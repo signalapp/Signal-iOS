@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positioniere diesen QR-Code innerhalb des Rahmens deines anderen Geräts.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Keine Aufforderung sichtbar auf deinem alten Gerät?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Warten auf anderes Gerät …";
@@ -2333,22 +2333,22 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Vorschauen für jeden Link";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Für das Übertragen deines Signal-Kontos musst du auf beiden Geräten den Zugriff auf das lokale Netzwerk aktivieren.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Hilfe benötigt?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Öffne auf jedem Gerät »Einstellungen«";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schalte »Lokales Netzwerk« ein";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigiere zu »Signal«";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schalte »Lokales Netzwerk« ein";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Nach Name oder Adresse suchen";

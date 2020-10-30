@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Administratzaileak Bakarrik";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Hautatu taldearen kide zeintzuk diren edita dezakeena:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Partaide Guztiak";
@@ -1055,7 +1055,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHubera Birzuzendu";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "Arazteko erregistroei buruzko informazioa";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Solasaldian dauden mezu guztiak ezabatu?";
@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Kokatu QR kode hau beste gailuaren laukitxoaren barruan.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Ez duzu ikusten transferentzia egiteko aukera zure gailu zaharrean?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Beste gailu baten zain...";
@@ -1244,7 +1244,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiatu";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Kaixo,\nAzkenaldi honetan Signal erabiltzen aritu naiz nire iPhonean solasaldien pribatutasuna mantentzeko. Zuk ere instalatzea gustatuko litzaidake, ziur egon gaitezen bakarrik biok gure mezuak irakurri edo deiak entzun ditzakegula.\n\nSignal eskuragarri dago iPhone eta Android gailuetarako. Eskuratu hemen: %@\n\nSignalen funtzinamendua zure mezularitza aplikazioarena bezalakoa da. Irudiak, eta bixeoak bidali ditzakezu, deiak egn eta talde txatak hasi. Onena hauxe da: inork ezin dezakeela ezer ikusi, ezta Signal garatzen duen jendeak ere.\n\nOpen Whisper Systems Signal egiten duen taldea da. Beraiei buruz gehiago jakiteko: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal erabiltzen has gaitezen";
@@ -1310,10 +1310,10 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Ezin izan da posta elektronikorako aplikazioa ireki";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Ezin izan da laguntza eskaera sortu";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Erregistroak igotzeak huts egin du.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Ezin izan da bidali pregako datu akasdunak direla eta.";
@@ -1397,7 +1397,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Izena eman ez duen erabiltzailea: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Zure Signal bertsioa iraungi da! Ukitu azkenengo bertsiora eguneratzeko.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Zure Signal-en bertsioa %d egun barru iraungiko da. Sakatu azkenengo bertsiora eguneratzeko.";
@@ -1508,31 +1508,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "\"%@\" erabiltzaileak aldatu dezake taldearen kideak.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Bakarrik administratzaileek alda dezakete aukera hau.";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Deian Sartu";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dei honetan - %ld pertsona";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, eta beste %ld daude dei honetan";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Beste inor ez dago hemen";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "Dei honetan - pertsona 1";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ dei honetan dago";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Hasi Deia";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ eta %@ dei honetan daude";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Taldea sortu duzu.";
@@ -1688,7 +1688,7 @@
 "GROUP_LINK_JOIN_GROUP_BUTTON" = "Taldera Sartu";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Eguneratu Signal gailu honetan talde honetan sartzeko.";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Kodea hau eskaneatuz gero jendea zure taldean sartu ahal izango da. Hala era, administratzaileen baimena eskatzeko aukera aktibatuta baduzu, berauen onespena beharko da taldean sartzeko.";
@@ -1709,7 +1709,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Talde Esteka";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Kudeatu eta Partekatu";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Kideak link bidez sartzen badira taldean, derrigorrezkotzat jo administratzailek batek onartzea.";
@@ -1916,7 +1916,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ taldean sartu da.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ erabiltzailea taldean sartu da talde esteka baten bidez.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ erabiltzaileak taldea utzi du.";
@@ -1928,28 +1928,28 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ erabiltzaileak %2$@ ezabatu du.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%@ erabiltzaileak taldean sartzeko egindako eskaera onartu duzu.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ erabiltzaileak taldean sartzeko %1$@erabiltzailearen  eskaera onartu du.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "%@ erabiltzaileak taldean sartzeko egindako eskaera onartua izan da.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ erabiltzaileak taldean sartzeko eskaera bertan behera utzi du.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "%@ erabiltzaileak taldean sartzeko egindako eskaera ukatu duzu.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ erabiltzaileak taldean sartzeko %1$@erabiltzailearen  eskaera ukatu du.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ erabiltzaileak taldean sartzeko egindako eskaera ukatua izan da.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ erabiltzaileak taldean sartzeko eskatu du talde esteka baten bidez.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ erabiltzaileari bere administratzaile baimenak kendu zaizkio.";
@@ -1964,7 +1964,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Kideen eskaerak";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Falta diren  gonbidapenak";
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Kideen Eskaerak & Gonbidapenak";
@@ -2042,7 +2042,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Zer dira Jarauntsitako Taldeak?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Jarauntsitako Taldeak oraindik ezin dira Talde Berrietara eguneratu, baina Signalen azkenengo bertsioa baduzu, kide berak dituen Talde Berri bat sortu dezakezu.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Eguneratu dezaket Jarauntsitako Taldea?";
@@ -2054,19 +2054,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Jarauntsitako Taldeak vs. Talde Berriak";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Jarauntsitako talde bat sortuko da kide bat Signal-en bertsio zahar bat erabiltzen ari delako. Mota Berriko talde batu sortu dezakezu berarekin Signal eguneratu ondoren; beste aukera bat ondokoa da: taldea sortu aurretik, bera ezabatu.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Jarauntsitako talde bat sortuko da %@  kide Signal-en bertsio zahar bat erabiltzen ari direlako. Mota Berriko talde batu sortu dezakezu beraiekin Signal eguneratu ondoren; beste aukera bat ondokoa da: taldea sortu aurretik, beraiek ezabatu.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Kide batek ez du aukerarik Talde Berriak erabiltzeko; beraz, talde hau Jarauntsitako Taldea izango da. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ kidek ez dute aukerarik Talde Berriak erabiltzeko; beraz, talde hau Jarauntsitako Taldea izango da. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Hau Jarauntsitako Talde bat da. Talde administratzaile moduko ezaugarriak Talde Berrietan erabil daitezke bakarrik. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Jarauntsitako Taldea";
@@ -2084,19 +2084,19 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Hautatu administratzaile berria";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Ikusi Eskaera";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "Ikusi Eskaerak";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "Harremanetan Jarri Gurekin";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Laguntzarako Zentroa";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Artxibatutako Solasaldiak";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blokeatuta";
@@ -2117,7 +2117,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Zure kontaktuetako batzuk Signalen daude jada, %@,  %@ eta %@ barne hartuta";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Hasi zure lehenengo solasaldia hemen.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@(e)k taldera gehitu zaitu";
@@ -2147,13 +2147,13 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ezin duzu %@ elementu baino gehiago partekatu.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "Aldatu Argazkiak";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Ez dituzu zure argazkiak ikusten?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Huts egin du eranskina hautatzeak.";
@@ -2177,10 +2177,10 @@
 "IN_CALL_RINGING" = "Deitzen...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Audio-Deia...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Bideo-Deia";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Erantzunda. Ziurtatzen...";
@@ -2189,16 +2189,16 @@
 "IN_CALL_TERMINATED" = "Deia amaitu da.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Solasaldi hauek artxibatuta daude eta bakarrik mezu berriak jasotakoan agertuko dira sarrera erretiluan.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Emaiozu zure sarrera erretiluari gogoangarria den zerbait. Hasi zaitez lagun bati mezu bat bidaliz.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ -(e)k deitu dizu";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Mezu sinkronizatuak bidali edo jaso dezakezu zure telefono edo iPadetik.\nZure segurtasunerako, solasaladien historia ez da bidaltzen lotutako gailu berrietara.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@(e)k Signal dauka";
@@ -2240,13 +2240,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Joan euskarri guztietara";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "Artxibatu Solasaldia";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Erakutsi eranskinak";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Joan Solasaldiaren Informaziora";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Ipini Arreta Sarrera Barran";
@@ -2261,10 +2261,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Mezu Berria";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Joan Hurrengo Solasaldira";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Joan Aurreko Solasaldira";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Bilatu";
@@ -2276,7 +2276,7 @@
 "KEY_COMMAND_STICKERS" = "Erakutsi Eranskailuak";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "Desartxibatu Solasaldia";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Gehiago jakin";
@@ -2297,7 +2297,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Gailua lotzeak huts egin du.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Gailu hau gai izango da zure talde eta kontaktuak ikusteko, zure solasaldietan sartzeko eta zure izenean mezuak bidaltzeko.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Lotu nahi duzu gailu hau?";
@@ -2324,28 +2324,28 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Gailua lotzeak huts egin du.";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Esteken aurrebistak webgune guztietarako sortuko dira orain.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Desgaitu";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Aurreikusi edozein esteka";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Zure Signal kontua transferitzeko, sare lokalereako baimena aktibatu behar duzu bi gailuetan.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Laguntzarik behar?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Gailu bakoitzean, ezarpenak ireki";
 
 /* Third step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Joan Signalera";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
@@ -2399,7 +2399,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Ezabatu guztientzat";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Mezu hau ezabatuko da solasaldian dagoen edonorentzat Signalen azkenengo bertsioetako bat erabiltzen badu. Mezua ezabatu duzula ikusteko gai izango dira.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Norentzat nahi duzu mezu hau ezabatu?";
@@ -2501,7 +2501,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Ezabatu";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Solasaldi hau zure gailu guztietatik ezabatuko da.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Ezabatu Txat-a?";
@@ -2537,10 +2537,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Ezabatu";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Jarraitu nahi duzu %@ erabiltzailearekin duzun solasaldian eta zure izena eta argazkia berarekin partekatu?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Jarraitu nahi duzu talde honekin duzun solasaldian eta zure izena eta argazkia bere kideekin partekatu?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ erabiltzaileari baimena eman nahi diozu zuri mezuak bidaltzeko eta zure izena eta argazkia beraiekin partekatzeko. Zuk onartu arte ez dute jakingo beraien mezua ikusi duzunik.";
@@ -2558,10 +2558,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Bertan behera utzi eskaera";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Taldean sartzeko zuk egindako eskaera bertan behera utzi nahi duzu?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Taldean sartzeko zure eskaera taldeko administratzaileari bidali zaio. Jakinaraziko zaizu erabaki bat hartzen duenean.";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Mezuen Eskaeren Aurkezpena";
@@ -2570,7 +2570,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Gehitu Profil Izena";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Orain aukeratu dezakezu solasaldi berri batean \"Onartu\" edo \"Ezabatu\". Izenek aukera ematen diote jendeari igorlea nor den jakiteko.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Zure profilaren izena gorde da.";
@@ -2657,10 +2657,10 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Zure kontuarekin lotu dezakezun gehienezko gailu kopurura iritsi zara. Mesedez, ezabatu gailu bat eta saia zaitez berriro.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Mututako solasaldietarako ez duzu jakinarazpenik jasoko.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "Isildu";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Jarraitu";
@@ -2783,7 +2783,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Soinuak";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Gehitu pertsonalizatutako soinua...";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Izena, edukia eta ekintzak";
@@ -2861,16 +2861,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Gaitu baimenak";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Jakinarazpenen bitartez ikusi ahal izango duzu mezu berriak iritsi diren eta jaso ahal izango duzu solasaldiei buruziko egunerapenak.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Mezua eskuratu";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Hautatu Signalen %@ den zure telefono zenbakia erabiliz topa zaitzakeena";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Nork topatu zaitzake zure telefono zenbakia erabiliz?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Zure telefono zenbakia sartu eta hasi zaitez";
@@ -2957,7 +2957,7 @@
 "OUTAGE_WARNING" = "Signal arazo teknikoak izaten ari da. Gogor ari gara lanean zerbitzua ahal bezain laster berriro martxan jartzeko.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "%@ erabiltzaileari deitu diozu";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDFa ezin izan da erakutsi";
@@ -2969,13 +2969,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Gehitu Taldera";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Nahi duzu \"%@\" erabiltzailea taldean sartu?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Ukatu Eskaera";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Ukatu \"%@\" erabiltzaileak egindako eskaera?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ erabiltzaileak pertsona bat gondibatu du";
@@ -2984,28 +2984,28 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ erabiltzaileak %2$@ pertsona gonbidatu ditu";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Ez dago egiteke dagoen kide eskaerarik.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Ez dago gonbidapenik.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\" gehitua.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ dira falta diren kideen eskaerak";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Ikusi Eskaerak";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" ukatua.";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Ezeztatu baliogabeko gonbidapena";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Ezeztatu %@ baliogabeko gonbidapen";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Ezeztatu Gonbidapena";
@@ -3029,7 +3029,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Baliogabeo Gonbidapenak";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Beste talde partaideek egindako gonbidapenak";
@@ -3065,10 +3065,10 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Ikusita";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Denak";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Zure telefono zenbakia bere kontaktuetan duen edonork ikusi ahal izango zaitu kontaktu gisa Signalen. Beste batzuk gai izango dira zu topatzeko bilaketa bidez.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Inor ez";
@@ -3080,13 +3080,13 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Adibidez: %@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Nire Kontaktuak";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Signalen bakarrik zure kontaktuek ikusi ahal izango dute zure telefono zenbakia.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "Denak";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
@@ -3095,7 +3095,7 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Inor ez";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Signalen inork ez du zure telefono zenbakia ikusiko.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3251,7 +3251,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Bihar gogoraraziko dizugu.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Bi aste barru gogoraraziko dizugu berriro.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Astebete barru gogoraraziko dizugu.";
@@ -3266,7 +3266,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PINak gutxienez 4 digitu eduki behar ditu.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "Gehienez 4 txat finka ditzakezu";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Finkatuta";
@@ -3311,7 +3311,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Honek ez dirudi %@ erabiltzailearekin duzun segurtasun zenbakia. Kontaktu zuzena egiaztatzen ari zara?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Zure arbelean duzun segurtasun zenbakiak ez dirudi solasaldi honetarako zuzena.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signalek ezin izan du segurtasun zenbakirik topatu zure arbelean. Ondo kopiatu al duzu?";
@@ -3380,7 +3380,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profila egiaztatu daiteke bakarrik internetera konektatuta bazaude.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Zure profila muturretik-muturrera enkriptatuta dago. Ikusgarri egongo da bakarrik zure kontaktuentzat, solasaldi berria sortu edo onartzen duzunean eta talde berrietan sartzen zarenean.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Gorde";
@@ -3593,7 +3593,7 @@
 "REREGISTER_FOR_PUSH" = "Bierregistratu push jakinarazpenetarako";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "Signal munduko mezularitza aplikaziorik onena bilakatzeko, zure iritzia entzutea gustatuko litzaiguke.";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "Esan Signali pentsatzen duzuna";
@@ -3605,7 +3605,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Ez, eskerrik asko";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>Pribatutasunean sinesten dugu. </bold>\nSignalek ez du jarraitzen egiten duzuna edo zure datuak bildu. Signal guztiontzat hobetzeko, erabiltzaileen iruzkinetan oinarritzen gara,  <bold>eta zurea edukitzea gustatuko litzaiguke. </bold>\n Inkesta bat egiten ari gara Signal nola erabiltzen duzun ulertzeko. Gure inkestak identifika zaitzakeen daturik ez du biltzen. Informazio gehiago partekatu nahi baduzu, kontakturako informazioa emateko aukera izango duzu. \n\n Minutu batzuk eta iruzkinak egiteko baduzu, gustatuko litzaiguke zure iritzia entzutea. ";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Inkesta egin";
@@ -4043,7 +4043,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Gehitu blokeatutako erabiltzailea";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "Blokeatu dituzun kontaktuen eta taldeen zerrenda.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Zure kontaktuek ez dute Signal erabiltzen.";
@@ -4061,7 +4061,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Birtransmititu dei guztiak Signal zerbitzari baten bitartez; horrela ez diozu erakutsiko zure IP helbidea kontaktuari. Aktibatzeak deiaren kalitatea gutxiagotuko du.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "Garbitu Solasaldien Historia";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Mezualaria\nBaimenduta GPLv3 litzentziapean";
@@ -4085,7 +4085,7 @@
 "SETTINGS_HELP" = "Laguntza";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "Garbitu Solasaldien Historia";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informazioa";
@@ -4103,19 +4103,19 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Baldintzak eta pribatutasun arauak";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Sortu esteken aurrebistak";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Eskaratu esteken aurrebistak zuzenean webguneetatik eta erabili bidaltzen dituzun mezuetan.";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "Mezularitza";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Hobespenak";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Zenbatu Isildutako Solasaldiak";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Intsignia Kopurua";
@@ -4136,16 +4136,16 @@
 "SETTINGS_NOTIFICATIONS" = "Jakinarazpenak";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Topa nazazu telefono zenbakia erabiliz";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Topa Nazazu Telefono Zenbakia Erabiliz";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Ikusi nire telefono zenbakia";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Ikusi nire telefono zenbakia";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Gogorarazleak desaktibatu";
@@ -4187,7 +4187,7 @@
 "SETTINGS_READ_RECEIPT" = "Irakurketaren hartu-agiriak";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Ikusi eta parkeatu mezuak irakurriak izan direnean. Ezarpen hau aukerazkoa da eta solasaldi guztiegi eragiten die.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Desaktibatu";
@@ -4247,7 +4247,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Idazketa jakinarazleak";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Ikusi eta parketatu mezuak noiz idazten ari diren. Ezarpen hau aukerazkoa da eta solasaldi guztiei eragiten die.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Igorle Zigilatuta";
@@ -4268,7 +4268,7 @@
 "SETTINGS_VERSION" = "Bertsioa";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "Nork egin dezake...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Emaila";
@@ -4313,7 +4313,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Erakutsi segurtasun zenbakia";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "Erakutsi Solasaldia";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signalera gonbidatu zaituz. Hauxe da esteka:";
@@ -4331,7 +4331,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Talde Berriak hemen daude!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
@@ -4412,7 +4412,7 @@
 "SUPPORT_FAQ_PROMPT" = "Gure FAQ-a irakurri duzu?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Arazteko erregistroa sartu";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Kargatzen";
@@ -4433,7 +4433,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ eta %lu  beste talde batzuetako kidea";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Zuretzako oharrak gehitu ditzakezu solasaldi honetan. Zure kontuak lotutako gailurik badauka, ohar berriak sinkronizatuko dira.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ taldeko kidea";
@@ -4478,13 +4478,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "minutu %@";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@segundu";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "Aste %@";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "Urte %@";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ aste";
@@ -4493,10 +4493,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@a";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ urte";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 segundu";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Utzi";
@@ -4568,7 +4568,7 @@
 "UNNAMED_DEVICE" = "Izenik Gabeko Gailua";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "Kendu finkapena";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Txatak";

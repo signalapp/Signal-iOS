@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Posicione este código QR no foco do seu outro aparelho.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Não está vendo um aviso de confirmação no seu antigo dispositivo?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Esperando o outro aparelho…";
@@ -2333,22 +2333,22 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Pré-visualizar qualquer link";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "A fim de transferir sua conta do Signal, você precisa permitir o acesso à rede local em ambos os dispositivos.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Precisa de ajuda?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "No cada dispositivo, abrir as Configurações";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Ativar \"Rede Local\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Vá para o Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Ativar o Acesso à Rede Local";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Buscar por nome ou endereço";
