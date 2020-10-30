@@ -28,6 +28,10 @@ public class GroupsV2Migration: NSObject {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Impl
     }
 
+    private static var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
+    }
+
     // MARK: -
 
     private override init() {}
@@ -156,10 +160,16 @@ public extension GroupsV2Migration {
         return true
     }
 
-    static func tryToAutoMigrateAllGroups() {
+    static func tryToAutoMigrateAllGroups(shouldLimitBatchSize: Bool) {
         AssertIsOnMainThread()
 
         guard FeatureFlags.groupsV2Migrations else {
+            return
+        }
+        guard CurrentAppContext().isMainAppAndActive else {
+            // Don't try to migrate groups in app extensions,
+            // nor if the app is in the background, e.g.
+            // waking up from a VOIP push.
             return
         }
 
@@ -195,9 +205,13 @@ public extension GroupsV2Migration {
                 }
             }
 
+            let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
+                                                            ? self.autoMigrationMode
+                                                            : .possiblyAlreadyMigratedOnService)
+
             // Check up to N groups on every launch.
             let maxCheckCount: Int = 50
-            if groupThreads.count > maxCheckCount {
+            if shouldLimitBatchSize, groupThreads.count > maxCheckCount {
                 groupThreads.shuffle()
                 groupThreads = Array(groupThreads.prefix(upTo: maxCheckCount))
             }
@@ -214,9 +228,6 @@ public extension GroupsV2Migration {
             }.map(on: .global()) { _ in
                 Logger.verbose("")
 
-                let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
-                                                                ? self.autoMigrationMode
-                                                                : .possiblyAlreadyMigratedOnService)
                 for groupThread in groupThreads {
                     firstly {
                         Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
@@ -316,14 +327,15 @@ fileprivate extension GroupsV2Migration {
         Logger.verbose("migrationMode: \(migrationMode)")
 
         return firstly(on: .global()) { () -> Promise<Void> in
-            return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.map(on: .global()) { () -> UnmigratedState in
             try Self.loadUnmigratedState(groupId: groupId)
         }.then(on: .global()) { (unmigratedState: UnmigratedState) -> Promise<UnmigratedState> in
             firstly {
-                Self.tryToFillInMissingUuids(unmigratedState: unmigratedState)
+                Self.tryToPrepareMembersForMigration(migrationMode: migrationMode,
+                                                     unmigratedState: unmigratedState)
             }.map(on: .global()) {
-                return unmigratedState
+                unmigratedState
             }
         }.then(on: .global()) { (unmigratedState: UnmigratedState) -> Promise<TSGroupThread> in
             addMigratingGroupId(unmigratedState.migrationMetadata.v1GroupId)
@@ -346,23 +358,121 @@ fileprivate extension GroupsV2Migration {
         }
     }
 
-    static func tryToFillInMissingUuids(unmigratedState: UnmigratedState) -> Promise<Void> {
-        let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
-        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
-        let phoneNumbersWithoutUuids = membersToMigrate.compactMap { (address: SignalServiceAddress) -> String? in
-            if address.uuid != nil {
-                return nil
-            }
-            return address.phoneNumber
-        }
-        guard !phoneNumbersWithoutUuids.isEmpty else {
+    // This method tries to fill in missing:
+    //
+    // * UUIDs.
+    // * Capabilities (2).
+    // * Profile key credentials.
+    static func tryToPrepareMembersForMigration(migrationMode: GroupsV2MigrationMode,
+                                                unmigratedState: UnmigratedState) -> Promise<Void> {
+        guard !migrationMode.isOnlyUpdatingIfAlreadyMigrated else {
+            // If we're only trying to update the local db to
+            // reflect groups that are already migrated, we can
+            // skip this step.
             return Promise.value(())
         }
 
-        Logger.info("Trying to fill in missing uuids: \(phoneNumbersWithoutUuids.count)")
+        let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
+        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
 
-        let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
-        return discoveryTask.perform().asVoid()
+        return firstly(on: .global()) { () -> Promise<Void> in
+            let phoneNumbersWithoutUuids = membersToMigrate.compactMap { (address: SignalServiceAddress) -> String? in
+                if address.uuid != nil {
+                    return nil
+                }
+                return address.phoneNumber
+            }
+            guard !phoneNumbersWithoutUuids.isEmpty else {
+                return Promise.value(())
+            }
+
+            Logger.info("Trying to fill in missing uuids: \(phoneNumbersWithoutUuids.count)")
+
+            let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
+            return firstly {
+                discoveryTask.perform().asVoid()
+            }.recover(on: .global()) { error -> Promise<Void> in
+                // Log but ignore errors.
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebug("Error: \(error)")
+                }
+                return Promise.value(())
+            }
+        }.then(on: .global()) { () -> Promise<Void> in
+            var membersToFetchProfiles = Set<SignalServiceAddress>()
+            Self.databaseStorage.read { transaction in
+                for address in membersToMigrate {
+                    if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
+                        membersToFetchProfiles.insert(address)
+                    } else if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
+                        membersToFetchProfiles.insert(address)
+                    }
+                }
+            }
+            guard !membersToFetchProfiles.isEmpty else {
+                return Promise.value(())
+            }
+            Logger.info("Fetching profiles: \(membersToFetchProfiles.count)")
+            // Profile fetches are rate limited. We don't want to run afoul of those
+            // rate limits especially while trying to auto-migrate groups in the
+            // background. Therefore we throttle these requests for auto-migrations.
+            let profileFetchMode: ProfileFetchMode = (migrationMode.isManualMigration
+                                                        ? .parallel
+                                                        : .serialWithThrottling)
+            return fetchProfiles(addresses: Array(membersToFetchProfiles),
+                                 profileFetchMode: profileFetchMode)
+        }
+    }
+
+    private enum ProfileFetchMode {
+        case serialWithThrottling
+        case parallel
+    }
+
+    private static func fetchProfiles(addresses: [SignalServiceAddress], profileFetchMode: ProfileFetchMode) -> Promise<Void> {
+        func fetchProfilePromise(address: SignalServiceAddress) -> Promise<Void> {
+            firstly {
+                ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
+            }.recover(on: .global()) { error -> Promise<Void> in
+                if case ProfileFetchError.throttled = error {
+                    // Do not ignore throttling errors.
+                    throw error
+                }
+                // Log but ignore errors.
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebug("Error: \(error)")
+                }
+                return Promise.value(())
+            }
+        }
+
+        switch profileFetchMode {
+        case .parallel:
+            let promises = addresses.map { fetchProfilePromise(address: $0) }
+            return when(fulfilled: promises)
+        case .serialWithThrottling:
+            guard let firstAddress = addresses.first else {
+                // No more profiles to fetch.
+                return Promise.value(())
+            }
+            let remainder = Array(addresses.suffix(from: 1))
+            return firstly {
+                fetchProfilePromise(address: firstAddress)
+            }.then(on: .global()) {
+                // We need to throttle these jobs.
+                //
+                // The profile fetch rate limit is a bucket size of 4320, which
+                // refills at a rate of 3 per minute.
+                after(seconds: 1.0 / 3.0)
+            }.then(on: .global()) {
+                // Recurse.
+                fetchProfiles(addresses: remainder, profileFetchMode: profileFetchMode)
+            }
+        }
     }
 
     static func attemptToMigrateByPullingFromService(unmigratedState: UnmigratedState,
@@ -846,7 +956,7 @@ public enum GroupsV2MigrationMode {
         self == .manualMigrationAggressive || self == .autoMigrationAggressive
     }
 
-    private var isOnlyUpdatingIfAlreadyMigrated: Bool {
+    fileprivate var isOnlyUpdatingIfAlreadyMigrated: Bool {
         switch self {
         case .isAlreadyMigratedOnService,
              .possiblyAlreadyMigratedOnService:

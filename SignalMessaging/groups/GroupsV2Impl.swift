@@ -78,7 +78,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
             Self.enqueueRestoreGroupPass()
 
-            GroupsV2Migration.tryToAutoMigrateAllGroups()
+            GroupsV2Migration.tryToAutoMigrateAllGroups(shouldLimitBatchSize: true)
         }
 
         observeNotifications()
