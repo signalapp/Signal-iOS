@@ -19,6 +19,11 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVer
 typedef NS_CLOSED_ENUM(
     NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator = 1 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
+    TSGroupModelComparisonMode_CompareAll,
+    TSGroupModelComparisonMode_UserFacingOnly
+};
+
 // NOTE: This class is tightly coupled to TSGroupModelBuilder.
 //       If you modify this class - especially if you
 //       add any new properties - make sure to update
@@ -54,7 +59,7 @@ typedef NS_CLOSED_ENUM(
                  addedByAddress:(nullable SignalServiceAddress *)addedByAddress NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
-- (BOOL)isEqualToGroupModel:(TSGroupModel *)model ignoreRevision:(BOOL)ignoreRevision;
+- (BOOL)isEqualToGroupModel:(TSGroupModel *)model comparisonMode:(TSGroupModelComparisonMode)comparisonMode;
 #endif
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;

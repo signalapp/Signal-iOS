@@ -548,7 +548,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
             return false
         }
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("Invalid group model.")
+            Logger.warn("Invalid group model; possibly needs to be migrated.")
             return false
         }
         let messageRevision = groupContext.revision
@@ -713,12 +713,23 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage {
     private func updateGroupPromise(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         // First, we try to update the group locally using changes embedded in
         // the group context (if any).
-        firstly {
-            return self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo)
+        firstly(on: .global()) { () -> Promise<Void> in
+            guard let groupContextInfo = jobInfo.groupContextInfo else {
+                owsFailDebug("Missing groupContextInfo.")
+                return Promise.value(())
+            }
+            return firstly(on: .global()) { () -> Promise<Void> in
+                self.groupsV2.updateAlreadyMigratedGroupIfNecessary(v2GroupId: groupContextInfo.groupId)
+            }.recover(on: .global()) {error -> Promise<Void> in
+                owsFailDebug("Error: \(error)")
+                throw GroupsV2Error.shouldRetry
+            }
+        }.then(on: .global()) { () -> Promise<UpdateOutcome> in
+            self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo)
         }.recover(on: .global()) { _ in
             owsFailDebug("tryToUpdateUsingEmbeddedGroupUpdate should never fail.")
             return Guarantee.value(UpdateOutcome.failureShouldFailoverToService)
-        }.then(on: DispatchQueue.global()) { (embeddedUpdateOutcome: UpdateOutcome) -> Promise<UpdateOutcome> in
+        }.then(on: .global()) { (embeddedUpdateOutcome: UpdateOutcome) -> Promise<UpdateOutcome> in
             if embeddedUpdateOutcome == .failureShouldFailoverToService {
                 return self.tryToUpdateUsingService(jobInfo: jobInfo)
             } else {

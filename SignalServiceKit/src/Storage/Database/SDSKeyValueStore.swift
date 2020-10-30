@@ -155,6 +155,20 @@ public class SDSKeyValueStore: NSObject {
         write(NSNumber(booleanLiteral: value), forKey: key, transaction: transaction)
     }
 
+    @objc
+    public func setBoolIfChanged(_ value: Bool,
+                                 defaultValue: Bool,
+                                 key: String,
+                                 transaction: SDSAnyWriteTransaction) {
+        let didChange = value != getBool(key,
+                                         defaultValue: defaultValue,
+                                         transaction: transaction)
+        guard didChange else {
+            return
+        }
+        setBool(value, key: key, transaction: transaction)
+    }
+
     // MARK: - UInt
 
     public func getUInt(_ key: String, transaction: SDSAnyReadTransaction) -> UInt? {

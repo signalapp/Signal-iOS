@@ -31,19 +31,27 @@ public extension DebugUIStress {
 
     // Creates a new group (by cloning the current group) without informing the,
     // other members. This can be used to test "group info requests", etc.
-    class func cloneAsV1orV2Group(_ groupThread: TSGroupThread) {
+    class func cloneAsV1orV2Group(_ oldGroupThread: TSGroupThread) {
         firstly { () -> Promise<TSGroupThread> in
-            let groupName = Self.nameForClonedGroup(groupThread)
-            return GroupManager.localCreateNewGroup(members: groupThread.groupModel.groupMembers,
+            let groupName = Self.nameForClonedGroup(oldGroupThread)
+            return GroupManager.localCreateNewGroup(members: oldGroupThread.groupModel.groupMembers,
                                                     groupId: nil,
                                                     name: groupName,
-                                                    avatarData: groupThread.groupModel.groupAvatarData,
+                                                    avatarData: oldGroupThread.groupModel.groupAvatarData,
                                                     newGroupSeed: nil,
                                                     shouldSendMessage: false)
-        }.done { groupThread in
+        }.done { newGroupThread in
+
+            self.databaseStorage.write { transaction in
+                let oldDMConfig = oldGroupThread.disappearingMessagesConfiguration(with: transaction)
+                _ = OWSDisappearingMessagesConfiguration.applyToken(oldDMConfig.asToken,
+                                                                    toThread: newGroupThread,
+                                                                    transaction: transaction)
+            }
+
             Logger.info("Complete.")
 
-            SignalApp.shared().presentConversation(for: groupThread, animated: true)
+            SignalApp.shared().presentConversation(for: newGroupThread, animated: true)
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")
         }
@@ -51,20 +59,27 @@ public extension DebugUIStress {
 
     // Creates a new group (by cloning the current group) without informing the,
     // other members. This can be used to test "group info requests", etc.
-    class func cloneAsV1Group(_ groupThread: TSGroupThread) {
+    class func cloneAsV1Group(_ oldGroupThread: TSGroupThread) {
         do {
-            let groupName = Self.nameForClonedGroup(groupThread) + " (v1)"
-            let groupThread = try self.databaseStorage.write { transaction in
-                try GroupManager.createGroupForTests(members: groupThread.groupModel.groupMembers,
-                                                     name: groupName,
-                                                     avatarData: groupThread.groupModel.groupAvatarData,
-                                                     groupId: nil,
-                                                     groupsVersion: .V1,
-                                                     transaction: transaction)
-            }
-            assert(groupThread.groupModel.groupsVersion == .V1)
+            let groupName = Self.nameForClonedGroup(oldGroupThread) + " (v1)"
+            let newGroupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
+                let newGroupThread = try GroupManager.createGroupForTests(members: oldGroupThread.groupModel.groupMembers,
+                                                                          name: groupName,
+                                                                          avatarData: oldGroupThread.groupModel.groupAvatarData,
+                                                                          groupId: nil,
+                                                                          groupsVersion: .V1,
+                                                                          transaction: transaction)
 
-            SignalApp.shared().presentConversation(for: groupThread, animated: true)
+                let oldDMConfig = oldGroupThread.disappearingMessagesConfiguration(with: transaction)
+                _ = OWSDisappearingMessagesConfiguration.applyToken(oldDMConfig.asToken,
+                                                                    toThread: newGroupThread,
+                                                                    transaction: transaction)
+
+                return newGroupThread
+            }
+            assert(newGroupThread.groupModel.groupsVersion == .V1)
+
+            SignalApp.shared().presentConversation(for: newGroupThread, animated: true)
         } catch {
             owsFailDebug("Error: \(error)")
         }
@@ -72,9 +87,9 @@ public extension DebugUIStress {
 
     // Creates a new group (by cloning the current group) without informing the,
     // other members. This can be used to test "group info requests", etc.
-    class func cloneAsV2Group(_ groupThread: TSGroupThread) {
+    class func cloneAsV2Group(_ oldGroupThread: TSGroupThread) {
         firstly { () -> Promise<Void> in
-            let members: [SignalServiceAddress] = groupThread.groupModel.groupMembers
+            let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers
             for member in members {
                 Logger.verbose("Candidate member: \(member)")
             }
@@ -84,7 +99,7 @@ public extension DebugUIStress {
                 throw OWSAssertionError("Groups v2 not enabled.")
             }
             let members = try self.databaseStorage.read { (transaction: SDSAnyReadTransaction) throws -> [SignalServiceAddress] in
-                let members: [SignalServiceAddress] = groupThread.groupModel.groupMembers.filter { address in
+                let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers.filter { address in
                     GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
                 }
                 guard GroupManager.canUseV2(for: Set(members), transaction: transaction) else {
@@ -95,19 +110,26 @@ public extension DebugUIStress {
             for member in members {
                 Logger.verbose("Member: \(member)")
             }
-            let groupName = Self.nameForClonedGroup(groupThread) + " (v2)"
+            let groupName = Self.nameForClonedGroup(oldGroupThread) + " (v2)"
             return GroupManager.localCreateNewGroup(members: members,
                                                     groupId: nil,
                                                     name: groupName,
-                                                    avatarData: groupThread.groupModel.groupAvatarData,
+                                                    avatarData: oldGroupThread.groupModel.groupAvatarData,
                                                     newGroupSeed: nil,
                                                     shouldSendMessage: false)
-        }.done { (groupThread) in
-            assert(groupThread.groupModel.groupsVersion == .V2)
+        }.done { (newGroupThread) in
+            assert(newGroupThread.groupModel.groupsVersion == .V2)
+
+            self.databaseStorage.write { transaction in
+                let oldDMConfig = oldGroupThread.disappearingMessagesConfiguration(with: transaction)
+                _ = OWSDisappearingMessagesConfiguration.applyToken(oldDMConfig.asToken,
+                                                                    toThread: newGroupThread,
+                                                                    transaction: transaction)
+            }
 
             Logger.info("Complete.")
 
-            SignalApp.shared().presentConversation(for: groupThread, animated: true)
+            SignalApp.shared().presentConversation(for: newGroupThread, animated: true)
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")
         }

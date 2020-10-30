@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
+@class TSGroupModelV2;
 
 extern NSString *const TSGroupThreadAvatarChangedNotification;
 extern NSString *const TSGroupThread_NotificationKey_UniqueId;
@@ -34,7 +35,8 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // This method should only be called by GroupManager.
-- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel
+                              transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -68,8 +70,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 + (nullable instancetype)fetchWithGroupId:(NSData *)groupId
                               transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(fetch(groupId:transaction:));
-
-+ (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 @property (nonatomic, readonly, class) NSString *defaultGroupName;

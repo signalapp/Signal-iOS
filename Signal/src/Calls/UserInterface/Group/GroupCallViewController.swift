@@ -31,8 +31,7 @@ class GroupCallViewController: UIViewController {
 
         self.call = call
         self.thread = Self.databaseStorage.uiRead { transaction in
-            let threadId = TSGroupThread.threadId(fromGroupId: call.groupCall.groupId)
-            return TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction)
+            return TSGroupThread.fetch(groupId: call.groupCall.groupId, transaction: transaction)
         }
 
         super.init(nibName: nil, bundle: nil)

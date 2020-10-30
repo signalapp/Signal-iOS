@@ -2103,13 +2103,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
 
     __block NSString *_Nullable changedThreadId;
-    if (address.isValid) {
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        if (address.isValid) {
             changedThreadId = [TSContactThread getThreadWithContactAddress:address transaction:transaction].uniqueId;
-        }];
-    } else if (groupId.length > 0) {
-        changedThreadId = [TSGroupThread threadIdFromGroupId:groupId];
-    }
+        } else if (groupId.length > 0) {
+            changedThreadId = [TSGroupThread threadIdForGroupId:groupId transaction:transaction];
+        }
+    }];
 
     if (changedThreadId) {
         [self anyUIDBDidUpdateWithUpdatedThreadIds:[NSSet setWithObject:changedThreadId]];

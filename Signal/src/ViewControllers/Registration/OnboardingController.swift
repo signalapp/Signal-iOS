@@ -110,6 +110,7 @@ public class OnboardingController: NSObject {
     }
 
     // MARK: -
+
     public enum OnboardingMode {
         case provisioning
         case registering

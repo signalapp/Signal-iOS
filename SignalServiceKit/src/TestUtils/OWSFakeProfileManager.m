@@ -327,6 +327,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (void)migrateWhitelistedGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
 @end
 
 #endif

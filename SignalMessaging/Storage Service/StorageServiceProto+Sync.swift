@@ -835,10 +835,12 @@ extension PinnedThreadManager {
                 pinnedThreadIds.append(thread.uniqueId)
             case .groupMasterKey(let masterKey)?:
                 let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
-                let threadUniqueId = TSGroupThread.threadId(fromGroupId: contextInfo.groupId)
+                let threadUniqueId = TSGroupThread.threadId(forGroupId: contextInfo.groupId,
+                                                            transaction: transaction)
                 pinnedThreadIds.append(threadUniqueId)
             case .legacyGroupID(let groupId)?:
-                let threadUniqueId = TSGroupThread.threadId(fromGroupId: groupId)
+                let threadUniqueId = TSGroupThread.threadId(forGroupId: groupId,
+                                                            transaction: transaction)
                 pinnedThreadIds.append(threadUniqueId)
             default:
                 break

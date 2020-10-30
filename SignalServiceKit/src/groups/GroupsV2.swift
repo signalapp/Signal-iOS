@@ -23,6 +23,8 @@ public enum GroupsV2Error: Error {
     case requestingMemberCantLoadGroupState
     case cantApplyChangesToPlaceholder
     case expiredGroupInviteLink
+    case groupDoesNotExistOnService
+    case groupNeedsToBeMigrated
 }
 
 // MARK: -
@@ -50,11 +52,11 @@ public enum GroupsV2LinkMode: UInt, CustomStringConvertible {
 @objc
 public protocol GroupsV2: AnyObject {
 
-    func createNewGroupOnServiceObjc(groupModel: TSGroupModelV2) -> AnyPromise
-
     func generateGroupSecretParamsData() throws -> Data
 
     func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data
+
+    func v2GroupId(forV1GroupId v1GroupId: Data) -> Data?
 
     func hasProfileKeyCredential(for address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool
@@ -88,7 +90,8 @@ public protocol GroupsV2: AnyObject {
 // MARK: -
 
 public protocol GroupsV2Swift: GroupsV2 {
-    func createNewGroupOnService(groupModel: TSGroupModelV2) -> Promise<Void>
+    func createNewGroupOnService(groupModel: TSGroupModelV2,
+                                 disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
 
     func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void>
 
@@ -150,6 +153,8 @@ public protocol GroupsV2Swift: GroupsV2 {
     func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2)
 
     func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential>
+
+    func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void>
 }
 
 // MARK: -
@@ -470,11 +475,8 @@ public struct InvalidInvite: Equatable {
 
 public class MockGroupsV2: NSObject, GroupsV2Swift {
 
-    public func createNewGroupOnService(groupModel: TSGroupModelV2) -> Promise<Void> {
-        owsFail("Not implemented.")
-    }
-
-    public func createNewGroupOnServiceObjc(groupModel: TSGroupModelV2) -> AnyPromise {
+    public func createNewGroupOnService(groupModel: TSGroupModelV2,
+                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 
@@ -490,6 +492,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
             owsAssert(groupSecretParamsData.count >= 32)
             return groupSecretParamsData.subdata(in: Int(0)..<Int(32))
         }
+        owsFail("Not implemented.")
+    }
+
+    public func v2GroupId(forV1GroupId v1GroupId: Data) -> Data? {
         owsFail("Not implemented.")
     }
 
@@ -645,6 +651,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential> {
+        owsFail("Not implemented")
+    }
+
+    public func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void> {
         owsFail("Not implemented")
     }
 }

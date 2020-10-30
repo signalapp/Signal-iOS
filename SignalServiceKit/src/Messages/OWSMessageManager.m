@@ -593,6 +593,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    [self ensureGroupIdMapping:envelope withDataMessage:dataMessage transaction:transaction];
+
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
@@ -703,6 +705,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid group id: %lu.", (unsigned long)groupId.length);
             return nil;
         }
+
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
 
         if (!groupContext.hasType) {
@@ -1023,6 +1026,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"invalid sourceAddress");
         return;
     }
+
+    [self ensureGroupIdMapping:envelope withCallMessage:callMessage transaction:transaction];
+
     if ([self isEnvelopeSenderBlocked:envelope]) {
         OWSFailDebug(@"envelope sender is blocked. Shouldn't have gotten this far.");
         return;
@@ -1114,6 +1120,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"invalid sourceAddress");
         return;
     }
+
+    [self ensureGroupIdMapping:envelope withTypingMessage:typingMessage transaction:transaction];
+
     if (envelope.sourceAddress.isLocalAddress) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
@@ -1550,6 +1559,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    [self ensureGroupIdMapping:envelope withSyncMessage:syncMessage transaction:transaction];
+
     if (syncMessage.sent) {
         if (![SDS fitsInInt64:syncMessage.sent.timestamp]) {
             OWSFailDebug(@"Invalid timestamp.");
@@ -1782,9 +1793,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [blockedUUIDs addObject:uuid];
     }
+    NSSet<NSData *> *groupIds = [NSSet setWithArray:blocked.groupIds];
+    for (NSData *groupId in groupIds) {
+        [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
+    }
+
     [self.blockingManager processIncomingSyncWithBlockedPhoneNumbers:[NSSet setWithArray:blocked.numbers]
                                                         blockedUUIDs:blockedUUIDs
-                                                     blockedGroupIds:[NSSet setWithArray:blocked.groupIds]
+                                                     blockedGroupIds:groupIds
                                                          transaction:transaction];
 }
 
@@ -2326,6 +2342,51 @@ NS_ASSUME_NONNULL_BEGIN
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
             ^{ [self.profileManager fetchLocalUsersProfile]; });
     }
+}
+
+#pragma mark - Group ID Mapping
+
+- (void)ensureGroupIdMapping:(SSKProtoEnvelope *)envelope
+             withDataMessage:(SSKProtoDataMessage *)dataMessage
+                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+    if (groupId != nil) {
+        [self ensureGroupIdMapping:groupId transaction:transaction];
+    }
+}
+
+- (void)ensureGroupIdMapping:(SSKProtoEnvelope *)envelope
+             withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
+    if (dataMessage != nil) {
+        [self ensureGroupIdMapping:envelope withDataMessage:dataMessage transaction:transaction];
+    }
+}
+
+- (void)ensureGroupIdMapping:(SSKProtoEnvelope *)envelope
+           withTypingMessage:(SSKProtoTypingMessage *)typingMessage
+                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (typingMessage.hasGroupID) {
+        [self ensureGroupIdMapping:typingMessage.groupID transaction:transaction];
+    }
+}
+
+- (void)ensureGroupIdMapping:(SSKProtoEnvelope *)envelope
+             withCallMessage:(SSKProtoCallMessage *)callMessage
+                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // TODO: Update this to reflect group calls.
+}
+
+- (void)ensureGroupIdMapping:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // We might be learning of a v1 group id for the first time that
+    // corresponds to a v2 group without a v1-to-v2 group id mapping.
+    [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
 }
 
 @end

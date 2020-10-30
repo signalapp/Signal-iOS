@@ -96,10 +96,9 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
     ) {
         let thread: TSThread
         if let groupId = syncMessage.groupID {
-            guard let groupThread = TSGroupThread.anyFetchGroupThread(
-                uniqueId: TSGroupThread.threadId(fromGroupId: groupId),
-                transaction: transaction
-            ) else {
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId,
+                                                        transaction: transaction) else {
                 return owsFailDebug("message request response for missing group thread")
             }
             thread = groupThread

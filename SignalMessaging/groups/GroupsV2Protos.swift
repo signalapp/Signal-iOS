@@ -9,6 +9,7 @@ import SignalMetadataKit
 import ZKGroup
 
 public class GroupsV2Protos {
+
     private init() {}
 
     // MARK: -
@@ -83,6 +84,7 @@ public class GroupsV2Protos {
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
 
     public class func buildNewGroupProto(groupModel: TSGroupModelV2,
+                                         disappearingMessageToken: DisappearingMessageToken,
                                          groupV2Params: GroupV2Params,
                                          profileKeyCredentialMap: ProfileKeyCredentialMap,
                                          localUuid: UUID) throws -> GroupsProtoGroup {
@@ -154,6 +156,9 @@ public class GroupsV2Protos {
                                                                        localUuid: localUuid,
                                                                        groupV2Params: groupV2Params))
         }
+
+        let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimer(disappearingMessageToken)
+        groupBuilder.setDisappearingMessagesTimer(encryptedTimerData)
 
         validateInviteLinkState(inviteLinkPassword: groupModel.inviteLinkPassword, groupAccess: groupAccess)
 

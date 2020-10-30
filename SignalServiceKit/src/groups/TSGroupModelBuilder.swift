@@ -27,6 +27,7 @@ public struct TSGroupModelBuilder {
     public var inviteLinkPassword: Data?
     public var isPlaceholderModel: Bool = false
     public var addedByAddress: SignalServiceAddress?
+    public var wasJustMigrated: Bool = false
 
     public init() {}
 
@@ -44,6 +45,7 @@ public struct TSGroupModelBuilder {
         self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
         self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
         self.isPlaceholderModel = false
+        self.wasJustMigrated = false
     }
 
     public func buildForMinorChanges() throws -> TSGroupModel {
@@ -106,6 +108,7 @@ public struct TSGroupModelBuilder {
                                   avatarUrlPath: avatarUrlPath,
                                   inviteLinkPassword: inviteLinkPassword,
                                   isPlaceholderModel: isPlaceholderModel,
+                                  wasJustMigrated: wasJustMigrated,
                                   addedByAddress: addedByAddress)
         }
     }
@@ -169,6 +172,7 @@ public struct TSGroupModelBuilder {
                                   avatarUrlPath: avatarUrlPath,
                                   inviteLinkPassword: inviteLinkPassword,
                                   isPlaceholderModel: isPlaceholderModel,
+                                  wasJustMigrated: wasJustMigrated,
                                   addedByAddress: addedByAddress)
         }
     }
@@ -260,8 +264,9 @@ public extension TSGroupModel {
             builder.groupSecretParamsData = v2.secretParamsData
             builder.avatarUrlPath = v2.avatarUrlPath
             builder.inviteLinkPassword = v2.inviteLinkPassword
-            // Do not copy isPlaceholderModel; we want to discard this
-            // value when updating group models.
+
+            // Do not copy isPlaceholderModel or wasJustMigrated;
+            // We want to discard these values when updating group models.
         }
 
         return builder

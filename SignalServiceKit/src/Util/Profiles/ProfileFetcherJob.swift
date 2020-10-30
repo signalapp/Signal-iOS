@@ -596,9 +596,10 @@ public class ProfileFetcherJob: NSObject {
         }
 
         return databaseStorage.write(.promise) { transaction in
-            GroupManager.setUserHasGroupsV2Capability(address: address,
-                                                      value: profile.supportsGroupsV2,
-                                                      transaction: transaction)
+            GroupManager.setUserCapabilities(address: address,
+                                             hasGroupsV2Capability: profile.supportsGroupsV2,
+                                             hasGroupsV2MigrationCapability: profile.supportsGroupsV2Migration,
+                                             transaction: transaction)
 
             self.verifyIdentityUpToDate(address: address,
                                         latestIdentityKey: profile.identityKey,

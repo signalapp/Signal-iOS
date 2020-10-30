@@ -81,6 +81,10 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.bulkUUIDLookup
     }
 
+    private class var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -110,6 +114,16 @@ public class GroupManager: NSObject {
         case .V2:
             return kGroupIdLengthV2
         }
+    }
+
+    @objc
+    public static func isV1GroupId(_ groupId: Data) -> Bool {
+        groupId.count == groupIdLength(for: .V1)
+    }
+
+    @objc
+    public static func isV2GroupId(_ groupId: Data) -> Bool {
+        groupId.count == groupIdLength(for: .V2)
     }
 
     @objc
@@ -339,7 +353,8 @@ public class GroupManager: NSObject {
                 return Promise.value(proposedGroupModel)
             }
             return firstly {
-                self.groupsV2.createNewGroupOnService(groupModel: proposedGroupModelV2)
+                self.groupsV2.createNewGroupOnService(groupModel: proposedGroupModelV2,
+                                                      disappearingMessageToken: disappearingMessageToken)
             }.then(on: .global()) { _ in
                 self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
@@ -896,7 +911,7 @@ public class GroupManager: NSObject {
         groupModelBuilder.groupMembership = groupMembership
         let newGroupModel = try groupModelBuilder.build(transaction: transaction)
 
-        if currentGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
+        if currentGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
         }
@@ -962,7 +977,7 @@ public class GroupManager: NSObject {
         builder.groupV2Revision = newRevision
         let newGroupModel = try builder.build(transaction: transaction)
 
-        if currentGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
+        if currentGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
         }
@@ -1052,13 +1067,7 @@ public class GroupManager: NSObject {
                                                newDisappearingMessageToken: newToken,
                                                newConfiguration: oldConfiguration)
         }
-        let newConfiguration: OWSDisappearingMessagesConfiguration
-        if newToken.isEnabled {
-            newConfiguration = oldConfiguration.copyAsEnabled(withDurationSeconds: newToken.durationSeconds)
-        } else {
-            newConfiguration = oldConfiguration.copy(withIsEnabled: false)
-        }
-        newConfiguration.anyUpsert(transaction: transaction)
+        let newConfiguration = oldConfiguration.applyToken(newToken, transaction: transaction)
 
         if shouldInsertInfoMessage {
             var remoteContactName: String?
@@ -1760,8 +1769,18 @@ public class GroupManager: NSObject {
                                                                        shouldAttributeAuthor: Bool,
                                                                        infoMessagePolicy: InfoMessagePolicy = .always,
                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
-        let groupThread = TSGroupThread(groupModelPrivate: groupModel)
+
+        if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
+            owsFail("Inserting existing group thread: \(groupThread.uniqueId).")
+        }
+
+        let groupThread = TSGroupThread(groupModelPrivate: groupModel,
+                                        transaction: transaction)
         groupThread.anyInsert(transaction: transaction)
+
+        TSGroupThread.setGroupIdMapping(groupThread.uniqueId,
+                                        forGroupId: groupModel.groupId,
+                                        transaction: transaction)
 
         let sourceAddress: SignalServiceAddress? = (shouldAttributeAuthor
             ? groupUpdateSourceAddress
@@ -1804,6 +1823,123 @@ public class GroupManager: NSObject {
         return groupThread
     }
 
+    public static func replaceMigratedGroup(groupIdV1: Data,
+                                            groupModelV2 groupModelV2Param: TSGroupModelV2,
+                                            disappearingMessageToken: DisappearingMessageToken,
+                                            groupUpdateSourceAddress: SignalServiceAddress?,
+                                            shouldSendMessage: Bool) -> Promise<TSGroupThread> {
+
+        return firstly(on: .global()) { () -> TSGroupThread in
+            try databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
+
+                // Set the wasJustMigrated flag on the model.
+                var groupModelBuilder = groupModelV2Param.asBuilder
+                groupModelBuilder.wasJustMigrated = true
+                let groupModelV2 = try groupModelBuilder.buildAsV2(transaction: transaction)
+                owsAssertDebug(groupModelV2.isEqual(to: groupModelV2Param,
+                                                    comparisonMode: .compareAll))
+
+                return try migratedGroupInDatabaseAndCreateInfoMessage(groupIdV1: groupIdV1,
+                                                                       groupModelV2: groupModelV2,
+                                                                       disappearingMessageToken: disappearingMessageToken,
+                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                       transaction: transaction)
+            }
+        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+            guard shouldSendMessage else {
+                return Promise.value(groupThread)
+            }
+
+            return firstly {
+                sendGroupUpdateMessage(thread: groupThread)
+            }.map(on: .global()) { _ in
+                return groupThread
+            }
+        }
+    }
+
+    private static func migratedGroupInDatabaseAndCreateInfoMessage(groupIdV1: Data,
+                                                                    groupModelV2 newGroupModelV2: TSGroupModelV2,
+                                                                    disappearingMessageToken: DisappearingMessageToken,
+                                                                    groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                    transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+        guard isV1GroupId(groupIdV1) else {
+            throw OWSAssertionError("Invalid v1 group id.")
+        }
+        guard let groupThreadV1 = TSGroupThread.fetch(groupId: groupIdV1,
+                                                      transaction: transaction) else {
+                                                        throw OWSAssertionError("Missing v1 thread.")
+        }
+        guard groupThreadV1.isGroupV1Thread else {
+            throw OWSAssertionError("Invalid v1 thread.")
+        }
+        let oldGroupModelV1 = groupThreadV1.groupModel
+        guard oldGroupModelV1.groupsVersion == .V1 else {
+            throw OWSAssertionError("Invalid v1 group model.")
+        }
+        guard newGroupModelV2.groupsVersion == .V2 else {
+            throw OWSAssertionError("Invalid v2 group model.")
+        }
+        let inProfileWhitelist = profileManager.isThread(inProfileWhitelist: groupThreadV1,
+                                                         transaction: transaction)
+        let isBlocked = blockingManager.isGroupIdBlocked(groupIdV1)
+
+        // We re-use the same model.
+        let groupThreadV2 = groupThreadV1
+
+        // Ensure that both the old and new groupIds map to the same unique id.
+        TSGroupThread.setGroupIdMapping(groupThreadV1.uniqueId,
+                                        forGroupId: oldGroupModelV1.groupId,
+                                        transaction: transaction)
+        TSGroupThread.setGroupIdMapping(groupThreadV1.uniqueId,
+                                        forGroupId: newGroupModelV2.groupId,
+                                        transaction: transaction)
+
+        groupThreadV2.update(with: newGroupModelV2, transaction: transaction)
+
+        // Update the disappearing messages configuration.
+        let oldDMConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThreadV2,
+                                                                                          transaction: transaction)
+        let newDMConfiguration = oldDMConfiguration.applyToken(disappearingMessageToken,
+                                                               transaction: transaction)
+
+        if inProfileWhitelist {
+            profileManager.addThread(toProfileWhitelist: groupThreadV2)
+        }
+        if isBlocked {
+            blockingManager.addBlockedGroup(newGroupModelV2, blockMode: .remote, transaction: transaction)
+        }
+
+        let didDMConfigChange = oldDMConfiguration.asToken != newDMConfiguration.asToken
+        let didGroupModelChange = !oldGroupModelV1.isEqual(to: newGroupModelV2,
+                                                         comparisonMode: .userFacingOnly)
+        if didDMConfigChange || didGroupModelChange {
+            insertGroupUpdateInfoMessage(groupThread: groupThreadV2,
+                                         oldGroupModel: oldGroupModelV1,
+                                         newGroupModel: newGroupModelV2,
+                                         oldDisappearingMessageToken: oldDMConfiguration.asToken,
+                                         newDisappearingMessageToken: newDMConfiguration.asToken,
+                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                         transaction: transaction)
+        }
+
+        // TODO: Do we also need to insert some kind of "migration" info message
+        //       in the conversation history?
+
+        // TODO: Should we notify storage service of an inserted group?
+        //       Should we clean up the old group id in the storage service?
+        notifyStorageServiceOfInsertedGroup(groupModel: newGroupModelV2,
+                                            transaction: transaction)
+
+        if DebugFlags.internalLogging {
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThreadV2,
+                                                                                           transaction: transaction)
+            owsAssertDebug(dmConfiguration.asToken == disappearingMessageToken)
+        }
+
+        return groupThreadV2
+    }
+
     // If newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel newGroupModelParam: TSGroupModel,
                                                                                     newDisappearingMessageToken: DisappearingMessageToken?,
@@ -1815,7 +1951,16 @@ public class GroupManager: NSObject {
 
         var newGroupModel = newGroupModelParam
 
-        let threadId = TSGroupThread.threadId(fromGroupId: newGroupModel.groupId)
+        // We might be trying to upsert a v1 group model for
+        // an existing v2 group. Therefore we need to ensure
+        // that the group-id-to-thread-unique-id mapping is
+        // up-to-date before proceeding.
+        TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId,
+                                           transaction: transaction)
+
+        let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId,
+                                              transaction: transaction)
+
         guard TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) else {
             guard canInsert else {
                 throw OWSAssertionError("Missing groupThread.")
@@ -1882,6 +2027,11 @@ public class GroupManager: NSObject {
             throw OWSAssertionError("Missing groupThread.")
         }
 
+        if newGroupModel.groupsVersion == .V1,
+            groupThread.groupModel.groupsVersion == .V2 {
+            throw OWSAssertionError("Cannot downgrade migrated group from v2 to v1.")
+        }
+
         // Step 2: Update DM configuration in database, if necessary.
         let updateDMResult: UpdateDMConfigurationResult
         if let newDisappearingMessageToken = newDisappearingMessageToken {
@@ -1921,12 +2071,13 @@ public class GroupManager: NSObject {
                 }
             }
 
-            guard !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) else {
+            guard !oldGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) else {
                 // Skip redundant update.
                 return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
             }
 
-            let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: true)
+            let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel,
+                                                             comparisonMode: .userFacingOnly)
 
             newGroupModel = updateAddedByAddressIfNecessary(oldGroupModel: oldGroupModel,
                                                             newGroupModel: newGroupModel,
@@ -1936,6 +2087,8 @@ public class GroupManager: NSObject {
                                           newGroupModel: newGroupModel,
                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                           transaction: transaction)
+
+            TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
 
             groupThread.update(with: newGroupModel, transaction: transaction)
 
@@ -2046,10 +2199,10 @@ public class GroupManager: NSObject {
         }
     }
 
-    // MARK: - Group Database
+    // MARK: - Capabilities
 
-    @objc
-    public static let groupsV2CapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2Capability")
+    private static let groupsV2CapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2Capability")
+    private static let groupsV2MigrationCapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2MigrationCapability")
 
     @objc
     public static func doesUserHaveGroupsV2Capability(address: SignalServiceAddress,
@@ -2057,26 +2210,42 @@ public class GroupManager: NSObject {
         if DebugFlags.groupsV2IgnoreCapability {
             return true
         }
-
-        if let uuid = address.uuid {
-            if groupsV2CapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction) {
-                return true
-            }
+        guard let uuid = address.uuid else {
+            return false
         }
-        return false
+        return groupsV2CapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
     }
 
     @objc
-    public static func setUserHasGroupsV2Capability(address: SignalServiceAddress,
-                                                    value: Bool,
-                                                    transaction: SDSAnyWriteTransaction) {
-        if let uuid = address.uuid {
-            let didChange = value != groupsV2CapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-            guard didChange else {
-                return
-            }
-            groupsV2CapabilityStore.setBool(value, key: uuid.uuidString, transaction: transaction)
+    public static func doesUserHaveGroupsV2MigrationCapability(address: SignalServiceAddress,
+                                                               transaction: SDSAnyReadTransaction) -> Bool {
+        if DebugFlags.groupsV2IgnoreMigrationCapability {
+            return true
         }
+        guard let uuid = address.uuid else {
+            return false
+        }
+        return groupsV2MigrationCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
+    public static func setUserCapabilities(address: SignalServiceAddress,
+                                           hasGroupsV2Capability: Bool,
+                                           hasGroupsV2MigrationCapability: Bool,
+                                           transaction: SDSAnyWriteTransaction) {
+        guard let uuid = address.uuid else {
+            Logger.warn("Address without uuid: \(address)")
+            return
+        }
+        let key = uuid.uuidString
+        groupsV2CapabilityStore.setBoolIfChanged(hasGroupsV2Capability,
+                                                 defaultValue: false,
+                                                 key: key,
+                                                 transaction: transaction)
+        groupsV2MigrationCapabilityStore.setBoolIfChanged(hasGroupsV2MigrationCapability,
+                                                          defaultValue: false,
+                                                          key: key,
+                                                          transaction: transaction)
     }
 
     // MARK: - Profiles

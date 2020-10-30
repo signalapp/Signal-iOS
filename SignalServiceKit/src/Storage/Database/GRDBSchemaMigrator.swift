@@ -8,9 +8,13 @@ import GRDB
 @objc
 public class GRDBSchemaMigrator: NSObject {
 
-    var grdbStorage: GRDBDatabaseStorageAdapter {
+    // MARK: - Dependencies
+
+    private var grdbStorage: GRDBDatabaseStorageAdapter {
         return SDSDatabaseStorage.shared.grdbStorage
     }
+
+    // MARK: -
 
     @objc
     public func runSchemaMigrations() {
@@ -117,6 +121,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_kbsStateCleanup
         case dataMigration_turnScreenSecurityOnForExistingUsers
         case dataMigration_disableLinkPreviewForExistingUsers
+        case dataMigration_groupIdMapping
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -991,6 +996,21 @@ public class GRDBSchemaMigrator: NSObject {
             } else {
                 // We don't want to show the megaphone for users that already had link previews disabled
                 ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .linkPreviews, transaction: transaction)
+            }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_groupIdMapping.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread,
+                _: UnsafeMutablePointer<ObjCBool>) in
+                guard let groupThread = thread as? TSGroupThread else {
+                    return
+                }
+                TSGroupThread.setGroupIdMapping(groupThread.uniqueId,
+                                                forGroupId: groupThread.groupModel.groupId,
+                                                transaction: transaction.asAnyWrite)
             }
         }
     }

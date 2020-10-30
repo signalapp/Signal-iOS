@@ -198,6 +198,9 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             owsFailDebug("Invalid group id.")
             return
         }
+
+        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+
         // groupUpdateSourceAddress is nil because we don't know
         // who made any changes.
         let groupUpdateSourceAddress: SignalServiceAddress? = nil
