@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "இந்த பயனர் முடியாது அவர்கள் இருக்கும் வரை குழுவில் சேர்க்கப்படும் மேம்படுத்தல் Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "100 உறுப்பினர்களின் அதிகபட்ச குழு அளவு அடைந்தது.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "100 உறுப்பினர்களின் அதிகபட்ச குழு அளவு அடைந்தது.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "தவறான புகைப்படம்.";

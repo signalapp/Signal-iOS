@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Baza'a iya sa wannan mai amfani cikin rukuni ba dole Sai ta/ya sabunta Signal dinta/sa. ";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "An kai membobi 100 watau iya lambar membobi da rukunin zata iya dauka. ";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "An kai membobi 100 watau iya lambar membobi da rukunin zata iya dauka. ";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";

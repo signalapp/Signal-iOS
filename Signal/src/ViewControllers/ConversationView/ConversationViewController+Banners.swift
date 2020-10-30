@@ -68,7 +68,7 @@ public extension ConversationViewController {
 
     // MARK: - Manual Migration Banner
 
-    var migrationInfoForGroup: GroupsV2MigrationInfo? {
+    var manualMigrationInfoForGroup: GroupsV2MigrationInfo? {
         guard GroupManager.canManuallyMigrate else {
             return nil
         }

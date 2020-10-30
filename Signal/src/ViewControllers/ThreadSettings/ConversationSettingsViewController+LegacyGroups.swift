@@ -42,8 +42,7 @@ class LegacyGroupView: UIView {
     func configureDefaultLabelContents() {
         let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT",
                                        comment: "Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}.")
-        let learnMoreText = NSLocalizedString("GROUPS_LEGACY_GROUP_LEARN_MORE_LINK",
-                                              comment: "A \"learn more\" link with more information about legacy groups.")
+        let learnMoreText = CommonStrings.learnMore
         configureLabel(format: format, highlightedSubstring: learnMoreText)
 
         isUserInteractionEnabled = true
@@ -54,8 +53,7 @@ class LegacyGroupView: UIView {
     func configureCantUpgradeDueToMembersContents() {
         let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT",
                                        comment: "Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}.")
-        let learnMoreText = NSLocalizedString("GROUPS_LEGACY_GROUP_LEARN_MORE_LINK",
-                                              comment: "A \"learn more\" link with more information about legacy groups.")
+        let learnMoreText = CommonStrings.learnMore
         configureLabel(format: format, highlightedSubstring: learnMoreText)
 
         isUserInteractionEnabled = true
@@ -104,8 +102,7 @@ class LegacyGroupView: UIView {
         case .cantBeMigrated_TooManyMembers:
             let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT",
                                            comment: "Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}.")
-            let learnMoreText = NSLocalizedString("GROUPS_LEGACY_GROUP_LEARN_MORE_LINK",
-                                                  comment: "A \"learn more\" link with more information about legacy groups.")
+            let learnMoreText = CommonStrings.learnMore
             configureLabel(format: format, highlightedSubstring: learnMoreText)
 
             isUserInteractionEnabled = true
@@ -158,7 +155,7 @@ class LegacyGroupView: UIView {
 
 // MARK: -
 
-private class LegacyGroupViewLearnMoreView: UIView {
+public class LegacyGroupViewLearnMoreView: UIView {
 
     weak var actionSheetController: ActionSheetController?
 

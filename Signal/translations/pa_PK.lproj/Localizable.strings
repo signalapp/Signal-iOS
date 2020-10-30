@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ایس صارف نوں ایس گروپ اچ نال نئیں رلایا جا سکدا جدوں تائیں کہ اوہ Signal نوں اپ گریڈ نئیں کردے۔";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "گروپ دے ودھ توں ودھ سائز 100 رکناں تائیں پہنچ گئے۔";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "گروپ دے ودھ توں ودھ سائز 100 رکناں تائیں پہنچ گئے۔";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";

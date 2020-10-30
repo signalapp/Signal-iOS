@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Signal ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವವರೆಗೆ ಈ ಬಳಕೆದಾರನನ್ನು ಗುಂಪಿಗೆ ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "100 ಸದಸ್ಯರ ಗರಿಷ್ಠ ಗುಂಪು ಗಾತ್ರವನ್ನು ತಲುಪಿದೆ.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "100 ಸದಸ್ಯರ ಗರಿಷ್ಠ ಗುಂಪು ಗಾತ್ರವನ್ನು ತಲುಪಿದೆ.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";

@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ते जोपर्यंत Signal श्रेणीसुधारणा करत नाही तोपर्यंत हा वापरकर्ता गटात जोडला जाऊ शकत नाही.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "100 सदस्यांचा कमाल गट आकार पूर्ण.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "100 सदस्यांचा कमाल गट आकार पूर्ण.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";

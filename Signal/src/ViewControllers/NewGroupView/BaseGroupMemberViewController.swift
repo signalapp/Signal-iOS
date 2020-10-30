@@ -22,13 +22,17 @@ protocol GroupMemberViewDelegate: class {
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int
 
-    func groupMemberViewIsGroupFull() -> Bool
+    func groupMemberViewIsGroupFull_HardLimit() -> Bool
+
+    func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool
 
     func groupMemberViewIsGroupsV2Required() -> Bool
 
     func groupMemberViewDismiss()
+
+    var isNewGroup: Bool { get }
 }
 
 // MARK: -
@@ -176,10 +180,20 @@ public class BaseGroupMemberViewController: OWSViewController {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
             return
         }
-        guard !groupMemberViewDelegate.groupMemberViewIsGroupFull() else {
-            showGroupFullAlert()
+        guard !groupMemberViewDelegate.groupMemberViewIsGroupFull_HardLimit() else {
+            showGroupFullAlert_HardLimit()
             return
         }
+        if groupMemberViewDelegate.groupMemberViewIsGroupFull_RecommendedLimit() {
+            showGroupFullAlert_SoftLimit(recipient: recipient, groupMemberViewDelegate: groupMemberViewDelegate)
+            return
+        } else {
+            addRecipientStep2(recipient, groupMemberViewDelegate: groupMemberViewDelegate)
+        }
+    }
+
+    private func addRecipientStep2(_ recipient: PickedRecipient,
+                                   groupMemberViewDelegate: GroupMemberViewDelegate) {
 
         groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
@@ -229,9 +243,42 @@ public class BaseGroupMemberViewController: OWSViewController {
         return members
     }
 
-    private func showGroupFullAlert() {
-        OWSActionSheets.showErrorAlert(message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL",
-                                                                  comment: "Message for 'group full' error alert when a user can't be added to a group."))
+    private func showGroupFullAlert_HardLimit() {
+        let format = NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT",
+                                       comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")
+        let message = String(format: format, OWSFormat.formatUInt(GroupManager.groupsV2MaxGroupSizeHardLimit))
+        OWSActionSheets.showErrorAlert(message: message)
+    }
+
+    private func showGroupFullAlert_SoftLimit(recipient: PickedRecipient,
+                                              groupMemberViewDelegate: GroupMemberViewDelegate) {
+        let title = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE",
+                                      comment: "Title for alert warning the user that they've reached the recommended limit on how many members can be in a group.")
+        let messageFormat = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT",
+                                              comment: "Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}.")
+        var message = String(format: messageFormat, OWSFormat.formatUInt(GroupManager.groupsV2MaxGroupSizeRecommended))
+
+        if groupMemberViewDelegate.isNewGroup {
+            let actionSheet = ActionSheetController(title: title, message: message)
+
+            actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton) { [weak self] _ in
+                guard let self = self else { return }
+                self.addRecipientStep2(recipient, groupMemberViewDelegate: groupMemberViewDelegate)
+            })
+            presentActionSheet(actionSheet)
+        } else {
+            message += ("\n\n"
+                            + NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_CONFIRM",
+                                                comment: "Message asking the user to confirm that they want to add a member to the group."))
+            let actionSheet = ActionSheetController(title: title, message: message)
+
+            actionSheet.addAction(ActionSheetAction(title: CommonStrings.addButton) { [weak self] _ in
+                guard let self = self else { return }
+                self.addRecipientStep2(recipient, groupMemberViewDelegate: groupMemberViewDelegate)
+            })
+            actionSheet.addAction(OWSActionSheets.cancelAction)
+            presentActionSheet(actionSheet)
+        }
     }
 
     // MARK: -

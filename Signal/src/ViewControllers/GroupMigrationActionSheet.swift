@@ -22,11 +22,15 @@ public class GroupMigrationActionSheet: UIView {
 
     weak var actionSheetController: ActionSheetController?
 
+    private let stackView = UIStackView()
+
     required init(groupThread: TSGroupThread, mode: Mode) {
         self.groupThread = groupThread
         self.mode = mode
 
         super.init(frame: .zero)
+
+        configure()
     }
 
     @objc
@@ -45,12 +49,8 @@ public class GroupMigrationActionSheet: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let stackView = UIStackView()
-
     @objc
     public func present(fromViewController: UIViewController) {
-        configure()
-
         let actionSheetController = ActionSheetController()
         actionSheetController.customHeader = self
         actionSheetController.isCancelable = true

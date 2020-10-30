@@ -1168,9 +1168,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [self.whitelistedGroupsStore removeValueForKey:groupIdKey transaction:transaction];
 
-    TSThread *_Nullable groupThread =
-        [TSGroupThread anyFetchGroupThreadWithUniqueId:[TSGroupThread threadIdFromGroupId:groupId]
-                                           transaction:transaction];
+    [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
+    TSThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (groupThread) {
         [self.databaseStorage touchThread:groupThread shouldReindex:NO transaction:transaction];
     }
@@ -1201,9 +1200,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:transaction];
 
-    TSThread *_Nullable groupThread =
-        [TSGroupThread anyFetchGroupThreadWithUniqueId:[TSGroupThread threadIdFromGroupId:groupId]
-                                           transaction:transaction];
+    [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
+    TSThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (groupThread) {
         [self.databaseStorage touchThread:groupThread shouldReindex:NO transaction:transaction];
     }

@@ -189,15 +189,15 @@ private extension AddGroupMembersViewController {
 extension AddGroupMembersViewController: GroupMemberViewDelegate {
 
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> {
-        return newRecipientSet
+        newRecipientSet
     }
 
     var groupMemberViewHasUnsavedChanges: Bool {
-        return !newRecipientSet.isEmpty
+        !newRecipientSet.isEmpty
     }
 
     var shouldTryToEnableGroupsV2ForMembers: Bool {
-        return groupThread.isGroupV2Thread
+        groupThread.isGroupV2Thread
     }
 
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
@@ -224,19 +224,20 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewShouldShowMemberCount() -> Bool {
-        return groupThread.isGroupV2Thread
+        groupThread.isGroupV2Thread
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
-        return (oldGroupModel.groupMembership.allMembersOfAnyKind.count +
+        (oldGroupModel.groupMembership.allMembersOfAnyKind.count +
                 newRecipientSet.count)
     }
 
-    func groupMemberViewIsGroupFull() -> Bool {
-        guard groupThread.isGroupV2Thread else {
-            return false
-        }
-        return groupMemberViewGroupMemberCountForDisplay() >= GroupManager.groupsV2MaxGroupSizeHardLimit
+    func groupMemberViewIsGroupFull_HardLimit() -> Bool {
+        groupMemberViewGroupMemberCountForDisplay() >= GroupManager.groupsV2MaxGroupSizeHardLimit
+    }
+
+    func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool {
+        groupMemberViewGroupMemberCountForDisplay() >= GroupManager.groupsV2MaxGroupSizeRecommended
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
@@ -270,5 +271,9 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
 
     func groupMemberViewDismiss() {
         navigationController?.popViewController(animated: true)
+    }
+
+    var isNewGroup: Bool {
+        false
     }
 }

@@ -2,6 +2,7 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import "ConversationInputToolbar.h"
 #import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,10 +14,20 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
     ConversationViewActionVideoCall,
 };
 
+@class CVCViewState;
+@class ConversationCollectionView;
+@class ConversationHeaderView;
+@class ConversationSearchController;
 @class ConversationViewCell;
+@class ConversationViewLayout;
+@class ConversationViewModel;
+@class MessageActionsToolbar;
+@class SDSDatabaseStorage;
+@class SelectionHighlightView;
 @class TSThread;
 @class ThreadViewModel;
 
+@protocol ConversationViewItem;
 @protocol ConversationViewItem;
 
 @interface ConversationViewController : OWSViewController
@@ -35,10 +46,10 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                                  action:(ConversationViewAction)action
                          focusMessageId:(nullable NSString *)focusMessageId NS_DESIGNATED_INITIALIZER;
 
-- (void)popKeyBoard;
-- (void)dismissKeyBoard;
-
 - (void)updateMessageActionsStateForCell:(ConversationViewCell *)cell;
+
+- (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
+    NS_SWIFT_NAME(buildInputToolbar(conversationStyle:));
 
 #pragma mark 3D Touch Methods
 
@@ -60,19 +71,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 #pragma mark - Internal Methods. Used in extensions
 
-@class ConversationCollectionView;
-@class ConversationHeaderView;
-@class ConversationSearchController;
-@class ConversationStyle;
-@class ConversationViewCell;
-@class ConversationViewLayout;
-@class ConversationViewModel;
-@class MessageActionsToolbar;
-@class SDSDatabaseStorage;
-@class SelectionHighlightView;
-
-@protocol ConversationViewItem;
-
 typedef NS_CLOSED_ENUM(NSUInteger,
     ConversationUIMode) { ConversationUIMode_Normal, ConversationUIMode_Search, ConversationUIMode_Selection };
 
@@ -84,18 +82,16 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 @property (nonatomic, readonly) BOOL isPresentingMessageActions;
 @property (nonatomic, readonly) ConversationHeaderView *headerView;
 
-@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
-
-- (void)dismissMessageRequestView;
-- (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem;
-- (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem;
+@property (nonatomic, readonly) CVCViewState *viewState;
 
 @property (nonatomic) ConversationUIMode uiMode;
+
+- (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem;
+- (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem;
 - (void)updateBarButtonItems;
-- (void)reloadBottomBar;
-- (UIView *)bottomBar;
 - (void)ensureBannerState;
+- (void)updateContentInsetsAnimated:(BOOL)animated;
 
 #pragma mark - Search
 

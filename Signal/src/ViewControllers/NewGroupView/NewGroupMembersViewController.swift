@@ -52,11 +52,11 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
 extension NewGroupMembersViewController: GroupMemberViewDelegate {
 
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> {
-        return newGroupState.recipientSet
+        newGroupState.recipientSet
     }
 
     var groupMemberViewHasUnsavedChanges: Bool {
-        return newGroupState.hasUnsavedChanges
+        newGroupState.hasUnsavedChanges
     }
 
     var shouldTryToEnableGroupsV2ForMembers: Bool {
@@ -84,28 +84,36 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
-        return groupMemberViewGroupMemberCount(withSelf: false)
+        groupMemberViewGroupMemberCount(withSelf: false)
     }
 
     func groupMemberViewGroupMemberCount(withSelf: Bool) -> Int {
         // We sometimes add one for the local user.
-        return newGroupState.recipientSet.count + (withSelf ? 1 : 0)
+        newGroupState.recipientSet.count + (withSelf ? 1 : 0)
     }
 
-    func groupMemberViewIsGroupFull() -> Bool {
-        return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.groupsV2MaxGroupSizeHardLimit
+    func groupMemberViewIsGroupFull_HardLimit() -> Bool {
+        groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.groupsV2MaxGroupSizeHardLimit
+    }
+
+    func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool {
+        groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.groupsV2MaxGroupSizeRecommended
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
-        return false
+        false
     }
 
     func groupMemberViewIsGroupsV2Required() -> Bool {
         // No, we can fail over to creating v1 groups.
-        return false
+        false
     }
 
     func groupMemberViewDismiss() {
         dismiss(animated: true)
+    }
+
+    var isNewGroup: Bool {
+        true
     }
 }

@@ -343,6 +343,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                 continue;
             }
 
+            [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
             TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
             if (groupThread != nil) {
                 newGroupMap[groupId] = groupThread.groupModel;
@@ -446,6 +447,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     // Open a sneaky transaction and quit the group if we're a member
     if ([groupModel.groupMembers containsObject:TSAccountManager.localAddress]) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
             TSGroupThread *groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
             [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
                                                                      transaction:transaction
@@ -483,6 +485,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             return;
         }
 
+        [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
 
         // Quit the group if we're a member

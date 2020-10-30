@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ni ellir ychwanegu'r defnyddiwr hwn i'r grŵp nes iddynt ddiweddaru Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Cyrhaeddwyd uchafswm nifer aelodau grŵp o 100.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Cyrhaeddwyd uchafswm nifer aelodau grŵp o 100.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Llun annilys.";

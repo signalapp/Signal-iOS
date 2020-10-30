@@ -200,6 +200,14 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupsV2MigrationAutoMigrationAggressive = groupsV2Migrations && false
 
+    // If set, users are forced to upgrade their v1 groups before they
+    // can interact with them.
+    //
+    // TODO: Make this a remote config flag?
+    // TODO: We might not need this flag.
+    @objc
+    public static let groupsV2MigrationBlockingMigrations = groupsV2Migrations && true
+
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
@@ -341,6 +349,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false, affectsCapabilities: true)
+
+    @objc
+    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(true)
 
     @objc
     public static let groupsV2migrationsForceAggressive = TestableFlag(false)

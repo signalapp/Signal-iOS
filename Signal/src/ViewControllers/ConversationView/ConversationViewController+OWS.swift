@@ -435,7 +435,7 @@ extension ConversationViewController {
         }
 
         updateBarButtonItems()
-        reloadBottomBar()
+        ensureBottomViewType()
     }
 }
 

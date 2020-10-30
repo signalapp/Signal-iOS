@@ -130,6 +130,12 @@ public class GroupManager: NSObject {
             DebugFlags.groupsV2migrationsForceAggressive.get()
     }
 
+    @objc
+    public static var areMigrationsBlocking: Bool {
+        FeatureFlags.groupsV2MigrationBlockingMigrations ||
+            DebugFlags.groupsV2MigrationForceBlockingMigrations.get()
+    }
+
     public static let maxGroupNameLength: Int = 32
 
     // Epoch 1: Group Links

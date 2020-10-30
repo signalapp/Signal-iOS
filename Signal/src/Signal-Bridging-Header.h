@@ -14,6 +14,7 @@
 #import "ContactCellView.h"
 #import "ContactTableViewCell.h"
 #import "ConversationCollectionView.h"
+#import "ConversationInputToolbar.h"
 #import "ConversationListCell.h"
 #import "ConversationListViewController.h"
 #import "ConversationViewCell.h"
