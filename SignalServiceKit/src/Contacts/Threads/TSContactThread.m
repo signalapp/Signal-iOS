@@ -175,20 +175,6 @@ lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
     return @[ self.contactAddress ];
 }
 
-- (BOOL)isGroupThread {
-    return NO;
-}
-
-- (BOOL)isGroupV1Thread
-{
-    return NO;
-}
-
-- (BOOL)isGroupV2Thread
-{
-    return NO;
-}
-
 - (BOOL)isNoteToSelf
 {
     if (!IsNoteToSelfEnabled()) {

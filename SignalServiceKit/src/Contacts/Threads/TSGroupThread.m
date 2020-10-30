@@ -148,21 +148,6 @@ lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
     return [groupThreads copy];
 }
 
-- (BOOL)isGroupThread
-{
-    return true;
-}
-
-- (BOOL)isGroupV1Thread
-{
-    return self.groupModel.groupsVersion == GroupsVersionV1;
-}
-
-- (BOOL)isGroupV2Thread
-{
-    return self.groupModel.groupsVersion == GroupsVersionV2;
-}
-
 - (NSString *)groupNameOrDefault
 {
     return self.groupModel.groupNameOrDefault;

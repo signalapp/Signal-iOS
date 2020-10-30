@@ -103,6 +103,33 @@ public class GroupManager: NSObject {
         return RemoteConfig.groupsV2MaxGroupSizeHardLimit
     }
 
+    @objc
+    public static var canManuallyMigrate: Bool {
+        return (FeatureFlags.groupsV2MigrationManualMigrationPolite ||
+            FeatureFlags.groupsV2MigrationManualMigrationAggressive)
+    }
+
+    @objc
+    public static var canAutoMigrate: Bool {
+        guard !DebugFlags.groupsV2migrationsDisableAutomigrations.get() else {
+            return false
+        }
+        return (FeatureFlags.groupsV2MigrationAutoMigrationPolite ||
+            FeatureFlags.groupsV2MigrationAutoMigrationAggressive)
+    }
+
+    @objc
+    public static var areManualMigrationsAggressive: Bool {
+        FeatureFlags.groupsV2MigrationManualMigrationAggressive ||
+            DebugFlags.groupsV2migrationsForceAggressive.get()
+    }
+
+    @objc
+    public static var areAutoMigrationsAggressive: Bool {
+        FeatureFlags.groupsV2MigrationAutoMigrationAggressive ||
+            DebugFlags.groupsV2migrationsForceAggressive.get()
+    }
+
     public static let maxGroupNameLength: Int = 32
 
     // Epoch 1: Group Links
@@ -362,8 +389,10 @@ public class GroupManager: NSObject {
             }.then(on: .global()) { _ in
                 self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
-                let createdGroupModel = try self.databaseStorage.read { transaction in
-                    return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot).build(transaction: transaction)
+                let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModel in
+                    let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                                                                             transaction: transaction)
+                    return try builder.build(transaction: transaction)
                 }
                 if proposedGroupModel != createdGroupModel {
                     Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")
@@ -492,7 +521,7 @@ public class GroupManager: NSObject {
             // If groupsV2forceInvites is set, we invite other members
             // instead of adding them.
             if address != localAddress &&
-                DebugFlags.groupsV2forceInvites {
+            DebugFlags.groupsV2forceInvites.get() {
                 builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
             } else if isPending {
                 builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
@@ -1433,6 +1462,8 @@ public class GroupManager: NSObject {
             return
         }
 
+        Logger.info("")
+
         // Remove local user from group.
         // We do _not_ bump the revision number since this (unlike all other
         // changes to group state) is inferred from a 403. This is fine; if
@@ -1558,7 +1589,7 @@ public class GroupManager: NSObject {
                                               changeActionsProtoData: Data? = nil) -> Promise<Void> {
 
         // Only honor groupsV2dontSendUpdates for v2 groups.
-        let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates
+        let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates.get()
         if shouldSkipUpdate {
             return Promise.value(())
         }
@@ -1649,7 +1680,7 @@ public class GroupManager: NSObject {
 
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
         // Only honor groupsV2dontSendUpdates for v2 groups.
-        let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates
+        let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates.get()
         if shouldSkipUpdate {
             return Promise.value(())
         }
@@ -1828,26 +1859,18 @@ public class GroupManager: NSObject {
     }
 
     public static func replaceMigratedGroup(groupIdV1: Data,
-                                            groupModelV2 groupModelV2Param: TSGroupModelV2,
+                                            groupModelV2: TSGroupModelV2,
                                             disappearingMessageToken: DisappearingMessageToken,
                                             groupUpdateSourceAddress: SignalServiceAddress?,
                                             shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
         return firstly(on: .global()) { () -> TSGroupThread in
             try databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
-
-                // Set the wasJustMigrated flag on the model.
-                var groupModelBuilder = groupModelV2Param.asBuilder
-                groupModelBuilder.wasJustMigrated = true
-                let groupModelV2 = try groupModelBuilder.buildAsV2(transaction: transaction)
-                owsAssertDebug(groupModelV2.isEqual(to: groupModelV2Param,
-                                                    comparisonMode: .compareAll))
-
-                return try migratedGroupInDatabaseAndCreateInfoMessage(groupIdV1: groupIdV1,
-                                                                       groupModelV2: groupModelV2,
-                                                                       disappearingMessageToken: disappearingMessageToken,
-                                                                       groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                       transaction: transaction)
+                try migrateGroupInDatabaseAndCreateInfoMessage(groupIdV1: groupIdV1,
+                                                               groupModelV2: groupModelV2,
+                                                               disappearingMessageToken: disappearingMessageToken,
+                                                               groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                               transaction: transaction)
             }
         }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
             guard shouldSendMessage else {
@@ -1862,11 +1885,11 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func migratedGroupInDatabaseAndCreateInfoMessage(groupIdV1: Data,
-                                                                    groupModelV2 newGroupModelV2: TSGroupModelV2,
-                                                                    disappearingMessageToken: DisappearingMessageToken,
-                                                                    groupUpdateSourceAddress: SignalServiceAddress?,
-                                                                    transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+    private static func migrateGroupInDatabaseAndCreateInfoMessage(groupIdV1: Data,
+                                                                   groupModelV2 proposedGroupModel: TSGroupModelV2,
+                                                                   disappearingMessageToken: DisappearingMessageToken,
+                                                                   groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                   transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
         guard isV1GroupId(groupIdV1) else {
             throw OWSAssertionError("Invalid v1 group id.")
         }
@@ -1881,6 +1904,18 @@ public class GroupManager: NSObject {
         guard oldGroupModelV1.groupsVersion == .V1 else {
             throw OWSAssertionError("Invalid v1 group model.")
         }
+
+        var groupModelBuilder = proposedGroupModel.asBuilder
+        // Set the wasJustMigrated flag on the model.
+        groupModelBuilder.wasJustMigrated = true
+        // Check for dropped members.
+        let droppedMembers = Set(oldGroupModelV1.groupMembership.allMembersOfAnyKind).subtracting(proposedGroupModel.groupMembership.allMembersOfAnyKind)
+        if !droppedMembers.isEmpty {
+            // Set droppedMembers on the model.
+            groupModelBuilder.droppedMembers = Array(droppedMembers)
+        }
+        let newGroupModelV2 = try groupModelBuilder.buildAsV2(transaction: transaction)
+
         guard newGroupModelV2.groupsVersion == .V2 else {
             throw OWSAssertionError("Invalid v2 group model.")
         }
@@ -1914,18 +1949,14 @@ public class GroupManager: NSObject {
             blockingManager.addBlockedGroup(newGroupModelV2, blockMode: .remote, transaction: transaction)
         }
 
-        let didDMConfigChange = oldDMConfiguration.asToken != newDMConfiguration.asToken
-        let didGroupModelChange = !oldGroupModelV1.isEqual(to: newGroupModelV2,
-                                                           comparisonMode: .migration)
-        if didDMConfigChange || didGroupModelChange {
-            insertGroupUpdateInfoMessage(groupThread: groupThreadV2,
-                                         oldGroupModel: oldGroupModelV1,
-                                         newGroupModel: newGroupModelV2,
-                                         oldDisappearingMessageToken: oldDMConfiguration.asToken,
-                                         newDisappearingMessageToken: newDMConfiguration.asToken,
-                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                         transaction: transaction)
-        }
+        // Always insert a "group update" info message.
+        insertGroupUpdateInfoMessage(groupThread: groupThreadV2,
+                                     oldGroupModel: oldGroupModelV1,
+                                     newGroupModel: newGroupModelV2,
+                                     oldDisappearingMessageToken: oldDMConfiguration.asToken,
+                                     newDisappearingMessageToken: newDMConfiguration.asToken,
+                                     groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                     transaction: transaction)
 
         // TODO: Do we also need to insert some kind of "migration" info message
         //       in the conversation history?

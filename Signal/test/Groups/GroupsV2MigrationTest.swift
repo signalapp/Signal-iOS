@@ -22,11 +22,11 @@ class GroupsV2MigrationTest: SignalBaseTest {
         let masterKeyV2String: String
 
         var groupIdV1: Data {
-            groupIdV1String.asHexadecimalData!
+            Data.data(fromHex: groupIdV1String)!
         }
 
         var masterKeyV2: Data {
-            masterKeyV2String.asHexadecimalData!
+            Data.data(fromHex: masterKeyV2String)!
         }
     }
 
@@ -69,33 +69,11 @@ class GroupsV2MigrationTest: SignalBaseTest {
              "dd3a7de23d10f18b64457fbeedc76226c112a730e4b76112e62c36c4432eb37d"
         ]
         for value in values {
-            XCTAssertEqual(value, value.asHexadecimalData!.hexadecimalString)
+            XCTAssertEqual(value, Data.data(fromHex: value)?.hexadecimalString)
         }
         for _ in 0..<16 {
             let bytes = Randomness.generateRandomBytes(256)
-            XCTAssertEqual(bytes, bytes.hexadecimalString.asHexadecimalData)
+            XCTAssertEqual(bytes, Data.data(fromHex: bytes.hexadecimalString))
         }
-    }
-}
-
-// MARK: -
-
-extension String {
-    var asHexadecimalData: Data? {
-        var data = Data()
-
-        var remainder = self
-        if remainder.hasPrefix("0x") {
-            remainder = remainder.substring(from: "0x".count)
-        }
-        while !remainder.isEmpty {
-            assert(remainder.count % 2 == 0)
-            let byteString = remainder.substring(to: 2)
-            remainder = remainder.substring(from: 2)
-
-            let byte = UInt8(byteString, radix: 16)!
-            data.append(byte)
-        }
-        return data
     }
 }

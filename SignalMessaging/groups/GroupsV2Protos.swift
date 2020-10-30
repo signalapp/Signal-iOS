@@ -51,7 +51,7 @@ public class GroupsV2Protos {
         let memberBuilder = GroupsProtoMember.builder()
         memberBuilder.setRole(role)
         let userId = try groupV2Params.userId(forUuid: uuid)
-        if DebugFlags.groupsV2corruptInvites {
+        if DebugFlags.groupsV2corruptInvites.get() {
             let corruptUserId = Randomness.generateRandomBytes(Int32(userId.count))
             memberBuilder.setUserID(corruptUserId)
         } else {

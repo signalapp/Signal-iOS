@@ -97,15 +97,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 // --- CODE GENERATION MARKER
 
-/**
- *  Whether the object is a group thread or not.
- *
- *  @return YES if is a group thread, NO otherwise.
- */
-@property (nonatomic, readonly) BOOL isGroupThread;
-@property (nonatomic, readonly) BOOL isGroupV1Thread;
-@property (nonatomic, readonly) BOOL isGroupV2Thread;
-
 @property (nonatomic) ConversationColorName conversationColorName;
 
 - (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;

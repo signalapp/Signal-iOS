@@ -77,6 +77,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.mergeUserProfiles()
 
             Self.enqueueRestoreGroupPass()
+
+            GroupsV2Migration.tryToAutoMigrateAllGroups()
         }
 
         observeNotifications()
@@ -385,7 +387,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                       groupChangeProto: GroupsProtoGroupChangeActions,
                                                       changeActionsProtoData: Data,
                                                       groupV2Params: GroupV2Params) {
-        let shouldSendUpdate = !DebugFlags.groupsV2dontSendUpdates
+        let shouldSendUpdate = !DebugFlags.groupsV2dontSendUpdates.get()
         guard shouldSendUpdate else {
             return
         }
@@ -489,7 +491,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func uploadGroupAvatar(avatarData: Data,
                                    groupV2Params: GroupV2Params) -> Promise<String> {
 
-        guard !DebugFlags.groupsV2corruptAvatarUrlPaths else {
+        guard !DebugFlags.groupsV2corruptAvatarUrlPaths.get() else {
             return Promise.value("some/invalid/url/path")
         }
 

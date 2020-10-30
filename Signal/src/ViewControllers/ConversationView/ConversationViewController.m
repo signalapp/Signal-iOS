@@ -146,7 +146,9 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isMarkingAsRead;
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
+
 @property (nonatomic, nullable) UIView *bannerView;
+@property (nonatomic) CVCViewState *viewState;
 
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
@@ -245,6 +247,7 @@ typedef enum : NSUInteger {
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
     _conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
+    _viewState = [CVCViewState new];
 
     _selectedItems = @{};
 
@@ -819,6 +822,8 @@ typedef enum : NSUInteger {
 
 - (void)ensureBannerState
 {
+    __weak ConversationViewController *weakSelf = self;
+
     // This method should be called rarely, so it's simplest to discard and
     // rebuild the indicator view every time.
     [self.bannerView removeFromSuperview];
@@ -850,9 +855,11 @@ typedef enum : NSUInteger {
             message = [NSString stringWithFormat:format, displayName];
         }
 
-        [banners addObject:[self createBannerWithTitle:message
-                                           bannerColor:UIColor.ows_accentRedColor
-                                           tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)]];
+        UIView *banner = [ConversationViewController
+            createBannerWithTitleWithTitle:message
+                               bannerColor:UIColor.ows_accentRedColor
+                                  tapBlock:^{ [weakSelf noLongerVerifiedBannerViewWasTapped]; }];
+        [banners addObject:banner];
     }
 
     NSString *blockStateMessage = nil;
@@ -871,14 +878,33 @@ typedef enum : NSUInteger {
     }
 
     if (blockStateMessage) {
-        [banners addObject:[self createBannerWithTitle:blockStateMessage
-                                           bannerColor:UIColor.ows_accentRedColor
-                                           tapSelector:@selector(blockBannerViewWasTapped:)]];
+        UIView *banner =
+            [ConversationViewController createBannerWithTitleWithTitle:blockStateMessage
+                                                           bannerColor:UIColor.ows_accentRedColor
+                                                              tapBlock:^{ [weakSelf blockBannerViewWasTapped]; }];
+        [banners addObject:banner];
     }
 
     NSUInteger pendingMemberRequestCount = self.pendingMemberRequestCount;
-    if (pendingMemberRequestCount > 0 && self.canApprovePendingMemberRequests) {
-        [banners addObject:[self createPendingJoinReuqestBannerWithCount:pendingMemberRequestCount]];
+    if (pendingMemberRequestCount > 0 && self.canApprovePendingMemberRequests
+        && !self.viewState.isPendingMemberRequestsBannerHidden) {
+        UIView *banner = [self
+            createPendingJoinRequestBannerWithViewState:self.viewState
+                                                  count:pendingMemberRequestCount
+                                viewMemberRequestsBlock:^{ [weakSelf showConversationSettingsAndShowMemberRequests]; }];
+        [banners addObject:banner];
+    }
+
+    GroupsV2MigrationInfo *_Nullable migrationInfo = [self migrationInfoForGroup];
+    if (migrationInfo != nil && migrationInfo.canGroupBeMigrated && !self.viewState.isMigrateGroupBannerHidden) {
+        UIView *banner = [self createMigrateGroupBannerWithViewState:self.viewState migrationInfo:migrationInfo];
+        [banners addObject:banner];
+    }
+
+    UIView *_Nullable droppedGroupMembersBanner;
+    droppedGroupMembersBanner = [self createDroppedGroupMembersBannerIfNecessaryWithViewState:self.viewState];
+    if (droppedGroupMembersBanner != nil) {
+        [banners addObject:droppedGroupMembersBanner];
     }
 
     if (banners.count < 1) {
@@ -930,110 +956,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (UIView *)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
+- (void)blockBannerViewWasTapped
 {
-    OWSAssertDebug(title.length > 0);
-    OWSAssertDebug(bannerColor);
-
-    UIView *bannerView = [UIView containerView];
-    bannerView.backgroundColor = bannerColor;
-
-    UILabel *label = [self buildBannerLabel:title];
-    label.textAlignment = NSTextAlignmentCenter;
-
-    UIImage *closeIcon = [UIImage imageNamed:@"banner_close"];
-    UIImageView *closeButton = [[UIImageView alloc] initWithImage:closeIcon];
-    [bannerView addSubview:closeButton];
-    const CGFloat kBannerCloseButtonPadding = 8.f;
-    [closeButton autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kBannerCloseButtonPadding];
-    [closeButton autoPinTrailingToSuperviewMarginWithInset:kBannerCloseButtonPadding];
-    [closeButton autoSetDimension:ALDimensionWidth toSize:closeIcon.size.width];
-    [closeButton autoSetDimension:ALDimensionHeight toSize:closeIcon.size.height];
-
-    [bannerView addSubview:label];
-    [label autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
-    [label autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:5];
-    const CGFloat kBannerHPadding = 15.f;
-    [label autoPinLeadingToSuperviewMarginWithInset:kBannerHPadding];
-    const CGFloat kBannerHSpacing = 10.f;
-    [closeButton autoPinLeadingToTrailingEdgeOfView:label offset:kBannerHSpacing];
-
-    [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
-    bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"banner_close");
-
-    return bannerView;
-}
-
-- (UILabel *)buildBannerLabel:(NSString *)title
-{
-    UILabel *label = [UILabel new];
-    label.font = [UIFont ows_dynamicTypeSubheadlineClampedFont].ows_semibold;
-    label.text = title;
-    label.textColor = [UIColor whiteColor];
-    label.numberOfLines = 0;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
-    return label;
-}
-
-- (UIView *)createPendingJoinReuqestBannerWithCount:(NSUInteger)pendingMemberRequestCount
-{
-    OWSAssertDebug(pendingMemberRequestCount > 0);
-
-    NSString *format = NSLocalizedString(@"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT",
-        @"Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number "
-        @"of pending member requests }}.");
-    NSString *title = [NSString stringWithFormat:format, [OWSFormat formatUInt:pendingMemberRequestCount]];
-    UILabel *label = [self buildBannerLabel:title];
-    label.font = [UIFont ows_dynamicTypeSubheadlineClampedFont];
-
-    __weak ConversationViewController *weakSelf = self;
-    OWSButton *dismissButton = [[OWSButton alloc] initWithTitle:CommonStrings.dismissButton
-                                                          block:^{ [weakSelf hidePendingMemberRequests]; }];
-    dismissButton.titleLabel.font = [UIFont ows_dynamicTypeSubheadlineClampedFont].ows_semibold;
-    NSString *viewRequestsLabel = NSLocalizedString(@"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS",
-        @"Label for the 'view requests' button in the pending member requests banner.");
-    OWSButton *viewRequestsButton = [[OWSButton alloc] initWithTitle:viewRequestsLabel
-                                                               block:^{ [weakSelf viewMemberRequests]; }];
-    viewRequestsButton.titleLabel.font = [UIFont ows_dynamicTypeSubheadlineClampedFont].ows_semibold;
-
-    UIStackView *buttonRow = [[UIStackView alloc] initWithArrangedSubviews:@[
-        [UIView hStretchingSpacer],
-        dismissButton,
-        viewRequestsButton,
-    ]];
-    buttonRow.axis = UILayoutConstraintAxisHorizontal;
-    buttonRow.spacing = 24;
-
-    UIStackView *bannerView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        label,
-        buttonRow,
-    ]];
-    bannerView.axis = UILayoutConstraintAxisVertical;
-    bannerView.alignment = UIStackViewAlignmentFill;
-    bannerView.spacing = 10;
-    bannerView.layoutMargins = UIEdgeInsetsMake(14, 16, 14, 16);
-    [bannerView setLayoutMarginsRelativeArrangement:YES];
-    [bannerView addBackgroundViewWithBackgroundColor:UIColor.ows_accentBlueColor];
-    bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"pending_group_request_banner");
-
-    return bannerView;
-}
-
-- (void)hidePendingMemberRequests
-{
-}
-
-- (void)viewMemberRequests
-{
-    [self showConversationSettingsAndShowMemberRequests];
-}
-
-- (void)blockBannerViewWasTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state != UIGestureRecognizerStateRecognized) {
-        return;
-    }
-
     if ([self isBlockedConversation]) {
         // If this a blocked conversation, offer to unblock.
         [self showUnblockConversationUI:nil];
@@ -1048,43 +972,37 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
+- (void)noLongerVerifiedBannerViewWasTapped
 {
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
-        if (noLongerVerifiedAddresses.count < 1) {
-            return;
-        }
-        BOOL hasMultiple = noLongerVerifiedAddresses.count > 1;
-
-        ActionSheetController *actionSheet = [ActionSheetController new];
-
-        __weak ConversationViewController *weakSelf = self;
-        ActionSheetAction *verifyAction = [[ActionSheetAction alloc]
-            initWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
-                               @"Label for button or row which allows users to verify the safety "
-                               @"numbers of multiple users.")
-                                       : NSLocalizedString(@"VERIFY_PRIVACY",
-                                           @"Label for button or row which allows users to verify the safety "
-                                           @"number of another user."))
-                    style:ActionSheetActionStyleDefault
-                  handler:^(ActionSheetAction *action) {
-                      [weakSelf showNoLongerVerifiedUI];
-                  }];
-        [actionSheet addAction:verifyAction];
-
-        ActionSheetAction *dismissAction =
-            [[ActionSheetAction alloc] initWithTitle:CommonStrings.dismissButton
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                               style:ActionSheetActionStyleCancel
-                                             handler:^(ActionSheetAction *action) {
-                                                 [weakSelf resetVerificationStateToDefault];
-                                             }];
-        [actionSheet addAction:dismissAction];
-
-        [self dismissKeyBoard];
-        [self presentActionSheet:actionSheet];
+    NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
+    if (noLongerVerifiedAddresses.count < 1) {
+        return;
     }
+    BOOL hasMultiple = noLongerVerifiedAddresses.count > 1;
+
+    ActionSheetController *actionSheet = [ActionSheetController new];
+
+    __weak ConversationViewController *weakSelf = self;
+    ActionSheetAction *verifyAction = [[ActionSheetAction alloc]
+        initWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
+                           @"Label for button or row which allows users to verify the safety "
+                           @"numbers of multiple users.")
+                                   : NSLocalizedString(@"VERIFY_PRIVACY",
+                                       @"Label for button or row which allows users to verify the safety "
+                                       @"number of another user."))
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) { [weakSelf showNoLongerVerifiedUI]; }];
+    [actionSheet addAction:verifyAction];
+
+    ActionSheetAction *dismissAction = [[ActionSheetAction alloc]
+                  initWithTitle:CommonStrings.dismissButton
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
+                          style:ActionSheetActionStyleCancel
+                        handler:^(ActionSheetAction *action) { [weakSelf resetVerificationStateToDefault]; }];
+    [actionSheet addAction:dismissAction];
+
+    [self dismissKeyBoard];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)resetVerificationStateToDefault
@@ -1233,6 +1151,12 @@ typedef enum : NSUInteger {
     [self updateInputToolbarLayout];
     [self configureScrollDownButtons];
     [self.inputToolbar viewDidAppear];
+
+    if (!self.viewState.hasTriedToMigrateGroup) {
+        self.viewState.hasTriedToMigrateGroup = YES;
+
+        [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -1721,6 +1645,16 @@ typedef enum : NSUInteger {
 
 - (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage
 {
+    OWSAssertIsOnMainThread();
+    if (![self.thread isKindOfClass:[TSGroupThread class]]) {
+        OWSFailDebug(@"Invalid thread.");
+        return;
+    }
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    GroupMigrationActionSheet *actionSheet =
+        [GroupMigrationActionSheet actionSheetForMigratedGroupWithGroupThread:groupThread];
+    [actionSheet presentFromViewController:self];
 }
 
 - (NSArray<UIViewController *> *)viewControllersUpToSelf
@@ -4926,7 +4860,8 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-    NSUInteger oldPendingMemberRequestCount = self.pendingMemberRequestCount;
+    // This will be nil for non-group threads.
+    TSGroupModel *_Nullable oldGroupModel = self.thread.groupModelIfGroupThread;
     TSThread *_Nullable lastestThread = [TSThread anyFetchWithUniqueId:self.thread.uniqueId transaction:transaction];
     if (lastestThread == nil) {
         lastestThread = self.thread;
@@ -4935,8 +4870,9 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [self updateBarButtonItems];
 
-    NSUInteger newPendingMemberRequestCount = self.pendingMemberRequestCount;
-    if (oldPendingMemberRequestCount != newPendingMemberRequestCount && self.canApprovePendingMemberRequests) {
+    // This will be nil for non-group threads.
+    TSGroupModel *_Nullable newGroupModel = self.thread.groupModelIfGroupThread;
+    if (![NSObject isNullableObject:oldGroupModel.groupMembership equalTo:newGroupModel.groupMembership]) {
         [self ensureBannerState];
     }
 

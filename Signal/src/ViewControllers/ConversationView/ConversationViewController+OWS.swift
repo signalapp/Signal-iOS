@@ -660,6 +660,8 @@ extension ConversationViewController: MediaPresentationContextProvider {
     }
 }
 
+// MARK: -
+
 private extension MediaPresentationContext {
     var messageBubbleView: OWSMessageBubbleView? {
         guard let messageBubbleView = mediaView.firstAncestor(ofType: OWSMessageBubbleView.self) else {
@@ -670,6 +672,8 @@ private extension MediaPresentationContext {
         return messageBubbleView
     }
 }
+
+// MARK: -
 
 extension OWSMessageBubbleView {
     func albumItemView(forAttachment attachment: TSAttachmentStream) -> UIView? {
@@ -687,6 +691,8 @@ extension OWSMessageBubbleView {
     }
 }
 
+// MARK: -
+
 @objc
 public class SelectionHighlightView: UIView {
     func setHighlightedFrames(_ frames: [CGRect]) {
@@ -698,4 +704,22 @@ public class SelectionHighlightView: UIView {
             addSubview(highlight)
         }
     }
+}
+
+// MARK: -
+
+@objc
+public extension ConversationViewController {
+    func showManualMigrationAlert(groupThread: TSGroupThread,
+                                  migrationInfo: GroupsV2MigrationInfo) {
+        let mode = GroupMigrationActionSheet.Mode.upgradeGroup(migrationInfo: migrationInfo)
+        let view = GroupMigrationActionSheet(groupThread: groupThread, mode: mode)
+        view.present(fromViewController: self)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension ConversationViewController {
 }

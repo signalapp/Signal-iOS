@@ -239,6 +239,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Remove All Sessions"
                                      actionBlock:^() { [DebugUIMisc removeAllSessions]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Discard All Profile Keys"
+                                     actionBlock:^() { [DebugUIMisc discardAllProfileKeys]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -255,6 +258,13 @@ NS_ASSUME_NONNULL_BEGIN
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [SSKEnvironment.shared.signedPreKeyStore removeAll:transaction];
         [SSKEnvironment.shared.preKeyStore removeAll:transaction];
+    });
+}
+
++ (void)discardAllProfileKeys
+{
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [OWSProfileManager discardAllProfileKeysWithTransaction:transaction];
     });
 }
 

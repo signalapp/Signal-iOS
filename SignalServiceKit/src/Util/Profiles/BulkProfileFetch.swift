@@ -277,21 +277,25 @@ public class BulkProfileFetch: NSObject {
         let minElapsedSeconds: TimeInterval
         let elapsedSeconds = abs(lastOutcome.date.timeIntervalSinceNow)
 
-        switch lastOutcome.outcome {
-        case .networkFailure:
-            minElapsedSeconds = 1 * kMinuteInterval
-        case .retryLimit:
-            minElapsedSeconds = 5 * kMinuteInterval
-        case .throttled:
-            minElapsedSeconds = 2 * kMinuteInterval
-        case .noProfile:
-            minElapsedSeconds = 6 * kHourInterval
-        case .serviceError:
-            minElapsedSeconds = 30 * kMinuteInterval
-        case .success:
-            minElapsedSeconds = 2 * kMinuteInterval
-        case .invalid:
-            minElapsedSeconds = 6 * kHourInterval
+        if DebugFlags.aggressiveProfileFetching.get() {
+            minElapsedSeconds = 0
+        } else {
+            switch lastOutcome.outcome {
+            case .networkFailure:
+                minElapsedSeconds = 1 * kMinuteInterval
+            case .retryLimit:
+                minElapsedSeconds = 5 * kMinuteInterval
+            case .throttled:
+                minElapsedSeconds = 2 * kMinuteInterval
+            case .noProfile:
+                minElapsedSeconds = 6 * kHourInterval
+            case .serviceError:
+                minElapsedSeconds = 30 * kMinuteInterval
+            case .success:
+                minElapsedSeconds = 2 * kMinuteInterval
+            case .invalid:
+                minElapsedSeconds = 6 * kHourInterval
+            }
         }
 
         return elapsedSeconds >= minElapsedSeconds

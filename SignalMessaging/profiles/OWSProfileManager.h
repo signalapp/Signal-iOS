@@ -137,6 +137,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // This method is only exposed for usage by the Swift extensions.
 - (NSString *)generateAvatarFilename;
 
+#ifdef DEBUG
++ (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

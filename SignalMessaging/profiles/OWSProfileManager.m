@@ -2008,6 +2008,22 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     }];
 }
 
+#ifdef DEBUG
++ (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSArray<OWSUserProfile *> *userProfiles = [OWSUserProfile anyFetchAllWithTransaction:transaction];
+    for (OWSUserProfile *userProfile in userProfiles) {
+        if ([OWSUserProfile isLocalProfileAddress:userProfile.address]) {
+            continue;
+        }
+        if (userProfile.profileKey == nil) {
+            continue;
+        }
+        [userProfile discardProfileKeyWithTransaction:transaction];
+    }
+}
+#endif
+
 #pragma mark - Clean Up
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction

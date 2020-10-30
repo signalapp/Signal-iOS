@@ -32,6 +32,8 @@ public class TSGroupModelV2: TSGroupModel {
     public var isPlaceholderModel: Bool = false
     @objc
     public var wasJustMigrated: Bool = false
+    @objc
+    public var droppedMembers = [SignalServiceAddress]()
 
     @objc
     public required init(groupId: Data,
@@ -45,7 +47,8 @@ public class TSGroupModelV2: TSGroupModel {
                          inviteLinkPassword: Data?,
                          isPlaceholderModel: Bool,
                          wasJustMigrated: Bool,
-                         addedByAddress: SignalServiceAddress?) {
+                         addedByAddress: SignalServiceAddress?,
+                         droppedMembers: [SignalServiceAddress]) {
         assert(secretParamsData.count > 0)
 
         self.membership = groupMembership
@@ -56,6 +59,7 @@ public class TSGroupModelV2: TSGroupModel {
         self.inviteLinkPassword = inviteLinkPassword
         self.isPlaceholderModel = isPlaceholderModel
         self.wasJustMigrated = wasJustMigrated
+        self.droppedMembers = droppedMembers
 
         super.init(groupId: groupId,
                    name: name,
@@ -102,7 +106,7 @@ public class TSGroupModelV2: TSGroupModel {
             switch comparisonMode {
             case .compareAll:
                 return false
-            case .userFacingOnly, .migration:
+            case .userFacingOnly:
                 return true
             }
         }
@@ -122,6 +126,9 @@ public class TSGroupModelV2: TSGroupModel {
             return false
         }
         guard other.inviteLinkPassword == inviteLinkPassword else {
+            return false
+        }
+        guard other.droppedMembers == droppedMembers else {
             return false
         }
         // Ignore isPlaceholderModel & wasJustMigrated.
@@ -144,6 +151,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "addedByAddress: \(addedByAddress?.debugDescription ?? "None"),\n"
         result += "isPlaceholderModel: \(isPlaceholderModel),\n"
         result += "wasJustMigrated: \(wasJustMigrated),\n"
+        result += "droppedMembers: \(droppedMembers),\n"
         result += "]"
         return result
     }
@@ -188,5 +196,19 @@ public extension TSGroupModel {
             return false
         }
         return groupModelV2.isPlaceholderModel
+    }
+
+    var wasJustMigratedToV2: Bool {
+        guard let groupModelV2 = self as? TSGroupModelV2 else {
+            return false
+        }
+        return groupModelV2.wasJustMigrated
+    }
+
+    var getDroppedMembers: [SignalServiceAddress] {
+        guard let groupModelV2 = self as? TSGroupModelV2 else {
+            return []
+        }
+        return groupModelV2.droppedMembers
     }
 }

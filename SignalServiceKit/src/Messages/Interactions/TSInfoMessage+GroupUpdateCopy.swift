@@ -1709,18 +1709,28 @@ extension GroupUpdateCopy {
         let invitedMembers = oldGroupMembership.allMembersOfAnyKind.intersection(newGroupMembership.invitedMembers)
         let droppedMembers = oldGroupMembership.allMembersOfAnyKind.subtracting(newGroupMembership.allMembersOfAnyKind)
 
+        if invitedMembers.contains(localAddress) {
+            let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER",
+                                         comment: "Message indicating that the local user was invited while migrating the group.")
+            addItem(.groupMigrated_usersInvited, copy: copy)
+            return
+        } else if droppedMembers.contains(localAddress) {
+            let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER",
+                                         comment: "Message indicating that the local user was dropped while migrating the group.")
+            addItem(.groupMigrated_usersDropped, copy: copy)
+            return
+        }
+
         if !invitedMembers.isEmpty {
             if invitedMembers.count == 1 {
                 let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_1",
                                              comment: "Message indicating that 1 user was invited while migrating the group.")
-                addItem(.groupMigrated_usersDropped,
-                        copy: copy)
+                addItem(.groupMigrated_usersInvited, copy: copy)
             } else {
                 let format = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT",
                                                comment: "Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}.")
                 let countString = OWSFormat.formatInt(invitedMembers.count)
-                addItem(.groupMigrated_usersInvited,
-                        format: format, countString)
+                addItem(.groupMigrated_usersInvited, format: format, countString)
             }
         }
 
@@ -1729,14 +1739,12 @@ extension GroupUpdateCopy {
             if droppedMembers.count == 1 {
                 let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_1",
                                              comment: "Message indicating that 1 user was dropped while migrating the group.")
-                addItem(.groupMigrated_usersDropped,
-                        copy: copy)
+                addItem(.groupMigrated_usersDropped, copy: copy)
             } else {
                 let format = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT",
                                                comment: "Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}.")
                 let countString = OWSFormat.formatInt(droppedMembers.count)
-                addItem(.groupMigrated_usersDropped,
-                        format: format, countString)
+                addItem(.groupMigrated_usersDropped, format: format, countString)
             }
         }
     }

@@ -93,6 +93,9 @@ import Foundation
 
     @objc
     static public let noButton = NSLocalizedString("BUTTON_NO", comment: "Label for the 'no' button.")
+
+    @objc
+    static public let notNowButton = NSLocalizedString("BUTTON_NOT_NOW", comment: "Label for the 'not now' button.")
 }
 
 @objc

@@ -382,6 +382,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     if (!self.tsAccountManager.isRegisteredAndReady) {
         return;
     }
+    if (SSKDebugFlags.disableMessageProcessing) {
+        return;
+    }
 
     dispatch_async(self.serialQueue, ^{
         if (self.isDrainingQueue) {
