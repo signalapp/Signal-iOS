@@ -448,7 +448,7 @@ extension GroupCallViewController: CallControlsDelegate {
 
     func didPressMute(sender: UIButton) {
         sender.isSelected = !sender.isSelected
-        groupCall.isOutgoingAudioMuted = sender.isSelected
+        callService.updateIsLocalAudioMuted(isLocalAudioMuted: sender.isSelected)
     }
 
     func didPressVideo(sender: UIButton) {

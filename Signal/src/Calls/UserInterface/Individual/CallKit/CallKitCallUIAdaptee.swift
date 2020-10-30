@@ -390,7 +390,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         defer { ignoreFirstUnuteAfterRemoteAnswer = false }
         guard !ignoreFirstUnuteAfterRemoteAnswer || action.isMuted else { return }
 
-        self.callService.updateIsLocalAudioMuted(call: call, isLocalAudioMuted: action.isMuted)
+        self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: action.isMuted)
         action.fulfill()
     }
 

@@ -177,7 +177,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        self.callService.updateIsLocalAudioMuted(call: call, isLocalAudioMuted: isMuted)
+        self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: isMuted)
     }
 
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {

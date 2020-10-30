@@ -156,8 +156,14 @@ public final class CallService: NSObject {
     /**
      * Local user toggled to mute audio.
      */
-    func updateIsLocalAudioMuted(call: SignalCall, isLocalAudioMuted: Bool) {
+    func updateIsLocalAudioMuted(isLocalAudioMuted: Bool) {
         AssertIsOnMainThread()
+
+        // Keep a reference to the call before permissions were requested...
+        guard let call = currentCall else {
+            owsFailDebug("missing currentCall")
+            return
+        }
 
         // If we're disabling the microphone, we don't need permission. Only need
         // permission to *enable* the microphone.
@@ -203,22 +209,8 @@ public final class CallService: NSObject {
             groupCall.isOutgoingAudioMuted = isLocalAudioMuted
         case .individual(let individualCall):
             individualCall.isMuted = isLocalAudioMuted
+            individualCallService.ensureAudioState(call: call)
         }
-
-        ensureAudioState(call: call)
-    }
-
-    func ensureAudioState(call: SignalCall) {
-        let isLocalAudioMuted: Bool
-
-        switch call.mode {
-        case .group(let groupCall):
-            isLocalAudioMuted = groupCall.localDeviceState.joinState != .joined || groupCall.localDeviceState.audioMuted
-        case .individual(let individualCall):
-            isLocalAudioMuted = individualCall.state != .connected || individualCall.isMuted || individualCall.isOnHold
-        }
-
-        callManager.setLocalAudioEnabled(enabled: !isLocalAudioMuted)
     }
 
     /**
