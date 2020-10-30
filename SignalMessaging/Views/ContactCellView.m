@@ -196,6 +196,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                                      name:kNSNotificationName_OtherUsersProfileDidChange
                                                    object:nil];
         [self updateProfileName];
+    } else {
+        self.nameLabel.text = thread.name;
+        [self.nameLabel setNeedsLayout];
     }
     
     [self updateAvatar];
@@ -211,6 +214,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
+    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [LKMentionsManager populateUserPublicKeyCacheIfNeededFor:self.thread.uniqueId in:transaction]; // FIXME: This is a terrible place to do this
+    }];
     if (self.thread != nil) {
         [self.profilePictureView updateForThread:self.thread];
     } else {

@@ -5,7 +5,7 @@ public final class ProfilePictureView : UIView {
     private var imageViewHeightConstraint: NSLayoutConstraint!
     private var additionalImageViewWidthConstraint: NSLayoutConstraint!
     private var additionalImageViewHeightConstraint: NSLayoutConstraint!
-    private var isUsingPlaceholder: Bool = true
+    private var hasTappableProfilePicture: Bool = false
     @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
     @objc public var isRSSFeed = false
     @objc public var hexEncodedPublicKey: String!
@@ -66,7 +66,7 @@ public final class ProfilePictureView : UIView {
             } else if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
                 self.openGroupProfilePicture = openGroupProfilePicture
                 isRSSFeed = false
-                isUsingPlaceholder = false
+                hasTappableProfilePicture = true
             } else if thread.groupModel.groupType == .openGroup
                 || thread.groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
                 hexEncodedPublicKey = ""
@@ -84,6 +84,7 @@ public final class ProfilePictureView : UIView {
             }
             update()
         } else { // A one-to-one chat
+            hasTappableProfilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: thread.contactIdentifier()!) != nil
             update(for: thread.contactIdentifier()!)
         }
     }
@@ -93,7 +94,6 @@ public final class ProfilePictureView : UIView {
         func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
             guard !publicKey.isEmpty else { return nil }
             if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: publicKey) {
-                isUsingPlaceholder = false
                 return profilePicture
             } else {
                 let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey) ?? publicKey
@@ -149,6 +149,6 @@ public final class ProfilePictureView : UIView {
     }
     
     @objc public func getProfilePicture() -> UIImage? {
-        return isUsingPlaceholder ? nil : imageView.image
+        return hasTappableProfilePicture ? imageView.image : nil
     }
 }
