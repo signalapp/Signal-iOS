@@ -167,6 +167,14 @@ class TestingViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
+        do {
+            let section = OWSTableSection()
+            section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Groups v2: Auto-migrate all v1 groups")) {
+                GroupsV2Migration.tryToAutoMigrateAllGroups()
+            })
+            contents.addSection(section)
+        }
+
         self.contents = contents
     }
 }

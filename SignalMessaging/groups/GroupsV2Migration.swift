@@ -187,7 +187,6 @@ public extension GroupsV2Migration {
                 }
             }
 
-            var allMembers = Set<SignalServiceAddress>()
             var phoneNumbersWithoutUuids = Set<String>()
             for groupThread in groupThreads {
                 // We want to fill in missing UUIDs for all members including
@@ -195,8 +194,6 @@ public extension GroupsV2Migration {
                 let groupMembers = (groupThread.groupModel.groupMembership.allMembersOfAnyKind +
                                         groupThread.groupModel.getDroppedMembers)
                 for address in groupMembers {
-                    allMembers.insert(address)
-
                     guard address.uuid == nil else {
                         continue
                     }
@@ -211,34 +208,6 @@ public extension GroupsV2Migration {
             let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
                                                             ? self.autoMigrationMode
                                                             : .possiblyAlreadyMigratedOnService)
-
-            if migrationMode.isAutoMigration {
-                // Try to fill in missing capabilities and profile key
-                // credentials before trying to auto-migrate groups.
-                //
-                // We use BulkProfileFetch in order to de-bounce profile
-                // fetches.
-                //
-                // There's no good way to block on these profile fetches;
-                // but we try to auto-migrate groups on every launch.
-                var membersToFetchProfiles = Set<SignalServiceAddress>()
-                Self.databaseStorage.read { transaction in
-                    for address in allMembers {
-                        if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
-                            membersToFetchProfiles.insert(address)
-                        } else if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
-                            membersToFetchProfiles.insert(address)
-                        }
-                    }
-                }
-                // Ignore users we know to be unregistered.
-                let knownUndiscoverable = ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverableForMessageSends(Array(membersToFetchProfiles))
-                membersToFetchProfiles.subtract(knownUndiscoverable)
-
-                if !membersToFetchProfiles.isEmpty {
-                    bulkProfileFetch.fetchProfiles(addresses: Array(membersToFetchProfiles))
-                }
-            }
 
             // Check up to N groups on every launch.
             let maxCheckCount: Int = 50
@@ -358,14 +327,15 @@ fileprivate extension GroupsV2Migration {
         Logger.verbose("migrationMode: \(migrationMode)")
 
         return firstly(on: .global()) { () -> Promise<Void> in
-            return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+            GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.map(on: .global()) { () -> UnmigratedState in
             try Self.loadUnmigratedState(groupId: groupId)
         }.then(on: .global()) { (unmigratedState: UnmigratedState) -> Promise<UnmigratedState> in
             firstly {
-                Self.tryToFillInMissingUuids(unmigratedState: unmigratedState)
+                Self.tryToPrepareMembersForMigration(migrationMode: migrationMode,
+                                                     unmigratedState: unmigratedState)
             }.map(on: .global()) {
-                return unmigratedState
+                unmigratedState
             }
         }.then(on: .global()) { (unmigratedState: UnmigratedState) -> Promise<TSGroupThread> in
             addMigratingGroupId(unmigratedState.migrationMetadata.v1GroupId)
@@ -388,23 +358,73 @@ fileprivate extension GroupsV2Migration {
         }
     }
 
-    static func tryToFillInMissingUuids(unmigratedState: UnmigratedState) -> Promise<Void> {
-        let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
-        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
-        let phoneNumbersWithoutUuids = membersToMigrate.compactMap { (address: SignalServiceAddress) -> String? in
-            if address.uuid != nil {
-                return nil
-            }
-            return address.phoneNumber
-        }
-        guard !phoneNumbersWithoutUuids.isEmpty else {
+    // This method tries to fill in missing:
+    //
+    // * UUIDs.
+    // * Capabilities (2).
+    // * Profile key credentials.
+    static func tryToPrepareMembersForMigration(migrationMode: GroupsV2MigrationMode,
+                                                unmigratedState: UnmigratedState) -> Promise<Void> {
+        guard !migrationMode.isOnlyUpdatingIfAlreadyMigrated else {
+            // If we're only trying to update the local db to
+            // reflect groups that are already migrated, we can
+            // skip this step.
             return Promise.value(())
         }
 
-        Logger.info("Trying to fill in missing uuids: \(phoneNumbersWithoutUuids.count)")
+        let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
+        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
 
-        let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
-        return discoveryTask.perform().asVoid()
+        return firstly(on: .global()) { () -> Promise<Void> in
+            let phoneNumbersWithoutUuids = membersToMigrate.compactMap { (address: SignalServiceAddress) -> String? in
+                if address.uuid != nil {
+                    return nil
+                }
+                return address.phoneNumber
+            }
+            guard !phoneNumbersWithoutUuids.isEmpty else {
+                return Promise.value(())
+            }
+
+            Logger.info("Trying to fill in missing uuids: \(phoneNumbersWithoutUuids.count)")
+
+            let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
+            return discoveryTask.perform().asVoid()
+        }.then(on: .global()) { () -> Promise<Void> in
+            var membersToFetchProfiles = Set<SignalServiceAddress>()
+            Self.databaseStorage.read { transaction in
+                for address in membersToMigrate {
+                    if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
+                        membersToFetchProfiles.insert(address)
+                    } else if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
+                        membersToFetchProfiles.insert(address)
+                    }
+                }
+            }
+            if !membersToFetchProfiles.isEmpty {
+                return Promise.value(())
+            }
+            Logger.info("Fetching profiles: \(membersToFetchProfiles.count)")
+            var promises = [Promise<Void>]()
+            for address in membersToFetchProfiles {
+                let promise = firstly {
+                    self.profileManager.fetchProfile(forAddressPromise: address,
+                                                     mainAppOnly: false,
+                                                     ignoreThrottling: true).asVoid()
+                }.recover(on: .global()) { error -> Promise<Void> in
+                    // Log but ignore errors.
+                    if IsNetworkConnectivityFailure(error) {
+                        Logger.warn("Error: \(error)")
+                    } else {
+                        owsFailDebug("Error: \(error)")
+                    }
+                    return Promise.value(())
+                }
+                promises.append(promise)
+            }
+
+            return when(fulfilled: promises)
+        }
     }
 
     static func attemptToMigrateByPullingFromService(unmigratedState: UnmigratedState,
@@ -888,7 +908,7 @@ public enum GroupsV2MigrationMode {
         self == .manualMigrationAggressive || self == .autoMigrationAggressive
     }
 
-    private var isOnlyUpdatingIfAlreadyMigrated: Bool {
+    fileprivate var isOnlyUpdatingIfAlreadyMigrated: Bool {
         switch self {
         case .isAlreadyMigratedOnService,
              .possiblyAlreadyMigratedOnService:
