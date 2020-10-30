@@ -155,25 +155,53 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupsV2showSplash = build.includes(.qa)
 
+    // TODO: Make this a remote config flag?
     @objc
-    public static let groupsV2MigrationMigration = build.includes(.dev)
+    public static let groupsV2Migration = build.includes(.dev)
 
     @objc
-    public static let groupsV2MigrationSetCapability = groupsV2MigrationMigration && false
+    public static let groupsV2MigrationSetCapability = groupsV2Migration && build.includes(.dev)
 
     @objc
     public static let groupsV2MigrationRequireCapability = false
 
-    // Controls whether or not the client will attempt to auto-migrate
-    // v1 groups to v2 groups.
+    // Controls whether or not the client will show the manual migration UI.
+    // Will only offer migrations if all members can be migrated.
+    //
+    // TODO: Make this a remote config flag?
+    // TODO: We might not need this flag.
     @objc
-    public static let groupsV2MigrationAutoMigration = groupsV2MigrationMigration && false
+    public static let groupsV2MigrationManualMigrationPolite = groupsV2Migration && build.includes(.dev)
+
+    // Controls whether or not the client will show the manual migration UI.
+    // Will offer migrations even if some members cannot be migrated.
+    //
+    // TODO: Make this a remote config flag?
+    // TODO: We might not need this flag.
+    @objc
+    public static let groupsV2MigrationManualMigrationAggressive = groupsV2Migration && false
+
+    // Controls whether or not the client will try to auto-migrate groups in the background.
+    // Will only migrate groups if all members can be migrated.
+    //
+    // TODO: Make this a remote config flag?
+    // TODO: We might not need this flag.
+    @objc
+    public static let groupsV2MigrationAutoMigrationPolite = groupsV2Migration && build.includes(.dev)
+
+    // Controls whether or not the client will try to auto-migrate groups in the background.
+    // Will migrate groups even if some members cannot be migrated.
+    //
+    // TODO: Make this a remote config flag?
+    // TODO: We might not need this flag.
+    @objc
+    public static let groupsV2MigrationAutoMigrationAggressive = groupsV2Migration && false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let isUsingProductionService = true
+    public static let isUsingProductionService = false
 
     @objc
     public static let useOrphanDataCleaner = true

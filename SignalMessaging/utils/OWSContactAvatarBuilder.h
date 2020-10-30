@@ -19,6 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter;
 
+- (instancetype)initWithAddress:(SignalServiceAddress *)address
+                      colorName:(ConversationColorName)colorName
+                       diameter:(NSUInteger)diameter
+                    transaction:(SDSAnyReadTransaction *)transaction;
+
 /**
  * Build an avatar for a non-Signal recipient
  */

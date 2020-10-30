@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
+    ActionSheetController *actionSheet = [ActionSheetController new];
 
     [actionSheet
         addAction:[[ActionSheetAction alloc]

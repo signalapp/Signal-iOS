@@ -285,7 +285,23 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     }
 }
 
+- (nullable UIImage *)buildWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    UIImage *_Nullable savedImage = [self buildSavedImageWithTransaction:transaction];
+    if (savedImage) {
+        return savedImage;
+    } else {
+        return [self buildDefaultImage];
+    }
+}
+
 - (nullable UIImage *)buildSavedImage
+{
+    OWSAbstractMethod();
+    return nil;
+}
+
+- (nullable UIImage *)buildSavedImageWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAbstractMethod();
     return nil;

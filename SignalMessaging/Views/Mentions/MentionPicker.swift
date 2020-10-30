@@ -40,9 +40,8 @@ class MentionPicker: UIView {
                     address: address,
                     username: Self.profileManager.username(for: address, transaction: transaction),
                     displayName: Self.contactsManager.displayName(for: address, transaction: transaction),
-                    conversationColorName: ConversationColorName(
-                        rawValue: TSContactThread.conversationColorName(forContactAddress: address, transaction: transaction)
-                    )
+                    conversationColorName: TSContactThread.conversationColorName(forContactAddress: address,
+                                                                                 transaction: transaction)
                 )
             }
         }

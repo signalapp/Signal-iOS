@@ -1946,7 +1946,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 {
     OWSAssertIsOnMainThread();
 
-    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] init];
 
     NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");

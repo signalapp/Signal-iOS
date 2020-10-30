@@ -199,10 +199,18 @@ public extension ContactDiscoveryTask {
         }
     }
 
-    static func addressesRecentlyMarkedAsUndiscoverable(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
+    static func addressesRecentlyMarkedAsUndiscoverableForMessageSends(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
         guard FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends else {
             return []
         }
+        return addressesRecentlyMarkedAsUndiscoverable(addresses)
+    }
+
+    static func addressesRecentlyMarkedAsUndiscoverableForGroupMigrations(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
+        return addressesRecentlyMarkedAsUndiscoverable(addresses)
+    }
+
+    private static func addressesRecentlyMarkedAsUndiscoverable(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
         return unfairLock.withLock {
             addresses.filter { address in
                 guard let phoneNumber = address.phoneNumber else {

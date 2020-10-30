@@ -95,8 +95,12 @@ public class GroupManager: NSObject {
     // GroupsV2 TODO: Finalize this value with the designers.
     public static let groupUpdateTimeoutDuration: TimeInterval = 30
 
-    public static var maxGroupsV2MemberCount: UInt {
-        return RemoteConfig.maxGroupsV2MemberCount
+    public static var groupsV2MaxGroupSizeRecommended: UInt {
+        return RemoteConfig.groupsV2MaxGroupSizeRecommended
+    }
+
+    public static var groupsV2MaxGroupSizeHardLimit: UInt {
+        return RemoteConfig.groupsV2MaxGroupSizeHardLimit
     }
 
     public static let maxGroupNameLength: Int = 32
@@ -1912,7 +1916,7 @@ public class GroupManager: NSObject {
 
         let didDMConfigChange = oldDMConfiguration.asToken != newDMConfiguration.asToken
         let didGroupModelChange = !oldGroupModelV1.isEqual(to: newGroupModelV2,
-                                                         comparisonMode: .userFacingOnly)
+                                                           comparisonMode: .migration)
         if didDMConfigChange || didGroupModelChange {
             insertGroupUpdateInfoMessage(groupThread: groupThreadV2,
                                          oldGroupModel: oldGroupModelV1,

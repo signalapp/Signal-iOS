@@ -1193,13 +1193,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address
+                                               transaction:(SDSAnyReadTransaction *)transaction
 {
     if (address == nil) {
         OWSFailDebug(@"address was unexpectedly nil");
         return nil;
     }
 
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
+    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
     Contact *_Nullable contact = self.allContactsMap[phoneNumber];
 
     if (contact != nil && contact.cnContactId != nil) {
@@ -1210,7 +1211,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     // If we haven't loaded system contacts yet, we may have a cached copy in the db
-    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
+    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
     if (signalAccount == nil) {
         return nil;
     }
@@ -1266,13 +1267,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address];
-    if (image != nil) {
-        return image;
-    }
-
-    // Else try to use the image from their profile
-    return [self profileImageForAddressWithSneakyTransaction:address];
+    __block UIImage *_Nullable image;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        image = [self imageForAddress:address transaction:transaction];
+    }];
+    return image;
 }
 
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
@@ -1283,7 +1282,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address];
+    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address transaction:transaction];
     if (image != nil) {
         return image;
     }

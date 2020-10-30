@@ -49,13 +49,34 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var maxGroupsV2MemberCount: UInt {
+    public static var groupsV2MaxGroupSizeRecommended: UInt {
         let defaultValue: UInt = 151
         guard AppReadiness.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }
-        guard let rawValue: AnyObject = value(.maxGroupsV2MemberCount) else {
+        guard let rawValue: AnyObject = value(.groupsV2MaxGroupSizeRecommended) else {
+            return defaultValue
+        }
+        guard let stringValue = rawValue as? String else {
+            owsFailDebug("Unexpected value.")
+            return defaultValue
+        }
+        guard let uintValue = UInt(stringValue) else {
+            owsFailDebug("Invalid value.")
+            return defaultValue
+        }
+        return uintValue
+    }
+
+    @objc
+    public static var groupsV2MaxGroupSizeHardLimit: UInt {
+        let defaultValue: UInt = 1001
+        guard AppReadiness.isAppReady else {
+            owsFailDebug("Storage is not yet ready.")
+            return defaultValue
+        }
+        guard let rawValue: AnyObject = value(.groupsV2MaxGroupSizeHardLimit) else {
             return defaultValue
         }
         guard let stringValue = rawValue as? String else {
@@ -257,7 +278,8 @@ private struct Flags {
     // Values defined in this array remain set once they are
     // set regardless of the remote state.
     enum StickyValuesFlags: String, FlagType {
-        case maxGroupsV2MemberCount
+        case groupsV2MaxGroupSizeRecommended
+        case groupsV2MaxGroupSizeHardLimit
     }
 
     // We filter the received config down to just the supported values.
@@ -265,7 +287,8 @@ private struct Flags {
     // set because we cached a value before it went public. e.g. if we set
     // a sticky value to X in beta then remove it before going to production.
     enum SupportedValuesFlags: String, FlagType {
-        case maxGroupsV2MemberCount
+        case groupsV2MaxGroupSizeRecommended
+        case groupsV2MaxGroupSizeHardLimit
         case clientExpiration
         case researchMegaphone
     }
@@ -284,7 +307,8 @@ private protocol FlagType: CaseIterable {
 private extension FlagType {
     var rawFlag: String {
         switch rawValue {
-        case "maxGroupsV2MemberCount": return "global.maxGroupSize"
+        case "groupsV2MaxGroupSizeRecommended": return "global.groupsv2.maxGroupSize"
+        case "groupsV2MaxGroupSizeHardLimit": return "global.groupsv2.groupSizeHardLimit"
         case "researchMegaphone": return "research.megaphone.1"
         default: return Flags.prefix + rawValue
         }

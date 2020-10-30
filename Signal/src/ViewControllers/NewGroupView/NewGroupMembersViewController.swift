@@ -93,7 +93,7 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsGroupFull() -> Bool {
-        return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.maxGroupsV2MemberCount
+        return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.groupsV2MaxGroupSizeHardLimit
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
