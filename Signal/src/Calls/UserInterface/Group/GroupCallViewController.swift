@@ -28,6 +28,7 @@ class GroupCallViewController: UIViewController {
 
     lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
+    lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
     var shouldRemoteVideoControlsBeHidden = false {
         didSet { updateCallUI() }
@@ -118,10 +119,6 @@ class GroupCallViewController: UIViewController {
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
-        videoOverflow.autoPinEdge(
-            toSuperviewEdge: .trailing,
-            withInset: GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4
-        )
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
@@ -196,6 +193,7 @@ class GroupCallViewController: UIViewController {
         let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
 
         videoOverflowTopConstraint.constant = yMax - videoOverflow.height
+        videoOverflowTrailingConstraint.constant = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4
         view.layoutIfNeeded()
 
         localMemberView.removeFromSuperview()
