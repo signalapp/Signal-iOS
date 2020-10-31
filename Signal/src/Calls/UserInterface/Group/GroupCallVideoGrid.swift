@@ -51,12 +51,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
 }
 
 extension GroupCallVideoGrid: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
-        AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
-        reloadData()
-    }
+    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
