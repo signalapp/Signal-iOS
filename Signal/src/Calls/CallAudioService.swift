@@ -94,6 +94,13 @@ protocol CallAudioServiceDelegate: class {
     }
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        // This should not be required, but for some reason setting the mode
+        // to "videoChat" prior to a remote device being connected gets changed
+        // to "voiceChat" by iOS. This results in the audio coming out of the
+        // earpiece instead of the speaker. It may be a result of us not actually
+        // playing any audio until the remote device connects, or something
+        // going on with the underlying RTCAudioSession that's not directly
+        // in our control.
         ensureProperAudioSession(call: call)
     }
 
@@ -585,5 +592,14 @@ protocol CallAudioServiceDelegate: class {
         guard let ringerStateToken = ringerStateToken else { return }
         DarwinNotificationCenter.removeObserver(ringerStateToken)
         self.ringerStateToken = nil
+    }
+
+    // MARK: - Join / Leave sound
+    func playJoinSound() {
+        play(sound: .groupCallJoin)
+    }
+
+    func playLeaveSound() {
+        play(sound: .groupCallLeave)
     }
 }

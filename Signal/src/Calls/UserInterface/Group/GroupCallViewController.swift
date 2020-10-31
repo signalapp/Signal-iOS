@@ -13,6 +13,7 @@ class GroupCallViewController: UIViewController {
     private var groupCall: GroupCall { call.groupCall }
     private lazy var callControls = CallControls(call: call, delegate: self)
     private lazy var callHeader = CallHeader(call: call, delegate: self)
+    private lazy var notificationView = GroupCallNotificationView(call: call)
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
@@ -112,6 +113,9 @@ class GroupCallViewController: UIViewController {
         view.addSubview(callHeader)
         callHeader.autoPinWidthToSuperview()
         callHeader.autoPinEdge(toSuperviewEdge: .top)
+
+        view.addSubview(notificationView)
+        notificationView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(callControls)
         callControls.autoPinWidthToSuperview()

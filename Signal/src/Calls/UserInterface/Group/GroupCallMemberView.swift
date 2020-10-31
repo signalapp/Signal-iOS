@@ -221,11 +221,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         if device.address.isLocalAddress {
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
-            avatarView.image = OWSContactAvatarBuilder(
-                address: device.address,
-                colorName: conversationColorName,
-                diameter: avatarDiameter
-            ).build()
+            avatarView.image = avatarBuilder.build()
         }
 
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
