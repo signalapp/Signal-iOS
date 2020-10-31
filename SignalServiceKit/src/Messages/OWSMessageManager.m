@@ -1105,6 +1105,12 @@ NS_ASSUME_NONNULL_BEGIN
             [self.callMessageHandler receivedBusy:callMessage.busy
                                        fromCaller:envelope.sourceAddress
                                      sourceDevice:envelope.sourceDevice];
+        } else if (callMessage.opaque) {
+            [self.callMessageHandler receivedOpaque:callMessage.opaque
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice
+                            serverReceivedTimestamp:envelope.serverTimestamp
+                            serverDeliveryTimestamp:serverDeliveryTimestamp];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }

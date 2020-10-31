@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import PromiseKit
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -26,6 +27,12 @@ public final class CallService: NSObject {
     private var audioSession: OWSAudioSession {
         return Environment.shared.audioSession
     }
+
+    private var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
+    private var databaseStorage: SDSDatabaseStorage { .shared }
 
     @objc
     public let individualCallService = IndividualCallService()
@@ -623,10 +630,29 @@ extension CallService: CallManagerDelegate {
         message: Data
     ) {
         AssertIsOnMainThread()
-        Logger.info("shouldSendHttpRequest")
+        Logger.info("shouldSendCallMessage")
 
-        // TODO: ? Presumably there's a new type of call message that needs to be
-        // added to the proto for this. Need to check in with calling team.
+        databaseStorage.write(.promise) { transaction in
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: recipientUuid),
+                transaction: transaction
+            )
+        }.then { thread throws -> Promise<Void> in
+            let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
+            opaqueBuilder.setData(message)
+
+            let callMessage = OWSOutgoingCallMessage(
+                thread: thread,
+                opaqueMessage: try opaqueBuilder.build()
+            )
+
+            return self.messageSender.sendMessage(.promise, callMessage.asPreparer)
+        }.done { _ in
+            // TODO: Tell RingRTC we succeeded in sending the message. API TBD
+        }.catch { error in
+            owsFailDebug("Failed to send opaque message \(error)")
+            // TODO: Tell RingRTC something went wrong. API TBD
+        }
     }
 
     /**

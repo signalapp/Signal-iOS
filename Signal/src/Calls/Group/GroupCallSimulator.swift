@@ -413,7 +413,7 @@ extension CallManager {
     }
 
     // MARK: - Group Call
-    public func createGroupCall(groupIdToLog: String, videoCaptureController: VideoCaptureController) -> GroupCall? {
+    public func createGroupCall(groupId: Data, videoCaptureController: VideoCaptureController) -> GroupCall? {
         AssertIsOnMainThread()
         Logger.debug("createGroupCall")
 

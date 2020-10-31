@@ -123,6 +123,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithThread:(TSThread *)thread opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage
+{
+    self = [self initWithThread:thread];
+    if (!self) {
+        return self;
+    }
+
+    _opaqueMessage = opaqueMessage;
+
+    return self;
+}
+
 #pragma mark - TSOutgoingMessage overrides
 
 - (BOOL)shouldSyncTranscript
@@ -183,6 +195,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.busyMessage) {
         [builder setBusy:self.busyMessage];
+    }
+
+    if (self.opaqueMessage) {
+        [builder setOpaque:self.opaqueMessage];
     }
 
     if (self.destinationDeviceId) {

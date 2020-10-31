@@ -132,4 +132,36 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             sourceDevice: sourceDevice
         )
     }
+
+    public func receivedOpaque(
+        _ opaque: SSKProtoCallMessageOpaque,
+        from caller: SignalServiceAddress,
+        sourceDevice: UInt32,
+        serverReceivedTimestamp: UInt64,
+        serverDeliveryTimestamp: UInt64
+    ) {
+        AssertIsOnMainThread()
+        Logger.info("Received opaque call message from \(caller) on device \(sourceDevice)")
+
+        guard let message = opaque.data else {
+            return owsFailDebug("Received opaque call message without data")
+        }
+
+        guard let senderUuid = caller.uuid else {
+            return owsFailDebug("Received opaque call message from sender without UUID")
+        }
+
+        var messageAgeSec: UInt64 = 0
+        if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
+            messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
+        }
+
+        self.callService.callManager.receivedCallMessage(
+            senderUuid: senderUuid,
+            senderDeviceId: sourceDevice,
+            localDeviceId: TSAccountManager.shared().storedDeviceId(),
+            message: message,
+            messageAgeSec: messageAgeSec
+        )
+    }
 }

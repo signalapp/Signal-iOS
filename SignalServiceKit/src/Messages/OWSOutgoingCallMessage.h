@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoCallMessageHangup;
 @class SSKProtoCallMessageIceUpdate;
 @class SSKProtoCallMessageOffer;
+@class SSKProtoCallMessageOpaque;
 @class TSThread;
 
 /**
@@ -38,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                    busyMessage:(SSKProtoCallMessageBusy *)busyMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId;
+- (instancetype)initWithThread:(TSThread *)thread opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage;
 
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOffer *offerMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageAnswer *answerMessage;
@@ -45,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *legacyHangupMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *hangupMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageBusy *busyMessage;
+@property (nullable, nonatomic, readonly) SSKProtoCallMessageOpaque *opaqueMessage;
 @property (nullable, nonatomic, readonly) NSNumber *destinationDeviceId;
 
 @end
