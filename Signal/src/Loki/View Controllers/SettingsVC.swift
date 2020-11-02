@@ -182,7 +182,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings))
+            getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
+            getSeparator(),
+            getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation))
         ]
         let isMasterDevice = UserDefaults.standard.isMasterDevice
         if isMasterDevice {
@@ -398,6 +400,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func showLinkedDevices() {
         let deviceLinksVC = DeviceLinksVC()
         navigationController!.pushViewController(deviceLinksVC, animated: true)
+    }
+
+    @objc private func sendInvitation() {
+        let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(userHexEncodedPublicKey)!"
+        let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
+        navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
     @objc private func showSeed() {
