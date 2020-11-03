@@ -66,7 +66,7 @@ public class OWSProvisioningCipher: NSObject {
         do {
             let sharedSecret = try self.ourKeyPair.privateKey.keyAgreement(with: self.theirPublicKey)
 
-            let infoData = "TextSecure Provisioning Message"
+            let infoData = ProvisioningCipher.messageInfo
             let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {
                 let totalLength = Self.cipherKeyLength + Self.macKeyLength
                 return try hkdf(outputLength: totalLength, version: 3, inputKeyMaterial: sharedSecret, salt: [], info: $0)

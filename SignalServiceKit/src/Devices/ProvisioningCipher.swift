@@ -39,6 +39,10 @@ public class ProvisioningCipher {
         return ProvisioningCipher(secondaryDeviceKeyPair: Curve25519.generateKeyPair())
     }
 
+    internal class var messageInfo: String {
+        return "TextSecure Provisioning Message"
+    }
+
     // MARK: 
 
     public func decrypt(envelope: ProvisioningProtoProvisionEnvelope) throws -> ProvisionMessage {
@@ -66,8 +70,7 @@ public class ProvisioningCipher {
         let agreement = try PrivateKey(secondaryDeviceKeyPair.privateKey).keyAgreement(
             with: PublicKey(primaryDeviceEphemeralPublicKey.keyData))
 
-        let info = "TextSecure Provisioning Message"
-        let keyBytes = try info.utf8.withContiguousStorageIfAvailable {
+        let keyBytes = try Self.messageInfo.utf8.withContiguousStorageIfAvailable {
             try hkdf(outputLength: 64, version: 3, inputKeyMaterial: agreement, salt: [], info: $0)
         }!
 
