@@ -38,16 +38,12 @@ public final class PublicChatAPI : DotNetAPI {
         return result
     }
     
-    private static func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64) {
-        try! Storage.writeSync { transaction in
-            transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
-        }
+    private static func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
     }
     
-    private static func removeLastMessageServerID(for group: UInt64, on server: String) {
-        try! Storage.writeSync { transaction in
-            transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
-        }
+    private static func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
     }
     
     private static func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt? {
@@ -58,22 +54,18 @@ public final class PublicChatAPI : DotNetAPI {
         return result
     }
     
-    private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64) {
-        try! Storage.writeSync { transaction in
-            transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
-        }
+    private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
     }
     
-    private static func removeLastDeletionServerID(for group: UInt64, on server: String) {
-        try! Storage.writeSync { transaction in
-            transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
-        }
+    private static func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
     }
     
     public static func clearCaches(for channel: UInt64, on server: String) {
-        removeLastMessageServerID(for: channel, on: server)
-        removeLastDeletionServerID(for: channel, on: server)
         try! Storage.writeSync { transaction in
+            removeLastMessageServerID(for: channel, on: server, using: transaction)
+            removeLastDeletionServerID(for: channel, on: server, using: transaction)
             Storage.removeOpenGroupPublicKey(for: server, using: transaction)
         }
     }
@@ -139,7 +131,11 @@ public final class PublicChatAPI : DotNetAPI {
                             profilePicture = PublicChatMessage.ProfilePicture(profileKey: profileKey, url: url)
                         }
                         let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
-                        if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
+                        if serverID > (lastMessageServerID ?? 0) {
+                            try! Storage.writeSync { transaction in
+                                setLastMessageServerID(for: channel, on: server, to: serverID, using: transaction)
+                            }
+                        }
                         let quote: PublicChatMessage.Quote?
                         if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String,
                             let quotedMessageBody = quoteAsJSON["text"] as? String {
@@ -258,7 +254,11 @@ public final class PublicChatAPI : DotNetAPI {
                             return nil
                         }
                         let lastDeletionServerID = getLastDeletionServerID(for: channel, on: server)
-                        if serverID > (lastDeletionServerID ?? 0) { setLastDeletionServerID(for: channel, on: server, to: serverID) }
+                        if serverID > (lastDeletionServerID ?? 0) {
+                            try! Storage.writeSync { transaction in
+                                setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
+                            }
+                        }
                         return messageServerID
                     }
                 }
