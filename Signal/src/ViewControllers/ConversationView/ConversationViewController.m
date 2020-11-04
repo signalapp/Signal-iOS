@@ -154,6 +154,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
+@property (nonatomic, nullable) NSTimer *audioTimer;
 @property (nonatomic, nullable) OWSAudioPlayer *audioAttachmentPlayer;
 @property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
@@ -3351,6 +3352,13 @@ typedef enum : NSUInteger {
                                                          AVEncoderBitRateKey : @(128 * 1024),
                                                      }
                                                         error:&error];
+
+    __weak ConversationViewController *weakSelf = self;
+    self.audioTimer = [NSTimer scheduledTimerWithTimeInterval:60 repeats:NO block:^(NSTimer *timer) {
+        [[weakSelf inputToolbar] hideVoiceMemoUI:YES];
+        [weakSelf endRecordingVoiceMemo];
+    }];
+
     if (error) {
         OWSFailDebug(@"Couldn't create audioRecorder: %@", error);
         [self cancelVoiceMemo];
@@ -3377,6 +3385,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"endRecordingVoiceMemo");
+
+    [self.audioTimer invalidate];
 
     self.voiceMessageUUID = nil;
 
@@ -3443,6 +3453,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSLogDebug(@"cancelRecordingVoiceMemo");
 
+    [self.audioTimer invalidate];
     [self stopRecording];
     self.audioRecorder = nil;
     self.voiceMessageUUID = nil;

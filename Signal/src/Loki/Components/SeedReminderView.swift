@@ -94,3 +94,9 @@ final class SeedReminderView : UIView {
         delegate?.handleContinueButtonTapped(from: self)
     }
 }
+
+// MARK: Delegate
+protocol SeedReminderViewDelegate {
+
+    func handleContinueButtonTapped(from seedReminderView: SeedReminderView)
+}
