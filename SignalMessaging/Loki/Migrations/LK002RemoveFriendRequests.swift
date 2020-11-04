@@ -13,7 +13,7 @@ public class LK002RemoveFriendRequests : OWSDatabaseMigration {
 
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
         DispatchQueue.global().async {
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 var interactionIDsToRemove: [String] = []
                 transaction.enumerateRows(inCollection: TSInteraction.collection()) { key, object, _, _ in
                     if !(object is TSInteraction) {

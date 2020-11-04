@@ -224,7 +224,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             let senderId = incomingMessage.authorId
             let threadID = thread.uniqueId!
             var senderName: String!
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 senderName = DisplayNameUtilities2.getDisplayName(for: senderId, inThreadWithID: threadID, using: transaction)
             }
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENDER",

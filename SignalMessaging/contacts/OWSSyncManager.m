@@ -253,7 +253,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
-    } error:nil];
+    }];
 }
 
 #pragma mark - Local Sync
@@ -306,7 +306,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         __block AnyPromise *promise;
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             promise = [LKSyncMessagesProtocol syncClosedGroup:thread transaction:transaction];
-        } error:nil];
+        }];
         return promise;
     } else {
         OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithGroupThread:thread];

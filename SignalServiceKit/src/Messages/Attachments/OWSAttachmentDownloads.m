@@ -292,7 +292,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             if (job.message) {
                 [job.message touchWithTransaction:transaction];
             }
-        } error:nil];
+        }];
 
         [self retrieveAttachmentForJob:job
             success:^(TSAttachmentStream *attachmentStream) {
@@ -304,7 +304,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (job.message) {
                         [job.message touchWithTransaction:transaction];
                     }
-                } error:nil];
+                }];
 
                 job.success(attachmentStream);
 
@@ -325,7 +325,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (job.message) {
                         [job.message touchWithTransaction:transaction];
                     }
-                } error:nil];
+                }];
 
                 @synchronized(self) {
                     [self.downloadingJobMap removeObjectForKey:job.attachmentPointer.uniqueId];

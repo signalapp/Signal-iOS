@@ -138,7 +138,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
         let profilePictureURL = profileManager.profilePictureURL()
         let profileKey = profileManager.localProfileKey().keyData
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: PublicChatAPI.lastMessageServerIDCollection)
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: PublicChatAPI.lastDeletionServerIDCollection)
         }

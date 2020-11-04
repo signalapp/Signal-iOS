@@ -140,14 +140,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
         [job saveWithTransaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)removeJobWithId:(NSString *)uniqueId
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeObjectForKey:uniqueId inCollection:[OWSMessageDecryptJob collection]];
-    } error:nil];
+    }];
 }
 
 + (YapDatabaseView *)databaseExtension
@@ -380,7 +380,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
-        } error:nil];
+        }];
 
         dispatch_async(self.serialQueue, ^{
             completion(NO);

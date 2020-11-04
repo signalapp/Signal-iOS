@@ -261,7 +261,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                            sourceDevice:envelope.sourceDevice
                                                             isUDMessage:NO];
                     successBlock(result, transaction);
-                } error:nil];
+                }];
                 // Return to avoid double-acknowledging.
                 return;
             }
@@ -284,7 +284,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                                                          sourceDevice:OWSDevicePrimaryDeviceId
                                                                                           isUDMessage:NO];
                     successBlock(result, transaction);
-                } error:nil];
+                }];
                 return;
             }
             case SSKProtoEnvelopeTypeUnidentifiedSender: {
@@ -315,7 +315,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
-        } error:nil];
+        }];
     }
 
     failureBlock();
@@ -667,7 +667,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 [contactThread saveWithTransaction:transaction];
             }
         }
-    } error:nil];
+    }];
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage

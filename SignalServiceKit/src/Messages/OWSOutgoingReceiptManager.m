@@ -256,7 +256,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             [newTimestamps addObject:@(timestamp)];
 
             [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
-        } error:nil];
+        }];
 
         [self process];
     });
@@ -287,7 +287,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             } else {
                 [transaction removeObjectForKey:recipientId inCollection:collection];
             }
-        } error:nil];
+        }];
     });
 }
 

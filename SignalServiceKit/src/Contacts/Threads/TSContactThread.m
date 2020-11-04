@@ -55,7 +55,7 @@ NSString *const TSContactThreadPrefix = @"c";
     __block TSContactThread *thread;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
-    } error:nil];
+    }];
 
     return thread;
 }

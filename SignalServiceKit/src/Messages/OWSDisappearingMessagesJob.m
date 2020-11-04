@@ -140,7 +140,7 @@ void AssertIsOnDisappearingMessagesQueue()
             expirationCount++;
         }
                                                                transaction:transaction];
-    } error:nil];
+    }];
 
     OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
 
@@ -269,7 +269,7 @@ void AssertIsOnDisappearingMessagesQueue()
             // of messages across timer changes which could cause a disappearing message's timer to never be started.
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [self cleanupMessagesWhichFailedToStartExpiringWithTransaction:transaction];
-            } error:nil];
+            }];
 
             [self runLoop];
         });

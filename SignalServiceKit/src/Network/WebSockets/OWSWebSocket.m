@@ -799,7 +799,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
                     TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                     [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                        transaction:transaction];
-                } error:nil];
+                }];
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -146,7 +146,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
             let unlinkDeviceMessage = UnlinkDeviceMessage(thread: thread)
             SSKEnvironment.shared.messageSender.send(unlinkDeviceMessage, success: {
                 let storage = OWSPrimaryStorage.shared()
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     storage.removePreKeyBundle(forContact: linkedDevicePublicKey, transaction: transaction)
                     storage.deleteAllSessions(forContact: linkedDevicePublicKey, protocolContext: transaction)
                     for groupPublicKey in Storage.getUserClosedGroupPublicKeys() {
@@ -157,7 +157,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
             }, failure: { _ in
                 print("[Loki] Failed to send unlink device message.")
                 let storage = OWSPrimaryStorage.shared()
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     storage.removePreKeyBundle(forContact: linkedDevicePublicKey, transaction: transaction)
                     storage.deleteAllSessions(forContact: linkedDevicePublicKey, protocolContext: transaction)
                     for groupPublicKey in Storage.getUserClosedGroupPublicKeys() {

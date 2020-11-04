@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [SignalRecipient markRecipientAsUnregistered:recipientId transaction:transaction];
                 }
             }
-        } error:nil];
+        }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             success([recipients copy]);

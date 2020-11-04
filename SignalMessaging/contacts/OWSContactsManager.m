@@ -354,7 +354,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                               forKey:OWSContactsManagerKeyNextFullIntersectionDate
                         inCollection:OWSContactsManagerCollection];
             }
-        } error:nil];
+        }];
     });
 }
 
@@ -553,7 +553,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     [signalAccounts sortUsingComparator:self.signalAccountComparator];
                 }
             }
-        } error:nil];
+        }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateSignalAccounts:signalAccounts];

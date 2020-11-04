@@ -28,7 +28,7 @@ public final class SyncMessagesProtocol : NSObject {
     // MARK: - Sending
 
     @objc public static func syncProfile() {
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             let userPublicKey = getUserHexEncodedPublicKey()
             let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
             for device in userLinkedDevices {

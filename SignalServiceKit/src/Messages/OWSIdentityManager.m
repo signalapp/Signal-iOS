@@ -210,7 +210,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     __block BOOL result;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         result = [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
-    } error:nil];
+    }];
 
     return result;
 }
@@ -302,7 +302,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                        recipientId:recipientId
              isUserInitiatedChange:isUserInitiatedChange
                        transaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
@@ -668,7 +668,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [self clearSyncMessageForRecipientId:message.verificationForRecipientId
                                                  transaction:transaction];
-                    } error:nil];
+                    }];
                 }
                 failure:^(NSError *error) {
                     OWSLogError(@"Failed to send verification state sync message with error: %@", error);
@@ -682,7 +682,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 // Otherwise this will fail forever.
                 [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [self clearSyncMessageForRecipientId:message.verificationForRecipientId transaction:transaction];
-                } error:nil];
+                }];
             }
         }];
 }

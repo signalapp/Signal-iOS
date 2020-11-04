@@ -178,7 +178,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             FileServerAPI.getDeviceLinks(associatedWith: selectedContacts).then2 { _ -> Promise<TSGroupThread> in
                 var promise: Promise<TSGroupThread>!
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     promise = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
                 }
                 return promise

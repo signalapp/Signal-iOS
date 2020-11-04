@@ -161,7 +161,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         for (OWSBackupFragment *item in allItems) {
             [item saveWithTransaction:transaction];
         }
-    } error:nil];
+    }];
 
     return [self downloadFilesFromCloud:blockingItems]
         .thenInBackground(^{
@@ -428,7 +428,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                                     @"Indicates that the backup import data is being restored.")
                                        progress:@(count / (CGFloat)self.attachmentsItems.count)];
         }
-    } error:nil];
+    }];
 
     OWSLogError(@"enqueued lazy restore of %zd files.", count);
 
@@ -585,7 +585,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 }
             }
         }
-    } error:nil];
+    }];
 
     if (aborted) {
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import failed.")];

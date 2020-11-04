@@ -866,7 +866,7 @@ NS_ASSUME_NONNULL_BEGIN
                 backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
                 [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [backupFragment saveWithTransaction:transaction];
-                } error:nil];
+                }];
 
                 OWSLogVerbose(@"saved attachment: %@ as %@",
                     attachmentExport.attachmentFilePath,
@@ -1110,7 +1110,7 @@ NS_ASSUME_NONNULL_BEGIN
         [obsoleteRecordNames minusSet:activeRecordNames];
         
         [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects inCollection:[OWSBackupFragment collection]];
-    } error:nil];
+    }];
 }
 
 - (AnyPromise *)cleanUpCloudWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames

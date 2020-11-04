@@ -231,7 +231,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     __block NSString *displayName = nil;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         displayName = [LKDisplayNameUtilities2 getDisplayNameForPublicKey:publicKey threadID:threadID transaction:transaction];
-    } error:nil];
+    }];
     self.nameLabel.text = displayName;
     [self.nameLabel setNeedsLayout];
 }

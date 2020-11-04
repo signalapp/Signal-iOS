@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self saveWithTransaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self touchWithTransaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self removeWithTransaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (YapDatabaseConnection *)dbReadConnection
@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeAllObjectsInCollection:[self collection]];
-    } error:nil];
+    }];
 }
 
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID

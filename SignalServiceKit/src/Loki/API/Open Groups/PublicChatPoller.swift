@@ -175,7 +175,7 @@ public final class PublicChatPoller : NSObject {
                     envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                     envelope.setContent(try! content.build().serializedData())
                     envelope.setServerTimestamp(message.serverTimestamp)
-                    try! Storage.writeSync { transaction in
+                    Storage.writeSync { transaction in
                         transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
@@ -229,7 +229,7 @@ public final class PublicChatPoller : NSObject {
     private func pollForDeletedMessages() {
         let publicChat = self.publicChat
         let _ = PublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt($0), in: transaction) }
                 deletedMessageIDs.forEach { messageID in
                     TSMessage.fetch(uniqueId: messageID)?.remove(with: transaction)

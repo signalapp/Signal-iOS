@@ -69,8 +69,8 @@ public final class Storage : NSObject {
 
     /// Blocks the calling thread until the write has finished.
     @discardableResult
-    @objc(writeSyncWithBlock:error:)
-    public static func writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
-        try write(with: block, completion: { }).wait()
+    @objc(writeSyncWithBlock:)
+    public static func writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
+        try! write(with: block, completion: { }).wait() // The promise returned by write(with:completion:) never rejects
     }
 }

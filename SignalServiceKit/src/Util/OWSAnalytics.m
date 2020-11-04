@@ -191,7 +191,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         // Remove from queue.
                         [transaction removeObjectForKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
-                    } error:nil];
+                    }];
 
                     // Wait a second between network requests / retries.
                     dispatch_after(
@@ -332,7 +332,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                 }
 
                 [transaction setObject:eventDictionary forKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
-            } error:nil];
+            }];
 
             [self tryToSyncEvents];
         }

@@ -66,7 +66,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId transaction:transaction];
-    } error:nil];
+    }];
 
     return userProfile;
 }
@@ -199,7 +199,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     {
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [self applyChanges:changeBlock functionName:functionName transaction:transaction completion:completion];
-        } error:nil];
+        }];
 }
     
 - (void)applyChanges:(void (^)(id))changeBlock
@@ -381,7 +381,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithProfileKey:profileKey transaction:transaction completion:completion];
-    } error:nil];
+    }];
 }
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey

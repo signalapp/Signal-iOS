@@ -171,7 +171,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageContentJob collection]];
-    } error:nil];
+    }];
 }
 
 + (YapDatabaseView *)databaseExtension
@@ -456,7 +456,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 break;
             }
         }
-    } error:nil];
+    }];
 
     return processedJobs;
 }

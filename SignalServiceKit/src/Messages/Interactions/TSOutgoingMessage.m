@@ -674,7 +674,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithCustomMessage:customMessage transaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)saveIsCalculatingProofOfWork:(BOOL)isCalculatingPoW withTransaction:(YapDatabaseReadWriteTransaction *)transaction

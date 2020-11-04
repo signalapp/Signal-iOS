@@ -931,7 +931,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                                            [groupThread updateAvatarWithAttachmentStream:attachmentStream
                                                                              transaction:transaction];
-                                       } error:nil];
+                                       }];
                                    }
                                          transaction:transaction
              ];
@@ -1607,7 +1607,7 @@ NS_ASSUME_NONNULL_BEGIN
                         // since the attachment might be a contact avatar, etc.
                         [incomingMessage touchWithTransaction:transaction];
                     }
-                } error:nil];
+                }];
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to download attachment for message: %lu with error: %@.",

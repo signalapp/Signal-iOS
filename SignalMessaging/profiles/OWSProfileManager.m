@@ -183,7 +183,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     __block OWSUserProfile *userProfile;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         userProfile = [self getLocalUserProfileWithTransaction:transaction];
-    } error:nil];
+    }];
     return userProfile;
 }
 
@@ -717,7 +717,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                     [transaction removeObjectForKey:groupIdKey
                                        inCollection:kOWSProfileManager_GroupWhitelistCollection];
                 }
-            } error:nil];
+            }];
             return @(1);
         });
 
@@ -1057,7 +1057,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
-        } error:nil];
+        }];
 
         NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
         NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
@@ -1480,7 +1480,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
-    } error:nil];
+    }];
 }
 
 #pragma mark - Notifications

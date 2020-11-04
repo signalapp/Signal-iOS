@@ -158,7 +158,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
         
         changeBlock(latest);
         [latest saveWithTransaction:transaction];
-    } error:nil];
+    }];
 }
 
 #pragma mark - debug

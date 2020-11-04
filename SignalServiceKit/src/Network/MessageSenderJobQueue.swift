@@ -51,11 +51,11 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                                                   inMessage: mediaMessage,
                                                   completionHandler: { error in
                                                     if let error = error {
-                                                        try! Storage.writeSync { transaction in
+                                                        Storage.writeSync { transaction in
                                                             mediaMessage.update(sendingError: error, transaction: transaction)
                                                         }
                                                     } else {
-                                                        try! Storage.writeSync { transaction in
+                                                        Storage.writeSync { transaction in
                                                             self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
                                                         }
                                                     }
@@ -96,7 +96,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     /// Used when the user clears their database to cancel any outstanding jobs.
     @objc public func clearAllJobs() {
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             let statuses: [SSKJobRecordStatus] = [ .unknown, .ready, .running, .permanentlyFailed ]
             var records: [SSKJobRecord] = []
             statuses.forEach {
@@ -193,7 +193,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
 
             if self.jobRecord.removeMessageAfterSending {
@@ -208,7 +208,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         if message is SessionRequestMessage, let publicKey = message.thread.contactIdentifier() {
             isFailedSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) == message.timestamp)
         }
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             if isFailedSessionRequest, let publicKey = message.thread.contactIdentifier() {
                 Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
             }
@@ -239,7 +239,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         if message is SessionRequestMessage, let publicKey = message.thread.contactIdentifier() {
             isFailedSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) == message.timestamp)
         }
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             if isFailedSessionRequest, let publicKey = message.thread.contactIdentifier() {
                 Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
             }

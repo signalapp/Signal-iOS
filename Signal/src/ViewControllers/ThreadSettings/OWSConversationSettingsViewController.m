@@ -1107,7 +1107,7 @@ static CGRect oldframe;
                                thread:self.thread];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction];
-        } error:nil];
+        }];
     }
 }
 
@@ -1232,7 +1232,7 @@ static CGRect oldframe;
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [[LKClosedGroupsProtocol leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
-        } error:nil];
+        }];
     } else {
         TSOutgoingMessage *message =
             [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
@@ -1240,7 +1240,7 @@ static CGRect oldframe;
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.messageSenderJobQueue addMessage:message transaction:transaction];
             [gThread leaveGroupWithTransaction:transaction];
-        } error:nil];
+        }];
     }
 
     [self.navigationController popViewControllerAnimated:YES];
@@ -1459,7 +1459,7 @@ static CGRect oldframe;
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         [self.thread updateWithMutedUntilDate:value transaction:transaction];
-    } error:nil];
+    }];
     
     [self updateTableContents];
 }
@@ -1500,7 +1500,7 @@ static CGRect oldframe;
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
                 [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
-            } error:nil];
+            }];
             [weakSelf.navigationController popViewControllerAnimated:YES];
         });
     }]];
@@ -1551,7 +1551,7 @@ static CGRect oldframe;
     OWSLogDebug(@"picked color: %@", conversationColor.name);
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
-    } error:nil];
+    }];
 
     [self.contactsManager.avatarCache removeAllImages];
     [self updateTableContents];

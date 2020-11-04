@@ -185,7 +185,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         FileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
                 let slavePublicKey = deviceLink.slave.publicKey
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     let thread = TSContactThread.getOrCreateThread(withContactId: slavePublicKey, transaction: transaction)
                     thread.save(with: transaction)
                 }
@@ -247,7 +247,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.markLinkingRequestAsProcessed() // Only relevant in master mode
         delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
         if let deviceLink = deviceLink {
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 OWSPrimaryStorage.shared().removePreKeyBundle(forContact: deviceLink.slave.publicKey, transaction: transaction)
             }
         }

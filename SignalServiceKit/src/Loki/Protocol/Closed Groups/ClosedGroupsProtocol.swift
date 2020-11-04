@@ -131,7 +131,7 @@ public final class ClosedGroupsProtocol : NSObject {
             }
             when(resolved: promises).done2 { _ in seal.fulfill(()) }.catch2 { seal.reject($0) }
             promise.done {
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
                     for (senderPublicKey, oldRatchet) in allOldRatchets {
                         let collection = Storage.ClosedGroupRatchetCollectionType.old

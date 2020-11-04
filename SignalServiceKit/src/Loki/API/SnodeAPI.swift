@@ -97,7 +97,7 @@ public final class SnodeAPI : NSObject {
                 }
             }.done2 { snode in
                 seal.fulfill(snode)
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     print("[Loki] Persisting snode pool to database.")
                     storage.setSnodePool(SnodeAPI.snodePool, in: transaction)
                 }
@@ -132,7 +132,7 @@ public final class SnodeAPI : NSObject {
             }.map2 { rawSnodes in
                 let swarm = parseSnodes(from: rawSnodes)
                 swarmCache[publicKey] = swarm
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     storage.setSwarm(swarm, for: publicKey, in: transaction)
                 }
                 return swarm
@@ -147,14 +147,14 @@ public final class SnodeAPI : NSObject {
 
     internal static func dropSnodeFromSnodePool(_ snode: Snode) {
         SnodeAPI.snodePool.remove(snode)
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             storage.dropSnodeFromSnodePool(snode, in: transaction)
         }
     }
 
     @objc public static func clearSnodePool() {
         snodePool.removeAll()
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             storage.clearSnodePool(in: transaction)
         }
     }
@@ -164,7 +164,7 @@ public final class SnodeAPI : NSObject {
         if var swarm = swarm, let index = swarm.firstIndex(of: snode) {
             swarm.remove(at: index)
             SnodeAPI.swarmCache[publicKey] = swarm
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 storage.setSwarm(swarm, for: publicKey, in: transaction)
             }
         }
@@ -172,7 +172,7 @@ public final class SnodeAPI : NSObject {
 
     // MARK: Receiving
     internal static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             Storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
         }
         let lastHash = Storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
@@ -257,7 +257,7 @@ public final class SnodeAPI : NSObject {
     
     private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
         if let lastMessage = rawMessages.last, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 Storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey, to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
         } else if (!rawMessages.isEmpty) {
@@ -274,7 +274,7 @@ public final class SnodeAPI : NSObject {
             }
             let isDuplicate = receivedMessages.contains(hash)
             receivedMessages.insert(hash)
-            try! Storage.writeSync { transaction in
+            Storage.writeSync { transaction in
                 Storage.setReceivedMessages(to: receivedMessages, for: publicKey, using: transaction)
             }
             return !isDuplicate

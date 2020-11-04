@@ -598,14 +598,14 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         __block TSThread *thread = nil;
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-        } error:nil];
+        }];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [ThreadUtil enqueueMessageWithText:url.absoluteString
                                       inThread:thread
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
                                    transaction:transaction];
-        } error:nil];
+        }];
     });
 
     // Also copy to pasteboard.
@@ -630,7 +630,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                   quotedReplyModel:nil
                                   linkPreviewDraft:nil
                                        transaction:transaction];
-            } error:nil];
+            }];
         } else {
             [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
         }

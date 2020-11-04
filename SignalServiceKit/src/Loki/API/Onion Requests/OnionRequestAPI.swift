@@ -134,7 +134,7 @@ public enum OnionRequestAPI {
                 }
             }.map2 { paths in
                 OnionRequestAPI.paths = paths + reusablePaths
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     print("[Loki] Persisting onion request paths to database.")
                     Storage.setOnionRequestPaths(paths, using: transaction)
                 }
@@ -214,7 +214,7 @@ public enum OnionRequestAPI {
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
         paths = newPaths
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             print("[Loki] Persisting onion request paths to database.")
             Storage.setOnionRequestPaths(newPaths, using: transaction)
         }
@@ -226,7 +226,7 @@ public enum OnionRequestAPI {
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             if !paths.isEmpty {
                 print("[Loki] Persisting onion request paths to database.")
                 Storage.setOnionRequestPaths(paths, using: transaction)

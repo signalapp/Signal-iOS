@@ -533,7 +533,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                         [transaction setDate:[NSDate new]
                                       forKey:OWSOrphanDataCleaner_LastCleaningDateKey
                                 inCollection:OWSOrphanDataCleaner_Collection];
-                    } error:nil];
+                    }];
 
                     if (completion) {
                         completion();
@@ -675,7 +675,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [attachmentStream removeWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
-    } error:nil];
+    }];
 
     if (shouldAbort) {
         return nil;

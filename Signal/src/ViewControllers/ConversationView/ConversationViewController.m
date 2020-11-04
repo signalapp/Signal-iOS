@@ -1228,7 +1228,7 @@ typedef enum : NSUInteger {
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
             [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
-        } error:nil];
+        }];
         [weakSelf updateSessionRestoreBanner];
     });
 }
@@ -2317,7 +2317,7 @@ typedef enum : NSUInteger {
                                        contactThread.hasDismissedOffers = YES;
                                        [contactThread saveWithTransaction:transaction];
                                        [interaction removeWithTransaction:transaction];
-                                   } error:nil];
+                                   }];
                                }];
     [actionSheet addAction:blockAction];
 
@@ -2345,7 +2345,7 @@ typedef enum : NSUInteger {
         contactThread.hasDismissedOffers = YES;
         [contactThread saveWithTransaction:transaction];
         [interaction removeWithTransaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2363,7 +2363,7 @@ typedef enum : NSUInteger {
             contactThread.hasDismissedOffers = YES;
             [contactThread saveWithTransaction:transaction];
             [interaction removeWithTransaction:transaction];
-        } error:nil];
+        }];
     }];
 }
 
@@ -2546,13 +2546,13 @@ typedef enum : NSUInteger {
                 [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                     [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                     [message saveWithTransaction:postSuccessTransaction];
-                } error:nil];
+                }];
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
                 [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                     [message touchWithTransaction:postSuccessTransaction];
-                } error:nil];
+                }];
             }];
     }];
 }
@@ -3682,7 +3682,7 @@ typedef enum : NSUInteger {
                                             groupMetaMessage:TSGroupMetaMessageUpdate
                                             expiresInSeconds:expiresInSeconds];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
-    } error:nil];
+    }];
 
     [groupThread fireAvatarChangedNotification];
 

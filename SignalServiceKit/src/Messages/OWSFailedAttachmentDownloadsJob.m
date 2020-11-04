@@ -88,7 +88,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             }
         }
                                              transaction:transaction];
-    } error:nil];
+    }];
 
     OWSLogDebug(@"Marked %u attachments as unsent", count);
 }

@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
                         if (serverID != 0) {
                             [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:serverID to:outgoingMessage.uniqueId in:transaction];
                         }
-                    } error:nil];
+                    }];
                 }
                 failure:^(NSError *error) {
                     OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",

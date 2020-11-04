@@ -31,7 +31,7 @@ public class DotNetAPI : NSObject {
             return Promise.value(token)
         } else {
             return requestNewAuthToken(for: server).then2 { submitAuthToken($0, for: server) }.map2 { token in
-                try! Storage.writeSync { transaction in
+                Storage.writeSync { transaction in
                     setAuthToken(for: server, to: token, in: transaction)
                 }
                 return token
@@ -52,7 +52,7 @@ public class DotNetAPI : NSObject {
     }
 
     public static func removeAuthToken(for server: String) {
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             transaction.removeObject(forKey: server, inCollection: authTokenCollection)
         }
     }

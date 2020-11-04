@@ -107,7 +107,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
                 count++;
             }
                                   transaction:transaction];
-    } error:nil];
+    }];
 
     OWSLogInfo(@"Marked %u calls as missed", count);
 }

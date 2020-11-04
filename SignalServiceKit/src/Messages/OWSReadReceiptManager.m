@@ -219,7 +219,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [self.messageSenderJobQueue addMessage:message transaction:transaction];
-            } error:nil];
+            }];
         }
 
         BOOL didWork = readReceiptsForLinkedDevices.count > 0;
@@ -256,7 +256,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                            readTimestamp:[NSDate ows_millisecondTimeStamp]
                                 wasLocal:YES
                              transaction:transaction];
-        } error:nil];
+        }];
     });
 }
 
@@ -343,7 +343,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                transaction:transaction];
                 }
             }
-        } error:nil];
+        }];
     });
 }
 

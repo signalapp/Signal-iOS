@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
             [transaction removeObjectForKey:unknownMigrationId inCollection:OWSDatabaseMigration.collection];
         }
-    } error:nil];
+    }];
 }
 
 // Run migrations serially to:

@@ -90,7 +90,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self setValueForKey:key toValue:value transaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)setValueForKey:(NSString *)key

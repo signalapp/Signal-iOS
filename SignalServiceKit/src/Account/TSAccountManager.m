@@ -253,7 +253,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     __block uint32_t result;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         result = [self getOrGenerateRegistrationId:transaction];
-    } error:nil];
+    }];
     return result;
 }
 
@@ -527,7 +527,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         [transaction setObject:authToken
                         forKey:TSAccountManager_ServerAuthToken
                   inCollection:TSAccountManager_UserAccountCollection];
-    } error:nil];
+    }];
 }
 
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock
@@ -631,7 +631,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             [transaction setObject:localNumber
                             forKey:TSAccountManager_ReregisteringPhoneNumberKey
                       inCollection:TSAccountManager_UserAccountCollection];
-        } error:nil];
+        }];
 
         [self postRegistrationStateDidChangeNotification];
 
@@ -733,7 +733,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                 [transaction removeObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
                                    inCollection:TSAccountManager_UserAccountCollection];
             }
-        } error:nil];
+        }];
     });
     return promise;
 }

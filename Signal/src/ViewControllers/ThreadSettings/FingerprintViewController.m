@@ -531,7 +531,7 @@ typedef void (^CustomLayoutBlock)(void);
                                                          recipientId:self.recipientId
                                                isUserInitiatedChange:YES
                                                          transaction:transaction];
-        } error:nil];
+        }];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

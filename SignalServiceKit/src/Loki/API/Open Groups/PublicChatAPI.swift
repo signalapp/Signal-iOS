@@ -63,7 +63,7 @@ public final class PublicChatAPI : DotNetAPI {
     }
     
     public static func clearCaches(for channel: UInt64, on server: String) {
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             removeLastMessageServerID(for: channel, on: server, using: transaction)
             removeLastDeletionServerID(for: channel, on: server, using: transaction)
             Storage.removeOpenGroupPublicKey(for: server, using: transaction)
@@ -79,7 +79,7 @@ public final class PublicChatAPI : DotNetAPI {
                 let url = URL(string: server)!
                 let request = TSRequest(url: url)
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: publicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { _ -> String in
-                    try! Storage.writeSync { transaction in
+                    Storage.writeSync { transaction in
                         Storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
                     }
                     return publicKey
@@ -132,7 +132,7 @@ public final class PublicChatAPI : DotNetAPI {
                         }
                         let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
                         if serverID > (lastMessageServerID ?? 0) {
-                            try! Storage.writeSync { transaction in
+                            Storage.writeSync { transaction in
                                 setLastMessageServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
@@ -255,7 +255,7 @@ public final class PublicChatAPI : DotNetAPI {
                         }
                         let lastDeletionServerID = getLastDeletionServerID(for: channel, on: server)
                         if serverID > (lastDeletionServerID ?? 0) {
-                            try! Storage.writeSync { transaction in
+                            Storage.writeSync { transaction in
                                 setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
@@ -305,7 +305,7 @@ public final class PublicChatAPI : DotNetAPI {
                         print("[Loki] Couldn't parse display names for users: \(publicKeys) from: \(json).")
                         throw DotNetAPIError.parsingFailed
                     }
-                    try! Storage.writeSync { transaction in
+                    Storage.writeSync { transaction in
                         data.forEach { data in
                             guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
                             let endIndex = hexEncodedPublicKey.endIndex
@@ -372,7 +372,7 @@ public final class PublicChatAPI : DotNetAPI {
     static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: PublicChatInfo) {
         let storage = OWSPrimaryStorage.shared()
         let publicChatID = "\(server).\(channel)"
-        try! Storage.writeSync { transaction in
+        Storage.writeSync { transaction in
             // Update user count
             storage.setUserCount(info.memberCount, forPublicChatWithID: publicChatID, in: transaction)
             let groupThread = TSGroupThread.getOrCreateThread(withGroupId: publicChatID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
@@ -425,7 +425,7 @@ public final class PublicChatAPI : DotNetAPI {
                             throw DotNetAPIError.parsingFailed
                         }
                         let storage = OWSPrimaryStorage.shared()
-                        try! Storage.writeSync { transaction in
+                        Storage.writeSync { transaction in
                             storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
                         }
                         let publicChatInfo = PublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)

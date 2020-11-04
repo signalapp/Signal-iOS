@@ -96,7 +96,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
             count++;
         }
                                           transaction:transaction];
-    } error:nil];
+    }];
 
     OWSLogDebug(@"Marked %u messages as unsent", count);
 }

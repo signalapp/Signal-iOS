@@ -712,7 +712,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         } @catch (NSException *exception) {
             // Do nothing
         }
-    } error:nil];
+    }];
     [TSAttachmentStream deleteAttachments];
 }
 

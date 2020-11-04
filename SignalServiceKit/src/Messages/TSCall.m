@@ -155,7 +155,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateCallType:callType transaction:transaction];
-    } error:nil];
+    }];
 }
 
 - (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction
