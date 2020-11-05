@@ -497,7 +497,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func v2GroupId(forV1GroupId v1GroupId: Data) -> Data? {
-        owsFail("Not implemented.")
+        let v2GroupId = v1GroupId + v1GroupId
+        owsAssert(GroupManager.isV1GroupId(v1GroupId))
+        owsAssert(GroupManager.isV2GroupId(v2GroupId))
+        return v2GroupId
     }
 
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
