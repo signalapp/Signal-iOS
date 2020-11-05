@@ -224,9 +224,7 @@ private class BannerView: UIView {
             avatarView.autoMatch(.height, to: .width, of: avatarView)
 
             let conversationColorName = databaseStorage.uiRead { transaction in
-                return ConversationColorName(
-                    rawValue: self.contactsManager.conversationColorName(for: address, transaction: transaction)
-                )
+                return self.contactsManager.conversationColorName(for: address, transaction: transaction)
             }
 
             let avatarBuilder = OWSContactAvatarBuilder(
