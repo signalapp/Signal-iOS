@@ -637,6 +637,8 @@
 		C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A75E2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift */; };
 		C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7672553A3D900C340D1 /* VisibleMessage+Contact.swift */; };
 		C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7702553A41E00C340D1 /* ControlMessage.swift */; };
+		C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7822553AAF200C340D1 /* SNProto.swift */; };
+		C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7832553AAF300C340D1 /* SessionProtos.pb.swift */; };
 		C3C3CF8924D8EED300E1CCE7 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C3CF8824D8EED300E1CCE7 /* TextView.swift */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
@@ -1507,6 +1509,8 @@
 		C3C2A75E2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+LinkPreview.swift"; sourceTree = "<group>"; };
 		C3C2A7672553A3D900C340D1 /* VisibleMessage+Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+Contact.swift"; sourceTree = "<group>"; };
 		C3C2A7702553A41E00C340D1 /* ControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlMessage.swift; sourceTree = "<group>"; };
+		C3C2A7822553AAF200C340D1 /* SNProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SNProto.swift; sourceTree = "<group>"; };
+		C3C2A7832553AAF300C340D1 /* SessionProtos.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionProtos.pb.swift; sourceTree = "<group>"; };
 		C3C3CF8824D8EED300E1CCE7 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPoller.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
@@ -3014,6 +3018,7 @@
 		C3C2A6F125539DE700C340D1 /* SessionMessagingKit */ = {
 			isa = PBXGroup;
 			children = (
+				C3C2A7802553AA6300C340D1 /* Protos */,
 				C3C2A70A25539DF900C340D1 /* Meta */,
 				C3C2A74325539EB700C340D1 /* Message.swift */,
 				C3C2A74C2553A39700C340D1 /* VisibleMessage.swift */,
@@ -3032,6 +3037,23 @@
 				C3C2A6F325539DE700C340D1 /* Info.plist */,
 			);
 			path = Meta;
+			sourceTree = "<group>";
+		};
+		C3C2A7802553AA6300C340D1 /* Protos */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A7812553AA9000C340D1 /* Generated */,
+			);
+			path = Protos;
+			sourceTree = "<group>";
+		};
+		C3C2A7812553AA9000C340D1 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A7832553AAF300C340D1 /* SessionProtos.pb.swift */,
+				C3C2A7822553AAF200C340D1 /* SNProto.swift */,
+			);
+			path = Generated;
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -4250,7 +4272,9 @@
 			files = (
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
+				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
+				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,

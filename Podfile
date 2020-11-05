@@ -107,6 +107,7 @@ end
 
 target 'SessionMessagingKit' do
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
 end
 
 target 'SessionSnodeKit' do
