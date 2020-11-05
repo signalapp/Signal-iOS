@@ -149,7 +149,8 @@ public class ProxiedContentAssetRequest: NSObject {
     // the request succeeds or fails.
     private var success: ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void)?
     private var failure: ((ProxiedContentAssetRequest) -> Void)?
-
+    
+    var shouldIgnoreSignalProxy = false
     var wasCancelled = false
     // This property is an internal implementation detail of the download process.
     var assetFilePath: String?
@@ -484,6 +485,21 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                                  delegateQueue: nil)
         return session
     }()
+    
+    private lazy var downloadSessionWithoutProxy: URLSession = {
+        AssertIsOnMainThread()
+
+        let configuration = URLSessionConfiguration.ephemeral
+        // Don't use any caching to protect privacy of these requests.
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringCacheData
+
+        configuration.httpMaximumConnectionsPerHost = 10
+        let session = URLSession(configuration: configuration,
+                                 delegate: self,
+                                 delegateQueue: nil)
+        return session
+    }()
 
     // 100 entries of which at least half will probably be stills.
     // Actual animated GIFs will usually be less than 3 MB so the
@@ -504,7 +520,8 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     public func requestAsset(assetDescription: ProxiedContentAssetDescription,
                              priority: ProxiedContentRequestPriority,
                              success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-                             failure:@escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
+                             failure:@escaping ((ProxiedContentAssetRequest) -> Void),
+                             shouldIgnoreSignalProxy: Bool = false) -> ProxiedContentAssetRequest? {
         AssertIsOnMainThread()
 
         if let asset = assetMap.get(key: assetDescription.url) {
@@ -522,6 +539,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                                              priority: priority,
                                              success: success,
                                              failure: failure)
+        assetRequest.shouldIgnoreSignalProxy = shouldIgnoreSignalProxy
         assetRequestQueue.append(assetRequest)
         // Process the queue (which may start this request)
         // asynchronously so that the caller has time to store
@@ -676,10 +694,17 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                 processRequestQueueSync()
                 return
             }
-
-            let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
-                self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
-            })
+            
+            var task: URLSessionDataTask
+            if (assetRequest.shouldIgnoreSignalProxy) {
+                task = downloadSessionWithoutProxy.dataTask(with: request, completionHandler: { data, response, error -> Void in
+                    self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
+                })
+            } else {
+                task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
+                    self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
+                })
+            }
 
             assetRequest.contentLengthTask = task
             task.resume()
@@ -704,7 +729,12 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                 return
             }
 
-            let task: URLSessionDataTask = downloadSession.dataTask(with: request)
+            var task: URLSessionDataTask
+            if (assetRequest.shouldIgnoreSignalProxy) {
+                task = downloadSessionWithoutProxy.dataTask(with: request)
+            } else {
+                task = downloadSession.dataTask(with: request)
+            }
             task.assetRequest = assetRequest
             task.assetSegment = assetSegment
             assetSegment.task = task

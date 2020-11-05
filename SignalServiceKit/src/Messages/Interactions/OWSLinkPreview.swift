@@ -606,7 +606,7 @@ public class OWSLinkPreview: MTLModel {
             }, failure: { (_) in
                 Logger.warn("Error downloading asset")
                 resolver.reject(LinkPreviewError.couldNotDownload)
-            })
+            }, shouldIgnoreSignalProxy: true)
         }
         return promise.then(on: DispatchQueue.global()) { (asset: ProxiedContentAsset) -> Promise<Data> in
             do {
@@ -736,7 +736,8 @@ public class OWSLinkPreview: MTLModel {
         let imageFilename = imageUrl.lastPathComponent
         let imageFileExtension = (imageFilename as NSString).pathExtension.lowercased()
         guard imageFileExtension.count > 0 else {
-            return nil
+            // TODO: For those links don't have a file extension, we should figure out a way to know the image mime type
+            return "png"
         }
         return imageFileExtension
     }
