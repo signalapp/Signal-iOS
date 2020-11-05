@@ -1,5 +1,5 @@
 
-public protocol Storage {
+public protocol SessionSnodeKitStorageProtocol {
 
     func with(_ work: (Any) -> Void)
 

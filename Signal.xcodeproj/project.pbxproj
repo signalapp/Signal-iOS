@@ -608,16 +608,16 @@
 		C3C2A5C3255385EE00C340D1 /* OnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */; };
 		C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */; };
 		C3C2A5C5255385EE00C340D1 /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BC255385EE00C340D1 /* HTTP.swift */; };
-		C3C2A5C6255385EE00C340D1 /* Notification+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BD255385EE00C340D1 /* Notification+Session.swift */; };
+		C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */; };
 		C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BE255385EE00C340D1 /* SnodeAPI.swift */; };
 		C3C2A5DA2553860B00C340D1 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CE2553860700C340D1 /* Logging.swift */; };
 		C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CF2553860700C340D1 /* Promise+Hashing.swift */; };
 		C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D02553860800C340D1 /* Promise+Threading.swift */; };
-		C3C2A5DD2553860B00C340D1 /* Array+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Utilities.swift */; };
+		C3C2A5DD2553860B00C340D1 /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D22553860900C340D1 /* String+Utilities.swift */; };
 		C3C2A5DF2553860B00C340D1 /* Promise+Delaying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D32553860900C340D1 /* Promise+Delaying.swift */; };
 		C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D42553860A00C340D1 /* Threading.swift */; };
-		C3C2A5E12553860B00C340D1 /* Dictionary+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D52553860A00C340D1 /* Dictionary+Utilities.swift */; };
+		C3C2A5E12553860B00C340D1 /* Dictionary+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */; };
 		C3C2A5E22553860B00C340D1 /* Promise+Retrying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */; };
 		C3C2A5E32553860B00C340D1 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
 		C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D82553860B00C340D1 /* Data+Utilities.swift */; };
@@ -1461,16 +1461,16 @@
 		C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnionRequestAPI.swift; sourceTree = "<group>"; };
 		C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OnionRequestAPI+Encryption.swift"; sourceTree = "<group>"; };
 		C3C2A5BC255385EE00C340D1 /* HTTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTP.swift; sourceTree = "<group>"; };
-		C3C2A5BD255385EE00C340D1 /* Notification+Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Notification+Session.swift"; sourceTree = "<group>"; };
+		C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Notification+OnionRequestAPI.swift"; sourceTree = "<group>"; };
 		C3C2A5BE255385EE00C340D1 /* SnodeAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnodeAPI.swift; sourceTree = "<group>"; };
 		C3C2A5CE2553860700C340D1 /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		C3C2A5CF2553860700C340D1 /* Promise+Hashing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+Hashing.swift"; sourceTree = "<group>"; };
 		C3C2A5D02553860800C340D1 /* Promise+Threading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+Threading.swift"; sourceTree = "<group>"; };
-		C3C2A5D12553860800C340D1 /* Array+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Utilities.swift"; sourceTree = "<group>"; };
+		C3C2A5D12553860800C340D1 /* Array+Description.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Description.swift"; sourceTree = "<group>"; };
 		C3C2A5D22553860900C340D1 /* String+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Utilities.swift"; sourceTree = "<group>"; };
 		C3C2A5D32553860900C340D1 /* Promise+Delaying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+Delaying.swift"; sourceTree = "<group>"; };
 		C3C2A5D42553860A00C340D1 /* Threading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
-		C3C2A5D52553860A00C340D1 /* Dictionary+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dictionary+Utilities.swift"; sourceTree = "<group>"; };
+		C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dictionary+Description.swift"; sourceTree = "<group>"; };
 		C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+Retrying.swift"; sourceTree = "<group>"; };
 		C3C2A5D72553860B00C340D1 /* AESGCM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AESGCM.swift; sourceTree = "<group>"; };
 		C3C2A5D82553860B00C340D1 /* Data+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Utilities.swift"; sourceTree = "<group>"; };
@@ -2911,7 +2911,7 @@
 				C3C2A5B0255385C700C340D1 /* Meta */,
 				C3C2A5B9255385ED00C340D1 /* Configuration.swift */,
 				C3C2A5B6255385EC00C340D1 /* Message.swift */,
-				C3C2A5BD255385EE00C340D1 /* Notification+Session.swift */,
+				C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */,
 				C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */,
 				C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */,
 				C3C2A5B7255385EC00C340D1 /* Snode.swift */,
@@ -2949,8 +2949,8 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A68B255388D500C340D1 /* Meta */,
-				C3C2A5D12553860800C340D1 /* Array+Utilities.swift */,
-				C3C2A5D52553860A00C340D1 /* Dictionary+Utilities.swift */,
+				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
+				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
 				C3C2A5D92553860B00C340D1 /* JSON.swift */,
 				C3C2A5CE2553860700C340D1 /* Logging.swift */,
@@ -4086,13 +4086,13 @@
 				C3C2A5E22553860B00C340D1 /* Promise+Retrying.swift in Sources */,
 				C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */,
 				C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */,
-				C3C2A5E12553860B00C340D1 /* Dictionary+Utilities.swift in Sources */,
+				C3C2A5E12553860B00C340D1 /* Dictionary+Description.swift in Sources */,
 				C3C2A5C5255385EE00C340D1 /* HTTP.swift in Sources */,
-				C3C2A5C6255385EE00C340D1 /* Notification+Session.swift in Sources */,
+				C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */,
 				C3C2A5DF2553860B00C340D1 /* Promise+Delaying.swift in Sources */,
 				C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */,
 				C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */,
-				C3C2A5DD2553860B00C340D1 /* Array+Utilities.swift in Sources */,
+				C3C2A5DD2553860B00C340D1 /* Array+Description.swift in Sources */,
 				C3C2A5E32553860B00C340D1 /* AESGCM.swift in Sources */,
 				C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */,
 				C3C2A5E52553860B00C340D1 /* JSON.swift in Sources */,

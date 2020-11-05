@@ -2,7 +2,7 @@ import Foundation
 import PromiseKit
 
 public enum HTTP {
-    private static let seedNodeURLSession = URLSession(configuration: .ephemeral)
+    private static let sslURLSession = URLSession(configuration: .ephemeral)
     private static let defaultURLSession = URLSession(configuration: .ephemeral, delegate: defaultURLSessionDelegate, delegateQueue: nil)
     private static let defaultURLSessionDelegate = DefaultURLSessionDelegateImplementation()
 
@@ -42,32 +42,32 @@ public enum HTTP {
     }
 
     // MARK: Main
-    public static func execute(_ verb: Verb, _ url: String, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
-        return execute(verb, url, body: nil, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
+    public static func execute(_ verb: Verb, _ url: String, timeout: TimeInterval = HTTP.timeout, useSSLURLSession: Bool = false) -> Promise<JSON> {
+        return execute(verb, url, body: nil, timeout: timeout, useSSLURLSession: useSSLURLSession)
     }
 
-    public static func execute(_ verb: Verb, _ url: String, parameters: JSON?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, parameters: JSON?, timeout: TimeInterval = HTTP.timeout, useSSLURLSession: Bool = false) -> Promise<JSON> {
         if let parameters = parameters {
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return Promise(error: Error.invalidJSON) }
                 let body = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
-                return execute(verb, url, body: body, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
+                return execute(verb, url, body: body, timeout: timeout, useSSLURLSession: useSSLURLSession)
             } catch (let error) {
                 return Promise(error: error)
             }
         } else {
-            return execute(verb, url, body: nil, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
+            return execute(verb, url, body: nil, timeout: timeout, useSSLURLSession: useSSLURLSession)
         }
     }
 
-    public static func execute(_ verb: Verb, _ url: String, body: Data?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, body: Data?, timeout: TimeInterval = HTTP.timeout, useSSLURLSession: Bool = false) -> Promise<JSON> {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = verb.rawValue
         request.httpBody = body
         request.timeoutInterval = timeout
         request.allHTTPHeaderFields?.removeValue(forKey: "User-Agent")
         let (promise, seal) = Promise<JSON>.pending()
-        let urlSession = useSeedNodeURLSession ? seedNodeURLSession : defaultURLSession
+        let urlSession = useSSLURLSession ? sslURLSession : defaultURLSession
         let task = urlSession.dataTask(with: request) { data, response, error in
             guard let data = data, let response = response as? HTTPURLResponse else {
                 if let error = error {

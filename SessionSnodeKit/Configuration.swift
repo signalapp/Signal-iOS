@@ -1,6 +1,6 @@
 
 public struct Configuration {
-    public let storage: Storage
+    public let storage: SessionSnodeKitStorageProtocol
 
     internal static var shared: Configuration!
 }
