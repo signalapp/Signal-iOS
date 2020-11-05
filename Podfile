@@ -111,6 +111,10 @@ target 'SessionSnodeKit' do
   pod 'PromiseKit', :inhibit_warnings => true
 end
 
+target 'SessionUtilities' do
+  pod 'PromiseKit', :inhibit_warnings => true
+end
+
 post_install do |installer|
   enable_whole_module_optimization_for_cryptoswift(installer)
   enable_extension_support_for_purelayout(installer)

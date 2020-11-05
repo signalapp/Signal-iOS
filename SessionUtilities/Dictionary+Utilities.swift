@@ -1,5 +1,5 @@
 
-internal extension Dictionary {
+public extension Dictionary {
     
     var prettifiedDescription: String {
         return "[ " + map { key, value in
