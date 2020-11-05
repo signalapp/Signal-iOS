@@ -14,6 +14,8 @@ public enum SPKProtoError: Error {
 
 @objc public class SPKProtoTSProtoWhisperMessage: NSObject {
 
+    class var logTag: String { "SPKProtoTSProtoWhisperMessage" }
+
     // MARK: - SPKProtoTSProtoWhisperMessageBuilder
 
     @objc public class func builder(ratchetKey: Data, counter: UInt32, ciphertext: Data) -> SPKProtoTSProtoWhisperMessageBuilder {
@@ -744,6 +746,8 @@ extension SPKProtoTSProtoSenderKeyDistributionMessage.SPKProtoTSProtoSenderKeyDi
 // MARK: - SPKProtoClosedGroupCiphertextMessage
 
 @objc public class SPKProtoClosedGroupCiphertextMessage: NSObject {
+
+    class var logTag: String { "SPKProtoClosedGroupCiphertextMessage" }
 
     // MARK: - SPKProtoClosedGroupCiphertextMessageBuilder
 

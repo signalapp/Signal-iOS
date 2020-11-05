@@ -731,6 +731,7 @@
 		C3C2AA072553B9C400C340D1 /* Cryptography.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9EC2553B9C400C340D1 /* Cryptography.m */; };
 		C3C2AA082553B9C400C340D1 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9ED2553B9C400C340D1 /* NSString+OWS.m */; };
 		C3C2AA092553B9C400C340D1 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9EE2553B9C400C340D1 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C3C3CF8924D8EED300E1CCE7 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C3CF8824D8EED300E1CCE7 /* TextView.swift */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
@@ -1791,6 +1792,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */,
 				C3C2A70B25539E1E00C340D1 /* SessionSnodeKit.framework in Frameworks */,
 				5DF9AB212C6DB1E8BE70EFF6 /* Pods_SessionMessagingKit.framework in Frameworks */,
 			);
