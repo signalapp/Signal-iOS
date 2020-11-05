@@ -18,6 +18,7 @@ PODS:
     - CocoaLumberjack/Core (= 3.6.2)
   - CocoaLumberjack/Core (3.6.2)
   - CryptoSwift (1.3.2)
+  - Curve25519Kit (2.1.0)
   - FeedKit (8.1.1)
   - GRKOpenSSLFramework (1.0.2.12)
   - libPhoneNumber-iOS (0.9.15)
@@ -199,11 +200,14 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 3.2.1)
+  - CryptoSwift
   - CryptoSwift (~> 1.3)
+  - Curve25519Kit
   - FeedKit (~> 8.1)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView (~> 4.7)
+  - PromiseKit
   - PromiseKit (= 6.5.3)
   - PureLayout (~> 3.1.4)
   - Reachability
@@ -232,6 +236,7 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
+    - Curve25519Kit
     - FeedKit
     - libPhoneNumber-iOS
     - NVActivityIndicatorView
@@ -309,6 +314,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
+  Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
   FeedKit: 3418eed25f0b493b205b4de1b8511ac21d413fa9
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
@@ -333,6 +339,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 8b58cc2d282fa528aa81b128b643596a9059c270
+PODFILE CHECKSUM: a046210e9d91429c33c0fa60f7ff0362c6994f5d
 
 COCOAPODS: 1.10.0.rc.1

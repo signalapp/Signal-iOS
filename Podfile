@@ -105,9 +105,16 @@ target 'SignalMessaging' do
   shared_pods
 end
 
+target 'SessionSnodeKit' do
+  pod 'CryptoSwift', :inhibit_warnings => true
+  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'PromiseKit', :inhibit_warnings => true
+end
+
 post_install do |installer|
   enable_whole_module_optimization_for_cryptoswift(installer)
   enable_extension_support_for_purelayout(installer)
+  set_minimum_deployment_target(installer)
 end
 
 def enable_whole_module_optimization_for_cryptoswift(installer)
@@ -132,4 +139,12 @@ def enable_extension_support_for_purelayout(installer)
       end
     end
   end
+end
+
+def set_minimum_deployment_target(installer)
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |build_configuration|
+            build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+        end
+    end
 end
