@@ -698,7 +698,7 @@ void uncaughtExceptionHandler(NSException *exception)
                 initWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
                       message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)];
 
-            [controller addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", nil)
+            [controller addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
                                                                      style:ActionSheetActionStyleDefault
                                                                    handler:^(ActionSheetAction *_Nonnull action) {
 

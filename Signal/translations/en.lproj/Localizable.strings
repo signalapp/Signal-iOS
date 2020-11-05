@@ -2956,7 +2956,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Show";
 
-/* No comment provided by engineer. */
+/* Label for the 'ok' button. */
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */

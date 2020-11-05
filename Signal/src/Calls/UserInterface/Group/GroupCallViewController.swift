@@ -422,7 +422,7 @@ extension GroupCallViewController: CallObserver {
             )
         )
         actionSheet.addAction(ActionSheetAction(
-            title: NSLocalizedString("OK", comment: ""),
+            title: CommonStrings.okButton,
             style: .default,
             handler: nil
         ))
