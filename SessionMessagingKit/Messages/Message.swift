@@ -17,11 +17,11 @@ public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase co
         preconditionFailure("encode(with:) is abstract and must be overridden.")
     }
 
-    public class func fromProto(_ proto: SNProtoContent) -> Self? {
-        preconditionFailure("fromProto(_:) is abstract and must be overridden.")
+    public class func fromSerializedProto(_ serializedProto: Data) -> Self? {
+        preconditionFailure("fromSerializedProto(_:) is abstract and must be overridden.")
     }
 
-    public func toProto() -> Any? {
-        preconditionFailure("toProto() is abstract and must be overridden.")
+    public func toSerializedProto() -> Data? {
+        preconditionFailure("toSerializedProto() is abstract and must be overridden.")
     }
 }

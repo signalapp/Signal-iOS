@@ -575,6 +575,9 @@
 		C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */; };
 		C300A5F22554B09800555489 /* SendingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5F12554B09800555489 /* SendingPipeline.swift */; };
 		C300A5FC2554B0A000555489 /* ReceivingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */; };
+		C300A60D2554B31900555489 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CE2553860700C340D1 /* Logging.swift */; };
+		C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = C300A6312554B6D100555489 /* NSDate+Timestamp.mm */; };
+		C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */ = {isa = PBXBuildFile; fileRef = C300A6302554B68200555489 /* NSDate+Timestamp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C59247F214E001123EF /* UIView+Glow.swift */; };
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
 		C31D1DD325216101005D4DA8 /* UIView+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DD225216101005D4DA8 /* UIView+Utilities.swift */; };
@@ -621,7 +624,6 @@
 		C3C2A5C5255385EE00C340D1 /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BC255385EE00C340D1 /* HTTP.swift */; };
 		C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */; };
 		C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BE255385EE00C340D1 /* SnodeAPI.swift */; };
-		C3C2A5DA2553860B00C340D1 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CE2553860700C340D1 /* Logging.swift */; };
 		C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CF2553860700C340D1 /* Promise+Hashing.swift */; };
 		C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D02553860800C340D1 /* Promise+Threading.swift */; };
 		C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D22553860900C340D1 /* String+Utilities.swift */; };
@@ -1564,6 +1566,8 @@
 		C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationTimerUpdate.swift; sourceTree = "<group>"; };
 		C300A5F12554B09800555489 /* SendingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingPipeline.swift; sourceTree = "<group>"; };
 		C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceivingPipeline.swift; sourceTree = "<group>"; };
+		C300A6302554B68200555489 /* NSDate+Timestamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Timestamp.h"; sourceTree = "<group>"; };
+		C300A6312554B6D100555489 /* NSDate+Timestamp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+Timestamp.mm"; sourceTree = "<group>"; };
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
 		C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Utilities.swift"; sourceTree = "<group>"; };
 		C31D1DD225216101005D4DA8 /* UIView+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Utilities.swift"; sourceTree = "<group>"; };
@@ -3285,6 +3289,8 @@
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
 				C3C2A5D92553860B00C340D1 /* JSON.swift */,
 				C3C2A5CE2553860700C340D1 /* Logging.swift */,
+				C300A6302554B68200555489 /* NSDate+Timestamp.h */,
+				C300A6312554B6D100555489 /* NSDate+Timestamp.mm */,
 				C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */,
 				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
 			);
@@ -3736,6 +3742,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */,
 				C3C2A67D255388CC00C340D1 /* SessionUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4824,7 +4831,6 @@
 			files = (
 				C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */,
 				C3C2A5BF255385EE00C340D1 /* Message.swift in Sources */,
-				C3C2A5DA2553860B00C340D1 /* Logging.swift in Sources */,
 				C3C2A5E22553860B00C340D1 /* Promise+Retrying.swift in Sources */,
 				C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */,
 				C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */,
@@ -4852,6 +4858,8 @@
 				C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
+				C300A60D2554B31900555489 /* Logging.swift in Sources */,
+				C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5841,6 +5849,15 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"PromiseKit\"",
+					"-framework",
+					"\"UIKit\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SessionUtilities";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -5914,6 +5931,15 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"PromiseKit\"",
+					"-framework",
+					"\"UIKit\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SessionUtilities";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
