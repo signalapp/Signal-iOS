@@ -1235,6 +1235,18 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
               viewItemCache[interaction.uniqueId] = viewItem;
               [viewItems addObject:viewItem];
+              TSMessage *message = (TSMessage *)viewItem.interaction;
+              if (message.hasAttachmentsInNSE) {
+                  [SSKEnvironment.shared.attachmentDownloads downloadAttachmentsForMessage:message
+                      transaction:transaction
+                      success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                          OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
+                      }
+                      failure:^(NSError *error) {
+                          OWSLogWarn(@"Failed to redownload message with error: %@", error);
+                      }];
+              }
+              
 
               return viewItem;
           };

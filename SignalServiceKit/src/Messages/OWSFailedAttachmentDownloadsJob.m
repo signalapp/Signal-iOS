@@ -3,6 +3,8 @@
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
+#import "SSKEnvironment.h"
+#import "OWSAttachmentDownloads.h"
 #import "OWSPrimaryStorage.h"
 #import "TSAttachmentPointer.h"
 #import <YapDatabase/YapDatabase.h>
@@ -24,6 +26,12 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 #pragma mark -
 
 @implementation OWSFailedAttachmentDownloadsJob
+
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
+}
+
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {

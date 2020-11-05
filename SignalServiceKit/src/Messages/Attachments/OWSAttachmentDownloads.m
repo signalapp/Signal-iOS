@@ -290,6 +290,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             [job.attachmentPointer saveWithTransaction:transaction];
 
             if (job.message) {
+                if (!CurrentAppContext().isMainApp) {
+                    job.message.hasAttachmentsInNSE = true;
+                } else {
+                    job.message.hasAttachmentsInNSE = false;
+                }
+                
+                [job.message saveWithTransaction:transaction];
                 [job.message touchWithTransaction:transaction];
             }
         }];
