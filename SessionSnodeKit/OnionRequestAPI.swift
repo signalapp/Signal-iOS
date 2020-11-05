@@ -6,7 +6,6 @@ public enum OnionRequestAPI {
     private static var pathFailureCount: [Path:UInt] = [:]
     private static var snodeFailureCount: [Snode:UInt] = [:]
     public static var guardSnodes: Set<Snode> = []
-    // TODO: Just get/set paths from/in the database directly?
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
     // MARK: Settings

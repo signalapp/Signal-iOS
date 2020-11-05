@@ -1,6 +1,6 @@
 import SessionUtilities
 
-public final class ClosedGroupRatchet : NSObject, NSCoding {
+public final class ClosedGroupRatchet : NSObject, NSCoding { // Not a struct for YapDatabase compatibility
     public let chainKey: String
     public let keyIndex: UInt
     public let messageKeys: [String]
@@ -41,5 +41,5 @@ public final class ClosedGroupRatchet : NSObject, NSCoding {
     }
 
     // MARK: Description
-    override public var description: String { return "[ chainKey : \(chainKey), keyIndex : \(keyIndex), messageKeys : \(messageKeys.prettifiedDescription) ]" }
+    override public var description: String { "[ chainKey : \(chainKey), keyIndex : \(keyIndex), messageKeys : \(messageKeys.prettifiedDescription) ]" }
 }

@@ -5,9 +5,9 @@ public enum SnodeAPI {
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     internal static var snodeFailureCount: [Snode:UInt] = [:]
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    internal static var snodePool: Set<Snode> = [] // TODO: Just get/set the database values directly?
+    internal static var snodePool: Set<Snode> = []
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    internal static var swarmCache: [String:Set<Snode>] = [:] // TODO: Just get/set the database values directly?
+    internal static var swarmCache: [String:Set<Snode>] = [:]
     
     // MARK: Settings
     private static let maxRetryCount: UInt = 4

@@ -2,6 +2,11 @@ import CryptoSwift
 import PromiseKit
 import SessionUtilities
 
+public protocol SharedSenderKeysDelegate {
+
+    func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: Any)
+}
+
 public enum SharedSenderKeys {
     private static let gcmTagSize: UInt = 16
     private static let ivSize: UInt = 12
@@ -100,8 +105,6 @@ public enum SharedSenderKeys {
         do {
             ratchet = try stepRatchetOnce(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
         } catch {
-            // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
-            // convenient because there's an easy way to get the sender public key from here.
             if case RatchetingError.loadingFailed(_, _) = error {
                 Configuration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
             }
@@ -123,8 +126,6 @@ public enum SharedSenderKeys {
             if !isRetry {
                 return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
             } else {
-                // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
-                // convenient because there's an easy way to get the sender public key from here.
                 if case RatchetingError.loadingFailed(_, _) = error {
                     Configuration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
                 }
@@ -159,14 +160,5 @@ public enum SharedSenderKeys {
             Configuration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
             throw error ?? RatchetingError.generic
         }
-    }
-
-    public func isClosedGroup(_ publicKey: String) -> Bool {
-        return Configuration.shared.storage.getUserClosedGroupPublicKeys().contains(publicKey)
-    }
-
-    public func getKeyPair(forGroupWithPublicKey groupPublicKey: String) -> ECKeyPair {
-        let privateKey = Configuration.shared.storage.getClosedGroupPrivateKey(for: groupPublicKey)!
-        return ECKeyPair(publicKey: Data(hex: groupPublicKey.removing05PrefixIfNeeded()), privateKey: Data(hex: privateKey))
     }
 }
