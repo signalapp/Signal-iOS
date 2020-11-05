@@ -34,9 +34,7 @@ public final class TypingIndicator : ControlMessage {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        if let rawKind = coder.decodeObject(forKey: "kind") as! String? {
-            kind = Kind(rawValue: rawKind)
-        }
+        if let rawKind = coder.decodeObject(forKey: "kind") as! String? { kind = Kind(rawValue: rawKind) }
     }
 
     public override func encode(with coder: NSCoder) {
@@ -46,10 +44,7 @@ public final class TypingIndicator : ControlMessage {
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent) -> TypingIndicator? {
-        guard let typingIndicatorProto = proto.typingMessage else {
-            SNLog("Couldn't parse typing indicator from: \(proto).")
-            return nil
-        }
+        guard let typingIndicatorProto = proto.typingMessage else { return nil }
         let timestamp = typingIndicatorProto.timestamp
         let now = NSDate.millisecondTimestamp()
         let kind = Kind.fromProto(typingIndicatorProto.action)
