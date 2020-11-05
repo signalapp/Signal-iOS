@@ -732,6 +732,15 @@
 		C3C2AA082553B9C400C340D1 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9ED2553B9C400C340D1 /* NSString+OWS.m */; };
 		C3C2AA092553B9C400C340D1 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9EE2553B9C400C340D1 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
+		C3C2AB642553C5FF00C340D1 /* SharedSenderKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2AB632553C5FF00C340D1 /* SharedSenderKeys.swift */; };
+		C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */; };
+		C3C2ABE42553C74400C340D1 /* ClosedGroupRatchet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2ABE32553C74400C340D1 /* ClosedGroupRatchet.swift */; };
+		C3C2ABEE2553C76900C340D1 /* ClosedGroupSenderKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2ABED2553C76900C340D1 /* ClosedGroupSenderKey.swift */; };
+		C3C2ABF82553C8A300C340D1 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2ABF72553C8A300C340D1 /* Storage.swift */; };
+		C3C2AC0A2553C9A100C340D1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2AC092553C9A100C340D1 /* Configuration.swift */; };
+		C3C2AC1C2553CADF00C340D1 /* SharedSenderKeysDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2AC1B2553CADF00C340D1 /* SharedSenderKeysDelegate.swift */; };
+		C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */; };
+		C3C2AC372553CCE600C340D1 /* SessionUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilities.framework */; };
 		C3C3CF8924D8EED300E1CCE7 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C3CF8824D8EED300E1CCE7 /* TextView.swift */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
@@ -1619,15 +1628,15 @@
 		C3C2A8642553B41A00C340D1 /* SessionProtocolKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionProtocolKit.h; sourceTree = "<group>"; };
 		C3C2A8652553B41A00C340D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C2A8872553B4CC00C340D1 /* AxolotlExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxolotlExceptions.h; sourceTree = "<group>"; };
-		C3C2A8932553B4F500C340D1 /* PreKeyWhisperMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreKeyWhisperMessage.h; path = SessionProtocolKit/CipherMessage/PreKeyWhisperMessage.h; sourceTree = SOURCE_ROOT; };
-		C3C2A8942553B4F500C340D1 /* ClosedGroupCiphertextMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClosedGroupCiphertextMessage.m; path = SessionProtocolKit/CipherMessage/ClosedGroupCiphertextMessage.m; sourceTree = SOURCE_ROOT; };
-		C3C2A8952553B4F500C340D1 /* WhisperMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WhisperMessage.h; path = SessionProtocolKit/CipherMessage/WhisperMessage.h; sourceTree = SOURCE_ROOT; };
-		C3C2A8962553B4F500C340D1 /* ClosedGroupCiphertextMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClosedGroupCiphertextMessage.h; path = SessionProtocolKit/CipherMessage/ClosedGroupCiphertextMessage.h; sourceTree = SOURCE_ROOT; };
-		C3C2A8972553B4F500C340D1 /* PreKeyWhisperMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreKeyWhisperMessage.m; path = SessionProtocolKit/CipherMessage/PreKeyWhisperMessage.m; sourceTree = SOURCE_ROOT; };
-		C3C2A8982553B4F600C340D1 /* WhisperMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WhisperMessage.m; path = SessionProtocolKit/CipherMessage/WhisperMessage.m; sourceTree = SOURCE_ROOT; };
-		C3C2A8992553B4F600C340D1 /* CipherMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CipherMessage.h; path = SessionProtocolKit/CipherMessage/CipherMessage.h; sourceTree = SOURCE_ROOT; };
-		C3C2A89A2553B4F600C340D1 /* FallbackMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FallbackMessage.m; path = SessionProtocolKit/CipherMessage/FallbackMessage.m; sourceTree = SOURCE_ROOT; };
-		C3C2A89B2553B4F600C340D1 /* FallbackMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FallbackMessage.h; path = SessionProtocolKit/CipherMessage/FallbackMessage.h; sourceTree = SOURCE_ROOT; };
+		C3C2A8932553B4F500C340D1 /* PreKeyWhisperMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreKeyWhisperMessage.h; path = SessionProtocolKit/Signal/CipherMessage/PreKeyWhisperMessage.h; sourceTree = SOURCE_ROOT; };
+		C3C2A8942553B4F500C340D1 /* ClosedGroupCiphertextMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClosedGroupCiphertextMessage.m; path = SessionProtocolKit/Signal/CipherMessage/ClosedGroupCiphertextMessage.m; sourceTree = SOURCE_ROOT; };
+		C3C2A8952553B4F500C340D1 /* WhisperMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WhisperMessage.h; path = SessionProtocolKit/Signal/CipherMessage/WhisperMessage.h; sourceTree = SOURCE_ROOT; };
+		C3C2A8962553B4F500C340D1 /* ClosedGroupCiphertextMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClosedGroupCiphertextMessage.h; path = SessionProtocolKit/Signal/CipherMessage/ClosedGroupCiphertextMessage.h; sourceTree = SOURCE_ROOT; };
+		C3C2A8972553B4F500C340D1 /* PreKeyWhisperMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreKeyWhisperMessage.m; path = SessionProtocolKit/Signal/CipherMessage/PreKeyWhisperMessage.m; sourceTree = SOURCE_ROOT; };
+		C3C2A8982553B4F600C340D1 /* WhisperMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WhisperMessage.m; path = SessionProtocolKit/Signal/CipherMessage/WhisperMessage.m; sourceTree = SOURCE_ROOT; };
+		C3C2A8992553B4F600C340D1 /* CipherMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CipherMessage.h; path = SessionProtocolKit/Signal/CipherMessage/CipherMessage.h; sourceTree = SOURCE_ROOT; };
+		C3C2A89A2553B4F600C340D1 /* FallbackMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FallbackMessage.m; path = SessionProtocolKit/Signal/CipherMessage/FallbackMessage.m; sourceTree = SOURCE_ROOT; };
+		C3C2A89B2553B4F600C340D1 /* FallbackMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FallbackMessage.h; path = SessionProtocolKit/Signal/CipherMessage/FallbackMessage.h; sourceTree = SOURCE_ROOT; };
 		C3C2A8B52553B53700C340D1 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		C3C2A8C02553B55600C340D1 /* AES-CBC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AES-CBC.h"; path = "Crypto/AES-CBC.h"; sourceTree = "<group>"; };
 		C3C2A8C12553B55600C340D1 /* AES-CBC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AES-CBC.m"; path = "Crypto/AES-CBC.m"; sourceTree = "<group>"; };
@@ -1706,6 +1715,14 @@
 		C3C2A9EC2553B9C400C340D1 /* Cryptography.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Cryptography.m; path = Utility/Cryptography.m; sourceTree = "<group>"; };
 		C3C2A9ED2553B9C400C340D1 /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+OWS.m"; path = "Utility/NSString+OWS.m"; sourceTree = "<group>"; };
 		C3C2A9EE2553B9C400C340D1 /* NSObject+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+OWS.h"; path = "Utility/NSObject+OWS.h"; sourceTree = "<group>"; };
+		C3C2AB632553C5FF00C340D1 /* SharedSenderKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSenderKeys.swift; sourceTree = "<group>"; };
+		C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SecureRandom.swift"; sourceTree = "<group>"; };
+		C3C2ABE32553C74400C340D1 /* ClosedGroupRatchet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedGroupRatchet.swift; sourceTree = "<group>"; };
+		C3C2ABED2553C76900C340D1 /* ClosedGroupSenderKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedGroupSenderKey.swift; sourceTree = "<group>"; };
+		C3C2ABF72553C8A300C340D1 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		C3C2AC092553C9A100C340D1 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		C3C2AC1B2553CADF00C340D1 /* SharedSenderKeysDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSenderKeysDelegate.swift; sourceTree = "<group>"; };
+		C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Trimming.swift"; sourceTree = "<group>"; };
 		C3C3CF8824D8EED300E1CCE7 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPoller.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
@@ -1802,6 +1819,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3C2AC372553CCE600C340D1 /* SessionUtilities.framework in Frameworks */,
 				A33A4BA9D050805FE156E3ED /* Pods_SessionProtocolKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3204,11 +3222,13 @@
 			children = (
 				C3C2A68B255388D500C340D1 /* Meta */,
 				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
+				C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
 				C3C2A5D92553860B00C340D1 /* JSON.swift */,
 				C3C2A5CE2553860700C340D1 /* Logging.swift */,
 				C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */,
+				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
 			);
 			path = SessionUtilities;
 			sourceTree = "<group>";
@@ -3266,19 +3286,10 @@
 		C3C2A8632553B41A00C340D1 /* SessionProtocolKit */ = {
 			isa = PBXGroup;
 			children = (
-				C3C2A8872553B4CC00C340D1 /* AxolotlExceptions.h */,
-				C3C2A8922553B4E400C340D1 /* CipherMessage */,
-				C3C2A8B52553B53700C340D1 /* Constants.h */,
-				C3C2A8BF2553B54600C340D1 /* Crypto */,
 				C3C2A8762553B42C00C340D1 /* Meta */,
-				C3C2A8CD2553B56400C340D1 /* Prekeys */,
-				C3C2A8E32553B58B00C340D1 /* Protos */,
-				C3C2A8F02553B5A100C340D1 /* Ratchet */,
-				C3C2A9292553B5BD00C340D1 /* SessionCipher.h */,
-				C3C2A92A2553B5BE00C340D1 /* SessionCipher.m */,
-				C3C2A9352553B5C300C340D1 /* Sessions */,
-				C3C2A9562553B5F600C340D1 /* State */,
-				C3C2A9692553B62B00C340D1 /* Utility */,
+				C3C2AC092553C9A100C340D1 /* Configuration.swift */,
+				C3C2AB622553C5D400C340D1 /* Shared Sender Keys */,
+				C3C2AB492553C4A800C340D1 /* Signal */,
 			);
 			path = SessionProtocolKit;
 			sourceTree = "<group>";
@@ -3430,6 +3441,37 @@
 				C3C2A9E62553B9C300C340D1 /* Threading.m */,
 			);
 			name = Utility;
+			sourceTree = "<group>";
+		};
+		C3C2AB492553C4A800C340D1 /* Signal */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A8872553B4CC00C340D1 /* AxolotlExceptions.h */,
+				C3C2A8922553B4E400C340D1 /* CipherMessage */,
+				C3C2A8B52553B53700C340D1 /* Constants.h */,
+				C3C2A8BF2553B54600C340D1 /* Crypto */,
+				C3C2A8CD2553B56400C340D1 /* Prekeys */,
+				C3C2A8E32553B58B00C340D1 /* Protos */,
+				C3C2A8F02553B5A100C340D1 /* Ratchet */,
+				C3C2A9292553B5BD00C340D1 /* SessionCipher.h */,
+				C3C2A92A2553B5BE00C340D1 /* SessionCipher.m */,
+				C3C2A9352553B5C300C340D1 /* Sessions */,
+				C3C2A9562553B5F600C340D1 /* State */,
+				C3C2A9692553B62B00C340D1 /* Utility */,
+			);
+			path = Signal;
+			sourceTree = "<group>";
+		};
+		C3C2AB622553C5D400C340D1 /* Shared Sender Keys */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2ABE32553C74400C340D1 /* ClosedGroupRatchet.swift */,
+				C3C2ABED2553C76900C340D1 /* ClosedGroupSenderKey.swift */,
+				C3C2AB632553C5FF00C340D1 /* SharedSenderKeys.swift */,
+				C3C2AC1B2553CADF00C340D1 /* SharedSenderKeysDelegate.swift */,
+				C3C2ABF72553C8A300C340D1 /* Storage.swift */,
+			);
+			path = "Shared Sender Keys";
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -3947,6 +3989,7 @@
 					C3C2A678255388CC00C340D1 = {
 						CreatedOnToolsVersion = 12.1;
 						DevelopmentTeam = SUQ8J2PCT7;
+						LastSwiftMigration = 1210;
 						ProvisioningStyle = Automatic;
 					};
 					C3C2A6EF25539DE700C340D1 = {
@@ -4754,6 +4797,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
+				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4779,6 +4824,7 @@
 				C3C2A91B2553B5B200C340D1 /* BobAxolotlParameters.m in Sources */,
 				C3C2A8D82553B57C00C340D1 /* PreKeyRecord.m in Sources */,
 				C3C2A9712553B63C00C340D1 /* SerializationUtilities.m in Sources */,
+				C3C2ABEE2553C76900C340D1 /* ClosedGroupSenderKey.swift in Sources */,
 				C3C2A9172553B5B200C340D1 /* RootKey.m in Sources */,
 				C3C2A9112553B5B200C340D1 /* ChainKey.m in Sources */,
 				C3C2A8C32553B55600C340D1 /* AES-CBC.m in Sources */,
@@ -4790,6 +4836,7 @@
 				C3C2A8A02553B4F600C340D1 /* PreKeyWhisperMessage.m in Sources */,
 				C3C2A93F2553B5D700C340D1 /* SessionState.m in Sources */,
 				C3C2A9F02553B9C400C340D1 /* OWSAsserts.m in Sources */,
+				C3C2ABF82553C8A300C340D1 /* Storage.swift in Sources */,
 				C3C2A9F72553B9C400C340D1 /* NSData+OWS.m in Sources */,
 				C3C2A90D2553B5B200C340D1 /* RKCK.m in Sources */,
 				C3C2A8E72553B59B00C340D1 /* SPKProto.swift in Sources */,
@@ -4801,16 +4848,20 @@
 				C3C2A8A32553B4F600C340D1 /* FallbackMessage.m in Sources */,
 				C3C2AA072553B9C400C340D1 /* Cryptography.m in Sources */,
 				C3C2A9F52553B9C400C340D1 /* NSDate+OWS.mm in Sources */,
+				C3C2ABE42553C74400C340D1 /* ClosedGroupRatchet.swift in Sources */,
 				C3C2A93E2553B5D700C340D1 /* SessionRecord.m in Sources */,
 				C3C2AA052553B9C400C340D1 /* SCKExceptionWrapper.m in Sources */,
 				C3C2A8D62553B57C00C340D1 /* PreKeyBundle.m in Sources */,
 				C3C2A9F62553B9C400C340D1 /* Data+OWS.swift in Sources */,
 				C3C2A89D2553B4F600C340D1 /* ClosedGroupCiphertextMessage.m in Sources */,
 				C3C2A9FB2553B9C400C340D1 /* Logger.swift in Sources */,
+				C3C2AC0A2553C9A100C340D1 /* Configuration.swift in Sources */,
 				C3C2A96E2553B63C00C340D1 /* NSData+keyVersionByte.m in Sources */,
 				C3C2A8E62553B59B00C340D1 /* WhisperTextProtocol.pb.swift in Sources */,
+				C3C2AB642553C5FF00C340D1 /* SharedSenderKeys.swift in Sources */,
 				C3C2A9102553B5B200C340D1 /* AliceAxolotlParameters.m in Sources */,
 				C3C2A9FA2553B9C400C340D1 /* OWSSwiftUtils.swift in Sources */,
+				C3C2AC1C2553CADF00C340D1 /* SharedSenderKeysDelegate.swift in Sources */,
 				C3C2A92C2553B5BE00C340D1 /* SessionCipher.m in Sources */,
 				C3C2A8D42553B57C00C340D1 /* SignedPrekeyRecord.m in Sources */,
 				C3C2A8A12553B4F600C340D1 /* WhisperMessage.m in Sources */,
@@ -5698,6 +5749,7 @@
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;

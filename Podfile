@@ -105,9 +105,11 @@ end
 
 target 'SessionProtocolKit' do
   pod 'CocoaLumberjack', :inhibit_warnings => true
+  pod 'CryptoSwift', :inhibit_warnings => true
   pod 'Curve25519Kit', :inhibit_warnings => true
   pod 'GRKOpenSSLFramework', :inhibit_warnings => true
   pod 'HKDFKit', :inhibit_warnings => true
+  pod 'PromiseKit', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
 end
 
