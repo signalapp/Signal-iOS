@@ -6,6 +6,7 @@ public final class VisibleMessage : Message {
     public var quote: Quote?
     public var linkPreview: LinkPreview?
     public var contact: Contact?
+    public var profile: Profile?
 
     public override class func fromProto(_ proto: SNProtoContent) -> VisibleMessage? {
         guard let data = proto.dataMessage,

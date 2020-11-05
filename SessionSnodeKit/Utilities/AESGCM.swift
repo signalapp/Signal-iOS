@@ -1,5 +1,6 @@
 import CryptoSwift
 import Curve25519Kit
+import SessionUtilities
 
 internal enum AESGCM {
     internal static let gcmTagSize: UInt = 16

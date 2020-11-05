@@ -567,6 +567,14 @@
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
+		C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
+		C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5BC2554B00D00555489 /* ReadReceipt.swift */; };
+		C300A5C92554B04E00555489 /* SessionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5C82554B04E00555489 /* SessionRequest.swift */; };
+		C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5D22554B05A00555489 /* TypingIndicator.swift */; };
+		C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */; };
+		C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */; };
+		C300A5F22554B09800555489 /* SendingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5F12554B09800555489 /* SendingPipeline.swift */; };
+		C300A5FC2554B0A000555489 /* ReceivingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */; };
 		C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C59247F214E001123EF /* UIView+Glow.swift */; };
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
 		C31D1DD325216101005D4DA8 /* UIView+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DD225216101005D4DA8 /* UIView+Utilities.swift */; };
@@ -1548,6 +1556,14 @@
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		C022DD8E076866C6241610BF /* Pods-SessionSnodeKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionSnodeKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionSnodeKit/Pods-SessionSnodeKit.app store release.xcconfig"; sourceTree = "<group>"; };
+		C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+Profile.swift"; sourceTree = "<group>"; };
+		C300A5BC2554B00D00555489 /* ReadReceipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadReceipt.swift; sourceTree = "<group>"; };
+		C300A5C82554B04E00555489 /* SessionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRequest.swift; sourceTree = "<group>"; };
+		C300A5D22554B05A00555489 /* TypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicator.swift; sourceTree = "<group>"; };
+		C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedGroupUpdate.swift; sourceTree = "<group>"; };
+		C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationTimerUpdate.swift; sourceTree = "<group>"; };
+		C300A5F12554B09800555489 /* SendingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingPipeline.swift; sourceTree = "<group>"; };
+		C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceivingPipeline.swift; sourceTree = "<group>"; };
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
 		C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Utilities.swift"; sourceTree = "<group>"; };
 		C31D1DD225216101005D4DA8 /* UIView+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Utilities.swift"; sourceTree = "<group>"; };
@@ -1790,8 +1806,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3C2A6C62553896A00C340D1 /* SessionUtilities.framework in Frameworks */,
 				9EE44C6B4D4A069B86112387 /* Pods_SessionSnodeKit.framework in Frameworks */,
+				C3C2A6C62553896A00C340D1 /* SessionUtilities.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1807,9 +1823,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DF9AB212C6DB1E8BE70EFF6 /* Pods_SessionMessagingKit.framework in Frameworks */,
 				C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */,
 				C3C2A70B25539E1E00C340D1 /* SessionSnodeKit.framework in Frameworks */,
-				5DF9AB212C6DB1E8BE70EFF6 /* Pods_SessionMessagingKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1817,8 +1833,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3C2AC372553CCE600C340D1 /* SessionUtilities.framework in Frameworks */,
 				A33A4BA9D050805FE156E3ED /* Pods_SessionProtocolKit.framework in Frameworks */,
+				C3C2AC372553CCE600C340D1 /* SessionUtilities.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3127,6 +3143,50 @@
 			path = "View Controllers";
 			sourceTree = "<group>";
 		};
+		C300A5BB2554AFFB00555489 /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A74325539EB700C340D1 /* Message.swift */,
+				C300A5C62554B02D00555489 /* Visible Message */,
+				C300A5C72554B03900555489 /* Control Message */,
+			);
+			path = Messages;
+			sourceTree = "<group>";
+		};
+		C300A5C62554B02D00555489 /* Visible Message */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A74C2553A39700C340D1 /* VisibleMessage.swift */,
+				C3C2A7552553A3AB00C340D1 /* VisibleMessage+Quote.swift */,
+				C3C2A75E2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift */,
+				C3C2A7672553A3D900C340D1 /* VisibleMessage+Contact.swift */,
+				C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */,
+			);
+			path = "Visible Message";
+			sourceTree = "<group>";
+		};
+		C300A5C72554B03900555489 /* Control Message */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A7702553A41E00C340D1 /* ControlMessage.swift */,
+				C300A5BC2554B00D00555489 /* ReadReceipt.swift */,
+				C300A5C82554B04E00555489 /* SessionRequest.swift */,
+				C300A5D22554B05A00555489 /* TypingIndicator.swift */,
+				C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */,
+				C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */,
+			);
+			path = "Control Message";
+			sourceTree = "<group>";
+		};
+		C300A5F02554B08500555489 /* Pipelines */ = {
+			isa = PBXGroup;
+			children = (
+				C300A5F12554B09800555489 /* SendingPipeline.swift */,
+				C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */,
+			);
+			path = Pipelines;
+			sourceTree = "<group>";
+		};
 		C31F812425258F9C00DD9FD9 /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -3245,12 +3305,8 @@
 			children = (
 				C3C2A7802553AA6300C340D1 /* Protos */,
 				C3C2A70A25539DF900C340D1 /* Meta */,
-				C3C2A74325539EB700C340D1 /* Message.swift */,
-				C3C2A74C2553A39700C340D1 /* VisibleMessage.swift */,
-				C3C2A7552553A3AB00C340D1 /* VisibleMessage+Quote.swift */,
-				C3C2A75E2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift */,
-				C3C2A7672553A3D900C340D1 /* VisibleMessage+Contact.swift */,
-				C3C2A7702553A41E00C340D1 /* ControlMessage.swift */,
+				C300A5BB2554AFFB00555489 /* Messages */,
+				C300A5F02554B08500555489 /* Pipelines */,
 			);
 			path = SessionMessagingKit;
 			sourceTree = "<group>";
@@ -4803,14 +4859,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
+				C300A5F22554B09800555489 /* SendingPipeline.swift in Sources */,
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
+				C300A5FC2554B0A000555489 /* ReceivingPipeline.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
 				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
+				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
+				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
+				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
+				C300A5C92554B04E00555489 /* SessionRequest.swift in Sources */,
+				C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
