@@ -71,7 +71,7 @@ public enum SnodeAPI {
             SNLog("Populating snode pool using: \(target).")
             let (promise, seal) = Promise<Snode>.pending()
             attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Snode in
+                HTTP.execute(.post, url, parameters: parameters, useSSLURLSession: true).map2 { json -> Snode in
                     guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.randomSnodePoolUpdatingFailed }
                     snodePool = Set(rawSnodes.compactMap { rawSnode in
                         guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,

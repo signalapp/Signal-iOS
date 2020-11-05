@@ -1,55 +1,61 @@
 import Foundation
 
-public struct Snode : Hashable, CustomStringConvertible {
+public final class Snode : NSObject, NSCoding { // Not a struct for YapDatabase compatibility
     public let address: String
     public let port: UInt16
-    public let publicKeySet: KeySet
+    internal let publicKeySet: KeySet
 
     public var ip: String {
         address.removingPrefix("https://")
     }
 
-    // MARK: Method
-    public enum Method : String {
+    // MARK: Nested Types
+    internal enum Method : String {
         case getSwarm = "get_snodes_for_pubkey"
         case getMessages = "retrieve"
         case sendMessage = "store"
     }
 
-    // MARK: Key Set
-    public struct KeySet : Hashable {
-        public let ed25519Key: String
-        public let x25519Key: String
-
-        public static func == (lhs: KeySet, rhs: KeySet) -> Bool {
-            return lhs.ed25519Key == rhs.ed25519Key && lhs.x25519Key == rhs.x25519Key
-        }
-
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(ed25519Key)
-            hasher.combine(x25519Key)
-        }
+    internal struct KeySet {
+        let ed25519Key: String
+        let x25519Key: String
     }
-    
+
     // MARK: Initialization
     internal init(address: String, port: UInt16, publicKeySet: KeySet) {
         self.address = address
         self.port = port
         self.publicKeySet = publicKeySet
     }
-    
+
+    // MARK: Coding
+    public init?(coder: NSCoder) {
+        address = coder.decodeObject(forKey: "address") as! String
+        port = coder.decodeObject(forKey: "port") as! UInt16
+        guard let idKey = coder.decodeObject(forKey: "idKey") as? String,
+            let encryptionKey = coder.decodeObject(forKey: "encryptionKey") as? String else { return nil }
+        publicKeySet = KeySet(ed25519Key: idKey, x25519Key: encryptionKey)
+        super.init()
+    }
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(address, forKey: "address")
+        coder.encode(port, forKey: "port")
+        coder.encode(publicKeySet.ed25519Key, forKey: "idKey")
+        coder.encode(publicKeySet.x25519Key, forKey: "encryptionKey")
+    }
+
     // MARK: Equality
-    public static func == (lhs: Snode, rhs: Snode) -> Bool {
-        return lhs.address == rhs.address && lhs.port == rhs.port && lhs.publicKeySet == rhs.publicKeySet
+    override public func isEqual(_ other: Any?) -> Bool {
+        guard let other = other as? Snode else { return false }
+        return address == other.address && port == other.port
     }
 
     // MARK: Hashing
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(address)
-        hasher.combine(port)
-        publicKeySet.hash(into: &hasher)
+    override public var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
+        return address.hashValue ^ port.hashValue
     }
 
     // MARK: Description
-    public var description: String { "\(address):\(port)" }
+    override public var description: String { return "\(address):\(port)" }
 }

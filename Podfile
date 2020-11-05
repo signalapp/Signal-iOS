@@ -105,6 +105,10 @@ target 'SignalMessaging' do
   shared_pods
 end
 
+target 'SessionMessagingKit' do
+  pod 'PromiseKit', :inhibit_warnings => true
+end
+
 target 'SessionSnodeKit' do
   pod 'CryptoSwift', :inhibit_warnings => true
   pod 'Curve25519Kit', :inhibit_warnings => true
@@ -138,7 +142,7 @@ def enable_extension_support_for_purelayout(installer)
     if target.name.end_with? "PureLayout"
       target.build_configurations.each do |build_configuration|
         if build_configuration.build_settings['APPLICATION_EXTENSION_API_ONLY'] == 'YES'
-          build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'PURELAYOUT_APP_EXTENSIONS=1']
+          build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = [ '$(inherited)', 'PURELAYOUT_APP_EXTENSIONS=1' ]
         end
       end
     end
