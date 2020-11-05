@@ -1531,17 +1531,41 @@
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "No one else is here";
 
+/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+
+/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+
+/* Copy explaining that a user has joined the group call. Embeds {member name} */
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+
+/* Copy explaining that a user has left the group call. Embeds {member name} */
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+
+/* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+
+/* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+
 /* String indicating one person is currently in the call */
 "GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
 
+/* Text indicating that the user has lost their connection to the call and we are reconnecting. */
+"GROUP_CALL_RECONNECTING" = "Reconnecting";
+
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+
+/* An error displayed to the user when the group call unexpectedly ends. */
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "The connection to the call unexpectedly ended.";
 
 /* Text describing the local user in the group call members sheet. */
 "GROUP_CALL_YOU" = "You";
@@ -2172,9 +2196,6 @@
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
-
-/* Message indicating the dropped group members were successfully re-added to the group succeeded. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_MEMBERS_SUCCEEDED" = "Members Added.";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
@@ -2935,7 +2956,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Show";
 
-/* No comment provided by engineer. */
+/* Label for the 'ok' button. */
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */

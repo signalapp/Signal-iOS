@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import PromiseKit
 
 // All Observer methods will be invoked from the main thread.
 protocol CallServiceObserver: class {
@@ -26,6 +27,12 @@ public final class CallService: NSObject {
     private var audioSession: OWSAudioSession {
         return Environment.shared.audioSession
     }
+
+    private var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
+    private var databaseStorage: SDSDatabaseStorage { .shared }
 
     @objc
     public let individualCallService = IndividualCallService()
@@ -156,8 +163,14 @@ public final class CallService: NSObject {
     /**
      * Local user toggled to mute audio.
      */
-    func updateIsLocalAudioMuted(call: SignalCall, isLocalAudioMuted: Bool) {
+    func updateIsLocalAudioMuted(isLocalAudioMuted: Bool) {
         AssertIsOnMainThread()
+
+        // Keep a reference to the call before permissions were requested...
+        guard let call = currentCall else {
+            owsFailDebug("missing currentCall")
+            return
+        }
 
         // If we're disabling the microphone, we don't need permission. Only need
         // permission to *enable* the microphone.
@@ -203,22 +216,8 @@ public final class CallService: NSObject {
             groupCall.isOutgoingAudioMuted = isLocalAudioMuted
         case .individual(let individualCall):
             individualCall.isMuted = isLocalAudioMuted
+            individualCallService.ensureAudioState(call: call)
         }
-
-        ensureAudioState(call: call)
-    }
-
-    func ensureAudioState(call: SignalCall) {
-        let isLocalAudioMuted: Bool
-
-        switch call.mode {
-        case .group(let groupCall):
-            isLocalAudioMuted = groupCall.localDeviceState.joinState != .joined || groupCall.localDeviceState.audioMuted
-        case .individual(let individualCall):
-            isLocalAudioMuted = individualCall.state != .connected || individualCall.isMuted || individualCall.isOnHold
-        }
-
-        callManager.setLocalAudioEnabled(enabled: !isLocalAudioMuted)
     }
 
     /**
@@ -416,12 +415,31 @@ public final class CallService: NSObject {
 
         currentCall = call
 
-        // TODO: Initialize this in a real way?
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = false
         call.groupCall.connect()
 
         return call
+    }
+
+    func joinGroupCallIfNecessary(_ call: SignalCall) {
+        owsAssertDebug(call.isGroupCall)
+
+        guard currentCall == nil || currentCall == call else {
+            return owsFailDebug("A call is already in progress")
+        }
+
+        // The joined/joining call must always be the current call.
+        currentCall = call
+
+        // If we're not yet connected, connect now. This may happen if, for
+        // example, the call ended unexpectedly.
+        if call.groupCall.localDeviceState.connectionState == .notConnected { call.groupCall.connect() }
+
+        // If we're not yet joined, join now. In general, it's unexpected that
+        // this method would be called when you're already joined, but it is
+        // safe to do so.
+        if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
     }
 
     func buildOutgoingIndividualCallIfPossible(address: SignalServiceAddress, hasVideo: Bool) -> SignalCall? {
@@ -566,7 +584,6 @@ extension CallService: CallObserver {
     public func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallEnded \(reason)")
-        terminate(call: call)
     }
 }
 
@@ -613,10 +630,29 @@ extension CallService: CallManagerDelegate {
         message: Data
     ) {
         AssertIsOnMainThread()
-        Logger.info("shouldSendHttpRequest")
+        Logger.info("shouldSendCallMessage")
 
-        // TODO: ? Presumably there's a new type of call message that needs to be
-        // added to the proto for this. Need to check in with calling team.
+        databaseStorage.write(.promise) { transaction in
+            TSContactThread.getOrCreateThread(
+                withContactAddress: SignalServiceAddress(uuid: recipientUuid),
+                transaction: transaction
+            )
+        }.then { thread throws -> Promise<Void> in
+            let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
+            opaqueBuilder.setData(message)
+
+            let callMessage = OWSOutgoingCallMessage(
+                thread: thread,
+                opaqueMessage: try opaqueBuilder.build()
+            )
+
+            return self.messageSender.sendMessage(.promise, callMessage.asPreparer)
+        }.done { _ in
+            // TODO: Tell RingRTC we succeeded in sending the message. API TBD
+        }.catch { error in
+            owsFailDebug("Failed to send opaque message \(error)")
+            // TODO: Tell RingRTC something went wrong. API TBD
+        }
     }
 
     /**

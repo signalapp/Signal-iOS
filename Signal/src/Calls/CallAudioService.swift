@@ -92,11 +92,25 @@ protocol CallAudioServiceDelegate: class {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         ensureProperAudioSession(call: call)
     }
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        // This should not be required, but for some reason setting the mode
+        // to "videoChat" prior to a remote device being connected gets changed
+        // to "voiceChat" by iOS. This results in the audio coming out of the
+        // earpiece instead of the speaker. It may be a result of us not actually
+        // playing any audio until the remote device connects, or something
+        // going on with the underlying RTCAudioSession that's not directly
+        // in our control.
+        ensureProperAudioSession(call: call)
+    }
+
     func groupCallJoinedMembersChanged(_ call: SignalCall) {}
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        ensureProperAudioSession(call: call)
+    }
 
     private let routePicker = AVRoutePickerView()
     public func presentRoutePicker() -> Bool {
@@ -448,6 +462,8 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
+    var hasExternalInputs: Bool { return availableInputs.count > 2 }
+
     var currentAudioSource: AudioSource? {
         get {
             let outputsByType = avAudioSession.currentRoute.outputs.reduce(
@@ -576,5 +592,14 @@ protocol CallAudioServiceDelegate: class {
         guard let ringerStateToken = ringerStateToken else { return }
         DarwinNotificationCenter.removeObserver(ringerStateToken)
         self.ringerStateToken = nil
+    }
+
+    // MARK: - Join / Leave sound
+    func playJoinSound() {
+        play(sound: .groupCallJoin)
+    }
+
+    func playLeaveSound() {
+        play(sound: .groupCallLeave)
     }
 }

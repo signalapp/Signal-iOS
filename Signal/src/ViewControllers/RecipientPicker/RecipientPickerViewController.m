@@ -963,7 +963,7 @@ const NSUInteger kMinimumSearchLength = 2;
                                              message:confirmMessage];
 
     ActionSheetAction *okAction = [[ActionSheetAction alloc]
-                  initWithTitle:NSLocalizedString(@"OK", @"")
+                  initWithTitle:CommonStrings.okButton
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                           style:ActionSheetActionStyleDefault
                         handler:^(ActionSheetAction *action) {

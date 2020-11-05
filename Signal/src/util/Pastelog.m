@@ -511,7 +511,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 + (void)showFailureAlertWithMessage:(NSString *)message
 {
     ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:nil message:message];
-    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"OK", @"")
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                                                         style:ActionSheetActionStyleDefault
                                                       handler:nil]];
@@ -587,7 +587,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                                          @"Message of the alert before redirecting to GitHub Issues.")];
     [alert
         addAction:[[ActionSheetAction alloc]
-                                initWithTitle:NSLocalizedString(@"OK", @"")
+                                initWithTitle:CommonStrings.okButton
                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                                         style:ActionSheetActionStyleDefault
                                       handler:^(ActionSheetAction *action) {

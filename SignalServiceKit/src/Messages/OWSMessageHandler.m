@@ -108,6 +108,9 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     } else if (callMessage.iceUpdate.count > 0) {
         messageType = [NSString stringWithFormat:@"Ice Updates (%lu)", (unsigned long)callMessage.iceUpdate.count];
         callId = callMessage.iceUpdate.firstObject.id;
+    } else if (callMessage.opaque) {
+        messageType = @"Opaque";
+        callId = 0;
     } else {
         OWSFailDebug(@"failure: unexpected call message type: %@", callMessage);
         messageType = @"Unknown";

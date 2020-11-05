@@ -72,7 +72,7 @@ public class ReturnToCallViewController: UIViewController {
 
         avatarView.image = OWSContactAvatarBuilder(
             address: callViewController.remoteVideoAddress,
-            colorName: ConversationColorName(rawValue: conversationColorName),
+            colorName: conversationColorName,
             diameter: 60
         ).build()
 

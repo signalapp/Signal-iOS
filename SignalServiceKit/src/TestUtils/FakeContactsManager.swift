@@ -58,8 +58,8 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 
-    public func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        ConversationColorName.indigo.rawValue
+    public func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ConversationColorName {
+        ConversationColorName.indigo
     }
 
     public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],

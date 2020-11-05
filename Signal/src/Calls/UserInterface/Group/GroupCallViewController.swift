@@ -13,6 +13,7 @@ class GroupCallViewController: UIViewController {
     private var groupCall: GroupCall { call.groupCall }
     private lazy var callControls = CallControls(call: call, delegate: self)
     private lazy var callHeader = CallHeader(call: call, delegate: self)
+    private lazy var notificationView = GroupCallNotificationView(call: call)
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
@@ -28,6 +29,7 @@ class GroupCallViewController: UIViewController {
 
     lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
+    lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
     var shouldRemoteVideoControlsBeHidden = false {
         didSet { updateCallUI() }
@@ -112,16 +114,15 @@ class GroupCallViewController: UIViewController {
         callHeader.autoPinWidthToSuperview()
         callHeader.autoPinEdge(toSuperviewEdge: .top)
 
+        view.addSubview(notificationView)
+        notificationView.autoPinEdgesToSuperviewEdges()
+
         view.addSubview(callControls)
         callControls.autoPinWidthToSuperview()
         callControls.autoPinEdge(toSuperviewEdge: .bottom)
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
-        videoOverflow.autoPinEdge(
-            toSuperviewEdge: .trailing,
-            withInset: GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4
-        )
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
@@ -196,6 +197,7 @@ class GroupCallViewController: UIViewController {
         let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
 
         videoOverflowTopConstraint.constant = yMax - videoOverflow.height
+        videoOverflowTrailingConstraint.constant = -(GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4)
         view.layoutIfNeeded()
 
         localMemberView.removeFromSuperview()
@@ -408,7 +410,23 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
-        dismissCall()
+        guard reason != .deviceExplicitlyDisconnected else { return }
+
+        owsFailDebug("Group call ended with reason \(reason)")
+
+        // TODO: Show better error to user?
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString(
+                "GROUP_CALL_UNEXPECTEDLY_ENDED",
+                comment: "An error displayed to the user when the group call unexpectedly ends."
+            )
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.okButton,
+            style: .default,
+            handler: nil
+        ))
+        presentActionSheet(actionSheet)
     }
 
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
@@ -427,14 +445,17 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressAudioSource(sender: UIButton) {
-        // TODO: Multiple Audio Sources
-        sender.isSelected = !sender.isSelected
-        callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+        if callService.audioService.hasExternalInputs {
+            callService.audioService.presentRoutePicker()
+        } else {
+            sender.isSelected = !sender.isSelected
+            callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+        }
     }
 
     func didPressMute(sender: UIButton) {
         sender.isSelected = !sender.isSelected
-        groupCall.isOutgoingAudioMuted = sender.isSelected
+        callService.updateIsLocalAudioMuted(isLocalAudioMuted: sender.isSelected)
     }
 
     func didPressVideo(sender: UIButton) {
@@ -452,7 +473,7 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressJoin(sender: UIButton) {
-        groupCall.join()
+        callService.joinGroupCallIfNecessary(call)
     }
 }
 
@@ -488,7 +509,6 @@ extension GroupCallViewController: UIScrollViewDelegate {
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
             updateCallUI()
-            ImpactHapticFeedback.impactOccured(style: .light)
         }
     }
 }

@@ -222,6 +222,12 @@ const NSUInteger OWSCustomSoundShift = 16;
         case OWSStandardSound_Silence:
             return @"Silence";
 
+        // Group Calls
+        case OWSStandardSound_GroupCallJoin:
+            return @"Group Call Join";
+        case OWSStandardSound_GroupCallLeave:
+            return @"Group Call Leave";
+
         // Other
         case OWSStandardSound_None:
             return NSLocalizedString(@"SOUNDS_NONE",
@@ -291,6 +297,12 @@ const NSUInteger OWSCustomSoundShift = 16;
             return @"message_sent.aiff";
         case OWSStandardSound_Silence:
             return @"silence.aiff";
+
+        // Group Calls
+        case OWSStandardSound_GroupCallJoin:
+            return @"group_call_join.aiff";
+        case OWSStandardSound_GroupCallLeave:
+            return @"group_call_leave.aiff";
 
             // Other
         case OWSStandardSound_None:

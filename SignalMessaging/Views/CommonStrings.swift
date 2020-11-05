@@ -47,6 +47,9 @@ import Foundation
     static public let okayButton = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
 
     @objc
+    static public let okButton = NSLocalizedString("OK", comment: "Label for the 'ok' button.")
+
+    @objc
     static public let openSettingsButton = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
 
     @objc

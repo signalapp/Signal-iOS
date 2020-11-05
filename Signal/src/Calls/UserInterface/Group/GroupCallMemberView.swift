@@ -126,9 +126,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         }
 
         let conversationColorName = databaseStorage.uiRead { transaction in
-            return ConversationColorName(
-                rawValue: self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
-            )
+            return self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
         }
 
         backgroundAvatarView.image = profileManager.localProfileAvatarImage()
@@ -204,9 +202,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
                 self.profileManager.profileAvatar(for: device.address, transaction: transaction),
-                ConversationColorName(
-                    rawValue: self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
-                )
+                self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
             )
         }
 
@@ -221,11 +217,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         if device.address.isLocalAddress {
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
-            avatarView.image = OWSContactAvatarBuilder(
-                address: device.address,
-                colorName: conversationColorName,
-                diameter: avatarDiameter
-            ).build()
+            avatarView.image = avatarBuilder.build()
         }
 
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)

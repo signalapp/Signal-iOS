@@ -62,6 +62,8 @@ class CallControls: UIView {
         return button
     }()
 
+    private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .white)
+
     private lazy var joinButton: UIButton = {
         let button = OWSButton()
         button.setTitleColor(.ows_white, for: .normal)
@@ -73,6 +75,8 @@ class CallControls: UIView {
             self?.delegate.didPressJoin(sender: button)
         }
         button.contentEdgeInsets = UIEdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 11)
+        button.addSubview(joinButtonActivityIndicator)
+        joinButtonActivityIndicator.autoCenterInSuperview()
         return button
     }()
 
@@ -102,6 +106,8 @@ class CallControls: UIView {
 
         call.addObserverAndSyncState(observer: self)
 
+        callService.audioService.delegate = self
+
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
 
@@ -117,7 +123,10 @@ class CallControls: UIView {
         updateControls()
     }
 
-    deinit { call.removeObserver(self) }
+    deinit {
+        call.removeObserver(self)
+        callService.audioService.delegate = nil
+    }
 
     func createTopStackView() -> UIStackView {
         let stackView = UIStackView()
@@ -166,19 +175,63 @@ class CallControls: UIView {
     }
 
     private func updateControls() {
-        flipCameraButton.isHidden = call.groupCall.localDeviceState.videoMuted
-        videoButton.isSelected = !call.groupCall.localDeviceState.videoMuted
+        let hasExternalAudioInputs = callService.audioService.hasExternalInputs
+        let isLocalVideoMuted = call.groupCall.localDeviceState.videoMuted
+
+        flipCameraButton.isHidden = isLocalVideoMuted
+        videoButton.isSelected = !isLocalVideoMuted
         muteButton.isSelected = call.groupCall.localDeviceState.audioMuted
         hangUpButton.isHidden = call.groupCall.localDeviceState.joinState != .joined
 
-        //  TODO: audio source selection
-        audioSourceButton.isHidden = !call.groupCall.localDeviceState.videoMuted
+        // Use small controls if video is enabled and we have external
+        // audio inputs, because we have five buttons now.
+        [audioSourceButton, flipCameraButton, videoButton, muteButton, hangUpButton].forEach {
+            $0.isSmall = hasExternalAudioInputs && !isLocalVideoMuted
+        }
+
+        // Audio Source Handling
+        if hasExternalAudioInputs, let audioSource = callService.audioService.currentAudioSource {
+            audioSourceButton.showDropdownArrow = true
+            audioSourceButton.isHidden = false
+
+            if audioSource.isBuiltInEarPiece {
+                audioSourceButton.iconName = "phone-solid-28"
+            } else if audioSource.isBuiltInSpeaker {
+                audioSourceButton.iconName = "speaker-solid-28"
+            } else {
+                audioSourceButton.iconName = "speaker-bt-solid-28"
+            }
+        } else if UIDevice.current.isIPad {
+            // iPad *only* supports speaker mode, if there are no external
+            // devices connected, so we don't need to show the button unless
+            // we have alternate audio sources.
+            audioSourceButton.isHidden = true
+        } else {
+            // If there are no external audio sources, and video is enabled,
+            // speaker mode is always enabled so we don't need to show the button.
+            audioSourceButton.isHidden = !isLocalVideoMuted
+
+            // No bluetooth audio detected
+            audioSourceButton.iconName = "speaker-solid-28"
+            audioSourceButton.showDropdownArrow = false
+        }
 
         bottomStackView.isHidden = call.groupCall.localDeviceState.joinState == .joined
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-        joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
+
+        if call.groupCall.localDeviceState.joinState == .joining {
+            joinButton.isUserInteractionEnabled = false
+            joinButtonActivityIndicator.startAnimating()
+
+            joinButton.setTitle("", for: .normal)
+        } else {
+            joinButton.isUserInteractionEnabled = true
+            joinButtonActivityIndicator.stopAnimating()
+
+            joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
+        }
     }
 
     required init(coder: NSCoder) {
@@ -218,4 +271,14 @@ extension CallControls: CallObserver {
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+}
+
+extension CallControls: CallAudioServiceDelegate {
+    func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
+        updateControls()
+    }
+
+    func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?) {
+        updateControls()
+    }
 }

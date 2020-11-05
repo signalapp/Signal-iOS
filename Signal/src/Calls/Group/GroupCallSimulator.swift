@@ -10,7 +10,7 @@ import SignalCoreKit
 
 /// Represents the connection state to a media server for a group call.
 public enum ConnectionState: Int32 {
-    case disconnected = 0
+    case notConnected = 0
     case connecting = 1
     case connected = 2
     case reconnecting = 3
@@ -31,8 +31,23 @@ public enum BandwidthMode: Int32 {
 
 /// If not ended purposely by the user, gives the reason why a group call ended.
 public enum GroupCallEndReason: Int32 {
-    case connectionFailure = 0
-    case internalFailure = 1
+    // Normal events
+    case deviceExplicitlyDisconnected = 0
+    case serverExplicitlyDisconnected = 1
+
+    // Things that can go wrong
+    case sfuClientFailedToJoin = 2
+    case failedToCreatePeerConnectionFactory = 3
+    case failedToGenerateCertificate = 4
+    case failedToCreateOutgoingAudioTrack = 5
+    case failedToCreatePeerConnection = 6
+    case failedToCreateDataChannel = 7
+    case failedToStartPeerConnection = 8
+    case failedToUpdatePeerConnection = 9
+    case failedToSetMaxSendBitrate = 10
+    case iceFailedWhileConnecting = 11
+    case iceFailedAfterConnected = 12
+    case serverChangedDemuxId = 13
 }
 
 /// The local device state for a group call.
@@ -43,7 +58,7 @@ public class LocalDeviceState {
     public internal(set) var videoMuted: Bool
 
     init() {
-        self.connectionState = .disconnected
+        self.connectionState = .notConnected
         self.joinState = .notJoined
         self.audioMuted = true
         self.videoMuted = true
@@ -52,7 +67,7 @@ public class LocalDeviceState {
 
 /// All remote devices in a group call and their associated state.
 public class RemoteDeviceState: Hashable {
-    public let demuxId: UInt16
+    public let demuxId: UInt32
     public let userId: UUID
 
     public internal(set) var audioMuted: Bool?
@@ -62,7 +77,7 @@ public class RemoteDeviceState: Hashable {
     public internal(set) var audioLevel: UInt16?
     public internal(set) var videoTrack: RTCVideoTrack?
 
-    init(demuxId: UInt16, uuid: UUID) {
+    init(demuxId: UInt32, uuid: UUID) {
         self.demuxId = demuxId
         self.userId = uuid
     }
@@ -104,12 +119,12 @@ public struct SfuInfo {
 /// Used for the application to communicate the actual resolutions of
 /// each device in a group call to RingRTC and the media server.
 public struct RenderedResolution {
-    let demuxId: UInt16
+    let demuxId: UInt32
     let width: UInt16
     let height: UInt16
     let framerate: UInt16?
 
-    public init(demuxId: UInt16, width: UInt16, height: UInt16, framerate: UInt16?) {
+    public init(demuxId: UInt32, width: UInt16, height: UInt16, framerate: UInt16?) {
         self.demuxId = demuxId
         self.width = width
         self.height = height
@@ -171,7 +186,7 @@ public class GroupCall {
     weak var delegate: GroupCallDelegate?
 
     public private(set) var localDeviceState: LocalDeviceState
-    public private(set) var remoteDeviceStates: [UInt16: RemoteDeviceState]
+    public private(set) var remoteDeviceStates: [UInt32: RemoteDeviceState]
     public private(set) var joinedGroupMembers: [UUID]
 
     // Simulation
@@ -244,7 +259,7 @@ public class GroupCall {
         DispatchQueue.main.async {
             Logger.debug("disconnect - main.async")
 
-            self.localDeviceState.connectionState = .disconnected
+            self.localDeviceState.connectionState = .notConnected
             self.delegate?.groupCall(onLocalDeviceStateChanged: self)
         }
     }
@@ -342,10 +357,10 @@ public class GroupCall {
             self.joinedGroupMembers.append(nextToAdd.userId)
             self.delegate?.groupCall(onJoinedMembersChanged: self)
 
-            let device = RemoteDeviceState(demuxId: .random(in: UInt16.min...UInt16.max), uuid: nextToAdd.userId)
+            let device = RemoteDeviceState(demuxId: .random(in: UInt32.min...UInt32.max), uuid: nextToAdd.userId)
             device.audioMuted = Bool.random()
             device.videoMuted = Bool.random()
-            device.speakerIndex = device.demuxId
+            device.speakerIndex = .random(in: UInt16.min...UInt16.max)
             self.remoteDeviceStates[device.demuxId] = device
             self.delegate?.groupCall(onRemoteDeviceStatesChanged: self)
 
@@ -398,7 +413,7 @@ extension CallManager {
     }
 
     // MARK: - Group Call
-    public func createGroupCall(groupIdToLog: String, videoCaptureController: VideoCaptureController) -> GroupCall? {
+    public func createGroupCall(groupId: Data, videoCaptureController: VideoCaptureController) -> GroupCall? {
         AssertIsOnMainThread()
         Logger.debug("createGroupCall")
 

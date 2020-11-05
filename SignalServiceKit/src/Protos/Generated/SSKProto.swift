@@ -1918,6 +1918,144 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
 
 #endif
 
+// MARK: - SSKProtoCallMessageOpaque
+
+@objc
+public class SSKProtoCallMessageOpaque: NSObject, Codable {
+
+    // MARK: - SSKProtoCallMessageOpaqueBuilder
+
+    @objc
+    public class func builder() -> SSKProtoCallMessageOpaqueBuilder {
+        return SSKProtoCallMessageOpaqueBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoCallMessageOpaqueBuilder {
+        let builder = SSKProtoCallMessageOpaqueBuilder()
+        if let _value = data {
+            builder.setData(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoCallMessageOpaqueBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_CallMessage.Opaque()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.data = valueParam
+        }
+
+        public func setData(_ valueParam: Data) {
+            proto.data = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoCallMessageOpaque {
+            return try SSKProtoCallMessageOpaque(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageOpaque(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_CallMessage.Opaque
+
+    @objc
+    public var data: Data? {
+        guard hasData else {
+            return nil
+        }
+        return proto.data
+    }
+    @objc
+    public var hasData: Bool {
+        return proto.hasData
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_CallMessage.Opaque) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_CallMessage.Opaque(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Opaque) throws {
+        // MARK: - Begin Validation Logic for SSKProtoCallMessageOpaque -
+
+        // MARK: - End Validation Logic for SSKProtoCallMessageOpaque -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoCallMessageOpaque {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoCallMessageOpaque.SSKProtoCallMessageOpaqueBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoCallMessageOpaque? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoCallMessage
 
 @objc
@@ -1958,6 +2096,9 @@ public class SSKProtoCallMessage: NSObject, Codable {
         }
         if hasDestinationDeviceID {
             builder.setDestinationDeviceID(destinationDeviceID)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2061,6 +2202,17 @@ public class SSKProtoCallMessage: NSObject, Codable {
             proto.destinationDeviceID = valueParam
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOpaque(_ valueParam: SSKProtoCallMessageOpaque?) {
+            guard let valueParam = valueParam else { return }
+            proto.opaque = valueParam.proto
+        }
+
+        public func setOpaque(_ valueParam: SSKProtoCallMessageOpaque) {
+            proto.opaque = valueParam.proto
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -2095,6 +2247,9 @@ public class SSKProtoCallMessage: NSObject, Codable {
 
     @objc
     public let hangup: SSKProtoCallMessageHangup?
+
+    @objc
+    public let opaque: SSKProtoCallMessageOpaque?
 
     @objc
     public var profileKey: Data? {
@@ -2140,7 +2295,8 @@ public class SSKProtoCallMessage: NSObject, Codable {
                  iceUpdate: [SSKProtoCallMessageIceUpdate],
                  legacyHangup: SSKProtoCallMessageHangup?,
                  busy: SSKProtoCallMessageBusy?,
-                 hangup: SSKProtoCallMessageHangup?) {
+                 hangup: SSKProtoCallMessageHangup?,
+                 opaque: SSKProtoCallMessageOpaque?) {
         self.proto = proto
         self.offer = offer
         self.answer = answer
@@ -2148,6 +2304,7 @@ public class SSKProtoCallMessage: NSObject, Codable {
         self.legacyHangup = legacyHangup
         self.busy = busy
         self.hangup = hangup
+        self.opaque = opaque
     }
 
     @objc
@@ -2190,6 +2347,11 @@ public class SSKProtoCallMessage: NSObject, Codable {
             hangup = try SSKProtoCallMessageHangup(proto.hangup)
         }
 
+        var opaque: SSKProtoCallMessageOpaque?
+        if proto.hasOpaque {
+            opaque = try SSKProtoCallMessageOpaque(proto.opaque)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoCallMessage -
 
         // MARK: - End Validation Logic for SSKProtoCallMessage -
@@ -2200,7 +2362,8 @@ public class SSKProtoCallMessage: NSObject, Codable {
                   iceUpdate: iceUpdate,
                   legacyHangup: legacyHangup,
                   busy: busy,
-                  hangup: hangup)
+                  hangup: hangup,
+                  opaque: opaque)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {

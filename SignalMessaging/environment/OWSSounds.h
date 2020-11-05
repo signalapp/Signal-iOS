@@ -36,6 +36,10 @@ typedef NS_ENUM(NSUInteger, OWSStandardSound) {
     OWSStandardSound_CallBusy,
     OWSStandardSound_CallEnded,
 
+    // Group Calls
+    OWSStandardSound_GroupCallJoin,
+    OWSStandardSound_GroupCallLeave,
+
     // Other
     OWSStandardSound_MessageSent,
     OWSStandardSound_None,

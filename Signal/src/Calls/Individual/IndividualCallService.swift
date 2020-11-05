@@ -203,7 +203,7 @@ import SignalMessaging
 
         call.individualCall.state = .localHangup
 
-        callService.ensureAudioState(call: call)
+        ensureAudioState(call: call)
 
         callService.terminate(call: call)
 
@@ -1173,7 +1173,7 @@ import SignalMessaging
         call.individualCall.state = .connected
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
-        callService.ensureAudioState(call: call)
+        ensureAudioState(call: call)
         callService.callManager.setLocalVideoEnabled(enabled: callService.shouldHaveLocalVideoTrack, call: call)
     }
 
@@ -1192,7 +1192,7 @@ import SignalMessaging
 
         call.individualCall.isOnHold = isOnHold
 
-        callService.ensureAudioState(call: call)
+        ensureAudioState(call: call)
     }
 
     @objc
@@ -1280,6 +1280,12 @@ import SignalMessaging
 
         Logger.error("call: \(failedCall) failed with error: \(error)")
         callService.terminate(call: failedCall)
+    }
+
+    func ensureAudioState(call: SignalCall) {
+        owsAssertDebug(call.isIndividualCall)
+        let isLocalAudioMuted = call.individualCall.state != .connected || call.individualCall.isMuted || call.individualCall.isOnHold
+        callManager.setLocalAudioEnabled(enabled: !isLocalAudioMuted)
     }
 
     // MARK: CallViewController Timer

@@ -225,9 +225,7 @@ public class BaseGroupMemberViewController: OWSViewController {
             let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
             let shortDisplayName = self.contactsManager.shortDisplayName(for: address, transaction: transaction)
             let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
-            let conversationColorName = ConversationColorName(
-                rawValue: self.contactsManager.conversationColorName(for: address, transaction: transaction)
-            )
+            let conversationColorName = self.contactsManager.conversationColorName(for: address, transaction: transaction)
             return NewGroupMember(recipient: recipient,
                                   address: address,
                                   displayName: displayName,

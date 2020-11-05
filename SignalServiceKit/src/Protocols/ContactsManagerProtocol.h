@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @class UIImage;
 
+typedef NSString *ConversationColorName NS_STRING_ENUM;
+
 @protocol ContactsManagerProtocol <NSObject>
 
 /// The name representing this address.
@@ -41,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
-                                  transaction:(SDSAnyReadTransaction *)transaction;
+- (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                             transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
