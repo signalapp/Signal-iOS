@@ -1809,6 +1809,6 @@ enum Emoji: String, CaseIterable {
     case bustsInSilhouette = "👥"
     case peopleHugging = "🫂"
     case footprints = "👣"
-    case manInTuxedo = "🤵"
-    case beetle = "🐞"
+    case personInTuxedo = "🤵"
+    case ladyBeetle = "🐞"
 }

@@ -96,6 +96,12 @@ class EmojiGenerator {
             case "couplekiss": return "personKissPerson"
             case "couple": return "womanAndManHoldingHands"
             case "couple_with_heart": return "personHeartPerson"
+            case "beetle":
+                if name == "LADY BEETLE" { return "ladyBeetle" }
+                return "beetle"
+            case "man_in_tuxedo":
+                if name == nil { return "manInTuxedo" }
+                return "personInTuxedo"
             default:
                 let uppperCamelCase = shortName.replacingOccurrences(of: "-", with: "_").components(separatedBy: "_").map(titlecase).joined(separator: "")
                 return String(uppperCamelCase.unicodeScalars.first!).lowercased() + String(uppperCamelCase.unicodeScalars.dropFirst())

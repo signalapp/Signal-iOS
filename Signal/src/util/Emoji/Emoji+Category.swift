@@ -545,7 +545,7 @@ extension Emoji {
                     .bustsInSilhouette,
                     .peopleHugging,
                     .footprints,
-                    .manInTuxedo,
+                    .personInTuxedo,
                 ]
             case .animals:
                 return [
@@ -688,7 +688,7 @@ extension Emoji {
                     .mapleLeaf,
                     .fallenLeaf,
                     .leaves,
-                    .beetle,
+                    .ladyBeetle,
                 ]
             case .food:
                 return [
@@ -3684,8 +3684,8 @@ extension Emoji {
         case .bustsInSilhouette: return .smileysAndPeople
         case .peopleHugging: return .smileysAndPeople
         case .footprints: return .smileysAndPeople
-        case .manInTuxedo: return .smileysAndPeople
-        case .beetle: return .animals
+        case .personInTuxedo: return .smileysAndPeople
+        case .ladyBeetle: return .animals
         default: fatalError("Unexpected case \(self)")
         }
     }

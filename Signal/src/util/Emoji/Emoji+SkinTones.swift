@@ -2356,7 +2356,7 @@ extension Emoji {
                 [.dark, .medium]: "👨🏿‍🤝‍👨🏽",
                 [.dark, .mediumDark]: "👨🏿‍🤝‍👨🏾",
             ]
-        case .manInTuxedo:
+        case .personInTuxedo:
             return [
                 [.light]: "🤵🏻",
                 [.mediumLight]: "🤵🏼",

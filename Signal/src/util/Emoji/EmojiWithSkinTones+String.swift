@@ -3296,13 +3296,13 @@ extension EmojiWithSkinTones {
         case "👥": self.init(baseEmoji: .bustsInSilhouette, skinTones: nil)
         case "🫂": self.init(baseEmoji: .peopleHugging, skinTones: nil)
         case "👣": self.init(baseEmoji: .footprints, skinTones: nil)
-        case "🤵": self.init(baseEmoji: .manInTuxedo, skinTones: nil)
-        case "🤵🏻": self.init(baseEmoji: .manInTuxedo, skinTones: [.light])
-        case "🤵🏼": self.init(baseEmoji: .manInTuxedo, skinTones: [.mediumLight])
-        case "🤵🏽": self.init(baseEmoji: .manInTuxedo, skinTones: [.medium])
-        case "🤵🏾": self.init(baseEmoji: .manInTuxedo, skinTones: [.mediumDark])
-        case "🤵🏿": self.init(baseEmoji: .manInTuxedo, skinTones: [.dark])
-        case "🐞": self.init(baseEmoji: .beetle, skinTones: nil)
+        case "🤵": self.init(baseEmoji: .personInTuxedo, skinTones: nil)
+        case "🤵🏻": self.init(baseEmoji: .personInTuxedo, skinTones: [.light])
+        case "🤵🏼": self.init(baseEmoji: .personInTuxedo, skinTones: [.mediumLight])
+        case "🤵🏽": self.init(baseEmoji: .personInTuxedo, skinTones: [.medium])
+        case "🤵🏾": self.init(baseEmoji: .personInTuxedo, skinTones: [.mediumDark])
+        case "🤵🏿": self.init(baseEmoji: .personInTuxedo, skinTones: [.dark])
+        case "🐞": self.init(baseEmoji: .ladyBeetle, skinTones: nil)
         default: return nil
         }
     }

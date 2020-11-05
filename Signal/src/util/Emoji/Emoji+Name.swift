@@ -1453,8 +1453,8 @@ extension Emoji {
         case .bustsInSilhouette: return "BUSTS IN SILHOUETTE"
         case .peopleHugging: return "PEOPLE HUGGING"
         case .footprints: return "FOOTPRINTS"
-        case .manInTuxedo: return "MAN IN TUXEDO"
-        case .beetle: return "LADY BEETLE"
+        case .personInTuxedo: return "MAN IN TUXEDO"
+        case .ladyBeetle: return "LADY BEETLE"
         default: return nil
         }
     }
