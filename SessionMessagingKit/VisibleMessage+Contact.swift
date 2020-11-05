@@ -2,7 +2,7 @@
 public extension VisibleMessage {
 
     @objc(SNContact)
-    public class Contact : NSObject, NSCoding {
+    class Contact : NSObject, NSCoding {
 
         public required init?(coder: NSCoder) {
             fatalError("Not implemented.")

@@ -3,10 +3,12 @@
 public class ControlMessage : Message {
 
     public enum Kind {
-        case sessionRequest
+        case sessionRequest(preKeyBundle: PreKeyBundle)
     }
 
-    func foo() {
-        
+    public override class func fromProto(_ proto: SNProtoContent) -> ControlMessage? {
+        if let preKeyBundle = proto.prekeyBundleMessage {
+
+        }
     }
 }

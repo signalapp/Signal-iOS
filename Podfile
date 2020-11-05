@@ -16,9 +16,6 @@ def shared_pods
   pod 'SessionAxolotlKit', git: 'https://github.com/loki-project/session-ios-protocol-kit.git', branch: 'master', testspecs: ["Tests"] # Fork of AxolotlKit
   # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
 
-  pod 'SessionHKDFKit', git: 'https://github.com/nielsandriesse/session-ios-hkdf-kit.git', testspecs: ["Tests"] # Fork of HKDFKit
-  # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
-
   pod 'SessionCurve25519Kit', git: 'https://github.com/loki-project/session-ios-curve-25519-kit', testspecs: ["Tests"] # Fork of Curve25519Kit
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
@@ -46,10 +43,6 @@ def shared_pods
   # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
-
-  # Forked to incorporate our self-built binary artifact.
-  pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
-  #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
 
   pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
   # pod 'Starscream', path: '../Starscream'
@@ -107,6 +100,14 @@ end
 
 target 'SessionMessagingKit' do
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
+end
+
+target 'SessionProtocolKit' do
+  pod 'CocoaLumberjack', :inhibit_warnings => true
+  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'GRKOpenSSLFramework', :inhibit_warnings => true
+  pod 'HKDFKit', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
 end
 
