@@ -5,10 +5,8 @@ public final class ExpirationTimerUpdate : ControlMessage {
     public var duration: UInt32?
 
     // MARK: Initialization
-    init(sentTimestamp: UInt64, receivedTimestamp: UInt64, duration: UInt32) {
+    init(duration: UInt32) {
         super.init()
-        self.sentTimestamp = sentTimestamp
-        self.receivedTimestamp = receivedTimestamp
         self.duration = duration
     }
 
@@ -25,23 +23,24 @@ public final class ExpirationTimerUpdate : ControlMessage {
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent) -> ExpirationTimerUpdate? {
-        guard let data = proto.dataMessage else { return nil }
-        let isExpirationTimerUpdate = (data.flags & UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue)) != 0
+        guard let dataMessageProto = proto.dataMessage else { return nil }
+        let isExpirationTimerUpdate = (dataMessageProto.flags & UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue)) != 0
         guard isExpirationTimerUpdate else { return nil }
-        let timestamp = data.timestamp
-        let now = NSDate.millisecondTimestamp()
-        let duration = data.expireTimer
-        return ExpirationTimerUpdate(sentTimestamp: timestamp, receivedTimestamp: now, duration: duration)
+        let duration = dataMessageProto.expireTimer
+        return ExpirationTimerUpdate(duration: duration)
     }
 
     public override func toProto() -> SNProtoContent? {
-        guard let duration = duration else { return nil }
-        let expirationTimerUpdateProto = SNProtoDataMessage.builder()
-        expirationTimerUpdateProto.setFlags(UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue))
-        expirationTimerUpdateProto.setExpireTimer(duration)
+        guard let duration = duration else {
+            SNLog("Couldn't construct expiration timer update proto from: \(self).")
+            return nil
+        }
+        let dataMessageProto = SNProtoDataMessage.builder()
+        dataMessageProto.setFlags(UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue))
+        dataMessageProto.setExpireTimer(duration)
         let contentProto = SNProtoContent.builder()
         do {
-            contentProto.setDataMessage(try expirationTimerUpdateProto.build())
+            contentProto.setDataMessage(try dataMessageProto.build())
             return try contentProto.build()
         } catch {
             SNLog("Couldn't construct expiration timer update proto from: \(self).")

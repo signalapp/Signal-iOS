@@ -6,6 +6,7 @@ public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase co
     public var threadID: String?
     public var sentTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
+    public var recipient: String?
 
     public override init() { }
 
@@ -15,6 +16,7 @@ public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase co
         if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
         if let sentTimestamp = coder.decodeObject(forKey: "sentTimestamp") as! UInt64? { self.sentTimestamp = sentTimestamp }
         if let receivedTimestamp = coder.decodeObject(forKey: "receivedTimestamp") as! UInt64? { self.receivedTimestamp = receivedTimestamp }
+        if let recipient = coder.decodeObject(forKey: "recipient") as! String? { self.recipient = recipient }
     }
 
     public func encode(with coder: NSCoder) {
@@ -22,6 +24,7 @@ public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase co
         coder.encode(threadID, forKey: "threadID")
         coder.encode(sentTimestamp, forKey: "sentTimestamp")
         coder.encode(receivedTimestamp, forKey: "receivedTimestamp")
+        coder.encode(recipient, forKey: "recipient")
     }
 
     // MARK: Proto Conversion

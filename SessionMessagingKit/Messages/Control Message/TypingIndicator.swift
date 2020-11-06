@@ -24,10 +24,8 @@ public final class TypingIndicator : ControlMessage {
     }
 
     // MARK: Initialization
-    init(sentTimestamp: UInt64, receivedTimestamp: UInt64, kind: Kind) {
+    init(kind: Kind) {
         super.init()
-        self.sentTimestamp = sentTimestamp
-        self.receivedTimestamp = receivedTimestamp
         self.kind = kind
     }
 
@@ -45,14 +43,15 @@ public final class TypingIndicator : ControlMessage {
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent) -> TypingIndicator? {
         guard let typingIndicatorProto = proto.typingMessage else { return nil }
-        let timestamp = typingIndicatorProto.timestamp
-        let now = NSDate.millisecondTimestamp()
         let kind = Kind.fromProto(typingIndicatorProto.action)
-        return TypingIndicator(sentTimestamp: timestamp, receivedTimestamp: now, kind: kind)
+        return TypingIndicator(kind: kind)
     }
 
     public override func toProto() -> SNProtoContent? {
-        guard let timestamp = sentTimestamp, let kind = kind else { return nil }
+        guard let timestamp = sentTimestamp, let kind = kind else {
+            SNLog("Couldn't construct typing indicator proto from: \(self).")
+            return nil
+        }
         let typingIndicatorProto = SNProtoTypingMessage.builder(timestamp: timestamp, action: kind.toProto())
         let contentProto = SNProtoContent.builder()
         do {
