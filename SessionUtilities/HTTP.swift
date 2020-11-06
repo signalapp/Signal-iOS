@@ -1,6 +1,5 @@
 import Foundation
 import PromiseKit
-import SessionUtilities
 
 public enum HTTP {
     private static let sslURLSession = URLSession(configuration: .ephemeral)

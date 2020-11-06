@@ -1,8 +1,44 @@
+import PromiseKit
+import SessionSnodeKit
+import SessionUtilities
 
 public enum SendingPipeline {
 
-    // 1. Convert message to proto
-    // 2. Convert proto to binary
-    // 3. Encrypt
-    // 4. Send to snode
+    public enum Destination {
+        case contact(publicKey: String)
+        case closedGroup(publicKey: String)
+        case openGroup(channel: UInt64, server: String)
+    }
+
+    public enum Error : LocalizedError {
+        case protoConversionFailed
+        case protoSerializationFailed
+
+        public var errorDescription: String? {
+            switch self {
+            case .protoConversionFailed: return "Couldn't convert message to proto."
+            case .protoSerializationFailed: return "Couldn't serialize proto."
+            }
+        }
+    }
+
+    public static func send(_ message: Message, to destination: Destination) -> Promise<Void> {
+        guard let proto = message.toProto() else { return Promise(error: Error.protoConversionFailed) }
+        let data: Data
+        do {
+            data = try proto.serializedData()
+        } catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            return Promise(error: Error.protoSerializationFailed)
+        }
+        // TODO: Encryption
+        let recipient = ""
+        let base64EncodedData = data.base64EncodedString()
+        let ttl: UInt64 = 2 * 24 * 60 * 60 * 1000
+        let timestamp: UInt64 = 0
+        let nonce = ""
+        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: ttl, timestamp: timestamp, nonce: nonce)
+        let _ = SnodeAPI.sendMessage(snodeMessage)
+        return Promise.value(())
+    }
 }

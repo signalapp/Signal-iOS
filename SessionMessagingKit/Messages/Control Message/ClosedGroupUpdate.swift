@@ -109,9 +109,9 @@ public final class ClosedGroupUpdate : ControlMessage {
                 closedGroupUpdate.setSenderKeys([ try senderKey.toProto() ])
             }
             let contentProto = SNProtoContent.builder()
-            let dataMessage = SNProtoDataMessage.builder()
-            dataMessage.setClosedGroupUpdate(try closedGroupUpdate.build())
-            contentProto.setDataMessage(try dataMessage.build())
+            let dataMessageProto = SNProtoDataMessage.builder()
+            dataMessageProto.setClosedGroupUpdate(try closedGroupUpdate.build())
+            contentProto.setDataMessage(try dataMessageProto.build())
             return try contentProto.build()
         } catch {
             SNLog("Couldn't construct closed group update proto from: \(self).")

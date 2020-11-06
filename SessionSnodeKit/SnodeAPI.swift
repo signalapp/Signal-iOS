@@ -185,9 +185,9 @@ public enum SnodeAPI {
     }
 
     // MARK: Sending
-    public static func sendMessage(_ message: Message) -> Promise<Set<RawResponsePromise>> {
+    public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
-        let publicKey = message.recipientPublicKey
+        let publicKey = message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
                 let parameters = message.toJSON()
