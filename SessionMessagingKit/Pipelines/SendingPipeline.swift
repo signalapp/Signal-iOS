@@ -2,6 +2,9 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilities
 
+// TODO: Notifications
+// TODO: Notify PN server
+
 public enum SendingPipeline {
     private static let ttl: UInt64 = 2 * 24 * 60 * 60 * 1000
 
@@ -55,7 +58,27 @@ public enum SendingPipeline {
             return Promise(error: Error.proofOfWorkCalculationFailed)
         }
         let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: ttl, timestamp: timestamp, nonce: nonce)
-        let _ = SnodeAPI.sendMessage(snodeMessage)
-        return Promise.value(())
+        let (promise, seal) = Promise<Void>.pending()
+        SnodeAPI.sendMessage(snodeMessage).done(on: Threading.workQueue) { promises in
+            var isSuccess = false
+            let promiseCount = promises.count
+            var errorCount = 0
+            promises.forEach {
+                let _ = $0.done(on: Threading.workQueue) { _ in
+                    guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
+                    isSuccess = true
+                    seal.fulfill(())
+                }
+                $0.catch(on: Threading.workQueue) { error in
+                    errorCount += 1
+                    guard errorCount == promiseCount else { return } // Only error out if all promises failed
+                    seal.reject(error)
+                }
+            }
+        }.catch(on: Threading.workQueue) { error in
+            SNLog("Couldn't send message due to error: \(error).")
+            seal.reject(error)
+        }
+        return promise
     }
 }

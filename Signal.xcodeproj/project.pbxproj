@@ -594,6 +594,7 @@
 		C3471F4C25553AB000297E91 /* ReceivingPipeline+Decryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */; };
 		C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */; };
+		C3471FA42555439E00297E91 /* Notification+SendingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471FA32555439E00297E91 /* Notification+SendingPipeline.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
@@ -1592,6 +1593,7 @@
 		C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReceivingPipeline+Decryption.swift"; sourceTree = "<group>"; };
 		C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ECKeyPair+Utilities.h"; sourceTree = "<group>"; };
 		C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ECKeyPair+Utilities.m"; sourceTree = "<group>"; };
+		C3471FA32555439E00297E91 /* Notification+SendingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+SendingPipeline.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
@@ -3203,6 +3205,7 @@
 		C300A5F02554B08500555489 /* Pipelines */ = {
 			isa = PBXGroup;
 			children = (
+				C3471FA32555439E00297E91 /* Notification+SendingPipeline.swift */,
 				C300A5F12554B09800555489 /* SendingPipeline.swift */,
 				C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */,
 				C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */,
@@ -4921,6 +4924,7 @@
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				C3471F4225553A4D00297E91 /* Threading.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
+				C3471FA42555439E00297E91 /* Notification+SendingPipeline.swift in Sources */,
 				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
