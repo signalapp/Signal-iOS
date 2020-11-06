@@ -7,7 +7,7 @@ public extension VisibleMessage {
         public var title: String?
         public var url: String?
 
-        internal init(title: String, url: String) {
+        internal init(title: String?, url: String) {
             self.title = title
             self.url = url
         }
@@ -23,18 +23,18 @@ public extension VisibleMessage {
         }
 
         public static func fromProto(_ proto: SNProtoDataMessagePreview) -> LinkPreview? {
-            guard let title = proto.title else { return nil }
+            let title = proto.title
             let url = proto.url
             return LinkPreview(title: title, url: url)
         }
 
         public func toProto() -> SNProtoDataMessagePreview? {
-            guard let title = title, let url = url else {
+            guard let url = url else {
                 SNLog("Couldn't construct link preview proto from: \(self).")
                 return nil
             }
             let linkPreviewProto = SNProtoDataMessagePreview.builder(url: url)
-            linkPreviewProto.setTitle(title)
+            if let title = title { linkPreviewProto.setTitle(title) }
             do {
                 return try linkPreviewProto.build()
             } catch {

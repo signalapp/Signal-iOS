@@ -1,5 +1,5 @@
-import SessionUtilities
 import SessionSnodeKit
+import SessionUtilities
 
 enum ProofOfWork {
 

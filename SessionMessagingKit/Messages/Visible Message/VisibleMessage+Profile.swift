@@ -37,15 +37,21 @@ public extension VisibleMessage {
             }
         }
 
-        public func toProto() -> SNProtoDataMessageLokiProfile? {
+        public func toProto() -> SNProtoDataMessage? {
             guard let displayName = displayName else {
                 SNLog("Couldn't construct profile proto from: \(self).")
                 return nil
             }
+            let dataMessageProto = SNProtoDataMessage.builder()
             let profileProto = SNProtoDataMessageLokiProfile.builder()
             profileProto.setDisplayName(displayName)
+            if let profileKey = profileKey, let profilePictureURL = profilePictureURL {
+                dataMessageProto.setProfileKey(profileKey)
+                profileProto.setProfilePicture(profilePictureURL)
+            }
             do {
-                return try profileProto.build()
+                dataMessageProto.setProfile(try profileProto.build())
+                return try dataMessageProto.build()
             } catch {
                 SNLog("Couldn't construct profile proto from: \(self).")
                 return nil

@@ -1,5 +1,5 @@
-import SessionUtilities
 import SessionProtocolKit
+import SessionUtilities
 
 @objc(SNSessionRequest)
 public final class SessionRequest : ControlMessage {

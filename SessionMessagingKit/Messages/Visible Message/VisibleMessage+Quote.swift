@@ -34,12 +34,12 @@ public extension VisibleMessage {
         }
 
         public func toProto() -> SNProtoDataMessageQuote? {
-            guard let timestamp = timestamp, let publicKey = publicKey else {
+            guard let timestamp = timestamp, let publicKey = publicKey, let text = text else {
                 SNLog("Couldn't construct quote proto from: \(self).")
                 return nil
             }
             let quoteProto = SNProtoDataMessageQuote.builder(id: timestamp, author: publicKey)
-            if let text = text { quoteProto.setText(text) }
+            quoteProto.setText(text)
             do {
                 return try quoteProto.build()
             } catch {

@@ -1,5 +1,5 @@
-import SessionUtilities
 import SessionProtocolKit
+import SessionUtilities
 
 @objc(SNClosedGroupUpdate)
 public final class ClosedGroupUpdate : ControlMessage {
