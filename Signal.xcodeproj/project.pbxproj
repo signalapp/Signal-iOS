@@ -614,6 +614,10 @@
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
 		C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE07F2554CDD70050F1E3 /* Storage.swift */; };
+		C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */; };
+		C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D92553860B00C340D1 /* JSON.swift */; };
+		C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BC255385EE00C340D1 /* HTTP.swift */; };
+		C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */; };
 		C3C2A5A3255385C100C340D1 /* SessionSnodeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A5A1255385C100C340D1 /* SessionSnodeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A5A6255385C100C340D1 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -623,7 +627,6 @@
 		C3C2A5C2255385EE00C340D1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B9255385ED00C340D1 /* Configuration.swift */; };
 		C3C2A5C3255385EE00C340D1 /* OnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */; };
 		C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */; };
-		C3C2A5C5255385EE00C340D1 /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BC255385EE00C340D1 /* HTTP.swift */; };
 		C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */; };
 		C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BE255385EE00C340D1 /* SnodeAPI.swift */; };
 		C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CF2553860700C340D1 /* Promise+Hashing.swift */; };
@@ -631,11 +634,8 @@
 		C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D22553860900C340D1 /* String+Utilities.swift */; };
 		C3C2A5DF2553860B00C340D1 /* Promise+Delaying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D32553860900C340D1 /* Promise+Delaying.swift */; };
 		C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D42553860A00C340D1 /* Threading.swift */; };
-		C3C2A5E12553860B00C340D1 /* Dictionary+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */; };
-		C3C2A5E22553860B00C340D1 /* Promise+Retrying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */; };
 		C3C2A5E32553860B00C340D1 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
 		C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D82553860B00C340D1 /* Data+Utilities.swift */; };
-		C3C2A5E52553860B00C340D1 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D92553860B00C340D1 /* JSON.swift */; };
 		C3C2A67D255388CC00C340D1 /* SessionUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A67B255388CC00C340D1 /* SessionUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A680255388CC00C340D1 /* SessionUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilities.framework */; };
 		C3C2A681255388CC00C340D1 /* SessionUtilities.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilities.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -4837,18 +4837,14 @@
 			files = (
 				C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */,
 				C3C2A5BF255385EE00C340D1 /* Message.swift in Sources */,
-				C3C2A5E22553860B00C340D1 /* Promise+Retrying.swift in Sources */,
 				C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */,
 				C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */,
-				C3C2A5E12553860B00C340D1 /* Dictionary+Description.swift in Sources */,
-				C3C2A5C5255385EE00C340D1 /* HTTP.swift in Sources */,
 				C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */,
 				C3C2A5DF2553860B00C340D1 /* Promise+Delaying.swift in Sources */,
 				C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */,
 				C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */,
 				C3C2A5E32553860B00C340D1 /* AESGCM.swift in Sources */,
 				C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */,
-				C3C2A5E52553860B00C340D1 /* JSON.swift in Sources */,
 				C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */,
 				C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */,
 				C3C2A5C2255385EE00C340D1 /* Configuration.swift in Sources */,
@@ -4862,8 +4858,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */,
+				C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
+				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
+				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
+				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
 				C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */,
 			);

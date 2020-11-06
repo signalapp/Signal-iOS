@@ -1,3 +1,4 @@
+import SessionUtilities
 
 public protocol SessionSnodeKitStorageProtocol {
 

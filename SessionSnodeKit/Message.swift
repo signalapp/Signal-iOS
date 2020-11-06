@@ -1,4 +1,5 @@
 import PromiseKit
+import SessionUtilities
 
 public struct Message {
     /// The hex encoded public key of the recipient.
