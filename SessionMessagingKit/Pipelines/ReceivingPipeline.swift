@@ -3,7 +3,8 @@ import SessionUtilities
 public enum ReceivingPipeline {
 
     public static func parse(_ data: Data) -> Message? {
-        // TODO: Decrypt
+        // TODO: Decryption
+        // TODO: Validation
         let proto: SNProtoContent
         do {
             proto = try SNProtoContent.parseData(data)

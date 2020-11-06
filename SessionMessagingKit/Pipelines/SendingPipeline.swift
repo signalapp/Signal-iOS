@@ -34,6 +34,7 @@ public enum SendingPipeline {
             return Promise(error: Error.protoSerializationFailed)
         }
         // TODO: Encryption
+        // TODO: Validation
         let recipient = ""
         let base64EncodedData = data.base64EncodedString()
         let ttl: UInt64 = 2 * 24 * 60 * 60 * 1000
