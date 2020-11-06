@@ -12,7 +12,7 @@ public final class SessionRequest : ControlMessage {
     }
 
     // MARK: Validation
-    public override var isValidForSending: Bool { preKeyBundle != nil }
+    public override var isValid: Bool { preKeyBundle != nil }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {

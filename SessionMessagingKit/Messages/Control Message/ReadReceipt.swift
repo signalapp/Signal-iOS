@@ -11,7 +11,7 @@ public final class ReadReceipt : ControlMessage {
     }
 
     // MARK: Validation
-    public override var isValidForSending: Bool {
+    public override var isValid: Bool {
         if let timestamps = timestamps, !timestamps.isEmpty { return true }
         return false
     }

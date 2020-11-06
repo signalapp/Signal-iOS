@@ -28,7 +28,7 @@ public enum SendingPipeline {
     }
 
     public static func send(_ message: Message, to destination: Destination) -> Promise<Void> {
-        guard message.isValidForSending else { return Promise(error: Error.invalidMessage) }
+        guard message.isValid else { return Promise(error: Error.invalidMessage) }
         guard let proto = message.toProto() else { return Promise(error: Error.protoConversionFailed) }
         let plaintext: Data
         do {

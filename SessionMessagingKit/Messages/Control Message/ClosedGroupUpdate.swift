@@ -20,7 +20,7 @@ public final class ClosedGroupUpdate : ControlMessage {
     }
 
     // MARK: Validation
-    public override var isValidForSending: Bool { kind != nil }
+    public override var isValid: Bool { kind != nil }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {

@@ -13,7 +13,7 @@ public final class VisibleMessage : Message {
     public override init() { super.init() }
 
     // MARK: Validation
-    public override var isValidForSending: Bool {
+    public override var isValid: Bool {
         if !attachmentIDs.isEmpty { return true }
         if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
         return false

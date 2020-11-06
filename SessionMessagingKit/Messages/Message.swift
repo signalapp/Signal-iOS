@@ -11,7 +11,7 @@ public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase co
     public override init() { }
 
     // MARK: Validation
-    public var isValidForSending: Bool { true }
+    public var isValid: Bool { true }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {
