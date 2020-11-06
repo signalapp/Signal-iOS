@@ -18,9 +18,10 @@ public enum SnodeAPI {
     private static let snodeFailureThreshold = 4
     private static let targetSwarmSnodeCount = 2
 
-    internal static var powDifficulty: UInt = 1
     /// - Note: Changing this on the fly is not recommended.
     internal static var useOnionRequests = true
+
+    public static var powDifficulty: UInt = 1
     
     // MARK: Error
     public enum Error : LocalizedError {

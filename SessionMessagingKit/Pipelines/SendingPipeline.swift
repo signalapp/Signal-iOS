@@ -13,11 +13,13 @@ public enum SendingPipeline {
     public enum Error : LocalizedError {
         case protoConversionFailed
         case protoSerializationFailed
+        case proofOfWorkCalculationFailed
 
         public var errorDescription: String? {
             switch self {
             case .protoConversionFailed: return "Couldn't convert message to proto."
             case .protoSerializationFailed: return "Couldn't serialize proto."
+            case .proofOfWorkCalculationFailed: return "Proof of work calculation failed."
             }
         }
     }
@@ -35,8 +37,10 @@ public enum SendingPipeline {
         let recipient = ""
         let base64EncodedData = data.base64EncodedString()
         let ttl: UInt64 = 2 * 24 * 60 * 60 * 1000
-        let timestamp: UInt64 = 0
-        let nonce = ""
+        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: ttl, publicKey: recipient, data: base64EncodedData) else {
+            SNLog("Proof of work calculation failed.")
+            return Promise(error: Error.proofOfWorkCalculationFailed)
+        }
         let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: ttl, timestamp: timestamp, nonce: nonce)
         let _ = SnodeAPI.sendMessage(snodeMessage)
         return Promise.value(())

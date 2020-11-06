@@ -618,6 +618,8 @@
 		C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D92553860B00C340D1 /* JSON.swift */; };
 		C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BC255385EE00C340D1 /* HTTP.swift */; };
 		C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */; };
+		C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */; };
+		C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */; };
 		C3C2A5A3255385C100C340D1 /* SessionSnodeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A5A1255385C100C340D1 /* SessionSnodeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A5A6255385C100C340D1 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -1609,6 +1611,8 @@
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3BBE0752554CDA60050F1E3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C3BBE07F2554CDD70050F1E3 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofOfWork.swift; sourceTree = "<group>"; };
+		C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FixedWidthInteger+BigEndian.swift"; sourceTree = "<group>"; };
 		C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SessionSnodeKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C2A5A1255385C100C340D1 /* SessionSnodeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionSnodeKit.h; sourceTree = "<group>"; };
 		C3C2A5A2255385C100C340D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3243,6 +3247,15 @@
 			path = SwiftCSV;
 			sourceTree = "<group>";
 		};
+		C3BBE0B32554F0D30050F1E3 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
+				C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		C3C2A5A0255385C100C340D1 /* SessionSnodeKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -3319,6 +3332,7 @@
 				C3BBE07F2554CDD70050F1E3 /* Storage.swift */,
 				C300A5BB2554AFFB00555489 /* Messages */,
 				C300A5F02554B08500555489 /* Pipelines */,
+				C3BBE0B32554F0D30050F1E3 /* Utilities */,
 			);
 			path = SessionMessagingKit;
 			sourceTree = "<group>";
@@ -4878,6 +4892,7 @@
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
 				C300A5FC2554B0A000555489 /* ReceivingPipeline.swift in Sources */,
+				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
@@ -4890,6 +4905,7 @@
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
 				C300A5C92554B04E00555489 /* SessionRequest.swift in Sources */,
+				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
 				C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
