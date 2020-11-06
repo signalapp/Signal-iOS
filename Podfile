@@ -100,6 +100,7 @@ end
 
 target 'SessionMessagingKit' do
   pod 'CryptoSwift', :inhibit_warnings => true
+  pod 'Curve25519Kit', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
 end
@@ -121,6 +122,8 @@ target 'SessionSnodeKit' do
 end
 
 target 'SessionUtilities' do
+  pod 'CryptoSwift', :inhibit_warnings => true
+  pod 'Curve25519Kit', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
 end
 

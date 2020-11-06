@@ -588,6 +588,12 @@
 		C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */; };
 		C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEEB24F7277900B1C64C /* LightModeSheet.swift */; };
 		C329FEEF24F7743F00B1C64C /* UIViewController+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */; };
+		C3471ECB2555356A00297E91 /* SendingPipeline+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */; };
+		C3471ED42555386B00297E91 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
+		C3471F4225553A4D00297E91 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4125553A4D00297E91 /* Threading.swift */; };
+		C3471F4C25553AB000297E91 /* ReceivingPipeline+Decryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */; };
+		C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
@@ -636,7 +642,6 @@
 		C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D22553860900C340D1 /* String+Utilities.swift */; };
 		C3C2A5DF2553860B00C340D1 /* Promise+Delaying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D32553860900C340D1 /* Promise+Delaying.swift */; };
 		C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D42553860A00C340D1 /* Threading.swift */; };
-		C3C2A5E32553860B00C340D1 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
 		C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D82553860B00C340D1 /* Data+Utilities.swift */; };
 		C3C2A67D255388CC00C340D1 /* SessionUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A67B255388CC00C340D1 /* SessionUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A680255388CC00C340D1 /* SessionUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilities.framework */; };
@@ -1582,6 +1587,11 @@
 		C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairUtilities.swift; sourceTree = "<group>"; };
 		C329FEEB24F7277900B1C64C /* LightModeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightModeSheet.swift; sourceTree = "<group>"; };
 		C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Utilities.swift"; sourceTree = "<group>"; };
+		C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SendingPipeline+Encryption.swift"; sourceTree = "<group>"; };
+		C3471F4125553A4D00297E91 /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
+		C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReceivingPipeline+Decryption.swift"; sourceTree = "<group>"; };
+		C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ECKeyPair+Utilities.h"; sourceTree = "<group>"; };
+		C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ECKeyPair+Utilities.m"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
@@ -3194,7 +3204,9 @@
 			isa = PBXGroup;
 			children = (
 				C300A5F12554B09800555489 /* SendingPipeline.swift */,
+				C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */,
 				C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */,
+				C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */,
 			);
 			path = Pipelines;
 			sourceTree = "<group>";
@@ -3252,6 +3264,7 @@
 			children = (
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
 				C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */,
+				C3471F4125553A4D00297E91 /* Threading.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -3285,7 +3298,6 @@
 		C3C2A5CD255385F300C340D1 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				C3C2A5D72553860B00C340D1 /* AESGCM.swift */,
 				C3C2A5D82553860B00C340D1 /* Data+Utilities.swift */,
 				C3C2A5D32553860900C340D1 /* Promise+Delaying.swift */,
 				C3C2A5CF2553860700C340D1 /* Promise+Hashing.swift */,
@@ -3300,9 +3312,12 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A68B255388D500C340D1 /* Meta */,
+				C3C2A5D72553860B00C340D1 /* AESGCM.swift */,
 				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
 				C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
+				C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */,
+				C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */,
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
 				C3C2A5D92553860B00C340D1 /* JSON.swift */,
 				C3C2A5CE2553860700C340D1 /* Logging.swift */,
@@ -3763,6 +3778,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */,
+				C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */,
 				C3C2A67D255388CC00C340D1 /* SessionUtilities.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4857,7 +4873,6 @@
 				C3C2A5DF2553860B00C340D1 /* Promise+Delaying.swift in Sources */,
 				C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */,
 				C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */,
-				C3C2A5E32553860B00C340D1 /* AESGCM.swift in Sources */,
 				C3C2A5DE2553860B00C340D1 /* String+Utilities.swift in Sources */,
 				C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */,
 				C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */,
@@ -4874,8 +4889,10 @@
 				C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */,
 				C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
+				C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
+				C3471ED42555386B00297E91 /* AESGCM.swift in Sources */,
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
@@ -4887,7 +4904,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3471F4C25553AB000297E91 /* ReceivingPipeline+Decryption.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
+				C3471ECB2555356A00297E91 /* SendingPipeline+Encryption.swift in Sources */,
 				C300A5F22554B09800555489 /* SendingPipeline.swift in Sources */,
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
@@ -4900,6 +4919,7 @@
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
+				C3471F4225553A4D00297E91 /* Threading.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
 				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,

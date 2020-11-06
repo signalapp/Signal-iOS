@@ -4,10 +4,22 @@ public enum ReceivingPipeline {
 
     public enum Error : LocalizedError {
         case invalidMessage
+        // Shared sender keys
+        case invalidGroupPublicKey
+        case noData
+        case noGroupPrivateKey
+        case sharedSecretGenerationFailed
+        case selfSend
 
         public var errorDescription: String? {
             switch self {
             case .invalidMessage: return "Invalid message."
+            // Shared sender keys
+            case .invalidGroupPublicKey: return "Invalid group public key."
+            case .noData: return "Received an empty envelope."
+            case .noGroupPrivateKey: return "Missing group private key."
+            case .sharedSecretGenerationFailed: return "Couldn't generate a shared secret."
+            case .selfSend: return "Message addressed at self."
             }
         }
     }

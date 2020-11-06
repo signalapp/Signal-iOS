@@ -1,14 +1,13 @@
 import CryptoSwift
 import Curve25519Kit
-import SessionUtilities
 
-internal enum AESGCM {
-    internal static let gcmTagSize: UInt = 16
-    internal static let ivSize: UInt = 12
+public enum AESGCM {
+    public static let gcmTagSize: UInt = 16
+    public static let ivSize: UInt = 12
 
-    internal struct EncryptionResult { internal let ciphertext: Data, symmetricKey: Data, ephemeralPublicKey: Data }
+    public struct EncryptionResult { public let ciphertext: Data, symmetricKey: Data, ephemeralPublicKey: Data }
 
-    internal enum Error : LocalizedError {
+    public enum Error : LocalizedError {
         case keyPairGenerationFailed
         case sharedSecretGenerationFailed
 
@@ -21,7 +20,7 @@ internal enum AESGCM {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    internal static func decrypt(_ ivAndCiphertext: Data, with symmetricKey: Data) throws -> Data {
+    public static func decrypt(_ ivAndCiphertext: Data, with symmetricKey: Data) throws -> Data {
         if Thread.isMainThread {
             #if DEBUG
             preconditionFailure("It's illegal to call decrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.")
@@ -35,7 +34,7 @@ internal enum AESGCM {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    internal static func encrypt(_ plaintext: Data, with symmetricKey: Data) throws -> Data {
+    public static func encrypt(_ plaintext: Data, with symmetricKey: Data) throws -> Data {
         if Thread.isMainThread {
             #if DEBUG
             preconditionFailure("It's illegal to call encrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.")
@@ -49,7 +48,7 @@ internal enum AESGCM {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    internal static func encrypt(_ plaintext: Data, for hexEncodedX25519PublicKey: String) throws -> EncryptionResult {
+    public static func encrypt(_ plaintext: Data, for hexEncodedX25519PublicKey: String) throws -> EncryptionResult {
         if Thread.isMainThread {
             #if DEBUG
             preconditionFailure("It's illegal to call encrypt(_:forSnode:) from the main thread.")

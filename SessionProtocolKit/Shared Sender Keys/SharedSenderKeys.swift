@@ -27,14 +27,14 @@ public enum SharedSenderKeys {
     }
 
     // MARK: Private/Internal API
-    internal func generateRatchet(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) -> ClosedGroupRatchet {
+    internal static func generateRatchet(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) -> ClosedGroupRatchet {
         let rootChainKey = Data.getSecureRandomData(ofSize: 32)!.toHexString()
         let ratchet = ClosedGroupRatchet(chainKey: rootChainKey, keyIndex: 0, messageKeys: [])
         Configuration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, in: .current, using: transaction)
         return ratchet
     }
 
-    private func step(_ ratchet: ClosedGroupRatchet) throws -> ClosedGroupRatchet {
+    private static func step(_ ratchet: ClosedGroupRatchet) throws -> ClosedGroupRatchet {
         let nextMessageKey = try HMAC(key: Data(hex: ratchet.chainKey).bytes, variant: .sha256).authenticate([ UInt8(1) ])
         let nextChainKey = try HMAC(key: Data(hex: ratchet.chainKey).bytes, variant: .sha256).authenticate([ UInt8(2) ])
         let nextKeyIndex = ratchet.keyIndex + 1
@@ -43,7 +43,7 @@ public enum SharedSenderKeys {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    private func stepRatchetOnce(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) throws -> ClosedGroupRatchet {
+    private static func stepRatchetOnce(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) throws -> ClosedGroupRatchet {
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
@@ -63,7 +63,7 @@ public enum SharedSenderKeys {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    private func stepRatchet(for groupPublicKey: String, senderPublicKey: String, until targetKeyIndex: UInt, using transaction: Any, isRetry: Bool = false) throws -> ClosedGroupRatchet {
+    private static func stepRatchet(for groupPublicKey: String, senderPublicKey: String, until targetKeyIndex: UInt, using transaction: Any, isRetry: Bool = false) throws -> ClosedGroupRatchet {
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
@@ -100,7 +100,7 @@ public enum SharedSenderKeys {
     }
 
     // MARK: Public API
-    public func encrypt(_ plaintext: Data, for groupPublicKey: String, senderPublicKey: String, using transaction: Any) throws -> (ivAndCiphertext: Data, keyIndex: UInt) {
+    public static func encrypt(_ plaintext: Data, for groupPublicKey: String, senderPublicKey: String, using transaction: Any) throws -> (ivAndCiphertext: Data, keyIndex: UInt) {
         let ratchet: ClosedGroupRatchet
         do {
             ratchet = try stepRatchetOnce(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
@@ -110,15 +110,15 @@ public enum SharedSenderKeys {
             }
             throw error
         }
-        let iv = Data.getSecureRandomData(ofSize: SharedSenderKeys.ivSize)!
-        let gcm = GCM(iv: iv.bytes, tagLength: Int(SharedSenderKeys.gcmTagSize), mode: .combined)
+        let iv = Data.getSecureRandomData(ofSize: ivSize)!
+        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
         let messageKey = ratchet.messageKeys.last!
         let aes = try AES(key: Data(hex: messageKey).bytes, blockMode: gcm, padding: .noPadding)
         let ciphertext = try aes.encrypt(plaintext.bytes)
         return (ivAndCiphertext: iv + Data(ciphertext), ratchet.keyIndex)
     }
 
-    public func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: Any, isRetry: Bool = false) throws -> Data {
+    public static func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: Any, isRetry: Bool = false) throws -> Data {
         let ratchet: ClosedGroupRatchet
         do {
             ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction, isRetry: isRetry)
@@ -132,9 +132,9 @@ public enum SharedSenderKeys {
                 throw error
             }
         }
-        let iv = ivAndCiphertext[0..<Int(SharedSenderKeys.ivSize)]
-        let ciphertext = ivAndCiphertext[Int(SharedSenderKeys.ivSize)...]
-        let gcm = GCM(iv: iv.bytes, tagLength: Int(SharedSenderKeys.gcmTagSize), mode: .combined)
+        let iv = ivAndCiphertext[0..<Int(ivSize)]
+        let ciphertext = ivAndCiphertext[Int(ivSize)...]
+        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
         let messageKeys = ratchet.messageKeys
         let lastNMessageKeys: [String]
         if messageKeys.count > 16 { // Pick an arbitrary number of message keys to try; this helps resolve issues caused by messages arriving out of order
