@@ -24,7 +24,7 @@ public final class TypingIndicator : ControlMessage {
     }
 
     // MARK: Initialization
-    init(kind: Kind) {
+    internal init(kind: Kind) {
         super.init()
         self.kind = kind
     }

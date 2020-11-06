@@ -5,7 +5,7 @@ public final class ExpirationTimerUpdate : ControlMessage {
     public var duration: UInt32?
 
     // MARK: Initialization
-    init(duration: UInt32) {
+    internal init(duration: UInt32) {
         super.init()
         self.duration = duration
     }

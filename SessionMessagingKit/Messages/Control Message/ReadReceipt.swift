@@ -5,7 +5,7 @@ public final class ReadReceipt : ControlMessage {
     public var timestamps: [UInt64]?
 
     // MARK: Initialization
-    init(timestamps: [UInt64]) {
+    internal init(timestamps: [UInt64]) {
         super.init()
         self.timestamps = timestamps
     }

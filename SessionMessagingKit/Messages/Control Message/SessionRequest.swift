@@ -6,7 +6,7 @@ public final class SessionRequest : ControlMessage {
     private var preKeyBundle: PreKeyBundle?
 
     // MARK: Initialization
-    init(preKeyBundle: PreKeyBundle) {
+    internal init(preKeyBundle: PreKeyBundle) {
         super.init()
         self.preKeyBundle = preKeyBundle
     }
