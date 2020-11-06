@@ -16,11 +16,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
     TSAttachmentTypeBorderless = 2,
 };
 
-@interface TSAttachment : BaseModel {
-
-@protected
-    NSString *_contentType;
-}
+@interface TSAttachment : BaseModel
 
 // TSAttachment is a base class for TSAttachmentPointer (a yet-to-be-downloaded
 // incoming attachment) and TSAttachmentStream (an outgoing or already-downloaded

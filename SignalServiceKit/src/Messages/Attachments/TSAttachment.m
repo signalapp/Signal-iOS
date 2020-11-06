@@ -28,6 +28,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 @implementation TSAttachment
 
+@synthesize contentType = _contentType;
+
 #pragma mark - Dependencies
 
 - (AttachmentReadCache *)attachmentReadCache
