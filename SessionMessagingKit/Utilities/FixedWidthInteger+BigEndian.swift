@@ -1,5 +1,4 @@
 
-
 internal extension FixedWidthInteger {
 
     init?(fromBigEndianBytes bytes: [UInt8]) {
