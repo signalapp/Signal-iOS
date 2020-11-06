@@ -12,6 +12,13 @@ public final class VisibleMessage : Message {
     // MARK: Initialization
     public override init() { super.init() }
 
+    // MARK: Validation
+    public override var isValidForSending: Bool {
+        if !attachmentIDs.isEmpty { return true }
+        if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
+        return false
+    }
+
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)

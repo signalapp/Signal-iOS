@@ -11,6 +11,9 @@ public final class SessionRequest : ControlMessage {
         self.preKeyBundle = preKeyBundle
     }
 
+    // MARK: Validation
+    public override var isValidForSending: Bool { preKeyBundle != nil }
+
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)

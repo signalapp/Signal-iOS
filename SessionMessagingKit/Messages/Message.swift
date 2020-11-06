@@ -10,6 +10,9 @@ public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase co
 
     public override init() { }
 
+    // MARK: Validation
+    public var isValidForSending: Bool { true }
+
     // MARK: Coding
     public required init?(coder: NSCoder) {
         if let id = coder.decodeObject(forKey: "id") as! String? { self.id = id }

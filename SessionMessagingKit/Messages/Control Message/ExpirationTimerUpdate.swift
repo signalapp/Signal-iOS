@@ -10,6 +10,9 @@ public final class ExpirationTimerUpdate : ControlMessage {
         self.duration = duration
     }
 
+    // MARK: Validation
+    public override var isValidForSending: Bool { duration != nil }
+
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)

@@ -19,6 +19,9 @@ public final class ClosedGroupUpdate : ControlMessage {
         self.kind = kind
     }
 
+    // MARK: Validation
+    public override var isValidForSending: Bool { kind != nil }
+
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)

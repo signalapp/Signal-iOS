@@ -23,6 +23,9 @@ public final class TypingIndicator : ControlMessage {
         }
     }
 
+    // MARK: Validation
+    public override var isValidForSending: Bool { kind != nil }
+
     // MARK: Initialization
     internal init(kind: Kind) {
         super.init()

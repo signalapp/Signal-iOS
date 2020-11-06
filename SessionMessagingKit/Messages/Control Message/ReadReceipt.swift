@@ -10,6 +10,12 @@ public final class ReadReceipt : ControlMessage {
         self.timestamps = timestamps
     }
 
+    // MARK: Validation
+    public override var isValidForSending: Bool {
+        if let timestamps = timestamps, !timestamps.isEmpty { return true }
+        return false
+    }
+
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
