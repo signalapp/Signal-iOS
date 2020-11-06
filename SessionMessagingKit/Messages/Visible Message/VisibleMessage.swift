@@ -1,3 +1,4 @@
+import SessionUtilities
 
 @objc(SNVisibleMessage)
 public final class VisibleMessage : Message {
@@ -29,7 +30,7 @@ public final class VisibleMessage : Message {
         guard let dataMessage = proto.dataMessage else { return nil }
         let result = VisibleMessage()
         result.text = dataMessage.body
-        result.attachmentIDs = [] // TODO
+        result.attachmentIDs = [] // TODO: Attachments
         if let quoteProto = dataMessage.quote, let quote = Quote.fromProto(quoteProto) { result.quote = quote }
         if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
         // TODO: Contact
@@ -38,6 +39,24 @@ public final class VisibleMessage : Message {
     }
 
     public override func toProto() -> SNProtoContent? {
-        return nil
+        let proto = SNProtoContent.builder()
+        let dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder
+        if let profile = profile, let profileProto = profile.toProto() {
+            dataMessage = profileProto.asBuilder()
+        } else {
+            dataMessage = SNProtoDataMessage.builder()
+        }
+        if let text = text { dataMessage.setBody(text) }
+        // TODO: Attachments
+        if let quote = quote, let quoteProto = quote.toProto() { dataMessage.setQuote(quoteProto) }
+        if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto() { dataMessage.setPreview([ linkPreviewProto ]) }
+        // TODO: Contact
+        do {
+            proto.setDataMessage(try dataMessage.build())
+            return try proto.build()
+        } catch {
+            SNLog("Couldn't construct visible message proto from: \(self).")
+            return nil
+        }
     }
 }
