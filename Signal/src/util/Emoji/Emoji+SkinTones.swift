@@ -76,6 +76,14 @@ extension Emoji {
                 [.mediumDark]: "👌🏾",
                 [.dark]: "👌🏿",
             ]
+        case .pinchedFingers:
+            return [
+                [.light]: "🤌🏻",
+                [.mediumLight]: "🤌🏼",
+                [.medium]: "🤌🏽",
+                [.mediumDark]: "🤌🏾",
+                [.dark]: "🤌🏿",
+            ]
         case .pinchingHand:
             return [
                 [.light]: "🤏🏻",
@@ -1236,6 +1244,14 @@ extension Emoji {
                 [.mediumDark]: "💂🏾‍♀️",
                 [.dark]: "💂🏿‍♀️",
             ]
+        case .ninja:
+            return [
+                [.light]: "🥷🏻",
+                [.mediumLight]: "🥷🏼",
+                [.medium]: "🥷🏽",
+                [.mediumDark]: "🥷🏾",
+                [.dark]: "🥷🏿",
+            ]
         case .constructionWorker:
             return [
                 [.light]: "👷🏻",
@@ -1318,11 +1334,19 @@ extension Emoji {
             ]
         case .manInTuxedo:
             return [
-                [.light]: "🤵🏻",
-                [.mediumLight]: "🤵🏼",
-                [.medium]: "🤵🏽",
-                [.mediumDark]: "🤵🏾",
-                [.dark]: "🤵🏿",
+                [.light]: "🤵🏻‍♂️",
+                [.mediumLight]: "🤵🏼‍♂️",
+                [.medium]: "🤵🏽‍♂️",
+                [.mediumDark]: "🤵🏾‍♂️",
+                [.dark]: "🤵🏿‍♂️",
+            ]
+        case .womanInTuxedo:
+            return [
+                [.light]: "🤵🏻‍♀️",
+                [.mediumLight]: "🤵🏼‍♀️",
+                [.medium]: "🤵🏽‍♀️",
+                [.mediumDark]: "🤵🏾‍♀️",
+                [.dark]: "🤵🏿‍♀️",
             ]
         case .brideWithVeil:
             return [
@@ -1331,6 +1355,22 @@ extension Emoji {
                 [.medium]: "👰🏽",
                 [.mediumDark]: "👰🏾",
                 [.dark]: "👰🏿",
+            ]
+        case .manWithVeil:
+            return [
+                [.light]: "👰🏻‍♂️",
+                [.mediumLight]: "👰🏼‍♂️",
+                [.medium]: "👰🏽‍♂️",
+                [.mediumDark]: "👰🏾‍♂️",
+                [.dark]: "👰🏿‍♂️",
+            ]
+        case .womanWithVeil:
+            return [
+                [.light]: "👰🏻‍♀️",
+                [.mediumLight]: "👰🏼‍♀️",
+                [.medium]: "👰🏽‍♀️",
+                [.mediumDark]: "👰🏾‍♀️",
+                [.dark]: "👰🏿‍♀️",
             ]
         case .pregnantWoman:
             return [
@@ -1347,6 +1387,30 @@ extension Emoji {
                 [.medium]: "🤱🏽",
                 [.mediumDark]: "🤱🏾",
                 [.dark]: "🤱🏿",
+            ]
+        case .womanFeedingBaby:
+            return [
+                [.light]: "👩🏻‍🍼",
+                [.mediumLight]: "👩🏼‍🍼",
+                [.medium]: "👩🏽‍🍼",
+                [.mediumDark]: "👩🏾‍🍼",
+                [.dark]: "👩🏿‍🍼",
+            ]
+        case .manFeedingBaby:
+            return [
+                [.light]: "👨🏻‍🍼",
+                [.mediumLight]: "👨🏼‍🍼",
+                [.medium]: "👨🏽‍🍼",
+                [.mediumDark]: "👨🏾‍🍼",
+                [.dark]: "👨🏿‍🍼",
+            ]
+        case .personFeedingBaby:
+            return [
+                [.light]: "🧑🏻‍🍼",
+                [.mediumLight]: "🧑🏼‍🍼",
+                [.medium]: "🧑🏽‍🍼",
+                [.mediumDark]: "🧑🏾‍🍼",
+                [.dark]: "🧑🏿‍🍼",
             ]
         case .angel:
             return [
@@ -1371,6 +1435,14 @@ extension Emoji {
                 [.medium]: "🤶🏽",
                 [.mediumDark]: "🤶🏾",
                 [.dark]: "🤶🏿",
+            ]
+        case .mxClaus:
+            return [
+                [.light]: "🧑🏻‍🎄",
+                [.mediumLight]: "🧑🏼‍🎄",
+                [.medium]: "🧑🏽‍🎄",
+                [.mediumDark]: "🧑🏾‍🎄",
+                [.dark]: "🧑🏿‍🎄",
             ]
         case .superhero:
             return [
@@ -2283,6 +2355,14 @@ extension Emoji {
                 [.dark, .mediumLight]: "👨🏿‍🤝‍👨🏼",
                 [.dark, .medium]: "👨🏿‍🤝‍👨🏽",
                 [.dark, .mediumDark]: "👨🏿‍🤝‍👨🏾",
+            ]
+        case .personInTuxedo:
+            return [
+                [.light]: "🤵🏻",
+                [.mediumLight]: "🤵🏼",
+                [.medium]: "🤵🏽",
+                [.mediumDark]: "🤵🏾",
+                [.dark]: "🤵🏿",
             ]
         default: return nil
         }
