@@ -60,7 +60,7 @@ public enum MessageSender {
         }
         let recipient = message.recipient!
         let base64EncodedData = ciphertext.base64EncodedString()
-        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: ttl, publicKey: recipient, data: base64EncodedData) else {
+        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: type(of: message).ttl, publicKey: recipient, data: base64EncodedData) else {
             SNLog("Proof of work calculation failed.")
             return Promise(error: Error.proofOfWorkCalculationFailed)
         }
@@ -70,7 +70,7 @@ public enum MessageSender {
                 NotificationCenter.default.post(name: .messageSending, object: NSNumber(value: message.sentTimestamp!))
             }
         }
-        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: ttl, timestamp: timestamp, nonce: nonce)
+        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: type(of: message).ttl, timestamp: timestamp, nonce: nonce)
         let (promise, seal) = Promise<Void>.pending()
         SnodeAPI.sendMessage(snodeMessage).done(on: Threading.workQueue) { promises in
             var isSuccess = false

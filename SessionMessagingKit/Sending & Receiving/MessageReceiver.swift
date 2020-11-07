@@ -48,7 +48,7 @@ public enum MessageReceiver {
             guard message.isValid else { throw Error.invalidMessage }
             return message
         } else {
-            return Error.unknownMessage
+            throw Error.unknownMessage
         }
     }
 }
