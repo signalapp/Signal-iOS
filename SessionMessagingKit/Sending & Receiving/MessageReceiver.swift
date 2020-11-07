@@ -1,9 +1,10 @@
 import SessionUtilities
 
-public enum ReceivingPipeline {
+public enum MessageReceiver {
 
     public enum Error : LocalizedError {
         case invalidMessage
+        case unknownMessage
         // Shared sender keys
         case invalidGroupPublicKey
         case noData
@@ -14,6 +15,7 @@ public enum ReceivingPipeline {
         public var errorDescription: String? {
             switch self {
             case .invalidMessage: return "Invalid message."
+            case .unknownMessage: return "Unknown message type."
             // Shared sender keys
             case .invalidGroupPublicKey: return "Invalid group public key."
             case .noData: return "Received an empty envelope."
@@ -24,14 +26,14 @@ public enum ReceivingPipeline {
         }
     }
 
-    public static func parse(_ ciphertext: Data) -> Message? {
+    public static func parse(_ ciphertext: Data) throws -> Message {
         let plaintext = ciphertext // TODO: Decryption
         let proto: SNProtoContent
         do {
             proto = try SNProtoContent.parseData(plaintext)
         } catch {
             SNLog("Couldn't parse proto due to error: \(error).")
-            return nil
+            throw error
         }
         let message: Message? = {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
@@ -43,10 +45,10 @@ public enum ReceivingPipeline {
             return nil
         }()
         if let message = message {
-            guard message.isValid else { return nil }
+            guard message.isValid else { throw Error.invalidMessage }
             return message
         } else {
-            return nil
+            return Error.unknownMessage
         }
     }
 }

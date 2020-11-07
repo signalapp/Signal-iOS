@@ -1,5 +1,5 @@
 
-public final class ClosedGroupSenderKey : NSObject, NSCoding { // Not a struct for YapDatabase compatibility
+public final class ClosedGroupSenderKey : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let chainKey: Data
     public let keyIndex: UInt
     public let publicKey: Data

@@ -1,6 +1,6 @@
 import SessionUtilities
 
-public final class ClosedGroupRatchet : NSObject, NSCoding { // Not a struct for YapDatabase compatibility
+public final class ClosedGroupRatchet : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let chainKey: String
     public let keyIndex: UInt
     public let messageKeys: [String]

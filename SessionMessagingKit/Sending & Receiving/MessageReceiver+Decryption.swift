@@ -2,7 +2,7 @@ import CryptoSwift
 import SessionProtocolKit
 import SessionUtilities
 
-public extension ReceivingPipeline {
+public extension MessageReceiver {
 
     static func decryptWithSharedSenderKeys(envelope: SNProtoEnvelope, using transaction: Any) throws -> (plaintext: Data, senderPublicKey: String) {
         // 1. ) Check preconditions

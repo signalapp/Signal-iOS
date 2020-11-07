@@ -1,12 +1,14 @@
 
 /// Abstract base class for `VisibleMessage` and `ControlMessage`.
 @objc(SNMessage)
-public class Message : NSObject, NSCoding { // Not a protocol for YapDatabase compatibility
+public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var id: String?
     public var threadID: String?
     public var sentTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
     public var recipient: String?
+
+    public class var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
 
     public override init() { }
 

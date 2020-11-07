@@ -573,8 +573,8 @@
 		C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5D22554B05A00555489 /* TypingIndicator.swift */; };
 		C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */; };
 		C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */; };
-		C300A5F22554B09800555489 /* SendingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5F12554B09800555489 /* SendingPipeline.swift */; };
-		C300A5FC2554B0A000555489 /* ReceivingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */; };
+		C300A5F22554B09800555489 /* MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5F12554B09800555489 /* MessageSender.swift */; };
+		C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5FB2554B0A000555489 /* MessageReceiver.swift */; };
 		C300A60D2554B31900555489 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5CE2553860700C340D1 /* Logging.swift */; };
 		C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */ = {isa = PBXBuildFile; fileRef = C300A6312554B6D100555489 /* NSDate+Timestamp.mm */; };
 		C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */ = {isa = PBXBuildFile; fileRef = C300A6302554B68200555489 /* NSDate+Timestamp.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -588,14 +588,18 @@
 		C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */; };
 		C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEEB24F7277900B1C64C /* LightModeSheet.swift */; };
 		C329FEEF24F7743F00B1C64C /* UIViewController+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */; };
-		C3471ECB2555356A00297E91 /* SendingPipeline+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */; };
+		C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */; };
 		C3471ED42555386B00297E91 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
 		C3471F4225553A4D00297E91 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4125553A4D00297E91 /* Threading.swift */; };
-		C3471F4C25553AB000297E91 /* ReceivingPipeline+Decryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */; };
+		C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */; };
 		C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */; };
-		C3471FA42555439E00297E91 /* Notification+SendingPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471FA32555439E00297E91 /* Notification+SendingPipeline.swift */; };
+		C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471FA32555439E00297E91 /* Notification+MessageSender.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
+		C352A2F525574B4700338F3E /* Job.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A2F425574B4700338F3E /* Job.swift */; };
+		C352A2FF25574B6300338F3E /* MessageSendJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A2FE25574B6300338F3E /* MessageSendJob.swift */; };
+		C352A30925574D8500338F3E /* Message+Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A30825574D8400338F3E /* Message+Destination.swift */; };
+		C352A31325574F5200338F3E /* MessageReceiveJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A31225574F5200338F3E /* MessageReceiveJob.swift */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
@@ -1574,8 +1578,8 @@
 		C300A5D22554B05A00555489 /* TypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicator.swift; sourceTree = "<group>"; };
 		C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedGroupUpdate.swift; sourceTree = "<group>"; };
 		C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationTimerUpdate.swift; sourceTree = "<group>"; };
-		C300A5F12554B09800555489 /* SendingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendingPipeline.swift; sourceTree = "<group>"; };
-		C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceivingPipeline.swift; sourceTree = "<group>"; };
+		C300A5F12554B09800555489 /* MessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSender.swift; sourceTree = "<group>"; };
+		C300A5FB2554B0A000555489 /* MessageReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReceiver.swift; sourceTree = "<group>"; };
 		C300A6302554B68200555489 /* NSDate+Timestamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+Timestamp.h"; sourceTree = "<group>"; };
 		C300A6312554B6D100555489 /* NSDate+Timestamp.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+Timestamp.mm"; sourceTree = "<group>"; };
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
@@ -1588,13 +1592,17 @@
 		C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairUtilities.swift; sourceTree = "<group>"; };
 		C329FEEB24F7277900B1C64C /* LightModeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightModeSheet.swift; sourceTree = "<group>"; };
 		C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Utilities.swift"; sourceTree = "<group>"; };
-		C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SendingPipeline+Encryption.swift"; sourceTree = "<group>"; };
+		C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSender+Encryption.swift"; sourceTree = "<group>"; };
 		C3471F4125553A4D00297E91 /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
-		C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReceivingPipeline+Decryption.swift"; sourceTree = "<group>"; };
+		C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageReceiver+Decryption.swift"; sourceTree = "<group>"; };
 		C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ECKeyPair+Utilities.h"; sourceTree = "<group>"; };
 		C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ECKeyPair+Utilities.m"; sourceTree = "<group>"; };
-		C3471FA32555439E00297E91 /* Notification+SendingPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+SendingPipeline.swift"; sourceTree = "<group>"; };
+		C3471FA32555439E00297E91 /* Notification+MessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+MessageSender.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
+		C352A2F425574B4700338F3E /* Job.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Job.swift; sourceTree = "<group>"; };
+		C352A2FE25574B6300338F3E /* MessageSendJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSendJob.swift; sourceTree = "<group>"; };
+		C352A30825574D8400338F3E /* Message+Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+Destination.swift"; sourceTree = "<group>"; };
+		C352A31225574F5200338F3E /* MessageReceiveJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReceiveJob.swift; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
@@ -3171,6 +3179,7 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A74325539EB700C340D1 /* Message.swift */,
+				C352A30825574D8400338F3E /* Message+Destination.swift */,
 				C300A5C62554B02D00555489 /* Visible Message */,
 				C300A5C72554B03900555489 /* Control Message */,
 			);
@@ -3202,16 +3211,16 @@
 			path = "Control Message";
 			sourceTree = "<group>";
 		};
-		C300A5F02554B08500555489 /* Pipelines */ = {
+		C300A5F02554B08500555489 /* Sending & Receiving */ = {
 			isa = PBXGroup;
 			children = (
-				C3471FA32555439E00297E91 /* Notification+SendingPipeline.swift */,
-				C300A5F12554B09800555489 /* SendingPipeline.swift */,
-				C3471ECA2555356A00297E91 /* SendingPipeline+Encryption.swift */,
-				C300A5FB2554B0A000555489 /* ReceivingPipeline.swift */,
-				C3471F4B25553AB000297E91 /* ReceivingPipeline+Decryption.swift */,
+				C3471FA32555439E00297E91 /* Notification+MessageSender.swift */,
+				C300A5F12554B09800555489 /* MessageSender.swift */,
+				C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */,
+				C300A5FB2554B0A000555489 /* MessageReceiver.swift */,
+				C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */,
 			);
-			path = Pipelines;
+			path = "Sending & Receiving";
 			sourceTree = "<group>";
 		};
 		C31F812425258F9C00DD9FD9 /* Database */ = {
@@ -3229,6 +3238,16 @@
 				C396DAE72518407300FF6DC5 /* SwiftCSV */,
 			);
 			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		C352A2F325574B3300338F3E /* Jobs */ = {
+			isa = PBXGroup;
+			children = (
+				C352A2F425574B4700338F3E /* Job.swift */,
+				C352A2FE25574B6300338F3E /* MessageSendJob.swift */,
+				C352A31225574F5200338F3E /* MessageReceiveJob.swift */,
+			);
+			path = Jobs;
 			sourceTree = "<group>";
 		};
 		C35E8AA42485C83B00ACB629 /* CSV */ = {
@@ -3349,7 +3368,8 @@
 				C3BBE0752554CDA60050F1E3 /* Configuration.swift */,
 				C3BBE07F2554CDD70050F1E3 /* Storage.swift */,
 				C300A5BB2554AFFB00555489 /* Messages */,
-				C300A5F02554B08500555489 /* Pipelines */,
+				C300A5F02554B08500555489 /* Sending & Receiving */,
+				C352A2F325574B3300338F3E /* Jobs */,
 				C3BBE0B32554F0D30050F1E3 /* Utilities */,
 			);
 			path = SessionMessagingKit;
@@ -4907,13 +4927,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3471F4C25553AB000297E91 /* ReceivingPipeline+Decryption.swift in Sources */,
+				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
-				C3471ECB2555356A00297E91 /* SendingPipeline+Encryption.swift in Sources */,
-				C300A5F22554B09800555489 /* SendingPipeline.swift in Sources */,
+				C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */,
+				C300A5F22554B09800555489 /* MessageSender.swift in Sources */,
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
+				C352A31325574F5200338F3E /* MessageReceiveJob.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
-				C300A5FC2554B0A000555489 /* ReceivingPipeline.swift in Sources */,
+				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
 				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
@@ -4924,13 +4945,16 @@
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				C3471F4225553A4D00297E91 /* Threading.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
-				C3471FA42555439E00297E91 /* Notification+SendingPipeline.swift in Sources */,
+				C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */,
+				C352A30925574D8500338F3E /* Message+Destination.swift in Sources */,
 				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
+				C352A2FF25574B6300338F3E /* MessageSendJob.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
 				C300A5C92554B04E00555489 /* SessionRequest.swift in Sources */,
 				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
 				C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */,
+				C352A2F525574B4700338F3E /* Job.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

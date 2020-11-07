@@ -137,7 +137,6 @@ public enum OnionRequestAPI {
                 }
             }.map2 { paths in
                 OnionRequestAPI.paths = paths + reusablePaths
-
                 Configuration.shared.storage.with { transaction in
                     SNLog("Persisting onion request paths to database.")
                     Configuration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)

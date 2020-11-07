@@ -1,6 +1,6 @@
 import Foundation
 
-public final class Snode : NSObject, NSCoding { // Not a struct for YapDatabase compatibility
+public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let address: String
     public let port: UInt16
     internal let publicKeySet: KeySet

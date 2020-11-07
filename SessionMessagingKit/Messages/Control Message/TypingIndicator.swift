@@ -4,6 +4,8 @@ import SessionUtilities
 public final class TypingIndicator : ControlMessage {
     public var kind: Kind?
 
+    public override class var ttl: UInt64 { 30 * 1000 }
+
     // MARK: Kind
     public enum Kind : String {
         case started, stopped
