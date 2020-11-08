@@ -98,8 +98,9 @@ internal enum MessageSender {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-            Configuration.shared.storage.persist(notifyPNServerJob)
-            notifyPNServerJob.execute()
+            Configuration.shared.storage.with { transaction in
+                JobQueue.shared.add(notifyPNServerJob, using: transaction)
+            }
         }
         let _ = promise.catch(on: DispatchQueue.main) { _ in
             if case .contact(_) = destination {

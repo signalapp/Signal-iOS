@@ -603,6 +603,10 @@
 		C352A32F2557549C00338F3E /* NotifyPNServerJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A32E2557549C00338F3E /* NotifyPNServerJob.swift */; };
 		C352A349255781F400338F3E /* AttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A348255781F400338F3E /* AttachmentDownloadJob.swift */; };
 		C352A35B2557824E00338F3E /* AttachmentUploadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A35A2557824E00338F3E /* AttachmentUploadJob.swift */; };
+		C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */ = {isa = PBXBuildFile; fileRef = C352A36C2557858D00338F3E /* NSTimer+Proxying.m */; };
+		C352A3772557864000338F3E /* NSTimer+Proxying.h in Headers */ = {isa = PBXBuildFile; fileRef = C352A3762557859C00338F3E /* NSTimer+Proxying.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C352A3892557876500338F3E /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A3882557876500338F3E /* JobQueue.swift */; };
+		C352A3932557883D00338F3E /* JobDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A3922557883D00338F3E /* JobDelegate.swift */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
@@ -1609,6 +1613,10 @@
 		C352A32E2557549C00338F3E /* NotifyPNServerJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotifyPNServerJob.swift; sourceTree = "<group>"; };
 		C352A348255781F400338F3E /* AttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadJob.swift; sourceTree = "<group>"; };
 		C352A35A2557824E00338F3E /* AttachmentUploadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadJob.swift; sourceTree = "<group>"; };
+		C352A36C2557858D00338F3E /* NSTimer+Proxying.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+Proxying.m"; sourceTree = "<group>"; };
+		C352A3762557859C00338F3E /* NSTimer+Proxying.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Proxying.h"; sourceTree = "<group>"; };
+		C352A3882557876500338F3E /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
+		C352A3922557883D00338F3E /* JobDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDelegate.swift; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
@@ -3250,6 +3258,8 @@
 			isa = PBXGroup;
 			children = (
 				C352A2F425574B4700338F3E /* Job.swift */,
+				C352A3922557883D00338F3E /* JobDelegate.swift */,
+				C352A3882557876500338F3E /* JobQueue.swift */,
 				C352A348255781F400338F3E /* AttachmentDownloadJob.swift */,
 				C352A35A2557824E00338F3E /* AttachmentUploadJob.swift */,
 				C352A31225574F5200338F3E /* MessageReceiveJob.swift */,
@@ -3354,6 +3364,8 @@
 				C3C2A5CE2553860700C340D1 /* Logging.swift */,
 				C300A6302554B68200555489 /* NSDate+Timestamp.h */,
 				C300A6312554B6D100555489 /* NSDate+Timestamp.mm */,
+				C352A3762557859C00338F3E /* NSTimer+Proxying.h */,
+				C352A36C2557858D00338F3E /* NSTimer+Proxying.m */,
 				C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */,
 				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
 			);
@@ -3810,6 +3822,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */,
+				C352A3772557864000338F3E /* NSTimer+Proxying.h in Headers */,
 				C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */,
 				C3C2A67D255388CC00C340D1 /* SessionUtilities.h in Headers */,
 			);
@@ -4920,6 +4933,7 @@
 			files = (
 				C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */,
 				C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */,
+				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
@@ -4942,9 +4956,11 @@
 				C352A32F2557549C00338F3E /* NotifyPNServerJob.swift in Sources */,
 				C300A5F22554B09800555489 /* MessageSender.swift in Sources */,
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
+				C352A3932557883D00338F3E /* JobDelegate.swift in Sources */,
 				C352A31325574F5200338F3E /* MessageReceiveJob.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
 				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
+				C352A3892557876500338F3E /* JobQueue.swift in Sources */,
 				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,

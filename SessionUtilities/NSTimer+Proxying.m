@@ -1,8 +1,5 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
-#import "NSTimer+OWS.h"
+#import <Foundation/Foundation.h>
+#import "NSTimer+Proxying.h"
 #import <objc/runtime.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SEL selector;
 
 @end
-
-#pragma mark -
 
 @implementation NSTimerProxy
 
@@ -28,22 +23,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#pragma mark -
+static void *kNSTimer_SN_Proxy = &kNSTimer_SN_Proxy;
 
-static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
-
-@implementation NSTimer (OWS)
+@implementation NSTimer (Session)
 
 - (NSTimerProxy *)sn_proxy
 {
-    return objc_getAssociatedObject(self, kNSTimer_OWS_Proxy);
+    return objc_getAssociatedObject(self, kNSTimer_SN_Proxy);
 }
 
 - (void)sn_setProxy:(NSTimerProxy *)proxy
 {
-    OWSAssertDebug(proxy);
+    #if DEBUG
+    assert(proxy != nil);
+    #endif
 
-    objc_setAssociatedObject(self, kNSTimer_OWS_Proxy, proxy, OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, kNSTimer_SN_Proxy, proxy, OBJC_ASSOCIATION_RETAIN);
 }
 
 + (NSTimer *)weakScheduledTimerWithTimeInterval:(NSTimeInterval)timeInterval

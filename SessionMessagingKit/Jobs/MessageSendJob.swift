@@ -5,18 +5,18 @@ import SessionUtilities
 // TODO: Retrying
 
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public var delegate: JobDelegate?
     private let message: Message
     private let destination: Message.Destination
-    private var failureCount: UInt
+    public var failureCount: UInt = 0
 
     // MARK: Settings
-    private static let maxRetryCount: UInt = 20
+    public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
     init(message: Message, destination: Message.Destination) {
         self.message = message
         self.destination = destination
-        self.failureCount = 0
     }
 
     // MARK: Coding
@@ -49,11 +49,12 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     }
 
     private func handleSuccess() {
-
+        delegate?.handleJobSucceeded(self)
     }
 
     private func handleFailure(error: Error) {
         self.failureCount += 1
+        delegate?.handleJobFailed(self, with: error)
     }
 }
 

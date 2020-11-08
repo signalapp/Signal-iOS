@@ -7,16 +7,16 @@ import SessionUtilities
 // TODO: Retrying
 
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public var delegate: JobDelegate?
     private let message: SnodeMessage
-    private var failureCount: UInt
+    public var failureCount: UInt = 0
 
     // MARK: Settings
-    private static let maxRetryCount: UInt = 20
+    public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
     init(message: SnodeMessage) {
         self.message = message
-        self.failureCount = 0
     }
 
     // MARK: Coding
@@ -33,15 +33,16 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     // MARK: Running
     public func execute() {
-        
+
     }
 
     private func handleSuccess() {
-
+        delegate?.handleJobSucceeded(self)
     }
 
     private func handleFailure(error: Error) {
         self.failureCount += 1
+        delegate?.handleJobFailed(self, with: error)
     }
 }
 
