@@ -1,8 +1,6 @@
 import SessionUtilities
 
 // TODO: Destination encoding & decoding
-// TODO: Result handling
-// TODO: Retrying
 
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?

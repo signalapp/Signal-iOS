@@ -3,8 +3,6 @@ import SessionSnodeKit
 import SessionUtilities
 
 // TODO: Implementation
-// TODO: Result handling
-// TODO: Retrying
 
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
