@@ -634,6 +634,25 @@
 		C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D0A2558989C0043A11F /* MessageWrapper.swift */; };
 		C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D1C25589AC30043A11F /* WebSocketProto.swift */; };
 		C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D1D25589AC30043A11F /* WebSocketResources.pb.swift */; };
+		C3A71D2925589EBF0043A11F /* SessionRestorationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D2825589EBF0043A11F /* SessionRestorationProtocol.swift */; };
+		C3A71D3B25589F2B0043A11F /* SessionRestorationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D3A25589F2B0043A11F /* SessionRestorationStatus.swift */; };
+		C3A71D5025589FF30043A11F /* SMKUDAccessKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4425589FF10043A11F /* SMKUDAccessKey.swift */; };
+		C3A71D5125589FF30043A11F /* ECPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4525589FF10043A11F /* ECPublicKey.swift */; };
+		C3A71D5225589FF30043A11F /* SMKError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4625589FF10043A11F /* SMKError.swift */; };
+		C3A71D5325589FF30043A11F /* ECPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4725589FF10043A11F /* ECPrivateKey.swift */; };
+		C3A71D5425589FF30043A11F /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4825589FF20043A11F /* NSData+messagePadding.m */; };
+		C3A71D5525589FF30043A11F /* SMKSenderCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4925589FF20043A11F /* SMKSenderCertificate.swift */; };
+		C3A71D5625589FF30043A11F /* SMKServerCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4A25589FF20043A11F /* SMKServerCertificate.swift */; };
+		C3A71D5725589FF30043A11F /* SMKCertificateValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4B25589FF20043A11F /* SMKCertificateValidator.swift */; };
+		C3A71D5825589FF30043A11F /* SMKSecretSessionCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4C25589FF30043A11F /* SMKSecretSessionCipher.swift */; };
+		C3A71D5925589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4D25589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift */; };
+		C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */ = {isa = PBXBuildFile; fileRef = C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */; };
+		C3A71D5B25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4F25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift */; };
+		C3A71D672558A0170043A11F /* FallbackSessionCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D642558A0170043A11F /* FallbackSessionCipher.swift */; };
+		C3A71D682558A0170043A11F /* LokiSessionCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D652558A0170043A11F /* LokiSessionCipher.swift */; };
+		C3A71D742558A0F60043A11F /* SMKProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D722558A0F60043A11F /* SMKProto.swift */; };
+		C3A71D752558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D732558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift */; };
+		C3A71D862558A28A0043A11F /* DiffieHellman.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D662558A0170043A11F /* DiffieHellman.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
 		C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE07F2554CDD70050F1E3 /* Storage.swift */; };
@@ -1651,6 +1670,25 @@
 		C3A71D0A2558989C0043A11F /* MessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageWrapper.swift; sourceTree = "<group>"; };
 		C3A71D1C25589AC30043A11F /* WebSocketProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketProto.swift; sourceTree = "<group>"; };
 		C3A71D1D25589AC30043A11F /* WebSocketResources.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketResources.pb.swift; sourceTree = "<group>"; };
+		C3A71D2825589EBF0043A11F /* SessionRestorationProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationProtocol.swift; sourceTree = "<group>"; };
+		C3A71D3A25589F2B0043A11F /* SessionRestorationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationStatus.swift; sourceTree = "<group>"; };
+		C3A71D4425589FF10043A11F /* SMKUDAccessKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKUDAccessKey.swift; sourceTree = "<group>"; };
+		C3A71D4525589FF10043A11F /* ECPublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECPublicKey.swift; sourceTree = "<group>"; };
+		C3A71D4625589FF10043A11F /* SMKError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKError.swift; sourceTree = "<group>"; };
+		C3A71D4725589FF10043A11F /* ECPrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECPrivateKey.swift; sourceTree = "<group>"; };
+		C3A71D4825589FF20043A11F /* NSData+messagePadding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+messagePadding.m"; sourceTree = "<group>"; };
+		C3A71D4925589FF20043A11F /* SMKSenderCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKSenderCertificate.swift; sourceTree = "<group>"; };
+		C3A71D4A25589FF20043A11F /* SMKServerCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKServerCertificate.swift; sourceTree = "<group>"; };
+		C3A71D4B25589FF20043A11F /* SMKCertificateValidator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKCertificateValidator.swift; sourceTree = "<group>"; };
+		C3A71D4C25589FF30043A11F /* SMKSecretSessionCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKSecretSessionCipher.swift; sourceTree = "<group>"; };
+		C3A71D4D25589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKUnidentifiedSenderMessageContent.swift; sourceTree = "<group>"; };
+		C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+messagePadding.h"; sourceTree = "<group>"; };
+		C3A71D4F25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKUnidentifiedSenderMessage.swift; sourceTree = "<group>"; };
+		C3A71D642558A0170043A11F /* FallbackSessionCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FallbackSessionCipher.swift; sourceTree = "<group>"; };
+		C3A71D652558A0170043A11F /* LokiSessionCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LokiSessionCipher.swift; sourceTree = "<group>"; };
+		C3A71D662558A0170043A11F /* DiffieHellman.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiffieHellman.swift; sourceTree = "<group>"; };
+		C3A71D722558A0F60043A11F /* SMKProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SMKProto.swift; path = Protos/SMKProto.swift; sourceTree = "<group>"; };
+		C3A71D732558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSUnidentifiedDelivery.pb.swift; path = Protos/OWSUnidentifiedDelivery.pb.swift; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3BBE0752554CDA60050F1E3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -3368,6 +3406,7 @@
 				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
 				C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
+				C3A71D662558A0170043A11F /* DiffieHellman.swift */,
 				C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */,
 				C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */,
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
@@ -3501,6 +3540,8 @@
 			children = (
 				C3C2A8E52553B59B00C340D1 /* SPKProto.swift */,
 				C3C2A8E42553B59B00C340D1 /* WhisperTextProtocol.pb.swift */,
+				C3A71D722558A0F60043A11F /* SMKProto.swift */,
+				C3A71D732558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift */,
 			);
 			name = Protos;
 			sourceTree = "<group>";
@@ -3613,6 +3654,22 @@
 				C3C2A9352553B5C300C340D1 /* Sessions */,
 				C3C2A9562553B5F600C340D1 /* State */,
 				C3C2A9692553B62B00C340D1 /* Utility */,
+				C3A71D4725589FF10043A11F /* ECPrivateKey.swift */,
+				C3A71D4525589FF10043A11F /* ECPublicKey.swift */,
+				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
+				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
+				C3A71D4B25589FF20043A11F /* SMKCertificateValidator.swift */,
+				C3A71D4625589FF10043A11F /* SMKError.swift */,
+				C3A71D4C25589FF30043A11F /* SMKSecretSessionCipher.swift */,
+				C3A71D4925589FF20043A11F /* SMKSenderCertificate.swift */,
+				C3A71D4A25589FF20043A11F /* SMKServerCertificate.swift */,
+				C3A71D4425589FF10043A11F /* SMKUDAccessKey.swift */,
+				C3A71D4F25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift */,
+				C3A71D4D25589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift */,
+				C3A71D642558A0170043A11F /* FallbackSessionCipher.swift */,
+				C3A71D652558A0170043A11F /* LokiSessionCipher.swift */,
+				C3A71D2825589EBF0043A11F /* SessionRestorationProtocol.swift */,
+				C3A71D3A25589F2B0043A11F /* SessionRestorationStatus.swift */,
 			);
 			path = Signal;
 			sourceTree = "<group>";
@@ -3871,6 +3928,7 @@
 				C3C2A9F42553B9C400C340D1 /* Threading.h in Headers */,
 				C3C2A90A2553B5B200C340D1 /* Chain.h in Headers */,
 				C3C2A8882553B4CC00C340D1 /* AxolotlExceptions.h in Headers */,
+				C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */,
 				C3C2A89E2553B4F600C340D1 /* WhisperMessage.h in Headers */,
 				C3C2A8D92553B57C00C340D1 /* PreKeyRecord.h in Headers */,
 				C3C2A90B2553B5B200C340D1 /* MessageKeys.h in Headers */,
@@ -4959,6 +5017,7 @@
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
+				C3A71D862558A28A0043A11F /* DiffieHellman.swift in Sources */,
 				C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5012,38 +5071,52 @@
 			files = (
 				C3C2A91B2553B5B200C340D1 /* BobAxolotlParameters.m in Sources */,
 				C3C2A8D82553B57C00C340D1 /* PreKeyRecord.m in Sources */,
+				C3A71D3B25589F2B0043A11F /* SessionRestorationStatus.swift in Sources */,
+				C3A71D5825589FF30043A11F /* SMKSecretSessionCipher.swift in Sources */,
 				C3C2A9712553B63C00C340D1 /* SerializationUtilities.m in Sources */,
+				C3A71D5925589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift in Sources */,
 				C3C2ABEE2553C76900C340D1 /* ClosedGroupSenderKey.swift in Sources */,
 				C3C2A9172553B5B200C340D1 /* RootKey.m in Sources */,
 				C3C2A9112553B5B200C340D1 /* ChainKey.m in Sources */,
 				C3C2A8C32553B55600C340D1 /* AES-CBC.m in Sources */,
 				C3C2AA012553B9C400C340D1 /* Threading.m in Sources */,
 				C3C2A9F32553B9C400C340D1 /* String+OWS.swift in Sources */,
+				C3A71D682558A0170043A11F /* LokiSessionCipher.swift in Sources */,
 				C3C2A9F12553B9C400C340D1 /* OWSLogs.m in Sources */,
 				C3C2A9F22553B9C400C340D1 /* NSObject+OWS.m in Sources */,
+				C3A71D5B25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift in Sources */,
 				C3C2A9182553B5B200C340D1 /* SendingChain.m in Sources */,
 				C3C2A8A02553B4F600C340D1 /* PreKeyWhisperMessage.m in Sources */,
+				C3A71D5225589FF30043A11F /* SMKError.swift in Sources */,
 				C3C2A93F2553B5D700C340D1 /* SessionState.m in Sources */,
 				C3C2A9F02553B9C400C340D1 /* OWSAsserts.m in Sources */,
+				C3A71D5125589FF30043A11F /* ECPublicKey.swift in Sources */,
 				C3C2ABF82553C8A300C340D1 /* Storage.swift in Sources */,
 				C3C2A9F72553B9C400C340D1 /* NSData+OWS.m in Sources */,
 				C3C2A90D2553B5B200C340D1 /* RKCK.m in Sources */,
 				C3C2A8E72553B59B00C340D1 /* SPKProto.swift in Sources */,
+				C3A71D5325589FF30043A11F /* ECPrivateKey.swift in Sources */,
+				C3A71D5525589FF30043A11F /* SMKSenderCertificate.swift in Sources */,
 				C3C2A91E2553B5B200C340D1 /* ChainAndIndex.m in Sources */,
 				C3C2A91A2553B5B200C340D1 /* TSDerivedSecrets.m in Sources */,
+				C3A71D5025589FF30043A11F /* SMKUDAccessKey.swift in Sources */,
 				C3C2A91C2553B5B200C340D1 /* ReceivingChain.m in Sources */,
 				C3C2AA032553B9C400C340D1 /* Randomness.m in Sources */,
 				C3C2A9EF2553B9C400C340D1 /* OWSDataParser.swift in Sources */,
 				C3C2A8A32553B4F600C340D1 /* FallbackMessage.m in Sources */,
+				C3A71D5425589FF30043A11F /* NSData+messagePadding.m in Sources */,
 				C3C2AA072553B9C400C340D1 /* Cryptography.m in Sources */,
 				C3C2A9F52553B9C400C340D1 /* NSDate+OWS.mm in Sources */,
 				C3C2ABE42553C74400C340D1 /* ClosedGroupRatchet.swift in Sources */,
 				C3C2A93E2553B5D700C340D1 /* SessionRecord.m in Sources */,
+				C3A71D742558A0F60043A11F /* SMKProto.swift in Sources */,
 				C3C2AA052553B9C400C340D1 /* SCKExceptionWrapper.m in Sources */,
+				C3A71D2925589EBF0043A11F /* SessionRestorationProtocol.swift in Sources */,
 				C3C2A8D62553B57C00C340D1 /* PreKeyBundle.m in Sources */,
 				C3C2A9F62553B9C400C340D1 /* Data+OWS.swift in Sources */,
 				C3C2A89D2553B4F600C340D1 /* ClosedGroupCiphertextMessage.m in Sources */,
 				C3C2A9FB2553B9C400C340D1 /* Logger.swift in Sources */,
+				C3A71D672558A0170043A11F /* FallbackSessionCipher.swift in Sources */,
 				C3C2AC0A2553C9A100C340D1 /* Configuration.swift in Sources */,
 				C3C2A96E2553B63C00C340D1 /* NSData+keyVersionByte.m in Sources */,
 				C3C2A8E62553B59B00C340D1 /* WhisperTextProtocol.pb.swift in Sources */,
@@ -5052,9 +5125,12 @@
 				C3C2A9FA2553B9C400C340D1 /* OWSSwiftUtils.swift in Sources */,
 				C3C2A92C2553B5BE00C340D1 /* SessionCipher.m in Sources */,
 				C3C2A8D42553B57C00C340D1 /* SignedPrekeyRecord.m in Sources */,
+				C3A71D752558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift in Sources */,
+				C3A71D5625589FF30043A11F /* SMKServerCertificate.swift in Sources */,
 				C3C2A8A12553B4F600C340D1 /* WhisperMessage.m in Sources */,
 				C3C2A9192553B5B200C340D1 /* MessageKeys.m in Sources */,
 				C3C2A90F2553B5B200C340D1 /* RatchetingSession.m in Sources */,
+				C3A71D5725589FF30043A11F /* SMKCertificateValidator.swift in Sources */,
 				C3C2A93D2553B5D700C340D1 /* SessionBuilder.m in Sources */,
 				C3C2AA082553B9C400C340D1 /* NSString+OWS.m in Sources */,
 			);

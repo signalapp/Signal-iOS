@@ -12,6 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
     return keyPair;
 }
 
+- (NSData *)privateKey
+{
+    return [NSData dataWithBytes:self->privateKey length:32];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

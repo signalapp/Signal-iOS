@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ECKeyPair (Utilities)
 
 - (ECKeyPair *)initWithPublicKey:(NSData *)publicKey privateKey:(NSData *)privateKey;
+- (NSData *)privateKey;
 
 @end
 

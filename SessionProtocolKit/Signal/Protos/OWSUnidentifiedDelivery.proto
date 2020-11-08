@@ -1,0 +1,73 @@
+/**
+ * Copyright (C) 2014-2016 Open Whisper Systems
+ *
+ * Licensed according to the LICENSE file in this repository.
+ */
+
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package SMKProtos;
+
+option java_package = "org.signal.libsignal.metadata";
+option java_outer_classname = "SignalProtos";
+
+message ServerCertificate {
+    message Certificate {
+        // @required
+        optional uint32 id = 1;
+        // @required
+        optional bytes key = 2;
+    }
+
+    // @required
+    optional bytes certificate = 1;
+    // @required
+    optional bytes signature = 2;
+}
+
+message SenderCertificate {
+    message Certificate {
+        // @required
+        optional string sender = 1;
+        // @required
+        optional uint32 senderDevice = 2;
+        // @required
+        optional fixed64 expires = 3;
+        // @required
+        optional bytes identityKey = 4;
+        // @required
+        optional ServerCertificate signer = 5;
+    }
+
+    // @required
+    optional string sender = 1;
+    // @required
+    optional uint32 senderDevice = 2;
+}
+
+message UnidentifiedSenderMessage {
+    message Message {
+        enum Type {
+            PREKEY_MESSAGE = 1;
+            MESSAGE = 2;
+            FALLBACK_MESSAGE = 3;
+        }
+
+        // @required
+        optional Type type = 1;
+        // @required
+        optional SenderCertificate senderCertificate = 2;
+        // @required
+        optional bytes content = 3;
+    }
+
+    // @required
+    optional bytes ephemeralPublic = 1;
+    // @required
+    optional bytes encryptedStatic = 2;
+    // @required
+    optional bytes encryptedMessage = 3;
+}
