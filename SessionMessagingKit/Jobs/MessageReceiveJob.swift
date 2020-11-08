@@ -6,7 +6,7 @@ public final class MessageReceiveJob : NSObject, Job,  NSCoding { // NSObject/NS
     public var failureCount: UInt = 0
 
     // MARK: Settings
-    public static let maxFailureCount: UInt = 20
+    public static let maxFailureCount: UInt = 10
 
     // MARK: Initialization
     init(data: Data) {
@@ -45,7 +45,6 @@ public final class MessageReceiveJob : NSObject, Job,  NSCoding { // NSObject/NS
     }
 
     private func handleFailure(error: Error) {
-        self.failureCount += 1
         delegate?.handleJobFailed(self, with: error)
     }
 }

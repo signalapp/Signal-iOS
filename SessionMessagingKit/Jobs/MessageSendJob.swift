@@ -51,7 +51,6 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     }
 
     private func handleFailure(error: Error) {
-        self.failureCount += 1
         delegate?.handleJobFailed(self, with: error)
     }
 }

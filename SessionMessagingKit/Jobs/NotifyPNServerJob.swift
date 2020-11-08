@@ -39,7 +39,6 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
     }
 
     private func handleFailure(error: Error) {
-        self.failureCount += 1
         delegate?.handleJobFailed(self, with: error)
     }
 }
