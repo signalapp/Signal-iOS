@@ -1,4 +1,4 @@
-import SessionUtilities
+import SessionUtilitiesKit
 
 @objc(SNTypingIndicator)
 public final class TypingIndicator : ControlMessage {

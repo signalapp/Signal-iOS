@@ -1,6 +1,6 @@
 import CryptoSwift
 import PromiseKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 internal extension OnionRequestAPI {
 

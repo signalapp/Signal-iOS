@@ -1,6 +1,6 @@
 import CryptoSwift
 import SessionProtocolKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 internal extension MessageReceiver {
 

@@ -1,6 +1,6 @@
 import PromiseKit
 import SessionSnodeKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 internal enum MessageSender {
 

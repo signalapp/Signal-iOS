@@ -1,5 +1,5 @@
 import PromiseKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 public enum SnodeAPI {
 

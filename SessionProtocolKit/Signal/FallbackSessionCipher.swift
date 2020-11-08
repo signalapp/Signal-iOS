@@ -1,6 +1,6 @@
 import CryptoSwift
 import Curve25519Kit
-import SessionUtilities
+import SessionUtilitiesKit
 
 /// A fallback session cipher which uses the the recipient's public key to encrypt data.
 @objc public final class FallBackSessionCipher : NSObject {

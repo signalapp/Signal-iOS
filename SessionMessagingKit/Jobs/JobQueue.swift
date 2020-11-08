@@ -1,4 +1,4 @@
-import SessionUtilities
+import SessionUtilitiesKit
 
 public final class JobQueue : JobDelegate {
 

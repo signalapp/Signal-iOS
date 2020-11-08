@@ -121,7 +121,7 @@ target 'SessionSnodeKit' do
   pod 'PromiseKit', :inhibit_warnings => true
 end
 
-target 'SessionUtilities' do
+target 'SessionUtilitiesKit' do
   pod 'CryptoSwift', :inhibit_warnings => true
   pod 'Curve25519Kit', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true

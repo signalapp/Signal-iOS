@@ -1,4 +1,4 @@
-import SessionUtilities
+import SessionUtilitiesKit
 
 @objc(SNReadReceipt)
 public final class ReadReceipt : ControlMessage {

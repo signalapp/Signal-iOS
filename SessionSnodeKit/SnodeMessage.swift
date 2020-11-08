@@ -1,5 +1,5 @@
 import PromiseKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 public final class SnodeMessage : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     /// The hex encoded public key of the recipient.

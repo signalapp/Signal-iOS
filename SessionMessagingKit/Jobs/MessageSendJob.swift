@@ -1,4 +1,4 @@
-import SessionUtilities
+import SessionUtilitiesKit
 
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?

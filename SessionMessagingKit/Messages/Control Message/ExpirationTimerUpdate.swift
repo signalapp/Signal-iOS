@@ -1,4 +1,4 @@
-import SessionUtilities
+import SessionUtilitiesKit
 
 @objc(SNExpirationTimerUpdate)
 public final class ExpirationTimerUpdate : ControlMessage {

@@ -1,6 +1,6 @@
 import PromiseKit
 import SessionSnodeKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?

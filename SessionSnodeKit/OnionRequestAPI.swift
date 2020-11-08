@@ -1,6 +1,6 @@
 import CryptoSwift
 import PromiseKit
-import SessionUtilities
+import SessionUtilitiesKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {

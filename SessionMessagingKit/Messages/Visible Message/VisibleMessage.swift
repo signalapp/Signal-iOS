@@ -1,4 +1,4 @@
-import SessionUtilities
+import SessionUtilitiesKit
 
 @objc(SNVisibleMessage)
 public final class VisibleMessage : Message {
