@@ -5,9 +5,11 @@ internal enum MessageReceiver {
     internal enum Error : LocalizedError {
         case invalidMessage
         case unknownMessage
+        case unknownEnvelopeType
+        case noUserPublicKey
+        case noData
         // Shared sender keys
         case invalidGroupPublicKey
-        case noData
         case noGroupPrivateKey
         case sharedSecretGenerationFailed
         case selfSend
@@ -16,9 +18,11 @@ internal enum MessageReceiver {
             switch self {
             case .invalidMessage: return "Invalid message."
             case .unknownMessage: return "Unknown message type."
+            case .unknownEnvelopeType: return "Unknown envelope type."
+            case .noUserPublicKey: return "Couldn't find user key pair."
+            case .noData: return "Received an empty envelope."
             // Shared sender keys
             case .invalidGroupPublicKey: return "Invalid group public key."
-            case .noData: return "Received an empty envelope."
             case .noGroupPrivateKey: return "Missing group private key."
             case .sharedSecretGenerationFailed: return "Couldn't generate a shared secret."
             case .selfSend: return "Message addressed at self."
@@ -26,11 +30,19 @@ internal enum MessageReceiver {
         }
     }
 
-    internal static func parse(_ ciphertext: Data) throws -> Message {
-        let plaintext = ciphertext
+    internal static func parse(_ data: Data, using transaction: Any) throws -> Message {
+        // Parse the envelope
+        let envelope = try MessageWrapper.unwrap(data: data)
+        // Decrypt the contents
+        let plaintext: Data
+        switch envelope.type {
+        case .unidentifiedSender: (plaintext, _) = try decryptWithSignalProtocol(envelope: envelope, using: transaction)
+        case .closedGroupCiphertext: (plaintext, _) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
+        default: throw Error.unknownEnvelopeType
+        }
         let proto: SNProtoContent
         do {
-            proto = try SNProtoContent.parseData(plaintext)
+            proto = try SNProtoContent.parseData((plaintext as NSData).removePadding())
         } catch {
             SNLog("Couldn't parse proto due to error: \(error).")
             throw error
