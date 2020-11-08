@@ -302,11 +302,24 @@ public enum OnionRequestAPI {
             endpoint = String(url[endpointStartIndex..<url.endIndex])
         }
         let parametersAsString: String
-        headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
-        if let parametersAsInputStream = request.httpBodyStream, let parameters = try? Data(from: parametersAsInputStream) {
-            parametersAsString = "{ \"fileUpload\" : \"\(String(data: parameters.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+        if let tsRequest = request as? TSRequest {
+            headers["Content-Type"] = "application/json"
+            let tsRequestParameters = tsRequest.parameters
+            if !tsRequestParameters.isEmpty {
+                guard let parameters = try? JSONSerialization.data(withJSONObject: tsRequestParameters, options: [ .fragmentsAllowed ]) else {
+                    return Promise(error: HTTP.Error.invalidJSON)
+                }
+                parametersAsString = String(bytes: parameters, encoding: .utf8) ?? "null"
+            } else {
+                parametersAsString = "null"
+            }
         } else {
-            parametersAsString = "null"
+            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
+            if let parametersAsInputStream = request.httpBodyStream, let parameters = try? Data(from: parametersAsInputStream) {
+                parametersAsString = "{ \"fileUpload\" : \"\(String(data: parameters.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+            } else {
+                parametersAsString = "null"
+            }
         }
         let payload: JSON = [
             "body" : parametersAsString,

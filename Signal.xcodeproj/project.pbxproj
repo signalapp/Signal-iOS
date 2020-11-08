@@ -607,6 +607,8 @@
 		C352A3772557864000338F3E /* NSTimer+Proxying.h in Headers */ = {isa = PBXBuildFile; fileRef = C352A3762557859C00338F3E /* NSTimer+Proxying.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C352A3892557876500338F3E /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A3882557876500338F3E /* JobQueue.swift */; };
 		C352A3932557883D00338F3E /* JobDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A3922557883D00338F3E /* JobDelegate.swift */; };
+		C352A3A62557B60D00338F3E /* TSRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = C352A3A52557B60D00338F3E /* TSRequest.m */; };
+		C352A3B72557B6ED00338F3E /* TSRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = C352A3A42557B5F000338F3E /* TSRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
@@ -1617,6 +1619,8 @@
 		C352A3762557859C00338F3E /* NSTimer+Proxying.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Proxying.h"; sourceTree = "<group>"; };
 		C352A3882557876500338F3E /* JobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		C352A3922557883D00338F3E /* JobDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobDelegate.swift; sourceTree = "<group>"; };
+		C352A3A42557B5F000338F3E /* TSRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TSRequest.h; sourceTree = "<group>"; };
+		C352A3A52557B60D00338F3E /* TSRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TSRequest.m; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
@@ -3368,6 +3372,8 @@
 				C352A36C2557858D00338F3E /* NSTimer+Proxying.m */,
 				C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */,
 				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
+				C352A3A42557B5F000338F3E /* TSRequest.h */,
+				C352A3A52557B60D00338F3E /* TSRequest.m */,
 			);
 			path = SessionUtilities;
 			sourceTree = "<group>";
@@ -3821,6 +3827,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C352A3B72557B6ED00338F3E /* TSRequest.h in Headers */,
 				C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */,
 				C352A3772557864000338F3E /* NSTimer+Proxying.h in Headers */,
 				C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */,
@@ -4938,6 +4945,7 @@
 				C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
+				C352A3A62557B60D00338F3E /* TSRequest.m in Sources */,
 				C3471ED42555386B00297E91 /* AESGCM.swift in Sources */,
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,

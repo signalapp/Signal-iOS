@@ -37,7 +37,6 @@ static void *kNSTimer_SN_Proxy = &kNSTimer_SN_Proxy;
     #if DEBUG
     assert(proxy != nil);
     #endif
-
     objc_setAssociatedObject(self, kNSTimer_SN_Proxy, proxy, OBJC_ASSOCIATION_RETAIN);
 }
 
