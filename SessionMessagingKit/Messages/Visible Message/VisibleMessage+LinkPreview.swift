@@ -14,12 +14,12 @@ public extension VisibleMessage {
 
         public required init?(coder: NSCoder) {
             if let title = coder.decodeObject(forKey: "title") as! String? { self.title = title }
-            if let url = coder.decodeObject(forKey: "url") as! String? { self.url = url }
+            if let url = coder.decodeObject(forKey: "urlString") as! String? { self.url = url }
         }
 
         public func encode(with coder: NSCoder) {
             coder.encode(title, forKey: "title")
-            coder.encode(url, forKey: "url")
+            coder.encode(url, forKey: "urlString")
         }
 
         public static func fromProto(_ proto: SNProtoDataMessagePreview) -> LinkPreview? {

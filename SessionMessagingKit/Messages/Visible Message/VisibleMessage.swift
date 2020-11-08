@@ -22,14 +22,14 @@ public final class VisibleMessage : Message {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        if let text = coder.decodeObject(forKey: "text") as! String? { self.text = text }
-        if let attachmentIDs = coder.decodeObject(forKey: "attachmentIDs") as! [String]? { self.attachmentIDs = attachmentIDs }
+        if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
+        if let attachmentIDs = coder.decodeObject(forKey: "attachments") as! [String]? { self.attachmentIDs = attachmentIDs }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
-        coder.encode(text, forKey: "text")
-        coder.encode(attachmentIDs, forKey: "attachmentIDs")
+        coder.encode(text, forKey: "body")
+        coder.encode(attachmentIDs, forKey: "attachments")
     }
 
     // MARK: Proto Conversion

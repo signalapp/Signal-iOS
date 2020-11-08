@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _parameters = parameters ?: @{};
+
     [self setHTTPMethod:method];
 
     return self;

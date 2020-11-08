@@ -7,7 +7,7 @@ public final class TypingIndicator : ControlMessage {
     public override class var ttl: UInt64 { 30 * 1000 }
 
     // MARK: Kind
-    public enum Kind : String {
+    public enum Kind : Int {
         case started, stopped
 
         static func fromProto(_ proto: SNProtoTypingMessage.SNProtoTypingMessageAction) -> Kind {
@@ -37,12 +37,12 @@ public final class TypingIndicator : ControlMessage {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        if let rawKind = coder.decodeObject(forKey: "kind") as! String? { kind = Kind(rawValue: rawKind) }
+        if let rawKind = coder.decodeObject(forKey: "action") as! Int? { kind = Kind(rawValue: rawKind) }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
-        coder.encode(kind?.rawValue, forKey: "kind")
+        coder.encode(kind?.rawValue, forKey: "action")
     }
 
     // MARK: Proto Conversion

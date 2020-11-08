@@ -16,12 +16,12 @@ public final class ExpirationTimerUpdate : ControlMessage {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        if let duration = coder.decodeObject(forKey: "duration") as! UInt32? { self.duration = duration }
+        if let duration = coder.decodeObject(forKey: "durationSeconds") as! UInt32? { self.duration = duration }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
-        coder.encode(duration, forKey: "duration")
+        coder.encode(duration, forKey: "durationSeconds")
     }
 
     // MARK: Proto Conversion

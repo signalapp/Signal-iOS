@@ -19,12 +19,12 @@ public final class ReadReceipt : ControlMessage {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        if let timestamps = coder.decodeObject(forKey: "timestamps") as! [UInt64]? { self.timestamps = timestamps }
+        if let timestamps = coder.decodeObject(forKey: "messageTimestamps") as! [UInt64]? { self.timestamps = timestamps }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
-        coder.encode(timestamps, forKey: "timestamps")
+        coder.encode(timestamps, forKey: "messageTimestamps")
     }
 
     // MARK: Proto Conversion

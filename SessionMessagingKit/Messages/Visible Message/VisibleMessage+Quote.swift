@@ -16,14 +16,14 @@ public extension VisibleMessage {
 
         public required init?(coder: NSCoder) {
             if let timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64? { self.timestamp = timestamp }
-            if let publicKey = coder.decodeObject(forKey: "publicKey") as! String? { self.publicKey = publicKey }
-            if let text = coder.decodeObject(forKey: "text") as! String? { self.text = text }
+            if let publicKey = coder.decodeObject(forKey: "authorId") as! String? { self.publicKey = publicKey }
+            if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
         }
 
         public func encode(with coder: NSCoder) {
             coder.encode(timestamp, forKey: "timestamp")
-            coder.encode(publicKey, forKey: "publicKey")
-            coder.encode(text, forKey: "text")
+            coder.encode(publicKey, forKey: "authorId")
+            coder.encode(text, forKey: "body")
         }
 
         public static func fromProto(_ proto: SNProtoDataMessageQuote) -> Quote? {
