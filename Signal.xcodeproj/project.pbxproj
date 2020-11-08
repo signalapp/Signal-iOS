@@ -646,7 +646,7 @@
 		C3A71D5725589FF30043A11F /* SMKCertificateValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4B25589FF20043A11F /* SMKCertificateValidator.swift */; };
 		C3A71D5825589FF30043A11F /* SMKSecretSessionCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4C25589FF30043A11F /* SMKSecretSessionCipher.swift */; };
 		C3A71D5925589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4D25589FF30043A11F /* SMKUnidentifiedSenderMessageContent.swift */; };
-		C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */ = {isa = PBXBuildFile; fileRef = C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */; };
+		C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */ = {isa = PBXBuildFile; fileRef = C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3A71D5B25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4F25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift */; };
 		C3A71D672558A0170043A11F /* FallbackSessionCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D642558A0170043A11F /* FallbackSessionCipher.swift */; };
 		C3A71D682558A0170043A11F /* LokiSessionCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D652558A0170043A11F /* LokiSessionCipher.swift */; };

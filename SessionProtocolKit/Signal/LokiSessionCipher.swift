@@ -38,7 +38,7 @@ public final class LokiSessionCipher : SessionCipher {
         // Note that while decrypting our state may change internally
         let currentState = getCurrentState(protocolContext: protocolContext)
         if (currentState == nil && whisperMessage.cipherMessageType == .prekey) {
-            try sessionResetImplementation?.validatePreKeyWhisperMessage(for: recipientID, whisperMessage: whisperMessage, using: protocolContext!)
+            try sessionResetImplementation?.validatePreKeyWhisperMessage(for: recipientID, preKeyWhisperMessage: whisperMessage as! PreKeyWhisperMessage, using: protocolContext!)
         }
         let plainText = try super.decrypt(whisperMessage, protocolContext: protocolContext)
         handleSessionReset(for: whisperMessage, previousState: currentState, protocolContext: protocolContext!)

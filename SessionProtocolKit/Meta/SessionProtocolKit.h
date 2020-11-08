@@ -7,6 +7,7 @@ FOUNDATION_EXPORT const unsigned char SessionProtocolKitVersionString[];
 #import <SessionProtocolKit/ClosedGroupCiphertextMessage.h>
 #import <SessionProtocolKit/Cryptography.h>
 #import <SessionProtocolKit/FallbackMessage.h>
+#import <SessionProtocolKit/NSData+messagePadding.h>
 #import <SessionProtocolKit/NSData+OWS.h>
 #import <SessionProtocolKit/NSObject+OWS.h>
 #import <SessionProtocolKit/NSString+OWS.h>

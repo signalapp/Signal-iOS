@@ -1,6 +1,6 @@
 import SessionProtocolKit
 
-public protocol SessionMessagingKitStorageProtocol {
+public protocol SessionMessagingKitStorageProtocol : SessionStore, PreKeyStore, SignedPreKeyStore, IdentityKeyStore {
 
     func with(_ work: (Any) -> Void)
     func withAsync(_ work: (Any) -> Void, completion: () -> Void)
@@ -12,4 +12,5 @@ public protocol SessionMessagingKitStorageProtocol {
     func persist(_ job: Job, using transaction: Any)
     func markJobAsSucceeded(_ job: Job, using transaction: Any)
     func markJobAsFailed(_ job: Job, using transaction: Any)
+    func getSenderCertificate(for publicKey: String) -> SMKSenderCertificate
 }

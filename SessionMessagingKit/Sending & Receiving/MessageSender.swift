@@ -49,7 +49,7 @@ internal enum MessageSender {
         let ciphertext: Data
         do {
             switch destination {
-            case .contact(let publicKey): ciphertext = try encryptWithSignalProtocol(plaintext, for: publicKey, using: transaction)
+            case .contact(let publicKey): ciphertext = try encryptWithSignalProtocol(plaintext, associatedWith: message, for: publicKey, using: transaction)
             case .closedGroup(let groupPublicKey): ciphertext = try encryptWithSharedSenderKeys(plaintext, for: groupPublicKey, using: transaction)
             case .openGroup(_, _): preconditionFailure()
             }

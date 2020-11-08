@@ -2,7 +2,7 @@
 @objc(LKSessionRestorationProtocol)
 public protocol SessionRestorationProtocol {
 
-    func validatePreKeyWhisperMessage(for recipientPublicKey: String, whisperMessage: CipherMessage, using transaction: Any) throws
-    func getSessionRestorationStatus(for recipientPublicKey: String) -> SessionRestorationStatus
-    func handleNewSessionAdopted(for recipientPublicKey: String, using transaction: Any)
+    func validatePreKeyWhisperMessage(for publicKey: String, preKeyWhisperMessage: PreKeyWhisperMessage, using transaction: Any) throws
+    func getSessionRestorationStatus(for publicKey: String) -> SessionRestorationStatus
+    func handleNewSessionAdopted(for publicKey: String, using transaction: Any)
 }
