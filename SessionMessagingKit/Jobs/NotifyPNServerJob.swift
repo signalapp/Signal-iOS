@@ -2,8 +2,6 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilities
 
-// TODO: Implementation
-
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
     private let message: SnodeMessage
@@ -31,7 +29,18 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     // MARK: Running
     public func execute() {
-
+        let server = Configuration.shared.pnServerURL
+        let parameters = [ "data" : message.data.description, "send_to" : message.recipient ]
+        let url = URL(string: "\(server)/notify")!
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
+        attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: Configuration.shared.pnServerPublicKey).map { _ in }
+        }.done(on: DispatchQueue.global()) { // Intentionally capture self
+            self.handleSuccess()
+        }.catch(on: DispatchQueue.global()) { error in
+            self.handleFailure(error: error)
+        }
     }
 
     private func handleSuccess() {
