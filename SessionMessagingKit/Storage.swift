@@ -8,4 +8,5 @@ public protocol SessionMessagingKitStorageProtocol {
     func getOrGenerateRegistrationID(using transaction: Any) -> UInt32
     func isClosedGroup(_ publicKey: String) -> Bool
     func getClosedGroupPrivateKey(for publicKey: String) -> String?
+    func persist(_ job: Job)
 }

@@ -1,5 +1,8 @@
 import SessionUtilities
 
+// TODO: Result handling
+// TODO: Retrying
+
 public final class MessageReceiveJob : NSObject, Job,  NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     private let data: Data
     private var failureCount: UInt

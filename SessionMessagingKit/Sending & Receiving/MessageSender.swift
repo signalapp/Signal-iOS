@@ -2,17 +2,18 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilities
 
-// TODO: Notify PN server
+// TODO: Open group encryption
+// TODO: Signal protocol encryption
 
-public enum MessageSender {
+internal enum MessageSender {
 
-    public enum Error : LocalizedError {
+    internal enum Error : LocalizedError {
         case invalidMessage
         case protoConversionFailed
         case proofOfWorkCalculationFailed
         case noUserPublicKey
 
-        public var errorDescription: String? {
+        internal var errorDescription: String? {
             switch self {
             case .invalidMessage: return "Invalid message."
             case .protoConversionFailed: return "Couldn't convert message to proto."
@@ -22,7 +23,7 @@ public enum MessageSender {
         }
     }
 
-    public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
+    internal static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         // Validate the message
         guard message.isValid else { return Promise(error: Error.invalidMessage) }
         // Convert it to protobuf
@@ -96,6 +97,9 @@ public enum MessageSender {
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
+            let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
+            Configuration.shared.storage.persist(notifyPNServerJob)
+            notifyPNServerJob.execute()
         }
         let _ = promise.catch(on: DispatchQueue.main) { _ in
             if case .contact(_) = destination {

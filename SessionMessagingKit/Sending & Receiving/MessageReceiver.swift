@@ -1,8 +1,10 @@
 import SessionUtilities
 
-public enum MessageReceiver {
+// TODO: Decryption
 
-    public enum Error : LocalizedError {
+internal enum MessageReceiver {
+
+    internal enum Error : LocalizedError {
         case invalidMessage
         case unknownMessage
         // Shared sender keys
@@ -12,7 +14,7 @@ public enum MessageReceiver {
         case sharedSecretGenerationFailed
         case selfSend
 
-        public var errorDescription: String? {
+        internal var errorDescription: String? {
             switch self {
             case .invalidMessage: return "Invalid message."
             case .unknownMessage: return "Unknown message type."
@@ -26,8 +28,8 @@ public enum MessageReceiver {
         }
     }
 
-    public static func parse(_ ciphertext: Data) throws -> Message {
-        let plaintext = ciphertext // TODO: Decryption
+    internal static func parse(_ ciphertext: Data) throws -> Message {
+        let plaintext = ciphertext
         let proto: SNProtoContent
         do {
             proto = try SNProtoContent.parseData(plaintext)

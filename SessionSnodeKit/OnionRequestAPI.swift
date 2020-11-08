@@ -24,7 +24,7 @@ public enum OnionRequestAPI {
     private static var targetGuardSnodeCount: UInt { return targetPathCount } // One per path
 
     // MARK: Destination
-    internal enum Destination {
+    public enum Destination {
         case snode(Snode)
         case server(host: String, x25519PublicKey: String)
     }
@@ -275,7 +275,7 @@ public enum OnionRequestAPI {
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
+    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
         return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
             guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json) = error else { throw error }
@@ -284,7 +284,7 @@ public enum OnionRequestAPI {
     }
 
     /// Sends an onion request to `server`. Builds new paths as needed.
-    internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+    public static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
         var rawHeaders = request.allHTTPHeaderFields ?? [:]
         rawHeaders.removeValue(forKey: "User-Agent")
         var headers: JSON = rawHeaders.mapValues { value in
@@ -322,7 +322,7 @@ public enum OnionRequestAPI {
         return promise
     }
 
-    internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
+    public static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode!
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`

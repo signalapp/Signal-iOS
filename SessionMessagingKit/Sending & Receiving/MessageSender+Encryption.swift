@@ -1,7 +1,7 @@
 import SessionProtocolKit
 import SessionUtilities
 
-public extension MessageSender {
+internal extension MessageSender {
 
     static func encryptWithSignalProtocol(_ plaintext: Data, for publicKey: String, using transaction: Any) throws -> Data {
         return Data()

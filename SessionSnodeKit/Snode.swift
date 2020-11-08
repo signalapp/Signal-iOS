@@ -10,7 +10,7 @@ public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance
     }
 
     // MARK: Nested Types
-    internal enum Method : String {
+    public enum Method : String {
         case getSwarm = "get_snodes_for_pubkey"
         case getMessages = "retrieve"
         case sendMessage = "store"
