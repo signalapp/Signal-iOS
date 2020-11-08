@@ -1,7 +1,5 @@
 import SessionUtilities
 
-// TODO: Decryption
-
 internal enum MessageReceiver {
 
     internal enum Error : LocalizedError {

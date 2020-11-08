@@ -6,8 +6,6 @@ import Foundation
 
 // WARNING: This code is generated. Only edit within the markers.
 
-private let logTag = "SNProto"
-
 public enum SNProtoError: Error {
     case invalidProtobuf(description: String)
 }

@@ -2,9 +2,6 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilities
 
-// TODO: Open group encryption
-// TODO: Signal protocol encryption
-
 internal enum MessageSender {
 
     internal enum Error : LocalizedError {
@@ -24,6 +21,13 @@ internal enum MessageSender {
     }
 
     internal static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
+        switch destination {
+        case .contact(_), .closedGroup(_): return sendToSnodeDestination(destination, message: message, using: transaction)
+        default: fatalError("Not implemented.")
+        }
+    }
+
+    internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         // Validate the message
         guard message.isValid else { return Promise(error: Error.invalidMessage) }
         // Convert it to protobuf
@@ -47,10 +51,30 @@ internal enum MessageSender {
             switch destination {
             case .contact(let publicKey): ciphertext = try encryptWithSignalProtocol(plaintext, for: publicKey, using: transaction)
             case .closedGroup(let groupPublicKey): ciphertext = try encryptWithSharedSenderKeys(plaintext, for: groupPublicKey, using: transaction)
-            case .openGroup(_, _): fatalError("Not implemented.")
+            case .openGroup(_, _): preconditionFailure()
             }
         } catch {
             SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
+            return Promise(error: error)
+        }
+        // Wrap the result
+        let kind: SNProtoEnvelope.SNProtoEnvelopeType
+        let senderPublicKey: String
+        switch destination {
+        case .contact(_):
+            kind = .unidentifiedSender
+            senderPublicKey = ""
+        case .closedGroup(let groupPublicKey):
+            kind = .closedGroupCiphertext
+            senderPublicKey = groupPublicKey
+        case .openGroup(_, _): preconditionFailure()
+        }
+        let wrappedMessage: Data
+        do {
+            wrappedMessage = try MessageWrapper.wrap(type: kind, timestamp: message.sentTimestamp!,
+                senderPublicKey: senderPublicKey, base64EncodedContent: ciphertext.base64EncodedString())
+        } catch {
+            SNLog("Couldn't wrap message due to error: \(error).")
             return Promise(error: error)
         }
         // Calculate proof of work
@@ -60,7 +84,7 @@ internal enum MessageSender {
             }
         }
         let recipient = message.recipient!
-        let base64EncodedData = ciphertext.base64EncodedString()
+        let base64EncodedData = wrappedMessage.base64EncodedString()
         guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: type(of: message).ttl, publicKey: recipient, data: base64EncodedData) else {
             SNLog("Proof of work calculation failed.")
             return Promise(error: Error.proofOfWorkCalculationFailed)

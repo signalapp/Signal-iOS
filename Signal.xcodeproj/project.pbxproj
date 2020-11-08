@@ -631,6 +631,9 @@
 		C39DD28824F3318C008590FC /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
 		C39DD28A24F3336E008590FC /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
 		C39DD28B24F3336F008590FC /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
+		C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D0A2558989C0043A11F /* MessageWrapper.swift */; };
+		C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D1C25589AC30043A11F /* WebSocketProto.swift */; };
+		C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D1D25589AC30043A11F /* WebSocketResources.pb.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
 		C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE07F2554CDD70050F1E3 /* Storage.swift */; };
@@ -1645,6 +1648,9 @@
 		C396DAED2518408B00FF6DC5 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		C396DAEE2518408B00FF6DC5 /* CSV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSV.swift; sourceTree = "<group>"; };
 		C39DD28724F3318C008590FC /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		C3A71D0A2558989C0043A11F /* MessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageWrapper.swift; sourceTree = "<group>"; };
+		C3A71D1C25589AC30043A11F /* WebSocketProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketProto.swift; sourceTree = "<group>"; };
+		C3A71D1D25589AC30043A11F /* WebSocketResources.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketResources.pb.swift; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3BBE0752554CDA60050F1E3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -3308,6 +3314,7 @@
 			isa = PBXGroup;
 			children = (
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
+				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */,
 				C3471F4125553A4D00297E91 /* Threading.swift */,
 			);
@@ -3424,6 +3431,8 @@
 			children = (
 				C3C2A7832553AAF300C340D1 /* SessionProtos.pb.swift */,
 				C3C2A7822553AAF200C340D1 /* SNProto.swift */,
+				C3A71D1C25589AC30043A11F /* WebSocketProto.swift */,
+				C3A71D1D25589AC30043A11F /* WebSocketResources.pb.swift */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -4973,6 +4982,8 @@
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
+				C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */,
+				C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */,
 				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
@@ -4980,6 +4991,7 @@
 				C3471F4225553A4D00297E91 /* Threading.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
 				C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */,
+				C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */,
 				C352A349255781F400338F3E /* AttachmentDownloadJob.swift in Sources */,
 				C352A30925574D8500338F3E /* Message+Destination.swift in Sources */,
 				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
