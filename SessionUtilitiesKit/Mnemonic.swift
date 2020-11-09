@@ -144,7 +144,7 @@ private extension String {
     }
 }
 
-@objc(LKMnemonic)
+@objc(SNMnemonic)
 public final class ObjCMnemonic : NSObject {
     
     override private init() { }

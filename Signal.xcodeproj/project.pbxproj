@@ -654,6 +654,16 @@
 		C3A71D752558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D732558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift */; };
 		C3A71F892558BA9F0043A11F /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71F882558BA9F0043A11F /* Mnemonic.swift */; };
 		C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D662558A0170043A11F /* DiffieHellman.swift */; };
+		C3A721382558BDFA0043A11F /* OpenGroupMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A721342558BDF90043A11F /* OpenGroupMessage.swift */; };
+		C3A721392558BDFA0043A11F /* OpenGroupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A721352558BDF90043A11F /* OpenGroupAPI.swift */; };
+		C3A7213A2558BDFA0043A11F /* OpenGroupInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */; };
+		C3A7213B2558BDFA0043A11F /* OpenGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A721372558BDFA0043A11F /* OpenGroup.swift */; };
+		C3A721902558C0CD0043A11F /* FileServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7218F2558C0CD0043A11F /* FileServerAPI.swift */; };
+		C3A7219A2558C1660043A11F /* AnyPromise+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A721992558C1660043A11F /* AnyPromise+Conversion.swift */; };
+		C3A7222A2558C1E40043A11F /* DotNetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A722292558C1E40043A11F /* DotNetAPI.swift */; };
+		C3A7225E2558C38D0043A11F /* AnyPromise+Retaining.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7225D2558C38D0043A11F /* AnyPromise+Retaining.swift */; };
+		C3A722802558C4E10043A11F /* AttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7227F2558C4E10043A11F /* AttachmentStream.swift */; };
+		C3A722922558C8940043A11F /* OpenGroupAPIDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A722912558C8940043A11F /* OpenGroupAPIDelegate.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
 		C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE07F2554CDD70050F1E3 /* Storage.swift */; };
@@ -1693,6 +1703,16 @@
 		C3A71D722558A0F60043A11F /* SMKProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SMKProto.swift; path = Protos/SMKProto.swift; sourceTree = "<group>"; };
 		C3A71D732558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSUnidentifiedDelivery.pb.swift; path = Protos/OWSUnidentifiedDelivery.pb.swift; sourceTree = "<group>"; };
 		C3A71F882558BA9F0043A11F /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
+		C3A721342558BDF90043A11F /* OpenGroupMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupMessage.swift; sourceTree = "<group>"; };
+		C3A721352558BDF90043A11F /* OpenGroupAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupAPI.swift; sourceTree = "<group>"; };
+		C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupInfo.swift; sourceTree = "<group>"; };
+		C3A721372558BDFA0043A11F /* OpenGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroup.swift; sourceTree = "<group>"; };
+		C3A7218F2558C0CD0043A11F /* FileServerAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileServerAPI.swift; sourceTree = "<group>"; };
+		C3A721992558C1660043A11F /* AnyPromise+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPromise+Conversion.swift"; sourceTree = "<group>"; };
+		C3A722292558C1E40043A11F /* DotNetAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotNetAPI.swift; sourceTree = "<group>"; };
+		C3A7225D2558C38D0043A11F /* AnyPromise+Retaining.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPromise+Retaining.swift"; sourceTree = "<group>"; };
+		C3A7227F2558C4E10043A11F /* AttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStream.swift; sourceTree = "<group>"; };
+		C3A722912558C8940043A11F /* OpenGroupAPIDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupAPIDelegate.swift; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3BBE0752554CDA60050F1E3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -3377,9 +3397,31 @@
 			name = Metadata;
 			sourceTree = "<group>";
 		};
+		C3A721332558BDDF0043A11F /* Open Groups */ = {
+			isa = PBXGroup;
+			children = (
+				C3A721372558BDFA0043A11F /* OpenGroup.swift */,
+				C3A721352558BDF90043A11F /* OpenGroupAPI.swift */,
+				C3A722912558C8940043A11F /* OpenGroupAPIDelegate.swift */,
+				C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */,
+				C3A721342558BDF90043A11F /* OpenGroupMessage.swift */,
+			);
+			path = "Open Groups";
+			sourceTree = "<group>";
+		};
+		C3A7215C2558C0AC0043A11F /* File Server */ = {
+			isa = PBXGroup;
+			children = (
+				C3A7218F2558C0CD0043A11F /* FileServerAPI.swift */,
+			);
+			path = "File Server";
+			sourceTree = "<group>";
+		};
 		C3BBE0B32554F0D30050F1E3 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				C3A7227F2558C4E10043A11F /* AttachmentStream.swift */,
+				C3A722292558C1E40043A11F /* DotNetAPI.swift */,
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */,
@@ -3432,6 +3474,8 @@
 			children = (
 				C3C2A68B255388D500C340D1 /* Meta */,
 				C3C2A5D72553860B00C340D1 /* AESGCM.swift */,
+				C3A721992558C1660043A11F /* AnyPromise+Conversion.swift */,
+				C3A7225D2558C38D0043A11F /* AnyPromise+Retaining.swift */,
 				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
 				C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
@@ -3473,6 +3517,8 @@
 				C300A5BB2554AFFB00555489 /* Messages */,
 				C300A5F02554B08500555489 /* Sending & Receiving */,
 				C352A2F325574B3300338F3E /* Jobs */,
+				C3A7215C2558C0AC0043A11F /* File Server */,
+				C3A721332558BDDF0043A11F /* Open Groups */,
 				C3BBE0B32554F0D30050F1E3 /* Utilities */,
 			);
 			path = SessionMessagingKit;
@@ -5025,6 +5071,7 @@
 				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */,
+				C3A7225E2558C38D0043A11F /* AnyPromise+Retaining.swift in Sources */,
 				C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
@@ -5034,6 +5081,7 @@
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
+				C3A7219A2558C1660043A11F /* AnyPromise+Conversion.swift in Sources */,
 				C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5043,6 +5091,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
+				C3A722802558C4E10043A11F /* AttachmentStream.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
 				C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */,
 				C352A32F2557549C00338F3E /* NotifyPNServerJob.swift in Sources */,
@@ -5050,15 +5099,20 @@
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C352A3932557883D00338F3E /* JobDelegate.swift in Sources */,
 				C352A31325574F5200338F3E /* MessageReceiveJob.swift in Sources */,
+				C3A722922558C8940043A11F /* OpenGroupAPIDelegate.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
 				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
+				C3A7213B2558BDFA0043A11F /* OpenGroup.swift in Sources */,
 				C352A3892557876500338F3E /* JobQueue.swift in Sources */,
 				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
+				C3A721902558C0CD0043A11F /* FileServerAPI.swift in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
+				C3A721392558BDFA0043A11F /* OpenGroupAPI.swift in Sources */,
 				C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */,
 				C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */,
+				C3A721382558BDFA0043A11F /* OpenGroupMessage.swift in Sources */,
 				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
@@ -5066,6 +5120,7 @@
 				C3471F4225553A4D00297E91 /* Threading.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
 				C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */,
+				C3A7222A2558C1E40043A11F /* DotNetAPI.swift in Sources */,
 				C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */,
 				C352A349255781F400338F3E /* AttachmentDownloadJob.swift in Sources */,
 				C352A30925574D8500338F3E /* Message+Destination.swift in Sources */,
@@ -5074,6 +5129,7 @@
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
 				C300A5C92554B04E00555489 /* SessionRequest.swift in Sources */,
+				C3A7213A2558BDFA0043A11F /* OpenGroupInfo.swift in Sources */,
 				C352A35B2557824E00338F3E /* AttachmentUploadJob.swift in Sources */,
 				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
 				C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */,

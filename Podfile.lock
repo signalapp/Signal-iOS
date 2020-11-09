@@ -197,6 +197,7 @@ PODS:
   - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
+  - AFNetworking
   - AFNetworking (~> 3.2.1)
   - CocoaLumberjack
   - CryptoSwift
@@ -332,6 +333,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 278b25019daa575575de0bf9baf371f7cdcd4fc4
+PODFILE CHECKSUM: 8fc5917e97576b902a46b328af80664381ede889
 
 COCOAPODS: 1.10.0.rc.1

@@ -1,7 +1,9 @@
 import PromiseKit
+import Curve25519Kit
+import SessionUtilitiesKit
 
-@objc(LKPublicChatMessage)
-public final class PublicChatMessage : NSObject {
+@objc(SNOpenGroupMessage)
+public final class OpenGroupMessage : NSObject {
     public let serverID: UInt64?
     public let senderPublicKey: String
     public let displayName: String
@@ -74,7 +76,8 @@ public final class PublicChatMessage : NSObject {
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, senderPublicKey: String, displayName: String, profilePicture: ProfilePicture?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?, serverTimestamp: UInt64) {
+    public init(serverID: UInt64?, senderPublicKey: String, displayName: String, profilePicture: ProfilePicture?, body: String,
+            type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?, serverTimestamp: UInt64) {
         self.serverID = serverID
         self.senderPublicKey = senderPublicKey
         self.displayName = displayName
@@ -89,7 +92,9 @@ public final class PublicChatMessage : NSObject {
         super.init()
     }
     
-    @objc public convenience init(senderPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64, serverTimestamp: UInt64) {
+    @objc public convenience init(senderPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64,
+            quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64,
+            signatureData: Data?, signatureVersion: UInt64, serverTimestamp: UInt64) {
         let quote: Quote?
         if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey, let quotedMessageBody = quotedMessageBody {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
@@ -107,25 +112,25 @@ public final class PublicChatMessage : NSObject {
     }
     
     // MARK: Crypto
-    internal func sign(with privateKey: Data) -> PublicChatMessage? {
+    internal func sign(with privateKey: Data) -> OpenGroupMessage? {
         guard let data = getValidationData(for: signatureVersion) else {
-            print("[Loki] Failed to sign public chat message.")
+            SNLog("Failed to sign open group message.")
             return nil
         }
-        let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
-        guard let signatureData = try? Ed25519.sign(data, with: userKeyPair) else {
-            print("[Loki] Failed to sign public chat message.")
+        let userKeyPair = Configuration.shared.storage.getUserKeyPair()
+        guard let signatureData = Ed25519.sign(data, with: userKeyPair) else {
+            SNLog("Failed to sign open group message.")
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return PublicChatMessage(serverID: serverID, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: profilePicture, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: serverTimestamp)
+        return OpenGroupMessage(serverID: serverID, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: profilePicture, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: serverTimestamp)
     }
     
     internal func hasValidSignature() -> Bool {
         guard let signature = signature else { return false }
         guard let data = getValidationData(for: signature.version) else { return false }
         let publicKey = Data(hex: self.senderPublicKey.removing05PrefixIfNeeded())
-        return (try? Ed25519.verifySignature(signature.data, publicKey: publicKey, data: data)) ?? false
+        return Ed25519.verifySignature(signature.data, publicKey: publicKey, data: data)
     }
     
     // MARK: JSON
@@ -143,7 +148,6 @@ public final class PublicChatMessage : NSObject {
         }
         let annotation: JSON = [ "type" : type, "value" : value ]
         let attachmentAnnotations: [JSON] = attachments.map { attachment in
-            let type: String
             var attachmentValue: JSON = [
                 // Fields required by the .NET API
                 "version" : 1, "type" : attachment.dotNETType,
@@ -151,7 +155,7 @@ public final class PublicChatMessage : NSObject {
                 "lokiType" : attachment.kind.rawValue, "server" : attachment.server, "id" : attachment.serverID, "contentType" : attachment.contentType, "size" : attachment.size, "fileName" : attachment.fileName, "width" : attachment.width, "height" : attachment.height, "url" : attachment.url
             ]
             if let caption = attachment.caption {
-                attachmentValue["caption"] = attachment.caption
+                attachmentValue["caption"] = caption
             }
             if let linkPreviewURL = attachment.linkPreviewURL {
                 attachmentValue["linkPreviewUrl"] = linkPreviewURL
@@ -169,7 +173,8 @@ public final class PublicChatMessage : NSObject {
     }
     
     // MARK: Convenience
-    @objc public func addAttachment(kind: String, server: String, serverID: UInt64, contentType: String, size: UInt, fileName: String, flags: UInt, width: UInt, height: UInt, caption: String?, url: String, linkPreviewURL: String?, linkPreviewTitle: String?) {
+    @objc public func addAttachment(kind: String, server: String, serverID: UInt64, contentType: String, size: UInt,
+            fileName: String, flags: UInt, width: UInt, height: UInt, caption: String?, url: String, linkPreviewURL: String?, linkPreviewTitle: String?) {
         guard let kind = Attachment.Kind(rawValue: kind) else { preconditionFailure() }
         let attachment = Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags, width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
         attachments.append(attachment)

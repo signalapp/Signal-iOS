@@ -49,7 +49,7 @@ public enum SharedSenderKeys {
         #endif
         guard let ratchet = Configuration.shared.storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: .current) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
-            print("[Loki] \(error.errorDescription!)")
+            SNLog("\(error.errorDescription!)")
             throw error
         }
         do {
@@ -57,7 +57,7 @@ public enum SharedSenderKeys {
             Configuration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: .current, using: transaction)
             return result
         } catch {
-            print("[Loki] Couldn't step ratchet due to error: \(error).")
+            SNLog("Couldn't step ratchet due to error: \(error).")
             throw error
         }
     }
@@ -70,14 +70,14 @@ public enum SharedSenderKeys {
         let collection: ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
         guard let ratchet = Configuration.shared.storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: collection) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
-            print("[Loki] \(error.errorDescription!)")
+            SNLog("\(error.errorDescription!)")
             throw error
         }
         if targetKeyIndex < ratchet.keyIndex {
             // There's no need to advance the ratchet if this is invoked for an old key index
             guard ratchet.messageKeys.count > targetKeyIndex else {
                 let error = RatchetingError.messageKeyMissing(targetKeyIndex: targetKeyIndex, groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
-                print("[Loki] \(error.errorDescription!)")
+                SNLog("\(error.errorDescription!)")
                 throw error
             }
             return ratchet
@@ -89,7 +89,7 @@ public enum SharedSenderKeys {
                     result = try step(result)
                     currentKeyIndex = result.keyIndex
                 } catch {
-                    print("[Loki] Couldn't step ratchet due to error: \(error).")
+                    SNLog("Couldn't step ratchet due to error: \(error).")
                     throw error
                 }
             }

@@ -1,6 +1,6 @@
 
-@objc(LKPublicChat)
-public final class PublicChat : NSObject, NSCoding {
+@objc(SNOpenGroup)
+public final class OpenGroup : NSObject, NSCoding {
     @objc public let id: String
     @objc public let idAsData: Data
     @objc public let channel: UInt64
@@ -39,5 +39,5 @@ public final class PublicChat : NSObject, NSCoding {
         coder.encode(isDeletable, forKey: "isDeletable")
     }
     
-    override public var description: String { return "\(displayName) (\(server))" }
+    override public var description: String { "\(displayName) (\(server))" }
 }

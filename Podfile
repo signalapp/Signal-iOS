@@ -99,6 +99,7 @@ target 'SignalMessaging' do
 end
 
 target 'SessionMessagingKit' do
+  pod 'AFNetworking', inhibit_warnings: true
   pod 'CryptoSwift', :inhibit_warnings => true
   pod 'Curve25519Kit', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true

@@ -1,6 +1,6 @@
 import Foundation
 
-@objc(LKSessionCipher)
+@objc(SNSessionCipher)
 public final class LokiSessionCipher : SessionCipher {
     private let sessionResetImplementation: SessionRestorationProtocol?
     private let sessionStore: SessionStore

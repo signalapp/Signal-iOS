@@ -1,10 +1,11 @@
+import AFNetworking
 import PromiseKit
+import SessionSnodeKit
+import SessionUtilitiesKit
 
-@objc(LKPublicChatAPI)
-public final class PublicChatAPI : DotNetAPI {
+@objc(SNOpenGroupAPI)
+public final class OpenGroupAPI : DotNetAPI {
     private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
-
-    @objc public static let defaultChats: [PublicChat] = [] // Currently unused
 
     public static var displayNameUpdatees: [String:Set<String>] = [:]
 
@@ -16,71 +17,19 @@ public final class PublicChatAPI : DotNetAPI {
 
     public static let profilePictureType = "network.loki.messenger.avatar"
     
-    @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
+    @objc public static let openGroupMessageType = "network.loki.messenger.openGroup"
 
-    // MARK: Convenience
-    private static var userDisplayName: String {
-        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-        return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey) ?? "Anonymous"
-    }
-    
-    // MARK: Database
-    override internal class var authTokenCollection: String { "LokiGroupChatAuthTokenCollection" }
-    
-    @objc public static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
-    @objc public static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
-    
-    private static func getLastMessageServerID(for group: UInt64, on server: String) -> UInt? {
-        var result: UInt? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection) as! UInt?
-        }
-        return result
-    }
-    
-    private static func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: YapDatabaseReadWriteTransaction) {
-        transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
-    }
-    
-    private static func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
-        transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
-    }
-    
-    private static func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt? {
-        var result: UInt? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection) as! UInt?
-        }
-        return result
-    }
-    
-    private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: YapDatabaseReadWriteTransaction) {
-        transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
-    }
-    
-    private static func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
-        transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
-    }
-    
-    public static func clearCaches(for channel: UInt64, on server: String) {
-        Storage.writeSync { transaction in
-            removeLastMessageServerID(for: channel, on: server, using: transaction)
-            removeLastDeletionServerID(for: channel, on: server, using: transaction)
-            Storage.removeOpenGroupPublicKey(for: server, using: transaction)
-        }
-    }
-    
     // MARK: Open Group Public Key Validation
     public static func getOpenGroupServerPublicKey(for server: String) -> Promise<String> {
-        if let publicKey = Storage.getOpenGroupPublicKey(for: server) {
+        if let publicKey = Configuration.shared.storage.getOpenGroupPublicKey(for: server) {
             return Promise.value(publicKey)
         } else {
             return FileServerAPI.getPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { publicKey -> Promise<String> in
                 let url = URL(string: server)!
                 let request = TSRequest(url: url)
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: publicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { _ -> String in
-                    Storage.writeSync { transaction in
-                        Storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
+                    Configuration.shared.storage.with { transaction in
+                        Configuration.shared.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
                     }
                     return publicKey
                 }
@@ -94,61 +43,62 @@ public final class PublicChatAPI : DotNetAPI {
         return AnyPromise.from(getMessages(for: group, on: server))
     }
 
-    public static func getMessages(for channel: UInt64, on server: String) -> Promise<[PublicChatMessage]> {
+    public static func getMessages(for channel: UInt64, on server: String) -> Promise<[OpenGroupMessage]> {
+        let storage = Configuration.shared.storage
         var queryParameters = "include_annotations=1"
-        if let lastMessageServerID = getLastMessageServerID(for: channel, on: server) {
+        if let lastMessageServerID = storage.getLastMessageServerID(for: channel, on: server) {
             queryParameters += "&since_id=\(lastMessageServerID)"
         } else {
             queryParameters += "&count=\(fallbackBatchCount)&include_deleted=0"
         }
         return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[PublicChatMessage]> in
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[OpenGroupMessage]> in
                 let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
                 let request = TSRequest(url: url)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
                     guard let rawMessages = json["data"] as? [JSON] else {
-                        print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
-                        throw DotNetAPIError.parsingFailed
+                        SNLog("Couldn't parse messages for open group channel with ID: \(channel) on server: \(server) from: \(json).")
+                        throw Error.parsingFailed
                     }
-                    return rawMessages.flatMap { message in
+                    return rawMessages.compactMap { message in
                         let isDeleted = (message["is_deleted"] as? Int == 1)
                         guard !isDeleted else { return nil }
                         let dateFormatter = DateFormatter()
                         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                        guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == publicChatMessageType }), let value = annotation["value"] as? JSON,
+                        guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == openGroupMessageType }), let value = annotation["value"] as? JSON,
                             let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? UInt64,
                             let body = message["text"] as? String, let user = message["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String,
                             let timestamp = value["timestamp"] as? UInt64, let dateAsString = message["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
-                                print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
+                                SNLog("Couldn't parse message for open group channel with ID: \(channel) on server: \(server) from: \(message).")
                                 return nil
                         }
                         let serverTimestamp = UInt64(date.timeIntervalSince1970) * 1000
-                        var profilePicture: PublicChatMessage.ProfilePicture? = nil
+                        var profilePicture: OpenGroupMessage.ProfilePicture? = nil
                         let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
                         if let userAnnotations = user["annotations"] as? [JSON], let profilePictureAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
                             let profilePictureValue = profilePictureAnnotation["value"] as? JSON, let profileKeyString = profilePictureValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = profilePictureValue["url"] as? String {
-                            profilePicture = PublicChatMessage.ProfilePicture(profileKey: profileKey, url: url)
+                            profilePicture = OpenGroupMessage.ProfilePicture(profileKey: profileKey, url: url)
                         }
-                        let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
+                        let lastMessageServerID = storage.getLastMessageServerID(for: channel, on: server)
                         if serverID > (lastMessageServerID ?? 0) {
-                            Storage.writeSync { transaction in
-                                setLastMessageServerID(for: channel, on: server, to: serverID, using: transaction)
+                            storage.with { transaction in
+                                storage.setLastMessageServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
-                        let quote: PublicChatMessage.Quote?
+                        let quote: OpenGroupMessage.Quote?
                         if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String,
                             let quotedMessageBody = quoteAsJSON["text"] as? String {
                             let quotedMessageServerID = message["reply_to"] as? UInt64
-                            quote = PublicChatMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteePublicKey, quotedMessageBody: quotedMessageBody,
+                            quote = OpenGroupMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteePublicKey, quotedMessageBody: quotedMessageBody,
                                 quotedMessageServerID: quotedMessageServerID)
                         } else {
                             quote = nil
                         }
-                        let signature = PublicChatMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
+                        let signature = OpenGroupMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
                         let attachmentsAsJSON = annotations.filter { $0["type"] as? String == attachmentType }
-                        let attachments: [PublicChatMessage.Attachment] = attachmentsAsJSON.compactMap { attachmentAsJSON in
-                            guard let value = attachmentAsJSON["value"] as? JSON, let kindAsString = value["lokiType"] as? String, let kind = PublicChatMessage.Attachment.Kind(rawValue: kindAsString),
+                        let attachments: [OpenGroupMessage.Attachment] = attachmentsAsJSON.compactMap { attachmentAsJSON in
+                            guard let value = attachmentAsJSON["value"] as? JSON, let kindAsString = value["lokiType"] as? String, let kind = OpenGroupMessage.Attachment.Kind(rawValue: kindAsString),
                                 let serverID = value["id"] as? UInt64, let contentType = value["contentType"] as? String, let size = value["size"] as? UInt, let url = value["url"] as? String else { return nil }
                             let fileName = value["fileName"] as? String ?? UUID().description
                             let width = value["width"] as? UInt ?? 0
@@ -159,25 +109,22 @@ public final class PublicChatAPI : DotNetAPI {
                             let linkPreviewTitle = value["linkPreviewTitle"] as? String
                             if kind == .linkPreview {
                                 guard linkPreviewURL != nil && linkPreviewTitle != nil else {
-                                    print("[Loki] Ignoring public chat message with invalid link preview.")
+                                    SNLog("Ignoring open group message with invalid link preview.")
                                     return nil
                                 }
                             }
-                            return PublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags,
+                            return OpenGroupMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags,
                                 width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                         }
-                        let result = PublicChatMessage(serverID: serverID, senderPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture,
-                            body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: serverTimestamp)
+                        let result = OpenGroupMessage(serverID: serverID, senderPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture,
+                            body: body, type: openGroupMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: serverTimestamp)
                         guard result.hasValidSignature() else {
-                            print("[Loki] Ignoring public chat message with invalid signature.")
+                            SNLog("Ignoring open group message with invalid signature.")
                             return nil
                         }
-                        var existingMessageID: String? = nil
-                        Storage.read { transaction in
-                            existingMessageID = OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
-                        }
+                        let existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!))
                         guard existingMessageID == nil else {
-                            print("[Loki] Ignoring duplicate public chat message.")
+                            SNLog("Ignoring duplicate open group message.")
                             return nil
                         }
                         return result
@@ -189,18 +136,21 @@ public final class PublicChatAPI : DotNetAPI {
 
     // MARK: Sending
     @objc(sendMessage:toGroup:onServer:)
-    public static func objc_sendMessage(_ message: PublicChatMessage, to group: UInt64, on server: String) -> AnyPromise {
+    public static func objc_sendMessage(_ message: OpenGroupMessage, to group: UInt64, on server: String) -> AnyPromise {
         return AnyPromise.from(sendMessage(message, to: group, on: server))
     }
 
-    public static func sendMessage(_ message: PublicChatMessage, to channel: UInt64, on server: String) -> Promise<PublicChatMessage> {
-        print("[Loki] Sending message to public chat channel with ID: \(channel) on server: \(server).")
-        let (promise, seal) = Promise<PublicChatMessage>.pending()
-        DispatchQueue.global(qos: .userInitiated).async { [privateKey = userKeyPair.privateKey] in
-            guard let signedMessage = message.sign(with: privateKey) else { return seal.reject(DotNetAPIError.signingFailed) }
+    public static func sendMessage(_ message: OpenGroupMessage, to channel: UInt64, on server: String) -> Promise<OpenGroupMessage> {
+        SNLog("Sending message to open group channel with ID: \(channel) on server: \(server).")
+        let storage = Configuration.shared.storage
+        guard let userKeyPair = storage.getUserKeyPair() else { return Promise(error: Error.generic) }
+        guard let userDisplayName = storage.getUserDisplayName() else { return Promise(error: Error.generic) }
+        let (promise, seal) = Promise<OpenGroupMessage>.pending()
+        DispatchQueue.global(qos: .userInitiated).async { [privateKey = userKeyPair.privateKey()] in
+            guard let signedMessage = message.sign(with: privateKey) else { return seal.reject(Error.signingFailed) }
             attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
                 getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
-                    getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<PublicChatMessage> in
+                    getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<OpenGroupMessage> in
                         let url = URL(string: "\(server)/channels/\(channel)/messages")!
                         let parameters = signedMessage.toJSON()
                         let request = TSRequest(url: url, method: "POST", parameters: parameters)
@@ -212,11 +162,11 @@ public final class PublicChatAPI : DotNetAPI {
                             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
                             guard let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
                                 let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
-                                print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
-                                throw DotNetAPIError.parsingFailed
+                                SNLog("Couldn't parse message for open group channel with ID: \(channel) on server: \(server) from: \(json).")
+                                throw Error.parsingFailed
                             }
                             let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                            return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTimestamp: timestamp)
+                            return OpenGroupMessage(serverID: serverID, senderPublicKey: userKeyPair.publicKey()!.toHexString(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: openGroupMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTimestamp: timestamp)
                         }
                     }
                 }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -231,9 +181,10 @@ public final class PublicChatAPI : DotNetAPI {
 
     // MARK: Deletion
     public static func getDeletedMessageServerIDs(for channel: UInt64, on server: String) -> Promise<[UInt64]> {
-        print("[Loki] Getting deleted messages for public chat channel with ID: \(channel) on server: \(server).")
+        SNLog("Getting deleted messages for open group channel with ID: \(channel) on server: \(server).")
+        let storage = Configuration.shared.storage
         let queryParameters: String
-        if let lastDeletionServerID = getLastDeletionServerID(for: channel, on: server) {
+        if let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server) {
             queryParameters = "since_id=\(lastDeletionServerID)"
         } else {
             queryParameters = "count=\(fallbackBatchCount)"
@@ -245,18 +196,18 @@ public final class PublicChatAPI : DotNetAPI {
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
                     guard let body = json["body"] as? JSON, let deletions = body["data"] as? [JSON] else {
-                        print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
-                        throw DotNetAPIError.parsingFailed
+                        SNLog("Couldn't parse deleted messages for open group channel with ID: \(channel) on server: \(server) from: \(json).")
+                        throw Error.parsingFailed
                     }
-                    return deletions.flatMap { deletion in
+                    return deletions.compactMap { deletion in
                         guard let serverID = deletion["id"] as? UInt64, let messageServerID = deletion["message_id"] as? UInt64 else {
-                            print("[Loki] Couldn't parse deleted message for public chat channel with ID: \(channel) on server: \(server) from: \(deletion).")
+                            SNLog("Couldn't parse deleted message for open group channel with ID: \(channel) on server: \(server) from: \(deletion).")
                             return nil
                         }
-                        let lastDeletionServerID = getLastDeletionServerID(for: channel, on: server)
+                        let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server)
                         if serverID > (lastDeletionServerID ?? 0) {
-                            Storage.writeSync { transaction in
-                                setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
+                            storage.with { transaction in
+                                storage.setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
                         return messageServerID
@@ -273,7 +224,7 @@ public final class PublicChatAPI : DotNetAPI {
     
     public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, isSentByUser: Bool) -> Promise<Void> {
         let isModerationRequest = !isSentByUser
-        print("[Loki] Deleting message with ID: \(messageID) for public chat channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
+        SNLog("Deleting message with ID: \(messageID) for open group channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
         let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
             getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
@@ -282,7 +233,7 @@ public final class PublicChatAPI : DotNetAPI {
                     let request = TSRequest(url: url, method: "DELETE", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
-                        print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
+                        SNLog("Deleted message with ID: \(messageID) on server: \(server).")
                     }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -291,10 +242,10 @@ public final class PublicChatAPI : DotNetAPI {
 
     // MARK: Display Name & Profile Picture
     public static func getDisplayNames(for channel: UInt64, on server: String) -> Promise<Void> {
-        let publicChatID = "\(server).\(channel)"
-        guard let publicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
-        displayNameUpdatees[publicChatID] = []
-        print("[Loki] Getting display names for: \(publicKeys).")
+        let openGroupID = "\(server).\(channel)"
+        guard let publicKeys = displayNameUpdatees[openGroupID] else { return Promise.value(()) }
+        displayNameUpdatees[openGroupID] = []
+        SNLog("Getting display names for: \(publicKeys).")
         return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
             getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
                 let queryParameters = "ids=\(publicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
@@ -302,16 +253,17 @@ public final class PublicChatAPI : DotNetAPI {
                 let request = TSRequest(url: url)
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
                     guard let data = json["data"] as? [JSON] else {
-                        print("[Loki] Couldn't parse display names for users: \(publicKeys) from: \(json).")
-                        throw DotNetAPIError.parsingFailed
+                        SNLog("Couldn't parse display names for users: \(publicKeys) from: \(json).")
+                        throw Error.parsingFailed
                     }
-                    Storage.writeSync { transaction in
+                    let storage = Configuration.shared.storage
+                    storage.with { transaction in
                         data.forEach { data in
                             guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
                             let endIndex = hexEncodedPublicKey.endIndex
                             let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
                             let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                            transaction.setObject(displayName, forKey: hexEncodedPublicKey, inCollection: "\(server).\(channel)")
+                            storage.setOpenGroupDisplayName(to: displayName, for: hexEncodedPublicKey, on: channel, server: server, using: transaction)
                         }
                     }
                 }
@@ -325,7 +277,7 @@ public final class PublicChatAPI : DotNetAPI {
     }
 
     public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
-        print("[Loki] Updating display name on server: \(server).")
+        SNLog("Updating display name on server: \(server).")
         let parameters: JSON = [ "name" : (newDisplayName ?? "") ]
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
             getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
@@ -348,7 +300,7 @@ public final class PublicChatAPI : DotNetAPI {
     }
 
     public static func setProfilePictureURL(to url: String?, using profileKey: Data, on server: String) -> Promise<Void> {
-        print("[Loki] Updating profile picture on server: \(server).")
+        SNLog("Updating profile picture on server: \(server).")
         var annotation: JSON = [ "type" : profilePictureType ]
         if let url = url {
             annotation["value"] = [ "profileKey" : profileKey.base64EncodedString(), "url" : url ]
@@ -361,41 +313,11 @@ public final class PublicChatAPI : DotNetAPI {
                     let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
-                        print("[Loki] Couldn't update profile picture due to error: \(error).")
+                        SNLog("Couldn't update profile picture due to error: \(error).")
                         throw error
                     }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
-        }
-    }
-
-    static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: PublicChatInfo) {
-        let storage = OWSPrimaryStorage.shared()
-        let publicChatID = "\(server).\(channel)"
-        Storage.writeSync { transaction in
-            // Update user count
-            storage.setUserCount(info.memberCount, forPublicChatWithID: publicChatID, in: transaction)
-            let groupThread = TSGroupThread.getOrCreateThread(withGroupId: publicChatID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
-            // Update display name if needed
-            let groupModel = groupThread.groupModel
-            if groupModel.groupName != info.displayName {
-                let newGroupModel = TSGroupModel(title: info.displayName, memberIds: groupModel.groupMemberIds, image: groupModel.groupImage, groupId: groupModel.groupId, groupType: groupModel.groupType, adminIds: groupModel.groupAdminIds)
-                groupThread.groupModel = newGroupModel
-                groupThread.save(with: transaction)
-            }
-            // Download and update profile picture if needed
-            let oldProfilePictureURL = storage.getProfilePictureURL(forPublicChatWithID: publicChatID, in: transaction)
-            if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
-                storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
-                if let profilePictureURL = info.profilePictureURL {
-                    let url = server.hasSuffix("/") ? "\(server)\(profilePictureURL)" : "\(server)/\(profilePictureURL)"
-                    FileServerAPI.downloadAttachment(from: url).map2 { data in
-                        let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
-                        try attachmentStream.write(data)
-                        groupThread.updateAvatar(with: attachmentStream)
-                    }
-                }
-            }
         }
     }
 
@@ -405,10 +327,10 @@ public final class PublicChatAPI : DotNetAPI {
         return AnyPromise.from(getInfo(for: channel, on: server))
     }
 
-    public static func getInfo(for channel: UInt64, on server: String) -> Promise<PublicChatInfo> {
+    public static func getInfo(for channel: UInt64, on server: String) -> Promise<OpenGroupInfo> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
             getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
-                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<PublicChatInfo> in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<OpenGroupInfo> in
                     let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
                     let request = TSRequest(url: url)
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
@@ -421,16 +343,16 @@ public final class PublicChatAPI : DotNetAPI {
                             let profilePictureURL = info["avatar"] as? String,
                             let countInfo = data["counts"] as? JSON,
                             let memberCount = countInfo["subscribers"] as? Int else {
-                            print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
-                            throw DotNetAPIError.parsingFailed
+                            SNLog("Couldn't parse info for open group channel with ID: \(channel) on server: \(server) from: \(json).")
+                            throw Error.parsingFailed
                         }
-                        let storage = OWSPrimaryStorage.shared()
-                        Storage.writeSync { transaction in
-                            storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
+                        let storage = Configuration.shared.storage
+                        storage.with { transaction in
+                            storage.setUserCount(to: memberCount, forOpenGroupWithID: "\(server).\(channel)", using: transaction)
                         }
-                        let publicChatInfo = PublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
-                        updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo)
-                        return publicChatInfo
+                        let openGroupInfo = OpenGroupInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
+                        Configuration.shared.openGroupAPIDelegate.updateProfileIfNeeded(for: channel, on: server, from: openGroupInfo)
+                        return openGroupInfo
                     }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -445,7 +367,7 @@ public final class PublicChatAPI : DotNetAPI {
                     let request = TSRequest(url: url, method: "POST", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
-                        print("[Loki] Joined channel with ID: \(channel) on server: \(server).")
+                        SNLog("Joined channel with ID: \(channel) on server: \(server).")
                     }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -460,7 +382,7 @@ public final class PublicChatAPI : DotNetAPI {
                     let request = TSRequest(url: url, method: "DELETE", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
-                        print("[Loki] Left channel with ID: \(channel) on server: \(server).")
+                        SNLog("Left channel with ID: \(channel) on server: \(server).")
                     }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -491,8 +413,8 @@ public final class PublicChatAPI : DotNetAPI {
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
                     guard let moderators = json["moderators"] as? [String] else {
-                        print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
-                        throw DotNetAPIError.parsingFailed
+                        SNLog("Couldn't parse moderators for open group channel with ID: \(channel) on server: \(server) from: \(json).")
+                        throw Error.parsingFailed
                     }
                     let moderatorsAsSet = Set(moderators);
                     if self.moderators.keys.contains(server) {
@@ -515,11 +437,14 @@ public final class PublicChatAPI : DotNetAPI {
 // MARK: Error Handling
 internal extension Promise {
 
-    internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
-        return recover2 { error -> Promise<T> in
+    func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
+        return recover(on: DispatchQueue.global(qos: .userInitiated)) { error -> Promise<T> in
             if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                print("[Loki] Auth token for: \(server) expired; dropping it.")
-                PublicChatAPI.removeAuthToken(for: server)
+                SNLog("Auth token for: \(server) expired; dropping it.")
+                let storage = Configuration.shared.storage
+                storage.with { transaction in
+                    storage.removeAuthToken(for: server, using: transaction)
+                }
             }
             throw error
         }

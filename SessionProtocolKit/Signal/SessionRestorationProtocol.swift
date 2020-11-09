@@ -1,5 +1,5 @@
 
-@objc(LKSessionRestorationProtocol)
+@objc(SNSessionRestorationProtocol)
 public protocol SessionRestorationProtocol {
 
     func validatePreKeyWhisperMessage(for publicKey: String, preKeyWhisperMessage: PreKeyWhisperMessage, using transaction: Any) throws

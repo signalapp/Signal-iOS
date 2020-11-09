@@ -35,7 +35,7 @@ import SessionUtilitiesKit
         do {
             return try DiffieHellman.encrypt(plaintext, using: symmetricKey)
         } catch {
-            print("[Loki] Couldn't encrypt message using fallback session cipher due to error: \(error).")
+            SNLog("Couldn't encrypt message using fallback session cipher due to error: \(error).")
             return nil
         }
     }
@@ -45,7 +45,7 @@ import SessionUtilitiesKit
         do {
             return try DiffieHellman.decrypt(ivAndCiphertext, using: symmetricKey)
         } catch {
-            print("[Loki] Couldn't decrypt message using fallback session cipher due to error: \(error).")
+            SNLog("Couldn't decrypt message using fallback session cipher due to error: \(error).")
             return nil
         }
     }
