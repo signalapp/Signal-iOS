@@ -34,12 +34,12 @@ static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
 
 @implementation NSTimer (OWS)
 
-- (NSTimerProxy *)ows_proxy
+- (NSTimerProxy *)sn_proxy
 {
     return objc_getAssociatedObject(self, kNSTimer_OWS_Proxy);
 }
 
-- (void)ows_setProxy:(NSTimerProxy *)proxy
+- (void)sn_setProxy:(NSTimerProxy *)proxy
 {
     OWSAssertDebug(proxy);
 
@@ -60,7 +60,7 @@ static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
                                                     selector:@selector(timerFired:)
                                                     userInfo:userInfo
                                                      repeats:repeats];
-    [timer ows_setProxy:proxy];
+    [timer sn_setProxy:proxy];
     return timer;
 }
 
