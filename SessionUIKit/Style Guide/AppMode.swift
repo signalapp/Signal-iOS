@@ -1,3 +1,4 @@
+import Foundation
 
 @objc(LKAppModeManager)
 public final class AppModeManager : NSObject {

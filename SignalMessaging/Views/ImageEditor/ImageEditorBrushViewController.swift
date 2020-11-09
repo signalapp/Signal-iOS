@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SessionUIKit
 
 @objc
 public protocol ImageEditorBrushViewControllerDelegate: class {

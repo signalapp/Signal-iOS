@@ -3,6 +3,7 @@
 //
 
 import PromiseKit
+import SessionUIKit
 
 public protocol GalleryRailItemProvider: class {
     var railItems: [GalleryRailItem] { get }

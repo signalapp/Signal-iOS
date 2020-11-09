@@ -1,12 +1,13 @@
+import UIKit
 
-final class SearchBar : UISearchBar {
+public final class SearchBar : UISearchBar {
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         setUpStyle()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpStyle()
     }
@@ -15,9 +16,9 @@ final class SearchBar : UISearchBar {
         searchBarStyle = .minimal // Hide the border around the search bar
         barStyle = .black // Use Apple's black design as a base
         tintColor = Colors.accent // The cursor color
-        let searchImage = #imageLiteral(resourceName: "searchbar_search").asTintedImage(color: Colors.searchBarPlaceholder)!
+        let searchImage = #imageLiteral(resourceName: "searchbar_search").withTint(Colors.searchBarPlaceholder)!
         setImage(searchImage, for: .search, state: .normal)
-        let clearImage = #imageLiteral(resourceName: "searchbar_clear").asTintedImage(color: Colors.searchBarPlaceholder)!
+        let clearImage = #imageLiteral(resourceName: "searchbar_clear").withTint(Colors.searchBarPlaceholder)!
         setImage(clearImage, for: .clear, state: .normal)
         let searchTextField: UITextField
         if #available(iOS 13, *) {

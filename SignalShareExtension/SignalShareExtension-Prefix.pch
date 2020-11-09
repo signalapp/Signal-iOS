@@ -18,4 +18,5 @@
     #import <SessionCoreKit/OWSAsserts.h>
     #import <SessionServiceKit/OWSAnalytics.h>
     #import <SessionCoreKit/NSObject+OWS.h>
+    #import <SessionUIKit/SessionUIKit.h>
 #endif

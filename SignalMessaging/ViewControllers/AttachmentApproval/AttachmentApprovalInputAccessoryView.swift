@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SessionUIKit
 
 protocol AttachmentApprovalInputAccessoryViewDelegate: class {
     func attachmentApprovalInputUpdateMediaRail()

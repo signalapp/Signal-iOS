@@ -22,4 +22,5 @@
     #import <SessionServiceKit/NSArray+Functional.h>
     #import <SessionServiceKit/NSSet+Functional.h>
     #import <SessionServiceKit/NSObject+Casting.h>
+    #import <SessionUIKit/SessionUIKit.h>
 #endif

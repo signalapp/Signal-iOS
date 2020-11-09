@@ -1,3 +1,4 @@
+import SessionUIKit
 
 @objc(LKSessionRestorationView)
 final class SessionRestorationView : UIView {

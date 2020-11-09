@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SessionUIKit
 
 public extension NSObject {
 

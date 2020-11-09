@@ -6,6 +6,7 @@ import Foundation
 import MediaPlayer
 import YYImage
 import SessionServiceKit
+import SessionUIKit
 
 @objc
 public enum MediaMessageViewMode: UInt {

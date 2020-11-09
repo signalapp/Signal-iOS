@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 @objc
 public class ConversationStyle: NSObject {

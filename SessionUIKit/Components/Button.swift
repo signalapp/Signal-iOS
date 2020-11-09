@@ -1,18 +1,19 @@
+import UIKit
 
-final class Button : UIButton {
+public final class Button : UIButton {
     private let style: Style
     private let size: Size
     private var heightConstraint: NSLayoutConstraint!
     
-    enum Style {
+    public enum Style {
         case unimportant, regular, prominentOutline, prominentFilled, regularBorderless
     }
     
-    enum Size {
+    public enum Size {
         case medium, large, small
     }
     
-    init(style: Style, size: Size) {
+    public init(style: Style, size: Size) {
         self.style = style
         self.size = size
         super.init(frame: .zero)

@@ -6,6 +6,7 @@ import Foundation
 import AVFoundation
 import MediaPlayer
 import PromiseKit
+import SessionUIKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {

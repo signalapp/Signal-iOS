@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SessionUIKit
 
 protocol AttachmentCaptionToolbarDelegate: class {
     func attachmentCaptionToolbarDidEdit(_ attachmentCaptionToolbar: AttachmentCaptionToolbar)

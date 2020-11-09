@@ -1,3 +1,4 @@
+import UIKit
 
 @objc(LKGradient)
 public final class Gradient : NSObject {

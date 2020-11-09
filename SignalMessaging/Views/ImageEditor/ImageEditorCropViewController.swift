@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SessionUIKit
 
 public protocol ImageEditorCropViewControllerDelegate: class {
     func cropDidComplete(transform: ImageEditorTransform)

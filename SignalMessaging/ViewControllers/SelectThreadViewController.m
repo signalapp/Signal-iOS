@@ -23,6 +23,7 @@
 #import <SessionServiceKit/TSContactThread.h>
 #import <SessionServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

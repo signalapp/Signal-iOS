@@ -14,6 +14,7 @@
 #import <SessionServiceKit/OWSError.h>
 #import <SessionServiceKit/OWSMessageSender.h>
 #import <SessionServiceKit/TSThread.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

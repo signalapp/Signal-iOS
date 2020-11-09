@@ -1,3 +1,4 @@
+import UIKit
 
 final class UserCell : UITableViewCell {
     var accessory = Accessory.none

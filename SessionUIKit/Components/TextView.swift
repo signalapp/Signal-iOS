@@ -1,12 +1,13 @@
+import UIKit
 
-final class TextView : UITextView, UITextViewDelegate {
+public final class TextView : UITextView, UITextViewDelegate {
     private let usesDefaultHeight: Bool
     private let height: CGFloat
     private let horizontalInset: CGFloat
     private let verticalInset: CGFloat
     private let placeholder: String
 
-    override var contentSize: CGSize { didSet { centerTextVertically() } }
+    public override var contentSize: CGSize { didSet { centerTextVertically() } }
 
     private lazy var placeholderLabel: UILabel = {
         let result = UILabel()
@@ -15,7 +16,7 @@ final class TextView : UITextView, UITextViewDelegate {
         return result
     }()
 
-    init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
+    public init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
         self.height = customHeight ?? Values.textFieldHeight
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
@@ -26,11 +27,11 @@ final class TextView : UITextView, UITextViewDelegate {
         setUpStyle()
     }
 
-    override init(frame: CGRect, textContainer: NSTextContainer?) {
+    public override init(frame: CGRect, textContainer: NSTextContainer?) {
         preconditionFailure("Use init(placeholder:) instead.")
     }
 
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         preconditionFailure("Use init(placeholder:) instead.")
     }
 
@@ -50,7 +51,7 @@ final class TextView : UITextView, UITextViewDelegate {
         layer.borderWidth = Values.borderThickness
         layer.cornerRadius = Values.textFieldCornerRadius
         let horizontalInset = usesDefaultHeight ? self.horizontalInset : Values.mediumSpacing
-        textContainerInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
+        textContainerInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
         addSubview(placeholderLabel)
         placeholderLabel.pin(.leading, to: .leading, of: self, withInset: horizontalInset + 3) // Slight visual adjustment
         placeholderLabel.pin(.top, to: .top, of: self)
@@ -58,7 +59,7 @@ final class TextView : UITextView, UITextViewDelegate {
         pin(.bottom, to: .bottom, of: placeholderLabel)
     }
 
-    func textViewDidChange(_ textView: UITextView) {
+    public func textViewDidChange(_ textView: UITextView) {
         placeholderLabel.isHidden = !text.isEmpty
     }
 

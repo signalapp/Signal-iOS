@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import AVFoundation
+import SessionUIKit
 
 protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewControllerUpdateNavigationBar()

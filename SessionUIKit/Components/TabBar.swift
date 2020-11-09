@@ -1,5 +1,6 @@
+import UIKit
 
-final class TabBar : UIView {
+public final class TabBar : UIView {
     private let tabs: [Tab]
     private var accentLineViewHorizontalCenteringConstraint: NSLayoutConstraint!
     private var accentLineViewWidthConstraint: NSLayoutConstraint!
@@ -22,23 +23,28 @@ final class TabBar : UIView {
     }()
     
     // MARK: Types
-    struct Tab {
+    public struct Tab {
         let title: String
         let onTap: () -> Void
+
+        public init(title: String, onTap: @escaping () -> Void) {
+            self.title = title
+            self.onTap = onTap
+        }
     }
     
     // MARK: Lifecycle
-    init(tabs: [Tab]) {
+    public init(tabs: [Tab]) {
         self.tabs = tabs
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         preconditionFailure("Use init(tabs:) instead.")
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         preconditionFailure("Use init(tabs:) instead.")
     }
     
@@ -75,7 +81,7 @@ final class TabBar : UIView {
     }
 
     // MARK: Updating
-    func selectTab(at index: Int, withAnimatedTransition isAnimated: Bool = true) {
+    public func selectTab(at index: Int, withAnimatedTransition isAnimated: Bool = true) {
         let tabLabel = tabLabels[index]
         accentLineViewHorizontalCenteringConstraint?.isActive = false
         accentLineViewHorizontalCenteringConstraint = accentLineView.centerXAnchor.constraint(equalTo: tabLabel.centerXAnchor)

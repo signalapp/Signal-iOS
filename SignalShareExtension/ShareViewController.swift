@@ -8,6 +8,7 @@ import SignalMessaging
 import PureLayout
 import SessionServiceKit
 import PromiseKit
+import SessionUIKit
 
 @objc
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate, AppModeManagerDelegate {

@@ -1,5 +1,6 @@
+import UIKit
 
-final class Separator : UIView {
+public final class Separator : UIView {
     private let title: String
     
     // MARK: Components
@@ -20,17 +21,17 @@ final class Separator : UIView {
     }()
     
     // MARK: Initialization
-    init(title: String) {
+    public init(title: String) {
         self.title = title
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         preconditionFailure("Use init(title:) instead.")
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         preconditionFailure("Use init(title:) instead.")
     }
     
@@ -44,14 +45,14 @@ final class Separator : UIView {
     }
     
     // MARK: Updating
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         updateLineLayer()
     }
     
     private func updateLineLayer() {
-        let w = width()
-        let h = height()
+        let w = bounds.width
+        let h = bounds.height
         let path = UIBezierPath()
         path.move(to: CGPoint(x: 0, y: h / 2))
         let titleLabelFrame = titleLabel.frame.insetBy(dx: -10, dy: -6)

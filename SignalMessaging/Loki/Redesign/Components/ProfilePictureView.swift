@@ -1,3 +1,4 @@
+import SessionUIKit
 
 @objc(LKProfilePictureView)
 public final class ProfilePictureView : UIView {

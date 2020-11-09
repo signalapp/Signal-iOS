@@ -13,6 +13,7 @@
 #import <SessionServiceKit/TSContactThread.h>
 #import <SessionServiceKit/TSGroupThread.h>
 #import <SessionServiceKit/TSThread.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

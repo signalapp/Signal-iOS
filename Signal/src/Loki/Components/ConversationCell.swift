@@ -1,3 +1,4 @@
+import UIKit
 
 final class ConversationCell : UITableViewCell {
     var threadViewModel: ThreadViewModel! { didSet { update() } }

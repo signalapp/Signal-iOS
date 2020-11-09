@@ -7,6 +7,7 @@
 #import "UIColor+OWS.h"
 #import <SessionServiceKit/AppContext.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
 

@@ -1,11 +1,12 @@
+import UIKit
 
-final class TextField : UITextField {
+public final class TextField : UITextField {
     private let usesDefaultHeight: Bool
     private let height: CGFloat
     private let horizontalInset: CGFloat
     private let verticalInset: CGFloat
 
-    init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
+    public init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
         self.height = customHeight ?? Values.textFieldHeight
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
@@ -15,11 +16,11 @@ final class TextField : UITextField {
         setUpStyle()
     }
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         preconditionFailure("Use init(placeholder:) instead.")
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         preconditionFailure("Use init(placeholder:) instead.")
     }
     
@@ -40,7 +41,7 @@ final class TextField : UITextField {
         layer.cornerRadius = Values.textFieldCornerRadius
     }
     
-    override func textRect(forBounds bounds: CGRect) -> CGRect {
+    public override func textRect(forBounds bounds: CGRect) -> CGRect {
         if usesDefaultHeight {
             return bounds.insetBy(dx: horizontalInset, dy: verticalInset)
         } else {
@@ -48,7 +49,7 @@ final class TextField : UITextField {
         }
     }
     
-    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+    public override func editingRect(forBounds bounds: CGRect) -> CGRect {
         if usesDefaultHeight {
             return bounds.insetBy(dx: horizontalInset, dy: verticalInset)
         } else {

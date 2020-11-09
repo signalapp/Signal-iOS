@@ -5,6 +5,7 @@
 #import "OWSTextView.h"
 #import "Theme.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

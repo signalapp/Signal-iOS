@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 // Separate iOS Frameworks from other imports.
 #import "AppDelegate.h"

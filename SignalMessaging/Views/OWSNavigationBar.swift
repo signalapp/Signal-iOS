@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SessionUIKit
 
 @objc
 public protocol NavBarLayoutDelegate: class {
