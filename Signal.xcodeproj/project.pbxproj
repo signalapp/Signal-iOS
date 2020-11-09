@@ -664,6 +664,7 @@
 		C3A7225E2558C38D0043A11F /* AnyPromise+Retaining.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7225D2558C38D0043A11F /* AnyPromise+Retaining.swift */; };
 		C3A722802558C4E10043A11F /* AttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7227F2558C4E10043A11F /* AttachmentStream.swift */; };
 		C3A722922558C8940043A11F /* OpenGroupAPIDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A722912558C8940043A11F /* OpenGroupAPIDelegate.swift */; };
+		C3A7229C2558E4310043A11F /* OpenGroupMessage+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
 		C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE07F2554CDD70050F1E3 /* Storage.swift */; };
@@ -1713,6 +1714,7 @@
 		C3A7225D2558C38D0043A11F /* AnyPromise+Retaining.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPromise+Retaining.swift"; sourceTree = "<group>"; };
 		C3A7227F2558C4E10043A11F /* AttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStream.swift; sourceTree = "<group>"; };
 		C3A722912558C8940043A11F /* OpenGroupAPIDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupAPIDelegate.swift; sourceTree = "<group>"; };
+		C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenGroupMessage+Conversion.swift"; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3BBE0752554CDA60050F1E3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -3405,6 +3407,7 @@
 				C3A722912558C8940043A11F /* OpenGroupAPIDelegate.swift */,
 				C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */,
 				C3A721342558BDF90043A11F /* OpenGroupMessage.swift */,
+				C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */,
 			);
 			path = "Open Groups";
 			sourceTree = "<group>";
@@ -5090,6 +5093,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3A7229C2558E4310043A11F /* OpenGroupMessage+Conversion.swift in Sources */,
 				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
 				C3A722802558C4E10043A11F /* AttachmentStream.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,

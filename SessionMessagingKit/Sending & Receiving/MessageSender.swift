@@ -23,7 +23,7 @@ internal enum MessageSender {
     internal static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         switch destination {
         case .contact(_), .closedGroup(_): return sendToSnodeDestination(destination, message: message, using: transaction)
-        default: fatalError("Not implemented.")
+        case .openGroup(_, _): return sendToOpenGroupDestination(destination, message: message, using: transaction)
         }
     }
 
@@ -132,5 +132,25 @@ internal enum MessageSender {
             }
         }
         return promise
+    }
+
+    internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+        guard message.isValid else { return Promise(error: Error.invalidMessage) }
+        let (channel, server) = { () -> (UInt64, String) in
+            switch destination {
+            case .openGroup(let channel, let server): return (channel, server)
+            default: preconditionFailure()
+            }
+        }()
+        guard let message = message as? VisibleMessage,
+            let openGroupMessage = OpenGroupMessage.from(message, for: server) else { return Promise(error: Error.invalidMessage) }
+        let promise = OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server)
+        let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+            // TODO: Save server message ID
+        }
+        promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+            // TODO: Handle failure
+        }
+        return promise.map { _ in }
     }
 }

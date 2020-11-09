@@ -40,6 +40,7 @@ internal enum MessageReceiver {
         case .closedGroupCiphertext: (plaintext, _) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
         default: throw Error.unknownEnvelopeType
         }
+        // Parse the proto
         let proto: SNProtoContent
         do {
             proto = try SNProtoContent.parseData((plaintext as NSData).removePadding())
@@ -47,6 +48,7 @@ internal enum MessageReceiver {
             SNLog("Couldn't parse proto due to error: \(error).")
             throw error
         }
+        // Parse the message
         let message: Message? = {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
             if let sessionRequest = SessionRequest.fromProto(proto) { return sessionRequest }

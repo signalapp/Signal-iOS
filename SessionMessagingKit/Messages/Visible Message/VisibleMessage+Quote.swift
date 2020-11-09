@@ -8,6 +8,8 @@ public extension VisibleMessage {
         public var publicKey: String?
         public var text: String?
 
+        public var isValid: Bool { timestamp != nil && publicKey != nil && text != nil }
+
         internal init(timestamp: UInt64, publicKey: String, text: String) {
             self.timestamp = timestamp
             self.publicKey = publicKey

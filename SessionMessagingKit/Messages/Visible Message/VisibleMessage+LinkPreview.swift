@@ -7,6 +7,8 @@ public extension VisibleMessage {
         public var title: String?
         public var url: String?
 
+        public var isValid: Bool { title != nil && url != nil } 
+
         internal init(title: String?, url: String) {
             self.title = title
             self.url = url
