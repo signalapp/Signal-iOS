@@ -5,7 +5,7 @@ public final class ClosedGroupSenderKey : NSObject, NSCoding { // NSObject/NSCod
     public let publicKey: Data
 
     // MARK: Initialization
-    init(chainKey: Data, keyIndex: UInt, publicKey: Data) {
+    public init(chainKey: Data, keyIndex: UInt, publicKey: Data) {
         self.chainKey = chainKey
         self.keyIndex = keyIndex
         self.publicKey = publicKey

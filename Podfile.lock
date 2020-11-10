@@ -206,12 +206,14 @@ DEPENDENCIES:
   - FeedKit (~> 8.1)
   - GRKOpenSSLFramework
   - HKDFKit
+  - libPhoneNumber-iOS
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView (~> 4.7)
   - PromiseKit
   - PromiseKit (= 6.5.3)
   - PureLayout (~> 3.1.4)
   - Reachability
+  - SAMKeychain
   - SessionAxolotlKit (from `https://github.com/loki-project/session-ios-protocol-kit.git`, branch `master`)
   - SessionAxolotlKit/Tests (from `https://github.com/loki-project/session-ios-protocol-kit.git`, branch `master`)
   - SessionCoreKit (from `https://github.com/loki-project/session-ios-core-kit.git`)
@@ -333,6 +335,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 8fc5917e97576b902a46b328af80664381ede889
+PODFILE CHECKSUM: d78dc9a752cd3ce8f01fa327b8518dff3f5236d5
 
 COCOAPODS: 1.10.0.rc.1

@@ -2,15 +2,15 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
 
-internal enum MessageSender {
+public enum MessageSender {
 
-    internal enum Error : LocalizedError {
+    public enum Error : LocalizedError {
         case invalidMessage
         case protoConversionFailed
         case proofOfWorkCalculationFailed
         case noUserPublicKey
 
-        internal var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .invalidMessage: return "Invalid message."
             case .protoConversionFailed: return "Couldn't convert message to proto."

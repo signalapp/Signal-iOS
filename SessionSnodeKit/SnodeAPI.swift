@@ -1,15 +1,18 @@
 import PromiseKit
 import SessionUtilitiesKit
 
-public enum SnodeAPI {
+@objc(SNSnodeAPI)
+public final class SnodeAPI : NSObject {
 
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     internal static var snodeFailureCount: [Snode:UInt] = [:]
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     internal static var snodePool: Set<Snode> = []
+
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    internal static var swarmCache: [String:Set<Snode>] = [:]
-    
+    public static var swarmCache: [String:Set<Snode>] = [:]
+    public static var workQueue: DispatchQueue { Threading.workQueue }
+
     // MARK: Settings
     private static let maxRetryCount: UInt = 4
     private static let minimumSnodePoolCount = 64
@@ -25,11 +28,13 @@ public enum SnodeAPI {
     
     // MARK: Error
     public enum Error : LocalizedError {
+        case generic
         case clockOutOfSync
         case randomSnodePoolUpdatingFailed
 
         public var errorDescription: String? {
             switch self {
+            case .generic: return "An error occurred."
             case .clockOutOfSync: return "Your clock is out of sync with the service node network."
             case .randomSnodePoolUpdatingFailed: return "Failed to update random service node pool."
             }
@@ -41,8 +46,8 @@ public enum SnodeAPI {
     public typealias RawResponse = Any
     public typealias RawResponsePromise = Promise<RawResponse>
     
-    // MARK: Core
-    internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String, parameters: JSON) -> RawResponsePromise {
+    // MARK: Internal API
+    public static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String, parameters: JSON) -> RawResponsePromise {
         if useOnionRequests {
             return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
         } else {
@@ -109,7 +114,40 @@ public enum SnodeAPI {
         }
     }
 
-    internal static func getSwarm(for publicKey: String, isForcedReload: Bool = false) -> Promise<Set<Snode>> {
+    internal static func dropSnodeFromSnodePool(_ snode: Snode) {
+        var snodePool = SnodeAPI.snodePool
+        snodePool.remove(snode)
+        SnodeAPI.snodePool = snodePool
+        Configuration.shared.storage.with { transaction in
+            Configuration.shared.storage.setSnodePool(to: snodePool, using: transaction)
+        }
+    }
+
+    public static func clearSnodePool() {
+        snodePool.removeAll()
+        Configuration.shared.storage.with { transaction in
+            Configuration.shared.storage.setSnodePool(to: [], using: transaction)
+        }
+    }
+
+    // MARK: Public API
+    public static func dropSnodeFromSwarmIfNeeded(_ snode: Snode, publicKey: String) {
+        let swarm = SnodeAPI.swarmCache[publicKey]
+        if var swarm = swarm, let index = swarm.firstIndex(of: snode) {
+            swarm.remove(at: index)
+            SnodeAPI.swarmCache[publicKey] = swarm
+            Configuration.shared.storage.with { transaction in
+                Configuration.shared.storage.setSwarm(to: swarm, for: publicKey, using: transaction)
+            }
+        }
+    }
+
+    public static func getTargetSnodes(for publicKey: String) -> Promise<[Snode]> {
+        // shuffled() uses the system's default random generator, which is cryptographically secure
+        return getSwarm(for: publicKey).map2 { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
+    }
+
+    public static func getSwarm(for publicKey: String, isForcedReload: Bool = false) -> Promise<Set<Snode>> {
         if swarmCache[publicKey] == nil {
             swarmCache[publicKey] = Configuration.shared.storage.getSwarm(for: publicKey)
         }
@@ -133,48 +171,26 @@ public enum SnodeAPI {
         }
     }
 
-    internal static func getTargetSnodes(for publicKey: String) -> Promise<[Snode]> {
-        // shuffled() uses the system's default random generator, which is cryptographically secure
-        return getSwarm(for: publicKey).map2 { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
-    }
-
-    internal static func dropSnodeFromSnodePool(_ snode: Snode) {
-        var snodePool = SnodeAPI.snodePool
-        snodePool.remove(snode)
-        SnodeAPI.snodePool = snodePool
-        Configuration.shared.storage.with { transaction in
-            Configuration.shared.storage.setSnodePool(to: snodePool, using: transaction)
+    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+        let storage = Configuration.shared.storage
+        storage.with { transaction in
+            storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
         }
+        let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
+        let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
+        return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
-    public static func clearSnodePool() {
-        snodePool.removeAll()
-        Configuration.shared.storage.with { transaction in
-            Configuration.shared.storage.setSnodePool(to: [], using: transaction)
-        }
-    }
-
-    internal static func dropSnodeFromSwarmIfNeeded(_ snode: Snode, publicKey: String) {
-        let swarm = SnodeAPI.swarmCache[publicKey]
-        if var swarm = swarm, let index = swarm.firstIndex(of: snode) {
-            swarm.remove(at: index)
-            SnodeAPI.swarmCache[publicKey] = swarm
-            Configuration.shared.storage.with { transaction in
-                Configuration.shared.storage.setSwarm(to: swarm, for: publicKey, using: transaction)
-            }
-        }
-    }
-
-    // MARK: Receiving
     public static func getMessages(for publicKey: String) -> Promise<Set<MessageListPromise>> {
         let (promise, seal) = Promise<Set<MessageListPromise>>.pending()
+        let storage = Configuration.shared.storage
         Threading.workQueue.async {
             attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                 getTargetSnodes(for: publicKey).mapValues2 { targetSnode in
-                    Configuration.shared.storage.with { transaction in
-                        Configuration.shared.storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey, using: transaction)
+                    storage.with { transaction in
+                        storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey, using: transaction)
                     }
-                    let lastHash = Configuration.shared.storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
+                    let lastHash = storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
                     let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
                     return invoke(.getMessages, on: targetSnode, associatedWith: publicKey, parameters: parameters).map2 { rawResponse in
                         parseRawMessagesResponse(rawResponse, from: targetSnode, associatedWith: publicKey)
@@ -185,7 +201,6 @@ public enum SnodeAPI {
         return promise
     }
 
-    // MARK: Sending
     public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
         let publicKey = message.recipient
@@ -230,7 +245,7 @@ public enum SnodeAPI {
         })
     }
 
-    internal static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [JSON] {
+    public static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [JSON] {
         guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
         updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages)
         return removeDuplicates(from: rawMessages, associatedWith: publicKey)

@@ -1,6 +1,6 @@
 import PromiseKit
 
-internal extension Thenable {
+public extension Thenable {
 
     @discardableResult
     func then2<U>(_ body: @escaping (T) throws -> U) -> Promise<U.T> where U : Thenable {
@@ -23,7 +23,7 @@ internal extension Thenable {
     }
 }
 
-internal extension Thenable where T: Sequence {
+public extension Thenable where T: Sequence {
 
     @discardableResult
     func mapValues2<U>(_ transform: @escaping (T.Iterator.Element) throws -> U) -> Promise<[U]> {
@@ -31,7 +31,7 @@ internal extension Thenable where T: Sequence {
     }
 }
 
-internal extension Guarantee {
+public extension Guarantee {
 
     @discardableResult
     func then2<U>(_ body: @escaping (T) -> Guarantee<U>) -> Guarantee<U> {
@@ -54,7 +54,7 @@ internal extension Guarantee {
     }
 }
 
-internal extension CatchMixin {
+public extension CatchMixin {
 
     @discardableResult
     func catch2(_ body: @escaping (Error) -> Void) -> PMKFinalizer {
@@ -77,7 +77,7 @@ internal extension CatchMixin {
     }
 }
 
-internal extension CatchMixin where T == Void {
+public extension CatchMixin where T == Void {
 
     @discardableResult
     func recover2(_ body: @escaping(Error) -> Void) -> Guarantee<Void> {

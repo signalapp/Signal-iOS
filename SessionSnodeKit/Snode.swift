@@ -3,7 +3,7 @@ import Foundation
 public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let address: String
     public let port: UInt16
-    internal let publicKeySet: KeySet
+    public let publicKeySet: KeySet
 
     public var ip: String {
         address.removingPrefix("https://")
@@ -16,9 +16,9 @@ public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance
         case sendMessage = "store"
     }
 
-    internal struct KeySet {
-        let ed25519Key: String
-        let x25519Key: String
+    public struct KeySet {
+        public let ed25519Key: String
+        public let x25519Key: String
     }
 
     // MARK: Initialization

@@ -7,7 +7,7 @@
 #import "NSData+OWS.h"
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonHMAC.h>
-#import <SessionProtocolKit/Randomness.h>
+#import <Curve25519Kit/Randomness.h>
 #import <openssl/evp.h>
 #import <SessionProtocolKit/OWSAsserts.h>
 
