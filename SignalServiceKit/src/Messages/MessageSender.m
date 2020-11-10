@@ -743,7 +743,13 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     SenderCertificates *senderCertificates = sendInfo.senderCertificates;
 
     if (!thread.canSendToThread) {
-        return failureHandler(OWSErrorMakeAssertionError(@"Blocked by group migration."));
+        if (message.shouldBeSaved) {
+            return failureHandler(OWSErrorMakeAssertionError(@"Blocked by group migration."));
+        } else {
+            // Pretend to succeed for non-visible messages like read receipts, etc.
+            successHandler();
+            return;
+        }
     }
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
