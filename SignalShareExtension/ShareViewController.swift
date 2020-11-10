@@ -722,7 +722,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             }
         case .image:
-            return itemProvider.loadUrl(forTypeIdentifier: kUTTypeImage as String, options: nil).map { fileUrl in
+            // When multiple image formats are available, kUTTypeImage will
+            // defer to jpeg when possible. On iPhone 12 Pro, when 'heic'
+            // and 'jpeg' are the available options, the 'jpeg' data breaks
+            // UIImage (and underlying) in some unclear way such that trying
+            // to perform any kind of transformation on the image (such as
+            // resizing) causes memory to balloon uncontrolled. Luckily,
+            // iOS 14 provides native UIImage support for heic and iPhone
+            // 12s can only be running iOS 14+, so we can request the heic
+            // format directly, which behaves correctly for all our needs.
+            // A radar has been opened with apple reporting this issue.
+            let desiredTypeIdentifier: String
+            if #available(iOS 14, *), itemProvider.registeredTypeIdentifiers.contains("public.heic") {
+                desiredTypeIdentifier = "public.heic"
+            } else {
+                desiredTypeIdentifier = kUTTypeImage as String
+            }
+
+            return itemProvider.loadUrl(forTypeIdentifier: desiredTypeIdentifier, options: nil).map { fileUrl in
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
                            payload: .fileUrl(fileUrl))
             }.recover(on: .global()) { error -> Promise<LoadedItem> in
