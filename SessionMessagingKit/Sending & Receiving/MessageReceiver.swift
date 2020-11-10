@@ -59,6 +59,7 @@ internal enum MessageReceiver {
             return nil
         }()
         if let message = message {
+            message.receivedTimestamp = NSDate.millisecondTimestamp()
             guard message.isValid else { throw Error.invalidMessage }
             return message
         } else {

@@ -4,12 +4,12 @@ import SessionUtilitiesKit
 internal extension MessageSender {
 
     static func encryptWithSignalProtocol(_ plaintext: Data, associatedWith message: Message, for publicKey: String, using transaction: Any) throws -> Data {
-        let storage = Configuration.shared.storage
+        let storage = Configuration.shared.signalStorage
         let cipher = try SMKSecretSessionCipher(sessionResetImplementation: Configuration.shared.sessionRestorationImplementation,
-            sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: storage)
+            sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: Configuration.shared.identityKeyStore)
         let useFallbackEncryption: Bool = {
             if (message is SessionRequest) { return true }
-            return !Configuration.shared.storage.containsSession(publicKey, deviceId: 1, protocolContext: transaction)
+            return !storage.containsSession(publicKey, deviceId: 1, protocolContext: transaction)
         }()
         let certificate = Configuration.shared.storage.getSenderCertificate(for: publicKey)
         return try cipher.throwswrapped_encryptMessage(recipientPublicKey: publicKey, deviceID: 1, paddedPlaintext: (plaintext as NSData).paddedMessageBody(),

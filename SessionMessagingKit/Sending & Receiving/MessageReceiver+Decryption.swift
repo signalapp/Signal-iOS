@@ -5,12 +5,12 @@ import SessionUtilitiesKit
 internal extension MessageReceiver {
 
     static func decryptWithSignalProtocol(envelope: SNProtoEnvelope, using transaction: Any) throws -> (plaintext: Data, senderPublicKey: String) {
-        let storage = Configuration.shared.storage
+        let storage = Configuration.shared.signalStorage
         let certificateValidator = Configuration.shared.certificateValidator
         guard let data = envelope.content else { throw Error.noData }
-        guard let userPublicKey = storage.getUserPublicKey() else { throw Error.noUserPublicKey }
+        guard let userPublicKey = Configuration.shared.storage.getUserPublicKey() else { throw Error.noUserPublicKey }
         let cipher = try SMKSecretSessionCipher(sessionResetImplementation: Configuration.shared.sessionRestorationImplementation,
-            sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: storage)
+            sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: Configuration.shared.identityKeyStore)
         let result = try cipher.throwswrapped_decryptMessage(certificateValidator: certificateValidator, cipherTextData: data,
             timestamp: envelope.timestamp, localRecipientId: userPublicKey, localDeviceId: 1, protocolContext: transaction)
         return (result.paddedPayload, result.senderRecipientId)

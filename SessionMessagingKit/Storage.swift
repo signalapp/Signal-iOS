@@ -1,6 +1,6 @@
 import SessionProtocolKit
 
-public protocol SessionMessagingKitStorageProtocol : SessionStore, PreKeyStore, SignedPreKeyStore, IdentityKeyStore {
+public protocol SessionMessagingKitStorageProtocol {
 
     func with(_ work: (Any) -> Void)
     func withAsync(_ work: (Any) -> Void, completion: () -> Void)

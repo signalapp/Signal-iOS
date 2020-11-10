@@ -2,6 +2,8 @@ import SessionProtocolKit
 
 public struct Configuration {
     public let storage: SessionMessagingKitStorageProtocol
+    public let signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore
+    public let identityKeyStore: IdentityKeyStore
     public let sessionRestorationImplementation: SessionRestorationProtocol
     public let certificateValidator: SMKCertificateValidator
     public let openGroupAPIDelegate: OpenGroupAPIDelegate
@@ -13,7 +15,25 @@ public struct Configuration {
 
 public enum SessionMessagingKit { // Just to make the external API nice
 
-    public static func configure(with configuration: Configuration) {
-        Configuration.shared = configuration
+    public static func configure(
+        storage: SessionMessagingKitStorageProtocol,
+        signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore,
+        identityKeyStore: IdentityKeyStore,
+        sessionRestorationImplementation: SessionRestorationProtocol,
+        certificateValidator: SMKCertificateValidator,
+        openGroupAPIDelegate: OpenGroupAPIDelegate,
+        pnServerURL: String,
+        pnServerPublicKey: String
+    ) {
+        Configuration.shared = Configuration(
+            storage: storage,
+            signalStorage: signalStorage,
+            identityKeyStore: identityKeyStore,
+            sessionRestorationImplementation: sessionRestorationImplementation,
+            certificateValidator: certificateValidator,
+            openGroupAPIDelegate: openGroupAPIDelegate,
+            pnServerURL: pnServerURL,
+            pnServerPublicKey: pnServerPublicKey
+        )
     }
 }

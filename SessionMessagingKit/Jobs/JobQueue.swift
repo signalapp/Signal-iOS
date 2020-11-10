@@ -1,10 +1,11 @@
 import SessionUtilitiesKit
 
-public final class JobQueue : JobDelegate {
+@objc(SNJobQueue)
+public final class JobQueue : NSObject, JobDelegate {
 
-    public static let shared = JobQueue()
+    @objc public static let shared = JobQueue()
 
-    public func add(_ job: Job, using transaction: Any) {
+    @objc public func add(_ job: Job, using transaction: Any) {
         Configuration.shared.storage.persist(job, using: transaction)
         job.delegate = self
         job.execute()
@@ -32,7 +33,7 @@ public final class JobQueue : JobDelegate {
                 })
             } else {
                 let retryInterval = self.getRetryInterval(for: job)
-                Timer.weakScheduledTimer(withTimeInterval: retryInterval, target: self, selector: #selector(retry(_:)), userInfo: job, repeats: false)
+                Timer.weakScheduledTimer(withTimeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
             }
         })
     }

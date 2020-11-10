@@ -1,4 +1,5 @@
 
+@objc(SNJobDelegate)
 public protocol JobDelegate {
 
     func handleJobSucceeded(_ job: Job)

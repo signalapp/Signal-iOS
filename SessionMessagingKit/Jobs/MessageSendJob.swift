@@ -1,5 +1,6 @@
 import SessionUtilitiesKit
 
+@objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
     private let message: Message
@@ -10,6 +11,9 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
+    @objc public convenience init(message: Message, publicKey: String) { self.init(message: message, destination: .contact(publicKey: publicKey)) }
+    @objc public convenience init(message: Message, groupPublicKey: String) { self.init(message: message, destination: .closedGroup(groupPublicKey: groupPublicKey)) }
+
     init(message: Message, destination: Message.Destination) {
         self.message = message
         self.destination = destination

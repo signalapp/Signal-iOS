@@ -28,6 +28,12 @@ internal enum MessageSender {
     }
 
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+        message.sentTimestamp = NSDate.millisecondTimestamp()
+        switch destination {
+        case .contact(let publicKey): message.recipient = publicKey
+        case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
+        case .openGroup(_, _): preconditionFailure()
+        }
         // Validate the message
         guard message.isValid else { return Promise(error: Error.invalidMessage) }
         // Convert it to protobuf
