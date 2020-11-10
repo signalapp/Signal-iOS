@@ -41,7 +41,6 @@ class ConversationPickerViewController: OWSViewController {
         let searchBar = OWSSearchBar()
         searchBar.placeholder = CommonStrings.searchPlaceholder
         searchBar.delegate = self
-
         return searchBar
     }()
 
