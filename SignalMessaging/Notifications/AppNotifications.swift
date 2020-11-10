@@ -466,9 +466,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            let canSendToThread = (!thread.isGroupV1Thread ||
-                                    !GroupManager.areMigrationsBlocking)
-            category = (canSendToThread
+            category = (thread.canSendToThread
                             ? .incomingMessageWithActions_CanReply
                             : .incomingMessageWithActions_CannotReply)
         }
@@ -570,9 +568,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            let canSendToThread = (!thread.isGroupV1Thread ||
-                                    !GroupManager.areMigrationsBlocking)
-            category = (canSendToThread
+            category = (thread.canSendToThread
                             ? .incomingReactionWithActions_CanReply
                             : .incomingReactionWithActions_CannotReply)
         }

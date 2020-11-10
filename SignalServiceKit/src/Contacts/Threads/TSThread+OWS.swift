@@ -31,4 +31,12 @@ public extension TSThread {
         }
         return groupThread.groupModel
     }
+
+    var isBlockedByMigration: Bool {
+        isGroupV1Thread && GroupManager.areMigrationsBlocking
+    }
+
+    var canSendToThread: Bool {
+        !isBlockedByMigration
+    }
 }

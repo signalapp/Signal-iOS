@@ -292,12 +292,6 @@ public extension ConversationViewController {
     }
 
     private var hasBlockingGroupMigration: Bool {
-        guard GroupManager.areMigrationsBlocking else {
-            return false
-        }
-        guard let groupThread = thread as? TSGroupThread else {
-            return false
-        }
-        return groupThread.isGroupV1Thread
+        thread.isBlockedByMigration
     }
 }

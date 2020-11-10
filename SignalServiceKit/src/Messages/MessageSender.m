@@ -742,8 +742,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     NSArray<SignalServiceAddress *> *recipientAddresses = sendInfo.recipients;
     SenderCertificates *senderCertificates = sendInfo.senderCertificates;
 
-    BOOL canSendToThread = (!thread.isGroupV1Thread || !GroupManager.areMigrationsBlocking);
-    if (!canSendToThread) {
+    if (!thread.canSendToThread) {
         return failureHandler(OWSErrorMakeAssertionError(@"Blocked by group migration."));
     }
 

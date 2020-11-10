@@ -1540,6 +1540,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 - (BOOL)canForwardMessage
 {
+    if (!self.thread.canSendToThread) {
+        return NO;
+    }
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
             return NO;
