@@ -598,6 +598,7 @@
 		C331FFF32558FF0300070591 /* PathStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B879D44A247E1D9200DB3608 /* PathStatusView.swift */; };
 		C331FFF42558FF0300070591 /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C331FFFE2558FF3B00070591 /* ConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AA238F669C00BA5194 /* ConversationCell.swift */; };
+		C33FD4E9255A149100E217F9 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
 		C3402FE52559036600EA6424 /* SessionUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C331FF1B2558F9D300070591 /* SessionUIKit.framework */; };
 		C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */; };
 		C3471ED42555386B00297E91 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
@@ -682,7 +683,6 @@
 		C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */; };
 		C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */; };
 		C3C2A5A3255385C100C340D1 /* SessionSnodeKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A5A1255385C100C340D1 /* SessionSnodeKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A5A6255385C100C340D1 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C3C2A5BF255385EE00C340D1 /* SnodeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B6255385EC00C340D1 /* SnodeMessage.swift */; };
 		C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B7255385EC00C340D1 /* Snode.swift */; };
@@ -699,11 +699,9 @@
 		C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D42553860A00C340D1 /* Threading.swift */; };
 		C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D82553860B00C340D1 /* Data+Utilities.swift */; };
 		C3C2A67D255388CC00C340D1 /* SessionUtilitiesKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A67B255388CC00C340D1 /* SessionUtilitiesKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A680255388CC00C340D1 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		C3C2A681255388CC00C340D1 /* SessionUtilitiesKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C3C2A6C62553896A00C340D1 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		C3C2A6F425539DE700C340D1 /* SessionMessagingKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A6F225539DE700C340D1 /* SessionMessagingKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A6F725539DE700C340D1 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
 		C3C2A6F825539DE700C340D1 /* SessionMessagingKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C3C2A70B25539E1E00C340D1 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C3C2A74425539EB700C340D1 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A74325539EB700C340D1 /* Message.swift */; };
@@ -715,7 +713,6 @@
 		C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7822553AAF200C340D1 /* SNProto.swift */; };
 		C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7832553AAF300C340D1 /* SessionProtos.pb.swift */; };
 		C3C2A8662553B41A00C340D1 /* SessionProtocolKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A8642553B41A00C340D1 /* SessionProtocolKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A8692553B41A00C340D1 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C3C2A86A2553B41A00C340D1 /* SessionProtocolKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C3C2A8882553B4CC00C340D1 /* AxolotlExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A8872553B4CC00C340D1 /* AxolotlExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A89C2553B4F600C340D1 /* PreKeyWhisperMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A8932553B4F500C340D1 /* PreKeyWhisperMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1997,7 +1994,6 @@
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
 				4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
-				C3C2A8692553B41A00C340D1 /* SessionProtocolKit.framework in Frameworks */,
 				4C9CA25D217E676900607C63 /* ZXingObjC.framework in Frameworks */,
 				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
 				45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */,
@@ -2007,19 +2003,16 @@
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
 				453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */,
-				C3C2A5A6255385C100C340D1 /* SessionSnodeKit.framework in Frameworks */,
 				3496956021A2FC8100DCFE74 /* CloudKit.framework in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
 				A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */,
 				A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */,
-				C3C2A680255388CC00C340D1 /* SessionUtilitiesKit.framework in Frameworks */,
 				A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */,
 				D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */,
 				C331FF222558F9D300070591 /* SessionUIKit.framework in Frameworks */,
 				D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */,
-				C3C2A6F725539DE700C340D1 /* SessionMessagingKit.framework in Frameworks */,
 				D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */,
 				D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */,
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
@@ -4583,6 +4576,7 @@
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
+				C33FD4E9255A149100E217F9 /* Colors.xcassets in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
