@@ -373,7 +373,7 @@ public final class CallService: NSObject {
         case .individual(let individualCall):
             return individualCall.state == .connected && individualCall.hasLocalVideo
         case .group(let groupCall):
-            return !groupCall.localDeviceState.videoMuted
+            return !groupCall.isOutgoingVideoMuted
         }
     }
 

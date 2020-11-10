@@ -325,8 +325,8 @@ class GroupCallMemberSheet: UIViewController {
                     conversationColorName: thread?.conversationColorName ?? .default,
                     displayName: displayName,
                     comparableName: comparableName,
-                    isAudioMuted: self.call.groupCall.localDeviceState.audioMuted,
-                    isVideoMuted: self.call.groupCall.localDeviceState.videoMuted
+                    isAudioMuted: self.call.groupCall.isOutgoingAudioMuted,
+                    isVideoMuted: self.call.groupCall.isOutgoingVideoMuted
                 ))
             } else {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.

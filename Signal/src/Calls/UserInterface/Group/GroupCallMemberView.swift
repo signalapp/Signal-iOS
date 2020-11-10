@@ -113,11 +113,11 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     }
 
     private var hasBeenConfigured = false
-    func configure(device: LocalDeviceState, session: AVCaptureSession, isFullScreen: Bool = false) {
+    func configure(call: SignalCall, isFullScreen: Bool = false) {
         hasBeenConfigured = true
 
-        videoView.isHidden = device.videoMuted
-        videoView.captureSession = session
+        videoView.isHidden = call.groupCall.isOutgoingVideoMuted
+        videoView.captureSession = call.videoCaptureController.captureSession
         noVideoView.isHidden = !videoView.isHidden
         videoOffLabel.isHidden = !videoView.isHidden || !isFullScreen
 
@@ -131,7 +131,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
         backgroundAvatarView.image = profileManager.localProfileAvatarImage()
 
-        muteIndicatorImage.isHidden = isFullScreen || !device.audioMuted
+        muteIndicatorImage.isHidden = isFullScreen || !call.groupCall.isOutgoingAudioMuted
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
 

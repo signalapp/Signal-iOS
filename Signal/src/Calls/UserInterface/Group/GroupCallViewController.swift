@@ -245,8 +245,7 @@ class GroupCallViewController: UIViewController {
         let localDevice = groupCall.localDeviceState
 
         localMemberView.configure(
-            device: localDevice,
-            session: call.videoCaptureController.captureSession,
+            call: call,
             isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
         )
 

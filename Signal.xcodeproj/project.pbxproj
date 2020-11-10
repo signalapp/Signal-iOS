@@ -763,7 +763,6 @@
 		88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */; };
 		88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D2B23CEC17400B0E74B /* CallAudioService.swift */; };
 		88D5887824846A7F00DC9AB6 /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
-		88D6E93A254C970B003142D9 /* GroupCallSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D6E939254C970A003142D9 /* GroupCallSimulator.swift */; };
 		88D6E93C254CE317003142D9 /* GroupCallNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */; };
 		88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93D254CF712003142D9 /* group_call_leave.aiff */; };
 		88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93E254CF712003142D9 /* group_call_join.aiff */; };
@@ -1835,7 +1834,6 @@
 		88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
 		88D23D2B23CEC17400B0E74B /* CallAudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
 		88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioSource.swift; sourceTree = "<group>"; };
-		88D6E939254C970A003142D9 /* GroupCallSimulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallSimulator.swift; sourceTree = "<group>"; };
 		88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallNotificationView.swift; sourceTree = "<group>"; };
 		88D6E93D254CF712003142D9 /* group_call_leave.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_leave.aiff; sourceTree = "<group>"; };
 		88D6E93E254CF712003142D9 /* group_call_join.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_join.aiff; sourceTree = "<group>"; };
@@ -3459,7 +3457,6 @@
 		88D23D1323CEC0C700B0E74B /* Calls */ = {
 			isa = PBXGroup;
 			children = (
-				88D6E938254C970A003142D9 /* Group */,
 				88588D24252E593500405414 /* Individual */,
 				88D23D1D23CEC0C700B0E74B /* Signaling */,
 				88D23D1723CEC0C700B0E74B /* UserInterface */,
@@ -3502,14 +3499,6 @@
 				88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */,
 			);
 			path = Signaling;
-			sourceTree = "<group>";
-		};
-		88D6E938254C970A003142D9 /* Group */ = {
-			isa = PBXGroup;
-			children = (
-				88D6E939254C970A003142D9 /* GroupCallSimulator.swift */,
-			);
-			path = Group;
 			sourceTree = "<group>";
 		};
 		88E34F2522F269B600966CC2 /* Storage Service */ = {
@@ -5093,7 +5082,6 @@
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				88D1BCBE24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */,
 				88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */,
-				88D6E93A254C970B003142D9 /* GroupCallSimulator.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,

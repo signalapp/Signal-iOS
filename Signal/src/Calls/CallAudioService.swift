@@ -168,7 +168,7 @@ protocol CallAudioServiceDelegate: class {
             return
         }
 
-        if call.localDeviceState.videoMuted {
+        if call.isOutgoingVideoMuted {
             setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
         } else {
             setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)

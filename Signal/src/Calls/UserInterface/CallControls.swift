@@ -176,11 +176,11 @@ class CallControls: UIView {
 
     private func updateControls() {
         let hasExternalAudioInputs = callService.audioService.hasExternalInputs
-        let isLocalVideoMuted = call.groupCall.localDeviceState.videoMuted
+        let isLocalVideoMuted = call.groupCall.isOutgoingVideoMuted
 
         flipCameraButton.isHidden = isLocalVideoMuted
         videoButton.isSelected = !isLocalVideoMuted
-        muteButton.isSelected = call.groupCall.localDeviceState.audioMuted
+        muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
         hangUpButton.isHidden = call.groupCall.localDeviceState.joinState != .joined
 
         // Use small controls if video is enabled and we have external
