@@ -21,10 +21,12 @@ import PromiseKit
 /// wired directly into the appropriate callback point.
 
 public enum AppNotificationCategory: CaseIterable {
-    case incomingMessageWithActions
+    case incomingMessageWithActions_CanReply
+    case incomingMessageWithActions_CannotReply
     case incomingMessageWithoutActions
     case incomingMessageFromNoLongerVerifiedIdentity
-    case incomingReactionWithActions
+    case incomingReactionWithActions_CanReply
+    case incomingReactionWithActions_CannotReply
     case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
@@ -56,14 +58,18 @@ public struct AppNotificationUserInfoKey {
 extension AppNotificationCategory {
     var identifier: String {
         switch self {
-        case .incomingMessageWithActions:
+        case .incomingMessageWithActions_CanReply:
             return "Signal.AppNotificationCategory.incomingMessageWithActions"
+        case .incomingMessageWithActions_CannotReply:
+            return "Signal.AppNotificationCategory.incomingMessageWithActionsNoReply"
         case .incomingMessageWithoutActions:
             return "Signal.AppNotificationCategory.incomingMessage"
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
-        case .incomingReactionWithActions:
+        case .incomingReactionWithActions_CanReply:
             return "Signal.AppNotificationCategory.incomingReactionWithActions"
+        case .incomingReactionWithActions_CannotReply:
+            return "Signal.AppNotificationCategory.incomingReactionWithActionsNoReply"
         case .infoOrErrorMessage:
             return "Signal.AppNotificationCategory.infoOrErrorMessage"
         case .threadlessErrorMessage:
@@ -83,14 +89,18 @@ extension AppNotificationCategory {
 
     var actions: [AppNotificationAction] {
         switch self {
-        case .incomingMessageWithActions:
+        case .incomingMessageWithActions_CanReply:
             if DebugFlags.reactWithThumbsUpFromLockscreen {
                 return [.markAsRead, .reply, .reactWithThumbsUp]
             } else {
                 return [.markAsRead, .reply]
             }
-        case .incomingReactionWithActions:
+        case .incomingMessageWithActions_CannotReply:
+            return [.markAsRead]
+        case .incomingReactionWithActions_CanReply:
             return [.markAsRead, .reply]
+        case .incomingReactionWithActions_CannotReply:
+            return [.markAsRead]
         case .incomingMessageWithoutActions,
              .incomingMessageFromNoLongerVerifiedIdentity:
             return []
@@ -456,7 +466,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            category = .incomingMessageWithActions
+            let canSendToThread = (!thread.isGroupV1Thread ||
+                                    !GroupManager.areMigrationsBlocking)
+            category = (canSendToThread
+                            ? .incomingMessageWithActions_CanReply
+                            : .incomingMessageWithActions_CannotReply)
         }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
@@ -556,7 +570,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            category = .incomingReactionWithActions
+            let canSendToThread = (!thread.isGroupV1Thread ||
+                                    !GroupManager.areMigrationsBlocking)
+            category = (canSendToThread
+                            ? .incomingReactionWithActions_CanReply
+                            : .incomingReactionWithActions_CannotReply)
         }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
