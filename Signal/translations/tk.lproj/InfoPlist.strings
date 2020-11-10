@@ -1,4 +1,4 @@
-NSAppleMusicUsageDescription = "Signal, media goşundylaryny oýnamak üçin “Apple Music” -i ulanmaly.";
+NSAppleMusicUsageDescription = "Signal, media goşundylaryny oýnamak üçin “Apple Music”-i ulanmaly.";
 NSCameraUsageDescription = "Signal kamerany surata düşürmek we wideo jaňlary üçin ulanýar.";
 NSContactsUsageDescription = "Signal, tanaýan ulanyjylaryňyzy tapmak üçin aragatnaşyklaryňyzy ulanýar. Aragatnaşyklaryňyzy serwerde saklamaýarys.";
 NSFaceIDUsageDescription = "Signal-yň ekran gulpy Face ID ulanýar.";
