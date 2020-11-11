@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAccountManager.h"
+#import <SignalUtilitiesKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

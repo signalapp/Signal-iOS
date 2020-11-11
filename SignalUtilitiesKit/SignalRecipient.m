@@ -8,7 +8,7 @@
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN

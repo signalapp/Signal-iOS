@@ -1,4 +1,4 @@
-#import "OWSPrimaryStorage.h"
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 
 #import <SessionProtocolKit/AxolotlExceptions.h>
 #import <SessionProtocolKit/PreKeyBundle.h>

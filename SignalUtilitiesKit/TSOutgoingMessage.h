@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessage.h"
+#import <SignalUtilitiesKit/TSMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

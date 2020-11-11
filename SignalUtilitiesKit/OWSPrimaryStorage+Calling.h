@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage.h"
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

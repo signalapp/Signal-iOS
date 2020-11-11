@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "AppContext.h"
+#import <SignalUtilitiesKit/AppContext.h>
 #import <SessionProtocolKit/NSObject+OWS.h>
 #import <SessionProtocolKit/OWSAsserts.h>
 

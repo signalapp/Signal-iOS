@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "DataSource.h"
-#import "TSContactThread.h"
+#import <SignalUtilitiesKit/DataSource.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

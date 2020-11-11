@@ -2,9 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSGroupModel.h"
-#import "TSThread.h"
-#import "LKGroupUtilities.h"
+#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/LKGroupUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

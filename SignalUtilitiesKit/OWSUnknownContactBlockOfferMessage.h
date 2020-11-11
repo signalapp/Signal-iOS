@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSErrorMessage.h"
+#import <SignalUtilitiesKit/TSErrorMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

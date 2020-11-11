@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOutgoingSyncMessage.h"
-#import "OWSRecipientIdentity.h"
+#import<SignalUtilitiesKit/OWSOutgoingSyncMessage.h>
+#import<SignalUtilitiesKit/OWSRecipientIdentity.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

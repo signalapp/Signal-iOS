@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSRecipientIdentity.h"
+#import <SignalUtilitiesKit/OWSRecipientIdentity.h>
 #import <SessionProtocolKit/IdentityKeyStore.h>
 
 NS_ASSUME_NONNULL_BEGIN

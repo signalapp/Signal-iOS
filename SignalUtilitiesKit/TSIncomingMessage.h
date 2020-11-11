@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSReadTracking.h"
-#import "TSMessage.h"
+#import <SignalUtilitiesKit/OWSReadTracking.h>
+#import <SignalUtilitiesKit/TSMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

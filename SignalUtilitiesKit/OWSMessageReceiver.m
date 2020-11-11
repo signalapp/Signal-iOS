@@ -26,7 +26,7 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
 #import <SessionProtocolKit/NSDate+OWS.h>
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+
 #import "SSKAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN

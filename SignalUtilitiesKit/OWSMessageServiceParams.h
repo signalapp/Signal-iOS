@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSConstants.h"
+#import <SignalUtilitiesKit/TSConstants.h>
 #import <Mantle/Mantle.h>
 
 NS_ASSUME_NONNULL_BEGIN

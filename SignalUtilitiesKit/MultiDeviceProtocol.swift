@@ -134,7 +134,7 @@ public final class MultiDeviceProtocol : NSObject {
             }
             when(resolved: promises).done(on: OWSDispatch.sendingQueue()) { results in
                 let errors = results.compactMap { result -> Error? in
-                    if case Result.rejected(let error) = result {
+                    if case PromiseKit.Result.rejected(let error) = result {
                         return error
                     } else {
                         return nil

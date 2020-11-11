@@ -1,4 +1,4 @@
-#import "OWSOutgoingSyncMessage.h"
+#import <SignalUtilitiesKit/OWSOutgoingSyncMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
