@@ -42,8 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)deleteAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)archiveSessionForAddress:(SignalServiceAddress *)address
-                       deviceId:(int)deviceId
-                    transaction:(SDSAnyWriteTransaction *)transaction;
+                        deviceId:(int)deviceId
+                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)archiveAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)archiveAllSessionsForAccountId:(NSString *)accountId transaction:(SDSAnyWriteTransaction *)transaction;

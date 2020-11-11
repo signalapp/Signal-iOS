@@ -308,8 +308,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)archiveSessionForAddress:(SignalServiceAddress *)address
-                       deviceId:(int)deviceId
-                    transaction:(SDSAnyWriteTransaction *)transaction
+                        deviceId:(int)deviceId
+                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
@@ -321,8 +321,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)archiveSessionForAccountId:(NSString *)accountId
-                       deviceId:(int)deviceId
-                    transaction:(SDSAnyWriteTransaction *)transaction
+                          deviceId:(int)deviceId
+                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(accountId.length > 0);
 
