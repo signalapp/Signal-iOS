@@ -23,7 +23,7 @@ class CallVideoHintView: UIView {
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(tapGesture:)))
         addGestureRecognizer(tapGesture)
 
-        let layerView = OWSLayerView()
+        let layerView = OWSLayerView(frame: .zero) { _ in }
         let shapeLayer = CAShapeLayer()
         shapeLayer.fillColor = UIColor.ows_signalBlue.cgColor
         layerView.layer.addSublayer(shapeLayer)

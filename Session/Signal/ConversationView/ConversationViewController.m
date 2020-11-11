@@ -16,7 +16,6 @@
 #import "ConversationViewLayout.h"
 #import "ConversationViewModel.h"
 #import "DateUtil.h"
-#import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
 #import "OWSAudioPlayer.h"
