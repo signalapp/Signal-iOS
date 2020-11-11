@@ -425,6 +425,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return;
     }
 
+    if (processedJobCount == 0) {
+        OWSLogInfo(@"Draining queue: %lu.", (unsigned long)self.finder.queuedJobCount);
+    }
+
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
