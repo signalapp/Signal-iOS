@@ -43,17 +43,6 @@ class Sheet : BaseVC {
         preconditionFailure("populateContentView() is abstract and must be overridden.")
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        // TODO: Animate
-//        bottomConstraint.constant = contentView.height()
-//        view.layoutIfNeeded()
-//        bottomConstraint.constant = overshoot
-//        UIView.animate(withDuration: 0.25) {
-//            self.view.layoutIfNeeded()
-//        }
-    }
-
     // MARK: Interaction
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first!

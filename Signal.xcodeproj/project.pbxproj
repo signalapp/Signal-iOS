@@ -806,7 +806,6 @@
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
 		C3645350252449260045C478 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364534F252449260045C478 /* VoiceMessageView.swift */; };
 		C364535C252467900045C478 /* AudioUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364535B252467900045C478 /* AudioUtilities.swift */; };
-		C369549D24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */; };
 		C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F53A7255B96E0002AEA92 /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2F5255B6DBC007E1867 /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1156,7 +1155,6 @@
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
-		C3DFFAC823E970080058DAF8 /* OpenGroupSuggestionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
 		C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */; };
@@ -2169,7 +2167,6 @@
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
 		C364534F252449260045C478 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		C364535B252467900045C478 /* AudioUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUtilities.swift; sourceTree = "<group>"; };
-		C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceRemovalSheet.swift; sourceTree = "<group>"; };
 		C37F53E8255BA9BB002AEA92 /* Environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		C37F5402255BA9ED002AEA92 /* Environment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		C38EEF09255B49A8007E1867 /* SSKProtoEnvelope+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SSKProtoEnvelope+Conversion.swift"; sourceTree = "<group>"; };
@@ -2523,7 +2520,6 @@
 		C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPoller.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
-		C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupSuggestionSheet.swift; sourceTree = "<group>"; };
 		C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditClosedGroupVC.swift; sourceTree = "<group>"; };
 		C3E7134E251C867C009649BB /* Sodium+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sodium+Conversion.swift"; sourceTree = "<group>"; };
 		C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
@@ -3179,11 +3175,9 @@
 				B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */,
 				B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
-				C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */,
 				B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */,
 				B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */,
 				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
-				C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */,
 				B879D448247E1BE300DB3608 /* PathVC.swift */,
 				C3548F0524456447009433A8 /* PNModeVC.swift */,
 				B886B4A62398B23E00211ABE /* QRCodeVC.swift */,
@@ -3270,6 +3264,9 @@
 		C31F812425258F9C00DD9FD9 /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				C3F0A619255C9902007BE2A3 /* Storage+SessionProtocolKit.swift */,
+				C3F0A607255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift */,
+				C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */,
 				C31F812525258FB000DD9FD9 /* Storage+VolumeSamples.swift */,
 			);
 			path = Database;
@@ -4462,9 +4459,6 @@
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
 				C3F0A62B255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift */,
 				C3F0A5EB255C970D007BE2A3 /* Configuration.swift */,
-				C3F0A619255C9902007BE2A3 /* Storage+SessionProtocolKit.swift */,
-				C3F0A607255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift */,
-				C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */,
 				B8CCF63B239757C10091D419 /* Components */,
 				C31F812425258F9C00DD9FD9 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
@@ -6238,7 +6232,6 @@
 				C331FFF32558FF0300070591 /* PathStatusView.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
-				C369549D24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				C3F0A608255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
@@ -6335,7 +6328,6 @@
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
 				3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */,
-				C3DFFAC823E970080058DAF8 /* OpenGroupSuggestionSheet.swift in Sources */,
 				34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */,
 				B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,

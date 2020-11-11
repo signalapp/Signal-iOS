@@ -126,10 +126,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         emptyStateView.center(.horizontal, in: view)
         let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
-        // Set up search bar
-//        tableView.tableHeaderView = searchBar
-//        searchBar.sizeToFit()
-//        tableView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
         // Set up new conversation button set
         view.addSubview(newConversationButtonSet)
         newConversationButtonSet.center(.horizontal, in: view)

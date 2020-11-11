@@ -188,8 +188,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         ]
         let isMasterDevice = UserDefaults.standard.isMasterDevice
         if isMasterDevice {
-//            result.append(getSeparator())
-//            result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_devices_button_title", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
             result.append(getSeparator())
             result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)))
         }
