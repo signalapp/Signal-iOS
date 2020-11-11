@@ -6,7 +6,7 @@
 #import "AppContext.h"
 #import "OWSPrimaryStorage.h"
 #import "TSCall.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>

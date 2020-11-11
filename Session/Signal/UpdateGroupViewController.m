@@ -8,7 +8,8 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import "ViewControllerUtils.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalUtilitiesKit/BlockListUIUtils.h>
 #import <SignalUtilitiesKit/ContactTableViewCell.h>
 #import <SignalUtilitiesKit/ContactsViewHelper.h>

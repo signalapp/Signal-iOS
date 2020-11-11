@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public enum SMKCertificateError: Error {
     case invalidCertificate(description: String)

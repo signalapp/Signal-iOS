@@ -28,8 +28,7 @@ public final class DiffieHellman : NSObject {
     }
     
     public static func encrypt(_ plaintext: Data, publicKey: Data, privateKey: Data) throws -> Data {
-        let keyPair = ECKeyPair(publicKey: publicKey, privateKey: privateKey)
-        guard let symmetricKey = Curve25519.generateSharedSecret(fromPublicKey: publicKey, andKeyPair: keyPair) else { throw Error.sharedSecretGenerationFailed }
+        guard let symmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: publicKey, privateKey: privateKey) else { throw Error.sharedSecretGenerationFailed }
         return try encrypt(plaintext, using: symmetricKey)
     }
     
@@ -44,8 +43,7 @@ public final class DiffieHellman : NSObject {
     }
     
     public static func decrypt(_ ivAndCiphertext: Data, publicKey: Data, privateKey: Data) throws -> Data {
-        let keyPair = ECKeyPair(publicKey: publicKey, privateKey: privateKey)
-        guard let symmetricKey = Curve25519.generateSharedSecret(fromPublicKey: publicKey, andKeyPair: keyPair) else { throw Error.sharedSecretGenerationFailed }
+        guard let symmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: publicKey, privateKey: privateKey) else { throw Error.sharedSecretGenerationFailed }
         return try decrypt(ivAndCiphertext, using: symmetricKey)
     }
 }

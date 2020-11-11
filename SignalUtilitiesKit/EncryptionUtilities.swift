@@ -17,7 +17,7 @@ enum EncryptionUtilities {
         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
         let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .noPadding)
         let ciphertext = try aes.encrypt(plaintext.bytes)
-        return iv + Data(bytes: ciphertext)
+        return iv + Data(ciphertext)
     }
 
     /// - Note: Sync. Don't call from the main thread.
@@ -28,11 +28,11 @@ enum EncryptionUtilities {
             #endif
         }
         let x25519PublicKey = Data(hex: hexEncodedX25519PublicKey)
-        let ephemeralKeyPair = Curve25519.generateKeyPair()!
-        let ephemeralSharedSecret = Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, andKeyPair: ephemeralKeyPair)!
+        let ephemeralKeyPair = Curve25519.generateKeyPair()
+        let ephemeralSharedSecret = try! Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, privateKey: ephemeralKeyPair.privateKey)
         let salt = "LOKI"
         let symmetricKey = try HMAC(key: salt.bytes, variant: .sha256).authenticate(ephemeralSharedSecret.bytes)
         let ciphertext = try encrypt(plaintext, usingAESGCMWithSymmetricKey: Data(bytes: symmetricKey))
-        return (ciphertext, Data(bytes: symmetricKey), ephemeralKeyPair.publicKey())
+        return (ciphertext, Data(bytes: symmetricKey), ephemeralKeyPair.publicKey)
     }
 }

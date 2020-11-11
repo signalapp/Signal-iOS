@@ -9,7 +9,7 @@
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "OWSPrimaryStorage.h"
 

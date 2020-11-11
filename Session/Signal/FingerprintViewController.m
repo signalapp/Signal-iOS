@@ -9,7 +9,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSContactsManager.h>
 #import <SignalUtilitiesKit/UIUtil.h>

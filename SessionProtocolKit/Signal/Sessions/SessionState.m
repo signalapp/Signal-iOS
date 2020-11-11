@@ -7,7 +7,7 @@
 #import "ReceivingChain.h"
 #import "SendingChain.h"
 #import "ChainAndIndex.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @implementation PendingPreKey
 

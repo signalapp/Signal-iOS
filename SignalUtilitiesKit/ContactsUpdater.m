@@ -9,8 +9,8 @@
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import "SSKAsserts.h"

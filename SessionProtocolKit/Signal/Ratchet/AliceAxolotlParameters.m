@@ -7,7 +7,7 @@
 //
 
 #import "AliceAxolotlParameters.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @implementation AliceAxolotlParameters
 

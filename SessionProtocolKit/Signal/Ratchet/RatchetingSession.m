@@ -10,8 +10,8 @@
 #import "SessionState.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <HKDFKit/HKDFKit.h>
-#import <SessionProtocolKit/SCKExceptionWrapper.h>
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @interface DHEResult : NSObject
 
@@ -140,28 +140,28 @@
     if ([parameters isKindOfClass:[AliceAxolotlParameters class]]) {
         AliceAxolotlParameters *params = (AliceAxolotlParameters*)parameters;
 
-        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirSignedPreKey
-                                                                 andKeyPair:params.ourIdentityKeyPair]];
-        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirIdentityKey
-                                                                 andKeyPair:params.ourBaseKey]];
-        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirSignedPreKey
-                                                                 andKeyPair:params.ourBaseKey]];
+        [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirSignedPreKey
+                                                                        andKeyPair:params.ourIdentityKeyPair]];
+        [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirIdentityKey
+                                                                        andKeyPair:params.ourBaseKey]];
+        [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirSignedPreKey
+                                                                        andKeyPair:params.ourBaseKey]];
         if (params.theirOneTimePrekey) {
-            [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirOneTimePrekey
-                                                                     andKeyPair:params.ourBaseKey]];
+            [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirOneTimePrekey
+                                                                            andKeyPair:params.ourBaseKey]];
         }
     } else if ([parameters isKindOfClass:[BobAxolotlParameters class]]){
         BobAxolotlParameters *params = (BobAxolotlParameters*)parameters;
 
-        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirIdentityKey
-                                                                 andKeyPair:params.ourSignedPrekey]];
-        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
-                                                                 andKeyPair:params.ourIdentityKeyPair]];
-        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
-                                                                 andKeyPair:params.ourSignedPrekey]];
+        [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirIdentityKey
+                                                                        andKeyPair:params.ourSignedPrekey]];
+        [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirBaseKey
+                                                                        andKeyPair:params.ourIdentityKeyPair]];
+        [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirBaseKey
+                                                                        andKeyPair:params.ourSignedPrekey]];
         if (params.ourOneTimePrekey) {
-            [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
-                                                                     andKeyPair:params.ourOneTimePrekey]];
+            [masterKey appendData:[Curve25519 throws_generateSharedSecretFromPublicKey:params.theirBaseKey
+                                                                            andKeyPair:params.ourOneTimePrekey]];
         }
     }
 

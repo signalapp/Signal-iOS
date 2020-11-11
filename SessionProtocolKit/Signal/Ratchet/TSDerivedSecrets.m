@@ -4,7 +4,7 @@
 
 #import "TSDerivedSecrets.h"
 #import <Curve25519Kit/Curve25519.h>
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 #import <HKDFKit/HKDFKit.h>
 
 @implementation TSDerivedSecrets

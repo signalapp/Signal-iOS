@@ -5,7 +5,7 @@
 #import "OWSEndSessionMessage.h"
 #import "OWSPrimaryStorage+Loki.h"
 #import "SignalRecipient.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

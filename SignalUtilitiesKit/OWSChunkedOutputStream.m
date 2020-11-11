@@ -3,7 +3,7 @@
 //
 
 #import "OWSChunkedOutputStream.h"
-#import <SessionProtocolKit/NSData+OWS.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

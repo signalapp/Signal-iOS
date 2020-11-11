@@ -19,8 +19,9 @@
 #import <Curve25519Kit/Curve25519.h>
 #import <Curve25519Kit/Ed25519.h>
 #import <HKDFKit/HKDFKit.h>
-#import <SessionProtocolKit/SCKExceptionWrapper.h>
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/SignalCoreKit.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

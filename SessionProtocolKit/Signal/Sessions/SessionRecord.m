@@ -3,7 +3,7 @@
 //
 
 #import "SessionRecord.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 #define ARCHIVED_STATES_MAX_LENGTH 40
 

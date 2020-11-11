@@ -25,7 +25,7 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import "SSKAsserts.h"

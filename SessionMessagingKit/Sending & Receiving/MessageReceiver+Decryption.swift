@@ -28,13 +28,12 @@ internal extension MessageReceiver {
             throw Error.noGroupPrivateKey
         }
         let groupPrivateKey = Data(hex: hexEncodedGroupPrivateKey)
-        let groupKeyPair = ECKeyPair(publicKey: Data(hex: groupPublicKey), privateKey: groupPrivateKey)
         // 2. ) Parse the wrapper
         let wrapper = try SNProtoClosedGroupCiphertextMessageWrapper.parseData(data)
         let ivAndCiphertext = wrapper.ciphertext
         let ephemeralPublicKey = wrapper.ephemeralPublicKey
         // 3. ) Decrypt the data inside
-        guard let ephemeralSharedSecret = Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublicKey, andKeyPair: groupKeyPair) else {
+        guard let ephemeralSharedSecret = try? Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublicKey, privateKey: groupPrivateKey) else {
             throw Error.sharedSecretGenerationFailed
         }
         let salt = "LOKI"

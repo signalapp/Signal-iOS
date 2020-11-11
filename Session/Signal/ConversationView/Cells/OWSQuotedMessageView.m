@@ -7,6 +7,7 @@
 #import "Environment.h"
 #import "OWSBubbleView.h"
 #import "Session-Swift.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalUtilitiesKit/OWSContactsManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>

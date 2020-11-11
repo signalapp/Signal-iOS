@@ -4,7 +4,7 @@ import SessionSnodeKit
 @objc(SNConfiguration)
 final class Configuration : NSObject {
 
-    @objc func performMainSetup() {
+    @objc static func performMainSetup() {
         SessionProtocolKit.configure(storage: Storage.shared, sharedSenderKeysDelegate: UIApplication.shared.delegate as! AppDelegate)
         SessionSnodeKit.configure(storage: Storage.shared)
     }

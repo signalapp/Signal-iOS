@@ -8,7 +8,7 @@
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <QuartzCore/QuartzCore.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN

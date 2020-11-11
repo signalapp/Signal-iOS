@@ -6,7 +6,7 @@
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
 #import "OWSFileSystem.h"
-#import <SessionProtocolKit/NSString+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

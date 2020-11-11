@@ -53,8 +53,7 @@ public final class ClosedGroupUtilities : NSObject {
         let ivAndCiphertext = wrapper.ciphertext
         let ephemeralPublicKey = wrapper.ephemeralPublicKey
         // 3. ) Decrypt the data inside
-        let groupKeyPair = ECKeyPair(publicKey: Data(hex: groupPublicKey), privateKey: groupPrivateKey)
-        let ephemeralSharedSecret = Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublicKey, andKeyPair: groupKeyPair)!
+        let ephemeralSharedSecret = try Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublicKey, privateKey: groupPrivateKey)
         let salt = "LOKI"
         let symmetricKey = try HMAC(key: salt.bytes, variant: .sha256).authenticate(ephemeralSharedSecret.bytes)
         let closedGroupCiphertextMessageAsData = try DecryptionUtilities.decrypt(ivAndCiphertext, usingAESGCMWithSymmetricKey: Data(symmetricKey))

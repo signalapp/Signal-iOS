@@ -12,8 +12,8 @@
 #import "OWSRecipientIdentity.h"
 #import "SignalAccount.h"
 #import "TSContactThread.h"
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/NSData+OWS.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

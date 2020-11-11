@@ -4,6 +4,7 @@ import PromiseKit
 import SessionProtocolKit
 import SessionSnodeKit
 import SessionUtilitiesKit
+import SignalCoreKit
 
 /// Base class for `FileServerAPI` and `OpenGroupAPI`.
 public class DotNetAPI : NSObject {
@@ -40,7 +41,7 @@ public class DotNetAPI : NSObject {
     private static func requestNewAuthToken(for server: String) -> Promise<String> {
         SNLog("Requesting auth token for server: \(server).")
         guard let userKeyPair = Configuration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
-        let queryParameters = "pubKey=\(userKeyPair.publicKey().toHexString())"
+        let queryParameters = "pubKey=\(userKeyPair.publicKey.toHexString())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
         let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise.value(FileServerAPI.publicKey)
@@ -56,10 +57,10 @@ public class DotNetAPI : NSObject {
             if serverPublicKey.count == 33 {
                 let hexEncodedServerPublicKey = serverPublicKey.toHexString()
                 let startIndex = hexEncodedServerPublicKey.index(hexEncodedServerPublicKey.startIndex, offsetBy: 2)
-                serverPublicKey = Data.data(fromHex: String(hexEncodedServerPublicKey[startIndex..<hexEncodedServerPublicKey.endIndex]))!
+                serverPublicKey = Data(hex: String(hexEncodedServerPublicKey[startIndex..<hexEncodedServerPublicKey.endIndex]))
             }
             // The challenge is prefixed by the 16 bit IV
-            guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey()),
+            guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey),
                 let token = String(bytes: tokenAsData, encoding: .utf8) else {
                 throw Error.decryptionFailed
             }
@@ -149,7 +150,7 @@ public class DotNetAPI : NSObject {
                 if isEncryptionRequired {
                     var encryptionKey = NSData()
                     var digest = NSData()
-                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, outKey: &encryptionKey, outDigest: &digest) else {
+                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, shouldPad: true, outKey: &encryptionKey, outDigest: &digest) else {
                         SNLog("Couldn't encrypt attachment.")
                         return seal.reject(Error.encryptionFailed)
                     }

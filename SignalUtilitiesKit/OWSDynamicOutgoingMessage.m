@@ -3,7 +3,7 @@
 //
 
 #import "OWSDynamicOutgoingMessage.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 
 
 NS_ASSUME_NONNULL_BEGIN

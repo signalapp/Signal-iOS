@@ -31,7 +31,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
     OWSAssert(identityKeyPair);
 
     @try {
-        NSData *signature = [Ed25519 sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair];
+        NSData *signature = [Ed25519 throws_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair];
         return [[SignedPreKeyRecord alloc] initWithId:preKeyId
                                               keyPair:keyPair
                                             signature:signature

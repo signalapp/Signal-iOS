@@ -12,7 +12,7 @@
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

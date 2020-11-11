@@ -50,8 +50,8 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/NSObject+Casting.h>
 #import <SignalUtilitiesKit/SignalRecipient.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

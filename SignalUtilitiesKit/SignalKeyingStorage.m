@@ -5,7 +5,7 @@
 #import "SignalKeyingStorage.h"
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 #import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 
 #define SignalKeyingCollection @"SignalKeyingCollection"
 

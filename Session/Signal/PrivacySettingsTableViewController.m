@@ -5,6 +5,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
 #import "Session-Swift.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>

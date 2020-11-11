@@ -1,6 +1,6 @@
 #import "ClosedGroupCiphertextMessage.h"
 #import "AxolotlExceptions.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 #import <SessionProtocolKit/SessionProtocolKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // https://github.com/signalapp/libsignal-metadata-java/blob/master/java/src/main/java/org/signal/libsignal/metadata/protocol/UnidentifiedSenderMessage.java
 @objc public class SMKUnidentifiedSenderMessage: NSObject {

@@ -13,6 +13,7 @@
 #import <SignalUtilitiesKit/MimeTypeUtil.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalCoreKit/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

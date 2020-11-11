@@ -6,7 +6,7 @@
 #import "OWSError.h"
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <CommonCrypto/CommonDigest.h>
-#import <SessionProtocolKit/NSData+OWS.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <UIKit/UIImage.h>
 

@@ -15,8 +15,8 @@
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

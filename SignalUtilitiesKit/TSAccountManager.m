@@ -18,8 +18,8 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
-#import <SessionProtocolKit/NSData+OWS.h>
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import "SSKAsserts.h"

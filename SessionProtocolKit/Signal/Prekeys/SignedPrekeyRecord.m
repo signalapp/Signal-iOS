@@ -3,7 +3,7 @@
 //
 
 #import "SignedPrekeyRecord.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 static NSString* const kCoderPreKeyId        = @"kCoderPreKeyId";
 static NSString* const kCoderPreKeyPair      = @"kCoderPreKeyPair";

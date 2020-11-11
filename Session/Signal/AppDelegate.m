@@ -14,7 +14,7 @@
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionProtocolKit/iOSVersions.h>
+#import <SignalCoreKit/iOSVersions.h>
 #import <SignalUtilitiesKit/AppSetup.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSContactsManager.h>
@@ -239,6 +239,8 @@ static NSTimeInterval launchStartedAt;
 
             [self versionMigrationsDidComplete];
         }];
+
+    [SNConfiguration performMainSetup];
 
     [LKAppearanceUtilities switchToSessionAppearance];
 

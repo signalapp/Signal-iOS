@@ -16,7 +16,7 @@
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionProtocolKit/SessionProtocolKit.h>
 #import "SSKAsserts.h"

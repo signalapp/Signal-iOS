@@ -20,8 +20,7 @@ import SessionUtilitiesKit
 
     private lazy var symmetricKey: Data? = {
         guard let privateKey = privateKey else { return nil }
-        let keyPair = ECKeyPair(publicKey: recipientPublicKeyAsData, privateKey: privateKey)
-        return Curve25519.generateSharedSecret(fromPublicKey: recipientPublicKeyAsData, andKeyPair: keyPair)
+        return try? Curve25519.generateSharedSecret(fromPublicKey: recipientPublicKeyAsData, privateKey: privateKey)
     }()
     
     @objc public init(recipientPublicKey: String, privateKey: Data?) {

@@ -24,27 +24,29 @@ end
 target 'SessionShareExtension' do
   pod 'AFNetworking', inhibit_warnings: true
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true
 end
 
 target 'SessionPushNotificationExtension' do
   pod 'AFNetworking', inhibit_warnings: true
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true
 end
 
 target 'SignalUtilitiesKit' do
   pod 'AFNetworking', inhibit_warnings: true
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'GRKOpenSSLFramework', :inhibit_warnings => true
   pod 'HKDFKit', :inhibit_warnings => true
   pod 'libPhoneNumber-iOS', :inhibit_warnings => true
@@ -53,6 +55,7 @@ target 'SignalUtilitiesKit' do
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SAMKeychain', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true
@@ -66,31 +69,35 @@ end
 target 'SessionMessagingKit' do
   pod 'AFNetworking', inhibit_warnings: true
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
 end
 
 target 'SessionProtocolKit' do
   pod 'CocoaLumberjack', :inhibit_warnings => true
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'GRKOpenSSLFramework', :inhibit_warnings => true
   pod 'HKDFKit', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
 end
 
 target 'SessionSnodeKit' do
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
 end
 
 target 'SessionUtilitiesKit' do
   pod 'CryptoSwift', :inhibit_warnings => true
-  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
 end
 
 post_install do |installer|

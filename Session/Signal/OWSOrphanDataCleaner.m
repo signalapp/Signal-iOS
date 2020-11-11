@@ -4,7 +4,7 @@
 
 #import "OWSOrphanDataCleaner.h"
 #import "DateUtil.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/AppReadiness.h>

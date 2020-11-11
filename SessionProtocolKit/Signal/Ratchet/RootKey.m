@@ -7,7 +7,7 @@
 #import "RKCK.h"
 #import "TSDerivedSecrets.h"
 #import <Curve25519Kit/Curve25519.h>
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 static NSString* const kCoderData      = @"kCoderData";
 
@@ -48,7 +48,7 @@ static NSString* const kCoderData      = @"kCoderData";
     OWSAssert(theirEphemeral);
     OWSAssert(ourEphemeral);
 
-    NSData *sharedSecret = [Curve25519 generateSharedSecretFromPublicKey:theirEphemeral andKeyPair:ourEphemeral];
+    NSData *sharedSecret = [Curve25519 throws_generateSharedSecretFromPublicKey:theirEphemeral andKeyPair:ourEphemeral];
     OWSAssert(sharedSecret.length == 32);
 
     TSDerivedSecrets *secrets =

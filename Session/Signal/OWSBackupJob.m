@@ -6,7 +6,7 @@
 #import "OWSBackupIO.h"
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN

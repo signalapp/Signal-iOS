@@ -7,8 +7,8 @@
 #import "Constants.h"
 #import "SerializationUtilities.h"
 #import <SessionProtocolKit/SessionProtocolKit-Swift.h>
-#import <SessionProtocolKit/SCKExceptionWrapper.h>
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

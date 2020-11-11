@@ -4,7 +4,7 @@
 
 #import "OWSDeviceProvisioningURLParser.h"
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
-#import <SessionProtocolKit/NSData+OWS.h>
+#import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

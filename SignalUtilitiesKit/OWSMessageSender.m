@@ -53,10 +53,10 @@
 #import <SessionProtocolKit/SessionBuilder.h>
 #import <SessionProtocolKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SessionProtocolKit/NSData+OWS.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
-#import <SessionProtocolKit/SCKExceptionWrapper.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/ProfileManagerProtocol.h>
 #import <SessionProtocolKit/SessionProtocolKit.h>

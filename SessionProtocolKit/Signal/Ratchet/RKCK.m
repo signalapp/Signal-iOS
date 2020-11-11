@@ -5,7 +5,7 @@
 #import "RKCK.h"
 #import <Curve25519Kit/Curve25519.h>
 #import "TSDerivedSecrets.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @implementation RKCK
 

@@ -3,7 +3,7 @@
 //
 
 #import "DateUtil.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 

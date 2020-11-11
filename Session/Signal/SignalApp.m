@@ -7,7 +7,7 @@
 #import "ConversationViewController.h"
 #import "Session-Swift.h"
 #import "SignalsNavigationController.h"
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>

@@ -11,7 +11,7 @@
 #import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
-#import <SessionProtocolKit/Cryptography.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "SSKAsserts.h"

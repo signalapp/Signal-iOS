@@ -132,9 +132,9 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             return present(alert, animated: true, completion: nil)
         }
-        let seed = Randomness.generateRandomBytes(16)!
+        let seed = Randomness.generateRandomBytes(16)
         preconditionFailure("This code path shouldn't be invoked.")
-        let keyPair = Curve25519.generateKeyPair()!
+        let keyPair = Curve25519.generateKeyPair()
         let identityManager = OWSIdentityManager.shared()
         let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
         databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)

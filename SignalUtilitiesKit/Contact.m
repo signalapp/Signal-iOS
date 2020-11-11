@@ -8,8 +8,8 @@
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/NSString+OWS.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SessionProtocolKit/SessionProtocolKit.h>
 
 @import Contacts;

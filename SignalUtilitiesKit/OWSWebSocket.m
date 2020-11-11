@@ -20,8 +20,8 @@
 #import "TSConstants.h"
 #import "TSErrorMessage.h"
 #import "TSRequest.h"
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

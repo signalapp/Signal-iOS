@@ -7,9 +7,9 @@
 #import "OWSDatabaseMigration.h"
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionProtocolKit/NSData+OWS.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SignalUtilitiesKit/OWSFileSystem.h>

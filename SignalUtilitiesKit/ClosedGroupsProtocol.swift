@@ -40,7 +40,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let userPublicKey = getUserHexEncodedPublicKey()
         // Generate a key pair for the group
-        let groupKeyPair = Curve25519.generateKeyPair()!
+        let groupKeyPair = Curve25519.generateKeyPair()
         let groupPublicKey = groupKeyPair.hexEncodedPublicKey // Includes the "05" prefix
         // Ensure the current user's master device is the one that's included in the member list
         members.remove(userPublicKey)
@@ -74,12 +74,12 @@ public final class ClosedGroupsProtocol : NSObject {
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
-                groupPrivateKey: groupKeyPair.privateKey(), senderKeys: senderKeys, members: membersAsData, admins: adminsAsData)
+                groupPrivateKey: groupKeyPair.privateKey, senderKeys: senderKeys, members: membersAsData, admins: adminsAsData)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             promises.append(SSKEnvironment.shared.messageSender.sendPromise(message: closedGroupUpdateMessage))
         }
         // Add the group to the user's set of public keys to poll for
-        Storage.setClosedGroupPrivateKey(groupKeyPair.privateKey().toHexString(), for: groupPublicKey, using: transaction)
+        Storage.setClosedGroupPrivateKey(groupKeyPair.privateKey.toHexString(), for: groupPublicKey, using: transaction)
         // Notify the PN server
         promises.append(LokiPushNotificationManager.performOperation(.subscribe, for: groupPublicKey, publicKey: userPublicKey))
         // Notify the user

@@ -8,6 +8,6 @@ extension Storage {
     }
 
     public func getUserPublicKey() -> String? {
-        return OWSIdentityManager.shared().identityKeyPair()?.publicKey()?.toHexString()
+        return OWSIdentityManager.shared().identityKeyPair()?.publicKey.toHexString()
     }
 }

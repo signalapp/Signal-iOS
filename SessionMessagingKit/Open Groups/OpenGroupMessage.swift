@@ -117,8 +117,8 @@ public final class OpenGroupMessage : NSObject {
             SNLog("Failed to sign open group message.")
             return nil
         }
-        let userKeyPair = Configuration.shared.storage.getUserKeyPair()
-        guard let signatureData = Ed25519.sign(data, with: userKeyPair) else {
+        let userKeyPair = Configuration.shared.storage.getUserKeyPair()!
+        guard let signatureData = try? Ed25519.sign(data, with: userKeyPair) else {
             SNLog("Failed to sign open group message.")
             return nil
         }
@@ -130,7 +130,7 @@ public final class OpenGroupMessage : NSObject {
         guard let signature = signature else { return false }
         guard let data = getValidationData(for: signature.version) else { return false }
         let publicKey = Data(hex: self.senderPublicKey.removing05PrefixIfNeeded())
-        return Ed25519.verifySignature(signature.data, publicKey: publicKey, data: data)
+        return (try? Ed25519.verifySignature(signature.data, publicKey: publicKey, data: data)) ?? false
     }
     
     // MARK: JSON

@@ -4,7 +4,7 @@
 
 #import "MainAppContext.h"
 #import "Session-Swift.h"
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

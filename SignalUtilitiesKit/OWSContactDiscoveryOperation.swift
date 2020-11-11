@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc(OWSLegacyContactDiscoveryOperation)
 public class LegacyContactDiscoveryBatchOperation: OWSOperation {
@@ -314,6 +315,7 @@ class CDSBatchOperation: OWSOperation {
         let addressPlainTextData = try type(of: self).encodePhoneNumbers(recipientIds: recipientIds)
 
         guard let encryptionResult = Cryptography.encryptAESGCM(plainTextData: addressPlainTextData,
+                                                                initializationVector: Cryptography.generateRandomBytes(kAESGCM256_DefaultIVLength),
                                                                 additionalAuthenticatedData: remoteAttestation.requestId,
                                                                 key: remoteAttestation.keys.clientKey) else {
 

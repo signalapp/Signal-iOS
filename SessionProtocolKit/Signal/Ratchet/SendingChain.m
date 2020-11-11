@@ -4,7 +4,7 @@
 
 #import "SendingChain.h"
 #import "ChainKey.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @interface SendingChain ()
 

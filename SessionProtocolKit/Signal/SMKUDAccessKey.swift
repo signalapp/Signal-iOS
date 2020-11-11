@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class SMKUDAccessKey: NSObject {
@@ -22,7 +23,7 @@ public class SMKUDAccessKey: NSObject {
         // We derive the "ud access key" from the private key by encrypting zeroes.
         let emptyPlaintextLength = 16
         let emptyPlaintext = Data(count: Int(emptyPlaintextLength))
-        let initializationVector = Data(count: Int(kAESGCM256_IVLength))
+        let initializationVector = Data(count: Int(kAESGCM256_DefaultIVLength))
         guard let keyData = Cryptography.encryptAESGCM(plainTextData: emptyPlaintext,
                                                 initializationVector: initializationVector,
                                                 additionalAuthenticatedData: nil,

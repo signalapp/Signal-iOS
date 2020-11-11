@@ -19,13 +19,13 @@
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 
 #import "SSKAsserts.h"
 

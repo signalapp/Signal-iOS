@@ -8,7 +8,7 @@
 #import "zlib.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SSZipArchive/SSZipArchive.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/AttachmentSharing.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/Environment.h>

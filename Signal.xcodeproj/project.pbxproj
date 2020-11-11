@@ -783,8 +783,6 @@
 		C3471ED42555386B00297E91 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
 		C3471F4225553A4D00297E91 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4125553A4D00297E91 /* Threading.swift */; };
 		C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */; };
-		C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */; };
 		C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471FA32555439E00297E91 /* Notification+MessageSender.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
 		C352A2F525574B4700338F3E /* Job.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A2F425574B4700338F3E /* Job.swift */; };
@@ -1018,9 +1016,7 @@
 		C3A71D2925589EBF0043A11F /* SessionRestorationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D2825589EBF0043A11F /* SessionRestorationProtocol.swift */; };
 		C3A71D3B25589F2B0043A11F /* SessionRestorationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D3A25589F2B0043A11F /* SessionRestorationStatus.swift */; };
 		C3A71D5025589FF30043A11F /* SMKUDAccessKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4425589FF10043A11F /* SMKUDAccessKey.swift */; };
-		C3A71D5125589FF30043A11F /* ECPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4525589FF10043A11F /* ECPublicKey.swift */; };
 		C3A71D5225589FF30043A11F /* SMKError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4625589FF10043A11F /* SMKError.swift */; };
-		C3A71D5325589FF30043A11F /* ECPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4725589FF10043A11F /* ECPrivateKey.swift */; };
 		C3A71D5425589FF30043A11F /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4825589FF20043A11F /* NSData+messagePadding.m */; };
 		C3A71D5525589FF30043A11F /* SMKSenderCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4925589FF20043A11F /* SMKSenderCertificate.swift */; };
 		C3A71D5625589FF30043A11F /* SMKServerCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4A25589FF20043A11F /* SMKServerCertificate.swift */; };
@@ -1148,30 +1144,6 @@
 		C3C2A96F2553B63C00C340D1 /* NSData+keyVersionByte.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A96B2553B63C00C340D1 /* NSData+keyVersionByte.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A9702553B63C00C340D1 /* SerializationUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A96C2553B63C00C340D1 /* SerializationUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A9712553B63C00C340D1 /* SerializationUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A96D2553B63C00C340D1 /* SerializationUtilities.m */; };
-		C3C2A9EF2553B9C400C340D1 /* OWSDataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9D42553B9C100C340D1 /* OWSDataParser.swift */; };
-		C3C2A9F02553B9C400C340D1 /* OWSAsserts.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9D52553B9C200C340D1 /* OWSAsserts.m */; };
-		C3C2A9F12553B9C400C340D1 /* OWSLogs.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9D62553B9C200C340D1 /* OWSLogs.m */; };
-		C3C2A9F22553B9C400C340D1 /* NSObject+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9D72553B9C200C340D1 /* NSObject+OWS.m */; };
-		C3C2A9F32553B9C400C340D1 /* String+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9D82553B9C200C340D1 /* String+OWS.swift */; };
-		C3C2A9F42553B9C400C340D1 /* Threading.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9D92553B9C200C340D1 /* Threading.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A9F52553B9C400C340D1 /* NSDate+OWS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9DA2553B9C200C340D1 /* NSDate+OWS.mm */; };
-		C3C2A9F62553B9C400C340D1 /* Data+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9DB2553B9C200C340D1 /* Data+OWS.swift */; };
-		C3C2A9F72553B9C400C340D1 /* NSData+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9DC2553B9C200C340D1 /* NSData+OWS.m */; };
-		C3C2A9F82553B9C400C340D1 /* NSString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9DD2553B9C200C340D1 /* NSString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A9F92553B9C400C340D1 /* NSData+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9DE2553B9C200C340D1 /* NSData+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A9FA2553B9C400C340D1 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9DF2553B9C200C340D1 /* OWSSwiftUtils.swift */; };
-		C3C2A9FB2553B9C400C340D1 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9E02553B9C300C340D1 /* Logger.swift */; };
-		C3C2A9FC2553B9C400C340D1 /* iOSVersions.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9E12553B9C300C340D1 /* iOSVersions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A9FD2553B9C400C340D1 /* SCKExceptionWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9E22553B9C300C340D1 /* SCKExceptionWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2A9FE2553B9C400C340D1 /* OWSLogs.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9E32553B9C300C340D1 /* OWSLogs.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2AA002553B9C400C340D1 /* NSDate+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9E52553B9C300C340D1 /* NSDate+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2AA012553B9C400C340D1 /* Threading.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9E62553B9C300C340D1 /* Threading.m */; };
-		C3C2AA022553B9C400C340D1 /* Cryptography.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9E72553B9C300C340D1 /* Cryptography.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2AA042553B9C400C340D1 /* OWSAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9E92553B9C300C340D1 /* OWSAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C3C2AA052553B9C400C340D1 /* SCKExceptionWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9EA2553B9C300C340D1 /* SCKExceptionWrapper.m */; };
-		C3C2AA072553B9C400C340D1 /* Cryptography.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9EC2553B9C400C340D1 /* Cryptography.m */; };
-		C3C2AA082553B9C400C340D1 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A9ED2553B9C400C340D1 /* NSString+OWS.m */; };
-		C3C2AA092553B9C400C340D1 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A9EE2553B9C400C340D1 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C3C2AB642553C5FF00C340D1 /* SharedSenderKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2AB632553C5FF00C340D1 /* SharedSenderKeys.swift */; };
 		C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */; };
@@ -2172,8 +2144,6 @@
 		C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSender+Encryption.swift"; sourceTree = "<group>"; };
 		C3471F4125553A4D00297E91 /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageReceiver+Decryption.swift"; sourceTree = "<group>"; };
-		C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ECKeyPair+Utilities.h"; sourceTree = "<group>"; };
-		C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ECKeyPair+Utilities.m"; sourceTree = "<group>"; };
 		C3471FA32555439E00297E91 /* Notification+MessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+MessageSender.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		C352A2F425574B4700338F3E /* Job.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Job.swift; sourceTree = "<group>"; };
@@ -2407,9 +2377,7 @@
 		C3A71D2825589EBF0043A11F /* SessionRestorationProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationProtocol.swift; sourceTree = "<group>"; };
 		C3A71D3A25589F2B0043A11F /* SessionRestorationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationStatus.swift; sourceTree = "<group>"; };
 		C3A71D4425589FF10043A11F /* SMKUDAccessKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKUDAccessKey.swift; sourceTree = "<group>"; };
-		C3A71D4525589FF10043A11F /* ECPublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECPublicKey.swift; sourceTree = "<group>"; };
 		C3A71D4625589FF10043A11F /* SMKError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKError.swift; sourceTree = "<group>"; };
-		C3A71D4725589FF10043A11F /* ECPrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECPrivateKey.swift; sourceTree = "<group>"; };
 		C3A71D4825589FF20043A11F /* NSData+messagePadding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+messagePadding.m"; sourceTree = "<group>"; };
 		C3A71D4925589FF20043A11F /* SMKSenderCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKSenderCertificate.swift; sourceTree = "<group>"; };
 		C3A71D4A25589FF20043A11F /* SMKServerCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKServerCertificate.swift; sourceTree = "<group>"; };
@@ -2544,30 +2512,6 @@
 		C3C2A96B2553B63C00C340D1 /* NSData+keyVersionByte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+keyVersionByte.h"; path = "Utility/NSData+keyVersionByte.h"; sourceTree = "<group>"; };
 		C3C2A96C2553B63C00C340D1 /* SerializationUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SerializationUtilities.h; path = Utility/SerializationUtilities.h; sourceTree = "<group>"; };
 		C3C2A96D2553B63C00C340D1 /* SerializationUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SerializationUtilities.m; path = Utility/SerializationUtilities.m; sourceTree = "<group>"; };
-		C3C2A9D42553B9C100C340D1 /* OWSDataParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSDataParser.swift; path = Utility/OWSDataParser.swift; sourceTree = "<group>"; };
-		C3C2A9D52553B9C200C340D1 /* OWSAsserts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAsserts.m; path = Utility/OWSAsserts.m; sourceTree = "<group>"; };
-		C3C2A9D62553B9C200C340D1 /* OWSLogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSLogs.m; path = Utility/OWSLogs.m; sourceTree = "<group>"; };
-		C3C2A9D72553B9C200C340D1 /* NSObject+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+OWS.m"; path = "Utility/NSObject+OWS.m"; sourceTree = "<group>"; };
-		C3C2A9D82553B9C200C340D1 /* String+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+OWS.swift"; path = "Utility/String+OWS.swift"; sourceTree = "<group>"; };
-		C3C2A9D92553B9C200C340D1 /* Threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Threading.h; path = Utility/Threading.h; sourceTree = "<group>"; };
-		C3C2A9DA2553B9C200C340D1 /* NSDate+OWS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "NSDate+OWS.mm"; path = "Utility/NSDate+OWS.mm"; sourceTree = "<group>"; };
-		C3C2A9DB2553B9C200C340D1 /* Data+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Data+OWS.swift"; path = "Utility/Data+OWS.swift"; sourceTree = "<group>"; };
-		C3C2A9DC2553B9C200C340D1 /* NSData+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+OWS.m"; path = "Utility/NSData+OWS.m"; sourceTree = "<group>"; };
-		C3C2A9DD2553B9C200C340D1 /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+OWS.h"; path = "Utility/NSString+OWS.h"; sourceTree = "<group>"; };
-		C3C2A9DE2553B9C200C340D1 /* NSData+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+OWS.h"; path = "Utility/NSData+OWS.h"; sourceTree = "<group>"; };
-		C3C2A9DF2553B9C200C340D1 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSSwiftUtils.swift; path = Utility/OWSSwiftUtils.swift; sourceTree = "<group>"; };
-		C3C2A9E02553B9C300C340D1 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = Utility/Logger.swift; sourceTree = "<group>"; };
-		C3C2A9E12553B9C300C340D1 /* iOSVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iOSVersions.h; path = Utility/iOSVersions.h; sourceTree = "<group>"; };
-		C3C2A9E22553B9C300C340D1 /* SCKExceptionWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCKExceptionWrapper.h; path = Utility/SCKExceptionWrapper.h; sourceTree = "<group>"; };
-		C3C2A9E32553B9C300C340D1 /* OWSLogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSLogs.h; path = Utility/OWSLogs.h; sourceTree = "<group>"; };
-		C3C2A9E52553B9C300C340D1 /* NSDate+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDate+OWS.h"; path = "Utility/NSDate+OWS.h"; sourceTree = "<group>"; };
-		C3C2A9E62553B9C300C340D1 /* Threading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Threading.m; path = Utility/Threading.m; sourceTree = "<group>"; };
-		C3C2A9E72553B9C300C340D1 /* Cryptography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Cryptography.h; path = Utility/Cryptography.h; sourceTree = "<group>"; };
-		C3C2A9E92553B9C300C340D1 /* OWSAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAsserts.h; path = Utility/OWSAsserts.h; sourceTree = "<group>"; };
-		C3C2A9EA2553B9C300C340D1 /* SCKExceptionWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCKExceptionWrapper.m; path = Utility/SCKExceptionWrapper.m; sourceTree = "<group>"; };
-		C3C2A9EC2553B9C400C340D1 /* Cryptography.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Cryptography.m; path = Utility/Cryptography.m; sourceTree = "<group>"; };
-		C3C2A9ED2553B9C400C340D1 /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+OWS.m"; path = "Utility/NSString+OWS.m"; sourceTree = "<group>"; };
-		C3C2A9EE2553B9C400C340D1 /* NSObject+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+OWS.h"; path = "Utility/NSObject+OWS.h"; sourceTree = "<group>"; };
 		C3C2AB632553C5FF00C340D1 /* SharedSenderKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSenderKeys.swift; sourceTree = "<group>"; };
 		C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SecureRandom.swift"; sourceTree = "<group>"; };
 		C3C2ABE32553C74400C340D1 /* ClosedGroupRatchet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedGroupRatchet.swift; sourceTree = "<group>"; };
@@ -4065,8 +4009,6 @@
 		C3A71DB12558B25F0043A11F /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				C3A71D4725589FF10043A11F /* ECPrivateKey.swift */,
-				C3A71D4525589FF10043A11F /* ECPublicKey.swift */,
 				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
 				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
 				C3A71D4B25589FF20043A11F /* SMKCertificateValidator.swift */,
@@ -4168,8 +4110,6 @@
 				C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
 				C3A71D662558A0170043A11F /* DiffieHellman.swift */,
-				C3471F5525553DA000297E91 /* ECKeyPair+Utilities.h */,
-				C3471F6725553E7600297E91 /* ECKeyPair+Utilities.m */,
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
 				C3C2A5D92553860B00C340D1 /* JSON.swift */,
 				C3C2A5CE2553860700C340D1 /* Logging.swift */,
@@ -4370,34 +4310,10 @@
 		C3C2A9692553B62B00C340D1 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				C3C2A9E72553B9C300C340D1 /* Cryptography.h */,
-				C3C2A9EC2553B9C400C340D1 /* Cryptography.m */,
-				C3C2A9DB2553B9C200C340D1 /* Data+OWS.swift */,
-				C3C2A9E12553B9C300C340D1 /* iOSVersions.h */,
-				C3C2A9E02553B9C300C340D1 /* Logger.swift */,
 				C3C2A96B2553B63C00C340D1 /* NSData+keyVersionByte.h */,
 				C3C2A96A2553B63B00C340D1 /* NSData+keyVersionByte.m */,
-				C3C2A9DE2553B9C200C340D1 /* NSData+OWS.h */,
-				C3C2A9DC2553B9C200C340D1 /* NSData+OWS.m */,
-				C3C2A9E52553B9C300C340D1 /* NSDate+OWS.h */,
-				C3C2A9DA2553B9C200C340D1 /* NSDate+OWS.mm */,
-				C3C2A9EE2553B9C400C340D1 /* NSObject+OWS.h */,
-				C3C2A9D72553B9C200C340D1 /* NSObject+OWS.m */,
-				C3C2A9DD2553B9C200C340D1 /* NSString+OWS.h */,
-				C3C2A9ED2553B9C400C340D1 /* NSString+OWS.m */,
-				C3C2A9E92553B9C300C340D1 /* OWSAsserts.h */,
-				C3C2A9D52553B9C200C340D1 /* OWSAsserts.m */,
-				C3C2A9D42553B9C100C340D1 /* OWSDataParser.swift */,
-				C3C2A9E32553B9C300C340D1 /* OWSLogs.h */,
-				C3C2A9D62553B9C200C340D1 /* OWSLogs.m */,
-				C3C2A9DF2553B9C200C340D1 /* OWSSwiftUtils.swift */,
-				C3C2A9E22553B9C300C340D1 /* SCKExceptionWrapper.h */,
-				C3C2A9EA2553B9C300C340D1 /* SCKExceptionWrapper.m */,
 				C3C2A96C2553B63C00C340D1 /* SerializationUtilities.h */,
 				C3C2A96D2553B63C00C340D1 /* SerializationUtilities.m */,
-				C3C2A9D82553B9C200C340D1 /* String+OWS.swift */,
-				C3C2A9D92553B9C200C340D1 /* Threading.h */,
-				C3C2A9E62553B9C300C340D1 /* Threading.m */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -4809,7 +4725,6 @@
 				C352A3B72557B6ED00338F3E /* TSRequest.h in Headers */,
 				C300A63B2554B72200555489 /* NSDate+Timestamp.h in Headers */,
 				C352A3772557864000338F3E /* NSTimer+Proxying.h in Headers */,
-				C3471F5625553E1100297E91 /* ECKeyPair+Utilities.h in Headers */,
 				C3C2A67D255388CC00C340D1 /* SessionUtilitiesKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4826,7 +4741,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3C2AA092553B9C400C340D1 /* NSObject+OWS.h in Headers */,
 				C3C2A95E2553B62400C340D1 /* IdentityKeyStore.h in Headers */,
 				C3C2A95D2553B62400C340D1 /* PreKeyStore.h in Headers */,
 				C3C2A91F2553B5B200C340D1 /* AxolotlParameters.h in Headers */,
@@ -4834,19 +4748,15 @@
 				C3C2A8D52553B57C00C340D1 /* PreKeyBundle.h in Headers */,
 				C3C2A9092553B5B200C340D1 /* RatchetingSession.h in Headers */,
 				C3C2A96F2553B63C00C340D1 /* NSData+keyVersionByte.h in Headers */,
-				C3C2A9FC2553B9C400C340D1 /* iOSVersions.h in Headers */,
 				C3C2A91D2553B5B200C340D1 /* AliceAxolotlParameters.h in Headers */,
 				C3C2A9402553B5D700C340D1 /* SessionRecord.h in Headers */,
-				C3C2A9F42553B9C400C340D1 /* Threading.h in Headers */,
 				C3C2A90A2553B5B200C340D1 /* Chain.h in Headers */,
 				C3C2A8882553B4CC00C340D1 /* AxolotlExceptions.h in Headers */,
 				C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */,
 				C3C2A89E2553B4F600C340D1 /* WhisperMessage.h in Headers */,
 				C3C2A8D92553B57C00C340D1 /* PreKeyRecord.h in Headers */,
 				C3C2A90B2553B5B200C340D1 /* MessageKeys.h in Headers */,
-				C3C2AA022553B9C400C340D1 /* Cryptography.h in Headers */,
 				C3C2A90C2553B5B200C340D1 /* RKCK.h in Headers */,
-				C3C2AA042553B9C400C340D1 /* OWSAsserts.h in Headers */,
 				C3C2A92B2553B5BE00C340D1 /* SessionCipher.h in Headers */,
 				C3C2A9152553B5B200C340D1 /* BobAxolotlParameters.h in Headers */,
 				C3C2A9412553B5D700C340D1 /* SessionState.h in Headers */,
@@ -4855,17 +4765,12 @@
 				C3C2A89F2553B4F600C340D1 /* ClosedGroupCiphertextMessage.h in Headers */,
 				C3C2A95C2553B62400C340D1 /* AxolotlStore.h in Headers */,
 				C3C2A9602553B62400C340D1 /* SignedPreKeyStore.h in Headers */,
-				C3C2A9F82553B9C400C340D1 /* NSString+OWS.h in Headers */,
 				C3C2A9702553B63C00C340D1 /* SerializationUtilities.h in Headers */,
 				C3C2A8A42553B4F600C340D1 /* FallbackMessage.h in Headers */,
 				C3C2A9122553B5B200C340D1 /* ReceivingChain.h in Headers */,
-				C3C2AA002553B9C400C340D1 /* NSDate+OWS.h in Headers */,
 				C3C2A9202553B5B200C340D1 /* SendingChain.h in Headers */,
 				C3C2A89C2553B4F600C340D1 /* PreKeyWhisperMessage.h in Headers */,
-				C3C2A9FD2553B9C400C340D1 /* SCKExceptionWrapper.h in Headers */,
 				C3C2A8B62553B53800C340D1 /* Constants.h in Headers */,
-				C3C2A9FE2553B9C400C340D1 /* OWSLogs.h in Headers */,
-				C3C2A9F92553B9C400C340D1 /* NSData+OWS.h in Headers */,
 				C3C2A8C22553B55600C340D1 /* AES-CBC.h in Headers */,
 				C3C2A93C2553B5D700C340D1 /* SessionBuilder.h in Headers */,
 				C3C2A9162553B5B200C340D1 /* ChainAndIndex.h in Headers */,
@@ -5469,6 +5374,7 @@
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
@@ -5494,6 +5400,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
@@ -6090,7 +5997,6 @@
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */,
 				C3A7225E2558C38D0043A11F /* AnyPromise+Retaining.swift in Sources */,
-				C3471F6825553E7600297E91 /* ECKeyPair+Utilities.m in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
 				C352A3A62557B60D00338F3E /* TSRequest.m in Sources */,
@@ -6171,49 +6077,34 @@
 				C3C2A9172553B5B200C340D1 /* RootKey.m in Sources */,
 				C3C2A9112553B5B200C340D1 /* ChainKey.m in Sources */,
 				C3C2A8C32553B55600C340D1 /* AES-CBC.m in Sources */,
-				C3C2AA012553B9C400C340D1 /* Threading.m in Sources */,
-				C3C2A9F32553B9C400C340D1 /* String+OWS.swift in Sources */,
 				C3A71D682558A0170043A11F /* LokiSessionCipher.swift in Sources */,
-				C3C2A9F12553B9C400C340D1 /* OWSLogs.m in Sources */,
-				C3C2A9F22553B9C400C340D1 /* NSObject+OWS.m in Sources */,
 				C3A71D5B25589FF30043A11F /* SMKUnidentifiedSenderMessage.swift in Sources */,
 				C3C2A9182553B5B200C340D1 /* SendingChain.m in Sources */,
 				C3C2A8A02553B4F600C340D1 /* PreKeyWhisperMessage.m in Sources */,
 				C3A71D5225589FF30043A11F /* SMKError.swift in Sources */,
 				C3C2A93F2553B5D700C340D1 /* SessionState.m in Sources */,
-				C3C2A9F02553B9C400C340D1 /* OWSAsserts.m in Sources */,
-				C3A71D5125589FF30043A11F /* ECPublicKey.swift in Sources */,
 				C3C2ABF82553C8A300C340D1 /* Storage.swift in Sources */,
-				C3C2A9F72553B9C400C340D1 /* NSData+OWS.m in Sources */,
 				C3C2A90D2553B5B200C340D1 /* RKCK.m in Sources */,
 				C3C2A8E72553B59B00C340D1 /* SPKProto.swift in Sources */,
-				C3A71D5325589FF30043A11F /* ECPrivateKey.swift in Sources */,
 				C3A71D5525589FF30043A11F /* SMKSenderCertificate.swift in Sources */,
 				C3C2A91E2553B5B200C340D1 /* ChainAndIndex.m in Sources */,
 				C3C2A91A2553B5B200C340D1 /* TSDerivedSecrets.m in Sources */,
 				C3A71D5025589FF30043A11F /* SMKUDAccessKey.swift in Sources */,
 				C3C2A91C2553B5B200C340D1 /* ReceivingChain.m in Sources */,
-				C3C2A9EF2553B9C400C340D1 /* OWSDataParser.swift in Sources */,
 				C3C2A8A32553B4F600C340D1 /* FallbackMessage.m in Sources */,
 				C3A71D5425589FF30043A11F /* NSData+messagePadding.m in Sources */,
-				C3C2AA072553B9C400C340D1 /* Cryptography.m in Sources */,
-				C3C2A9F52553B9C400C340D1 /* NSDate+OWS.mm in Sources */,
 				C3C2ABE42553C74400C340D1 /* ClosedGroupRatchet.swift in Sources */,
 				C3C2A93E2553B5D700C340D1 /* SessionRecord.m in Sources */,
 				C3A71D742558A0F60043A11F /* SMKProto.swift in Sources */,
-				C3C2AA052553B9C400C340D1 /* SCKExceptionWrapper.m in Sources */,
 				C3A71D2925589EBF0043A11F /* SessionRestorationProtocol.swift in Sources */,
 				C3C2A8D62553B57C00C340D1 /* PreKeyBundle.m in Sources */,
-				C3C2A9F62553B9C400C340D1 /* Data+OWS.swift in Sources */,
 				C3C2A89D2553B4F600C340D1 /* ClosedGroupCiphertextMessage.m in Sources */,
-				C3C2A9FB2553B9C400C340D1 /* Logger.swift in Sources */,
 				C3A71D672558A0170043A11F /* FallbackSessionCipher.swift in Sources */,
 				C3C2AC0A2553C9A100C340D1 /* Configuration.swift in Sources */,
 				C3C2A96E2553B63C00C340D1 /* NSData+keyVersionByte.m in Sources */,
 				C3C2A8E62553B59B00C340D1 /* WhisperTextProtocol.pb.swift in Sources */,
 				C3C2AB642553C5FF00C340D1 /* SharedSenderKeys.swift in Sources */,
 				C3C2A9102553B5B200C340D1 /* AliceAxolotlParameters.m in Sources */,
-				C3C2A9FA2553B9C400C340D1 /* OWSSwiftUtils.swift in Sources */,
 				C3C2A92C2553B5BE00C340D1 /* SessionCipher.m in Sources */,
 				C3C2A8D42553B57C00C340D1 /* SignedPrekeyRecord.m in Sources */,
 				C3A71D752558A0F60043A11F /* OWSUnidentifiedDelivery.pb.swift in Sources */,
@@ -6223,7 +6114,6 @@
 				C3C2A90F2553B5B200C340D1 /* RatchetingSession.m in Sources */,
 				C3A71D5725589FF30043A11F /* SMKCertificateValidator.swift in Sources */,
 				C3C2A93D2553B5D700C340D1 /* SessionBuilder.m in Sources */,
-				C3C2AA082553B9C400C340D1 /* NSString+OWS.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

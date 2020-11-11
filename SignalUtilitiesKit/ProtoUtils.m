@@ -6,7 +6,7 @@
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSThread.h"
-#import <SessionProtocolKit/Cryptography.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

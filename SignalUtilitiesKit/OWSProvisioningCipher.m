@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)throws_encryptWithData:(NSData *)dataToEncrypt
 {
     NSData *sharedSecret =
-        [Curve25519 generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
+        [Curve25519 throws_generateSharedSecretFromPublicKey:self.theirPublicKey privateKey:self.ourKeyPair.privateKey];
 
     NSData *infoData = [@"TextSecure Provisioning Message" dataUsingEncoding:NSASCIIStringEncoding];
     NSData *nullSalt = [[NSMutableData dataWithLength:32] copy];

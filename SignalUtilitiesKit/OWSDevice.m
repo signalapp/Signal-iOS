@@ -12,7 +12,7 @@
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSIdentityManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 

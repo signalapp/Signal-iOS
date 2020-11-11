@@ -7,7 +7,7 @@
 //
 
 #import "MessageKeys.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 static NSString* const kCoderMessageKeysCipherKey = @"kCoderMessageKeysCipherKey";
 static NSString* const kCoderMessageKeysMacKey    = @"kCoderMessageKeysMacKey";

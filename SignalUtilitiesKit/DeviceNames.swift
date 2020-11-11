@@ -4,6 +4,7 @@
 
 import Foundation
 import Curve25519Kit
+import SignalCoreKit
 
 @objc
 public enum DeviceNameError: Int, Error {
@@ -27,12 +28,12 @@ public class DeviceNames: NSObject {
             throw DeviceNameError.invalidInput
         }
 
-        let ephemeralKeyPair = Curve25519.generateKeyPair()!
+        let ephemeralKeyPair = Curve25519.generateKeyPair()
 
         // master_secret = ECDH(ephemeral_private, identity_public).
         let masterSecret: Data
         do {
-            masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: identityKeyPair.publicKey(), andKeyPair: ephemeralKeyPair)
+            masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: identityKeyPair.publicKey, privateKey: ephemeralKeyPair.privateKey)
         } catch {
             Logger.error("Could not generate shared secret: \(error)")
             throw error
@@ -58,7 +59,7 @@ public class DeviceNames: NSObject {
             throw DeviceNameError.assertionFailure
         }
 
-        guard let keyData = (ephemeralKeyPair.publicKey() as NSData).prependKeyType() else {
+        guard let keyData = (ephemeralKeyPair.publicKey as NSData).prependKeyType() else {
             owsFailDebug("Could not prepend key type.")
             throw DeviceNameError.assertionFailure
         }
@@ -176,7 +177,7 @@ public class DeviceNames: NSObject {
         // master_secret = ECDH(identity_private, ephemeral_public)
         let masterSecret: Data
         do {
-            masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublic, andKeyPair: identityKeyPair)
+            masterSecret = try Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublic, privateKey: identityKeyPair.privateKey)
         } catch {
             Logger.error("Could not generate shared secret: \(error)")
             throw error

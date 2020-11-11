@@ -13,8 +13,8 @@
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <SessionProtocolKit/SignedPreKeyRecord.h>
 #import <Curve25519Kit/Curve25519.h>
-#import <SessionProtocolKit/Cryptography.h>
-#import <SessionProtocolKit/NSData+OWS.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -1,5 +1,5 @@
 #import "LKUnlinkDeviceMessage.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 @implementation LKUnlinkDeviceMessage

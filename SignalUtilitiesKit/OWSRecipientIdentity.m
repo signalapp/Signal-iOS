@@ -6,7 +6,7 @@
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
-#import <SessionProtocolKit/Cryptography.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

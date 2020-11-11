@@ -24,9 +24,9 @@
 #import <SessionProtocolKit/AxolotlExceptions.h>
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <SessionProtocolKit/SessionCipher.h>
-#import <SessionProtocolKit/NSData+OWS.h>
-#import <Curve25519Kit/Randomness.h>
-#import <SessionProtocolKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/Randomness.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "SSKAsserts.h"
 

@@ -8,7 +8,7 @@
 #import "OWSMessageBubbleView.h"
 #import "OWSQuotedReplyModel.h"
 #import "Session-Swift.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
 #import <SignalUtilitiesKit/OWSContactsManager.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>

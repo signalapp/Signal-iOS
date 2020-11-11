@@ -7,7 +7,7 @@
 //
 
 #import "BobAxolotlParameters.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @implementation BobAxolotlParameters
 

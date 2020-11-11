@@ -4,6 +4,7 @@
 
 import Foundation
 import HKDFKit
+import SignalCoreKit
 
 @objc
 public class SecretSessionKnownSenderError: NSObject, CustomNSError {
@@ -36,32 +37,6 @@ public class SecretSessionKnownSenderError: NSObject, CustomNSError {
 @objc
 public enum SMKSecretSessionCipherError: Int, Error {
     case selfSentMessage
-}
-
-// See:
-// https://github.com/signalapp/libsignal-metadata-java/blob/master/java/src/main/java/org/signal/libsignal/metadata/SecretSessionCipher.java
-
-public extension ECKeyPair {
-
-    // TODO: Rename to publicKey(), rename existing publicKey() method to publicKeyData().
-    func ecPublicKey() throws -> ECPublicKey {
-        guard publicKey().count == ECCKeyLength else {
-            throw SMKError.assertionError(description: "\(logTag) public key has invalid length")
-        }
-
-        // NOTE: we don't use ECPublicKey(serializedKeyData:) since the
-        // key data should not have a type byte.
-        return try ECPublicKey(keyData: publicKey())
-    }
-
-    // TODO: Rename to privateKey(), rename existing privateKey() method to privateKeyData().
-    func ecPrivateKey() throws -> ECPrivateKey {
-        guard privateKey().count == ECCKeyLength else {
-            throw SMKError.assertionError(description: "\(logTag) private key has invalid length")
-        }
-
-        return try ECPrivateKey(keyData: privateKey())
-    }
 }
 
 // MARK: -
@@ -182,7 +157,7 @@ public class SMKDecryptResult: NSObject {
 
         let encryptedMessage: CipherMessage
         if useFallbackSessionCipher {
-            let cipher = FallBackSessionCipher(recipientPublicKey: recipientPublicKey, privateKey: try ourIdentityKeyPair.privateKey())
+            let cipher = FallBackSessionCipher(recipientPublicKey: recipientPublicKey, privateKey: try ourIdentityKeyPair.privateKey)
             let ivAndCiphertext = cipher.encrypt(paddedPlaintext)!
             encryptedMessage = FallbackMessage(_throws_with: ivAndCiphertext)
         } else {
@@ -207,7 +182,7 @@ public class SMKDecryptResult: NSObject {
         // key data should not have a type byte.
         let theirIdentityKey = try ECPublicKey(keyData: theirIdentityKeyData)
 
-        let ephemeral = Curve25519.generateKeyPair()!
+        let ephemeral = Curve25519.generateKeyPair()
 
         guard let prefixData = kUDPrefixString.data(using: String.Encoding.utf8) else {
             throw SMKError.assertionError(description: "\(logTag) Could not encode prefix.")
@@ -388,8 +363,7 @@ public class SMKDecryptResult: NSObject {
         //
         // See:
         // https://github.com/signalapp/libsignal-protocol-java/blob/master/java/src/main/java/org/whispersystems/libsignal/ecc/Curve.java#L30
-        let keyPair = ECKeyPair(publicKey: ephemeralPublicKey.keyData, privateKey: ephemeralPrivateKey.keyData)
-        let ephemeralSecret = try Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublicKey.keyData, andKeyPair: keyPair)
+        let ephemeralSecret = try Curve25519.generateSharedSecret(fromPublicKey: ephemeralPublicKey.keyData, privateKey: ephemeralPrivateKey.keyData)
 
         // byte[] ephemeralDerived = new HKDFv3().deriveSecrets(ephemeralSecret, salt, new byte[0], 96);
         let kEphemeralDerivedLength: UInt = 96
@@ -429,8 +403,7 @@ public class SMKDecryptResult: NSObject {
         //
         // See:
         // https://github.com/signalapp/libsignal-protocol-java/blob/master/java/src/main/java/org/whispersystems/libsignal/ecc/Curve.java#L30
-        let keyPair = ECKeyPair(publicKey: staticPublicKey.keyData, privateKey: staticPrivateKey.keyData)
-        let staticSecret = Curve25519.generateSharedSecret(fromPublicKey: staticPublicKey.keyData, andKeyPair: keyPair)
+        let staticSecret = try Curve25519.generateSharedSecret(fromPublicKey: staticPublicKey.keyData, privateKey: staticPrivateKey.keyData)
 
         // byte[] staticDerived = new HKDFv3().deriveSecrets(staticSecret, salt, new byte[0], 96);
         let kStaticDerivedLength: UInt = 96
@@ -509,7 +482,7 @@ public class SMKDecryptResult: NSObject {
         case .prekey:
             cipherMessage = try PreKeyWhisperMessage(data: messageContent.contentData)
         case .fallback:
-            let privateKey = try? identityStore.identityKeyPair(protocolContext)?.privateKey()
+            let privateKey = try? identityStore.identityKeyPair(protocolContext)?.privateKey
             let cipher = FallBackSessionCipher(recipientPublicKey: senderRecipientId, privateKey: privateKey)
             let plaintext = cipher.decrypt(messageContent.contentData)!
             return plaintext

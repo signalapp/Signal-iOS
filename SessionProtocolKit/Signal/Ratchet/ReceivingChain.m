@@ -7,7 +7,7 @@
 //
 
 #import "ReceivingChain.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 
 @interface ReceivingChain ()
 

@@ -215,6 +215,6 @@ public final class SharedSenderKeysImplementation : NSObject {
 
     public func getKeyPair(forGroupWithPublicKey groupPublicKey: String) -> ECKeyPair {
         let privateKey = Storage.getClosedGroupPrivateKey(for: groupPublicKey)!
-        return ECKeyPair(publicKey: Data(hex: groupPublicKey.removing05PrefixIfNeeded()), privateKey: Data(hex: privateKey))
+        return try! ECKeyPair(publicKeyData: Data(hex: groupPublicKey.removing05PrefixIfNeeded()), privateKeyData: Data(hex: privateKey))
     }
 }

@@ -26,6 +26,7 @@
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import "Session-Swift.h"
 #import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import "TSAttachmentPointer.h"
@@ -45,8 +46,8 @@
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SessionProtocolKit/NSDate+OWS.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
 #import <SignalUtilitiesKit/OWSContactsManager.h>

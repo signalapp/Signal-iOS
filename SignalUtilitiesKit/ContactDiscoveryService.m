@@ -98,9 +98,9 @@ NSError *ContactDiscoveryServiceErrorMakeWithReason(NSInteger code, NSString *re
     NSData *ephemeralToStatic;
     @try {
         ephemeralToEphemeral =
-            [Curve25519 generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
+            [Curve25519 throws_generateSharedSecretFromPublicKey:self.serverEphemeralPublic privateKey:self.keyPair.privateKey];
         ephemeralToStatic =
-            [Curve25519 generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
+            [Curve25519 throws_generateSharedSecretFromPublicKey:self.serverStaticPublic privateKey:self.keyPair.privateKey];
     } @catch (NSException *exception) {
         OWSFailDebug(@"could not generate shared secrets: %@", exception);
         return NO;

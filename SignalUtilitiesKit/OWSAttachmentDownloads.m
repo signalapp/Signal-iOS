@@ -22,7 +22,7 @@
 #import "TSNetworkManager.h"
 #import "TSThread.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionProtocolKit/Cryptography.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 

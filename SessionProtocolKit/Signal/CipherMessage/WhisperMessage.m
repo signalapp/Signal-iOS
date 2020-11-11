@@ -7,10 +7,11 @@
 #import "Constants.h"
 #import "NSData+keyVersionByte.h"
 #import "SerializationUtilities.h"
-#import <SessionProtocolKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSAsserts.h>
 #import <SessionProtocolKit/SessionProtocolKit-Swift.h>
-#import <SessionProtocolKit/NSData+OWS.h>
-#import <SessionProtocolKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SessionProtocolKit/SessionProtocolKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

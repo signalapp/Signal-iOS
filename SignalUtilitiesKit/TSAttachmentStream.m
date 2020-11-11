@@ -8,7 +8,7 @@
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SessionProtocolKit/Threading.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

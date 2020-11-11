@@ -55,15 +55,13 @@ public enum AESGCM {
             #endif
         }
         let x25519PublicKey = Data(hex: hexEncodedX25519PublicKey)
-        guard let ephemeralKeyPair = Curve25519.generateKeyPair() else {
-            throw Error.keyPairGenerationFailed
-        }
-        guard let ephemeralSharedSecret = Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, andKeyPair: ephemeralKeyPair) else {
+        let ephemeralKeyPair = Curve25519.generateKeyPair()
+        guard let ephemeralSharedSecret = try? Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, privateKey: ephemeralKeyPair.privateKey) else {
             throw Error.sharedSecretGenerationFailed
         }
         let salt = "LOKI"
         let symmetricKey = try HMAC(key: salt.bytes, variant: .sha256).authenticate(ephemeralSharedSecret.bytes)
         let ciphertext = try encrypt(plaintext, with: Data(symmetricKey))
-        return EncryptionResult(ciphertext: ciphertext, symmetricKey: Data(symmetricKey), ephemeralPublicKey: ephemeralKeyPair.publicKey())
+        return EncryptionResult(ciphertext: ciphertext, symmetricKey: Data(symmetricKey), ephemeralPublicKey: ephemeralKeyPair.publicKey)
     }
 }

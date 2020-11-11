@@ -13,7 +13,7 @@
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
-#import <SessionProtocolKit/Cryptography.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
@@ -117,7 +117,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     NSData *encryptionKey;
     NSData *digest;
     NSData *_Nullable encryptedAttachmentData =
-        [Cryptography encryptAttachmentData:attachmentData outKey:&encryptionKey outDigest:&digest];
+        [Cryptography encryptAttachmentData:attachmentData shouldPad:YES outKey:&encryptionKey outDigest:&digest];
     if (!encryptedAttachmentData) {
         OWSFailDebug(@"could not encrypt attachment data.");
         error = OWSErrorMakeFailedToSendOutgoingMessageError();

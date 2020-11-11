@@ -8,7 +8,7 @@
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
