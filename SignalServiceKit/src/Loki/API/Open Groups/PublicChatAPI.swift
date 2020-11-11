@@ -388,7 +388,11 @@ public final class PublicChatAPI : DotNetAPI {
             if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
                 storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
                 if let profilePictureURL = info.profilePictureURL {
-                    let url = server.hasSuffix("/") ? "\(server)\(profilePictureURL)" : "\(server)/\(profilePictureURL)"
+                    var sanitizedServerURL = server
+                    var sanitizedProfilePictureURL = profilePictureURL
+                    while sanitizedServerURL.hasSuffix("/") { sanitizedServerURL.removeLast(1) }
+                    while sanitizedProfilePictureURL.hasPrefix("/") { sanitizedProfilePictureURL.removeFirst(1) }
+                    let url = "\(sanitizedServerURL)/\(sanitizedProfilePictureURL)"
                     FileServerAPI.downloadAttachment(from: url).map2 { data in
                         let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
                         try attachmentStream.write(data)
