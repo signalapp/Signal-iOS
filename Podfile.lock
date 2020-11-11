@@ -121,30 +121,26 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - AFNetworking (~> 3.2.1)
   - CocoaLumberjack
   - CryptoSwift
-  - CryptoSwift (~> 1.3)
   - Curve25519Kit
-  - FeedKit (~> 8.1)
+  - FeedKit
   - GRKOpenSSLFramework
   - HKDFKit
   - libPhoneNumber-iOS
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - NVActivityIndicatorView (~> 4.7)
+  - NVActivityIndicatorView
   - PromiseKit
-  - PromiseKit (= 6.5.3)
   - PureLayout (~> 3.1.4)
   - Reachability
   - SAMKeychain
-  - Sodium (~> 0.8.0)
-  - SQLCipher (>= 4.0.1)
+  - Sodium
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
-  - ZXingObjC (~> 3.6.4)
+  - ZXingObjC
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -218,6 +214,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7f78e18fa317b1aa375f0a3c80ecf62fd8d30cca
+PODFILE CHECKSUM: db9bd6df7d17f8926d13475263d89cd767f7eea2
 
 COCOAPODS: 1.10.0.rc.1

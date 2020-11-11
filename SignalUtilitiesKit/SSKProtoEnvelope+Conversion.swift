@@ -1,5 +1,5 @@
 
-extension SSKProtoEnvelope {
+public extension SSKProtoEnvelope {
 
     static func from(_ json: JSON) -> SSKProtoEnvelope? {
         guard let base64EncodedData = json["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {

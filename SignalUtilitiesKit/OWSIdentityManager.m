@@ -126,12 +126,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [self.dbConnection setObject:keyPair forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
 }
 
-- (void)generateNewIdentityKeyPairFromSeed:(NSData *)seed
-{
-    ECKeyPair *keyPair = nil;//[Curve25519 generateKeyPairFromSeed:seed];
-    [self.dbConnection setObject:keyPair forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
-}
-
 - (void)clearIdentityKey
 {
     [self.dbConnection removeObjectForKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey

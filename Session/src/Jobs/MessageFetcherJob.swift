@@ -160,7 +160,13 @@ public class MessageFetcherJob: NSObject {
     private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
         let userPublickKey = getUserHexEncodedPublicKey() // Can be missing in rare cases
         guard !userPublickKey.isEmpty else { return Promise.value(Set()) }
-        return Promise.value(Set())
+        return SnodeAPI.getMessages(for: userPublickKey).map2 { promises -> Set<Promise<[SSKProtoEnvelope]>> in
+            return Set(promises.map { promise -> Promise<[SSKProtoEnvelope]> in
+                return promise.map2 { rawMessages -> [SSKProtoEnvelope] in
+                    return rawMessages.compactMap { SSKProtoEnvelope.from($0) }
+                }
+            })
+        }
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		10AC6C7D50A0C865C5E4779B /* Pods_SessionUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71CFEDD2D3C54277731012DF /* Pods_SessionUIKit.framework */; };
 		2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2400888D239F30A600305217 /* SessionRestorationView.swift */; };
-		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
@@ -135,7 +134,7 @@
 		34EA69402194933900702471 /* MediaDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA693F2194933900702471 /* MediaDownloadView.swift */; };
 		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
-		390650A6D345BFE01E006DB0 /* Pods_LokiPushNotificationService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04912E453971FB16E5E78EC6 /* Pods_LokiPushNotificationService.framework */; };
+		3681EBBAC430992520DBD9AC /* Pods_SessionShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 200605FD180CB8B89F566B41 /* Pods_SessionShareExtension.framework */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
@@ -257,6 +256,7 @@
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
 		7BDCFC092421894900641C39 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		7BDCFC0B2421EB7600641C39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
+		8E10697B10CBC965F052A4CB /* Pods_SessionPushNotificationExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9E02BC2732E07195B5AFA75 /* Pods_SessionPushNotificationExtension.framework */; };
 		945AA2B82B621254F69FA9E8 /* Pods_SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9117261809D69B3D7C26B8F1 /* Pods_SessionUtilitiesKit.framework */; };
 		9EE44C6B4D4A069B86112387 /* Pods_SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9559C3068280BA2383F547F7 /* Pods_SessionSnodeKit.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -326,7 +326,6 @@
 		B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF6422397711F0091D419 /* SettingsVC.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
-		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
 		C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5BC2554B00D00555489 /* ReadReceipt.swift */; };
 		C300A5C92554B04E00555489 /* SessionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5C82554B04E00555489 /* SessionRequest.swift */; };
@@ -1206,6 +1205,7 @@
 		C3DFFAC823E970080058DAF8 /* OpenGroupSuggestionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
 		C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
+		C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */; };
 		D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
 		D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
@@ -1215,6 +1215,7 @@
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
+		FAD6392E0205566D11AA9E48 /* Pods_Session.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB3724C70247A916D43271FE /* Pods_Session.framework */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
 		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
@@ -1313,12 +1314,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		04912E453971FB16E5E78EC6 /* Pods_LokiPushNotificationService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LokiPushNotificationService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		174BD0AE74771D02DAC2B7A9 /* Pods-SessionProtocolKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionProtocolKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionProtocolKit/Pods-SessionProtocolKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		18D19142FD6E60FD0A5D89F7 /* Pods-LokiPushNotificationService.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LokiPushNotificationService.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-LokiPushNotificationService/Pods-LokiPushNotificationService.app store release.xcconfig"; sourceTree = "<group>"; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
+		200605FD180CB8B89F566B41 /* Pods_SessionShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SessionShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2183DCA28E0620BC73FCC554 /* Pods_SessionProtocolKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SessionProtocolKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2400888D239F30A600305217 /* SessionRestorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationView.swift; sourceTree = "<group>"; };
 		264033E641846B67E0CB21B0 /* Pods-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionUtilitiesKit/Pods-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1536,6 +1536,8 @@
 		34EA69412194DE7F00702471 /* MediaUploadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaUploadView.swift; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
+		36098A00B2C7DB91D85A4AE3 /* Pods-Session.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Session.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Session/Pods-Session.debug.xcconfig"; sourceTree = "<group>"; };
+		40E4C5D2ABFC1940BEB88BB9 /* Pods-Session.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Session.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Session/Pods-Session.app store release.xcconfig"; sourceTree = "<group>"; };
 		435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
@@ -1674,6 +1676,7 @@
 		5F3070F3395081DD0EB4F933 /* Pods-SignalUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUtilitiesKit/Pods-SignalUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		6A26D6558DE69AF455E571C1 /* Pods-SessionMessagingKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.debug.xcconfig"; sourceTree = "<group>"; };
+		6AD66810558DCCC8D6FD14C6 /* Pods-SessionPushNotificationExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionPushNotificationExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionPushNotificationExtension/Pods-SessionPushNotificationExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		71CFEDD2D3C54277731012DF /* Pods_SessionUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SessionUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1715,6 +1718,7 @@
 		B10C9B5C1A7049EC00ECA2BF /* pause_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pause_icon@2x.png"; sourceTree = "<group>"; };
 		B10C9B5D1A7049EC00ECA2BF /* play_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_icon.png; sourceTree = "<group>"; };
 		B10C9B5E1A7049EC00ECA2BF /* play_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "play_icon@2x.png"; sourceTree = "<group>"; };
+		B27A64C349BBE85670300948 /* Pods-SessionShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionShareExtension/Pods-SessionShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B633C5041A1D190B0059AC12 /* call@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call@2x.png"; sourceTree = "<group>"; };
 		B633C50B1A1D190B0059AC12 /* contact_default_feed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = contact_default_feed.png; sourceTree = "<group>"; };
@@ -2657,8 +2661,9 @@
 		C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupSuggestionSheet.swift; sourceTree = "<group>"; };
 		C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditClosedGroupVC.swift; sourceTree = "<group>"; };
 		C3E7134E251C867C009649BB /* Sodium+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sodium+Conversion.swift"; sourceTree = "<group>"; };
+		C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		C88965DE4F4EC4FC919BEC4E /* Pods-SessionUIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionUIKit/Pods-SessionUIKit.debug.xcconfig"; sourceTree = "<group>"; };
-		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB3724C70247A916D43271FE /* Pods_Session.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Session.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D221A089169C9E5E00537ABF /* Session.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Session.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2671,6 +2676,7 @@
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		D9E02BC2732E07195B5AFA75 /* Pods_SessionPushNotificationExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SessionPushNotificationExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
 		DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.app store release.xcconfig"; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -2678,7 +2684,9 @@
 		E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Permissions.h"; path = "util/UIViewController+Permissions.h"; sourceTree = "<group>"; };
 		EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+Permissions.m"; path = "util/UIViewController+Permissions.m"; sourceTree = "<group>"; };
+		F121FB43E2A1C1CF7F2AFC23 /* Pods-SessionPushNotificationExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionPushNotificationExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionPushNotificationExtension/Pods-SessionPushNotificationExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		F62ECF7B8AF4F8089AA705B3 /* Pods-LokiPushNotificationService.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LokiPushNotificationService.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LokiPushNotificationService/Pods-LokiPushNotificationService.debug.xcconfig"; sourceTree = "<group>"; };
+		F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionShareExtension/Pods-SessionShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		FB523C549815DE935E98151E /* Pods_SessionMessagingKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SessionMessagingKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FC5CDF371A3393DD00B47253 /* error_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error_white@2x.png"; sourceTree = "<group>"; };
@@ -2696,7 +2704,7 @@
 				C37F54B9255BB2D4002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				C3402FE52559036600EA6424 /* SessionUIKit.framework in Frameworks */,
-				2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */,
+				3681EBBAC430992520DBD9AC /* Pods_SessionShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2706,7 +2714,7 @@
 			files = (
 				C37F54BA255BB2D8002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
-				390650A6D345BFE01E006DB0 /* Pods_LokiPushNotificationService.framework in Frameworks */,
+				8E10697B10CBC965F052A4CB /* Pods_SessionPushNotificationExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2803,7 +2811,7 @@
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */,
 				D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */,
-				BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */,
+				FAD6392E0205566D11AA9E48 /* Pods_Session.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3481,6 +3489,12 @@
 				C1A746BC424B531D8ED478F6 /* Pods-SessionUIKit.app store release.xcconfig */,
 				5F3070F3395081DD0EB4F933 /* Pods-SignalUtilitiesKit.debug.xcconfig */,
 				9C0469AC557930C01552CC83 /* Pods-SignalUtilitiesKit.app store release.xcconfig */,
+				36098A00B2C7DB91D85A4AE3 /* Pods-Session.debug.xcconfig */,
+				40E4C5D2ABFC1940BEB88BB9 /* Pods-Session.app store release.xcconfig */,
+				F121FB43E2A1C1CF7F2AFC23 /* Pods-SessionPushNotificationExtension.debug.xcconfig */,
+				6AD66810558DCCC8D6FD14C6 /* Pods-SessionPushNotificationExtension.app store release.xcconfig */,
+				F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */,
+				B27A64C349BBE85670300948 /* Pods-SessionShareExtension.app store release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -3997,6 +4011,7 @@
 				C38EF284255B6D84007E1867 /* AppSetup.h */,
 				C38EF287255B6D85007E1867 /* AppSetup.m */,
 				C38EF289255B6D85007E1867 /* NoopCallMessageHandler.swift */,
+				C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */,
 				C38EF281255B6D84007E1867 /* OWSAudioSession.swift */,
 				C38EF288255B6D85007E1867 /* OWSSounds.h */,
 				C38EF28B255B6D86007E1867 /* OWSSounds.m */,
@@ -4928,17 +4943,17 @@
 				D221A08D169C9E5E00537ABF /* UIKit.framework */,
 				D221A08F169C9E5E00537ABF /* Foundation.framework */,
 				D221A091169C9E5E00537ABF /* CoreGraphics.framework */,
-				D17BB5C25D615AB49813100C /* Pods_Signal.framework */,
-				0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */,
 				748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */,
 				264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */,
-				04912E453971FB16E5E78EC6 /* Pods_LokiPushNotificationService.framework */,
 				9559C3068280BA2383F547F7 /* Pods_SessionSnodeKit.framework */,
 				FB523C549815DE935E98151E /* Pods_SessionMessagingKit.framework */,
 				2183DCA28E0620BC73FCC554 /* Pods_SessionProtocolKit.framework */,
 				9117261809D69B3D7C26B8F1 /* Pods_SessionUtilitiesKit.framework */,
 				71CFEDD2D3C54277731012DF /* Pods_SessionUIKit.framework */,
 				53D547348A367C8A14D37FC0 /* Pods_SignalUtilitiesKit.framework */,
+				CB3724C70247A916D43271FE /* Pods_Session.framework */,
+				D9E02BC2732E07195B5AFA75 /* Pods_SessionPushNotificationExtension.framework */,
+				200605FD180CB8B89F566B41 /* Pods_SessionShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -5815,7 +5830,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Signal-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Session-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5833,7 +5848,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalShareExtension-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SessionShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5884,7 +5899,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-LokiPushNotificationService-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SessionPushNotificationExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5897,7 +5912,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Session/Pods-Session-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
@@ -5948,7 +5963,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Session/Pods-Session-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5BEA71AEF5E31390FEFA2E99 /* [CP] Check Pods Manifest.lock */ = {
@@ -6219,6 +6234,7 @@
 				C33FDD9C255A582000E217F9 /* OWSUnknownContactBlockOfferMessage.m in Sources */,
 				C33FDC4A255A582000E217F9 /* TSYapDatabaseObject.m in Sources */,
 				C33FDC65255A582000E217F9 /* OWSWebSocket.m in Sources */,
+				C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */,
 				C33FDD8D255A582000E217F9 /* OWSSignalAddress.swift in Sources */,
 				C33FDCEF255A582000E217F9 /* OWSContactDiscoveryOperation.swift in Sources */,
 				C38EF217255B6D3B007E1867 /* OWSConversationColor.m in Sources */,
@@ -7004,7 +7020,7 @@
 /* Begin XCBuildConfiguration section */
 		453518731FC635DD00210559 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 69349DE607F5BA6036C9AC60 /* Pods-SignalShareExtension.debug.xcconfig */;
+			baseConfigurationReference = F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -7052,7 +7068,7 @@
 		};
 		453518751FC635DD00210559 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 435EAC2E5E22D3F087EB3192 /* Pods-SignalShareExtension.app store release.xcconfig */;
+			baseConfigurationReference = B27A64C349BBE85670300948 /* Pods-SessionShareExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -7120,7 +7136,7 @@
 		};
 		7BC01A43241F40AB00BC7C55 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F62ECF7B8AF4F8089AA705B3 /* Pods-LokiPushNotificationService.debug.xcconfig */;
+			baseConfigurationReference = F121FB43E2A1C1CF7F2AFC23 /* Pods-SessionPushNotificationExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -7166,7 +7182,7 @@
 		};
 		7BC01A44241F40AB00BC7C55 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18D19142FD6E60FD0A5D89F7 /* Pods-LokiPushNotificationService.app store release.xcconfig */;
+			baseConfigurationReference = 6AD66810558DCCC8D6FD14C6 /* Pods-SessionPushNotificationExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -8166,7 +8182,7 @@
 		};
 		D221A0BD169C9E5F00537ABF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */;
+			baseConfigurationReference = 36098A00B2C7DB91D85A4AE3 /* Pods-Session.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -8235,7 +8251,7 @@
 		};
 		D221A0BE169C9E5F00537ABF /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DF728B4B438716EAF95CEC18 /* Pods-Signal.app store release.xcconfig */;
+			baseConfigurationReference = 40E4C5D2ABFC1940BEB88BB9 /* Pods-Session.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;

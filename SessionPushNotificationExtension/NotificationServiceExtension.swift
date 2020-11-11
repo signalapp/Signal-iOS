@@ -183,7 +183,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
-//                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
             },
             migrationCompletion: { [weak self] in
                 self?.versionMigrationsDidComplete()

@@ -11,7 +11,7 @@ public final class SnodeAPI : NSObject {
 
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var swarmCache: [String:Set<Snode>] = [:]
-    public static var workQueue: DispatchQueue { Threading.workQueue }
+    public static var workQueue: DispatchQueue { Threading.workQueue } // Just to make things fit with legacy code
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 4
