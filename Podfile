@@ -10,20 +10,6 @@ def shared_pods
   # OWS Pods
   ###
 
-  pod 'SessionCoreKit', git: 'https://github.com/loki-project/session-ios-core-kit.git', testspecs: ["Tests"] # Fork of SignalCoreKit
-  # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
-
-  pod 'SessionAxolotlKit', git: 'https://github.com/loki-project/session-ios-protocol-kit.git', branch: 'master', testspecs: ["Tests"] # Fork of AxolotlKit
-  # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
-
-  pod 'SessionCurve25519Kit', git: 'https://github.com/loki-project/session-ios-curve-25519-kit', testspecs: ["Tests"] # Fork of Curve25519Kit
-  # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
-
-  pod 'SessionMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
-  # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
-
-  pod 'SessionServiceKit', path: '.', testspecs: ["Tests"]
-
   # Project does not compile with PromiseKit 6.7.1
   # see: https://github.com/mxcl/PromiseKit/issues/990
   pod 'PromiseKit', "6.5.3"
@@ -71,10 +57,6 @@ target 'Signal' do
   pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true
   pod 'Sodium', '~> 0.8.0', :inhibit_warnings => true
-
-  target 'SignalTests' do
-    inherit! :search_paths
-  end
 end
 
 target 'SignalShareExtension' do
@@ -94,8 +76,16 @@ target 'LokiPushNotificationService' do
 end
 
 target 'SignalMessaging' do
-  project 'Signal'
-  shared_pods
+  pod 'AFNetworking', inhibit_warnings: true
+  pod 'CocoaLumberjack', :inhibit_warnings => true
+  pod 'CryptoSwift', :inhibit_warnings => true
+  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'libPhoneNumber-iOS', :inhibit_warnings => true
+  pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
+  pod 'PromiseKit', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true
+  pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 end
 
 target 'SignalUtilitiesKit' do

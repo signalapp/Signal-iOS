@@ -5,7 +5,7 @@
 #import "OWSDatabaseMigrationRunner.h"
 #import "OWSDatabaseMigration.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/AppContext.h>
+#import <SignalUtilitiesKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

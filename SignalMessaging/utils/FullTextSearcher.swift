@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SessionServiceKit
+
 
 public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {

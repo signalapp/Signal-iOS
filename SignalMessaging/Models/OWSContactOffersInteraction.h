@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SessionServiceKit/TSInteraction.h>
+#import <SignalUtilitiesKit/TSInteraction.h>
 
 @class YapDatabaseReadWriteTransaction;
 

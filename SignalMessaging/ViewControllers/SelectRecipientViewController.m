@@ -13,11 +13,11 @@
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/ContactsUpdater.h>
-#import <SessionServiceKit/PhoneNumberUtil.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/ContactsUpdater.h>
+#import <SignalUtilitiesKit/PhoneNumberUtil.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

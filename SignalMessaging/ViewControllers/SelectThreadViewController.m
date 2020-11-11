@@ -16,12 +16,12 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/PhoneNumber.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/PhoneNumber.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SessionUIKit/SessionUIKit.h>
 

@@ -5,7 +5,7 @@
 import Foundation
 import Contacts
 import ContactsUI
-import SessionServiceKit
+
 
 enum Result<T, ErrorType> {
     case success(T)

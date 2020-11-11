@@ -9,18 +9,18 @@
 #import "OWSProfileManager.h"
 #import "OWSUserProfile.h"
 #import "ViewControllerUtils.h"
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionCoreKit/iOSVersions.h>
+
+
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
-#import <SessionServiceKit/ContactsUpdater.h>
-#import <SessionServiceKit/NSNotificationCenter+OWS.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWSError.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/PhoneNumber.h>
-#import <SessionServiceKit/SignalAccount.h>
+#import <SignalUtilitiesKit/ContactsUpdater.h>
+#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWSError.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/PhoneNumber.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
 
 @import Contacts;
 
@@ -224,15 +224,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
               updatedContacts:(NSArray<Contact *> *)contacts
                 isUserRequested:(BOOL)isUserRequested
 {
-    BOOL shouldClearStaleCache;
-    // On iOS 11.2, only clear the contacts cache if the fetch was initiated by the user.
-    // iOS 11.2 rarely returns partial fetches and we use the cache to prevent contacts from
-    // periodically disappearing from the UI.
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 2) && !SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 3)) {
-        shouldClearStaleCache = isUserRequested;
-    } else {
-        shouldClearStaleCache = YES;
-    }
+    BOOL shouldClearStaleCache = YES;
     [self updateWithContacts:contacts isUserRequested:isUserRequested shouldClearStaleCache:shouldClearStaleCache];
 }
 

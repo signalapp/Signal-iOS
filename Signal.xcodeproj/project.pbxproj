@@ -27,7 +27,6 @@
 		340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D522397E6800CB25B0 /* AttachmentCaptionToolbar.swift */; };
 		340872D822397F4600CB25B0 /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D722397F4500CB25B0 /* AttachmentCaptionViewController.swift */; };
 		340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D922397FEB00CB25B0 /* AttachmentTextView.swift */; };
-		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
 		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
@@ -50,7 +49,6 @@
 		34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34129B8521EF8779005457A8 /* LinkPreviewView.swift */; };
 		341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 341341EE2187467900192D59 /* ConversationViewModel.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
-		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
 		3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
 		342950822124C9750000B063 /* OWSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 3429507E2124C9740000B063 /* OWSTextField.m */; };
@@ -134,13 +132,9 @@
 		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
-		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
-		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
 		348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 348570A620F67574004FF32B /* OWSMessageHeaderView.m */; };
 		3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* ConversationMediaView.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
-		3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* CDSSigningCertificateTest.m */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
@@ -226,8 +220,6 @@
 		34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC855220C7ADA00857249 /* ImageEditorTextItem.swift */; };
 		34BBC85B220C7ADA00857249 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC856220C7ADA00857249 /* OrderedDictionary.swift */; };
 		34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */; };
-		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
-		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
@@ -241,10 +233,6 @@
 		34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */; };
 		34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4E2552118957600BEA353 /* OWSWebRTCDataProtos.pb.swift */; };
 		34C4E2582118957600BEA353 /* WebRTCProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4E2562118957600BEA353 /* WebRTCProto.swift */; };
-		34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A51FA0E46F00D35993 /* test-gif.gif */; };
-		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
-		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
-		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
 		34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
@@ -274,7 +262,6 @@
 		34D920E720E179C200D51158 /* OWSMessageFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D920E620E179C200D51158 /* OWSMessageFooterView.m */; };
 		34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99CE3217509C1000AFB39 /* AppEnvironment.swift */; };
-		34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DB0BEC2011548B007B313F /* OWSDatabaseConverterTest.m */; };
 		34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */; };
 		34DBF004206BD5A500025978 /* OWSBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF001206BD5A500025978 /* OWSBubbleView.m */; };
 		34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF006206C3CB200025978 /* OWSBubbleShapeView.m */; };
@@ -283,7 +270,6 @@
 		34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
 		34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
-		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34EA69402194933900702471 /* MediaDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA693F2194933900702471 /* MediaDownloadView.swift */; };
 		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
@@ -329,7 +315,6 @@
 		452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C7CA72037628B003D51A5 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
-		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
 		452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */; };
 		452EC6E1205FF5DC000E787C /* Bench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6E0205FF5DC000E787C /* Bench.swift */; };
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
@@ -340,22 +325,16 @@
 		453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		4535189A1FC63DBF00210559 /* SignalMessaging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
-		45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8F1F9527DA00FA666C /* SearcherTest.swift */; };
-		45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4539B5851F79348F007141FF /* PushRegistrationManager.swift */; };
 		4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541B71A209D2DAE0008608F /* ContactShareViewModel.swift */; };
 		4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF53208D40AC007B4E76 /* LoadingViewController.swift */; };
 		454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A84032059C787008B8C75 /* MediaTileViewController.swift */; };
 		454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
-		454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4551DB59205C562300C8AE75 /* Collection+OWS.swift */; };
 		4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */; };
 		45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45638BDB1F3DD0D400128435 /* DebugUICalling.swift */; };
-		45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */; };
-		456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456F6E2E1E261D1000FD2210 /* PeerConnectionClientTest.swift */; };
 		4574A5D61DD6704700C6B692 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4574A5D51DD6704700C6B692 /* CallService.swift */; };
 		4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */ = {isa = PBXBuildFile; fileRef = 4579431D1E7C8CE9008ED0C0 /* Pastelog.m */; };
 		45794E861E00620000066731 /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45794E851E00620000066731 /* CallUIAdapter.swift */; };
@@ -365,7 +344,6 @@
 		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
 		458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
-		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
 		459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 459B775A207BA3A80071D0AB /* OWSQuotedReplyModel.m */; };
 		459B775D207BA4810071D0AB /* OWSQuotedReplyModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 459B7759207BA3A80071D0AB /* OWSQuotedReplyModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -411,7 +389,6 @@
 		45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */; };
 		45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
-		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
 		45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */; };
 		45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */; };
 		45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F32C1D205718B000A300D5 /* MediaPageViewController.swift */; };
@@ -424,7 +401,6 @@
 		45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
 		4AC4EA13C8A444455DAB351F /* Pods_SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */; };
 		4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */; };
-		4C04F58421C860C50090D0BB /* MantlePerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C04F58321C860C50090D0BB /* MantlePerfTest.swift */; };
 		4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
@@ -435,8 +411,6 @@
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
 		4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
 		4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
-		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
-		4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */; };
 		4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */; };
 		4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */; };
 		4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C586925224FAB83003FD070 /* AVAudioSession+OWS.m */; };
@@ -473,14 +447,8 @@
 		7BF3FF002505B8E400609570 /* PlaceholderIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF3FEFF2505B8E400609570 /* PlaceholderIcon.swift */; };
 		945AA2B82B621254F69FA9E8 /* Pods_SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9117261809D69B3D7C26B8F1 /* Pods_SessionUtilitiesKit.framework */; };
 		9EE44C6B4D4A069B86112387 /* Pods_SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9559C3068280BA2383F547F7 /* Pods_SessionSnodeKit.framework */; };
-		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
-		A123C14916F902EE000AE905 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
 		A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
-		A194D3B917A08CD1004BD3A9 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
-		A194D3BA17A08CD5004BD3A9 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
-		A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
-		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		A33A4BA9D050805FE156E3ED /* Pods_SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2183DCA28E0620BC73FCC554 /* Pods_SessionProtocolKit.framework */; };
@@ -498,7 +466,6 @@
 		B10C9B611A7049EC00ECA2BF /* play_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5D1A7049EC00ECA2BF /* play_icon.png */; };
 		B10C9B621A7049EC00ECA2BF /* play_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5E1A7049EC00ECA2BF /* play_icon@2x.png */; };
 		B3E0C9C6F1633B1ABCE5AD0B /* Pods_SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53D547348A367C8A14D37FC0 /* Pods_SignalUtilitiesKit.framework */; };
-		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
 		B633C5861A1D190B0059AC12 /* call@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5041A1D190B0059AC12 /* call@2x.png */; };
 		B633C58D1A1D190B0059AC12 /* contact_default_feed.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C50B1A1D190B0059AC12 /* contact_default_feed.png */; };
 		B633C59D1A1D190B0059AC12 /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C51B1A1D190B0059AC12 /* endcall@2x.png */; };
@@ -506,12 +473,8 @@
 		B633C5C41A1D190B0059AC12 /* mute_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5421A1D190B0059AC12 /* mute_on@2x.png */; };
 		B633C5CE1A1D190B0059AC12 /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54C1A1D190B0059AC12 /* quit@2x.png */; };
 		B633C5D21A1D190B0059AC12 /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5501A1D190B0059AC12 /* savephoto@2x.png */; };
-		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
-		B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */; };
-		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
-		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		B6F509971AA53F760068F56A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
@@ -742,7 +705,7 @@
 		C33FDCA7255A582000E217F9 /* SSKMessageSenderJobRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAED255A580500E217F9 /* SSKMessageSenderJobRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDCA8255A582000E217F9 /* OWSFingerprintBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAEE255A580500E217F9 /* OWSFingerprintBuilder.m */; };
 		C33FDCA9255A582000E217F9 /* NSData+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAEF255A580500E217F9 /* NSData+Image.m */; };
-		C33FDCAA255A582000E217F9 /* ContactsUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAF0255A580500E217F9 /* ContactsUpdater.h */; };
+		C33FDCAA255A582000E217F9 /* ContactsUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAF0255A580500E217F9 /* ContactsUpdater.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDCAB255A582000E217F9 /* OWSThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAF1255A580500E217F9 /* OWSThumbnailService.swift */; };
 		C33FDCAC255A582000E217F9 /* ProxiedContentDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAF2255A580500E217F9 /* ProxiedContentDownloader.swift */; };
 		C33FDCAD255A582000E217F9 /* OWSPrimaryStorage+SessionStore.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAF3255A580500E217F9 /* OWSPrimaryStorage+SessionStore.m */; };
@@ -891,7 +854,7 @@
 		C33FDD45255A582000E217F9 /* Storage+SessionManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8B255A581200E217F9 /* Storage+SessionManagement.swift */; };
 		C33FDD46255A582000E217F9 /* TSInvalidIdentityKeyErrorMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB8C255A581200E217F9 /* TSInvalidIdentityKeyErrorMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD47255A582000E217F9 /* DeviceLinkingSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8D255A581200E217F9 /* DeviceLinkingSessionDelegate.swift */; };
-		C33FDD48255A582000E217F9 /* OWSContact+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB8E255A581200E217F9 /* OWSContact+Private.h */; };
+		C33FDD48255A582000E217F9 /* OWSContact+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB8E255A581200E217F9 /* OWSContact+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD49255A582000E217F9 /* ParamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8F255A581200E217F9 /* ParamParser.swift */; };
 		C33FDD4A255A582000E217F9 /* OWSMessageDecrypter.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB90255A581200E217F9 /* OWSMessageDecrypter.m */; };
 		C33FDD4B255A582000E217F9 /* ProtoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB91255A581200E217F9 /* ProtoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -973,7 +936,7 @@
 		C33FDD9E255A582000E217F9 /* OWSOutgoingSyncMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBE4255A581A00E217F9 /* OWSOutgoingSyncMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD9F255A582000E217F9 /* OWSDevicesService.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBE5255A581A00E217F9 /* OWSDevicesService.m */; };
 		C33FDDA0255A582000E217F9 /* OWSOutgoingNullMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBE6255A581A00E217F9 /* OWSOutgoingNullMessage.m */; };
-		C33FDDA1255A582000E217F9 /* NSTimer+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBE7255A581A00E217F9 /* NSTimer+OWS.h */; };
+		C33FDDA1255A582000E217F9 /* NSTimer+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBE7255A581A00E217F9 /* NSTimer+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDA2255A582000E217F9 /* Storage+OnionRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBE8255A581A00E217F9 /* Storage+OnionRequests.swift */; };
 		C33FDDA3255A582000E217F9 /* TSInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBE9255A581A00E217F9 /* TSInteraction.m */; };
 		C33FDDA4255A582000E217F9 /* SessionRequestMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBEA255A581A00E217F9 /* SessionRequestMessage.swift */; };
@@ -1064,6 +1027,10 @@
 		C36B8707243C50C60049991D /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		C38EEF0A255B49A8007E1867 /* SSKProtoEnvelope+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EEF09255B49A8007E1867 /* SSKProtoEnvelope+Conversion.swift */; };
 		C38EEFD6255B5BA2007E1867 /* OldSnodeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EEFD5255B5BA2007E1867 /* OldSnodeAPI.swift */; };
+		C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
+		C38EF00D255B61D3007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
+		C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
+		C38EF1A4255B67A2007E1867 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C396DAEF2518408B00FF6DC5 /* ParsingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAE82518408900FF6DC5 /* ParsingState.swift */; };
 		C396DAF02518408B00FF6DC5 /* String+Lines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAE92518408A00FF6DC5 /* String+Lines.swift */; };
 		C396DAF12518408B00FF6DC5 /* EnumeratedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAEA2518408A00FF6DC5 /* EnumeratedView.swift */; };
@@ -1246,22 +1213,14 @@
 		C3DFFAC823E970080058DAF8 /* OpenGroupSuggestionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
 		C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
-		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
-		D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
-		D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
-		D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
-		D202868416DBE108009068E9 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */; };
 		D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
 		D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
 		D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
 		D221A09A169C9E5E00537ABF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D221A099169C9E5E00537ABF /* main.m */; };
-		D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
-		D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
-		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FC5CDF391A3393DD00B47253 /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
@@ -1272,13 +1231,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		34480B391FD0950000BC14EF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518911FC63DBF00210559;
-			remoteInfo = SignalMessaging;
-		};
-		3478506D1FD9CFF4007B8332 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
 			proxyType = 1;
@@ -1305,13 +1257,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7BC01A3A241F40AB00BC7C55;
 			remoteInfo = LokiPushNotificationService;
-		};
-		B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D221A088169C9E5E00537ABF;
-			remoteInfo = Signal;
 		};
 		C331FF202558F9D300070591 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2757,7 +2702,6 @@
 		D221A095169C9E5E00537ABF /* Signal-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Signal-Info.plist"; sourceTree = "<group>"; };
 		D221A099169C9E5E00537ABF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Prefix.pch"; sourceTree = "<group>"; };
-		D221A0AA169C9E5F00537ABF /* SignalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D221A0E7169DFFC500537ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = ../../../../../../System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -2783,6 +2727,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				C3402FE52559036600EA6424 /* SessionUIKit.framework in Frameworks */,
 				453518A21FC63E2900210559 /* SignalMessaging.framework in Frameworks */,
 				2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */,
@@ -2793,6 +2738,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C38EF1A4255B67A2007E1867 /* SessionProtocolKit.framework in Frameworks */,
+				C38EF00D255B61D3007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				C331003D255900F200070591 /* SessionUIKit.framework in Frameworks */,
 				4AC4EA13C8A444455DAB351F /* Pods_SignalMessaging.framework in Frameworks */,
 			);
@@ -2802,6 +2749,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				C36B8707243C50C60049991D /* SignalMessaging.framework in Frameworks */,
 				390650A6D345BFE01E006DB0 /* Pods_LokiPushNotificationService.framework in Frameworks */,
 			);
@@ -2867,6 +2815,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C33FD9B2255A548A00E217F9 /* SignalUtilitiesKit.framework in Frameworks */,
 				4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
@@ -2893,35 +2842,11 @@
 				C331FF222558F9D300070591 /* SessionUIKit.framework in Frameworks */,
 				D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */,
 				D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */,
-				C33FD9B2255A548A00E217F9 /* SignalUtilitiesKit.framework in Frameworks */,
 				D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */,
 				D221A090169C9E5E00537ABF /* Foundation.framework in Frameworks */,
 				D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */,
 				D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */,
 				BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D221A0A6169C9E5F00537ABF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */,
-				B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */,
-				E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */,
-				A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */,
-				A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */,
-				A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */,
-				A123C14916F902EE000AE905 /* Security.framework in Frameworks */,
-				A194D3BA17A08CD5004BD3A9 /* AddressBookUI.framework in Frameworks */,
-				A194D3B917A08CD1004BD3A9 /* AddressBook.framework in Frameworks */,
-				D202868416DBE108009068E9 /* AVFoundation.framework in Frameworks */,
-				D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */,
-				D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */,
-				D202868116DBE0E7009068E9 /* CFNetwork.framework in Frameworks */,
-				D221A0AD169C9E5F00537ABF /* UIKit.framework in Frameworks */,
-				D221A0AE169C9E5F00537ABF /* Foundation.framework in Frameworks */,
-				CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5159,7 +5084,6 @@
 			isa = PBXGroup;
 			children = (
 				D221A089169C9E5E00537ABF /* Session.app */,
-				D221A0AA169C9E5F00537ABF /* SignalTests.xctest */,
 				453518681FC635DD00210559 /* SignalShareExtension.appex */,
 				453518921FC63DBF00210559 /* SignalMessaging.framework */,
 				7BC01A3B241F40AB00BC7C55 /* LokiPushNotificationService.appex */,
@@ -5807,28 +5731,6 @@
 			productReference = D221A089169C9E5E00537ABF /* Session.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D221A0A9169C9E5F00537ABF /* SignalTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D221A0BF169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "SignalTests" */;
-			buildPhases = (
-				6565655F4068F9E5CDC5687F /* [CP] Check Pods Manifest.lock */,
-				D221A0A5169C9E5F00537ABF /* Sources */,
-				D221A0A6169C9E5F00537ABF /* Frameworks */,
-				D221A0A7169C9E5F00537ABF /* Resources */,
-				B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */,
-				451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3478506E1FD9CFF4007B8332 /* PBXTargetDependency */,
-				B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */,
-			);
-			name = SignalTests;
-			productName = RedPhoneTests;
-			productReference = D221A0AA169C9E5F00537ABF /* SignalTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -5938,12 +5840,6 @@
 							};
 						};
 					};
-					D221A0A9169C9E5F00537ABF = {
-						DevelopmentTeam = 8SQ45X653X;
-						LastSwiftMigration = 1020;
-						ProvisioningStyle = Automatic;
-						TestTargetID = D221A088169C9E5E00537ABF;
-					};
 				};
 			};
 			buildConfigurationList = D221A083169C9E5E00537ABF /* Build configuration list for PBXProject "Signal" */;
@@ -5972,7 +5868,6 @@
 			projectRoot = "";
 			targets = (
 				D221A088169C9E5E00537ABF /* Signal */,
-				D221A0A9169C9E5F00537ABF /* SignalTests */,
 				453518671FC635DD00210559 /* SignalShareExtension */,
 				453518911FC63DBF00210559 /* SignalMessaging */,
 				7BC01A3A241F40AB00BC7C55 /* LokiPushNotificationService */,
@@ -6137,18 +6032,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D221A0A7169C9E5F00537ABF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */,
-				B660F6D41C29868000687D6E /* whisperFake.cer in Resources */,
-				34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */,
-				34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */,
-				34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -6239,21 +6122,6 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
-		451DE9FB1DC18D4500810E42 /* [Carthage] Copy Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
-			);
-			name = "[Carthage] Copy Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
 		4B4609DACEC6E462A2394D2F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -6287,30 +6155,24 @@
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/FeedKit/FeedKit.framework",
-				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
-				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionAxolotlKit/SessionAxolotlKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionCoreKit/SessionCoreKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionCurve25519Kit/SessionCurve25519Kit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionHKDFKit/SessionHKDFKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionMetadataKit/SessionMetadataKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionServiceKit/SessionServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Sodium/Sodium.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
-				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
+				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
+				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
 				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -6318,30 +6180,24 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FeedKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionAxolotlKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCoreKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCurve25519Kit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionHKDFKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionMetadataKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sodium.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -6364,24 +6220,6 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-SessionMessagingKit-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6565655F4068F9E5CDC5687F /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SignalTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -6452,66 +6290,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
-				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
-				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
-				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
-				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
-				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
-				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
-				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
-				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionAxolotlKit/SessionAxolotlKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionCoreKit/SessionCoreKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionCurve25519Kit/SessionCurve25519Kit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionHKDFKit/SessionHKDFKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionMetadataKit/SessionMetadataKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SessionServiceKit/SessionServiceKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
-				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
-				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
-				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
-				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionAxolotlKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCoreKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCurve25519Kit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionHKDFKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionMetadataKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionServiceKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E185AC3DC0F55CFE87DEC852 /* [CP] Check Pods Manifest.lock */ = {
@@ -7426,37 +7204,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D221A0A5169C9E5F00537ABF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
-				3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */,
-				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
-				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
-				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
-				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
-				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
-				4C04F58421C860C50090D0BB /* MantlePerfTest.swift in Sources */,
-				45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */,
-				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
-				34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */,
-				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
-				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
-				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
-				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
-				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
-				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
-				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
-				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
-				34843B2421432293004DED45 /* SignalBaseTest.m in Sources */,
-				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
-				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
-				455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */,
-				34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -7464,11 +7211,6 @@
 			isa = PBXTargetDependency;
 			target = 453518911FC63DBF00210559 /* SignalMessaging */;
 			targetProxy = 34480B391FD0950000BC14EF /* PBXContainerItemProxy */;
-		};
-		3478506E1FD9CFF4007B8332 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518911FC63DBF00210559 /* SignalMessaging */;
-			targetProxy = 3478506D1FD9CFF4007B8332 /* PBXContainerItemProxy */;
 		};
 		453518711FC635DD00210559 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7484,11 +7226,6 @@
 			isa = PBXTargetDependency;
 			target = 7BC01A3A241F40AB00BC7C55 /* LokiPushNotificationService */;
 			targetProxy = 7BC01A40241F40AB00BC7C55 /* PBXContainerItemProxy */;
-		};
-		B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D221A088169C9E5E00537ABF /* Signal */;
-			targetProxy = B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */;
 		};
 		C331FF212558F9D300070591 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -8083,7 +7820,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SignalUtilitiesKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -8156,7 +7893,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SignalUtilitiesKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -8984,123 +8721,6 @@
 			};
 			name = "App Store Release";
 		};
-		D221A0C0169C9E5F00537ABF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = AD2AB1207E8888E4262D781B /* Pods-SignalTests.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Session.app/Session";
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 8SQ45X653X;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-				);
-				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
-				GCC_VERSION = "";
-				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
-				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				HEADER_SEARCH_PATHS = (
-					"${PODS_HEADERS_SEARCH_PATHS}",
-					"$(inherited)",
-					"\"${SRCROOT}/Signal/lib/speex/include\"",
-					"\"${SRCROOT}/Signal/lib/ogg/include\"",
-					"\"${SRCROOT}/Signal/lib/debug/include\"",
-					"\"$(SRCROOT)/libtommath\"",
-					"\"$(SRCROOT)/libtomcrypt/headers\"",
-					"\"$(SRCROOT)/spandsp/spandsp/spandsp\"",
-					"\"$(SRCROOT)/Libraries\"/**",
-					"\"$(TARGET_TEMP_DIR)/../$(PROJECT_NAME).build/DerivedSources\"",
-				);
-				INFOPLIST_FILE = "Signal/test/Supporting Files/SignalTests-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-					"$(inherited)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.whispersystems.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = SignalTests;
-				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
-			};
-			name = Debug;
-		};
-		D221A0C1169C9E5F00537ABF /* App Store Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E85DB184824BA9DC302EC8B3 /* Pods-SignalTests.app store release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Session.app/Session";
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 8SQ45X653X;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-				);
-				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
-				GCC_VERSION = "";
-				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
-				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				HEADER_SEARCH_PATHS = (
-					"${PODS_HEADERS_SEARCH_PATHS}",
-					"$(inherited)",
-					"\"${SRCROOT}/Signal/lib/speex/include\"",
-					"\"${SRCROOT}/Signal/lib/ogg/include\"",
-					"\"${SRCROOT}/Signal/lib/debug/include\"",
-					"\"$(SRCROOT)/libtommath\"",
-					"\"$(SRCROOT)/libtomcrypt/headers\"",
-					"\"$(SRCROOT)/Libraries\"/**",
-					"\"$(TARGET_TEMP_DIR)/../$(PROJECT_NAME).build/DerivedSources\"",
-				);
-				INFOPLIST_FILE = "Signal/test/Supporting Files/SignalTests-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)",
-				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-					"$(inherited)",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.whispersystems.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = SignalTests;
-				PROVISIONING_PROFILE = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/test/SignalTests-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUNDLE_LOADER)";
-				VALID_ARCHS = "arm64 armv7s armv7 i386 x86_64";
-			};
-			name = "App Store Release";
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -9199,15 +8819,6 @@
 			buildConfigurations = (
 				D221A0BD169C9E5F00537ABF /* Debug */,
 				D221A0BE169C9E5F00537ABF /* App Store Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "App Store Release";
-		};
-		D221A0BF169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "SignalTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D221A0C0169C9E5F00537ABF /* Debug */,
-				D221A0C1169C9E5F00537ABF /* App Store Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "App Store Release";

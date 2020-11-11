@@ -7,8 +7,8 @@
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionCoreKit/NSData+OWS.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+
 
 NS_ASSUME_NONNULL_BEGIN
 

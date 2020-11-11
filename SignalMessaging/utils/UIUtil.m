@@ -5,7 +5,7 @@
 #import "UIUtil.h"
 #import "Theme.h"
 #import "UIColor+OWS.h"
-#import <SessionServiceKit/AppContext.h>
+#import <SignalUtilitiesKit/AppContext.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SessionUIKit/SessionUIKit.h>
 

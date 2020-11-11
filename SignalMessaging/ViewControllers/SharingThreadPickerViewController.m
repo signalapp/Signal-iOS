@@ -10,10 +10,10 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWSError.h>
-#import <SessionServiceKit/OWSMessageSender.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWSError.h>
+#import <SignalUtilitiesKit/OWSMessageSender.h>
+#import <SignalUtilitiesKit/TSThread.h>
 #import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

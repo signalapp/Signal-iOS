@@ -9,22 +9,22 @@
 #import "OWSProfileManager.h"
 #import "OWSReadReceiptManager.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionServiceKit/AppReadiness.h>
-#import <SessionServiceKit/DataSource.h>
-#import <SessionServiceKit/MIMETypeUtil.h>
-#import <SessionServiceKit/OWSMessageSender.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/OWSSyncConfigurationMessage.h>
-#import <SessionServiceKit/OWSSyncContactsMessage.h>
-#import <SessionServiceKit/OWSSyncGroupsMessage.h>
-#import <SessionServiceKit/LKSyncOpenGroupsMessage.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/AppReadiness.h>
+#import <SignalUtilitiesKit/DataSource.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/OWSMessageSender.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/OWSSyncConfigurationMessage.h>
+#import <SignalUtilitiesKit/OWSSyncContactsMessage.h>
+#import <SignalUtilitiesKit/OWSSyncGroupsMessage.h>
+#import <SignalUtilitiesKit/LKSyncOpenGroupsMessage.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

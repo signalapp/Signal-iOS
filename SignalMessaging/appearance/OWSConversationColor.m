@@ -5,7 +5,7 @@
 #import "OWSConversationColor.h"
 #import "Theme.h"
 #import "UIColor+OWS.h"
-#import <SessionServiceKit/TSThread.h>
+#import <SignalUtilitiesKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

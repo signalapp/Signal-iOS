@@ -4,16 +4,16 @@
 
 #import "OWSUserProfile.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/Cryptography.h>
-#import <SessionCoreKit/NSData+OWS.h>
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/NSNotificationCenter+OWS.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSAccountManager.h>
+
+
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

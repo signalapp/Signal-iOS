@@ -3,12 +3,12 @@
 //
 
 #import "ThreadViewHelper.h"
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/TSDatabaseView.h>
-#import <SessionServiceKit/TSThread.h>
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/TSDatabaseView.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>

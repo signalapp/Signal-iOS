@@ -6,7 +6,6 @@
 #import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

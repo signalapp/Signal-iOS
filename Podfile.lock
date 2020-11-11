@@ -41,83 +41,6 @@ PODS:
   - PureLayout (3.1.6)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
-  - SessionAxolotlKit (1.0.7):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionAxolotlKit/Tests (1.0.7):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionCoreKit (1.0.0):
-    - CocoaLumberjack
-    - GRKOpenSSLFramework
-  - SessionCoreKit/Tests (1.0.0):
-    - CocoaLumberjack
-    - GRKOpenSSLFramework
-  - SessionCurve25519Kit (2.1.3):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-  - SessionCurve25519Kit/Tests (2.1.3):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-  - SessionHKDFKit (0.0.5):
-    - CocoaLumberjack
-    - SessionCoreKit
-  - SessionMetadataKit (1.0.9):
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionMetadataKit/Tests (1.0.9):
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionServiceKit (1.0.0):
-    - AFNetworking
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - GRKOpenSSLFramework
-    - libPhoneNumber-iOS
-    - Mantle
-    - PromiseKit (~> 6.0)
-    - Reachability
-    - SAMKeychain
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.3)
-    - SessionMetadataKit (~> 1.0.9)
-    - Starscream
-    - SwiftProtobuf (~> 1.5.0)
-    - YapDatabase/SQLCipher
-  - SessionServiceKit/Tests (1.0.0):
-    - AFNetworking
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - GRKOpenSSLFramework
-    - libPhoneNumber-iOS
-    - Mantle
-    - PromiseKit (~> 6.0)
-    - Reachability
-    - SAMKeychain
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.3)
-    - SessionMetadataKit (~> 1.0.9)
-    - Starscream
-    - SwiftProtobuf (~> 1.5.0)
-    - YapDatabase/SQLCipher
   - Sodium (0.8.0)
   - SQLCipher (4.4.0):
     - SQLCipher/standard (= 4.4.0)
@@ -214,16 +137,6 @@ DEPENDENCIES:
   - PureLayout (~> 3.1.4)
   - Reachability
   - SAMKeychain
-  - SessionAxolotlKit (from `https://github.com/loki-project/session-ios-protocol-kit.git`, branch `master`)
-  - SessionAxolotlKit/Tests (from `https://github.com/loki-project/session-ios-protocol-kit.git`, branch `master`)
-  - SessionCoreKit (from `https://github.com/loki-project/session-ios-core-kit.git`)
-  - SessionCoreKit/Tests (from `https://github.com/loki-project/session-ios-core-kit.git`)
-  - SessionCurve25519Kit (from `https://github.com/loki-project/session-ios-curve-25519-kit`)
-  - SessionCurve25519Kit/Tests (from `https://github.com/loki-project/session-ios-curve-25519-kit`)
-  - SessionMetadataKit (from `https://github.com/loki-project/session-ios-metadata-kit`)
-  - SessionMetadataKit/Tests (from `https://github.com/loki-project/session-ios-metadata-kit`)
-  - SessionServiceKit (from `.`)
-  - SessionServiceKit/Tests (from `.`)
   - Sodium (~> 0.8.0)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
@@ -248,7 +161,6 @@ SPEC REPOS:
     - PureLayout
     - Reachability
     - SAMKeychain
-    - SessionHKDFKit
     - Sodium
     - SQLCipher
     - SSZipArchive
@@ -259,17 +171,6 @@ EXTERNAL SOURCES:
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
-  SessionAxolotlKit:
-    :branch: master
-    :git: https://github.com/loki-project/session-ios-protocol-kit.git
-  SessionCoreKit:
-    :git: https://github.com/loki-project/session-ios-core-kit.git
-  SessionCurve25519Kit:
-    :git: https://github.com/loki-project/session-ios-curve-25519-kit
-  SessionMetadataKit:
-    :git: https://github.com/loki-project/session-ios-metadata-kit
-  SessionServiceKit:
-    :path: "."
   Starscream:
     :branch: signal-release
     :git: https://github.com/signalapp/Starscream.git
@@ -283,18 +184,6 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
-  SessionAxolotlKit:
-    :commit: be92fccb6152ee02c8c2658cb3c2e21201f119d1
-    :git: https://github.com/loki-project/session-ios-protocol-kit.git
-  SessionCoreKit:
-    :commit: 0d66c90657b62cb66ecd2767c57408a951650f23
-    :git: https://github.com/loki-project/session-ios-core-kit.git
-  SessionCurve25519Kit:
-    :commit: c3bc075d1e1c8339eebe2af184869de1a007d855
-    :git: https://github.com/loki-project/session-ios-curve-25519-kit
-  SessionMetadataKit:
-    :commit: df787d84bb8adb23c10df669296dee8d7988e410
-    :git: https://github.com/loki-project/session-ios-metadata-kit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
@@ -320,12 +209,6 @@ SPEC CHECKSUMS:
   PureLayout: bd3c4ec3a3819ad387c99ebb72c6b129c3ed4d2d
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SessionAxolotlKit: f3558573a3cb52ebb921572f2f3b683da5eddad9
-  SessionCoreKit: 778a3f6e3da788b43497734166646025b6392e88
-  SessionCurve25519Kit: 9bb9afe199e4bc23578a4b15932ad2c57bd047b1
-  SessionHKDFKit: b0f4e669411703ab925aba07491c5611564d1419
-  SessionMetadataKit: d37afdc47d20c7046faa139a92e68fa99f76c95b
-  SessionServiceKit: b12afb3975b33a9579802111f948838861d914bb
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
@@ -335,6 +218,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: d78dc9a752cd3ce8f01fa327b8518dff3f5236d5
+PODFILE CHECKSUM: 99d57680804c51117e98de7f4d4c243750ed26e1
 
 COCOAPODS: 1.10.0.rc.1

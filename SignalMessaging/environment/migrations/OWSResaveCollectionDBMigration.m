@@ -5,7 +5,7 @@
 #import "OWSResaveCollectionDBMigration.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

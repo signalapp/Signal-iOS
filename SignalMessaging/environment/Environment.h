@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SessionServiceKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
 
 @class OWSAudioSession;
 @class OWSContactsManager;

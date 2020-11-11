@@ -4,7 +4,7 @@
 
 import Foundation
 import MobileCoreServices
-import SessionServiceKit
+
 import PromiseKit
 import AVFoundation
 

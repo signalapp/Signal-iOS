@@ -5,16 +5,16 @@
 #import "OWSQuotedReplyModel.h"
 #import "ConversationViewItem.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/MIMETypeUtil.h>
-#import <SessionServiceKit/OWSMessageSender.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/TSAttachmentPointer.h>
-#import <SessionServiceKit/TSAttachmentStream.h>
-#import <SessionServiceKit/TSIncomingMessage.h>
-#import <SessionServiceKit/TSMessage.h>
-#import <SessionServiceKit/TSOutgoingMessage.h>
-#import <SessionServiceKit/TSQuotedMessage.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/OWSMessageSender.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/TSAttachmentPointer.h>
+#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/TSIncomingMessage.h>
+#import <SignalUtilitiesKit/TSMessage.h>
+#import <SignalUtilitiesKit/TSOutgoingMessage.h>
+#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SignalUtilitiesKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,32 +6,32 @@
 #import "Environment.h"
 #import "OWSUserProfile.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/Cryptography.h>
-#import <SessionCoreKit/NSData+OWS.h>
-#import <SessionCoreKit/NSDate+OWS.h>
+
+
+
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/AppReadiness.h>
-#import <SessionServiceKit/MIMETypeUtil.h>
-#import <SessionServiceKit/NSData+Image.h>
-#import <SessionServiceKit/NSNotificationCenter+OWS.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWSBlockingManager.h>
-#import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/OWSMessageSender.h>
-#import <SessionServiceKit/OWSPrimaryStorage+Loki.h>
-#import <SessionServiceKit/OWSProfileKeyMessage.h>
-#import <SessionServiceKit/OWSRequestBuilder.h>
-#import <SessionServiceKit/OWSSignalService.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/TSGroupThread.h>
-#import <SessionServiceKit/TSNetworkManager.h>
-#import <SessionServiceKit/TSThread.h>
-#import <SessionServiceKit/TSYapDatabaseObject.h>
-#import <SessionServiceKit/UIImage+OWS.h>
-#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/AppReadiness.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/NSData+Image.h>
+#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SignalUtilitiesKit/OWSMessageSender.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
+#import <SignalUtilitiesKit/OWSProfileKeyMessage.h>
+#import <SignalUtilitiesKit/OWSRequestBuilder.h>
+#import <SignalUtilitiesKit/OWSSignalService.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/TSNetworkManager.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/TSYapDatabaseObject.h>
+#import <SignalUtilitiesKit/UIImage+OWS.h>
+#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -430,7 +430,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSData *encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
             OWSAssertDebug(encryptedAvatarData.length > 0);
             
-            [[LKFileServerAPI uploadProfilePicture:encryptedAvatarData]
+            [[SNFileServerAPI uploadProfilePicture:encryptedAvatarData]
             .thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
                    successBlock(downloadURL);
@@ -468,12 +468,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [SSKEnvironment.shared.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
-    
-    NSSet *servers = [NSSet setWithArray:[publicChats.allValues map:^NSString *(LKPublicChat *publicChat) { return publicChat.server; }]];
+
+    NSSet *servers = [NSSet setWithArray:[publicChats.allValues map:^NSString *(SNOpenGroup *publicChat) { return publicChat.server; }]];
 
     for (NSString *server in servers) {
-        [[LKPublicChatAPI setDisplayName:localProfileName on:server] retainUntilComplete];
-        [[LKPublicChatAPI setProfilePictureURL:avatarURL usingProfileKey:self.localProfileKey.keyData on:server] retainUntilComplete];
+        [[SNOpenGroupAPI setDisplayName:localProfileName on:server] retainUntilComplete];
+        [[SNOpenGroupAPI setProfilePictureURL:avatarURL usingProfileKey:self.localProfileKey.keyData on:server] retainUntilComplete];
     }
     
     successBlock();
@@ -1158,7 +1158,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
 
         NSString *profilePictureURL = userProfile.avatarUrlPath;
-        [[LKFileServerAPI downloadAttachmentFrom:profilePictureURL].then(^(NSData *data) {
+        [[SNFileServerAPI downloadAttachmentFrom:profilePictureURL].then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)
             {
                 [self.currentAvatarDownloads removeObject:userProfile.recipientId];

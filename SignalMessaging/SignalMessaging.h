@@ -57,4 +57,4 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalMessaging/ViewControllerUtils.h>
-#import <SessionServiceKit/UIImage+OWS.h>
+#import <SignalUtilitiesKit/UIImage+OWS.h>

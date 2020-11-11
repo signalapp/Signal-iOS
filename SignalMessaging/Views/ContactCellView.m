@@ -8,11 +8,11 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/TSGroupThread.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/TSThread.h>
 #import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

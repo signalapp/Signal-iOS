@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SessionServiceKit
+
 
 @objc
 public class OWSFlatButton: UIView {

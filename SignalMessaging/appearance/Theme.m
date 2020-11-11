@@ -5,9 +5,9 @@
 #import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
-#import <SessionServiceKit/NSNotificationCenter+OWS.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
+#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SessionUIKit/SessionUIKit.h>
 

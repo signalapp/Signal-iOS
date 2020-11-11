@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SessionServiceKit
 
 @objc
 public protocol ContactNameFieldViewDelegate: class {

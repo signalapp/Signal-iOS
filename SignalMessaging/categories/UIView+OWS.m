@@ -4,9 +4,8 @@
 
 #import "UIView+OWS.h"
 #import "OWSMath.h"
-#import <SessionCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/AppContext.h>
+#import <SignalUtilitiesKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -551,15 +550,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (BOOL)applyScrollViewInsetsFix
 {
-    // Fix a bug that only affects iOS 11.0.x and 11.1.x.
-    // The symptom is a fix weird animation that happens when using the interactive pop gesture.
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0) && !SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 2)) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-        self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-#pragma clang diagnostic pop
-        return YES;
-    }
     return NO;
 }
 

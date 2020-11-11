@@ -5,27 +5,26 @@
 #import "AppSetup.h"
 #import "Environment.h"
 #import "VersionMigrations.h"
-#import <SessionAxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/ContactDiscoveryService.h>
-#import <SessionServiceKit/OWS2FAManager.h>
-#import <SessionServiceKit/OWSAttachmentDownloads.h>
-#import <SessionServiceKit/OWSBackgroundTask.h>
-#import <SessionServiceKit/OWSBatchMessageProcessor.h>
-#import <SessionServiceKit/OWSBlockingManager.h>
-#import <SessionServiceKit/OWSDisappearingMessagesJob.h>
-#import <SessionServiceKit/OWSIdentityManager.h>
-#import <SessionServiceKit/OWSMessageDecrypter.h>
-#import <SessionServiceKit/OWSMessageManager.h>
-#import <SessionServiceKit/OWSMessageReceiver.h>
-#import <SessionServiceKit/OWSOutgoingReceiptManager.h>
-#import <SessionServiceKit/OWSReadReceiptManager.h>
-#import <SessionServiceKit/OWSStorage.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSSocketManager.h>
+#import <SignalUtilitiesKit/ContactDiscoveryService.h>
+#import <SignalUtilitiesKit/OWS2FAManager.h>
+#import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
+#import <SignalUtilitiesKit/OWSBackgroundTask.h>
+#import <SignalUtilitiesKit/OWSBatchMessageProcessor.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
+#import <SignalUtilitiesKit/OWSIdentityManager.h>
+#import <SignalUtilitiesKit/OWSMessageDecrypter.h>
+#import <SignalUtilitiesKit/OWSMessageManager.h>
+#import <SignalUtilitiesKit/OWSMessageReceiver.h>
+#import <SignalUtilitiesKit/OWSOutgoingReceiptManager.h>
+#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
+#import <SignalUtilitiesKit/OWSStorage.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

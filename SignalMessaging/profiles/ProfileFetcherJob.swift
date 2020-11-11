@@ -4,8 +4,6 @@
 
 import Foundation
 import PromiseKit
-import SessionServiceKit
-import SessionMetadataKit
 
 @objc
 public class ProfileFetcherJob: NSObject {

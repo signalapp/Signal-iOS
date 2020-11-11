@@ -3,15 +3,15 @@
 //
 
 #import "OWSPreferences.h"
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/NSNotificationCenter+OWS.h>
-#import <SessionServiceKit/NSUserDefaults+OWS.h>
-#import <SessionServiceKit/OWSSyncManagerProtocol.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/TSStorageHeaders.h>
-#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
-#import <SessionServiceKit/YapDatabaseTransaction+OWS.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
+#import <SignalUtilitiesKit/OWSSyncManagerProtocol.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/TSStorageHeaders.h>
+#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
+#import <SignalUtilitiesKit/YapDatabaseTransaction+OWS.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
