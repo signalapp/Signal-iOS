@@ -19,7 +19,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -156,11 +156,8 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupsV2showSplash = build.includes(.qa)
 
-    // TODO: Revisit this once we've tested and merged migrations.
     @objc
-    public static var groupsV2Migrations: Bool {
-        build.includes(.qa) && !isUsingProductionService
-    }
+    public static var groupsV2Migrations: Bool = build.includes(.beta)
 
     @objc
     public static let groupsV2MigrationSetCapability = groupsV2Migrations
