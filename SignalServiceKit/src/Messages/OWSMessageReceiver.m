@@ -392,7 +392,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         }
         self.isDrainingQueue = YES;
 
-        [self drainQueueWorkStep];
+        [self drainQueueWorkStep:0];
     });
 }
 
@@ -401,7 +401,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return nil != [self.finder nextJobWithTransaction:transaction];
 }
 
-- (void)drainQueueWorkStep
+- (void)drainQueueWorkStep:(NSUInteger)processedJobCount
 {
     AssertOnDispatchQueue(self.serialQueue);
 
@@ -413,7 +413,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
     if (!job) {
         self.isDrainingQueue = NO;
-        OWSLogVerbose(@"Queue is drained.");
+        if (processedJobCount > 0) {
+            OWSLogInfo(@"Queue is drained: %lu.", (unsigned long)processedJobCount);
+        }
 
         [[NSNotificationCenter defaultCenter]
             postNotificationNameAsync:kNSNotificationNameMessageDecryptionDidFlushQueue
@@ -432,7 +434,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
               OWSLogVerbose(@"%@ job. %lu jobs left.",
                   success ? @"decrypted" : @"failed to decrypt",
                   (unsigned long)[self.finder queuedJobCount]);
-              [self drainQueueWorkStep];
+              [self drainQueueWorkStep:processedJobCount + 1];
               OWSAssertDebug(backgroundTask);
               backgroundTask = nil;
           }];
