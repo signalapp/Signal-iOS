@@ -155,7 +155,7 @@
 		452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535186A1FC635DD00210559 /* ShareViewController.swift */; };
 		4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4535186C1FC635DD00210559 /* MainInterface.storyboard */; };
-		453518721FC635DD00210559 /* SignalShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 453518681FC635DD00210559 /* SignalShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		453518721FC635DD00210559 /* SessionShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 453518681FC635DD00210559 /* SessionShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4539B5851F79348F007141FF /* PushRegistrationManager.swift */; };
 		4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF53208D40AC007B4E76 /* LoadingViewController.swift */; };
 		454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A84032059C787008B8C75 /* MediaTileViewController.swift */; };
@@ -253,7 +253,7 @@
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		7BC01A3E241F40AB00BC7C55 /* NotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */; };
-		7BC01A42241F40AB00BC7C55 /* LokiPushNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* LokiPushNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7BC01A42241F40AB00BC7C55 /* SessionPushNotificationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
 		7BDCFC092421894900641C39 /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
 		7BDCFC0B2421EB7600641C39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
@@ -1288,8 +1288,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				7BC01A42241F40AB00BC7C55 /* LokiPushNotificationService.appex in Embed App Extensions */,
-				453518721FC635DD00210559 /* SignalShareExtension.appex in Embed App Extensions */,
+				7BC01A42241F40AB00BC7C55 /* SessionPushNotificationExtension.appex in Embed App Extensions */,
+				453518721FC635DD00210559 /* SessionShareExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1401,7 +1401,7 @@
 		346129981FD1E4DA00532771 /* SignalApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalApp.h; sourceTree = "<group>"; };
 		34641E1D2088DA6C00E2EDE5 /* SAEScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAEScreenLockViewController.h; sourceTree = "<group>"; };
 		34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAEScreenLockViewController.m; sourceTree = "<group>"; };
-		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Signal/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
+		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Session/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
@@ -1457,7 +1457,7 @@
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
 		34C3C78C20409F320000134C /* Opening.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Opening.m4r; sourceTree = "<group>"; };
-		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
+		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Session/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C4E2552118957600BEA353 /* OWSWebRTCDataProtos.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSWebRTCDataProtos.pb.swift; sourceTree = "<group>"; };
 		34C4E2562118957600BEA353 /* WebRTCProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCProto.swift; sourceTree = "<group>"; };
 		34C6B0A51FA0E46F00D35993 /* test-gif.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "test-gif.gif"; sourceTree = "<group>"; };
@@ -1467,9 +1467,9 @@
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CA63192097806E00E526A0 /* OWSContactShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareView.h; sourceTree = "<group>"; };
 		34CA631A2097806E00E526A0 /* OWSContactShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareView.m; sourceTree = "<group>"; };
-		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
-		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
-		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
+		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Session/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
+		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Session/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
+		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Session/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
 		34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
 		34D1F0671F8678AA0066283D /* ConversationInputTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationInputTextView.h; sourceTree = "<group>"; };
@@ -1557,7 +1557,7 @@
 		452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringAdditionsTest.swift; sourceTree = "<group>"; };
 		452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryViewController.swift; sourceTree = "<group>"; };
 		452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageFetcherJob.swift; sourceTree = "<group>"; };
-		453518681FC635DD00210559 /* SignalShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SignalShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		453518681FC635DD00210559 /* SessionShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4535186A1FC635DD00210559 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		4535186D1FC635DD00210559 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		4535186F1FC635DD00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1587,7 +1587,7 @@
 		458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisioningURLParserTest.m; path = Models/OWSDeviceProvisioningURLParserTest.m; sourceTree = "<group>"; };
 		459311FA1D75C948008DD4F0 /* OWSDeviceTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceTableViewCell.h; sourceTree = "<group>"; };
 		459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDeviceTableViewCell.m; sourceTree = "<group>"; };
-		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
+		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Session/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
 		45A663C41F92EC760027B59E /* GroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupTableViewCell.swift; sourceTree = "<group>"; };
 		45A6DAD51EBBF85500893231 /* ReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
 		45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurnServerInfo.swift; sourceTree = "<group>"; };
@@ -1624,7 +1624,7 @@
 		45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
 		45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
 		45C9DEB71DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCCallMessageHandler.swift; sourceTree = "<group>"; };
-		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
+		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Session/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45CD81EE1DC030E7004C9430 /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
 		45D231761DC7E8F10034FA89 /* SessionResetJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionResetJob.swift; sourceTree = "<group>"; };
 		45D308AB2049A439000189E4 /* PinEntryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PinEntryView.h; sourceTree = "<group>"; };
@@ -1634,7 +1634,7 @@
 		45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarqueeLabel.swift; sourceTree = "<group>"; };
 		45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableTextFilterTest.swift; sourceTree = "<group>"; };
 		45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallAudioService.swift; sourceTree = "<group>"; };
-		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Signal/src/ViewControllers/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
+		45F32C1D205718B000A300D5 /* MediaPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaPageViewController.swift; path = Session/src/ViewControllers/MediaPageViewController.swift; sourceTree = SOURCE_ROOT; };
 		45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
 		45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallKitCallManager.swift; sourceTree = "<group>"; };
@@ -1681,7 +1681,7 @@
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		7BC01A3B241F40AB00BC7C55 /* LokiPushNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LokiPushNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionPushNotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtension.swift; sourceTree = "<group>"; };
 		7BC01A3F241F40AB00BC7C55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7BDCFC0424206E7300641C39 /* LokiPushNotificationService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LokiPushNotificationService.entitlements; sourceTree = "<group>"; };
@@ -2822,7 +2822,8 @@
 				34C3C78B20409F320000134C /* ringtoneSounds */,
 				34C3C78E2040A4F70000134C /* sonarping.mp3 */,
 			);
-			path = Sounds;
+			name = Sounds;
+			path = AudioFiles;
 			sourceTree = "<group>";
 		};
 		34074FC5203E5435004596AE /* messageReceivedSounds */ = {
@@ -2856,7 +2857,7 @@
 				45B74A722044AAB600CD42F8 /* synth.aifc */,
 			);
 			name = messageReceivedSounds;
-			path = Signal/AudioFiles/messageReceivedSounds;
+			path = Session/AudioFiles/messageReceivedSounds;
 			sourceTree = SOURCE_ROOT;
 		};
 		340FC875204DAC8C007AEB0F /* Registration */ = {
@@ -2928,15 +2929,6 @@
 				B8BB82BA2394D47000BA5194 /* Loki */,
 			);
 			path = Fonts;
-			sourceTree = "<group>";
-		};
-		34480B2F1FD0921000BC14EF /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
-				34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */,
-			);
-			path = utils;
 			sourceTree = "<group>";
 		};
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
@@ -3086,7 +3078,7 @@
 				34C3C78C20409F320000134C /* Opening.m4r */,
 			);
 			name = ringtoneSounds;
-			path = Signal/AudioFiles/ringtoneSounds;
+			path = Session/AudioFiles/ringtoneSounds;
 			sourceTree = SOURCE_ROOT;
 		};
 		34C4E2542118957600BEA353 /* Generated */ = {
@@ -3232,22 +3224,20 @@
 			name = Notifications;
 			sourceTree = "<group>";
 		};
-		453518691FC635DD00210559 /* SignalShareExtension */ = {
+		453518691FC635DD00210559 /* SessionShareExtension */ = {
 			isa = PBXGroup;
 			children = (
-				4535186F1FC635DD00210559 /* Info.plist */,
+				C31C21A4255BCA4800EC2D66 /* Meta */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
 				34641E1D2088DA6C00E2EDE5 /* SAEScreenLockViewController.h */,
 				34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */,
 				4535186A1FC635DD00210559 /* ShareViewController.swift */,
-				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
-				34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */,
-				34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */,
-				34480B2F1FD0921000BC14EF /* utils */,
+				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
+				34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */,
 			);
-			path = SignalShareExtension;
+			path = SessionShareExtension;
 			sourceTree = "<group>";
 		};
 		45464DB81DFA03D8001D3FD6 /* Signaling */ = {
@@ -3450,15 +3440,14 @@
 			path = views;
 			sourceTree = "<group>";
 		};
-		7BC01A3C241F40AB00BC7C55 /* LokiPushNotificationService */ = {
+		7BC01A3C241F40AB00BC7C55 /* SessionPushNotificationExtension */ = {
 			isa = PBXGroup;
 			children = (
+				C31C219B255BC92200EC2D66 /* Meta */,
 				7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */,
-				7BDCFC0424206E7300641C39 /* LokiPushNotificationService.entitlements */,
 				7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */,
-				7BC01A3F241F40AB00BC7C55 /* Info.plist */,
 			);
-			path = LokiPushNotificationService;
+			path = SessionPushNotificationExtension;
 			sourceTree = "<group>";
 		};
 		9404664EC513585B05DF1350 /* Pods */ = {
@@ -3737,6 +3726,26 @@
 				C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */,
 			);
 			path = "Sending & Receiving";
+			sourceTree = "<group>";
+		};
+		C31C219B255BC92200EC2D66 /* Meta */ = {
+			isa = PBXGroup;
+			children = (
+				7BC01A3F241F40AB00BC7C55 /* Info.plist */,
+				7BDCFC0424206E7300641C39 /* LokiPushNotificationService.entitlements */,
+			);
+			path = Meta;
+			sourceTree = "<group>";
+		};
+		C31C21A4255BCA4800EC2D66 /* Meta */ = {
+			isa = PBXGroup;
+			children = (
+				4535186F1FC635DD00210559 /* Info.plist */,
+				34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */,
+				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
+				34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */,
+			);
+			path = Meta;
 			sourceTree = "<group>";
 		};
 		C31F812425258F9C00DD9FD9 /* Database */ = {
@@ -4850,9 +4859,9 @@
 		D221A07E169C9E5E00537ABF = {
 			isa = PBXGroup;
 			children = (
-				D221A093169C9E5E00537ABF /* Signal */,
-				453518691FC635DD00210559 /* SignalShareExtension */,
-				7BC01A3C241F40AB00BC7C55 /* LokiPushNotificationService */,
+				D221A093169C9E5E00537ABF /* Session */,
+				453518691FC635DD00210559 /* SessionShareExtension */,
+				7BC01A3C241F40AB00BC7C55 /* SessionPushNotificationExtension */,
 				C33FD9AC255A548A00E217F9 /* SignalUtilitiesKit */,
 				C331FF1C2558F9D300070591 /* SessionUIKit */,
 				C3C2A6F125539DE700C340D1 /* SessionMessagingKit */,
@@ -4869,8 +4878,8 @@
 			isa = PBXGroup;
 			children = (
 				D221A089169C9E5E00537ABF /* Session.app */,
-				453518681FC635DD00210559 /* SignalShareExtension.appex */,
-				7BC01A3B241F40AB00BC7C55 /* LokiPushNotificationService.appex */,
+				453518681FC635DD00210559 /* SessionShareExtension.appex */,
+				7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */,
 				C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */,
 				C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */,
 				C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */,
@@ -4934,7 +4943,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D221A093169C9E5E00537ABF /* Signal */ = {
+		D221A093169C9E5E00537ABF /* Session */ = {
 			isa = PBXGroup;
 			children = (
 				C35E8AA42485C83B00ACB629 /* CSV */,
@@ -4949,7 +4958,7 @@
 				D221A094169C9E5E00537ABF /* Supporting Files */,
 				B660F66C1C29867F00687D6E /* test */,
 			);
-			path = Signal;
+			path = Session;
 			sourceTree = "<group>";
 		};
 		D221A094169C9E5E00537ABF /* Supporting Files */ = {
@@ -5302,9 +5311,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		453518671FC635DD00210559 /* SignalShareExtension */ = {
+		453518671FC635DD00210559 /* SessionShareExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SignalShareExtension" */;
+			buildConfigurationList = 453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SessionShareExtension" */;
 			buildPhases = (
 				16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */,
 				453518641FC635DD00210559 /* Sources */,
@@ -5315,14 +5324,14 @@
 			);
 			dependencies = (
 			);
-			name = SignalShareExtension;
+			name = SessionShareExtension;
 			productName = SignalShareExtension;
-			productReference = 453518681FC635DD00210559 /* SignalShareExtension.appex */;
+			productReference = 453518681FC635DD00210559 /* SessionShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		7BC01A3A241F40AB00BC7C55 /* LokiPushNotificationService */ = {
+		7BC01A3A241F40AB00BC7C55 /* SessionPushNotificationExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "LokiPushNotificationService" */;
+			buildConfigurationList = 7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "SessionPushNotificationExtension" */;
 			buildPhases = (
 				4B4609DACEC6E462A2394D2F /* [CP] Check Pods Manifest.lock */,
 				7BC01A37241F40AB00BC7C55 /* Sources */,
@@ -5333,9 +5342,9 @@
 			);
 			dependencies = (
 			);
-			name = LokiPushNotificationService;
+			name = SessionPushNotificationExtension;
 			productName = LokiPushNotificationService;
-			productReference = 7BC01A3B241F40AB00BC7C55 /* LokiPushNotificationService.appex */;
+			productReference = 7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		C331FF1A2558F9D300070591 /* SessionUIKit */ = {
@@ -5452,9 +5461,9 @@
 			productReference = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		D221A088169C9E5E00537ABF /* Signal */ = {
+		D221A088169C9E5E00537ABF /* Session */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Signal" */;
+			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Session" */;
 			buildPhases = (
 				1460156AE01E0DB0949D61FE /* [CP] Check Pods Manifest.lock */,
 				D221A085169C9E5E00537ABF /* Sources */,
@@ -5478,7 +5487,7 @@
 				C331FF212558F9D300070591 /* PBXTargetDependency */,
 				C33FD9B1255A548A00E217F9 /* PBXTargetDependency */,
 			);
-			name = Signal;
+			name = Session;
 			productName = RedPhone;
 			productReference = D221A089169C9E5E00537ABF /* Session.app */;
 			productType = "com.apple.product-type.application";
@@ -5613,9 +5622,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D221A088169C9E5E00537ABF /* Signal */,
-				453518671FC635DD00210559 /* SignalShareExtension */,
-				7BC01A3A241F40AB00BC7C55 /* LokiPushNotificationService */,
+				D221A088169C9E5E00537ABF /* Session */,
+				453518671FC635DD00210559 /* SessionShareExtension */,
+				7BC01A3A241F40AB00BC7C55 /* SessionPushNotificationExtension */,
 				C33FD9AA255A548A00E217F9 /* SignalUtilitiesKit */,
 				C331FF1A2558F9D300070591 /* SessionUIKit */,
 				C3C2A6EF25539DE700C340D1 /* SessionMessagingKit */,
@@ -6921,12 +6930,12 @@
 /* Begin PBXTargetDependency section */
 		453518711FC635DD00210559 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 453518671FC635DD00210559 /* SignalShareExtension */;
+			target = 453518671FC635DD00210559 /* SessionShareExtension */;
 			targetProxy = 453518701FC635DD00210559 /* PBXContainerItemProxy */;
 		};
 		7BC01A41241F40AB00BC7C55 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 7BC01A3A241F40AB00BC7C55 /* LokiPushNotificationService */;
+			target = 7BC01A3A241F40AB00BC7C55 /* SessionPushNotificationExtension */;
 			targetProxy = 7BC01A40241F40AB00BC7C55 /* PBXContainerItemProxy */;
 		};
 		C331FF212558F9D300070591 /* PBXTargetDependency */ = {
@@ -7009,7 +7018,7 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = SignalShareExtension/SignalShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SessionShareExtension/Meta/SignalShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -7022,10 +7031,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalShareExtension/SignalShareExtension-Prefix.pch";
+				GCC_PREFIX_HEADER = "SessionShareExtension/Meta/SignalShareExtension-Prefix.pch";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = SignalShareExtension/Info.plist;
+				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.6.4;
@@ -7034,7 +7043,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "SignalShareExtension/SignalShareExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "SessionShareExtension/Meta/SignalShareExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -7071,7 +7080,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = SignalShareExtension/SignalShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SessionShareExtension/Meta/SignalShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -7085,14 +7094,14 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalShareExtension/SignalShareExtension-Prefix.pch";
+				GCC_PREFIX_HEADER = "SessionShareExtension/Meta/SignalShareExtension-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SignalShareExtension/Info.plist;
+				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.6.4;
@@ -7101,7 +7110,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "SignalShareExtension/SignalShareExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "SessionShareExtension/Meta/SignalShareExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -7125,7 +7134,7 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = LokiPushNotificationService/LokiPushNotificationService.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SessionPushNotificationExtension/Meta/LokiPushNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -7139,7 +7148,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = LokiPushNotificationService/Info.plist;
+				INFOPLIST_FILE = SessionPushNotificationExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.6.4;
@@ -7188,7 +7197,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = LokiPushNotificationService/LokiPushNotificationService.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SessionPushNotificationExtension/Meta/LokiPushNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -7207,7 +7216,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = LokiPushNotificationService/Info.plist;
+				INFOPLIST_FILE = SessionPushNotificationExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.6.4;
@@ -8168,7 +8177,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
-				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Session/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 139;
@@ -8179,7 +8188,7 @@
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
+				GCC_PREFIX_HEADER = "Session/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -8198,7 +8207,7 @@
 					"\"$(SRCROOT)/MMDrawerController\"",
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Signal/Signal-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Session/Signal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -8215,7 +8224,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/src/Signal-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Session/src/Signal-Bridging-Header.h";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Session-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -8235,7 +8244,7 @@
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Signal/Signal.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Session/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 139;
@@ -8246,7 +8255,7 @@
 				);
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Signal/Signal-Prefix.pch";
+				GCC_PREFIX_HEADER = "Session/Signal-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					HAVE_CONFIG_H,
@@ -8265,7 +8274,7 @@
 					"\"$(SRCROOT)/MMDrawerController\"",
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Signal/Signal-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Session/Signal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -8280,7 +8289,7 @@
 				PROVISIONING_PROFILE = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
-				SWIFT_OBJC_BRIDGING_HEADER = "Signal/src/Signal-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Session/src/Signal-Bridging-Header.h";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Session-Swift.h";
 				SWIFT_VERSION = 5.0;
 				TEST_AFTER_BUILD = YES;
@@ -8291,7 +8300,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SignalShareExtension" */ = {
+		453518761FC635DD00210559 /* Build configuration list for PBXNativeTarget "SessionShareExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				453518731FC635DD00210559 /* Debug */,
@@ -8300,7 +8309,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "App Store Release";
 		};
-		7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "LokiPushNotificationService" */ = {
+		7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "SessionPushNotificationExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7BC01A43241F40AB00BC7C55 /* Debug */,
@@ -8372,7 +8381,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "App Store Release";
 		};
-		D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Signal" */ = {
+		D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Session" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D221A0BD169C9E5F00537ABF /* Debug */,
