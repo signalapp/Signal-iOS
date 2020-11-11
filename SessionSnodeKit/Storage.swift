@@ -2,7 +2,7 @@ import SessionUtilitiesKit
 
 public protocol SessionSnodeKitStorageProtocol {
 
-    func with(_ work: (Any) -> Void)
+    func with(_ work: @escaping (Any) -> Void)
 
     func getUserPublicKey() -> String?
     func getOnionRequestPaths() -> [OnionRequestAPI.Path]

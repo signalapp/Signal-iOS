@@ -8,7 +8,7 @@ public struct Configuration {
 
 public enum SessionProtocolKit { // Just to make the external API nice
 
-    public static func configure(with configuration: Configuration) {
-        Configuration.shared = configuration
+    public static func configure(storage: SessionProtocolKitStorageProtocol, sharedSenderKeysDelegate: SharedSenderKeysDelegate) {
+        Configuration.shared = Configuration(storage: storage, sharedSenderKeysDelegate: sharedSenderKeysDelegate)
     }
 }

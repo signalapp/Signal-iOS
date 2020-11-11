@@ -1188,6 +1188,11 @@
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
 		C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */; };
+		C3F0A5EC255C970D007BE2A3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5EB255C970D007BE2A3 /* Configuration.swift */; };
+		C3F0A5FE255C988A007BE2A3 /* Storage+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */; };
+		C3F0A608255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A607255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift */; };
+		C3F0A61A255C9902007BE2A3 /* Storage+SessionProtocolKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A619255C9902007BE2A3 /* Storage+SessionProtocolKit.swift */; };
+		C3F0A62C255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A62B255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift */; };
 		D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
 		D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
@@ -2579,6 +2584,11 @@
 		C3E7134E251C867C009649BB /* Sodium+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sodium+Conversion.swift"; sourceTree = "<group>"; };
 		C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		C3F0A5B2255C915C007BE2A3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C3F0A5EB255C970D007BE2A3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Shared.swift"; sourceTree = "<group>"; };
+		C3F0A607255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+SessionSnodeKit.swift"; sourceTree = "<group>"; };
+		C3F0A619255C9902007BE2A3 /* Storage+SessionProtocolKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+SessionProtocolKit.swift"; sourceTree = "<group>"; };
+		C3F0A62B255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+SharedSenderKeys.swift"; sourceTree = "<group>"; };
 		C88965DE4F4EC4FC919BEC4E /* Pods-SessionUIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionUIKit/Pods-SessionUIKit.debug.xcconfig"; sourceTree = "<group>"; };
 		CB3724C70247A916D43271FE /* Pods_Session.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Session.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -4534,6 +4544,11 @@
 			isa = PBXGroup;
 			children = (
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
+				C3F0A62B255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift */,
+				C3F0A5EB255C970D007BE2A3 /* Configuration.swift */,
+				C3F0A619255C9902007BE2A3 /* Storage+SessionProtocolKit.swift */,
+				C3F0A607255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift */,
+				C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */,
 				B8CCF63B239757C10091D419 /* Components */,
 				C31F812425258F9C00DD9FD9 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
@@ -6220,6 +6235,7 @@
 				B8CCF63723961D6D0091D419 /* NewPrivateChatVC.swift in Sources */,
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
+				C3F0A61A255C9902007BE2A3 /* Storage+SessionProtocolKit.swift in Sources */,
 				34C4E2582118957600BEA353 /* WebRTCProto.swift in Sources */,
 				C396DAF12518408B00FF6DC5 /* EnumeratedView.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
@@ -6311,6 +6327,7 @@
 				C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */,
 				C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
+				C3F0A62C255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift in Sources */,
 				452ECA4D1E087E7200E2F016 /* MessageFetcherJob.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
@@ -6333,6 +6350,7 @@
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				C369549D24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
+				C3F0A608255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */,
@@ -6385,11 +6403,13 @@
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
+				C3F0A5FE255C988A007BE2A3 /* Storage+Shared.swift in Sources */,
 				B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */,
 				3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				C396DAEF2518408B00FF6DC5 /* ParsingState.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
+				C3F0A5EC255C970D007BE2A3 /* Configuration.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */,
