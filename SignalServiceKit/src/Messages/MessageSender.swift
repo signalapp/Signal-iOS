@@ -1086,7 +1086,7 @@ extension MessageSender {
                                                        transaction: transaction)
 
         if !devicesToRemove.isEmpty {
-            Logger.info("Deleting sessions for extra devices: \(devicesToRemove)")
+            Logger.info("Deleting sessions for extra devices: \(recipient.address), \(devicesToRemove)")
             for deviceId in devicesToRemove {
                 sessionStore.deleteSession(for: recipient.address, deviceId: deviceId.int32Value, transaction: transaction)
             }
