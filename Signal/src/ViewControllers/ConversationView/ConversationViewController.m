@@ -141,6 +141,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isMarkingAsRead;
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
+@property (nonatomic) BOOL isGroupCallActive;
 
 @property (nonatomic, nullable) UIView *bannerView;
 
@@ -1283,11 +1284,21 @@ typedef enum : NSUInteger {
             if ([self canCall]) {
                 if (self.isGroupConversation) {
                     // TODO: Show different state if the group call is started.
-                    UIBarButtonItem *videoCallButton =
-                        [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:self
-                                                        action:@selector(showGroupCallLobby)];
+                    UIBarButtonItem *videoCallButton = [[UIBarButtonItem alloc] init];
+
+                    if (self.isGroupCallActive) {
+                        OWSJoinGroupCallPill *pill = [[OWSJoinGroupCallPill alloc] init];
+                        [pill addTarget:self
+                                 action:@selector(showGroupCallLobby)
+                       forControlEvents:UIControlEventTouchUpInside];
+                        [videoCallButton setCustomView:pill];
+                    } else {
+                        UIImage *image = [Theme iconImage:ThemeIconVideoCall];
+                        [videoCallButton setImage:image];
+                        videoCallButton.target = self;
+                        videoCallButton.action = @selector(showGroupCallLobby);
+                    }
+
                     videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
                     videoCallButton.accessibilityLabel
                         = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
@@ -1413,6 +1424,16 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Calls
+
+// TODO: Update this value when group call state monitoring is ready
+- (void)setIsGroupCallActive:(BOOL)isGroupCallActive {
+    BOOL didChange = (_isGroupCallActive != isGroupCallActive);
+    _isGroupCallActive = isGroupCallActive;
+
+    if (didChange) {
+        [self updateBarButtonItems];
+    }
+}
 
 - (void)showGroupCallLobby
 {

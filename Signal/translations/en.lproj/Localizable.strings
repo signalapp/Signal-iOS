@@ -2416,6 +2416,9 @@
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
+/* Button to join an active group call */
+"JOIN_CALL_PILL_BUTTON" = "Join";
+
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";
 
