@@ -4,8 +4,8 @@
 
 import Foundation
 import PromiseKit
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
+import SignalUtilitiesKit
 import YYImage
 
 class GifPickerCell: UICollectionViewCell {

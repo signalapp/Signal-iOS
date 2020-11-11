@@ -3,8 +3,8 @@
 //
 
 #import "OWSDeviceProvisioningURLParser.h"
-#import <SessionAxolotlKit/NSData+keyVersionByte.h>
-#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionProtocolKit/NSData+keyVersionByte.h>
+#import <SessionProtocolKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

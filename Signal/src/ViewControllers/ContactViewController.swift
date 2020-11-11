@@ -3,8 +3,8 @@
 //
 
 import Foundation
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
+import SignalUtilitiesKit
 import Reachability
 import ContactsUI
 import MessageUI

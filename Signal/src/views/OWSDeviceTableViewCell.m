@@ -4,10 +4,10 @@
 
 #import "OWSDeviceTableViewCell.h"
 #import "DateUtil.h"
-#import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/Theme.h>
-#import <SignalMessaging/UIFont+OWS.h>
-#import <SignalMessaging/UIView+OWS.h>
+#import <SignalUtilitiesKit/OWSTableViewController.h>
+#import <SignalUtilitiesKit/Theme.h>
+#import <SignalUtilitiesKit/UIFont+OWS.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

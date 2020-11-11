@@ -6,8 +6,8 @@
 //import UIKit
 //import CallKit
 //import AVFoundation
-//import SessionServiceKit
-//import SignalMessaging
+//import SignalUtilitiesKit
+//import SignalUtilitiesKit
 //
 ///**
 // * Connects user interface to the CallService using CallKit.

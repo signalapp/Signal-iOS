@@ -12,10 +12,10 @@
 #import "Session-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SessionServiceKit/OWSBlockingManager.h>
-#import <SessionServiceKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

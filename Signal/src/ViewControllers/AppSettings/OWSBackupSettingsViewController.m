@@ -7,13 +7,13 @@
 #import "Session-Swift.h"
 #import "ThreadUtil.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SignalMessaging/AttachmentSharing.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIColor+OWS.h>
-#import <SignalMessaging/UIFont+OWS.h>
-#import <SignalMessaging/UIView+OWS.h>
-#import <SessionServiceKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/AttachmentSharing.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/UIColor+OWS.h>
+#import <SignalUtilitiesKit/UIFont+OWS.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

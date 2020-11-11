@@ -5,12 +5,12 @@
 #import "ConversationViewItem.h"
 #import "SignalBaseTest.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/MIMETypeUtil.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSAttachmentStream.h>
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/TSOutgoingMessage.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 /*

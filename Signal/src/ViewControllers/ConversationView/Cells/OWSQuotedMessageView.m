@@ -7,13 +7,13 @@
 #import "Environment.h"
 #import "OWSBubbleView.h"
 #import "Session-Swift.h"
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIColor+OWS.h>
-#import <SignalMessaging/UIView+OWS.h>
-#import <SessionServiceKit/TSAttachmentStream.h>
-#import <SessionServiceKit/TSMessage.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/UIColor+OWS.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/TSMessage.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -554,7 +554,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                LKPublicChat *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.quotedMessage.threadId transaction:transaction];
+                SNOpenGroup *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.quotedMessage.threadId transaction:transaction];
                 if (publicChat != nil) {
                     quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
                 } else {

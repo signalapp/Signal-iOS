@@ -5,10 +5,10 @@
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
 #import "Session-Swift.h"
-#import <SignalMessaging/OWSContactOffersInteraction.h>
-#import <SignalMessaging/UIColor+OWS.h>
-#import <SignalMessaging/UIFont+OWS.h>
-#import <SignalMessaging/UIView+OWS.h>
+#import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
+#import <SignalUtilitiesKit/UIColor+OWS.h>
+#import <SignalUtilitiesKit/UIFont+OWS.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

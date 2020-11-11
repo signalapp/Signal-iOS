@@ -3,7 +3,7 @@
 //
 
 import PromiseKit
-import SessionServiceKit
+import SignalUtilitiesKit
 
 @objc(OWSSyncPushTokensJob)
 class SyncPushTokensJob: NSObject {

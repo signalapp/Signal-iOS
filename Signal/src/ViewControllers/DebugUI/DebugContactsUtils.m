@@ -5,7 +5,7 @@
 #import "DebugContactsUtils.h"
 #import "Session-Swift.h"
 #import <Contacts/Contacts.h>
-#import <SessionCoreKit/Randomness.h>
+#import <Curve25519Kit/Randomness.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

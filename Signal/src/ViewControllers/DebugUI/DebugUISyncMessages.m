@@ -7,26 +7,26 @@
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
 #import "ThreadUtil.h"
-#import <SessionAxolotlKit/PreKeyBundle.h>
+#import <SessionProtocolKit/PreKeyBundle.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/Randomness.h>
-#import <SignalMessaging/Environment.h>
-#import <SessionServiceKit/OWSBatchMessageProcessor.h>
-#import <SessionServiceKit/OWSBlockingManager.h>
-#import <SessionServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/OWSReadReceiptManager.h>
-#import <SessionServiceKit/OWSSyncGroupsMessage.h>
-#import <SessionServiceKit/OWSSyncGroupsRequestMessage.h>
-#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSCall.h>
-#import <SessionServiceKit/TSDatabaseView.h>
-#import <SessionServiceKit/TSIncomingMessage.h>
-#import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SessionServiceKit/TSThread.h>
+#import <Curve25519Kit/Randomness.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSBatchMessageProcessor.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
+#import <SignalUtilitiesKit/OWSSyncGroupsMessage.h>
+#import <SignalUtilitiesKit/OWSSyncGroupsRequestMessage.h>
+#import <SignalUtilitiesKit/OWSVerificationStateChangeMessage.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSCall.h>
+#import <SignalUtilitiesKit/TSDatabaseView.h>
+#import <SignalUtilitiesKit/TSIncomingMessage.h>
+#import <SignalUtilitiesKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalUtilitiesKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

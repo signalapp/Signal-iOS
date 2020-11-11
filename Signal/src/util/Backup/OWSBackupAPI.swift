@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SessionServiceKit
+import SignalUtilitiesKit
 import CloudKit
 import PromiseKit
 

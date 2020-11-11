@@ -7,16 +7,16 @@
 #import "OWSDatabaseMigration.h"
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/NSData+OWS.h>
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionCoreKit/Threading.h>
-#import <SessionServiceKit/OWSBackgroundTask.h>
-#import <SessionServiceKit/OWSError.h>
-#import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/TSAttachment.h>
-#import <SessionServiceKit/TSAttachmentStream.h>
-#import <SessionServiceKit/TSMessage.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SessionProtocolKit/NSData+OWS.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SessionProtocolKit/Threading.h>
+#import <SignalUtilitiesKit/OWSBackgroundTask.h>
+#import <SignalUtilitiesKit/OWSError.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SignalUtilitiesKit/TSAttachment.h>
+#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/TSMessage.h>
+#import <SignalUtilitiesKit/TSThread.h>
 
 @import CloudKit;
 

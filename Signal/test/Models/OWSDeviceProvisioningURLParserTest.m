@@ -4,7 +4,7 @@
 
 #import "OWSDeviceProvisioningURLParser.h"
 #import "SignalBaseTest.h"
-#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionProtocolKit/NSData+OWS.h>
 
 @interface OWSDeviceProvisioningURLParserTest : SignalBaseTest
 

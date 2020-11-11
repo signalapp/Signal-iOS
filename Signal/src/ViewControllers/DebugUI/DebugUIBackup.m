@@ -7,7 +7,7 @@
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/Randomness.h>
+#import <Curve25519Kit/Randomness.h>
 
 @import CloudKit;
 

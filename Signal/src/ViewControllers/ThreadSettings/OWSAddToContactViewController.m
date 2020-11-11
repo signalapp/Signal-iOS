@@ -3,10 +3,10 @@
 //
 
 #import "OWSAddToContactViewController.h"
-#import <SignalMessaging/ContactsViewHelper.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/UIUtil.h>
+#import <SignalUtilitiesKit/ContactsViewHelper.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/UIUtil.h>
 
 @import ContactsUI;
 

@@ -7,12 +7,12 @@
 #import "ConversationViewController.h"
 #import "Session-Swift.h"
 #import "SignalsNavigationController.h"
-#import <SessionCoreKit/Threading.h>
-#import <SignalMessaging/DebugLogger.h>
-#import <SignalMessaging/Environment.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/TSGroupThread.h>
+#import <SessionProtocolKit/Threading.h>
+#import <SignalUtilitiesKit/DebugLogger.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

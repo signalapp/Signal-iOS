@@ -9,7 +9,7 @@
 
 import UIKit
 import Contacts
-import SessionServiceKit
+import SignalUtilitiesKit
 
 @objc
 public protocol ContactsPickerDelegate: class {

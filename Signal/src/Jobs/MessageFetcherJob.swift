@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import SessionServiceKit
+import SignalUtilitiesKit
 
 @objc(OWSMessageFetcherJob)
 public class MessageFetcherJob: NSObject {
@@ -160,7 +160,7 @@ public class MessageFetcherJob: NSObject {
     private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
         let userPublickKey = getUserHexEncodedPublicKey() // Can be missing in rare cases
         guard !userPublickKey.isEmpty else { return Promise.value(Set()) }
-        return SnodeAPI.getMessages(for: userPublickKey)
+        return Promise.value(Set())
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {

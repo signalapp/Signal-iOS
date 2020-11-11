@@ -3,7 +3,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import <SignalMessaging/OWSViewController.h>
+#import <SignalUtilitiesKit/OWSViewController.h>
 #import <UIKit/UIKit.h>
 #import <ZXingObjC/ZXingObjC.h>
 

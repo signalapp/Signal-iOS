@@ -4,7 +4,7 @@
 
 import XCTest
 @testable import Session
-@testable import SignalMessaging
+@testable import SignalUtilitiesKit
 
 extension ImageEditorModel {
     func itemIds() -> [String] {

@@ -6,7 +6,7 @@ import Foundation
 import AVFoundation
 
 @objc
-protocol OWSVideoPlayerDelegate: class {
+public protocol OWSVideoPlayerDelegate: class {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
 }
 
@@ -14,13 +14,13 @@ protocol OWSVideoPlayerDelegate: class {
 public class OWSVideoPlayer: NSObject {
 
     @objc
-    let avPlayer: AVPlayer
+    public let avPlayer: AVPlayer
     let audioActivity: AudioActivity
 
     @objc
-    weak var delegate: OWSVideoPlayerDelegate?
+    public weak var delegate: OWSVideoPlayerDelegate?
 
-    @objc init(url: URL) {
+    @objc public init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
         self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", behavior: .playback)
 

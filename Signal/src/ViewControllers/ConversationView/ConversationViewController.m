@@ -4,7 +4,7 @@
 
 #import "ConversationViewController.h"
 #import "AppDelegate.h"
-#import "BlockListUIUtils.h"
+#import <SignalUtilitiesKit/BlockListUIUtils.h>
 #import "BlockListViewController.h"
 #import "ContactsViewHelper.h"
 #import "ConversationCollectionView.h"
@@ -18,7 +18,7 @@
 #import "DateUtil.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
-#import "NSAttributedString+OWS.h"
+#import <SignalUtilitiesKit/NSAttributedString+OWS.h>
 #import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
@@ -28,16 +28,16 @@
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "Session-Swift.h"
-#import "SignalKeyingStorage.h"
+#import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import "TSAttachmentPointer.h"
-#import "TSCall.h"
+#import <SignalUtilitiesKit/TSCall.h>
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
-#import "TSInvalidIdentityKeyErrorMessage.h"
+#import <SignalUtilitiesKit/TSInvalidIdentityKeyErrorMessage.h>
 #import "UIFont+OWS.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
@@ -46,48 +46,47 @@
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionCoreKit/Threading.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactOffersInteraction.h>
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/OWSFormat.h>
-#import <SignalMessaging/OWSNavigationController.h>
-#import <SignalMessaging/OWSUnreadIndicator.h>
-#import <SignalMessaging/OWSUserProfile.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/ThreadUtil.h>
-#import <SignalMessaging/UIUtil.h>
-#import <SignalMessaging/UIViewController+OWS.h>
-#import <SessionServiceKit/Contact.h>
-#import <SessionServiceKit/ContactsUpdater.h>
-#import <SessionServiceKit/MimeTypeUtil.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/NSTimer+OWS.h>
-#import <SessionServiceKit/OWSAddToContactsOfferMessage.h>
-#import <SessionServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SessionServiceKit/OWSAttachmentDownloads.h>
-#import <SessionServiceKit/OWSBlockingManager.h>
-#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SessionServiceKit/OWSIdentityManager.h>
-#import <SessionServiceKit/OWSMessageManager.h>
-#import <SessionServiceKit/OWSMessageSender.h>
-#import <SessionServiceKit/OWSMessageUtils.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/OWSPrimaryStorage+Loki.h>
-#import <SessionServiceKit/OWSReadReceiptManager.h>
-#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/TSGroupModel.h>
-#import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SessionServiceKit/TSNetworkManager.h>
-#import <SessionServiceKit/TSQuotedMessage.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SessionProtocolKit/Threading.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/OWSFormat.h>
+#import <SignalUtilitiesKit/OWSNavigationController.h>
+#import <SignalUtilitiesKit/OWSUnreadIndicator.h>
+#import <SignalUtilitiesKit/OWSUserProfile.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/ThreadUtil.h>
+#import <SignalUtilitiesKit/UIUtil.h>
+#import <SignalUtilitiesKit/UIViewController+OWS.h>
+#import <SignalUtilitiesKit/Contact.h>
+#import <SignalUtilitiesKit/ContactsUpdater.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/NSTimer+OWS.h>
+#import <SignalUtilitiesKit/OWSAddToContactsOfferMessage.h>
+#import <SignalUtilitiesKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalUtilitiesKit/OWSIdentityManager.h>
+#import <SignalUtilitiesKit/OWSMessageManager.h>
+#import <SignalUtilitiesKit/OWSMessageSender.h>
+#import <SignalUtilitiesKit/OWSMessageUtils.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
+#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
+#import <SignalUtilitiesKit/OWSVerificationStateChangeMessage.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SignalUtilitiesKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalUtilitiesKit/TSNetworkManager.h>
+#import <SignalUtilitiesKit/TSQuotedMessage.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
 
 @import Photos;
 
@@ -680,11 +679,11 @@ typedef enum : NSUInteger {
     if (self.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
         if (!thread.isPublicChat) { return; }
-        __block LKPublicChat *publicChat;
+        __block SNOpenGroup *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
         }];
-        [LKPublicChatAPI getInfoForChannelWithID:publicChat.channel onServer:publicChat.server]
+        [SNOpenGroupAPI getInfoForChannelWithID:publicChat.channel onServer:publicChat.server]
         .thenOn(dispatch_get_main_queue(), ^(id userCount) {
             [self.headerView updateSubtitleForCurrentStatus];
         });
@@ -2041,7 +2040,7 @@ typedef enum : NSUInteger {
         if ([conversationViewItem.interaction isKindOfClass:TSMessage.class]) {
             messageID = ((TSMessage *)conversationViewItem.interaction).openGroupServerMessageID;
         }
-        [LKPublicChatAPI reportMessageWithID:messageID inChannel:1 onServer:@"https://chat.getsession.org"];
+        [SNOpenGroupAPI reportMessageWithID:messageID inChannel:1 onServer:@"https://chat.getsession.org"];
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];

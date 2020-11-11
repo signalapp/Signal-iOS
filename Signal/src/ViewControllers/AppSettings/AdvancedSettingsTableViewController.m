@@ -11,9 +11,9 @@
 #import "TSAccountManager.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSPreferences.h>
-#import <SessionServiceKit/OWSSignalService.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SignalUtilitiesKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

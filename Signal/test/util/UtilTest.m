@@ -5,9 +5,9 @@
 #import "UtilTest.h"
 #import "DateUtil.h"
 #import "TestUtil.h"
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionCoreKit/NSObject+OWS.h>
-#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SessionProtocolKit/NSObject+OWS.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
 
 @interface DateUtil (Test)
 

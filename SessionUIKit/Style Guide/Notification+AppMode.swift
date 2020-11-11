@@ -6,5 +6,5 @@ public extension Notification.Name {
 
 @objc public extension NSNotification {
 
-    @objc public static let appModeChanged = Notification.Name.appModeChanged.rawValue as NSString
+    @objc static let appModeChanged = Notification.Name.appModeChanged.rawValue as NSString
 }

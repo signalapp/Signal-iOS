@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SessionServiceKit
+import SignalUtilitiesKit
 
 let CompareSafetyNumbersActivityType = "org.whispersystems.signal.activity.CompareSafetyNumbers"
 

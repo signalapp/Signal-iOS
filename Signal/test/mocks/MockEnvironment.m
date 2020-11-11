@@ -5,9 +5,9 @@
 #import "MockEnvironment.h"
 #import "OWSBackup.h"
 #import "OWSWindowManager.h"
-#import <SignalMessaging/OWSPreferences.h>
-#import <SignalMessaging/OWSSounds.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SignalUtilitiesKit/OWSSounds.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

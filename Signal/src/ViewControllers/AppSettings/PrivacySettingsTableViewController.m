@@ -5,15 +5,15 @@
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
 #import "Session-Swift.h"
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSPreferences.h>
-#import <SignalMessaging/ThreadUtil.h>
-#import <SignalMessaging/UIColor+OWS.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWS2FAManager.h>
-#import <SessionServiceKit/OWSReadReceiptManager.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SignalUtilitiesKit/ThreadUtil.h>
+#import <SignalUtilitiesKit/UIColor+OWS.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWS2FAManager.h>
+#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

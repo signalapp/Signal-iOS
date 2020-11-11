@@ -10,7 +10,7 @@ public final class MentionUtilities : NSObject {
     
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
         let userPublicKey = getUserHexEncodedPublicKey()
-        var publicChat: PublicChat?
+        var publicChat: OpenGroup?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
             MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)

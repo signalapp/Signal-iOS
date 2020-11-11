@@ -9,17 +9,17 @@
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
 #import "ThreadUtil.h"
-#import <SessionAxolotlKit/PreKeyBundle.h>
-#import <SignalMessaging/AttachmentSharing.h>
-#import <SignalMessaging/Environment.h>
-#import <SessionServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SessionServiceKit/TSCall.h>
-#import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SessionServiceKit/TSThread.h>
-#import <SessionServiceKit/UIImage+OWS.h>
+#import <SessionProtocolKit/PreKeyBundle.h>
+#import <SignalUtilitiesKit/AttachmentSharing.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalUtilitiesKit/OWSVerificationStateChangeMessage.h>
+#import <SignalUtilitiesKit/TSCall.h>
+#import <SignalUtilitiesKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

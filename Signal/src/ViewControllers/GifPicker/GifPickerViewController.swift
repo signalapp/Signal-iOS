@@ -3,9 +3,9 @@
 //
 
 import Foundation
-import SessionServiceKit
+import SignalUtilitiesKit
 import Reachability
-import SignalMessaging
+import SignalUtilitiesKit
 import PromiseKit
 
 @objc

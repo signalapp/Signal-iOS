@@ -3,7 +3,7 @@
 //
 
 #import "MockEnvironment.h"
-#import <SessionServiceKit/MockSSKEnvironment.h>
+#import <SignalUtilitiesKit/MockSSKEnvironment.h>
 #import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 

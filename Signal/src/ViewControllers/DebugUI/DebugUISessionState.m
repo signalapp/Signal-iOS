@@ -5,9 +5,9 @@
 #import "DebugUISessionState.h"
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
-#import <SessionServiceKit/OWSIdentityManager.h>
-#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SessionServiceKit/TSContactThread.h>
+#import <SignalUtilitiesKit/OWSIdentityManager.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

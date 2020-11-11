@@ -611,7 +611,7 @@
 		C33FDD14255A582000E217F9 /* OWSUDManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB5A255A580E00E217F9 /* OWSUDManager.swift */; };
 		C33FDD15255A582000E217F9 /* YapDatabaseTransaction+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB5B255A580E00E217F9 /* YapDatabaseTransaction+OWS.m */; };
 		C33FDD16255A582000E217F9 /* NSArray+Functional.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB5C255A580E00E217F9 /* NSArray+Functional.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C33FDD17255A582000E217F9 /* TSErrorMessage_privateConstructor.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB5D255A580E00E217F9 /* TSErrorMessage_privateConstructor.h */; };
+		C33FDD17255A582000E217F9 /* TSErrorMessage_privateConstructor.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB5D255A580E00E217F9 /* TSErrorMessage_privateConstructor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD18255A582000E217F9 /* ContactParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB5E255A580E00E217F9 /* ContactParser.swift */; };
 		C33FDD19255A582000E217F9 /* YapDatabaseConnection+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB5F255A580E00E217F9 /* YapDatabaseConnection+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD1A255A582000E217F9 /* TSMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB60255A580E00E217F9 /* TSMessage.m */; };
@@ -833,6 +833,11 @@
 		C37F53A7255B96E0002AEA92 /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2F5255B6DBC007E1867 /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F53E9255BA9CE002AEA92 /* Environment.h in Headers */ = {isa = PBXBuildFile; fileRef = C37F53E8255BA9BB002AEA92 /* Environment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5403255BA9ED002AEA92 /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = C37F5402255BA9ED002AEA92 /* Environment.m */; };
+		C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
+		C37F54B9255BB2D4002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
+		C37F54BA255BB2D8002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
+		C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
+		C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C38EEF0A255B49A8007E1867 /* SSKProtoEnvelope+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EEF09255B49A8007E1867 /* SSKProtoEnvelope+Conversion.swift */; };
 		C38EEFD6255B5BA2007E1867 /* OldSnodeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EEFD5255B5BA2007E1867 /* OldSnodeAPI.swift */; };
 		C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
@@ -846,7 +851,7 @@
 		C38EF22A255B6D5D007E1867 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF225255B6D5D007E1867 /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF22B255B6D5D007E1867 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF226255B6D5D007E1867 /* ShareViewDelegate.swift */; };
 		C38EF22C255B6D5D007E1867 /* OWSVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF227255B6D5D007E1867 /* OWSVideoPlayer.swift */; };
-		C38EF243255B6D67007E1867 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF236255B6D65007E1867 /* UIViewController+OWS.h */; };
+		C38EF243255B6D67007E1867 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF236255B6D65007E1867 /* UIViewController+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF244255B6D67007E1867 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF237255B6D65007E1867 /* UIDevice+featureSupport.swift */; };
 		C38EF245255B6D67007E1867 /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF238255B6D66007E1867 /* UIFont+OWS.m */; };
 		C38EF246255B6D67007E1867 /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF239255B6D66007E1867 /* UIFont+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2688,6 +2693,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37F54B9255BB2D4002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				C3402FE52559036600EA6424 /* SessionUIKit.framework in Frameworks */,
 				2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */,
@@ -2698,6 +2704,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37F54BA255BB2D8002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				390650A6D345BFE01E006DB0 /* Pods_LokiPushNotificationService.framework in Frameworks */,
 			);
@@ -2764,6 +2771,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */,
+				C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */,
+				C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */,
 				4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
@@ -5896,11 +5906,11 @@
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
-				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
 				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -5921,11 +5931,11 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

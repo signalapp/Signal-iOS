@@ -3,8 +3,8 @@
 //
 
 import Foundation
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
+import SignalUtilitiesKit
 import PromiseKit
 
 class DebugUINotifications: DebugUIPage {
@@ -35,11 +35,11 @@ class DebugUINotifications: DebugUIPage {
 
         var sectionItems: [OWSTableItem] = []
 
-        if let contactThread = thread as? TSContactThread {
-            sectionItems += [
-                OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
-                    self?.notifyForEverythingInSequence(contactThread: contactThread).retainUntilComplete()
-                },
+//        if let contactThread = thread as? TSContactThread {
+//            sectionItems += [
+//                OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
+//                    self?.notifyForEverythingInSequence(contactThread: contactThread).retainUntilComplete()
+//                },
 //                OWSTableItem(title: "Incoming Call") { [weak self] in
 //                    self?.notifyForIncomingCall(thread: contactThread).retainUntilComplete()
 //                },
@@ -52,22 +52,22 @@ class DebugUINotifications: DebugUIPage {
 //                OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
 //                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread).retainUntilComplete()
 //                }
-            ]
-        }
+//            ]
+//        }
 
-        sectionItems += [
-            OWSTableItem(title: "Last Incoming Message") { [weak self] in
-                self?.notifyForIncomingMessage(thread: thread).retainUntilComplete()
-            },
-
-            OWSTableItem(title: "Notify For Error Message") { [weak self] in
-                self?.notifyForErrorMessage(thread: thread).retainUntilComplete()
-            },
-
-            OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
-                self?.notifyUserForThreadlessErrorMessage().retainUntilComplete()
-            }
-        ]
+//        sectionItems += [
+//            OWSTableItem(title: "Last Incoming Message") { [weak self] in
+//                self?.notifyForIncomingMessage(thread: thread).retainUntilComplete()
+//            },
+//
+//            OWSTableItem(title: "Notify For Error Message") { [weak self] in
+//                self?.notifyForErrorMessage(thread: thread).retainUntilComplete()
+//            },
+//
+//            OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
+//                self?.notifyUserForThreadlessErrorMessage().retainUntilComplete()
+//            }
+//        ]
 
         return OWSTableSection(title: "Notifications have delay: \(kNotificationDelay)s", items: sectionItems)
     }
@@ -110,9 +110,8 @@ class DebugUINotifications: DebugUIPage {
 
     // MARK: Notification Methods
 
-    func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
-        let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
-
+//    func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
+//        let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 //        return firstly {
 //            self.notifyForIncomingCall(thread: contactThread)
 //        }.then {
@@ -122,16 +121,16 @@ class DebugUINotifications: DebugUIPage {
 //        }.then {
 //            self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
 //        }.then
-        return firstly {
-            self.notifyForIncomingMessage(thread: contactThread)
-        }.then {
-            self.notifyForErrorMessage(thread: contactThread)
-        }.then {
-            self.notifyUserForThreadlessErrorMessage()
-        }.done {
-            UIApplication.shared.endBackgroundTask(taskIdentifier)
-        }
-    }
+//        return firstly {
+//            self.notifyForIncomingMessage(thread: contactThread)
+//        }.then {
+//            self.notifyForErrorMessage(thread: contactThread)
+//        }.then {
+//            self.notifyUserForThreadlessErrorMessage()
+//        }.done {
+//            UIApplication.shared.endBackgroundTask(taskIdentifier)
+//        }
+//    }
 
 //    func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
 //        Logger.info("⚠️ will present notification after delay")
@@ -160,34 +159,6 @@ class DebugUINotifications: DebugUIPage {
 //            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
 //        }
 //    }
-
-    func notifyForIncomingMessage(thread: TSThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
-        return delayedNotificationDispatch {
-            self.readWrite { transaction in
-                let factory = IncomingMessageFactory()
-                factory.threadCreator = { _ in return thread }
-                let incomingMessage = factory.create(transaction: transaction)
-
-                self.notificationPresenter.notifyUser(for: incomingMessage,
-                                                     in: thread,
-                                                     transaction: transaction)
-            }
-        }
-    }
-
-    func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
-        return delayedNotificationDispatch {
-            let errorMessage = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                              in: thread,
-                                              failedMessageType: TSErrorMessageType.invalidMessage)
-
-            self.readWrite { transaction in
-                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
-            }
-        }
-    }
 
     func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")

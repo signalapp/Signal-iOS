@@ -3,8 +3,8 @@
 //
 
 import Foundation
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
+import SignalUtilitiesKit
 
 @objc(OWSWebRTCCallMessageHandler)
 public class WebRTCCallMessageHandler: NSObject/*, OWSCallMessageHandler*/ {

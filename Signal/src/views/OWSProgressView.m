@@ -3,8 +3,8 @@
 //
 
 #import "OWSProgressView.h"
-#import <SignalMessaging/UIView+OWS.h>
-#import <SessionServiceKit/OWSMath.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SignalUtilitiesKit/OWSMath.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,16 +7,17 @@
 #import "OWSTableViewController.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
-#import <SessionCoreKit/Cryptography.h>
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionCoreKit/Randomness.h>
-#import <SignalMessaging/Environment.h>
-#import <SessionServiceKit/OWSDynamicOutgoingMessage.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/TSGroupThread.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SessionProtocolKit/Cryptography.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <Curve25519Kit/Randomness.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSDynamicOutgoingMessage.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

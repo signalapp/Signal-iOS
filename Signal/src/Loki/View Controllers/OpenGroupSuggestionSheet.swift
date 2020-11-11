@@ -63,9 +63,9 @@ final class OpenGroupSuggestionSheet : Sheet {
         let displayName = OWSProfileManager.shared().localProfileName()
         // TODO: Profile picture & profile key
         let _ = PublicChatManager.shared.addChat(server: url, channel: channelID).done(on: .main) { _ in
-            let _ = PublicChatAPI.getMessages(for: channelID, on: url)
-            let _ = PublicChatAPI.setDisplayName(to: displayName, on: url)
-            let _ = PublicChatAPI.join(channelID, on: url)
+            let _ = OpenGroupAPI.getMessages(for: channelID, on: url)
+            let _ = OpenGroupAPI.setDisplayName(to: displayName, on: url)
+            let _ = OpenGroupAPI.join(channelID, on: url)
         }
         close()
     }

@@ -4,7 +4,7 @@
 
 import UIKit
 import Contacts
-import SessionServiceKit
+import SignalUtilitiesKit
 
 class ContactCell: UITableViewCell {
 

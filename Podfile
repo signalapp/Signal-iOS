@@ -60,32 +60,23 @@ target 'Signal' do
 end
 
 target 'SignalShareExtension' do
-  project 'Signal'
-  shared_pods
-end
-
-target 'LokiPushNotificationService' do
-  project 'Signal'
-  shared_pods
-
-  ###
-  # Loki third party pods
-  ###
-
-  pod 'CryptoSwift', '~> 1.3', :inhibit_warnings => true
-end
-
-target 'SignalMessaging' do
   pod 'AFNetworking', inhibit_warnings: true
-  pod 'CocoaLumberjack', :inhibit_warnings => true
   pod 'CryptoSwift', :inhibit_warnings => true
   pod 'Curve25519Kit', :inhibit_warnings => true
-  pod 'libPhoneNumber-iOS', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true
-  pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
+end
+
+target 'LokiPushNotificationService' do
+  pod 'AFNetworking', inhibit_warnings: true
+  pod 'CryptoSwift', :inhibit_warnings => true
+  pod 'Curve25519Kit', :inhibit_warnings => true
+  pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
+  pod 'PromiseKit', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true
 end
 
 target 'SignalUtilitiesKit' do

@@ -3,8 +3,8 @@
 //
 
 #import "OWSBackupIO.h"
-#import <SessionCoreKit/Randomness.h>
-#import <SessionServiceKit/OWSFileSystem.h>
+#import <Curve25519Kit/Randomness.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
 
 @import Compression;
 

@@ -376,7 +376,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         guard let thread = self.thread(at: indexPath.row) else { return [] }
-        var publicChat: PublicChat?
+        var publicChat: OpenGroup?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)
         }
@@ -390,9 +390,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                             messageIDs.insert(interaction.uniqueId!)
                         }
                         OWSPrimaryStorage.shared().updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, in: transaction)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: PublicChatAPI.lastMessageServerIDCollection)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: PublicChatAPI.lastDeletionServerIDCollection)
-                        let _ = PublicChatAPI.leave(publicChat.channel, on: publicChat.server)
+                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastMessageServerIDCollection)
+                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastDeletionServerIDCollection)
+                        let _ = OpenGroupAPI.leave(publicChat.channel, on: publicChat.server)
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
                     } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {

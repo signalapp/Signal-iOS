@@ -4,7 +4,7 @@
 
 import XCTest
 
-import SessionServiceKit
+import SignalUtilitiesKit
 import SwiftProtobuf
 
 class SSKProtoEnvelopeTest: SignalBaseTest {

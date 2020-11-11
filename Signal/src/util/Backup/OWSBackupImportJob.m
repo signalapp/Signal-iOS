@@ -8,12 +8,12 @@
 #import "OWSDatabaseMigrationRunner.h"
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/NSData+OWS.h>
-#import <SessionServiceKit/OWSBackgroundTask.h>
-#import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/TSAttachment.h>
-#import <SessionServiceKit/TSMessage.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SessionProtocolKit/NSData+OWS.h>
+#import <SignalUtilitiesKit/OWSBackgroundTask.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SignalUtilitiesKit/TSAttachment.h>
+#import <SignalUtilitiesKit/TSMessage.h>
+#import <SignalUtilitiesKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

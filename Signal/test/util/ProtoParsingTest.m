@@ -3,13 +3,13 @@
 //
 
 #import "SignalBaseTest.h"
-#import <SessionCoreKit/NSData+OWS.h>
-#import <SessionCoreKit/Randomness.h>
-#import <SessionServiceKit/ContactsManagerProtocol.h>
-#import <SessionServiceKit/OWSContactsOutputStream.h>
-#import <SessionServiceKit/OWSGroupsOutputStream.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionProtocolKit/NSData+OWS.h>
+#import <Curve25519Kit/Randomness.h>
+#import <SignalUtilitiesKit/ContactsManagerProtocol.h>
+#import <SignalUtilitiesKit/OWSContactsOutputStream.h>
+#import <SignalUtilitiesKit/OWSGroupsOutputStream.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,10 +4,10 @@
 
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SignalMessaging/OWSAudioPlayer.h>
-#import <SignalMessaging/OWSSounds.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIUtil.h>
+#import <SignalUtilitiesKit/OWSAudioPlayer.h>
+#import <SignalUtilitiesKit/OWSSounds.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN

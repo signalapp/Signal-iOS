@@ -16,7 +16,7 @@
 #import "OWSQuotedMessageView.h"
 #import "Session-Swift.h"
 #import "UIColor+OWS.h"
-#import <SignalMessaging/UIView+OWS.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

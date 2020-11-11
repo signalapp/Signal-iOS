@@ -6,16 +6,16 @@
 #import "Session-Swift.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
-#import <SignalMessaging/BlockListUIUtils.h>
-#import <SignalMessaging/ContactTableViewCell.h>
-#import <SignalMessaging/ContactsViewHelper.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/UIUtil.h>
-#import <SessionServiceKit/OWSBlockingManager.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/TSGroupModel.h>
-#import <SessionServiceKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/BlockListUIUtils.h>
+#import <SignalUtilitiesKit/ContactTableViewCell.h>
+#import <SignalUtilitiesKit/ContactsViewHelper.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/UIUtil.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
 
 @import ContactsUI;
 

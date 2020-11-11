@@ -3,10 +3,10 @@
 //
 
 #import "ShareAppExtensionContext.h"
-#import <SignalMessaging/UIViewController+OWS.h>
-#import <SessionServiceKit/OWSStorage.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSConstants.h>
+#import <SignalUtilitiesKit/UIViewController+OWS.h>
+#import <SignalUtilitiesKit/OWSStorage.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

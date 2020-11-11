@@ -3,7 +3,7 @@
 //
 
 import UIKit
-import SessionServiceKit
+import SignalUtilitiesKit
 
 @objc class GroupTableViewCell: UITableViewCell {
 

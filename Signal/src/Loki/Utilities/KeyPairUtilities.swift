@@ -8,7 +8,7 @@ enum KeyPairUtilities {
         let ed25519KeyPair = Sodium().sign.keyPair(seed: (seed + padding).bytes)!
         let x25519PublicKey = Sodium().sign.toX25519(ed25519PublicKey: ed25519KeyPair.publicKey)!
         let x25519SecretKey = Sodium().sign.toX25519(ed25519SecretKey: ed25519KeyPair.secretKey)!
-        let x25519KeyPair = ECKeyPair(publicKey: Data(x25519PublicKey), privateKey: Data(x25519SecretKey))!
+        let x25519KeyPair = ECKeyPair(publicKey: Data(x25519PublicKey), privateKey: Data(x25519SecretKey))
         return (ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
     }
 

@@ -123,14 +123,14 @@ public final class SnodeAPI : NSObject {
         }
     }
 
-    public static func clearSnodePool() {
+    // MARK: Public API
+    @objc public static func clearSnodePool() {
         snodePool.removeAll()
         Configuration.shared.storage.with { transaction in
             Configuration.shared.storage.setSnodePool(to: [], using: transaction)
         }
     }
-
-    // MARK: Public API
+    
     public static func dropSnodeFromSwarmIfNeeded(_ snode: Snode, publicKey: String) {
         let swarm = SnodeAPI.swarmCache[publicKey]
         if var swarm = swarm, let index = swarm.firstIndex(of: snode) {

@@ -7,10 +7,10 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIColor+OWS.h>
-#import <SessionServiceKit/OWSContact.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/UIColor+OWS.h>
+#import <SignalUtilitiesKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

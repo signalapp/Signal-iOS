@@ -5,11 +5,11 @@
 #import "AttachmentUploadView.h"
 #import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
-#import <SignalMessaging/UIFont+OWS.h>
-#import <SignalMessaging/UIView+OWS.h>
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/OWSUploadOperation.h>
-#import <SessionServiceKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/UIFont+OWS.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/OWSUploadOperation.h>
+#import <SignalUtilitiesKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

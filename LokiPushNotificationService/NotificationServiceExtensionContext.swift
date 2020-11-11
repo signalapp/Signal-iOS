@@ -3,8 +3,7 @@
 //
 
 import Foundation
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
 
 final class NotificationServiceExtensionContext : NSObject, AppContext {
     let appLaunchTime = Date()

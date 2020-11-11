@@ -3,7 +3,7 @@
 //
 
 #import "OWSConversationSettingsViewDelegate.h"
-#import <SignalMessaging/OWSViewController.h>
+#import <SignalUtilitiesKit/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

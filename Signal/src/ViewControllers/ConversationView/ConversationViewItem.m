@@ -9,13 +9,13 @@
 #import "OWSSystemMessageCell.h"
 #import "Session-Swift.h"
 #import "AnyPromise.h"
-#import <SignalMessaging/OWSUnreadIndicator.h>
-#import <SessionServiceKit/NSData+Image.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWSContact.h>
-#import <SessionServiceKit/TSInteraction.h>
-#import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/OWSUnreadIndicator.h>
+#import <SignalUtilitiesKit/NSData+Image.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWSContact.h>
+#import <SignalUtilitiesKit/TSInteraction.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1186,7 +1186,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isOpenGroupMessage) return;
         
-        __block LKPublicChat *publicChat;
+        __block SNOpenGroup *publicChat;
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
         }];
@@ -1194,7 +1194,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         
         // Delete the message
         BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[LKPublicChatAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
+        [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];
@@ -1262,7 +1262,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!message.isOpenGroupMessage) return true;
     
     // Ensure we have the details needed to contact the server
-    __block LKPublicChat *publicChat;
+    __block SNOpenGroup *publicChat;
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
     }];
@@ -1270,7 +1270,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
-        return [LKPublicChatAPI isUserModerator:self.userHexEncodedPublicKey forChannel:publicChat.channel onServer:publicChat.server];
+        return [SNOpenGroupAPI isUserModerator:self.userHexEncodedPublicKey forChannel:publicChat.channel onServer:publicChat.server];
     } else {
         // Only allow deletion on outgoing messages if the user was the sender (i.e. it was not sent from another linked device)
         return [self.interaction.actualSenderHexEncodedPublicKey isEqual:self.userHexEncodedPublicKey];

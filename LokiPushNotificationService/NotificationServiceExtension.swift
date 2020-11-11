@@ -1,6 +1,5 @@
 import UserNotifications
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
 
 final class NotificationServiceExtension : UNNotificationServiceExtension {
     static let isFromRemoteKey = "remote"
@@ -184,7 +183,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
-                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+//                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
             },
             migrationCompletion: { [weak self] in
                 self?.versionMigrationsDidComplete()

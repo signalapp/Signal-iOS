@@ -6,11 +6,11 @@
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <AFNetworking/AFNetworking.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SessionCoreKit/Randomness.h>
-#import <SessionServiceKit/MIMETypeUtil.h>
-#import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
-#import <SessionServiceKit/TSAttachment.h>
+#import <Curve25519Kit/Randomness.h>
+#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/TSAttachment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

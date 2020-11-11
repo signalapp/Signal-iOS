@@ -5,7 +5,7 @@
 import XCTest
 import Contacts
 @testable import Session
-@testable import SignalMessaging
+@testable import SignalUtilitiesKit
 
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc

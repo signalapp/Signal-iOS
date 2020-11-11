@@ -5,8 +5,8 @@
 #import "NotificationSettingsOptionsViewController.h"
 #import "Session-Swift.h"
 #import "SignalApp.h"
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 @implementation NotificationSettingsOptionsViewController
 

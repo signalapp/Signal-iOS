@@ -164,7 +164,7 @@ private extension MentionCandidateSelectionView {
             profilePictureView.hexEncodedPublicKey = mentionCandidate.publicKey
             profilePictureView.update()
             if let server = publicChatServer, let channel = publicChatChannel {
-                let isUserModerator = PublicChatAPI.isUserModerator(mentionCandidate.publicKey, for: channel, on: server)
+                let isUserModerator = OpenGroupAPI.isUserModerator(mentionCandidate.publicKey, for: channel, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {
                 moderatorIconImageView.isHidden = true

@@ -12,11 +12,11 @@
 #import "UIFont+OWS.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SignalMessaging/OWSFormat.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIView+OWS.h>
-#import <SessionServiceKit/NSTimer+OWS.h>
-#import <SessionServiceKit/TSQuotedMessage.h>
+#import <SignalUtilitiesKit/OWSFormat.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SignalUtilitiesKit/NSTimer+OWS.h>
+#import <SignalUtilitiesKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1092,7 +1092,7 @@ const CGFloat kMaxTextViewHeight = 120;
 
 - (void)showMentionCandidateSelectionViewFor:(NSArray<LKMention *> *)mentionCandidates in:(TSThread *)thread
 {
-    __block LKPublicChat *publicChat;
+    __block SNOpenGroup *publicChat;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
     }];

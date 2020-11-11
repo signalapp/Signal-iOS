@@ -12,7 +12,7 @@ public final class BackgroundPoller : NSObject {
         promises.append(AppEnvironment.shared.messageFetcherJob.run()) // FIXME: It'd be nicer to just use Poller directly
         closedGroupPoller = ClosedGroupPoller()
         promises.append(contentsOf: closedGroupPoller.pollOnce())
-        var openGroups: [String:PublicChat] = [:]
+        var openGroups: [String:OpenGroup] = [:]
         Storage.read { transaction in
             openGroups = LokiDatabaseUtilities.getAllPublicChats(in: transaction)
         }

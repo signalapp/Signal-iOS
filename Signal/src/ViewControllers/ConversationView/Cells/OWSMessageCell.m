@@ -7,7 +7,7 @@
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
 #import "Session-Swift.h"
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -287,12 +287,12 @@ NS_ASSUME_NONNULL_BEGIN
     
     // Loki: Show the moderator icon if needed
     if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) { // FIXME: This logic also shouldn't apply to closed groups
-        __block LKPublicChat *publicChat;
+        __block SNOpenGroup *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
         }];
         if (publicChat != nil) {
-            BOOL isModerator = [LKPublicChatAPI isUserModerator:incomingMessage.authorId forChannel:publicChat.channel onServer:publicChat.server];
+            BOOL isModerator = [SNOpenGroupAPI isUserModerator:incomingMessage.authorId forChannel:publicChat.channel onServer:publicChat.server];
             UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];
             self.moderatorIconImageView.image = moderatorIcon;
             self.moderatorIconImageView.hidden = !isModerator;

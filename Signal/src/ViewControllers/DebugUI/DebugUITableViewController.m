@@ -12,8 +12,8 @@
 #import "DebugUIStress.h"
 #import "DebugUISyncMessages.h"
 #import "Session-Swift.h"
-#import <SessionServiceKit/TSContactThread.h>
-#import <SessionServiceKit/TSThread.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SignalUtilitiesKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

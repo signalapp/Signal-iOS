@@ -4,11 +4,11 @@
 
 #import "MainAppContext.h"
 #import "Session-Swift.h"
-#import <SessionCoreKit/Threading.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSProfileManager.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionProtocolKit/Threading.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSProfileManager.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SignalUtilitiesKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

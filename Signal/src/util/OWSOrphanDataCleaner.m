@@ -4,21 +4,21 @@
 
 #import "OWSOrphanDataCleaner.h"
 #import "DateUtil.h"
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/OWSProfileManager.h>
-#import <SignalMessaging/OWSUserProfile.h>
-#import <SessionServiceKit/AppReadiness.h>
-#import <SessionServiceKit/AppVersion.h>
-#import <SessionServiceKit/OWSContact.h>
-#import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/TSAttachmentStream.h>
-#import <SessionServiceKit/TSInteraction.h>
-#import <SessionServiceKit/TSMessage.h>
-#import <SessionServiceKit/TSQuotedMessage.h>
-#import <SessionServiceKit/TSThread.h>
-#import <SessionServiceKit/YapDatabaseTransaction+OWS.h>
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalUtilitiesKit/OWSProfileManager.h>
+#import <SignalUtilitiesKit/OWSUserProfile.h>
+#import <SignalUtilitiesKit/AppReadiness.h>
+#import <SignalUtilitiesKit/AppVersion.h>
+#import <SignalUtilitiesKit/OWSContact.h>
+#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/TSInteraction.h>
+#import <SignalUtilitiesKit/TSMessage.h>
+#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/YapDatabaseTransaction+OWS.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

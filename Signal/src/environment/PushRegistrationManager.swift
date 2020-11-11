@@ -5,8 +5,8 @@
 import Foundation
 import PromiseKit
 import PushKit
-import SessionServiceKit
-import SignalMessaging
+import SignalUtilitiesKit
+import SignalUtilitiesKit
 
 public enum PushRegistrationError: Error {
     case assertionError(description: String)

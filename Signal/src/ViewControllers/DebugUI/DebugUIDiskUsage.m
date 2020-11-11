@@ -6,10 +6,10 @@
 #import "OWSOrphanDataCleaner.h"
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/TSDatabaseView.h>
-#import <SessionServiceKit/TSInteraction.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/TSDatabaseView.h>
+#import <SignalUtilitiesKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -8,23 +8,23 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import "ViewControllerUtils.h"
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/BlockListUIUtils.h>
-#import <SignalMessaging/ContactTableViewCell.h>
-#import <SignalMessaging/ContactsViewHelper.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/SignalKeyingStorage.h>
-#import <SignalMessaging/UIUtil.h>
-#import <SignalMessaging/UIView+OWS.h>
-#import <SignalMessaging/UIViewController+OWS.h>
-#import <SessionServiceKit/NSString+SSK.h>
-#import <SessionServiceKit/OWSMessageSender.h>
-#import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/TSGroupModel.h>
-#import <SessionServiceKit/TSGroupThread.h>
-#import <SessionServiceKit/TSOutgoingMessage.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalUtilitiesKit/BlockListUIUtils.h>
+#import <SignalUtilitiesKit/ContactTableViewCell.h>
+#import <SignalUtilitiesKit/ContactsViewHelper.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/OWSTableViewController.h>
+#import <SignalUtilitiesKit/SignalKeyingStorage.h>
+#import <SignalUtilitiesKit/UIUtil.h>
+#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SignalUtilitiesKit/UIViewController+OWS.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SignalUtilitiesKit/OWSMessageSender.h>
+#import <SignalUtilitiesKit/SignalAccount.h>
+#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -5,8 +5,8 @@
 //import Foundation
 //import PromiseKit
 //import WebRTC
-//import SessionServiceKit
-//import SignalMessaging
+//import SignalUtilitiesKit
+//import SignalUtilitiesKit
 //
 ///**
 // * `CallService` is a global singleton that manages the state of WebRTC-backed Signal Calls

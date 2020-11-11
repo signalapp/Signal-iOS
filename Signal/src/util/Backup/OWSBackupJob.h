@@ -3,7 +3,7 @@
 //
 
 #import "TSYapDatabaseObject.h"
-#import <SessionServiceKit/OWSBackupFragment.h>
+#import <SignalUtilitiesKit/OWSBackupFragment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

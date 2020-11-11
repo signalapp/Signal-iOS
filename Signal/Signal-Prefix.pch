@@ -15,12 +15,12 @@
     static const NSUInteger ddLogLevel = DDLogLevelInfo;
     #endif
 
-    #import <SessionCoreKit/NSObject+OWS.h>
-    #import <SessionCoreKit/OWSAsserts.h>
-    #import <SessionServiceKit/SSKAsserts.h>
-    #import <SessionServiceKit/OWSAnalytics.h>
-    #import <SessionServiceKit/NSArray+Functional.h>
-    #import <SessionServiceKit/NSSet+Functional.h>
-    #import <SessionServiceKit/NSObject+Casting.h>
+    #import <SessionProtocolKit/NSObject+OWS.h>
+    #import <SessionProtocolKit/OWSAsserts.h>
+    #import <SignalUtilitiesKit/SSKAsserts.h>
+    #import <SignalUtilitiesKit/OWSAnalytics.h>
+    #import <SignalUtilitiesKit/NSArray+Functional.h>
+    #import <SignalUtilitiesKit/NSSet+Functional.h>
+    #import <SignalUtilitiesKit/NSObject+Casting.h>
     #import <SessionUIKit/SessionUIKit.h>
 #endif

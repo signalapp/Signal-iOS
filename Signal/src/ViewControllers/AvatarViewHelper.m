@@ -6,13 +6,13 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/UIUtil.h>
-#import <SessionServiceKit/PhoneNumber.h>
-#import <SessionServiceKit/TSGroupModel.h>
-#import <SessionServiceKit/TSGroupThread.h>
-#import <SessionServiceKit/TSThread.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/UIUtil.h>
+#import <SignalUtilitiesKit/PhoneNumber.h>
+#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SignalUtilitiesKit/TSThread.h>
+#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -3,8 +3,8 @@ public extension Storage {
 
     // MARK: Open Group Public Keys
     internal static let openGroupPublicKeyCollection = "LokiOpenGroupPublicKeyCollection"
-    internal static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
-    internal static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
+    public static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
+    public static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
 
     internal static func getOpenGroupPublicKey(for server: String) -> String? {
         var result: String? = nil

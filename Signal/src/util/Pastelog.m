@@ -8,15 +8,15 @@
 #import "zlib.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SSZipArchive/SSZipArchive.h>
-#import <SessionCoreKit/Threading.h>
-#import <SignalMessaging/AttachmentSharing.h>
-#import <SignalMessaging/DebugLogger.h>
-#import <SignalMessaging/Environment.h>
-#import <SessionServiceKit/AppContext.h>
-#import <SessionServiceKit/MimeTypeUtil.h>
-#import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/TSAccountManager.h>
-#import <SessionServiceKit/TSContactThread.h>
+#import <SessionProtocolKit/Threading.h>
+#import <SignalUtilitiesKit/AttachmentSharing.h>
+#import <SignalUtilitiesKit/DebugLogger.h>
+#import <SignalUtilitiesKit/Environment.h>
+#import <SignalUtilitiesKit/AppContext.h>
+#import <SignalUtilitiesKit/MimeTypeUtil.h>
+#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SignalUtilitiesKit/TSContactThread.h>
 #import <sys/sysctl.h>
 
 NS_ASSUME_NONNULL_BEGIN

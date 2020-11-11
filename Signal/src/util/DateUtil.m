@@ -3,9 +3,9 @@
 //
 
 #import "DateUtil.h"
-#import <SessionCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/OWSFormat.h>
-#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionProtocolKit/NSDate+OWS.h>
+#import <SignalUtilitiesKit/OWSFormat.h>
+#import <SignalUtilitiesKit/NSString+SSK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import SessionServiceKit
+import SignalUtilitiesKit
 
 @objc(OWSSessionResetJobQueue)
 public class SessionResetJobQueue: NSObject, JobQueue {

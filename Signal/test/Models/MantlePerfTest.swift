@@ -3,8 +3,8 @@
 //
 
 import XCTest
-@testable import SignalMessaging
-@testable import SessionServiceKit
+@testable import SignalUtilitiesKit
+@testable import SignalUtilitiesKit
 
 class MantlePerfTest: SignalBaseTest {
 

@@ -5,8 +5,8 @@
 //import Foundation
 //import PromiseKit
 //import WebRTC
-//import SessionServiceKit
-//import SignalMessaging
+//import SignalUtilitiesKit
+//import SignalUtilitiesKit
 //
 //// HACK - Seeing crazy SEGFAULTs on iOS9 when accessing these objc externs.
 //// iOS10 seems unaffected. Reproducible for ~1 in 3 calls.
