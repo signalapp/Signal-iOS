@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal potřebuje přístup k vaší pozi
 NSMicrophoneUsageDescription = "Signal potřebuje přístup k vašemu mikrofonu pro hovory a nahrávání hlasových zpráv. ";
 NSPhotoLibraryAddUsageDescription = "Signal uloží fotografie do vaší knihovny. ";
 NSPhotoLibraryUsageDescription = "Signal vás nechá vybrat, které fotografie z vaší knihovny chcete odeslat. ";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Pro přímý přesun vašeho účtu do nového telefonu, používá Signal místní síť. Toto nebude použito, pokud explicitně nezahájíte přenos do nového zařízení.";

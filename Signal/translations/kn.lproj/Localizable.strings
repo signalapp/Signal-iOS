@@ -2573,7 +2573,7 @@
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "ನಿಮ್ಮ ಪ್ರೋಫೈಲ್ ಹೆಸರನ್ನು ಉಳಿಸಲಾಗಿದೆ.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಹೆಸರನ್ನು ಉಳಿಸಲಾಗಿದೆ.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "ತಲುಪಿಸಲಾಗಿದೆ";

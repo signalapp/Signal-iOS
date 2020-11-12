@@ -1511,7 +1511,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "پیوستن به تماس";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
@@ -1520,7 +1520,7 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "هیچکس دیگری اینجا نیست";
 
 /* String indicating one person is currently in the call */
 "GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
@@ -2567,13 +2567,13 @@
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "معرفی درخواست پیام";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "افزودن نام نمایه";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "افزودن نام پروفایل";
 
 /* Body text for message requests splash screen */
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "نام نمایه شما ذخیره شده است";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "نام پروفایل شما ذخیره شد.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "تحویل داده شده";

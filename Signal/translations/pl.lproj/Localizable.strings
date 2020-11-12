@@ -1517,7 +1517,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "W tej rozmowie · %ld osób(y)";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ i %ld innych uczestniczy w rozmowie";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ i %ld inny(ch) uczestniczy w rozmowie";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Brak innych uczestników rozmowy";

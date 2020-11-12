@@ -434,7 +434,7 @@
 "BROWSE_FILES_BUTTON" = "Seleccionar";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Siguiente";
+"BUTTON_CONTINUE" = "Adelante";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Hecho";
@@ -1166,7 +1166,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Esperando respuesta del dispositivo para transferir ...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Mantén próximos ambos dispositivos. No los desconectes y mantén Signal abierto. La transferencia está cifrada de punto a punto.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Mantén próximos ambos dispositivos. Conéctalos a su cargador y mantén Signal abierto. La transferencia entre ambos dispositivos está cifrada.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Recibiendo datos";
@@ -2036,7 +2036,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Bloquear a %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Los grupos antiguos no son compatibles con las características de los grupos nuevos como admins o actualizaciones más descriptivas.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Los grupos antiguos no son compatibles con las funciones de los grupos nuevos como admins o actualizaciones más descriptivas.";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "¿Qué son los grupos antiguos?";
@@ -2066,7 +2066,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ personas usan una version antigua de Signal que no soporta el nuevo sistema de grupos. Este será un grupo del sistema antiguo. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Este grupo usa el sistema antiguo de Signal. Características como admins de grupo o menciones solo están disponibles en el nuevo sistema. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Este grupo usa el sistema antiguo de Signal. Funciones como admins de grupo o menciones solo están disponibles en el nuevo sistema. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grupo antiguo";
@@ -2525,7 +2525,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Deseas que %@ te envíe mensajes y así compartir tu nombre y foto? Esta persona no sabrá que has visto sus mensajes hasta que aceptes.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y compartir tu nombre y foto con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y así compartir tu nombre y foto con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "¿Desbloquear este grupo? Sus participantes no sabrán que has visto sus mensajes hasta que lo desbloquees.";
@@ -2642,7 +2642,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Puedes dar acceso desde «Ajustes» de iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal necesita acceso a tu posición para usar esta característica.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal necesita acceso a tu posición para usar esta función.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Puedes dar acceso desde «Ajustes» de iOS.";
@@ -4256,7 +4256,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostrar indicador";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente confidencial» es una característica del protocolo de Signal que impide saber a nuestro servidor quién envía el mensaje. La persona que lo recibe sí lo sabrá. Activar la opción muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con esta característica.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente confidencial» es una función del protocolo de Signal que impide saber a nuestro servidor quién envía el mensaje. La persona que lo recibe sí lo sabrá. Activar la opción muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con esta función.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
@@ -4334,7 +4334,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "¡Los nuevos grupos han llegado!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Características de los nuevos grupos incluyen @menciones, admins y  más. Pruébalos tocando en:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Funciones de los nuevos grupos incluyen @menciones, admins y más. Pruébalos tocando en:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Mensaje con cromo";
@@ -4517,13 +4517,13 @@
 "UNKNOWN_COUNTRY_NAME" = "País desconocido";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Uno de tus dispositivos ha enviado un mensaje que no se puede procesar o mostrar ya que usa una característica nueva de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Uno de tus dispositivos ha enviado un mensaje que no se puede procesar o mostrar ya que usa una función nueva de Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ te ha enviado un mensaje que no se puede procesar o mostrar ya que usa una característica nueva de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ te ha enviado un mensaje que no se puede procesar o mostrar ya que usa una función nueva de Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Has recibido un mensaje que no se puede procesar o mostrar ya que usa una característica nueva de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Has recibido un mensaje que no se puede procesar o mostrar ya que usa una función nueva de Signal.";
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Actualiza Signal ahora";

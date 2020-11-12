@@ -2573,7 +2573,7 @@
 "MESSAGE_REQUESTS_SPLASH_BODY" = "Теперь вы можете «Принять» или «Удалить» новый чат. Имена позволяют людям знать, кто отправляет им сообщения.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Имя вашего профиля было сохранено.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Имя вашего профиля сохранено.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставлено";
@@ -4334,7 +4334,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Новые группы уже здесь!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Функции новых групп включают @упоминания, администраторов и другие. Попробуйте их, нажав:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Функции Новых групп включают @упоминания, администраторов и другие. Попробуйте их, нажав:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Сообщение со стикером";

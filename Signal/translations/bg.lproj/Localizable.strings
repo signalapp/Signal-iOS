@@ -2555,7 +2555,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Отблокиране";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Отказване на заявката";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2588,7 +2588,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Провалено";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Частично изпратено, натиснете за повече информация";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Прочетено";
@@ -4709,7 +4709,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завърши настройките на Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Изтрихте това съобщение.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Вие сте забранили изчезващи съобщения.";

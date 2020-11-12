@@ -65,7 +65,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil je jouw profiel voor deze groep zichtbaar maken?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Wil je deze gebruiker aan je contacten toevoegen?";
+"ADD_TO_CONTACTS_OFFER" = "Wil je deze persoon aan je contactenlijst toevoegen?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Aan nog een andere groep toevoegen";
@@ -293,7 +293,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiobericht";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Spraakoproep";
+"AUDIO_CALL_LABEL" = "Audio-oproep";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Luidspreker";
@@ -380,7 +380,7 @@
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Groepsgesprek is al geblokkeerd.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Persoon is al geblokkeerd";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Deze persoon is al geblokkeerd";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokkeren";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is geblokkeerd.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Gebruiker geblokkeerd";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Persoon geblokkeerd";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Groep geblokkeerd";
@@ -461,10 +461,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Opnieuw bellen";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Inkomend audiogesprek …";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Inkomende audio-oproep …";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Gemist audiogesprek";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Gemiste audio-oproep";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Je kunt microfoontoegang inschakelen in de iOS-instellingenapp om te kunnen bellen en spraakberichten op te kunnen nemen met Signal.";
@@ -494,7 +494,7 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Inkomend videogesprek …";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Gemist videogesprek";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Gemiste video-oproep";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder video";
@@ -539,7 +539,7 @@
 "CAMERA_BUTTON_LABEL" = "Camera";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Deze gebruiker kan niet geverifieerd worden zolang je nog geen berichten met hem of haar hebt uitgewisseld.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Deze persoon kan niet geverifieerd worden zolang je nog geen berichten met hem of haar hebt uitgewisseld.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fout";
@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Uitgeschakeld";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor zelfwissende berichten mag aanpassen.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor verlopende berichten mag aanpassen.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Je zult niet langer berichten of meldingen van deze persoon ontvangen.";
@@ -827,7 +827,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Groep blokkeren";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Gebruiker blokkeren";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Persoon blokkeren";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contactinformatie";
@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Uitsluitend beheerders";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor zelfwissende berichten mag aanpassen:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor verlopende berichten mag aanpassen:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle groepsleden";
@@ -959,7 +959,7 @@
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Alle leden weergeven";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Deze contactpersoon staat ook in je contactenlijst";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Deze persoon staat ook in je contactenlijst";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profiel zichtbaar maken";
@@ -1187,19 +1187,19 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Gegevens overzetten";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Zelfwissende berichten";
+"DISAPPEARING_MESSAGES" = "Verlopende berichten";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in dit gesprek zullen zichzelf na %@ wissen.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in dit gesprek zullen na %@ verlopen.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld zal elk nieuwe bericht zichzelf wissen nadat de ingestelde tijd is verlopen. Voor iedere deelnemer aan het gesprek begint de tijd pas te lopen als hij het bericht heeft gezien. – Gebruik zelfwissende berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld zal elk nieuwe bericht dat in dit gesprek verzonden of ontvangen wordt voor iedere deelnemer aan het gesprek gewist worden nadat de ingestelde tijd verlopen is. De tijd gaat voor iedere deelnemer pas lopen vanaf het moment dat hij of zij het bericht heeft gezien.  – Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Momenteel wissen nieuwe berichten zichzelf na %@";
+"DISAPPEARING_MESSAGES_HINT" = "Momenteel verlopen nieuwe berichten na %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Instellingen voor zelfwissende berichten";
+"DISAPPEARING_MESSAGES_LABEL" = "Instellingen voor verlopende berichten";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Sluiten";
@@ -1319,7 +1319,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kan niet verzenden vanwege oude prekey-gegevens.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Bericht verzenden mislukt omdat je de gebruiker hebt geblokkeerd.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Bericht verzenden mislukt omdat je deze persoon hebt geblokkeerd.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kon geen verbinding maken met het internet. Probeer het opnieuw.";
@@ -1394,7 +1394,7 @@
 "ERROR_SENDING_EXPIRED" = "Jouw versie van Signal is verlopen. Werk Signal bij om weer berichten te kunnen verzenden.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Ongeregistreerde gebruiker: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Ongeregistreerd persoon: %@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Deze versie van Signal is verlopen! Tik hier om bij te werken naar de meest recente versie.";
@@ -2021,7 +2021,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Kies een nieuwe beheerder voor de groep voor je deze verlaat.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Persoon is al lid van de groep.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Deze persoon is al lid van de groep.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Kon de uitnodiging niet aanvaarden.";
@@ -2072,7 +2072,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Verouderde groep";
 
 /* A \"learn more\" link with more information about legacy groups. */
-"GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Meer lezen hierover";
+"GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Meer lezen";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Kies een nieuwe beheerder voor de groep voor je deze verlaat.";
@@ -2231,10 +2231,10 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Door meerdere mensen tegelijkertijd uit te nodigen maak je een groepsbericht. De ontvangers kunnen elkaar zien.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Berichten wissen zichzelf na %@.";
+"KEEP_MESSAGES_DURATION" = "Berichten verlopen na %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Berichten wissen zichzelf niet.";
+"KEEP_MESSAGES_FOREVER" = "Berichten verlopen niet.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Ga naar ‘Alle media’";
@@ -2720,7 +2720,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Zoeken";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Gebruiker zoeken";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Persoon zoeken";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Zoek contactpersonen op telefoonnummer";
@@ -2735,7 +2735,7 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nieuw bericht naar:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Geen gebruiker gevonden. Wil je via sms een uitnodiging verzenden?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Geen persoon gevonden. Wil je via sms een uitnodiging verzenden?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notitie aan mezelf";
@@ -2948,16 +2948,16 @@
 "OPEN_SETTINGS_BUTTON" = "Instellingen";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft zelfwissende berichten uitgeschakeld.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft verlopende berichten uitgeschakeld.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor zelfwissende berichten op %@ ingesteld.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor verlopende berichten op %@ ingesteld.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de dienst te hervatten.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "Je hebt %@ opgeroepen";
+"OUTGOING_CALL_FORMAT" = "Je hebt %@ gebeld";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "Dit PDF-bestand kan niet worden weergegeven";
@@ -3317,7 +3317,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kon geen veiligheidsnummer vinden in je klembord. Heb je het wel juist gekopieerd?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Elk paar Signal-gebruikers deelt een apart veiligheidsnummer. Controleer dat %@ *jouw* veiligheidsnummer toont.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Elk paar Signal-gebruikers deelt een apart veiligheidsnummer. Controleer dat %@ het zelfde veiligheidsnummer ziet als jij.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Je gebruikt een oude versie van Signal. Om te kunnen verifiëren moet je Signal eerst bijwerken.";
@@ -3485,7 +3485,7 @@
 "READ_ACTION" = "Gelezen";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Persoon kan niet worden geselecteerd.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Deze persoon kan niet worden geselecteerd.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ik ben mijn pincode vergeten.";
@@ -4040,7 +4040,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Back-up-bestand aanmaken is voltooid";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Geblokkeerde gebruiker toevoegen";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Contactpersoon aan blokkeerlijst toevoegen";
 
 /* An explanation of the 'blocked' setting */
 "SETTINGS_BLOCK_LIST_FOOTER" = "Lijst van contactpersonen en groepen die je hebt geblokkeerd.";
@@ -4508,7 +4508,7 @@
 "UNARCHIVE_ACTION" = "Dearchiveren";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Gebruiker staat niet in contacten. Wil je deze gebruiker blokkeren?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Deze persoon staat niet in je contactenlijst. Wil je deze persoon blokkeren?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Onbekend contactpersoon";
@@ -4541,10 +4541,10 @@
 "UNKNOWN_USER" = "Gebruiker niet bekend";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zelfwissende berichten zijn uitgeschakeld.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verlopende berichten zijn uitgeschakeld.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor zelfwissende berichten is op %@ ingesteld.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor verlopende berichten is op %@ ingesteld.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";
@@ -4631,7 +4631,7 @@
 "USERNAME_NOT_FOUND_FORMAT" = "%@ is geen Signal-gebruiker. Ga na dat je de complete gebruikersnaam hebt ingevuld.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "Gebruiker niet gevonden";
+"USERNAME_NOT_FOUND_TITLE" = "Deze persoon is niet gevonden";
 
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Voer een gebruikersnaam in";
@@ -4712,10 +4712,10 @@
 "YOU_DELETED_THIS_MESSAGE" = "Je hebt dit bericht verwijderd.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt zelfwissende berichten uitgeschakeld.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt verlopende berichten uitgeschakeld.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelfwissende berichten op %@ ingesteld.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor verlopende berichten op %@ ingesteld.";

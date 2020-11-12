@@ -47,10 +47,10 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Afegiu-hi membres";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Afegeix el membre a \"%2$@\"?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Voleu afegir el membre a «%2$@»? ";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Voleu afegir %1$@ membres a \"%2$@\"?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Voleu afegir %1$@ membres a «%2$@»?";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Afegiu-hi un membre nou";
@@ -89,7 +89,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ s'ha afegit a %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Afegeix-lo a un altre grup";
+"ADD_TO_GROUP_TITLE" = "Afegiu a un altre grup";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voleu compartir el vostre perfil amb aquest usuari?";
@@ -131,7 +131,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versió desconeguda de la base de dades.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "No s'han pogut restaurar les dades transferides des del dispositiu antic. Envieu un registre de depuració a support@signal.org per tal de poder solucionar aquest problema. Si reinstal·leu el Signal, es pot perdre l’historial de missatges.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "No s'han pogut restaurar les dades transferides des del dispositiu antic. Envieu els informes de depuració a support@signal.org perquè puguem provar de solucionar-ho. Si reinstal·leu el Signal, podríeu perdre l’historial de missatges.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "No s'ha pogut completar la transferència.";
@@ -170,7 +170,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "S'ha assolit el límit de la llegenda.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Afegeix una llegenda...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Afegiu una llegenda...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Llegenda";
@@ -293,7 +293,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Missatge d'àudio";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Trucada d'àudio";
+"AUDIO_CALL_LABEL" = "Trucada";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altaveu";
@@ -302,7 +302,7 @@
 "BACK_BUTTON" = "Enrere";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "La còpia de seguretat no s’ha pogut exportar";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "La còpia de seguretat no s’ha pogut exportar.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta del servei no vàlida";
@@ -332,7 +332,7 @@
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Es baixa la còpia de seguretat";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "S'acaba còpia de seguretat";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "S'acaba la còpia de seguretat";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "S'importa la còpia de seguretat.";
@@ -359,7 +359,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "Error de la còpia de seguretat";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "No rebreu missatges ni actualitzacions d'aquest grup.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ja no rebreu missatges ni actualitzacions d'aquest grup.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloca";
@@ -377,10 +377,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Usuaris blocats";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "El grup ja està blocat.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "El grup ja s'ha blocat.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "L'usuari ja està blocat.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "L'usuari ja s'ha blocat.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloca";
@@ -392,7 +392,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Els membres existents us podran afegir de nou al grup.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Els membres del grup us podran afegir a aquest grup un altre cop.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Els membres del grup us hi podran afegir de nou.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Voleu desblocar el grup?";
@@ -428,10 +428,10 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Els usuaris blocats no podran trucar-vos ni enviar-vos missatges.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nou: s'esfumen les cares o dibuixeu a qualsevol lloc per esfumar-lo.";
+"BLUR_TOOLTIP" = "Nou: difumineu les cares o dibuixeu enlloc per difuminar.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Navegueu";
+"BROWSE_FILES_BUTTON" = "Explora";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continua";
@@ -461,10 +461,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Torna a trucar";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Trucada d'àudio entrant...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Trucada entrant…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Trucada d'àudio perduda";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Trucada perduda";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Podeu activar l'accés al micròfon a la Configuració de l'iOS per a poder trucar i enviar missatges de veu al Signal.";
@@ -491,7 +491,7 @@
 "CALL_USER_ALERT_TITLE" = "Voleu trucar?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Trucada de vídeo entrant...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Trucada de vídeo entrant…";
 
 /* notification body */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Trucada de vídeo perduda";
@@ -509,13 +509,13 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Rebutja";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "Acaba la trucada";
+"CALL_VIEW_HANGUP_LABEL" = "Penja";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Silencia";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ rebrà una petició de missatge vostra. Podeu trucar-li un cop acceptada.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ rebrà una petició de missatge vostra. Podeu trucar-li una vegada l'accepti.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Canvia l'orientació de la càmera";
@@ -683,16 +683,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organització";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Per veure els noms i les fotografies a les converses:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Per a veure els noms i les fotografies a les converses:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Feu un toc a Ves a la configuració";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toqueu «Vés a la configuració»";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activeu Contactes";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activeu «Contactes»";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activació de contactes";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activació de «Contactes»";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Ara no";
@@ -761,7 +761,7 @@
 "CONTACT_WITHOUT_NAME" = "Contacte sense nom";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Aquesta conversa se suprimirà d'aquest dispositiu.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Aquesta conversa se suprimirà del dispositiu.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Voleu suprimir la conversa?";
@@ -797,7 +797,7 @@
 "CONVERSATION_SETTINGS" = "Configuració de la conversa";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Afegiu-hi membres";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Afegeix membres";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Afegeix a un contacte existent";
@@ -938,7 +938,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Voleu suprimir %@ com a administrador del grup?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Cerca a la converxa";
+"CONVERSATION_SETTINGS_SEARCH" = "Cerca a la conversa";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Desbloca el grup";
@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Situeu aquest codi QR al marc de l’altre dispositiu.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "No en veieu l'indicador al dispositiu antic?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "S'espera l'altre dispositiu...";
@@ -1514,25 +1514,25 @@
 "GROUP_CALL_JOIN_BUTTON" = "Afegeix-me a la trucada";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "En aquesta trucada: %ld persones";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ i %ld més són en aquesta trucada.";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Aquí no hi ha ningú més.";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "En aquesta trucada: 1 persona";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ és en aquesta trucada.";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Inicia una trucada";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ i %@ són en aquesta trucada.";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Heu creat el grup.";
@@ -1847,7 +1847,7 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ ha acceptat una invitació al grup.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ ha accemptat la vostra invitació al grup.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ ha acceptat la vostra invitació al grup.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ ha acceptat una invitació al grup de %2$@.";
@@ -2036,40 +2036,40 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Bloca %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Els grups de llegat són grups que no són compatibles amb les funcions dels grups nous com ara els administradors i les actualitzacions més descriptives.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Els Grups Antics són grups que no són compatibles amb les funcions dels grups nous com ara els administradors i les actualitzacions més descriptives.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Què són els grups de llegat?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Què són els Grups Antics?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Els grups de llegat no es poden actualitzar a grups nous, però podeu crear un grup nou amb els mateixos membres sempre que tinguin la darrera versió del Signal.\n\nSignal oferirà una manera d'actualitzar els grups de llegat més endavant.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Els Grups Antics no es poden actualitzar a grups nous, però podeu crear un grup nou amb els mateixos membres sempre que tinguin la darrera versió del Signal.\n\nEl Signal oferirà una manera d'actualitzar els Grups Antics més endavant.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puc actualitzar un grup de llegat?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puc actualitzar un Grup Antic?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Per crear un grup nou, tots els membres han d'actualitzar el Signal a la darrera versió.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grups de llegat vs. grups nous";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grups Antics vs. grups nous";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es crearà un grup de llegat perquè 1 membre usa una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o suprimir-los-en abans de crear el grup.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es crearà un Grup Antic perquè 1 membre usa una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o expulsar-los abans de crear el grup.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Es crearà un grup de llegat perquè %@ membres usen una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o suprimir-los-en abans de crear el grup.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Es crearà un Grup Antic perquè %@ membres usen una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o expulsar-los abans de crear el grup.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 membre no admet els grups nous, per això aquest serà un grup de llegat. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 membre no admet els grups nous, per això aquest serà un Grup Antic. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ membres no admeten els grups nous, per això aquest serà un grup de llegat. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ membres no admeten els grups nous, per això aquest serà un Grup Antic. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Aquest és un grup de llegat. Característiques com ara els administradors de grup només estan disponibles per als grups nous. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Aquest és un Grup Antic. Característiques com ara els administradors de grup només estan disponibles per als grups nous. %@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Grup de llegat";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Grup Antic";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Més informació";
@@ -2333,22 +2333,22 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Previsualitza qualsevol enllaç";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Per transferir el compte de Signal, heu d’habilitar l’accés a la xarxa local als dos dispositius.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Us cal ajuda?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "A cada dispositiu, obriu la Configuració.";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activeu la xarxa local.";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Aneu fins a Signal.";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Activeu l'accés a la xarxa local.";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cerca per nom o adreça";
@@ -2627,7 +2627,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Més d'un membre del grup ja no està marcat com a verificat. Toqueu per a més opcions.";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "MIssatges nous";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Missatges nous";
 
 /* info message text in conversation view */
 "MISSED_CALL" = "Telefonada perduda";
@@ -3701,7 +3701,7 @@
 "SCREENSHOT_NAME_CONTACT_SIX" = "Miquel Puig";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Berta Delort";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Ada Colau";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
 "SCREENSHOT_NAME_CONTACT_THREE" = "Noa Reixach";
@@ -3842,7 +3842,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versió sense suport";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "El vostre altre dispositiu està executant una versió antiga del Signal que no és compatible amb l'exploració de codis QR d'iPad. Instal·leu-hi l'última versió del Signal i torneu-ho a provar.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "El vostre altre dispositiu està executant una versió antiga del Signal que no és compatible amb l'escaneig de codis QR d'iPad. Instal·leu-hi l'última versió del Signal i torneu-ho a provar.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Actualitza el dispositiu d'escaneig";

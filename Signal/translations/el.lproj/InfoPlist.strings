@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Το Signal απαιτεί τη χρήση του Apple Music για να αναπαράξει συνημμένα πολυμέσων.";
+NSAppleMusicUsageDescription = "Το Signal πρέπει να χρησιμοποιήσει το Apple Music για να αναπαράξει συνημμένα πολυμέσα.";
 NSCameraUsageDescription = "Το Signal χρησιμοποιεί την κάμερά σου για φωτογραφίες και βιντεοκλήσεις.";
 NSContactsUsageDescription = "Το Signal χρησιμοποιεί τις επαφές σου για να βρει χρήστες που γνωρίζεις. Δεν αποθηκεύουμε τις επαφές σου στο server.";
-NSFaceIDUsageDescription = "Το Κλείδωμα Οθόνης του Signal χρησιμοποιεί Face ID.";
-NSLocationWhenInUseUsageDescription = "Το Signal χρειάζεται πρόσβαση στην τοποθεσία σου για να μοιραστεί την τωρινή τοποθεσία σου.";
+NSFaceIDUsageDescription = "Το Κλείδωμα Οθόνης του Signal χρησιμοποιεί το Face ID.";
+NSLocationWhenInUseUsageDescription = "Το Signal χρειάζεται πρόσβαση στην τοποθεσία σου για να μοιραστεί την τρέχουσα τοποθεσία σου.";
 NSMicrophoneUsageDescription = "Το Signal χρειάζεται πρόσβαση στο μικρόφωνό σου για να κάνει και λάβει τηλεφωνικές κλήσεις και να ηχογραφήσει ηχητικά μηνύματα.";
 NSPhotoLibraryAddUsageDescription = "Το Signal θα αποθηκεύσει φωτογραφίες στη βιβλιοθήκη σου.";
 NSPhotoLibraryUsageDescription = "Το Signal θα σε αφήσει να επιλέξεις ποιες φωτογραφίες θα στείλεις από τη βιβλιοθήκη σου.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Το Signal χρησιμοποιεί το τοπικό δίκτυο για να σου επιτρέψει να μεταφέρεις τον λογαριασμό σου απ' ευθείας σε μια νέα συσκευή. Αυτό δεν θα χρησιμοποιηθεί εκτός αν συγκεκριμένα επιλέξεις να ξεκινήσεις τη μεταφορά σε νέα συσκευή.";

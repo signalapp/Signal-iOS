@@ -59,7 +59,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Shtoni Anëtarë të Rinj";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Shtoni Anëtarë ";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Shtoni Anëtarë";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Dëshironi të ndani me këtë grup profilin tuaj?";
@@ -251,10 +251,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Vendndodhje";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Që t’i dërgoni këtu, akordoni hyrje te fotot tuaja, që nga rregullimet";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Që t’i dërgoni këtu, akordoni hyrje te fotot tuaja, që nga rregullimet.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Pasi të keni bërë foto, do të jeni në gjendje të dërgoni këtu ato të fundit";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Pasi të keni bërë foto, do të jeni në gjendje të dërgoni këtu ato të fundit.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bashkëngjitje";
@@ -410,7 +410,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Përdoruesi u Bllokua";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Bllokim Grupi ";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupi u Bllokua";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "S’mund të bllokoni veten.";
@@ -701,7 +701,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Aktivizoje";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Shihni emra dhe foto kontaktesh në fjalosjet tuaja:";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Shihni emra dhe foto kontaktesh në fjalosjet tuaja.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Të aktivizohen Kontaktet?";
@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Vetëm Përgjegjësit";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Zgjidhni cilët mund të ndryshojnë për grupin emrin, avatarin dhe zhdukje mesazhesh.";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Zgjidhni cilët mund të ndryshojnë për grupin emrin, avatarin dhe zhdukje mesazhesh:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Krejt Anëtarët";
@@ -1316,7 +1316,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "S’u arrit të ngarkohen regjistrat.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S’arrihet të dërgohet, për shkak të dhënash prekey të vjetruara";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S’arrihet të dërgohet, për shkak të dhënash prekey të vjetruara.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "S’u arrit t’i dërgohej mesazh përdoruesit, ngaqë e keni bllokuar.";
@@ -1361,7 +1361,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kyçi i marrësit s’është i vlefshëm.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s’qe i njëkohësuar";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s’qe i njëkohësuar.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "U mor një mesazh që s’është i përputhshëm me këtë version.";
@@ -1610,7 +1610,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ aktivizoi lidhjen e grupit me miratim nga përgjegjësi të çaktivizuar.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Lidhja e grupit qe ricaktuar.";
+"GROUP_INVITE_LINK_RESET" = "Lidhja e grupit u ricaktua.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Rikthyet te parazgjedhjet lidhjen e grupit.";
@@ -2105,7 +2105,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Kërko";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Skicë:";
+"HOME_VIEW_DRAFT_PREFIX" = "Skicë: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Disa nga kontaktet tuaja kanë tashmë Signal, përfshi %@.";
@@ -2201,7 +2201,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Mund të dërgoni ose merrni mesazhe të njëkohësuar nga telefoni ose iPad-i juaj. ↵Për hir të sigurisë tuaj, historiku i fjalosjeve nuk shpërngulet te pajisje të reja të lidhura.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ është në Signal! ";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ është në Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Ngjitëse";
@@ -2828,7 +2828,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Nëse s’mbani mend PIN-in tuaj, mund të krijoni një të ri. Mund të regjistroni dhe përdorni llogarinë tuaj, por do të humbni disa nga rregullimet e ruajtura, bie fjala, të dhëna të profilit tuaj.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Të anashkalohet Dhënia e PIN-it";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Të anashkalohet Dhënia e PIN-it?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Shtojini një grimë dore njerëzore mesazheve tuaj";
@@ -2864,7 +2864,7 @@
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Njoftimet ju lejojnë të shihni kur mbërrijnë mesazhe dhe të merrni përditësime rreth veprimtarie të re në fjalosje.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Merrni mesazhin.";
+"ONBOARDING_PERMISSIONS_TITLE" = "Merrni mesazhin";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Zgjidhni cilët mund t’ju gjejnë në Signal përmes numrin tuaj të telefonit%@";
@@ -2984,7 +2984,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ ftoi %2$@ vetë";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "S’ka pezull kërkesa anëtarësh";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "S’ka pezull kërkesa anëtarësh.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "S’ka ftesa për shfaqje.";
@@ -3134,10 +3134,10 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Faks Pune";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "S’arrihet të fotografohet figura";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "S’arrihet të fotografohet figura.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "S’arrihet të fotografohet figura";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "S’arrihet të fotografohet figura.";
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "S’u arrit të formësohej kamera.";
@@ -3248,7 +3248,7 @@
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Verifikoni PIN-in tuaj të Signal-it";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Do t’jua kujtojmë prapë nesër. ";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Do t’jua kujtojmë prapë nesër.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Do t’jua kujtojmë sërish pas nja dy javësh.";
@@ -3770,7 +3770,7 @@
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Ou, ku gjendesh?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Sot është …   ";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Sot është …";
 
 /* This is a message in the group chat of family members. */
 "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Gëzuar ditëlindjen. Gëzuar ditëlindjen!";
@@ -4244,7 +4244,7 @@
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Për siguri më të madhe, aktivizoni kyçje regjistrimesh, çka do të kërkojë PIN-in tuaj Signal për të riregjistruar numrin tuaj të telefonit me Signal-in.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Indikatorë Shtypjeje ";
+"SETTINGS_TYPING_INDICATORS" = "Indikatorë Shtypjeje";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Shihni dhe ndani me të tjerë kur shtypen mesazhe. Ky rregullim është opsional dhe vlen për krejt fjalosjet.";
@@ -4505,7 +4505,7 @@
 "TXT_DELETE_TITLE" = "Fshije";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "Çarkivoje ";
+"UNARCHIVE_ACTION" = "Çarkivoje";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Përdoruesi s’gjendet në kontaktet tuaja. Doni të bllokohet ky përdorues?";
@@ -4685,7 +4685,7 @@
 "VIDEO_CALL_LABEL" = "Thirrje Video";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "E patë tashmë këtë mesazh";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "E patë tashmë këtë mesazh.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Prekni këtu që të zhduket ky mesazh pasi të jetë parë.";
