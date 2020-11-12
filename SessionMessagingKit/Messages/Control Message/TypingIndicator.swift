@@ -29,6 +29,8 @@ public final class TypingIndicator : ControlMessage {
     public override var isValid: Bool { kind != nil }
 
     // MARK: Initialization
+    public override init() { super.init() }
+
     internal init(kind: Kind) {
         super.init()
         self.kind = kind

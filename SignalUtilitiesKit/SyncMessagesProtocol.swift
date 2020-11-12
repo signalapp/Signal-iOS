@@ -28,6 +28,7 @@ public final class SyncMessagesProtocol : NSObject {
     // MARK: - Sending
 
     @objc public static func syncProfile() {
+        /*
         Storage.writeSync { transaction in
             let userPublicKey = getUserHexEncodedPublicKey()
             let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
@@ -41,6 +42,7 @@ public final class SyncMessagesProtocol : NSObject {
                 messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
             }
         }
+         */
     }
 
     @objc(syncContactWithPublicKey:)
@@ -73,6 +75,7 @@ public final class SyncMessagesProtocol : NSObject {
 
     @objc(syncClosedGroup:transaction:)
     public static func syncClosedGroup(_ thread: TSGroupThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        /*
         // Prepare
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let group = thread.groupModel
@@ -113,6 +116,7 @@ public final class SyncMessagesProtocol : NSObject {
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction) // This internally takes care of multi device
         }
         sendMessageToLinkedDevices()
+         */
         // Return a dummy promise
         return AnyPromise.from(Promise<Void> { $0.fulfill(()) })
     }
@@ -132,15 +136,7 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     @objc public static func syncAllOpenGroups() -> AnyPromise {
-        let openGroupSyncMessage = SyncOpenGroupsMessage()
-        let (promise, seal) = Promise<Void>.pending()
-        let messageSender = SSKEnvironment.shared.messageSender
-        messageSender.send(openGroupSyncMessage, success: {
-            seal.fulfill(())
-        }, failure: { error in
-            seal.reject(error)
-        })
-        return AnyPromise.from(promise)
+        fatalError("Not implemented.")
     }
 
     // MARK: - Receiving

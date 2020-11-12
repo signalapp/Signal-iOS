@@ -226,12 +226,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             self.thread = thread
         }
 
-        // MARK: - Dependencies
-
-        private var messageSender: MessageSender {
-            return SSKEnvironment.shared.messageSender
-        }
-
         // MARK: -
 
         func didStartTypingOutgoingInput() {
@@ -325,8 +319,19 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
             if !SessionMetaProtocol.shouldSendTypingIndicator(in: thread) { return }
 
-            let message = TypingIndicatorMessage(thread: thread, action: action)
-            messageSender.sendPromise(message: message).retainUntilComplete()
+            let typingIndicator = TypingIndicator()
+            typingIndicator.kind = {
+                switch action {
+                case .started: return .started
+                case .stopped: return .stopped
+                }
+            }()
+            typingIndicator.threadID = thread.uniqueId!
+            let destination = Message.Destination.from(thread)
+            let job = MessageSendJob(message: typingIndicator, destination: destination)
+            Storage.write { transaction in
+                SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+            }
         }
     }
 

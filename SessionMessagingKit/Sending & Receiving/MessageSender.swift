@@ -20,7 +20,7 @@ public enum MessageSender {
         }
     }
 
-    internal static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
+    public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         switch destination {
         case .contact(_), .closedGroup(_): return sendToSnodeDestination(destination, message: message, using: transaction)
         case .openGroup(_, _): return sendToOpenGroupDestination(destination, message: message, using: transaction)
@@ -141,6 +141,12 @@ public enum MessageSender {
     }
 
     internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+        message.sentTimestamp = NSDate.millisecondTimestamp()
+        switch destination {
+        case .contact(_): preconditionFailure()
+        case .closedGroup(_): preconditionFailure()
+        case .openGroup(let channel, let server): message.recipient = "\(server).\(channel)"
+        }
         guard message.isValid else { return Promise(error: Error.invalidMessage) }
         let (channel, server) = { () -> (UInt64, String) in
             switch destination {

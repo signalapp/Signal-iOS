@@ -362,7 +362,6 @@
 		C33FDC21255A581F00E217F9 /* OWSPrimaryStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA67255A57F900E217F9 /* OWSPrimaryStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC22255A581F00E217F9 /* OWSBlockingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */; };
 		C33FDC23255A581F00E217F9 /* SSKPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA69255A57F900E217F9 /* SSKPreferences.swift */; };
-		C33FDC24255A581F00E217F9 /* OWSMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA6A255A57F900E217F9 /* OWSMessageManager.m */; };
 		C33FDC25255A581F00E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA6B255A57FA00E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.m */; };
 		C33FDC26255A581F00E217F9 /* ProtoUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */; };
 		C33FDC27255A581F00E217F9 /* YapDatabase+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA6D255A57FA00E217F9 /* YapDatabase+Promise.swift */; };
@@ -401,7 +400,6 @@
 		C33FDC49255A581F00E217F9 /* NSTimer+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA8F255A57FD00E217F9 /* NSTimer+OWS.m */; };
 		C33FDC4A255A582000E217F9 /* TSYapDatabaseObject.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA90255A57FD00E217F9 /* TSYapDatabaseObject.m */; };
 		C33FDC4B255A582000E217F9 /* LKSyncOpenGroupsMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA91255A57FD00E217F9 /* LKSyncOpenGroupsMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C33FDC4C255A582000E217F9 /* OWSMessageSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA92255A57FE00E217F9 /* OWSMessageSender.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC4E255A582000E217F9 /* Data+Streaming.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA94255A57FE00E217F9 /* Data+Streaming.swift */; };
 		C33FDC4F255A582000E217F9 /* OWSChunkedOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA95255A57FE00E217F9 /* OWSChunkedOutputStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC50255A582000E217F9 /* OWSDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA96255A57FE00E217F9 /* OWSDispatch.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -426,7 +424,6 @@
 		C33FDC63255A582000E217F9 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAA9255A580000E217F9 /* Mnemonic.swift */; };
 		C33FDC64255A582000E217F9 /* NSObject+Casting.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAAA255A580000E217F9 /* NSObject+Casting.m */; };
 		C33FDC65255A582000E217F9 /* OWSWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAAB255A580000E217F9 /* OWSWebSocket.m */; };
-		C33FDC66255A582000E217F9 /* OWSMessageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAAC255A580000E217F9 /* OWSMessageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC67255A582000E217F9 /* OWSDeviceProvisioner.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAAD255A580000E217F9 /* OWSDeviceProvisioner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC68255A582000E217F9 /* OWSReceiptsForSenderMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAAE255A580000E217F9 /* OWSReceiptsForSenderMessage.m */; };
 		C33FDC69255A582000E217F9 /* String+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAAF255A580000E217F9 /* String+Trimming.swift */; };
@@ -434,7 +431,6 @@
 		C33FDC6B255A582000E217F9 /* OWSStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB1255A580000E217F9 /* OWSStorage.m */; };
 		C33FDC6C255A582000E217F9 /* TSNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB2255A580000E217F9 /* TSNetworkManager.m */; };
 		C33FDC6D255A582000E217F9 /* TSContactThread.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAB3255A580000E217F9 /* TSContactThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C33FDC6E255A582000E217F9 /* OWSMessageReceiver.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB4255A580000E217F9 /* OWSMessageReceiver.m */; };
 		C33FDC6F255A582000E217F9 /* TSNetworkManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAB5255A580000E217F9 /* TSNetworkManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC70255A582000E217F9 /* SyncMessagesProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB6255A580100E217F9 /* SyncMessagesProtocol.swift */; };
 		C33FDC71255A582000E217F9 /* OWSFailedMessagesJob.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB7255A580100E217F9 /* OWSFailedMessagesJob.m */; };
@@ -456,7 +452,6 @@
 		C33FDC83255A582000E217F9 /* OWSContact.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAC9255A580200E217F9 /* OWSContact.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC84255A582000E217F9 /* LokiMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDACA255A580200E217F9 /* LokiMessage.swift */; };
 		C33FDC85255A582000E217F9 /* CDSSigningCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDACB255A580200E217F9 /* CDSSigningCertificate.m */; };
-		C33FDC86255A582000E217F9 /* OWSMessageSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDACC255A580200E217F9 /* OWSMessageSend.swift */; };
 		C33FDC87255A582000E217F9 /* SSKJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDACD255A580200E217F9 /* SSKJobRecord.m */; };
 		C33FDC88255A582000E217F9 /* OWSVerificationStateSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDACE255A580300E217F9 /* OWSVerificationStateSyncMessage.m */; };
 		C33FDC89255A582000E217F9 /* OWSAttachmentDownloads.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDACF255A580300E217F9 /* OWSAttachmentDownloads.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -563,7 +558,6 @@
 		C33FDCF4255A582000E217F9 /* Poller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB3A255A580B00E217F9 /* Poller.swift */; };
 		C33FDCF5255A582000E217F9 /* NSNotificationCenter+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB3B255A580B00E217F9 /* NSNotificationCenter+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDCF7255A582000E217F9 /* OWSProfileKeyMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB3D255A580B00E217F9 /* OWSProfileKeyMessage.m */; };
-		C33FDCF8255A582000E217F9 /* OWSMessageSender.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB3E255A580B00E217F9 /* OWSMessageSender.m */; };
 		C33FDCF9255A582000E217F9 /* String+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB3F255A580C00E217F9 /* String+SSK.swift */; };
 		C33FDCFA255A582000E217F9 /* SignalIOSProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB40255A580C00E217F9 /* SignalIOSProto.swift */; };
 		C33FDCFB255A582000E217F9 /* MIMETypeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB41255A580C00E217F9 /* MIMETypeUtil.m */; };
@@ -623,7 +617,6 @@
 		C33FDD33255A582000E217F9 /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB79255A581000E217F9 /* PhoneNumberUtil.m */; };
 		C33FDD34255A582000E217F9 /* NotificationsProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB7A255A581000E217F9 /* NotificationsProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD36255A582000E217F9 /* OWSVerificationStateChangeMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB7C255A581000E217F9 /* OWSVerificationStateChangeMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C33FDD37255A582000E217F9 /* OWSMessageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB7D255A581100E217F9 /* OWSMessageManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD38255A582000E217F9 /* TSPreKeyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB7E255A581100E217F9 /* TSPreKeyManager.m */; };
 		C33FDD39255A582000E217F9 /* FullTextSearchFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */; };
 		C33FDD3A255A582000E217F9 /* Notification+Loki.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB80255A581100E217F9 /* Notification+Loki.swift */; };
@@ -642,7 +635,6 @@
 		C33FDD47255A582000E217F9 /* DeviceLinkingSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8D255A581200E217F9 /* DeviceLinkingSessionDelegate.swift */; };
 		C33FDD48255A582000E217F9 /* OWSContact+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB8E255A581200E217F9 /* OWSContact+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD49255A582000E217F9 /* ParamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8F255A581200E217F9 /* ParamParser.swift */; };
-		C33FDD4A255A582000E217F9 /* OWSMessageDecrypter.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB90255A581200E217F9 /* OWSMessageDecrypter.m */; };
 		C33FDD4B255A582000E217F9 /* ProtoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB91255A581200E217F9 /* ProtoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD4C255A582000E217F9 /* OWSDeviceProvisioningService.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB92255A581200E217F9 /* OWSDeviceProvisioningService.m */; };
 		C33FDD4D255A582000E217F9 /* PreKeyBundle+jsonDict.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB93255A581200E217F9 /* PreKeyBundle+jsonDict.m */; };
@@ -653,7 +645,6 @@
 		C33FDD52255A582000E217F9 /* DeviceNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB98255A581300E217F9 /* DeviceNames.swift */; };
 		C33FDD53255A582000E217F9 /* OWSPrimaryStorage+keyFromIntLong.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB99255A581300E217F9 /* OWSPrimaryStorage+keyFromIntLong.m */; };
 		C33FDD54255A582000E217F9 /* OWS2FAManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB9A255A581300E217F9 /* OWS2FAManager.m */; };
-		C33FDD55255A582000E217F9 /* MessageSenderJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB9B255A581300E217F9 /* MessageSenderJobQueue.swift */; };
 		C33FDD56255A582000E217F9 /* TSIncomingMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB9C255A581300E217F9 /* TSIncomingMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD57255A582000E217F9 /* OWSCallMessageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB9D255A581300E217F9 /* OWSCallMessageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD58255A582000E217F9 /* TSAttachmentPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB9E255A581400E217F9 /* TSAttachmentPointer.m */; };
@@ -691,12 +682,10 @@
 		C33FDD7C255A582000E217F9 /* SSKAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBC2255A581700E217F9 /* SSKAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD7D255A582000E217F9 /* AnyPromise+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBC3255A581700E217F9 /* AnyPromise+Conversion.swift */; };
 		C33FDD7E255A582000E217F9 /* TypingIndicatorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBC4255A581700E217F9 /* TypingIndicatorMessage.swift */; };
-		C33FDD80255A582000E217F9 /* OWSMessageReceiver.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBC6255A581700E217F9 /* OWSMessageReceiver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD82255A582000E217F9 /* OWSFingerprint.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBC8255A581700E217F9 /* OWSFingerprint.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD83255A582000E217F9 /* CreatePreKeysOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBC9255A581700E217F9 /* CreatePreKeysOperation.swift */; };
 		C33FDD84255A582000E217F9 /* LKGroupUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD85255A582000E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBCB255A581800E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m */; };
-		C33FDD86255A582000E217F9 /* MultiDeviceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBCC255A581800E217F9 /* MultiDeviceProtocol.swift */; };
 		C33FDD88255A582000E217F9 /* OWSMessageServiceParams.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBCE255A581800E217F9 /* OWSMessageServiceParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD89255A582000E217F9 /* OWSFingerprintBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBCF255A581800E217F9 /* OWSFingerprintBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD8A255A582000E217F9 /* OnionRequestAPI+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBD0255A581800E217F9 /* OnionRequestAPI+Encryption.swift */; };
@@ -733,7 +722,6 @@
 		C33FDDA9255A582000E217F9 /* TSStorageKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBEF255A581B00E217F9 /* TSStorageKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDAA255A582000E217F9 /* LokiDatabaseUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBF0255A581B00E217F9 /* LokiDatabaseUtilities.swift */; };
 		C33FDDAB255A582000E217F9 /* OWSIdentityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF1255A581B00E217F9 /* OWSIdentityManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C33FDDAC255A582000E217F9 /* MessageSender+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBF2255A581B00E217F9 /* MessageSender+Promise.swift */; };
 		C33FDDAD255A582000E217F9 /* OWSBlockedPhoneNumbersMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF3255A581B00E217F9 /* OWSBlockedPhoneNumbersMessage.h */; };
 		C33FDDAE255A582000E217F9 /* DisplayNameUtilities2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBF4255A581B00E217F9 /* DisplayNameUtilities2.swift */; };
 		C33FDDAF255A582000E217F9 /* OWSDeviceProvisioningService.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF5255A581B00E217F9 /* OWSDeviceProvisioningService.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -743,7 +731,6 @@
 		C33FDDB3255A582000E217F9 /* OWSError.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF9255A581C00E217F9 /* OWSError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDB4255A582000E217F9 /* PhoneNumberUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBFA255A581C00E217F9 /* PhoneNumberUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDB5255A582000E217F9 /* Storage+PublicChats.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBFB255A581C00E217F9 /* Storage+PublicChats.swift */; };
-		C33FDDB6255A582000E217F9 /* OWSMessageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBFC255A581C00E217F9 /* OWSMessageHandler.m */; };
 		C33FDDB7255A582000E217F9 /* OWSPrimaryStorage+Calling.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBFD255A581C00E217F9 /* OWSPrimaryStorage+Calling.m */; };
 		C33FDDB8255A582000E217F9 /* NSSet+Functional.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBFE255A581C00E217F9 /* NSSet+Functional.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDB9255A582000E217F9 /* OWSOutgoingSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBFF255A581C00E217F9 /* OWSOutgoingSyncMessage.m */; };
@@ -761,7 +748,6 @@
 		C33FDDC5255A582000E217F9 /* OWSError.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDC0B255A581D00E217F9 /* OWSError.m */; };
 		C33FDDC6255A582000E217F9 /* TSInfoMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDC0C255A581E00E217F9 /* TSInfoMessage.m */; };
 		C33FDDC7255A582000E217F9 /* OWSProvisioningMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDC0D255A581E00E217F9 /* OWSProvisioningMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C33FDDC8255A582000E217F9 /* OWSMessageDecrypter.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDC0E255A581E00E217F9 /* OWSMessageDecrypter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDC9255A582000E217F9 /* LKDeviceLinkMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDC0F255A581E00E217F9 /* LKDeviceLinkMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDCA255A582000E217F9 /* ProofOfWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDC10255A581E00E217F9 /* ProofOfWork.swift */; };
 		C33FDDCB255A582000E217F9 /* TSSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDC11255A581E00E217F9 /* TSSocketManager.m */; };
@@ -1156,6 +1142,9 @@
 		C3CA3AB4255CDAE600F4C6D4 /* japanese.txt in Resources */ = {isa = PBXBuildFile; fileRef = C3CA3AB3255CDAE600F4C6D4 /* japanese.txt */; };
 		C3CA3ABE255CDB0D00F4C6D4 /* portuguese.txt in Resources */ = {isa = PBXBuildFile; fileRef = C3CA3ABD255CDB0D00F4C6D4 /* portuguese.txt */; };
 		C3CA3AC8255CDB2900F4C6D4 /* spanish.txt in Resources */ = {isa = PBXBuildFile; fileRef = C3CA3AC7255CDB2900F4C6D4 /* spanish.txt */; };
+		C3CA3B13255CF18200F4C6D4 /* Destination+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CA3B12255CF18200F4C6D4 /* Destination+Conversion.swift */; };
+		C3CA3B1D255CF3C800F4C6D4 /* MessageSender+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */; };
+		C3CA3B2F255CF84E00F4C6D4 /* NullMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CA3B2E255CF84E00F4C6D4 /* NullMessage.swift */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
@@ -1728,7 +1717,6 @@
 		C33FDA67255A57F900E217F9 /* OWSPrimaryStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPrimaryStorage.h; sourceTree = "<group>"; };
 		C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBlockingManager.m; sourceTree = "<group>"; };
 		C33FDA69255A57F900E217F9 /* SSKPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreferences.swift; sourceTree = "<group>"; };
-		C33FDA6A255A57F900E217F9 /* OWSMessageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageManager.m; sourceTree = "<group>"; };
 		C33FDA6B255A57FA00E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingConfigurationUpdateInfoMessage.m; sourceTree = "<group>"; };
 		C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoUtils.m; sourceTree = "<group>"; };
 		C33FDA6D255A57FA00E217F9 /* YapDatabase+Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "YapDatabase+Promise.swift"; sourceTree = "<group>"; };
@@ -1767,7 +1755,6 @@
 		C33FDA8F255A57FD00E217F9 /* NSTimer+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+OWS.m"; sourceTree = "<group>"; };
 		C33FDA90255A57FD00E217F9 /* TSYapDatabaseObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSYapDatabaseObject.m; sourceTree = "<group>"; };
 		C33FDA91255A57FD00E217F9 /* LKSyncOpenGroupsMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKSyncOpenGroupsMessage.h; sourceTree = "<group>"; };
-		C33FDA92255A57FE00E217F9 /* OWSMessageSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageSender.h; sourceTree = "<group>"; };
 		C33FDA94255A57FE00E217F9 /* Data+Streaming.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Streaming.swift"; sourceTree = "<group>"; };
 		C33FDA95255A57FE00E217F9 /* OWSChunkedOutputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSChunkedOutputStream.h; sourceTree = "<group>"; };
 		C33FDA96255A57FE00E217F9 /* OWSDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDispatch.h; sourceTree = "<group>"; };
@@ -1792,7 +1779,6 @@
 		C33FDAA9255A580000E217F9 /* Mnemonic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
 		C33FDAAA255A580000E217F9 /* NSObject+Casting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Casting.m"; sourceTree = "<group>"; };
 		C33FDAAB255A580000E217F9 /* OWSWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWebSocket.m; sourceTree = "<group>"; };
-		C33FDAAC255A580000E217F9 /* OWSMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageHandler.h; sourceTree = "<group>"; };
 		C33FDAAD255A580000E217F9 /* OWSDeviceProvisioner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceProvisioner.h; sourceTree = "<group>"; };
 		C33FDAAE255A580000E217F9 /* OWSReceiptsForSenderMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSReceiptsForSenderMessage.m; sourceTree = "<group>"; };
 		C33FDAAF255A580000E217F9 /* String+Trimming.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Trimming.swift"; sourceTree = "<group>"; };
@@ -1800,7 +1786,6 @@
 		C33FDAB1255A580000E217F9 /* OWSStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSStorage.m; sourceTree = "<group>"; };
 		C33FDAB2255A580000E217F9 /* TSNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSNetworkManager.m; sourceTree = "<group>"; };
 		C33FDAB3255A580000E217F9 /* TSContactThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactThread.h; sourceTree = "<group>"; };
-		C33FDAB4255A580000E217F9 /* OWSMessageReceiver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageReceiver.m; sourceTree = "<group>"; };
 		C33FDAB5255A580000E217F9 /* TSNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSNetworkManager.h; sourceTree = "<group>"; };
 		C33FDAB6255A580100E217F9 /* SyncMessagesProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncMessagesProtocol.swift; sourceTree = "<group>"; };
 		C33FDAB7255A580100E217F9 /* OWSFailedMessagesJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFailedMessagesJob.m; sourceTree = "<group>"; };
@@ -1822,7 +1807,6 @@
 		C33FDAC9255A580200E217F9 /* OWSContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContact.h; sourceTree = "<group>"; };
 		C33FDACA255A580200E217F9 /* LokiMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LokiMessage.swift; sourceTree = "<group>"; };
 		C33FDACB255A580200E217F9 /* CDSSigningCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDSSigningCertificate.m; sourceTree = "<group>"; };
-		C33FDACC255A580200E217F9 /* OWSMessageSend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessageSend.swift; sourceTree = "<group>"; };
 		C33FDACD255A580200E217F9 /* SSKJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKJobRecord.m; sourceTree = "<group>"; };
 		C33FDACE255A580300E217F9 /* OWSVerificationStateSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSVerificationStateSyncMessage.m; sourceTree = "<group>"; };
 		C33FDACF255A580300E217F9 /* OWSAttachmentDownloads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAttachmentDownloads.h; sourceTree = "<group>"; };
@@ -1929,7 +1913,6 @@
 		C33FDB3A255A580B00E217F9 /* Poller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Poller.swift; sourceTree = "<group>"; };
 		C33FDB3B255A580B00E217F9 /* NSNotificationCenter+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OWS.h"; sourceTree = "<group>"; };
 		C33FDB3D255A580B00E217F9 /* OWSProfileKeyMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileKeyMessage.m; sourceTree = "<group>"; };
-		C33FDB3E255A580B00E217F9 /* OWSMessageSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageSender.m; sourceTree = "<group>"; };
 		C33FDB3F255A580C00E217F9 /* String+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+SSK.swift"; sourceTree = "<group>"; };
 		C33FDB40255A580C00E217F9 /* SignalIOSProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOSProto.swift; sourceTree = "<group>"; };
 		C33FDB41255A580C00E217F9 /* MIMETypeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIMETypeUtil.m; sourceTree = "<group>"; };
@@ -1989,7 +1972,6 @@
 		C33FDB79255A581000E217F9 /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
 		C33FDB7A255A581000E217F9 /* NotificationsProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsProtocol.h; sourceTree = "<group>"; };
 		C33FDB7C255A581000E217F9 /* OWSVerificationStateChangeMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSVerificationStateChangeMessage.h; sourceTree = "<group>"; };
-		C33FDB7D255A581100E217F9 /* OWSMessageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageManager.h; sourceTree = "<group>"; };
 		C33FDB7E255A581100E217F9 /* TSPreKeyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPreKeyManager.m; sourceTree = "<group>"; };
 		C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullTextSearchFinder.swift; sourceTree = "<group>"; };
 		C33FDB80255A581100E217F9 /* Notification+Loki.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Notification+Loki.swift"; sourceTree = "<group>"; };
@@ -2008,7 +1990,6 @@
 		C33FDB8D255A581200E217F9 /* DeviceLinkingSessionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceLinkingSessionDelegate.swift; sourceTree = "<group>"; };
 		C33FDB8E255A581200E217F9 /* OWSContact+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSContact+Private.h"; sourceTree = "<group>"; };
 		C33FDB8F255A581200E217F9 /* ParamParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParamParser.swift; sourceTree = "<group>"; };
-		C33FDB90255A581200E217F9 /* OWSMessageDecrypter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageDecrypter.m; sourceTree = "<group>"; };
 		C33FDB91255A581200E217F9 /* ProtoUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProtoUtils.h; sourceTree = "<group>"; };
 		C33FDB92255A581200E217F9 /* OWSDeviceProvisioningService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDeviceProvisioningService.m; sourceTree = "<group>"; };
 		C33FDB93255A581200E217F9 /* PreKeyBundle+jsonDict.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PreKeyBundle+jsonDict.m"; sourceTree = "<group>"; };
@@ -2019,7 +2000,6 @@
 		C33FDB98255A581300E217F9 /* DeviceNames.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceNames.swift; sourceTree = "<group>"; };
 		C33FDB99255A581300E217F9 /* OWSPrimaryStorage+keyFromIntLong.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "OWSPrimaryStorage+keyFromIntLong.m"; sourceTree = "<group>"; };
 		C33FDB9A255A581300E217F9 /* OWS2FAManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS2FAManager.m; sourceTree = "<group>"; };
-		C33FDB9B255A581300E217F9 /* MessageSenderJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobQueue.swift; sourceTree = "<group>"; };
 		C33FDB9C255A581300E217F9 /* TSIncomingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSIncomingMessage.h; sourceTree = "<group>"; };
 		C33FDB9D255A581300E217F9 /* OWSCallMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCallMessageHandler.h; sourceTree = "<group>"; };
 		C33FDB9E255A581400E217F9 /* TSAttachmentPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentPointer.m; sourceTree = "<group>"; };
@@ -2057,12 +2037,10 @@
 		C33FDBC2255A581700E217F9 /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
 		C33FDBC3255A581700E217F9 /* AnyPromise+Conversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AnyPromise+Conversion.swift"; sourceTree = "<group>"; };
 		C33FDBC4255A581700E217F9 /* TypingIndicatorMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorMessage.swift; sourceTree = "<group>"; };
-		C33FDBC6255A581700E217F9 /* OWSMessageReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageReceiver.h; sourceTree = "<group>"; };
 		C33FDBC8255A581700E217F9 /* OWSFingerprint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFingerprint.h; sourceTree = "<group>"; };
 		C33FDBC9255A581700E217F9 /* CreatePreKeysOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreatePreKeysOperation.swift; sourceTree = "<group>"; };
 		C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKGroupUtilities.h; sourceTree = "<group>"; };
 		C33FDBCB255A581800E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeyReceivingErrorMessage.m; sourceTree = "<group>"; };
-		C33FDBCC255A581800E217F9 /* MultiDeviceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiDeviceProtocol.swift; sourceTree = "<group>"; };
 		C33FDBCE255A581800E217F9 /* OWSMessageServiceParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageServiceParams.h; sourceTree = "<group>"; };
 		C33FDBCF255A581800E217F9 /* OWSFingerprintBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFingerprintBuilder.h; sourceTree = "<group>"; };
 		C33FDBD0255A581800E217F9 /* OnionRequestAPI+Encryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OnionRequestAPI+Encryption.swift"; sourceTree = "<group>"; };
@@ -2099,7 +2077,6 @@
 		C33FDBEF255A581B00E217F9 /* TSStorageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSStorageKeys.h; sourceTree = "<group>"; };
 		C33FDBF0255A581B00E217F9 /* LokiDatabaseUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LokiDatabaseUtilities.swift; sourceTree = "<group>"; };
 		C33FDBF1255A581B00E217F9 /* OWSIdentityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIdentityManager.h; sourceTree = "<group>"; };
-		C33FDBF2255A581B00E217F9 /* MessageSender+Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MessageSender+Promise.swift"; sourceTree = "<group>"; };
 		C33FDBF3255A581B00E217F9 /* OWSBlockedPhoneNumbersMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBlockedPhoneNumbersMessage.h; sourceTree = "<group>"; };
 		C33FDBF4255A581B00E217F9 /* DisplayNameUtilities2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayNameUtilities2.swift; sourceTree = "<group>"; };
 		C33FDBF5255A581B00E217F9 /* OWSDeviceProvisioningService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceProvisioningService.h; sourceTree = "<group>"; };
@@ -2109,7 +2086,6 @@
 		C33FDBF9255A581C00E217F9 /* OWSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSError.h; sourceTree = "<group>"; };
 		C33FDBFA255A581C00E217F9 /* PhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberUtil.h; sourceTree = "<group>"; };
 		C33FDBFB255A581C00E217F9 /* Storage+PublicChats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Storage+PublicChats.swift"; sourceTree = "<group>"; };
-		C33FDBFC255A581C00E217F9 /* OWSMessageHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageHandler.m; sourceTree = "<group>"; };
 		C33FDBFD255A581C00E217F9 /* OWSPrimaryStorage+Calling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "OWSPrimaryStorage+Calling.m"; sourceTree = "<group>"; };
 		C33FDBFE255A581C00E217F9 /* NSSet+Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSSet+Functional.h"; sourceTree = "<group>"; };
 		C33FDBFF255A581C00E217F9 /* OWSOutgoingSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingSyncMessage.m; sourceTree = "<group>"; };
@@ -2127,7 +2103,6 @@
 		C33FDC0B255A581D00E217F9 /* OWSError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSError.m; sourceTree = "<group>"; };
 		C33FDC0C255A581E00E217F9 /* TSInfoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInfoMessage.m; sourceTree = "<group>"; };
 		C33FDC0D255A581E00E217F9 /* OWSProvisioningMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProvisioningMessage.h; sourceTree = "<group>"; };
-		C33FDC0E255A581E00E217F9 /* OWSMessageDecrypter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageDecrypter.h; sourceTree = "<group>"; };
 		C33FDC0F255A581E00E217F9 /* LKDeviceLinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKDeviceLinkMessage.h; sourceTree = "<group>"; };
 		C33FDC10255A581E00E217F9 /* ProofOfWork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProofOfWork.swift; sourceTree = "<group>"; };
 		C33FDC11255A581E00E217F9 /* TSSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSSocketManager.m; sourceTree = "<group>"; };
@@ -2525,6 +2500,9 @@
 		C3CA3AB3255CDAE600F4C6D4 /* japanese.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = japanese.txt; sourceTree = "<group>"; };
 		C3CA3ABD255CDB0D00F4C6D4 /* portuguese.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = portuguese.txt; sourceTree = "<group>"; };
 		C3CA3AC7255CDB2900F4C6D4 /* spanish.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = spanish.txt; sourceTree = "<group>"; };
+		C3CA3B12255CF18200F4C6D4 /* Destination+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Destination+Conversion.swift"; sourceTree = "<group>"; };
+		C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSender+Utilities.swift"; sourceTree = "<group>"; };
+		C3CA3B2E255CF84E00F4C6D4 /* NullMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NullMessage.swift; sourceTree = "<group>"; };
 		C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPoller.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
@@ -3230,6 +3208,7 @@
 				C3C2A7702553A41E00C340D1 /* ControlMessage.swift */,
 				C300A5BC2554B00D00555489 /* ReadReceipt.swift */,
 				C300A5C82554B04E00555489 /* SessionRequest.swift */,
+				C3CA3B2E255CF84E00F4C6D4 /* NullMessage.swift */,
 				C300A5D22554B05A00555489 /* TypingIndicator.swift */,
 				C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */,
 				C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */,
@@ -3350,6 +3329,7 @@
 		C33FD9AC255A548A00E217F9 /* SignalUtilitiesKit */ = {
 			isa = PBXGroup;
 			children = (
+				C3CA3B11255CF17200F4C6D4 /* Utilities */,
 				C33FDC09255A581D00E217F9 /* AccountServiceClient.swift */,
 				C33FDBC3255A581700E217F9 /* AnyPromise+Conversion.swift */,
 				C33FDB8A255A581200E217F9 /* AppContext.h */,
@@ -3609,13 +3589,10 @@
 				C33FDAFD255A580600E217F9 /* LRUCache.swift */,
 				C33FDA7E255A57FB00E217F9 /* Mention.swift */,
 				C33FDA81255A57FC00E217F9 /* MentionsManager.swift */,
-				C33FDBF2255A581B00E217F9 /* MessageSender+Promise.swift */,
-				C33FDB9B255A581300E217F9 /* MessageSenderJobQueue.swift */,
 				C33FDB82255A581100E217F9 /* MessageWrapper.swift */,
 				C33FDAFC255A580600E217F9 /* MIMETypeUtil.h */,
 				C33FDB41255A580C00E217F9 /* MIMETypeUtil.m */,
 				C33FDAA9255A580000E217F9 /* Mnemonic.swift */,
-				C33FDBCC255A581800E217F9 /* MultiDeviceProtocol.swift */,
 				C33FDA9F255A57FF00E217F9 /* NetworkManager.swift */,
 				C33FDB80255A581100E217F9 /* Notification+Loki.swift */,
 				C33FDB7A255A581000E217F9 /* NotificationsProtocol.h */,
@@ -3736,17 +3713,6 @@
 				C33FDB67255A580F00E217F9 /* OWSMediaGalleryFinder.h */,
 				C33FDB71255A581000E217F9 /* OWSMediaGalleryFinder.m */,
 				C33FDB22255A580900E217F9 /* OWSMediaUtils.swift */,
-				C33FDC0E255A581E00E217F9 /* OWSMessageDecrypter.h */,
-				C33FDB90255A581200E217F9 /* OWSMessageDecrypter.m */,
-				C33FDAAC255A580000E217F9 /* OWSMessageHandler.h */,
-				C33FDBFC255A581C00E217F9 /* OWSMessageHandler.m */,
-				C33FDB7D255A581100E217F9 /* OWSMessageManager.h */,
-				C33FDA6A255A57F900E217F9 /* OWSMessageManager.m */,
-				C33FDBC6255A581700E217F9 /* OWSMessageReceiver.h */,
-				C33FDAB4255A580000E217F9 /* OWSMessageReceiver.m */,
-				C33FDACC255A580200E217F9 /* OWSMessageSend.swift */,
-				C33FDA92255A57FE00E217F9 /* OWSMessageSender.h */,
-				C33FDB3E255A580B00E217F9 /* OWSMessageSender.m */,
 				C33FDBCE255A581800E217F9 /* OWSMessageServiceParams.h */,
 				C33FDB70255A580F00E217F9 /* OWSMessageServiceParams.m */,
 				C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */,
@@ -4364,6 +4330,15 @@
 			path = Mnemonic;
 			sourceTree = "<group>";
 		};
+		C3CA3B11255CF17200F4C6D4 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				C3CA3B12255CF18200F4C6D4 /* Destination+Conversion.swift */,
+				C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		C3F0A58F255C8E3D007BE2A3 /* Meta */ = {
 			isa = PBXGroup;
 			children = (
@@ -4542,7 +4517,6 @@
 				C33FDD65255A582000E217F9 /* OWSFileSystem.h in Headers */,
 				C33FDCD6255A582000E217F9 /* UIImage+OWS.h in Headers */,
 				C38EF219255B6D3B007E1867 /* OWSConversationColor.h in Headers */,
-				C33FDD80255A582000E217F9 /* OWSMessageReceiver.h in Headers */,
 				C38EF369255B6DCC007E1867 /* ViewControllerUtils.h in Headers */,
 				C33FDC6D255A582000E217F9 /* TSContactThread.h in Headers */,
 				C33FDD7A255A582000E217F9 /* OWSRequestFactory.h in Headers */,
@@ -4572,7 +4546,6 @@
 				C33FDCDF255A582000E217F9 /* TSDatabaseSecondaryIndexes.h in Headers */,
 				C33FDDBD255A582000E217F9 /* ByteParser.h in Headers */,
 				C33FDCBC255A582000E217F9 /* TSCall.h in Headers */,
-				C33FDD37255A582000E217F9 /* OWSMessageManager.h in Headers */,
 				C38EF2C3255B6DA6007E1867 /* OWSContactOffersInteraction.h in Headers */,
 				C33FDD95255A582000E217F9 /* OWSDevicesService.h in Headers */,
 				C38EF243255B6D67007E1867 /* UIViewController+OWS.h in Headers */,
@@ -4616,7 +4589,6 @@
 				C33FDC42255A581F00E217F9 /* YapDatabaseTransaction+OWS.h in Headers */,
 				C33FDD48255A582000E217F9 /* OWSContact+Private.h in Headers */,
 				C33FDCA6255A582000E217F9 /* SignalRecipient.h in Headers */,
-				C33FDC66255A582000E217F9 /* OWSMessageHandler.h in Headers */,
 				C33FDDA1255A582000E217F9 /* NSTimer+OWS.h in Headers */,
 				C38EF277255B6D7A007E1867 /* OWSDatabaseMigration.h in Headers */,
 				C38EF294255B6D86007E1867 /* OWSSounds.h in Headers */,
@@ -4629,7 +4601,6 @@
 				C33FDC83255A582000E217F9 /* OWSContact.h in Headers */,
 				C33FDCB2255A582000E217F9 /* OWSSyncGroupsRequestMessage.h in Headers */,
 				C33FDCA7255A582000E217F9 /* SSKMessageSenderJobRecord.h in Headers */,
-				C33FDDC8255A582000E217F9 /* OWSMessageDecrypter.h in Headers */,
 				C38EF262255B6D6F007E1867 /* OWSContactsManager.h in Headers */,
 				C33FDCC2255A582000E217F9 /* OWSProfileKeyMessage.h in Headers */,
 				C33FDCDE255A582000E217F9 /* OWSOutgoingSentMessageTranscript.h in Headers */,
@@ -4653,7 +4624,6 @@
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
 				C33FDD57255A582000E217F9 /* OWSCallMessageHandler.h in Headers */,
 				C33FDCC8255A582000E217F9 /* NSError+MessageSending.h in Headers */,
-				C33FDC4C255A582000E217F9 /* OWSMessageSender.h in Headers */,
 				C38EF403255B6DF7007E1867 /* ContactCellView.h in Headers */,
 				C33FDD6D255A582000E217F9 /* OWSOutgoingNullMessage.h in Headers */,
 				C33FDCA0255A582000E217F9 /* TSInteraction.h in Headers */,
@@ -5649,7 +5619,6 @@
 				C33FDDA8255A582000E217F9 /* ClosedGroupUpdateMessage.swift in Sources */,
 				C33FDCF9255A582000E217F9 /* String+SSK.swift in Sources */,
 				C38EF389255B6DD2007E1867 /* AttachmentTextView.swift in Sources */,
-				C33FDDAC255A582000E217F9 /* MessageSender+Promise.swift in Sources */,
 				C38EF36A255B6DCC007E1867 /* NewNonContactConversationViewController.m in Sources */,
 				C38EF321255B6DBF007E1867 /* OWSAudioPlayer.m in Sources */,
 				C33FDD0A255A582000E217F9 /* OWSPrimaryStorage+PreKeyStore.m in Sources */,
@@ -5664,7 +5633,6 @@
 				C38EF3C2255B6DE7007E1867 /* ImageEditorPaletteView.swift in Sources */,
 				C38EF245255B6D67007E1867 /* UIFont+OWS.m in Sources */,
 				C33FDD26255A582000E217F9 /* NSNotificationCenter+OWS.m in Sources */,
-				C33FDDB6255A582000E217F9 /* OWSMessageHandler.m in Sources */,
 				C38EF36F255B6DCC007E1867 /* OWSViewController.m in Sources */,
 				C33FDC80255A582000E217F9 /* Fingerprint.pb.swift in Sources */,
 				C33FDD42255A582000E217F9 /* TSAccountManager.m in Sources */,
@@ -5678,7 +5646,6 @@
 				C33FDD5F255A582000E217F9 /* SignalServiceProfile.swift in Sources */,
 				C33FDD83255A582000E217F9 /* CreatePreKeysOperation.swift in Sources */,
 				C33FDDD5255A582000E217F9 /* OWSBackgroundTask.m in Sources */,
-				C33FDC6E255A582000E217F9 /* OWSMessageReceiver.m in Sources */,
 				C33FDC7E255A582000E217F9 /* TSAttachmentStream.m in Sources */,
 				C33FDC62255A582000E217F9 /* BuildConfiguration.swift in Sources */,
 				C38EF40A255B6DF7007E1867 /* OWSFlatButton.swift in Sources */,
@@ -5753,7 +5720,6 @@
 				C33FDC7C255A582000E217F9 /* TSAttachment.m in Sources */,
 				C38EF3C7255B6DE7007E1867 /* ImageEditorCanvasView.swift in Sources */,
 				C38EF3F3255B6DF7007E1867 /* ContactsViewHelper.m in Sources */,
-				C33FDC24255A581F00E217F9 /* OWSMessageManager.m in Sources */,
 				C33FDC46255A581F00E217F9 /* PublicChatPoller.swift in Sources */,
 				C38EF400255B6DF7007E1867 /* GalleryRailView.swift in Sources */,
 				C38EF32E255B6DBF007E1867 /* ImageCache.swift in Sources */,
@@ -5796,6 +5762,7 @@
 				C38EF3FC255B6DF7007E1867 /* AvatarImageView.swift in Sources */,
 				C33FDD13255A582000E217F9 /* OWSFailedAttachmentDownloadsJob.m in Sources */,
 				C38EF24D255B6D67007E1867 /* UIView+OWS.swift in Sources */,
+				C3CA3B13255CF18200F4C6D4 /* Destination+Conversion.swift in Sources */,
 				C33FDCB5255A582000E217F9 /* SessionMetaProtocol.swift in Sources */,
 				C33FDC91255A582000E217F9 /* OWSDeviceProvisioner.m in Sources */,
 				C33FDC6A255A582000E217F9 /* ProvisioningProto.swift in Sources */,
@@ -5811,7 +5778,6 @@
 				C38EF310255B6DBF007E1867 /* DebugLogger.m in Sources */,
 				C38EF38B255B6DD2007E1867 /* AttachmentPrepViewController.swift in Sources */,
 				C33FDD98255A582000E217F9 /* LokiPushNotificationManager.swift in Sources */,
-				C33FDCF8255A582000E217F9 /* OWSMessageSender.m in Sources */,
 				C33FDD70255A582000E217F9 /* DataSource.m in Sources */,
 				C33FDD2F255A582000E217F9 /* AppReadiness.m in Sources */,
 				C33FDCEC255A582000E217F9 /* SSKIncrementingIdFinder.swift in Sources */,
@@ -5824,7 +5790,6 @@
 				C33FDC3B255A581F00E217F9 /* MentionsManager.swift in Sources */,
 				C33FDC49255A581F00E217F9 /* NSTimer+OWS.m in Sources */,
 				C38EF260255B6D6F007E1867 /* OWSContactsManager.m in Sources */,
-				C33FDD55255A582000E217F9 /* MessageSenderJobQueue.swift in Sources */,
 				C33FDCFD255A582000E217F9 /* YapDatabaseConnection+OWS.m in Sources */,
 				C38EF3BC255B6DE7007E1867 /* ImageEditorPanGestureRecognizer.swift in Sources */,
 				C33FDC23255A581F00E217F9 /* SSKPreferences.swift in Sources */,
@@ -5867,7 +5832,6 @@
 				C33FDD85255A582000E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m in Sources */,
 				C33FDD2E255A582000E217F9 /* TSInvalidIdentityKeyErrorMessage.m in Sources */,
 				C33FDDBB255A582000E217F9 /* TSGroupThread.m in Sources */,
-				C33FDD4A255A582000E217F9 /* OWSMessageDecrypter.m in Sources */,
 				C38EF40C255B6DF7007E1867 /* GradientView.swift in Sources */,
 				C33FDD14255A582000E217F9 /* OWSUDManager.swift in Sources */,
 				C33FDC6B255A582000E217F9 /* OWSStorage.m in Sources */,
@@ -5946,16 +5910,15 @@
 				C33FDCBA255A582000E217F9 /* OWSRequestBuilder.m in Sources */,
 				C33FDC2B255A581F00E217F9 /* OWSReadReceiptManager.m in Sources */,
 				C38EF326255B6DBF007E1867 /* ConversationStyle.swift in Sources */,
-				C33FDC86255A582000E217F9 /* OWSMessageSend.swift in Sources */,
 				C38EF312255B6DBF007E1867 /* OWSGroupAvatarBuilder.m in Sources */,
 				C38EF3B8255B6DE7007E1867 /* ImageEditorTextViewController.swift in Sources */,
 				C33FDD91255A582000E217F9 /* OWSMessageUtils.m in Sources */,
 				C38EF40B255B6DF7007E1867 /* TappableStackView.swift in Sources */,
 				C33FDCF7255A582000E217F9 /* OWSProfileKeyMessage.m in Sources */,
+				C3CA3B1D255CF3C800F4C6D4 /* MessageSender+Utilities.swift in Sources */,
 				C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */,
 				C38EF359255B6DCC007E1867 /* SheetViewController.swift in Sources */,
 				C38EF362255B6DCC007E1867 /* ContactShareApprovalViewController.swift in Sources */,
-				C33FDD86255A582000E217F9 /* MultiDeviceProtocol.swift in Sources */,
 				C33FDCAD255A582000E217F9 /* OWSPrimaryStorage+SessionStore.m in Sources */,
 				C38EF386255B6DD2007E1867 /* AttachmentApprovalInputAccessoryView.swift in Sources */,
 				C33FDC92255A582000E217F9 /* OWSGroupsOutputStream.m in Sources */,
@@ -6037,6 +6000,7 @@
 				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
 				C3A722802558C4E10043A11F /* AttachmentStream.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
+				C3CA3B2F255CF84E00F4C6D4 /* NullMessage.swift in Sources */,
 				C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */,
 				C352A32F2557549C00338F3E /* NotifyPNServerJob.swift in Sources */,
 				C300A5F22554B09800555489 /* MessageSender.swift in Sources */,

@@ -14,7 +14,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     @objc public convenience init(message: Message, publicKey: String) { self.init(message: message, destination: .contact(publicKey: publicKey)) }
     @objc public convenience init(message: Message, groupPublicKey: String) { self.init(message: message, destination: .closedGroup(groupPublicKey: groupPublicKey)) }
 
-    init(message: Message, destination: Message.Destination) {
+    public init(message: Message, destination: Message.Destination) {
         self.message = message
         self.destination = destination
     }

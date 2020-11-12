@@ -27,7 +27,7 @@ public final class ClosedGroupPoller : NSObject {
         guard !isPolling else { return }
         isPolling = true
         timer = Timer.scheduledTimer(withTimeInterval: ClosedGroupPoller.pollInterval, repeats: true) { [weak self] _ in
-            self?.poll()
+            let _ = self?.poll()
         }
     }
 
@@ -64,7 +64,10 @@ public final class ClosedGroupPoller : NSObject {
                     guard let envelope = SSKProtoEnvelope.from(json) else { return }
                     do {
                         let data = try envelope.serializedData()
-                        SSKEnvironment.shared.messageReceiver.handleReceivedEnvelopeData(data)
+                        let job = MessageReceiveJob(data: data)
+                        Storage.write { transaction in
+                            SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+                        }
                     } catch {
                         print("[Loki] Failed to deserialize envelope due to error: \(error).")
                     }

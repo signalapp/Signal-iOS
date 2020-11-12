@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 #ifndef TextSecureKit_Constants_h
 #define TextSecureKit_Constants_h
 
+extern const NSUInteger kOversizeTextMessageSizeThreshold;
+
 typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSUnknownMessageType = 0,
     TSEncryptedWhisperMessageType = 1,

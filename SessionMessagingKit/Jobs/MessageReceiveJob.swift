@@ -9,7 +9,7 @@ public final class MessageReceiveJob : NSObject, Job,  NSCoding { // NSObject/NS
     public static let maxFailureCount: UInt = 10
 
     // MARK: Initialization
-    init(data: Data) {
+    public init(data: Data) {
         self.data = data
     }
 

@@ -105,20 +105,17 @@ public final class SessionManagementProtocol : NSObject {
         // Send the session request
         print("[Loki] Sending session request to: \(publicKey).")
         Storage.setSessionRequestSentTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
-        let sessionRequestMessage = SessionRequestMessage(thread: thread)
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
+        let sessionRequest = SessionRequest()
+        sessionRequest.preKeyBundle = storage.generatePreKeyBundle(forContact: publicKey)
+        MessageSender.send(sessionRequest, in: thread, using: transaction)
     }
 
     @objc(sendNullMessageToPublicKey:transaction:)
     public static func sendNullMessage(to publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
-        let nullMessage = OWSOutgoingNullMessage(outgoingMessageWithTimestamp: NSDate.millisecondTimestamp(), in: thread, messageBody: nil,
-            attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .unspecified, quotedMessage: nil,
-            contactShare: nil, linkPreview: nil)
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        messageSenderJobQueue.add(message: nullMessage, transaction: transaction)
+        let nullMessage = NullMessage()
+        MessageSender.send(nullMessage, in: thread, using: transaction)
     }
 
     /// - Note: Deprecated.
@@ -147,9 +144,11 @@ public final class SessionManagementProtocol : NSObject {
             guard ECKeyPair.isValidHexEncodedPublicKey(candidate: device) else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: device, transaction: transaction)
             thread.save(with: transaction)
+            /*
             let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread)
             let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
             messageSenderJobQueue.add(message: endSessionMessage, transaction: transaction)
+             */
         }
         thread.removeAllSessionRestoreDevices(with: transaction)
         // Notify the user

@@ -3,9 +3,11 @@ import SessionUtilitiesKit
 
 @objc(SNSessionRequest)
 public final class SessionRequest : ControlMessage {
-    private var preKeyBundle: PreKeyBundle?
+    public var preKeyBundle: PreKeyBundle?
 
     // MARK: Initialization
+    public override init() { super.init() }
+
     internal init(preKeyBundle: PreKeyBundle) {
         super.init()
         self.preKeyBundle = preKeyBundle

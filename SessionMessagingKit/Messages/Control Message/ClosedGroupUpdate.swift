@@ -14,6 +14,8 @@ public final class ClosedGroupUpdate : ControlMessage {
     }
 
     // MARK: Initialization
+    public override init() { super.init() }
+
     internal init(kind: Kind) {
         super.init()
         self.kind = kind

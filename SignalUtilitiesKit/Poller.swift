@@ -44,7 +44,7 @@ public final class Poller : NSObject {
     // MARK: Private API
     private func setUpPolling() {
         guard isPolling else { return }
-        SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey(), isForcedReload: true).then2 { [weak self] _ -> Promise<Void> in
+        let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey(), isForcedReload: true).then2 { [weak self] _ -> Promise<Void> in
             guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
             strongSelf.usedSnodes.removeAll()
             let (promise, seal) = Promise<Void>.pending()
@@ -96,7 +96,10 @@ public final class Poller : NSObject {
                 guard let envelope = SSKProtoEnvelope.from(json) else { return }
                 do {
                     let data = try envelope.serializedData()
-                    SSKEnvironment.shared.messageReceiver.handleReceivedEnvelopeData(data)
+                    let job = MessageReceiveJob(data: data)
+                    Storage.write { transaction in
+                        SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+                    }
                 } catch {
                     print("[Loki] Failed to deserialize envelope due to error: \(error).")
                 }

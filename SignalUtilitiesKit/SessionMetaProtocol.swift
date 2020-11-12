@@ -101,19 +101,6 @@ public final class SessionMetaProtocol : NSObject {
         return errorMessage.timestamp < restorationTimeInMs
     }
 
-    @objc(shouldSkipMessageDecryptResult:wrappedIn:)
-    public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
-        return result.source == getUserHexEncodedPublicKey()
-        /*
-        if result.source == getUserHexEncodedPublicKey() { return true }
-        var isLinkedDevice = false
-        Storage.read { transaction in
-            isLinkedDevice = LokiDatabaseUtilities.isUserLinkedDevice(result.source, transaction: transaction)
-        }
-        return isLinkedDevice && envelope.type == .closedGroupCiphertext
-         */
-    }
-
     @objc(updateDisplayNameIfNeededForPublicKey:using:transaction:)
     public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let displayName = profile.displayName, !displayName.isEmpty else { return }

@@ -64,10 +64,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSHTTPSecurityPolicy.h>
 #import <SignalUtilitiesKit/OWSIdentityManager.h>
 #import <SignalUtilitiesKit/OWSIncomingSentMessageTranscript.h>
-#import <SignalUtilitiesKit/OWSMessageDecrypter.h>
-#import <SignalUtilitiesKit/OWSMessageManager.h>
-#import <SignalUtilitiesKit/OWSMessageReceiver.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
 #import <SignalUtilitiesKit/OWSMessageUtils.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSOperation.h>
