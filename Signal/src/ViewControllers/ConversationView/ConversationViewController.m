@@ -2123,6 +2123,9 @@ typedef enum : NSUInteger {
     if (!self.thread.isLocalUserFullMemberOfThread) {
         return NO;
     }
+    if (!self.thread.canSendToThread) {
+        return NO;
+    }
     if (self.threadViewModel.hasPendingMessageRequest) {
         return NO;
     }

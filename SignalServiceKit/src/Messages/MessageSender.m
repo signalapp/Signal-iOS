@@ -742,6 +742,16 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     NSArray<SignalServiceAddress *> *recipientAddresses = sendInfo.recipients;
     SenderCertificates *senderCertificates = sendInfo.senderCertificates;
 
+    if (!thread.canSendToThread) {
+        if (message.shouldBeSaved) {
+            return failureHandler(OWSErrorMakeAssertionError(@"Blocked by group migration."));
+        } else {
+            // Pretend to succeed for non-visible messages like read receipts, etc.
+            successHandler();
+            return;
+        }
+    }
+
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         // In the "self-send" aka "Note to Self" special case, we only

@@ -68,7 +68,8 @@ class MessageActionsViewController: UIViewController {
     @objc
     let focusedViewItem: ConversationViewItem
     @objc
-    var focusedInteraction: TSInteraction { return focusedViewItem.interaction }
+    var focusedInteraction: TSInteraction { focusedViewItem.interaction }
+    var thread: TSThread { focusedViewItem.thread }
     let focusedView: ConversationViewCell
     private let actionsToolbar: MessageActionsToolbar
 
@@ -251,14 +252,15 @@ class MessageActionsViewController: UIViewController {
 
     // MARK: - Reaction handling
 
-    var interactionAllowsReactions: Bool {
+    var canAddReact: Bool {
+        guard thread.canSendToThread else { return false }
         guard let delegate = delegate else { return false }
         return delegate.messageActionsViewController(self, shouldShowReactionPickerForInteraction: focusedInteraction)
     }
 
     private var quickReactionPicker: MessageReactionPicker?
     private func addReactionPickerIfNecessary() {
-        guard interactionAllowsReactions, quickReactionPicker == nil else { return }
+        guard canAddReact, quickReactionPicker == nil else { return }
 
         let picker = MessageReactionPicker(selectedEmoji: focusedViewItem.reactionState?.localUserEmoji, delegate: self)
         view.addSubview(picker)
@@ -313,7 +315,7 @@ class MessageActionsViewController: UIViewController {
     @objc
     func didChangeLongpress() {
         // Do nothing if reactions aren't enabled.
-        guard interactionAllowsReactions else { return }
+        guard canAddReact else { return }
 
         guard let reactionPicker = quickReactionPicker else {
             return owsFailDebug("unexpectedly missing reaction picker")

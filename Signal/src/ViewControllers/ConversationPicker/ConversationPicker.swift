@@ -41,7 +41,6 @@ class ConversationPickerViewController: OWSViewController {
         let searchBar = OWSSearchBar()
         searchBar.placeholder = CommonStrings.searchPlaceholder
         searchBar.delegate = self
-
         return searchBar
     }()
 
@@ -182,6 +181,10 @@ class ConversationPickerViewController: OWSViewController {
             let maxRecentCount = 25 - pinnedThreadIds.count
 
             let addThread = { (thread: TSThread) -> Void in
+                guard thread.canSendToThread else {
+                    return
+                }
+
                 switch thread {
                 case let contactThread as TSContactThread:
                     let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
@@ -257,7 +260,12 @@ class ConversationPickerViewController: OWSViewController {
 
         return DispatchQueue.global().async(.promise) {
             return self.databaseStorage.read { transaction in
-                let groupItems = searchResults.groupThreads.map { self.buildGroupItem($0, transaction: transaction) }
+                let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
+                    guard groupThread.canSendToThread else {
+                        return nil
+                    }
+                    return self.buildGroupItem(groupThread, transaction: transaction)
+                }
                 let contactItems = searchResults.signalAccounts.map { self.buildContactItem($0.recipientAddress, transaction: transaction) }
 
                 return ConversationCollection(contactConversations: contactItems,

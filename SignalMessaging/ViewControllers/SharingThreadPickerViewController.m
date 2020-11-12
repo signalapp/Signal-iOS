@@ -35,18 +35,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 @implementation SharingThreadPickerViewController
 
-#pragma mark - Dependencies
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (MessageSender *)messageSender
-{
-    return SSKEnvironment.shared.messageSender;
-}
-
 #pragma mark - Durable Message Enqueue
 
 - (instancetype)initWithShareViewDelegate:(id<ShareViewDelegate>)shareViewDelegate
@@ -60,13 +48,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     self.selectThreadViewDelegate = self;
 
     return self;
-}
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - UIViewController overrides

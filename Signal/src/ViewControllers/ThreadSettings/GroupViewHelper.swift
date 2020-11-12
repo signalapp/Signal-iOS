@@ -101,11 +101,7 @@ class GroupViewHelper: NSObject {
     }
 
     var isBlockedByMigration: Bool {
-        guard let groupThread = thread as? TSGroupThread else {
-            return false
-        }
-        return (groupThread.isGroupV1Thread &&
-                    GroupManager.areMigrationsBlocking)
+        thread.isBlockedByMigration
     }
 
     // Can local user edit conversation attributes:
