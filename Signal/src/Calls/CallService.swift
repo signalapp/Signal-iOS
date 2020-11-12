@@ -214,6 +214,7 @@ public final class CallService: NSObject {
         switch call.mode {
         case .group(let groupCall):
             groupCall.isOutgoingAudioMuted = isLocalAudioMuted
+            call.groupCall(onLocalDeviceStateChanged: groupCall)
         case .individual(let individualCall):
             individualCall.isMuted = isLocalAudioMuted
             individualCallService.ensureAudioState(call: call)
@@ -272,6 +273,7 @@ public final class CallService: NSObject {
         switch call.mode {
         case .group(let groupCall):
             groupCall.isOutgoingVideoMuted = isLocalVideoMuted
+            call.groupCall(onLocalDeviceStateChanged: groupCall)
         case .individual(let individualCall):
             individualCall.hasLocalVideo = !isLocalVideoMuted
         }
