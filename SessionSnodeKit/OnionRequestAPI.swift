@@ -26,7 +26,7 @@ public enum OnionRequestAPI {
     // MARK: Destination
     public enum Destination {
         case snode(Snode)
-        case server(host: String, x25519PublicKey: String)
+        case server(host: String, target: String, x25519PublicKey: String)
     }
 
     // MARK: Error
@@ -284,7 +284,7 @@ public enum OnionRequestAPI {
     }
 
     /// Sends an onion request to `server`. Builds new paths as needed.
-    public static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+    public static func sendOnionRequest(_ request: NSURLRequest, to server: String, target: String = "/loki/v3/lsrpc", using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
         var rawHeaders = request.allHTTPHeaderFields ?? [:]
         rawHeaders.removeValue(forKey: "User-Agent")
         var headers: JSON = rawHeaders.mapValues { value in
@@ -327,7 +327,7 @@ public enum OnionRequestAPI {
             "method" : request.httpMethod!,
             "headers" : headers
         ]
-        let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
+        let destination = Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey)
         let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
         promise.catch2 { error in
             SNLog("Couldn't reach server: \(url) due to error: \(error).")

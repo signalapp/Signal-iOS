@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Open groups
 @property (nonatomic) uint64_t openGroupServerMessageID;
 @property (nonatomic, readonly) BOOL isOpenGroupMessage;
+// Push notifications
+@property (nonatomic) BOOL hasAttachmentsInNSE;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 

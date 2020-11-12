@@ -13,7 +13,7 @@ public struct Configuration {
     internal static var shared: Configuration!
 }
 
-public enum SessionMessagingKitX { // Just to make the external API nice
+public enum SNMessagingKit { // Just to make the external API nice
 
     public static func configure(
         storage: SessionMessagingKitStorageProtocol,

@@ -17,7 +17,7 @@ public final class OpenGroupAPI : DotNetAPI {
 
     public static let profilePictureType = "network.loki.messenger.avatar"
     
-    @objc public static let openGroupMessageType = "network.loki.messenger.openGroup"
+    @objc public static let openGroupMessageType = "network.loki.messenger.publicChat"
 
     // MARK: Open Group Public Key Validation
     public static func getOpenGroupServerPublicKey(for server: String) -> Promise<String> {
@@ -122,7 +122,7 @@ public final class OpenGroupAPI : DotNetAPI {
                             SNLog("Ignoring open group message with invalid signature.")
                             return nil
                         }
-                        let existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!))
+                        let existingMessageID = storage.getIDForMessage(withServerID: result.serverID!)
                         guard existingMessageID == nil else {
                             SNLog("Ignoring duplicate open group message.")
                             return nil
