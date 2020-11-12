@@ -25,6 +25,11 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
 @implementation OWSFailedAttachmentDownloadsJob
 
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
+}
+
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];

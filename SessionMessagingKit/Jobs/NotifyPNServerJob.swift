@@ -35,7 +35,7 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: Configuration.shared.pnServerPublicKey).map { _ in }
+            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: Configuration.shared.pnServerPublicKey).map { _ in }
         }.done(on: DispatchQueue.global()) { // Intentionally capture self
             self.handleSuccess()
         }.catch(on: DispatchQueue.global()) { error in

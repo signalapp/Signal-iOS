@@ -122,11 +122,11 @@ public class DotNetAPI : NSObject {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .userInitiated)) {
             serverPublicKeyPromise.then(on: DispatchQueue.global(qos: .userInitiated)) { serverPublicKey in
                 return OnionRequestAPI.sendOnionRequest(request, to: host, using: serverPublicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
-                    guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
+                    guard let body = json["result"] as? String, let data = Data(base64Encoded: body) else {
                         SNLog("Couldn't parse attachment from: \(json).")
                         throw Error.parsingFailed
                     }
-                    return Data(data)
+                    return data
                 }
             }
         }

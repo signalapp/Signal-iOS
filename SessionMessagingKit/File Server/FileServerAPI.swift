@@ -19,7 +19,7 @@ public final class FileServerAPI : DotNetAPI {
     /// be other parameters in the request. On average the multiplier appears to be about 1.5, so when checking whether the file will exceed the file size limit when
     /// uploading a file we just divide the size of the file by this number. The alternative would be to actually check the size of the HTTP request but that's only
     /// possible after proof of work has been calculated and the onion request encryption has happened, which takes several seconds.
-    public static let fileSizeORMultiplier: Double = 3
+    public static let fileSizeORMultiplier: Double = 2
 
     @objc public static let server = "https://file.getsession.org"
     @objc public static let fileStorageBucketURL = "https://file-static.lokinet.org"
