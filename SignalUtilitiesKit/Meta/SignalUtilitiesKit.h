@@ -102,7 +102,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SSKMessageSenderJobRecord.h>
 #import <SignalUtilitiesKit/Theme.h>
-#import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SignalUtilitiesKit/TSAttachmentPointer.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSCall.h>

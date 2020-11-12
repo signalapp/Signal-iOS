@@ -730,11 +730,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                              }];
 }
 
-- (BOOL)isSlaveThread
-{
-    return [LKMultiDeviceProtocol isSlaveThread:self];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

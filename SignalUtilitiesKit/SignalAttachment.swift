@@ -244,15 +244,15 @@ public class SignalAttachment: NSObject {
         return errorDescription
     }
 
-    @objc
-    public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
-        assert(message.uniqueId != nil)
-        return OutgoingAttachmentInfo(dataSource: dataSource,
-                                      contentType: mimeType,
-                                      sourceFilename: filenameOrDefault,
-                                      caption: captionText,
-                                      albumMessageId: message.uniqueId)
-    }
+//    @objc
+//    public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
+//        assert(message.uniqueId != nil)
+//        return OutgoingAttachmentInfo(dataSource: dataSource,
+//                                      contentType: mimeType,
+//                                      sourceFilename: filenameOrDefault,
+//                                      caption: captionText,
+//                                      albumMessageId: message.uniqueId)
+//    }
 
     @objc
     public func staticThumbnail() -> UIImage? {

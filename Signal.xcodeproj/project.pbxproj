@@ -880,7 +880,6 @@
 		C38EF31B255B6DBF007E1867 /* OWSPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2F1255B6DBB007E1867 /* OWSPreferences.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF31C255B6DBF007E1867 /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F2255B6DBC007E1867 /* Searcher.swift */; };
 		C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F3255B6DBC007E1867 /* UIImage+OWS.swift */; };
-		C38EF31E255B6DBF007E1867 /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F4255B6DBC007E1867 /* ThreadUtil.m */; };
 		C38EF320255B6DBF007E1867 /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F6255B6DBC007E1867 /* OWSScrubbingLogFormatter.m */; };
 		C38EF321255B6DBF007E1867 /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */; };
 		C38EF322255B6DBF007E1867 /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2F8255B6DBC007E1867 /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -890,7 +889,6 @@
 		C38EF326255B6DBF007E1867 /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2FC255B6DBD007E1867 /* ConversationStyle.swift */; };
 		C38EF327255B6DBF007E1867 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2FD255B6DBD007E1867 /* BlockListUIUtils.m */; };
 		C38EF328255B6DBF007E1867 /* OWSContactAvatarBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2FE255B6DBD007E1867 /* OWSContactAvatarBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF329255B6DBF007E1867 /* ThreadUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2FF255B6DBD007E1867 /* ThreadUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF32A255B6DBF007E1867 /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF300255B6DBD007E1867 /* UIUtil.m */; };
 		C38EF32B255B6DBF007E1867 /* OWSFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF301255B6DBD007E1867 /* OWSFormat.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF32D255B6DBF007E1867 /* BlockListUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF303255B6DBE007E1867 /* BlockListUIUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2225,7 +2223,6 @@
 		C38EF2F1255B6DBB007E1867 /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSPreferences.h; path = SignalUtilitiesKit/OWSPreferences.h; sourceTree = SOURCE_ROOT; };
 		C38EF2F2255B6DBC007E1867 /* Searcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Searcher.swift; path = SignalUtilitiesKit/Searcher.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2F3255B6DBC007E1867 /* UIImage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIImage+OWS.swift"; path = "SignalUtilitiesKit/UIImage+OWS.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF2F4255B6DBC007E1867 /* ThreadUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThreadUtil.m; path = SignalUtilitiesKit/ThreadUtil.m; sourceTree = SOURCE_ROOT; };
 		C38EF2F5255B6DBC007E1867 /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAudioPlayer.h; path = SignalUtilitiesKit/OWSAudioPlayer.h; sourceTree = SOURCE_ROOT; };
 		C38EF2F6255B6DBC007E1867 /* OWSScrubbingLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSScrubbingLogFormatter.m; path = SignalUtilitiesKit/OWSScrubbingLogFormatter.m; sourceTree = SOURCE_ROOT; };
 		C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAudioPlayer.m; path = SignalUtilitiesKit/OWSAudioPlayer.m; sourceTree = SOURCE_ROOT; };
@@ -2236,7 +2233,6 @@
 		C38EF2FC255B6DBD007E1867 /* ConversationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConversationStyle.swift; path = SignalUtilitiesKit/ConversationStyle.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2FD255B6DBD007E1867 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlockListUIUtils.m; path = SignalUtilitiesKit/BlockListUIUtils.m; sourceTree = SOURCE_ROOT; };
 		C38EF2FE255B6DBD007E1867 /* OWSContactAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSContactAvatarBuilder.h; path = SignalUtilitiesKit/OWSContactAvatarBuilder.h; sourceTree = SOURCE_ROOT; };
-		C38EF2FF255B6DBD007E1867 /* ThreadUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadUtil.h; path = SignalUtilitiesKit/ThreadUtil.h; sourceTree = SOURCE_ROOT; };
 		C38EF300255B6DBD007E1867 /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIUtil.m; path = SignalUtilitiesKit/UIUtil.m; sourceTree = SOURCE_ROOT; };
 		C38EF301255B6DBD007E1867 /* OWSFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSFormat.h; path = SignalUtilitiesKit/OWSFormat.h; sourceTree = SOURCE_ROOT; };
 		C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = SignalUtilitiesKit/OWSAnyTouchGestureRecognizer.h; sourceTree = SOURCE_ROOT; };
@@ -3468,8 +3464,6 @@
 				C38EF306255B6DBE007E1867 /* OWSWindowManager.m */,
 				C38EF2EC255B6DBA007E1867 /* ProximityMonitoringManager.swift */,
 				C38EF2F2255B6DBC007E1867 /* Searcher.swift */,
-				C38EF2FF255B6DBD007E1867 /* ThreadUtil.h */,
-				C38EF2F4255B6DBC007E1867 /* ThreadUtil.m */,
 				C38EF307255B6DBE007E1867 /* UIGestureRecognizer+OWS.swift */,
 				C38EF2F3255B6DBC007E1867 /* UIImage+OWS.swift */,
 				C38EF30A255B6DBE007E1867 /* UIUtil.h */,
@@ -4562,7 +4556,6 @@
 				C33FDC6F255A582000E217F9 /* TSNetworkManager.h in Headers */,
 				C33FDD4B255A582000E217F9 /* ProtoUtils.h in Headers */,
 				C33FDD19255A582000E217F9 /* YapDatabaseConnection+OWS.h in Headers */,
-				C38EF329255B6DBF007E1867 /* ThreadUtil.h in Headers */,
 				C33FDD1F255A582000E217F9 /* OWSSyncConfigurationMessage.h in Headers */,
 				C38EF216255B6D3B007E1867 /* Theme.h in Headers */,
 				C38EF31B255B6DBF007E1867 /* OWSPreferences.h in Headers */,
@@ -5827,7 +5820,6 @@
 				C33FDC26255A581F00E217F9 /* ProtoUtils.m in Sources */,
 				C33FDC48255A581F00E217F9 /* OWSFileSystem.m in Sources */,
 				C33FDC5E255A582000E217F9 /* SSKProto.swift in Sources */,
-				C38EF31E255B6DBF007E1867 /* ThreadUtil.m in Sources */,
 				C38EF39E255B6DDA007E1867 /* OWSQuotedReplyModel.m in Sources */,
 				C33FDD85255A582000E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m in Sources */,
 				C33FDD2E255A582000E217F9 /* TSInvalidIdentityKeyErrorMessage.m in Sources */,

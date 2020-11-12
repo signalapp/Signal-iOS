@@ -178,7 +178,10 @@ public final class PublicChatPoller : NSObject {
                     Storage.writeSync { transaction in
                         transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
-                        SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
+                        let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), messageServerID: messageServerID)
+                        Storage.write { transaction in
+                            SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+                        }
                         // If we got a message from our master device then we should use its profile picture
                         if let profilePicture = message.profilePicture, masterPublicKey == message.senderPublicKey {
                             if (message.displayName.count > 0) {

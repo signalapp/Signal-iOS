@@ -38,7 +38,6 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
-@property (nonatomic, readonly) BOOL isSlaveThread;
 
 /**
  *  Whether the object is a group thread or not.

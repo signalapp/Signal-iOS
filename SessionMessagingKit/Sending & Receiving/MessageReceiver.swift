@@ -30,7 +30,7 @@ internal enum MessageReceiver {
         }
     }
 
-    internal static func parse(_ data: Data, using transaction: Any) throws -> Message {
+    internal static func parse(_ data: Data, messageServerID: UInt64?, using transaction: Any) throws -> Message {
         // Parse the envelope
         let envelope = try MessageWrapper.unwrap(data: data)
         // Decrypt the contents

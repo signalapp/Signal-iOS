@@ -4,14 +4,12 @@
 
 #import "SharingThreadPickerViewController.h"
 #import "SignalApp.h"
-#import "ThreadUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
 #import <SignalUtilitiesKit/TSThread.h>
 #import <SessionUIKit/SessionUIKit.h>
 

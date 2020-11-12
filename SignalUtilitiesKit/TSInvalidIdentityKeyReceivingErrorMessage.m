@@ -5,8 +5,6 @@
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
-#import "OWSMessageManager.h"
-#import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
@@ -108,7 +106,6 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         [self.thread receivedMessagesForInvalidKey:newKey];
 
     for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-        [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:errorMessage.envelopeData];
 
         // Here we remove the existing error message because handleReceivedEnvelope will either
         //  1.) succeed and create a new successful message in the thread or...
