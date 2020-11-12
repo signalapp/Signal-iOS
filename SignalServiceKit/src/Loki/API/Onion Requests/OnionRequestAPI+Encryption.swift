@@ -26,7 +26,7 @@ extension OnionRequestAPI {
                     let plaintext = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
                     let result = try EncryptionUtilities.encrypt(plaintext, using: snodeX25519PublicKey)
                     seal.fulfill(result)
-                case .server(_, let serverX25519PublicKey):
+                case .server(_, _, let serverX25519PublicKey):
                     let plaintext = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
                     let result = try EncryptionUtilities.encrypt(plaintext, using: serverX25519PublicKey)
                     seal.fulfill(result)
@@ -47,8 +47,8 @@ extension OnionRequestAPI {
             case .snode(let snode):
                 guard let snodeED25519PublicKey = snode.publicKeySet?.ed25519Key else { return seal.reject(Error.snodePublicKeySetMissing) }
                 parameters = [ "destination" : snodeED25519PublicKey ]
-            case .server(let host, _):
-                parameters = [ "host" : host, "target" : "/loki/v2/lsrpc", "method" : "POST" ]
+            case .server(let host, let target, _):
+                parameters = [ "host" : host, "target" : target, "method" : "POST" ]
             }
             parameters["ephemeral_key"] = previousEncryptionResult.ephemeralPublicKey.toHexString()
             let x25519PublicKey: String
@@ -56,7 +56,7 @@ extension OnionRequestAPI {
             case .snode(let snode):
                 guard let snodeX25519PublicKey = snode.publicKeySet?.x25519Key else { return seal.reject(Error.snodePublicKeySetMissing) }
                 x25519PublicKey = snodeX25519PublicKey
-            case .server(_, let serverX25519PublicKey):
+            case .server(_, _, let serverX25519PublicKey):
                 x25519PublicKey = serverX25519PublicKey
             }
             do {

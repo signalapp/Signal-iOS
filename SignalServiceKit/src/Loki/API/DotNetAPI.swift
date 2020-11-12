@@ -127,11 +127,11 @@ public class DotNetAPI : NSObject {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: SnodeAPI.workQueue) {
             serverPublicKeyPromise.then2 { serverPublicKey in
                 return OnionRequestAPI.sendOnionRequest(request, to: host, using: serverPublicKey, isJSONRequired: false).map2 { json in
-                    guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
+                    guard let body = json["result"] as? String, let data = Data(base64Encoded: body) else {
                         print("[Loki] Couldn't parse attachment from: \(json).")
                         throw DotNetAPIError.parsingFailed
                     }
-                    return Data(data)
+                    return data
                 }
             }
         }

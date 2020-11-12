@@ -30,7 +30,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: pnServerPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
                     return print("[Loki] Couldn't unregister from push notifications.")
                 }
@@ -72,7 +72,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: pnServerPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
                     return print("[Loki] Couldn't register device token.")
                 }
@@ -109,7 +109,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: pnServerPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
                     return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
                 }
@@ -131,7 +131,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: pnServerPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
                     return print("[Loki] Couldn't notify PN server.")
                 }
