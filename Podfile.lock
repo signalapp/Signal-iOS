@@ -329,7 +329,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 0516a98a5514ecc1f6ab2a83a0c3953e4beff828
+    :commit: 582ec1a96c81ef5623e49a2a99abbae2601a6f35
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
