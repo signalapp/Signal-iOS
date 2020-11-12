@@ -88,4 +88,8 @@ class NotificationServiceExtensionContext: NSObject, AppContext {
     func setNetworkActivityIndicatorVisible(_ value: Bool) {}
 
     func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {}
+
+    var debugLogsDirPath: String {
+        DebugLogger.nseDebugLogsDirPath
+    }
 }

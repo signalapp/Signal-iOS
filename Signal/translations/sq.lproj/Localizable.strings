@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Vendoseni këtë kod QR te kuadrati i pajisjet tuaj tjetër.";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "S’po e shihni kërkesën te pajisja juaj e vjetër?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Po pritet për Pajisje Tjetër…";
 
@@ -1505,7 +1508,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Anëtarësia në grup mund të ndryshohet nga “%@“.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Këtë mundësi mund ta ndryshojnë vetëm përgjegjësit.";
+
+/* Button to join an ongoing group call */
+"GROUP_CALL_JOIN_BUTTON" = "Hyni në Thirrje";
+
+/* String indicating how many people are current in the call */
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Në këtë thirrje · %ld vetë";
+
+/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "Në këtë thirrje gjenden %@, %@, dhe %ld të tjerë";
+
+/* Text explaining that you are the only person currently in the group call */
+"GROUP_CALL_NO_ONE_HERE" = "S’ka tjetër këtu";
+
+/* String indicating one person is currently in the call */
+"GROUP_CALL_ONE_IN_THIS_CALL" = "Në këtë thirrje · 1 person";
+
+/* Text explaining that there is one person in the group call. Embeds {member name} */
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "Në këtë thirrje gjendet %@";
+
+/* Button to start a group call */
+"GROUP_CALL_START_BUTTON" = "Nise Thirrjen";
+
+/* Text explaining that there are two people in the group call. Embeds {member name} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "Në këtë thirrje gjenden %@ dhe %@";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "E krijuat grupin.";
@@ -2057,7 +2084,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Zgjidhni përgjegjës të ri";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Shihni Kërkesë";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Shihni Kërkesa";
@@ -2304,6 +2331,24 @@
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Parashihni Çfarëdo Lidhje";
+
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Që të mund të shpërngulni llogarinë tuaj Signal, lypset të aktivizoni rrjet vendor në të dyja pajisjet.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Ju Duhet Ndihmë?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Në secilën pajisje, hapni Rregullimet";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Aktivizoni “Rrejt Vendor”";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Kaloni te Signal-i";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Aktivizoni Hyrje Në Rrjet Vendor";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Kërkoni sipas emrash ose adresash";

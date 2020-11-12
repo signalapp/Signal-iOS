@@ -416,6 +416,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let fastPerfTests = false
 
+    @objc
+    public static let extraDebugLogs = build.includes(.qa)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)

@@ -29,7 +29,9 @@ extension DeviceTransferService: MCNearbyServiceAdvertiserDelegate {
         invitationHandler(true, session)
     }
 
-    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Swift.Error) {}
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Swift.Error) {
+        Logger.error("Failed to start advertising for peers \(error)")
+    }
 }
 
 extension DeviceTransferService: MCSessionDelegate {

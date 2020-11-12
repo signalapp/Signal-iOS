@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <CocoaLumberjack/DDFileLogger.h>
@@ -17,13 +17,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enableTTYLogging;
 
 - (void)enableErrorReporting;
+
 @property (nonatomic, readonly) NSURL *errorLogsDir;
 
 - (void)wipeLogs;
 
 - (NSArray<NSString *> *)allLogFilePaths;
 
+@property (nonatomic, readonly, class) NSString *mainAppDebugLogsDirPath;
+@property (nonatomic, readonly, class) NSString *shareExtensionDebugLogsDirPath;
+@property (nonatomic, readonly, class) NSString *nseDebugLogsDirPath;
+#ifdef TESTABLE_BUILD
+@property (nonatomic, readonly, class) NSString *testDebugLogsDirPath;
+#endif
+
 @end
+
+#pragma mark -
 
 @interface ErrorLogger : DDFileLogger
 

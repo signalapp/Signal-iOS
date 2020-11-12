@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Igazítsd a QR kódot a keretbe a másik eszközön";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Nem látod a feliratot a régi eszközödön?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Várakozás a másik eszközre...";
 
@@ -1505,7 +1508,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Csoport tagságot állíthathatja: \"%@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Ezt a beállítást csak adminok módosíthatják.";
+
+/* Button to join an ongoing group call */
+"GROUP_CALL_JOIN_BUTTON" = "Belépés a hívásba";
+
+/* String indicating how many people are current in the call */
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "%ld ember · ebben a hívásban";
+
+/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ és még %ld másik ember ebben a hívásban";
+
+/* Text explaining that you are the only person currently in the group call */
+"GROUP_CALL_NO_ONE_HERE" = "Nincs itt senki";
+
+/* String indicating one person is currently in the call */
+"GROUP_CALL_ONE_IN_THIS_CALL" = "1 személy · ebben a hívásban";
+
+/* Text explaining that there is one person in the group call. Embeds {member name} */
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ ebben a hívásban";
+
+/* Button to start a group call */
+"GROUP_CALL_START_BUTTON" = "Hívás indítása";
+
+/* Text explaining that there are two people in the group call. Embeds {member name} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ és %@ ebben a hívásban";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Létrehoztad a csoportot.";
@@ -2057,7 +2084,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Új admin választása";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Kérés mutatása";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Kérések mutatása";
@@ -2304,6 +2331,24 @@
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Link előnézet bármire";
+
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Hogy át tudd mozgatni Signal azonosítódat, mindkét eszközön engedélyezd a helyi hálózathoz való hozzáférést.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Segítség?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Mindkét eszközön nyisd meg a Beállításokat";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Kapcsold be: \"Helyi hálózat\"";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Keresd meg a Signal alkalmazást";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Helyi hálózati hozzáférés bekapcsolása";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Keresés név, vagy cím alapján";

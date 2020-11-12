@@ -424,6 +424,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return SignalApp.sharedApp.didLastLaunchNotTerminate;
 }
 
+- (NSString *)debugLogsDirPath
+{
+    return DebugLogger.mainAppDebugLogsDirPath;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

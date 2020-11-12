@@ -453,6 +453,13 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     });
 }
 
+- (void)reuploadLocalProfile
+{
+    [self reuploadLocalProfilePromiseObjc].then(^{ OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
+        OWSFailDebug(@"Error: %@", error);
+    });
+}
+
 #pragma mark - Profile Key Rotation
 
 - (nullable NSString *)groupKeyForGroupId:(NSData *)groupId {
@@ -720,19 +727,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:TSContactThread.class]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
-            if (phoneNumber != nil) {
-                [self.whitelistedPhoneNumbersStore removeValueForKey:phoneNumber transaction:transaction];
-            }
-
-            NSString *_Nullable uuidString = contactThread.contactAddress.uuidString;
-            if (uuidString != nil) {
-                [self.whitelistedUUIDsStore removeValueForKey:uuidString transaction:transaction];
-            }
+            [self removeUserFromProfileWhitelist:contactThread.contactAddress
+                             wasLocallyInitiated:YES
+                                     transaction:transaction];
         } else {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
-            NSString *groupKey = [self groupKeyForGroupId:groupThread.groupModel.groupId];
-            [self.whitelistedGroupsStore removeValueForKey:groupKey transaction:transaction];
+            [self removeGroupIdFromProfileWhitelist:groupThread.groupModel.groupId
+                                wasLocallyInitiated:YES
+                                        transaction:transaction];
         }
     });
 }
@@ -1002,6 +1004,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         if (address.phoneNumber) {
             [self.whitelistedPhoneNumbersStore removeValueForKey:address.phoneNumber transaction:transaction];
         }
+
+        TSThread *_Nullable thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+        if (thread) {
+            [self.databaseStorage touchThread:thread shouldReindex:NO transaction:transaction];
+        }
     }
 
     [transaction addSyncCompletion:^{
@@ -1038,6 +1045,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
         if (address.phoneNumber) {
             [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:transaction];
+        }
+
+        TSThread *_Nullable thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+        if (thread) {
+            [self.databaseStorage touchThread:thread shouldReindex:NO transaction:transaction];
         }
     }
 
@@ -1156,6 +1168,13 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [self.whitelistedGroupsStore removeValueForKey:groupIdKey transaction:transaction];
 
+    TSThread *_Nullable groupThread =
+        [TSGroupThread anyFetchGroupThreadWithUniqueId:[TSGroupThread threadIdFromGroupId:groupId]
+                                           transaction:transaction];
+    if (groupThread) {
+        [self.databaseStorage touchThread:groupThread shouldReindex:NO transaction:transaction];
+    }
+
     [transaction addSyncCompletion:^{
         // Mark the group for update
         if (wasLocallyInitiated) {
@@ -1181,6 +1200,13 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
     [self.whitelistedGroupsStore setBool:YES key:groupIdKey transaction:transaction];
+
+    TSThread *_Nullable groupThread =
+        [TSGroupThread anyFetchGroupThreadWithUniqueId:[TSGroupThread threadIdFromGroupId:groupId]
+                                           transaction:transaction];
+    if (groupThread) {
+        [self.databaseStorage touchThread:groupThread shouldReindex:NO transaction:transaction];
+    }
 
     [transaction addSyncCompletion:^{
         // Mark the group for update

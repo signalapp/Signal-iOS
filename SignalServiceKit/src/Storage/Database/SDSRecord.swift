@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,29 +34,38 @@ public extension SDSRecord {
     // doesn't match the database contents.
     func sdsSave(saveMode: SDSSaveMode,
                  transaction: GRDBWriteTransaction) {
-        do {
-            // GRDB TODO: the record has an id property, but we can't use it here
-            //            until we modify the upsert logic.
-            //            grdbIdByUniqueId() verifies that the model hasn't been
-            //            deleted from the db.
-            if let grdbId: Int64 = grdbIdByUniqueId(transaction: transaction) {
-
-                if saveMode == .insert {
-                    owsFailDebug("Could not insert existing record.")
-                }
-
-                var recordCopy = self
-                recordCopy.id = grdbId
-                try recordCopy.update(transaction.database)
-            } else {
-                if saveMode == .update {
-                    owsFailDebug("Could not update missing record.")
-                }
-
-                try self.insert(transaction.database)
+        // GRDB TODO: the record has an id property, but we can't use it here
+        //            until we modify the upsert logic.
+        //            grdbIdByUniqueId() verifies that the model hasn't been
+        //            deleted from the db.
+        if let grdbId: Int64 = grdbIdByUniqueId(transaction: transaction) {
+            if saveMode == .insert {
+                owsFailDebug("Could not insert existing record.")
             }
+            sdsUpdate(grdbId: grdbId, transaction: transaction)
+        } else {
+            if saveMode == .update {
+                owsFailDebug("Could not update missing record.")
+            }
+            sdsInsert(transaction: transaction)
+        }
+    }
+
+    private func sdsUpdate(grdbId: Int64, transaction: GRDBWriteTransaction) {
+        do {
+            var recordCopy = self
+            recordCopy.id = grdbId
+            try recordCopy.update(transaction.database)
         } catch {
-            owsFail("Write failed: \(error.grdbErrorForLogging)")
+            owsFail("Update failed: \(error.grdbErrorForLogging)")
+        }
+    }
+
+    private func sdsInsert(transaction: GRDBWriteTransaction) {
+        do {
+            try self.insert(transaction.database)
+        } catch {
+            owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
 

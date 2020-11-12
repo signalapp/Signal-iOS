@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Поместите этот QR-код в кадр своего другого устройства.";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Не видите инструкцию на своём старом устройстве?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Ожидание другого устройства…";
 
@@ -1169,7 +1172,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Получение данных";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Соединение…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Подключает…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поместите этот QR-код внутри круга";
@@ -1505,7 +1508,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Членство в группе может быть изменено «%@».";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Только администраторы могут изменять эту опцию.";
+
+/* Button to join an ongoing group call */
+"GROUP_CALL_JOIN_BUTTON" = "Присоединиться к звонку";
+
+/* String indicating how many people are current in the call */
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "В этом звонке · %ld человек(-а)";
+
+/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ и ещё %ld человек(-а) в этом звонке";
+
+/* Text explaining that you are the only person currently in the group call */
+"GROUP_CALL_NO_ONE_HERE" = "Здесь нет никого, кроме вас";
+
+/* String indicating one person is currently in the call */
+"GROUP_CALL_ONE_IN_THIS_CALL" = "В этом звонке · 1 человек";
+
+/* Text explaining that there is one person in the group call. Embeds {member name} */
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ в этом звонке";
+
+/* Button to start a group call */
+"GROUP_CALL_START_BUTTON" = "Начать звонок";
+
+/* Text explaining that there are two people in the group call. Embeds {member name} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ и %@ в этом звонке";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Вы создали группу.";
@@ -2057,7 +2084,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Выбрать нового администратора";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Просмотреть запрос";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Просмотреть запросы";
@@ -2132,7 +2159,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не удалось выбрать вложение.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Соединеняемся…";
+"IN_CALL_CONNECTING" = "Подключает…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Принят на другом устройстве.";
@@ -2144,7 +2171,7 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Отклонён на другом устройстве.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Переподключаемся…";
+"IN_CALL_RECONNECTING" = "Переподключает…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Звоним…";
@@ -2304,6 +2331,24 @@
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Предпросмотр любой ссылки";
+
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Чтобы перенести вашу учётную запись Signal, вам нужно включить доступ к локальной сети на обоих устройствах.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Нужна помощь?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "На каждом устройстве откройте «Настройки»";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Включите «Локальная сеть»";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Перейдите в «Signal»";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Включите доступ к локальной сети";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Поиск по названию или адресу";
