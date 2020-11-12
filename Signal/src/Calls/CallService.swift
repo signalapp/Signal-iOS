@@ -685,6 +685,18 @@ extension CallService: CallManagerDelegate {
             configuration: OWSURLSession.defaultURLSessionConfiguration()
         )
         session.require2xxOr3xx = false
+        session.allowRedirects = true
+        session.customRedirectHandler = { request in
+            var request = request
+
+            if let authHeader = headers.first(where: {
+                $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
+            }) {
+                request.addValue(authHeader.value, forHTTPHeaderField: authHeader.key)
+            }
+
+            return request
+        }
 
         firstly(on: .sharedUtility) {
             session.dataTaskPromise(url, method: httpMethod, headers: headers, body: body)

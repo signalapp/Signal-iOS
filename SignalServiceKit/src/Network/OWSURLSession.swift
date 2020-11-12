@@ -90,7 +90,6 @@ public struct OWSUrlDownloadResponse {
 // TODO: If we use OWSURLSession more, we'll need to add support for more features, e.g.:
 //
 // * Download tasks to memory.
-// * Redirects.
 @objc
 public class OWSURLSession: NSObject {
 
@@ -158,6 +157,30 @@ public class OWSURLSession: NSObject {
         }
         set {
             _shouldHandleRemoteDeprecation.set(newValue)
+        }
+    }
+
+    private let _allowRedirects = AtomicBool(true)
+    @objc
+    public var allowRedirects: Bool {
+        get {
+            _allowRedirects.get()
+        }
+        set {
+            owsAssertDebug(customRedirectHandler == nil || newValue)
+            _allowRedirects.set(newValue)
+        }
+    }
+
+    private let _customRedirectHandler = AtomicOptional<(URLRequest) -> URLRequest?>(nil)
+    @objc
+    public var customRedirectHandler: ((URLRequest) -> URLRequest?)? {
+        get {
+            _customRedirectHandler.get()
+        }
+        set {
+            owsAssertDebug(newValue == nil || allowRedirects)
+            _customRedirectHandler.set(newValue)
         }
     }
 
@@ -525,6 +548,20 @@ extension OWSURLSession: URLSessionDelegate {
                            didReceive challenge: URLAuthenticationChallenge,
                            completionHandler: @escaping URLAuthenticationChallengeCompletion) {
         urlSession(didReceive: challenge, completionHandler: completionHandler)
+    }
+
+    public func urlSession(_ session: URLSession,
+                           task: URLSessionTask,
+                           willPerformHTTPRedirection response: HTTPURLResponse,
+                           newRequest: URLRequest,
+                           completionHandler: @escaping (URLRequest?) -> Void) {
+        guard allowRedirects else { return completionHandler(nil) }
+
+        if let customRedirectHandler = customRedirectHandler {
+            completionHandler(customRedirectHandler(newRequest))
+        } else {
+            completionHandler(newRequest)
+        }
     }
 }
 
