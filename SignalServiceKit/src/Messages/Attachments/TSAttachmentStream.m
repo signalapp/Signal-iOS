@@ -107,7 +107,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return self;
     }
 
-    _contentType = pointer.contentType;
+    OWSAssertDebug([NSObject isNullableObject:self.contentType equalTo:pointer.contentType]);
+
     // TSAttachmentStream doesn't have any "incoming vs. outgoing"
     // state, but this constructor is used only for new incoming
     // attachments which don't need to be uploaded.
