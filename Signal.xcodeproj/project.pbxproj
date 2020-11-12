@@ -801,6 +801,8 @@
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
 		C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C354E75923FE2A7600CE22E3 /* BaseVC.swift */; };
+		C3550A03255DD6D900194B6A /* AppDelegate+OpenGroupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3550A02255DD6D900194B6A /* AppDelegate+OpenGroupAPI.swift */; };
+		C3550A1D255DD73500194B6A /* Storage+SessionMessagingKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3550A1C255DD73500194B6A /* Storage+SessionMessagingKit.swift */; };
 		C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */; };
 		C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */; };
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
@@ -2165,6 +2167,8 @@
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
 		C354E75923FE2A7600CE22E3 /* BaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVC.swift; sourceTree = "<group>"; };
+		C3550A02255DD6D900194B6A /* AppDelegate+OpenGroupAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+OpenGroupAPI.swift"; sourceTree = "<group>"; };
+		C3550A1C255DD73500194B6A /* Storage+SessionMessagingKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+SessionMessagingKit.swift"; sourceTree = "<group>"; };
 		C35E8AA22485C72300ACB629 /* SwiftCSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCSV.framework; path = ThirdParty/Carthage/Build/iOS/SwiftCSV.framework; sourceTree = "<group>"; };
 		C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Locations-English.csv"; sourceTree = "<group>"; };
 		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
@@ -3272,6 +3276,7 @@
 		C31F812425258F9C00DD9FD9 /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				C3550A1C255DD73500194B6A /* Storage+SessionMessagingKit.swift */,
 				C3F0A619255C9902007BE2A3 /* Storage+SessionProtocolKit.swift */,
 				C3F0A607255C98A6007BE2A3 /* Storage+SessionSnodeKit.swift */,
 				C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */,
@@ -4477,6 +4482,7 @@
 			isa = PBXGroup;
 			children = (
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
+				C3550A02255DD6D900194B6A /* AppDelegate+OpenGroupAPI.swift */,
 				C3F0A62B255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift */,
 				C3F0A5EB255C970D007BE2A3 /* Configuration.swift */,
 				B8CCF63B239757C10091D419 /* Components */,
@@ -6159,6 +6165,7 @@
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */,
 				B80C6B5B2384C7F900FDBC8B /* DeviceNameModalDelegate.swift in Sources */,
+				C3550A03255DD6D900194B6A /* AppDelegate+OpenGroupAPI.swift in Sources */,
 				340FC8B8204DAC8D007AEB0F /* AddToGroupViewController.m in Sources */,
 				B893063F2383961A005EAA8E /* ScanQRCodeWrapperVC.swift in Sources */,
 				B879D449247E1BE300DB3608 /* PathVC.swift in Sources */,
@@ -6268,6 +6275,7 @@
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
 				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
+				C3550A1D255DD73500194B6A /* Storage+SessionMessagingKit.swift in Sources */,
 				C331FFF42558FF0300070591 /* PNOptionView.swift in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,

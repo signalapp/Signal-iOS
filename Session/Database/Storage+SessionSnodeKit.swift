@@ -2,7 +2,7 @@
 extension Storage : SessionSnodeKitStorageProtocol {
 
     // MARK: Onion Request Paths
-    internal static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
+    private static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
 
     public func getOnionRequestPaths() -> [OnionRequestAPI.Path] {
         let collection = Storage.onionRequestPathCollection

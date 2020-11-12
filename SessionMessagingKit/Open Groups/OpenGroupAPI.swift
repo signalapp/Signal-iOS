@@ -122,7 +122,7 @@ public final class OpenGroupAPI : DotNetAPI {
                             SNLog("Ignoring open group message with invalid signature.")
                             return nil
                         }
-                        let existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!))
+                        let existingMessageID = storage.getIDForMessage(withServerID: result.serverID!)
                         guard existingMessageID == nil else {
                             SNLog("Ignoring duplicate open group message.")
                             return nil
