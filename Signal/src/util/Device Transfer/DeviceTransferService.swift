@@ -83,6 +83,9 @@ class DeviceTransferService: NSObject {
     static let databaseIdentifier = "database"
     static let databaseWALIdentifier = "database-wal"
 
+    static let missingFileData = "Missing File".data(using: .utf8)!
+    static let missingFileHash = Cryptography.computeSHA256Digest(missingFileData)!
+
     // This must also be updated in the info.plist
     private static let newDeviceServiceIdentifier = "sgnl-new-device"
 
@@ -354,7 +357,7 @@ class DeviceTransferService: NSObject {
 
         guard let progress: Progress = {
             switch transferState {
-            case .incoming(_, _, _, let progress):
+            case .incoming(_, _, _, _, let progress):
                 return progress
             case .outgoing(_, _, _, _, let progress):
                 return progress

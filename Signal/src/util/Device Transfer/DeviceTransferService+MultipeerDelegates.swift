@@ -68,7 +68,7 @@ extension DeviceTransferService: MCSessionDelegate {
             @unknown default:
                 failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
             }
-        case .incoming(let oldDevicePeerId, _, _, _):
+        case .incoming(let oldDevicePeerId, _, _, _, _):
             // We only care about state changes for the device we're receiving from.
             guard peerId == oldDevicePeerId else { return }
 
@@ -103,7 +103,7 @@ extension DeviceTransferService: MCSessionDelegate {
                 SignalApp.resetAppData()
             }
 
-        case .incoming(let oldDevicePeerId, _, let receivedFileIds, _):
+        case .incoming(let oldDevicePeerId, _, let receivedFileIds, let skippedFileIds, _):
             guard peerId == oldDevicePeerId else {
                 return owsFailDebug("Ignoring data from unexpected peer \(peerId)")
             }
@@ -118,7 +118,10 @@ extension DeviceTransferService: MCSessionDelegate {
             // it indicates that the old device thinks we should have received
             // everything at this point.
 
-            guard verifyTransferCompletedSuccessfully(receivedFileIds: receivedFileIds) else {
+            guard verifyTransferCompletedSuccessfully(
+                receivedFileIds: receivedFileIds,
+                skippedFileIds: skippedFileIds
+            ) else {
                 return failTransfer(.assertion, "transfer is missing data")
             }
 
@@ -168,7 +171,7 @@ extension DeviceTransferService: MCSessionDelegate {
             }
         case .outgoing:
             owsFailDebug("Unexpectedly received a file on old device \(resourceName)")
-        case .incoming(let oldDevicePeerId, let manifest, let receivedFileIds, let progress):
+        case .incoming(let oldDevicePeerId, let manifest, let receivedFileIds, let skippedFileIds, let progress):
             guard peerId == oldDevicePeerId else {
                 return owsFailDebug("Ignoring file from unexpected peer \(peerId)")
             }
@@ -181,6 +184,10 @@ extension DeviceTransferService: MCSessionDelegate {
 
             guard !receivedFileIds.contains(fileIdentifier) else {
                 return Logger.info("Ignoring duplicate file: \(fileIdentifier)")
+            }
+
+            guard !skippedFileIds.contains(fileIdentifier) else {
+                return Logger.info("Ignoring previously skipped file: \(fileIdentifier)")
             }
 
             guard let file: DeviceTransferProtoFile = {
@@ -223,7 +230,7 @@ extension DeviceTransferService: MCSessionDelegate {
             }
         case .outgoing:
             owsFailDebug("Unexpectedly received a file on old device \(resourceName)")
-        case .incoming(let oldDevicePeerId, let manifest, let receivedFileIds, _):
+        case .incoming(let oldDevicePeerId, let manifest, let receivedFileIds, let skippedFileIds, _):
             guard peerId == oldDevicePeerId else {
                 return owsFailDebug("Ignoring file from unexpected peer \(peerId)")
             }
@@ -237,6 +244,11 @@ extension DeviceTransferService: MCSessionDelegate {
             guard !receivedFileIds.contains(fileIdentifier) else {
                 return Logger.info("Ignoring duplicate file: \(fileIdentifier)")
             }
+
+            guard !skippedFileIds.contains(fileIdentifier) else {
+                return Logger.info("Ignoring previously skipped file: \(fileIdentifier)")
+            }
+
             guard let file: DeviceTransferProtoFile = {
                 switch fileIdentifier {
                 case DeviceTransferService.databaseIdentifier:
@@ -261,6 +273,12 @@ extension DeviceTransferService: MCSessionDelegate {
 
                 guard computedHash.hexadecimalString == fileHash else {
                     return failTransfer(.assertion, "Received file with incorrect hash \(file.identifier)")
+                }
+
+                guard computedHash != DeviceTransferService.missingFileHash else {
+                    Logger.warn("Received notification of missing file: \(file.identifier), skipping.")
+                    transferState = transferState.appendingSkippedFileId(file.identifier)
+                    return
                 }
 
                 guard OWSFileSystem.moveFilePath(

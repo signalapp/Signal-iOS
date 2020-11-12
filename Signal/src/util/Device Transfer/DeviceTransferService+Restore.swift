@@ -21,7 +21,7 @@ extension DeviceTransferService {
         set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.pendingWasTransferedClearKey) }
     }
 
-    func verifyTransferCompletedSuccessfully(receivedFileIds: [String]) -> Bool {
+    func verifyTransferCompletedSuccessfully(receivedFileIds: [String], skippedFileIds: [String]) -> Bool {
         guard let manifest = readManifestFromTransferDirectory() else {
             owsFailDebug("Missing manifest file")
             return false
@@ -30,6 +30,8 @@ extension DeviceTransferService {
         // Check that there aren't any files that we were
         // expecting that are missing.
         for file in manifest.files {
+            guard !skippedFileIds.contains(file.identifier) else { continue }
+
             guard receivedFileIds.contains(file.identifier) else {
                 owsFailDebug("did not receive file \(file.identifier)")
                 return false
