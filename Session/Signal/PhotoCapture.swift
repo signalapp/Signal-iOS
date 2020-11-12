@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import CoreServices
 
 protocol PhotoCaptureDelegate: AnyObject {
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment)

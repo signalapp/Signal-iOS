@@ -102,7 +102,6 @@ public class DotNetAPI : NSObject {
     }
 
     public static func downloadAttachment(from url: String) -> Promise<Data> {
-        var error: NSError?
         var host = "https://\(URL(string: url)!.host!)"
         let sanitizedURL: String
         if FileServerAPI.fileStorageBucketURL.contains(host) {
@@ -111,8 +110,10 @@ public class DotNetAPI : NSObject {
         } else {
             sanitizedURL = url.replacingOccurrences(of: host, with: "\(host)/loki/v1")
         }
-        let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: sanitizedURL, parameters: nil, error: &error)
-        if let error = error {
+        let request: NSMutableURLRequest
+        do {
+            request = try AFHTTPRequestSerializer().request(withMethod: "GET", urlString: sanitizedURL, parameters: nil)
+        } catch {
             SNLog("Couldn't download attachment due to error: \(error).")
             return Promise(error: error)
         }

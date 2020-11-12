@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import CoreServices
 
 // There's no UTI type for webp!
 enum GiphyFormat {
@@ -300,6 +301,7 @@ extension GiphyError: LocalizedError {
         let (promise, resolver) = Promise<[GiphyImageInfo]>.pending()
         sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
+                           headers:nil,
                            progress: nil,
                            success: { _, value in
                             Logger.error("search request succeeded")
@@ -347,6 +349,7 @@ extension GiphyError: LocalizedError {
 
         sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
+                           headers: nil,
                            progress: nil,
                            success: { _, value in
                             Logger.error("search request succeeded")

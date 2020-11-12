@@ -1,18 +1,18 @@
 PODS:
-  - AFNetworking (3.2.1):
-    - AFNetworking/NSURLSession (= 3.2.1)
-    - AFNetworking/Reachability (= 3.2.1)
-    - AFNetworking/Security (= 3.2.1)
-    - AFNetworking/Serialization (= 3.2.1)
-    - AFNetworking/UIKit (= 3.2.1)
-  - AFNetworking/NSURLSession (3.2.1):
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.2.1)
-  - AFNetworking/Security (3.2.1)
-  - AFNetworking/Serialization (3.2.1)
-  - AFNetworking/UIKit (3.2.1):
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
   - CocoaLumberjack (3.6.2):
     - CocoaLumberjack/Core (= 3.6.2)
@@ -21,24 +21,24 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
-  - FeedKit (8.1.1)
+  - FeedKit (9.1.2)
   - GRKOpenSSLFramework (1.0.2.20)
   - HKDFKit (0.0.3)
   - libPhoneNumber-iOS (0.9.15)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - NVActivityIndicatorView (4.8.0):
-    - NVActivityIndicatorView/Presenter (= 4.8.0)
-  - NVActivityIndicatorView/Presenter (4.8.0)
-  - PromiseKit (6.5.3):
-    - PromiseKit/CorePromise (= 6.5.3)
-    - PromiseKit/Foundation (= 6.5.3)
-    - PromiseKit/UIKit (= 6.5.3)
-  - PromiseKit/CorePromise (6.5.3)
-  - PromiseKit/Foundation (6.5.3):
+  - NVActivityIndicatorView (5.0.1):
+    - NVActivityIndicatorView/Base (= 5.0.1)
+  - NVActivityIndicatorView/Base (5.0.1)
+  - PromiseKit (6.13.1):
+    - PromiseKit/CorePromise (= 6.13.1)
+    - PromiseKit/Foundation (= 6.13.1)
+    - PromiseKit/UIKit (= 6.13.1)
+  - PromiseKit/CorePromise (6.13.1)
+  - PromiseKit/Foundation (6.13.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.5.3):
+  - PromiseKit/UIKit (6.13.1):
     - PromiseKit/CorePromise
   - PureLayout (3.1.6)
   - Reachability (3.2)
@@ -206,17 +206,17 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/YYImage
 
 SPEC CHECKSUMS:
-  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
-  FeedKit: 3418eed25f0b493b205b4de1b8511ac21d413fa9
+  FeedKit: 71653273ab08e618cd6fd1301ca08fc02dca6a9e
   GRKOpenSSLFramework: dc635b0a9d4cd8af2a9ff80a61e779e21b69dfd8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
-  PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
+  NVActivityIndicatorView: 738e843cb8924e9e4fc3e559d0728031624bf860
+  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: bd3c4ec3a3819ad387c99ebb72c6b129c3ed4d2d
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c

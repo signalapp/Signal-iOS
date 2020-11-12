@@ -2,6 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import <CoreServices/CoreServices.h>
 #import "ConversationViewItem.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"

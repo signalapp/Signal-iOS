@@ -647,6 +647,7 @@ public class OWSLinkPreview: MTLModel {
         let (promise, resolver) = Promise<Data>.pending()
         sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
+                           headers: nil,
                            progress: nil,
                            success: { task, value in
 

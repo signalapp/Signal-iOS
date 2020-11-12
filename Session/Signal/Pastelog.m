@@ -79,6 +79,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     NSString *urlString = @"https://debuglogs.org/";
     [sessionManager GET:urlString
         parameters:nil
+        headers:nil
         progress:nil
         success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
             DebugLogUploader *strongSelf = weakSelf;
@@ -158,6 +159,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     [sessionManager POST:uploadUrl
         parameters:@{}
+        headers:nil
         constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
             for (NSString *fieldName in fields) {
                 NSString *fieldValue = fields[fieldName];

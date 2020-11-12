@@ -115,28 +115,33 @@ dispatch_queue_t NetworkManagerQueue()
     if ([request.HTTPMethod isEqualToString:@"GET"]) {
         [self.sessionManager GET:request.URL.absoluteString
                       parameters:request.parameters
+                         headers:request.allHTTPHeaderFields
                         progress:nil
                          success:success
                          failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
         [self.sessionManager POST:request.URL.absoluteString
                        parameters:request.parameters
+                          headers:request.allHTTPHeaderFields
                          progress:nil
                           success:success
                           failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
         [self.sessionManager PUT:request.URL.absoluteString
                       parameters:request.parameters
+                         headers:request.allHTTPHeaderFields
                          success:success
                          failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
         [self.sessionManager DELETE:request.URL.absoluteString
                          parameters:request.parameters
+                            headers:request.allHTTPHeaderFields
                             success:success
                             failure:failure];
     } else if ([request.HTTPMethod isEqualToString:@"PATCH"]) {
         [self.sessionManager PATCH:request.URL.absoluteString
                         parameters:request.parameters
+                           headers:request.allHTTPHeaderFields
                            success:success
                            failure:failure];
     } else {

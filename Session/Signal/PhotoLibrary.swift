@@ -5,6 +5,7 @@
 import Foundation
 import Photos
 import PromiseKit
+import CoreServices
 
 protocol PhotoLibraryDelegate: class {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)

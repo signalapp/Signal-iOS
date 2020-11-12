@@ -7,6 +7,7 @@ import UIKit
 import PureLayout
 import PromiseKit
 import SessionUIKit
+import CoreServices
 
 @objc
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate, AppModeManagerDelegate {
