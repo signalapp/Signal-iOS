@@ -106,7 +106,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 {
     OWSLogDebug(@"started uploading data for attachment: %@", self.attachmentId);
     NSError *error;
-    NSData *attachmentData = [attachmentStream readDataFromFileWithError:&error];
+    NSData *attachmentData = [attachmentStream readDataFromFileAndReturnError:&error];
     if (error) {
         OWSLogError(@"Failed to read attachment data with error: %@", error);
         error.isRetryable = YES;

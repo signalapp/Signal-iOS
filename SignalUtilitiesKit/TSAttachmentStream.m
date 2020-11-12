@@ -168,7 +168,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 #pragma mark - File Management
 
-- (nullable NSData *)readDataFromFileWithError:(NSError **)error
+- (nullable NSData *)readDataFromFileAndReturnError:(NSError **)error
 {
     *error = nil;
     NSString *_Nullable filePath = self.originalFilePath;

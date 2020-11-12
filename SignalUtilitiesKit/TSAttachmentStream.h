@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);
 
-@interface TSAttachmentStream : TSAttachment
+@interface TSAttachmentStream : TSAttachment <SNAttachmentStream>
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithContentType:(NSString *)contentType
@@ -52,7 +52,7 @@ typedef void (^OWSThumbnailFailure)(void);
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
 
-- (nullable NSData *)readDataFromFileWithError:(NSError **)error;
+- (nullable NSData *)readDataFromFileAndReturnError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
 - (BOOL)writeDataSource:(DataSource *)dataSource;
 
