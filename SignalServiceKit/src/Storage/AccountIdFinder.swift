@@ -39,22 +39,3 @@ public class OWSAccountIdFinder: NSObject {
         return recipient.address
     }
 }
-
-extension OWSAccountIdFinder: SMKAccountIdFinder {
-    public func accountId(forUuid uuid: UUID?, phoneNumber: String?, protocolContext: SPKProtocolWriteContext?) -> String? {
-        guard let transaction = protocolContext as? SDSAnyWriteTransaction else {
-            owsFail("transaction had unexected type: \(type(of: protocolContext))")
-        }
-
-        return ensureAccountId(forUuid: uuid, phoneNumber: phoneNumber, transaction: transaction)
-    }
-
-    private func ensureAccountId(forUuid uuid: UUID?, phoneNumber: String?, transaction: SDSAnyWriteTransaction) -> String? {
-        let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
-        guard address.isValid else {
-            owsFailDebug("address was invalid")
-            return nil
-        }
-        return ensureAccountId(forAddress: address, transaction: transaction)
-    }
-}
