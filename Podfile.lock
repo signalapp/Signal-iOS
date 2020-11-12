@@ -1,124 +1,51 @@
 PODS:
-  - AFNetworking (3.2.1):
-    - AFNetworking/NSURLSession (= 3.2.1)
-    - AFNetworking/Reachability (= 3.2.1)
-    - AFNetworking/Security (= 3.2.1)
-    - AFNetworking/Serialization (= 3.2.1)
-    - AFNetworking/UIKit (= 3.2.1)
-  - AFNetworking/NSURLSession (3.2.1):
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.2.1)
-  - AFNetworking/Security (3.2.1)
-  - AFNetworking/Serialization (3.2.1)
-  - AFNetworking/UIKit (3.2.1):
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
   - CocoaLumberjack (3.6.2):
     - CocoaLumberjack/Core (= 3.6.2)
   - CocoaLumberjack/Core (3.6.2)
   - CryptoSwift (1.3.2)
-  - FeedKit (8.1.1)
-  - GRKOpenSSLFramework (1.0.2.12)
+  - Curve25519Kit (2.1.0):
+    - CocoaLumberjack
+    - SignalCoreKit
+  - FeedKit (9.1.2)
+  - GRKOpenSSLFramework (1.0.2.20)
+  - HKDFKit (0.0.3)
   - libPhoneNumber-iOS (0.9.15)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - NVActivityIndicatorView (4.8.0):
-    - NVActivityIndicatorView/Presenter (= 4.8.0)
-  - NVActivityIndicatorView/Presenter (4.8.0)
-  - PromiseKit (6.5.3):
-    - PromiseKit/CorePromise (= 6.5.3)
-    - PromiseKit/Foundation (= 6.5.3)
-    - PromiseKit/UIKit (= 6.5.3)
-  - PromiseKit/CorePromise (6.5.3)
-  - PromiseKit/Foundation (6.5.3):
+  - NVActivityIndicatorView (5.0.1):
+    - NVActivityIndicatorView/Base (= 5.0.1)
+  - NVActivityIndicatorView/Base (5.0.1)
+  - PromiseKit (6.13.1):
+    - PromiseKit/CorePromise (= 6.13.1)
+    - PromiseKit/Foundation (= 6.13.1)
+    - PromiseKit/UIKit (= 6.13.1)
+  - PromiseKit/CorePromise (6.13.1)
+  - PromiseKit/Foundation (6.13.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.5.3):
+  - PromiseKit/UIKit (6.13.1):
     - PromiseKit/CorePromise
   - PureLayout (3.1.6)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
-  - SessionAxolotlKit (1.0.7):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionAxolotlKit/Tests (1.0.7):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionCoreKit (1.0.0):
+  - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - GRKOpenSSLFramework
-  - SessionCoreKit/Tests (1.0.0):
-    - CocoaLumberjack
-    - GRKOpenSSLFramework
-  - SessionCurve25519Kit (2.1.3):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-  - SessionCurve25519Kit/Tests (2.1.3):
-    - CocoaLumberjack
-    - SessionCoreKit (~> 1.0.0)
-  - SessionHKDFKit (0.0.5):
-    - CocoaLumberjack
-    - SessionCoreKit
-  - SessionHKDFKit/Tests (0.0.5):
-    - CocoaLumberjack
-    - SessionCoreKit
-  - SessionMetadataKit (1.0.9):
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionMetadataKit/Tests (1.0.9):
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionHKDFKit (~> 0.0.5)
-    - SwiftProtobuf (~> 1.5.0)
-  - SessionServiceKit (1.0.0):
-    - AFNetworking
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - GRKOpenSSLFramework
-    - libPhoneNumber-iOS
-    - Mantle
-    - PromiseKit (~> 6.0)
-    - Reachability
-    - SAMKeychain
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.3)
-    - SessionMetadataKit (~> 1.0.9)
-    - Starscream
-    - SwiftProtobuf (~> 1.5.0)
-    - YapDatabase/SQLCipher
-  - SessionServiceKit/Tests (1.0.0):
-    - AFNetworking
-    - CocoaLumberjack
-    - CryptoSwift (~> 1.3)
-    - GRKOpenSSLFramework
-    - libPhoneNumber-iOS
-    - Mantle
-    - PromiseKit (~> 6.0)
-    - Reachability
-    - SAMKeychain
-    - SessionAxolotlKit (~> 1.0.7)
-    - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.3)
-    - SessionMetadataKit (~> 1.0.9)
-    - Starscream
-    - SwiftProtobuf (~> 1.5.0)
-    - YapDatabase/SQLCipher
   - Sodium (0.8.0)
   - SQLCipher (4.4.0):
     - SQLCipher/standard (= 4.4.0)
@@ -198,34 +125,28 @@ PODS:
   - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
-  - AFNetworking (~> 3.2.1)
-  - CryptoSwift (~> 1.3)
-  - FeedKit (~> 8.1)
-  - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
+  - AFNetworking
+  - CocoaLumberjack
+  - CryptoSwift
+  - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
+  - FeedKit
+  - GRKOpenSSLFramework
+  - HKDFKit
+  - libPhoneNumber-iOS
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - NVActivityIndicatorView (~> 4.7)
-  - PromiseKit (= 6.5.3)
+  - NVActivityIndicatorView
+  - PromiseKit
   - PureLayout (~> 3.1.4)
   - Reachability
-  - SessionAxolotlKit (from `https://github.com/loki-project/session-ios-protocol-kit.git`, branch `master`)
-  - SessionAxolotlKit/Tests (from `https://github.com/loki-project/session-ios-protocol-kit.git`, branch `master`)
-  - SessionCoreKit (from `https://github.com/loki-project/session-ios-core-kit.git`)
-  - SessionCoreKit/Tests (from `https://github.com/loki-project/session-ios-core-kit.git`)
-  - SessionCurve25519Kit (from `https://github.com/loki-project/session-ios-curve-25519-kit`)
-  - SessionCurve25519Kit/Tests (from `https://github.com/loki-project/session-ios-curve-25519-kit`)
-  - SessionHKDFKit (from `https://github.com/nielsandriesse/session-ios-hkdf-kit.git`)
-  - SessionHKDFKit/Tests (from `https://github.com/nielsandriesse/session-ios-hkdf-kit.git`)
-  - SessionMetadataKit (from `https://github.com/loki-project/session-ios-metadata-kit`)
-  - SessionMetadataKit/Tests (from `https://github.com/loki-project/session-ios-metadata-kit`)
-  - SessionServiceKit (from `.`)
-  - SessionServiceKit/Tests (from `.`)
-  - Sodium (~> 0.8.0)
-  - SQLCipher (>= 4.0.1)
+  - SAMKeychain
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - Sodium
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
+  - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
-  - ZXingObjC (~> 3.6.4)
+  - ZXingObjC
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -233,6 +154,8 @@ SPEC REPOS:
     - CocoaLumberjack
     - CryptoSwift
     - FeedKit
+    - GRKOpenSSLFramework
+    - HKDFKit
     - libPhoneNumber-iOS
     - NVActivityIndicatorView
     - PromiseKit
@@ -246,24 +169,13 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
-  GRKOpenSSLFramework:
-    :git: https://github.com/signalapp/GRKOpenSSLFramework
+  Curve25519Kit:
+    :git: https://github.com/signalapp/Curve25519Kit.git
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
-  SessionAxolotlKit:
-    :branch: master
-    :git: https://github.com/loki-project/session-ios-protocol-kit.git
-  SessionCoreKit:
-    :git: https://github.com/loki-project/session-ios-core-kit.git
-  SessionCurve25519Kit:
-    :git: https://github.com/loki-project/session-ios-curve-25519-kit
-  SessionHKDFKit:
-    :git: https://github.com/nielsandriesse/session-ios-hkdf-kit.git
-  SessionMetadataKit:
-    :git: https://github.com/loki-project/session-ios-metadata-kit
-  SessionServiceKit:
-    :path: "."
+  SignalCoreKit:
+    :git: https://github.com/signalapp/SignalCoreKit.git
   Starscream:
     :branch: signal-release
     :git: https://github.com/signalapp/Starscream.git
@@ -274,27 +186,15 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/YYImage
 
 CHECKOUT OPTIONS:
-  GRKOpenSSLFramework:
-    :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
-    :git: https://github.com/signalapp/GRKOpenSSLFramework
+  Curve25519Kit:
+    :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
+    :git: https://github.com/signalapp/Curve25519Kit.git
   Mantle:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
-  SessionAxolotlKit:
-    :commit: be92fccb6152ee02c8c2658cb3c2e21201f119d1
-    :git: https://github.com/loki-project/session-ios-protocol-kit.git
-  SessionCoreKit:
-    :commit: 0d66c90657b62cb66ecd2767c57408a951650f23
-    :git: https://github.com/loki-project/session-ios-core-kit.git
-  SessionCurve25519Kit:
-    :commit: c3bc075d1e1c8339eebe2af184869de1a007d855
-    :git: https://github.com/loki-project/session-ios-curve-25519-kit
-  SessionHKDFKit:
-    :commit: 0dcf8cf8a7995ef8663146f7063e6c1d7f5a3274
-    :git: https://github.com/nielsandriesse/session-ios-hkdf-kit.git
-  SessionMetadataKit:
-    :commit: df787d84bb8adb23c10df669296dee8d7988e410
-    :git: https://github.com/loki-project/session-ios-metadata-kit
+  SignalCoreKit:
+    :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
+    :git: https://github.com/signalapp/SignalCoreKit.git
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
@@ -306,24 +206,21 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/YYImage
 
 SPEC CHECKSUMS:
-  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
-  FeedKit: 3418eed25f0b493b205b4de1b8511ac21d413fa9
-  GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
+  Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
+  FeedKit: 71653273ab08e618cd6fd1301ca08fc02dca6a9e
+  GRKOpenSSLFramework: dc635b0a9d4cd8af2a9ff80a61e779e21b69dfd8
+  HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
-  PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
+  NVActivityIndicatorView: 738e843cb8924e9e4fc3e559d0728031624bf860
+  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: bd3c4ec3a3819ad387c99ebb72c6b129c3ed4d2d
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SessionAxolotlKit: f3558573a3cb52ebb921572f2f3b683da5eddad9
-  SessionCoreKit: 778a3f6e3da788b43497734166646025b6392e88
-  SessionCurve25519Kit: 9bb9afe199e4bc23578a4b15932ad2c57bd047b1
-  SessionHKDFKit: b0f4e669411703ab925aba07491c5611564d1419
-  SessionMetadataKit: d37afdc47d20c7046faa139a92e68fa99f76c95b
-  SessionServiceKit: b12afb3975b33a9579802111f948838861d914bb
+  SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
@@ -333,6 +230,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 8b58cc2d282fa528aa81b128b643596a9059c270
+PODFILE CHECKSUM: 1aad5fbd49d168d2f50da0b3b3e515247f1ce291
 
 COCOAPODS: 1.10.0.rc.1

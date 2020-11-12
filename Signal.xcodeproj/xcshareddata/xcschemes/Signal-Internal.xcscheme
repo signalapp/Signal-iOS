@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D221A088169C9E5E00537ABF"
                BuildableName = "Session.app"
-               BlueprintName = "Signal"
+               BlueprintName = "Session"
                ReferencedContainer = "container:Signal.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,7 +32,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D221A088169C9E5E00537ABF"
             BuildableName = "Session.app"
-            BlueprintName = "Signal"
+            BlueprintName = "Session"
             ReferencedContainer = "container:Signal.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -55,7 +55,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D221A088169C9E5E00537ABF"
             BuildableName = "Session.app"
-            BlueprintName = "Signal"
+            BlueprintName = "Session"
             ReferencedContainer = "container:Signal.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -84,7 +84,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D221A088169C9E5E00537ABF"
             BuildableName = "Session.app"
-            BlueprintName = "Signal"
+            BlueprintName = "Session"
             ReferencedContainer = "container:Signal.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

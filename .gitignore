@@ -28,3 +28,5 @@ DerivedData
 *.xcuserstate
 Index/
 
+# CocoaPods
+Pods
