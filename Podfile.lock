@@ -231,8 +231,8 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking/NSURLSession
-  - AxolotlKit (from `../SignalProtocolKit`)
-  - AxolotlKit/Tests (from `../SignalProtocolKit`)
+  - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
+  - AxolotlKit/Tests (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `master`)
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
@@ -284,7 +284,8 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   AxolotlKit:
-    :path: "../SignalProtocolKit"
+    :branch: master
+    :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :branch: signal-master
     :git: https://github.com/signalapp/blurhash
@@ -327,6 +328,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/zxingify/zxingify-objc.git
 
 CHECKOUT OPTIONS:
+  AxolotlKit:
+    :commit: 18a7031342824cb73e6c7d170227249d0c461a79
+    :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
@@ -403,6 +407,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 2c63fe2b9f8ee738050a15a7d7204004248f35ad
+PODFILE CHECKSUM: b5bfa970280627e05667d8024a4089e2f68b0e49
 
 COCOAPODS: 1.9.2
