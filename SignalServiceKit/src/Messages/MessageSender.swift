@@ -1056,8 +1056,9 @@ extension MessageSender {
         }
 
         Self.databaseStorage.write { transaction in
+            Logger.info("Archiving sessions for stale devices: \(staleDevices)")
             for staleDeviceId in staleDevices {
-                Self.sessionStore.deleteSession(for: recipient.address, deviceId: Int32(staleDeviceId), transaction: transaction)
+                Self.sessionStore.archiveSession(for: recipient.address, deviceId: Int32(staleDeviceId), transaction: transaction)
             }
         }
     }
@@ -1086,9 +1087,9 @@ extension MessageSender {
                                                        transaction: transaction)
 
         if !devicesToRemove.isEmpty {
-            Logger.info("Deleting sessions for extra devices: \(devicesToRemove)")
+            Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             for deviceId in devicesToRemove {
-                sessionStore.deleteSession(for: recipient.address, deviceId: deviceId.int32Value, transaction: transaction)
+                sessionStore.archiveSession(for: recipient.address, deviceId: deviceId.int32Value, transaction: transaction)
             }
         }
     }

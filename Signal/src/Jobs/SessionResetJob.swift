@@ -114,8 +114,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
         if firstAttempt {
             self.databaseStorage.write { transaction in
-                Logger.info("deleting sessions for recipient: \(self.recipientAddress)")
-                self.sessionStore.deleteAllSessions(for: self.recipientAddress, transaction: transaction)
+                Logger.info("archiving sessions for recipient: \(self.recipientAddress)")
+                self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
             }
             firstAttempt = false
         }

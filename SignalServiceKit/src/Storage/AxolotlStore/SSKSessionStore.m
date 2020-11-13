@@ -307,6 +307,32 @@ NS_ASSUME_NONNULL_BEGIN
     [self.keyValueStore removeValueForKey:accountId transaction:transaction];
 }
 
+- (void)archiveSessionForAddress:(SignalServiceAddress *)address
+                        deviceId:(int)deviceId
+                     transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(deviceId >= 0);
+
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
+
+    [self archiveSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
+}
+
+- (void)archiveSessionForAccountId:(NSString *)accountId
+                          deviceId:(int)deviceId
+                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+
+    OWSLogInfo(@"Archiving session for contact: %@ device: %d", accountId, deviceId);
+
+    SessionRecord *sessionRecord = [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
+    [sessionRecord archiveCurrentState];
+    [self storeSessionForAccountId:accountId deviceId:deviceId session:sessionRecord transaction:transaction];
+}
+
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
                      protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
