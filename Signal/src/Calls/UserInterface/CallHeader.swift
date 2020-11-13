@@ -26,7 +26,6 @@ class CallHeader: UIView {
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
     private let groupMembersButton = GroupMembersButton()
-    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
 
     private let call: SignalCall
     private weak var delegate: CallHeaderDelegate!
@@ -98,8 +97,6 @@ class CallHeader: UIView {
         addShadow(to: callTitleLabel)
 
         vStack.addArrangedSubview(callTitleLabel)
-        callTitleLabel.setContentHuggingVerticalHigh()
-        callTitleLabel.setCompressionResistanceHigh()
 
         // Status label
 
@@ -109,8 +106,6 @@ class CallHeader: UIView {
         addShadow(to: callStatusLabel)
 
         vStack.addArrangedSubview(callStatusLabel)
-        callStatusLabel.setContentHuggingVerticalHigh()
-        callStatusLabel.setCompressionResistanceHigh()
 
         // Group members button
 
@@ -122,7 +117,6 @@ class CallHeader: UIView {
         addShadow(to: groupMembersButton)
 
         hStack.addArrangedSubview(groupMembersButton)
-        hStack.addArrangedSubview(groupMembersButtonPlaceholder)
 
         updateCallTitleLabel()
         updateCallStatusLabel()
@@ -178,10 +172,7 @@ class CallHeader: UIView {
                     return self.call.groupCall.sortedRemoteDeviceStates
                         .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
                 } else {
-                    // TODO: For now, we can only use `joinedGroupMembers` before you join.
-                    // We might be able to just always use it here.
                     return self.call.groupCall.joinedGroupMembers
-                        .filter { !SignalServiceAddress(uuid: $0).isLocalAddress }
                         .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
                 }
             }
@@ -233,8 +224,6 @@ class CallHeader: UIView {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
         let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : call.groupCall.joinedGroupMembers.count
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
-        groupMembersButton.isHidden = remoteMemberCount < 2
-        groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
     required init?(coder: NSCoder) {
@@ -310,6 +299,8 @@ private class GroupMembersButton: UIButton {
         countLabel.autoPinEdge(.leading, to: .trailing, of: iconImageView, withOffset: 5)
         countLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
         countLabel.autoAlignAxis(.horizontal, toSameAxisOf: iconImageView)
+        countLabel.setContentHuggingHorizontalHigh()
+        countLabel.setCompressionResistanceHorizontalHigh()
     }
 
     func updateMemberCount(_ count: Int) {

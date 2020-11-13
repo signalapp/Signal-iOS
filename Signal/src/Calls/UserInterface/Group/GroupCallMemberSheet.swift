@@ -64,6 +64,7 @@ class GroupCallMemberSheet: UIViewController {
         tableView.autoPinEdgesToSuperviewEdges()
 
         tableView.register(GroupCallMemberCell.self, forCellReuseIdentifier: GroupCallMemberCell.reuseIdentifier)
+        tableView.register(GroupCallEmptyCell.self, forCellReuseIdentifier: GroupCallEmptyCell.reuseIdentifier)
 
         // Support tapping the backdrop to cancel the action sheet.
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapBackdrop(_:)))
@@ -359,10 +360,14 @@ class GroupCallMemberSheet: UIViewController {
 
 extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sortedMembers.count
+        return sortedMembers.count > 0 ? sortedMembers.count : 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard !sortedMembers.isEmpty else {
+            return tableView.dequeueReusableCell(withIdentifier: GroupCallEmptyCell.reuseIdentifier, for: indexPath)
+        }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: GroupCallMemberCell.reuseIdentifier, for: indexPath)
 
         guard let memberCell = cell as? GroupCallMemberCell else {
@@ -391,11 +396,13 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
                 comment: "String indicating how many people are current in the call"
             )
             label.text = String(format: formatString, sortedMembers.count)
-        } else {
+        } else if sortedMembers.count > 0 {
             label.text = NSLocalizedString(
                 "GROUP_CALL_ONE_IN_THIS_CALL",
                 comment: "String indicating one person is currently in the call"
             )
+        } else {
+            label.text = nil
         }
 
         let labelContainer = UIView()
@@ -576,5 +583,41 @@ private class GroupCallMemberCell: UITableViewCell {
             nameLabel.text = item.displayName
             avatarView.image = avatarBuilder.build()
         }
+    }
+}
+
+private class GroupCallEmptyCell: UITableViewCell {
+    static let reuseIdentifier = "GroupCallEmptyCell"
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        backgroundColor = .clear
+        selectionStyle = .none
+
+        layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "sad-cat"))
+        imageView.contentMode = .scaleAspectFit
+        contentView.addSubview(imageView)
+        imageView.autoSetDimensions(to: CGSize(square: 160))
+        imageView.autoHCenterInSuperview()
+        imageView.autoPinTopToSuperviewMargin(withInset: 32)
+
+        let label = UILabel()
+        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.textColor = Theme.darkThemePrimaryColor
+        label.text = "Nobody is in this call yet."
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        contentView.addSubview(label)
+        label.autoPinWidthToSuperviewMargins()
+        label.autoPinBottomToSuperviewMargin()
+        label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 16)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
