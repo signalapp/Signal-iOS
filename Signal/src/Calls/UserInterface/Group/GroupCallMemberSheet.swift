@@ -607,7 +607,8 @@ private class GroupCallEmptyCell: UITableViewCell {
         let label = UILabel()
         label.font = .ows_dynamicTypeSubheadlineClamped
         label.textColor = Theme.darkThemePrimaryColor
-        label.text = "Nobody is in this call yet."
+        label.text = NSLocalizedString("GROUP_CALL_NOBODY_IS_IN_YET",
+                                       comment: "Text explaining to the user that nobody has joined this call yet.")
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textAlignment = .center
