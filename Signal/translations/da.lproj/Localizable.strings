@@ -536,7 +536,7 @@
 "CALLBACK_BUTTON_TITLE" = "Ring tilbage ";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Din kamera er slået fra";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal bruger";
@@ -710,7 +710,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Aktivér";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Se navne på kontaktpersoner og fotos i dine chat´s";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Se navne på kontaktpersoner og fotos i dine chats";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Slå kontaktpersoner til?";
@@ -779,13 +779,13 @@
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Download";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan ikke vælge flere end %@ chat´s";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan ikke vælge flere end %@ chats";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupper";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Seneste samtaler";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Seneste chats";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Kontakter";
@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktinformation";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chatfarve";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat farve";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Hvem kan redigere info for gruppe";
@@ -1232,7 +1232,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Brugeren kan ikke tilføjes gruppen, før Signal opdateres";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maksimal størrelse på %@ gruppemedlemmer er nået";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ugyldigt foto";
@@ -1253,7 +1253,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiér";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nJeg er begyndt at bruge Signal til at holde mine samtaler på min iPhone private. Jeg synes også du skal installere det, så vi er de eneste som kan læse vores beskeder og høre vores opkald.\n\nSignal er tilgændelig til iPhone og Android. Hent det her: %@\n\nSignal virker som den eksisterende besked-app. Vi kan sende billeder og video, ringe til hinanden og starte gruppechats. Det bedste er at ingen andre kan følge med - ikke en gang dem som laver Signal!\n\nDu kan læse mere om Open Whisper Systems, som laver Signal, her: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nJeg er begyndt at bruge Signal til at holde mine chats på min iPhone private. Jeg synes også du skal installere det, så vi er de eneste som kan læse vores beskeder og høre vores opkald.\n\nSignal er tilgændelig til iPhone og Android. Hent det her: %@\n\nSignal virker som den eksisterende besked-app. Vi kan sende billeder og video, ringe til hinanden og starte gruppechats. Det bedste er at ingen andre kan følge med - ikke en gang dem som laver Signal!\n\nDu kan læse mere om Open Whisper Systems, som laver Signal, her: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Lad os skifte til Signal";
@@ -1532,10 +1532,10 @@
 "GROUP_CALL_NO_ONE_HERE" = "Ingen andre deltager";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ og %ld andre sluttede sig til samtalen";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ og %ld andre forlod samtalen";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
@@ -2270,7 +2270,7 @@
 "HELP_SUPPORT_CENTER" = "Hjælpecenter";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverede chat´s";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverede chats";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blokeret";
@@ -2363,7 +2363,7 @@
 "IN_CALL_TERMINATED" = "Opkald afsluttet";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Disse chat´s arkiveres og vises kun i indbakken, hvis der modtages nye beskeder";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Disse chats arkiveres og vises kun i indbakken, hvis der modtages nye beskeder";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Giv din indbakke noget at skrive hjem om. Kom i gang - skriv til en ven";
@@ -2414,7 +2414,7 @@
 "KEY_COMMAND_ALL_MEDIA" = "Gå til alle medier";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Arkivér chat´s";
+"KEY_COMMAND_ARCHIVE" = "Arkivér chats";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Vis vedhæftninger";
@@ -2819,7 +2819,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nået det maksimale antal enheder, du i øjeblikket kan tilkoble din konto. Fjern en enhed, og prøv igen";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Du modtager ikke meddelelser for muted chat´s";
+"MUTE_BEHAVIOR_EXPLANATION" = "Du modtager ikke meddelelser for muted chats";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Udsat";
@@ -3023,7 +3023,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Giv tilladelse";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifikationer gør det muligt for dig at vide, hvornår beskeder kommer, og hvornår der er opdateringer om ny chataktivitet";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifikationer gør det muligt for dig at vide, hvornår beskeder kommer, og hvornår der er opdateringer om ny chat aktivitet";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Modtag beskeden";
@@ -3428,7 +3428,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden skal være mindst 4 cifre";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Du kan kun fastgøre op til 4 chat´s";
+"PINNED_CONVERSATION_LIMIT" = "Du kan kun fastgøre op til 4 chats";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fastgjort";
@@ -3473,7 +3473,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ligner ikke dit sikkerhedsnummer med %@. Verificere du den korrekte kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nummeret i din udklipsholder, ligner ikke det rigtige sikkerhedsnummer til denne chat";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nummeret i din udklipsholder, ligner ikke det rigtige sikkerhedsnummer til chatten";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kunne ikke finde noget sikkerhedsnummer i din udklipsholder. Har du kopieret det korrekt?";
@@ -3989,7 +3989,7 @@
 "SEARCH_SECTION_CONTACTS" = "Andre kontakter";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Chat´s";
+"SEARCH_SECTION_CONVERSATIONS" = "Chats";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "Beskeder";
@@ -4055,7 +4055,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Andre kontakter";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Seneste samtaler";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Seneste chats";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send igen";
@@ -4277,7 +4277,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Tæl udsatte chat´s";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Tæl udsatte chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Emblem tæller";
@@ -4349,7 +4349,7 @@
 "SETTINGS_READ_RECEIPT" = "Kvittering for læsning";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del, når beskeder er læst. Denne indstilling er valgfri og gælder for alle chat´s";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del, når beskeder er læst. Denne indstilling er valgfri og gælder for alle chats";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Deaktivér";
@@ -4409,7 +4409,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Skriveindikatorer";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Se og del, når der skrives beskeder. Denne indstilling er valgfri og gælder for alle chat´s";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Se og del, når der skrives beskeder. Denne indstilling er valgfri og gælder for alle chats";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Forseglet afsender";
@@ -4733,7 +4733,7 @@
 "UNPIN_ACTION" = "Frigør";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Chat´s";
+"UNPINNED_SECTION_TITLE" = "Chats";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Ulæst";

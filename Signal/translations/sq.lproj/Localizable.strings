@@ -59,7 +59,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Shtoni Anëtarë të Rinj";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Shtoni Anëtarë ";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Shtoni Anëtarë";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Dëshironi të ndani me këtë grup profilin tuaj?";
@@ -251,10 +251,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Vendndodhje";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Që t’i dërgoni këtu, akordoni hyrje te fotot tuaja, që nga rregullimet";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Që t’i dërgoni këtu, akordoni hyrje te fotot tuaja, që nga rregullimet.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Pasi të keni bërë foto, do të jeni në gjendje të dërgoni këtu ato të fundit";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Pasi të keni bërë foto, do të jeni në gjendje të dërgoni këtu ato të fundit.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bashkëngjitje";
@@ -410,7 +410,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Përdoruesi u Bllokua";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Bllokim Grupi ";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupi u Bllokua";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "S’mund të bllokoni veten.";
@@ -536,7 +536,7 @@
 "CALLBACK_BUTTON_TITLE" = "Ktheji Thirrjen";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Kamera juaj është e fikur";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Përdorues Signal-i";
@@ -710,7 +710,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Aktivizoje";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Shihni emra dhe foto kontaktesh në fjalosjet tuaja:";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Shihni emra dhe foto kontaktesh në fjalosjet tuaja.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Të aktivizohen Kontaktet?";
@@ -851,7 +851,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Vetëm Përgjegjësit";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Zgjidhni cilët mund të ndryshojnë për grupin emrin, avatarin dhe zhdukje mesazhesh.";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Zgjidhni cilët mund të ndryshojnë për grupin emrin, avatarin dhe zhdukje mesazhesh:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Krejt Anëtarët";
@@ -1232,7 +1232,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ky përdorues s’mund të shtohet te grupi, para se të përmirësojë Signal-in.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "U mbërrit në maksimum madhësie grupi prej anëtarësh %@.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Foto e pavlefshme.";
@@ -1325,7 +1325,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "S’u arrit të ngarkohen regjistrat.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S’arrihet të dërgohet, për shkak të dhënash prekey të vjetruara";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S’arrihet të dërgohet, për shkak të dhënash prekey të vjetruara.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "S’u arrit t’i dërgohej mesazh përdoruesit, ngaqë e keni bllokuar.";
@@ -1370,7 +1370,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kyçi i marrësit s’është i vlefshëm.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s’qe i njëkohësuar";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s’qe i njëkohësuar.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "U mor një mesazh që s’është i përputhshëm me këtë version.";
@@ -1532,22 +1532,22 @@
 "GROUP_CALL_NO_ONE_HERE" = "S’ka tjetër këtu";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, dhe %ld të tjerë u bënë pjesë e thirrjes";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, dhe %ld të tjerë e lanë thirrjen";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ u bë pjesë e thirrjes";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ e la thirrjen";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ dhe %@ u bënë pjesë e thirrjes";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ dhe %@ e lanë thirrjen";
 
 /* String indicating one person is currently in the call */
 "GROUP_CALL_ONE_IN_THIS_CALL" = "Në këtë thirrje · 1 person";
@@ -1556,7 +1556,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "Në këtë thirrje gjendet %@";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "Po rilidhet";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Nise Thirrjen";
@@ -1565,13 +1565,13 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "Në këtë thirrje gjenden %@ dhe %@";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "The connection to the call unexpectedly ended.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Lidhja për thirrjen përfundoi papritmas.";
 
 /* Text describing the local user in the group call members sheet. */
 "GROUP_CALL_YOU" = "Ju";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Ju (në një tjetër pajisje)";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "E krijuat grupin.";
@@ -1649,7 +1649,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ aktivizoi lidhjen e grupit me miratim nga përgjegjësi të çaktivizuar.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Lidhja e grupit qe ricaktuar.";
+"GROUP_INVITE_LINK_RESET" = "Lidhja e grupit u ricaktua.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Rikthyet te parazgjedhjet lidhjen e grupit.";
@@ -2054,25 +2054,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Emri i grupit tani është “%@”.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "Ky grup u përmirësua si Grup i Ri.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Një anëtar s’u shtua dot te Grupi i Ri dhe u hoq prej grupit.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "S’u shtuat dot te Grupi i Ri dhe u hoqët prej grupit.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ anëtarë s’u shtuan dot te Grupi i Ri dhe u hoqën prej grupit.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Një anëtar s’u shtua dot te Grupi i Ri dhe u ftua të bëhet pjesë";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "S’u shtuat dot te Grupi i Ri dhe u ftuat të bëheni pjesë";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ anëtarë s’u shtuan dot te Grupi i Ri dhe u ftuan të bëhet pjesë.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "E braktisët grupin.";
@@ -2114,19 +2114,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grupe të Dikurshëm vs. Grupesh të Rinj";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Përmirësojeni grupin, që të aktivizohen veçori të reja, të tilla si @përmendje dhe përgjegjës. Anëtarët që nuk kanë dhënë emrin ose foton e tyre te ky grup, do të ftohen të bëhen pjesë. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Nuk Përmirësohet Dot si Grup i Ri";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Ky grup s’mund të përmirësohet si Grup i Ri, ngaqë ka shumë anëtarë. Madhësia maksimum e grupeve që mund të përmirësohen është %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kur krejt anëtarët e tanishëm të grupit të përdorin një version Signal-i të aftë për t’u bërë pjesë e një Grupi të Ri, ky grup do të përmirësohet.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Krejt historiku i mesazheve dhe mediat do të mbahen prej kohës para përmirësimit.";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Do të krijohet një Grup i Dikurshëm, ngaqë 1 anëtar po përdor një version të vjetër të Signal-it. Mund të krijoni një Grup në Stil të Ri me të, pasi të përditësojë Signal-in, ose ta hiqni para krijimit të grupit.";
@@ -2144,100 +2144,100 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ky është një Grup i Dikurshëm. Veçori të tilla si përgjegjës grupesh, mund të përdoren vetëm në Grupe të Rinj. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Ky Grup i Dikurshëm s’është ende gati për t’u përmirësuar si Grup i Ri. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ky Grup i Dikurshëm s’mund të përmirësohet si Grup i Ri, ngaqë është shumë i madh. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ky është një Grup i Dikurshëm. Që të përdorni veçori të tilla si, @përmendje dhe përgjegjës, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 anëtar s’u rishtua dot te Grupi i Ri. Doni të shtohet tani?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ anëtarë s’u rishtuan dot te Grupi i Ri. Doni të shtohen tani?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grup i Dikurshëm";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Përmirësoje Grupin";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Që të përdorni veçori të tilla si, @përmendje dhe përgjegjës, përmirësojeni këtë grup.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Ç’janë Grupet e Reja?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Krejt historiku i mesazhe dhe mediat janë mbajtur prej kohës para përmirësimit.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Krejt historiku i mesazheve dhe mediat janë mbajtur prej kohës para përmirësimit.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Grupet e Reja kanë veçori të tilla si @përmendje dhe përgjegjës grupi, dhe në të ardhmen do të mbulojnë më tepër veçori.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Grupe të Rinj";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Shtoni Anëtarë ";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Shtoni Anëtarë";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Të shtohet Anëtar?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Të shtohen Anëtarë?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Shtoni Anëtarë ";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Shtoni Anëtarë";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Ky anëtar s’u shtua dot automatikisht te Grupi i Ri, kur u përditësua:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Këta anëtarë s’u shtuan dot automatikisht te Grupi i Ri, kur u përditësua:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Krejt historiku i mesazhe dhe mediat janë mbajtur prej kohës para përmirësimit.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Krejt historiku i mesazheve dhe mediat janë mbajtur prej kohës para përmirësimit.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Ky anëtar u hoq prej grupit dhe s’do të jetë në gjendje të ribëhet pjesë e grupit, pa përmirësuar versionin:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Këta anëtarë u hoqën prej grupit dhe s’do të jenë në gjendje të ribëhen pjesë e grupit, pa përmirësuar versionin:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Këtij anëtari do t’i duhet të pranojë një ftesë për t’u bërë pjesë e grupit, dhe s’do të marrë mesazhe grupi, pa pranuar ftesën:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Këtyre anëtarëve do t’u duhet të pranojnë një ftesë për t’u bërë pjesë e grupit, dhe s’do të marrin mesazhe grupi, pa pranuar ftesën:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ky anëtar s’është në gjendje të bëhet pjesë Grupesh të Rinj, dhe do të hiqet prej grupit:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Këta anëtarë s’janë në gjendje të bëhen pjesë Grupesh të Rinj, dhe do të hiqet prej grupit:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Përmirësoje si Grup të Ri";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Përmirësoje këtë Grup";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Ky grup s’mund të përmirësohet si Grupi i Ri tani këtë çast.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Ky grup s’u përmirësua dot si Grupi i Ri, ngaqë s’jeni i lidhur në Internet. Riprovoni më vonë.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "S’u Plotësua Dot Përmirësimi";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "U përmirësua si Grup i Ri.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "përmirësoje këtë grup";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Përpara se të ikni, zgjidhni një përgjegjës të ri për këtë grup.";
@@ -2249,13 +2249,13 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Zgjidhni përgjegjës të ri";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Punimin më të mirë grupet Signal e kanë me %@ anëtarë ose më pak. Shtimi i më shumë anëtarëve do të shkaktojë vonesa në dërgim dhe marrje mesazhesh.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "U mbërrit në kufi të rekomanduar anëtaarësh";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Të shtohet anëtari, sido qoftë?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Shihni Kërkesë";
@@ -2279,7 +2279,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Kërko";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Skicë:";
+"HOME_VIEW_DRAFT_PREFIX" = "Skicë: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Disa nga kontaktet tuaja kanë tashmë Signal, përfshi %@.";
@@ -2375,7 +2375,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Mund të dërgoni ose merrni mesazhe të njëkohësuar nga telefoni ose iPad-i juaj. ↵Për hir të sigurisë tuaj, historiku i fjalosjeve nuk shpërngulet te pajisje të reja të lidhura.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ është në Signal! ";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ është në Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Ngjitëse";
@@ -2990,7 +2990,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Nëse s’mbani mend PIN-in tuaj, mund të krijoni një të ri. Mund të regjistroni dhe përdorni llogarinë tuaj, por do të humbni disa nga rregullimet e ruajtura, bie fjala, të dhëna të profilit tuaj.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Të anashkalohet Dhënia e PIN-it";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Të anashkalohet Dhënia e PIN-it?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Shtojini një grimë dore njerëzore mesazheve tuaj";
@@ -3026,7 +3026,7 @@
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Njoftimet ju lejojnë të shihni kur mbërrijnë mesazhe dhe të merrni përditësime rreth veprimtarie të re në fjalosje.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Merrni mesazhin.";
+"ONBOARDING_PERMISSIONS_TITLE" = "Merrni mesazhin";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Zgjidhni cilët mund t’ju gjejnë në Signal përmes numrin tuaj të telefonit%@";
@@ -3146,7 +3146,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ ftoi %2$@ vetë";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "S’ka pezull kërkesa anëtarësh";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "S’ka pezull kërkesa anëtarësh.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "S’ka ftesa për shfaqje.";
@@ -3296,10 +3296,10 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Faks Pune";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "S’arrihet të fotografohet figura";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "S’arrihet të fotografohet figura.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "S’arrihet të fotografohet figura";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "S’arrihet të fotografohet figura.";
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "S’u arrit të formësohej kamera.";
@@ -3410,7 +3410,7 @@
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Verifikoni PIN-in tuaj të Signal-it";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Do t’jua kujtojmë prapë nesër. ";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Do t’jua kujtojmë prapë nesër.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Do t’jua kujtojmë sërish pas nja dy javësh.";
@@ -3932,7 +3932,7 @@
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Ou, ku gjendesh?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Sot është …   ";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Sot është …";
 
 /* This is a message in the group chat of family members. */
 "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Gëzuar ditëlindjen. Gëzuar ditëlindjen!";
@@ -4406,7 +4406,7 @@
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Për siguri më të madhe, aktivizoni kyçje regjistrimesh, çka do të kërkojë PIN-in tuaj Signal për të riregjistruar numrin tuaj të telefonit me Signal-in.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Indikatorë Shtypjeje ";
+"SETTINGS_TYPING_INDICATORS" = "Indikatorë Shtypjeje";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Shihni dhe ndani me të tjerë kur shtypen mesazhe. Ky rregullim është opsional dhe vlen për krejt fjalosjet.";
@@ -4667,7 +4667,7 @@
 "TXT_DELETE_TITLE" = "Fshije";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "Çarkivoje ";
+"UNARCHIVE_ACTION" = "Çarkivoje";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Përdoruesi s’gjendet në kontaktet tuaja. Doni të bllokohet ky përdorues?";
@@ -4847,7 +4847,7 @@
 "VIDEO_CALL_LABEL" = "Thirrje Video";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "E patë tashmë këtë mesazh";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "E patë tashmë këtë mesazh.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Prekni këtu që të zhduket ky mesazh pasi të jetë parë.";
