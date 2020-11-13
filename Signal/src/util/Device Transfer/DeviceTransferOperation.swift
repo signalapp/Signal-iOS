@@ -77,7 +77,7 @@ class DeviceTransferOperation: OWSOperation {
             Logger.warn("Missing file for transfer, it probably disappeared or was otherwise deleted. Sending missing file placeholder.")
 
             url = URL(
-                fileURLWithPath: file.relativePath,
+                fileURLWithPath: UUID().uuidString,
                 relativeTo: URL(fileURLWithPath: OWSTemporaryDirectory(), isDirectory: true)
             )
             guard FileManager.default.createFile(
@@ -85,7 +85,7 @@ class DeviceTransferOperation: OWSOperation {
                 contents: DeviceTransferService.missingFileData,
                 attributes: nil
             ) else {
-                return reportError(OWSAssertionError("Failed to create temp file for missing file"))
+                return reportError(OWSAssertionError("Failed to create temp file for missing file \(url)"))
             }
         }
 
