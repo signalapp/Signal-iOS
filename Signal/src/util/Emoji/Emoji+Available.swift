@@ -16,12 +16,14 @@ extension Emoji {
 
         let iosVersion = AppVersion.iOSVersionString
         var iosVersionNeedsUpdate = false
+        var shouldResetCache = false
 
         SDSDatabaseStorage.shared.read { transaction in
             guard let lastIosVersion = metadataStore.getString(iosVersionKey, transaction: transaction) else {
                 Logger.info("Building initial emoji availability cache.")
                 iosVersionNeedsUpdate = true
                 uncachedEmoji = Emoji.allCases
+                shouldResetCache = true
                 return
             }
 
@@ -29,6 +31,7 @@ extension Emoji {
                 Logger.info("Re-building emoji availability cache. iOS version upgraded from \(lastIosVersion) -> \(iosVersion)")
                 iosVersionNeedsUpdate = true
                 uncachedEmoji = Emoji.allCases
+                shouldResetCache = true
                 return
             }
 
@@ -36,6 +39,7 @@ extension Emoji {
             guard !availableMap.isEmpty else {
                 Logger.info("Re-building emoji availability cache. Cache could not be loaded.")
                 uncachedEmoji = Emoji.allCases
+                shouldResetCache = true
                 return
             }
 
@@ -60,7 +64,9 @@ extension Emoji {
 
         if uncachedAvailability.count > 0 || iosVersionNeedsUpdate {
             SDSDatabaseStorage.shared.write { transaction in
-                availableStore.removeAll(transaction: transaction)
+                if shouldResetCache {
+                    availableStore.removeAll(transaction: transaction)
+                }
                 for (emoji, available) in uncachedAvailability {
                     availableStore.setBool(available, key: emoji.rawValue, transaction: transaction)
                 }
