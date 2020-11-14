@@ -901,6 +901,15 @@ struct SignalServiceProtos_DataMessage {
     set {_uniqueStorage()._bodyRanges = newValue}
   }
 
+  var groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate {
+    get {return _storage._groupCallUpdate ?? SignalServiceProtos_DataMessage.GroupCallUpdate()}
+    set {_uniqueStorage()._groupCallUpdate = newValue}
+  }
+  /// Returns true if `groupCallUpdate` has been explicitly set.
+  var hasGroupCallUpdate: Bool {return _storage._groupCallUpdate != nil}
+  /// Clears the value of `groupCallUpdate`. Subsequent reads from it will return its default value.
+  mutating func clearGroupCallUpdate() {_uniqueStorage()._groupCallUpdate = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -1786,6 +1795,18 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _start: UInt32?
     fileprivate var _length: UInt32?
     fileprivate var _mentionUuid: String?
+  }
+
+  /// Currently just a sentinel message indicating that a client should
+  /// fetch updated group state.
+  struct GroupCallUpdate {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
   }
 
   init() {}
@@ -4091,7 +4112,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     14: .same(proto: "isViewOnce"),
     16: .same(proto: "reaction"),
     17: .same(proto: "delete"),
-    18: .same(proto: "bodyRanges")
+    18: .same(proto: "bodyRanges"),
+    19: .same(proto: "groupCallUpdate")
   ]
 
   fileprivate class _StorageClass {
@@ -4112,6 +4134,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _reaction: SignalServiceProtos_DataMessage.Reaction?
     var _delete: SignalServiceProtos_DataMessage.Delete?
     var _bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
+    var _groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate?
 
     static let defaultInstance = _StorageClass()
 
@@ -4135,6 +4158,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _reaction = source._reaction
       _delete = source._delete
       _bodyRanges = source._bodyRanges
+      _groupCallUpdate = source._groupCallUpdate
     }
   }
 
@@ -4167,6 +4191,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 16: try decoder.decodeSingularMessageField(value: &_storage._reaction)
         case 17: try decoder.decodeSingularMessageField(value: &_storage._delete)
         case 18: try decoder.decodeRepeatedMessageField(value: &_storage._bodyRanges)
+        case 19: try decoder.decodeSingularMessageField(value: &_storage._groupCallUpdate)
         default: break
         }
       }
@@ -4226,6 +4251,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._bodyRanges.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._bodyRanges, fieldNumber: 18)
       }
+      if let v = _storage._groupCallUpdate {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4252,6 +4280,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._reaction != rhs_storage._reaction {return false}
         if _storage._delete != rhs_storage._delete {return false}
         if _storage._bodyRanges != rhs_storage._bodyRanges {return false}
+        if _storage._groupCallUpdate != rhs_storage._groupCallUpdate {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -4955,6 +4984,25 @@ extension SignalServiceProtos_DataMessage.BodyRange: SwiftProtobuf.Message, Swif
     if lhs._start != rhs._start {return false}
     if lhs._length != rhs._length {return false}
     if lhs._mentionUuid != rhs._mentionUuid {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".GroupCallUpdate"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.GroupCallUpdate, rhs: SignalServiceProtos_DataMessage.GroupCallUpdate) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
