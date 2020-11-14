@@ -47,6 +47,7 @@ extension Emoji {
                 if let available = availableMap[emoji.rawValue] {
                     availableCache[emoji] = available
                 } else {
+                    Logger.warn("Emoji unexpectedly missing from cache.")
                     uncachedEmoji.append(emoji)
                 }
             }
