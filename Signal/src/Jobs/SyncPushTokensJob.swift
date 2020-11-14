@@ -26,7 +26,7 @@ class SyncPushTokensJob: NSObject {
         self.preferences = preferences
     }
 
-    class func run(accountManager: AccountManager, preferences: OWSPreferences) -> Promise<Void> {
+    private class func run(accountManager: AccountManager, preferences: OWSPreferences) -> Promise<Void> {
         let job = self.init(accountManager: accountManager, preferences: preferences)
         return job.run()
     }
