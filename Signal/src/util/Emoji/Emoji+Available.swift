@@ -33,6 +33,12 @@ extension Emoji {
             }
 
             let availableMap = availableStore.allBoolValuesMap(transaction: transaction)
+            guard !availableMap.isEmpty else {
+                Logger.info("Re-building emoji availability cache. Cache could not be loaded.")
+                uncachedEmoji = Emoji.allCases
+                return
+            }
+
             for emoji in Emoji.allCases {
                 if let available = availableMap[emoji.rawValue] {
                     availableCache[emoji] = available
@@ -54,6 +60,7 @@ extension Emoji {
 
         if uncachedAvailability.count > 0 || iosVersionNeedsUpdate {
             SDSDatabaseStorage.shared.write { transaction in
+                availableStore.removeAll(transaction: transaction)
                 for (emoji, available) in uncachedAvailability {
                     availableStore.setBool(available, key: emoji.rawValue, transaction: transaction)
                 }
