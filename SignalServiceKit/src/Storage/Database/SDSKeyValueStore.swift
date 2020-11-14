@@ -410,9 +410,14 @@ public class SDSKeyValueStore: NSObject {
             WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
             """
 
-            return try! PairRecord.fetchAll(grdbTransaction.database,
-                                            sql: sql,
-                                            arguments: [collection])
+            do {
+                return try PairRecord.fetchAll(grdbTransaction.database,
+                                               sql: sql,
+                                               arguments: [collection])
+            } catch {
+                owsFailDebug("Error: \(error)")
+                return []
+            }
         }
     }
 
