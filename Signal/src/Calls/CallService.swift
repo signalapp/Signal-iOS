@@ -548,7 +548,12 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    public func groupCallPeekChanged(_ call: SignalCall) {}
+    public func groupCallPeekChanged(_ call: SignalCall) {
+        // TODO: Fetch the real PeekInfo from call.groupCall.localDeviceState
+        let peekInfo = PeekInfo()
+        guard let groupThread = call.thread as? TSGroupThread else { return }
+        updateGroupCallMessageWithInfo(peekInfo, for: groupThread)
+    }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
@@ -588,6 +593,63 @@ extension CallService: CallObserver {
     public func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallEnded \(reason)")
+    }
+}
+
+// MARK: - Group call participant updates
+
+extension CallService {
+
+    func peekCallAndUpdateThread(_ thread: TSGroupThread) {
+        let groupCall = (currentCall?.isGroupCall == true) ? currentCall?.groupCall : nil
+        let groupCallConnectionState = groupCall?.localDeviceState.connectionState
+
+        guard currentCall?.thread != thread || groupCallConnectionState != .connected else {
+            // If we're already connected to the group call that we want to peek, ignore
+            // We'll have PeekInfo updates handed to us directly from an observer callback
+            Logger.info("Ignoring peek request for currently connected call")
+            return
+        }
+
+        firstly {
+            // TODO: Fetch PeekInfo
+            return .value(PeekInfo())
+
+        }.done { info in
+            self.updateGroupCallMessageWithInfo(info, for: thread)
+
+        }.catch { error in
+            Logger.error("Failed to fetch PeekInfo for \(thread): \(error)")
+        }
+    }
+
+    fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread) {
+        databaseStorage.write { writeTx in
+            // TODO: Build InteractionFinder method to find unended OWSGroupCallMessages for the current thread
+            let results: [OWSGroupCallMessage] = []
+
+            // Update everything that doesn't match the current call era to mark as ended
+            results
+                .filter { $0.conferenceId != info.eraId }
+                .forEach { toExpire in
+                    toExpire.anyUpdateGroupCallMessage(transaction: writeTx) { $0.hasCallEnded = true }
+                }
+
+            // Update the message for the current era if it exists, or insert a new one.
+            let currentEraMessages = results.filter { $0.conferenceId == info.eraId }
+            owsAssertDebug(currentEraMessages.count <= 1)
+
+            if let currentMessage = results.first {
+                currentMessage.anyUpdateGroupCallMessage(transaction: writeTx) { (toUpdate) in
+                    toUpdate.update(with: info, transaction: writeTx)
+                }
+            } else {
+                // TODO: Plumb through a more relevant timestamp if available
+                let timestamp = NSDate.ows_millisecondTimeStamp()
+                let newMessage = OWSGroupCallMessage(peekInfo: info, thread: thread, sentAtTimestamp: timestamp )
+                newMessage.anyInsert(transaction: writeTx)
+            }
+        }
     }
 }
 

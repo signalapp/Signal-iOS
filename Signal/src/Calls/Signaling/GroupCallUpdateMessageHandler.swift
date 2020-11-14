@@ -36,6 +36,10 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
         }
     }
 
+    func handleUpdateMessage(_ message: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread) {
+        AppEnvironment.shared.callService.peekCallAndUpdateThread(thread)
+    }
+
     // MARK: - CallServiceObserver
 
     func didUpdateCall(call: SignalCall?) {

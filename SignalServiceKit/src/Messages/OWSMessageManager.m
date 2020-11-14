@@ -1699,6 +1699,19 @@ NS_ASSUME_NONNULL_BEGIN
                                           associatedMessageAuthor:envelope.sourceAddress];
                     break;
             }
+        } else if (dataMessage.groupCallUpdate != nil) {
+            TSGroupThread *_Nullable groupThread = nil;
+            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+            if (groupId) {
+                groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+            }
+
+            if (groupThread) {
+                [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate forThread:groupThread];
+            } else {
+                OWSLogError(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
+            }
+
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
@@ -2135,6 +2148,16 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
         return nil;
+    }
+
+    if (dataMessage.groupCallUpdate) {
+        if (!thread.isGroupThread) {
+            OWSLogError(@"Invalid thread for GroupUpdateMessage: %@", thread);
+            return nil;
+        }
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
+                                                      forThread:groupThread];
     }
 
     NSString *body = dataMessage.body;

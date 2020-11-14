@@ -10,7 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoCallMessageIceUpdate;
 @class SSKProtoCallMessageOffer;
 @class SSKProtoCallMessageOpaque;
+@class SSKProtoDataMessageGroupCallUpdate;
 @class SignalServiceAddress;
+@class TSGroupThread;
 
 @protocol OWSCallMessageHandler <NSObject>
 
@@ -44,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
                sourceDevice:(uint32_t)device
     serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp NS_SWIFT_NAME(receivedOpaque(_:from:sourceDevice:serverReceivedTimestamp:serverDeliveryTimestamp:));
+
+- (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)update
+                             forThread:(TSGroupThread *)groupThread
+        NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:));
 
 @end
 
