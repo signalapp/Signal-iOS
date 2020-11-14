@@ -343,6 +343,7 @@ void uncaughtExceptionHandler(NSException *exception)
     [AppVersion shared];
 
     self.window = [OWSWindow new];
+    CurrentAppContext().mainWindow = self.window;
 
     // Show the launch screen
     UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Launch Screen"
