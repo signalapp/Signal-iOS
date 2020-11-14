@@ -68,6 +68,7 @@
 		"OWSProfileKeyMessage",
 		"OWSOutgoingNullMessage",
 		"OWSOutgoingCallMessage",
+		"OWSOutgoingGroupCallMessage",
 		"OWSReceiptsForSenderMessage",
 		"OWSUnknownDBObject",
 		"TSOutgoingDeleteMessage"

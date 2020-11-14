@@ -36,6 +36,7 @@ public final class CallService: NSObject {
 
     @objc
     public let individualCallService = IndividualCallService()
+    let groupCallMessageHandler = GroupCallUpdateMessageHandler()
 
     lazy private(set) var audioService = CallAudioService()
 
@@ -108,6 +109,7 @@ public final class CallService: NSObject {
 
         SwiftSingletons.register(self)
         callManager.delegate = self
+        addObserverAndSyncState(observer: groupCallMessageHandler)
 
         NotificationCenter.default.addObserver(
             self,

@@ -11,6 +11,7 @@
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
 		32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */; };
+		32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */; };
 		32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */; };
 		32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */; };
 		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
@@ -923,6 +924,7 @@
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewsMegaphone.swift; sourceTree = "<group>"; };
 		32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMoodPickerView.swift; sourceTree = "<group>"; };
+		32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallUpdateMessageHandler.swift; sourceTree = "<group>"; };
 		32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeSupportEmailOperation.swift; sourceTree = "<group>"; };
 		32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
@@ -3495,6 +3497,7 @@
 		88D23D1D23CEC0C700B0E74B /* Signaling */ = {
 			isa = PBXGroup;
 			children = (
+				32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */,
 				88D23D1E23CEC0C700B0E74B /* WebRTCCallMessageHandler.swift */,
 				88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */,
 			);
@@ -5053,6 +5056,7 @@
 				88F8195A2383569A007914E8 /* CNContactViewController+OWS.m in Sources */,
 				34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */,
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
+				32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,

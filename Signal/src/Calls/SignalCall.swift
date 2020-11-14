@@ -21,6 +21,21 @@ public protocol CallObserver: class {
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
 }
 
+extension CallObserver {
+    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
+    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
+    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
+    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
+    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
+
+    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+}
+
 @objc
 public class SignalCall: NSObject, CallManagerCallReference {
     public let mode: Mode
