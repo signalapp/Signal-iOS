@@ -899,7 +899,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Ingen varsling om mutet";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Motta varsler når du blir nevnt i mutede samtaler?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Motta varsler når du blir nevnt i dempede samtaler?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "\"Mentions\"";
@@ -2114,7 +2114,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs nye grupper";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Oppgrader denne gruppen for å aktivere nye funksjoner som \"@ Mentions\" og administratorer. Medlemmer som ikke har delt navn eller bilde i gruppen vil bli invitert inn. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Oppgrader denne gruppen for å aktivere nye funksjoner som @-omtaler og gruppeadministratorer. Medlemmer som ikke har delt navn eller bilde i gruppen vil bli invitert inn. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Kan ikke oppgradere til \"ny\" gruppe";
@@ -2150,7 +2150,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Denne gruppen kan ikke oppgraderes fordi den er for stor. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dette er en \"legacy\" gruppe. For å få tilgang til de nye funksjonene, som \"@ Mentions\" og administratorer, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dette er en \"legacy\" gruppe. For å få tilgang til de nye funksjonene, som @-omtaler og gruppeadministratorer, %@.";
 
 /* Title for the the 'dropped group member' banner. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 medlem kunne ikke legges til på nytt. Ønsker du å legge dem til nå?";
@@ -2174,7 +2174,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All meldingshistorikk og alle mediefiler fra før oppgradering har blitt tatt vare på.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nye grupper har funksjoner som @mentions og gruppeadministratorer, og vil støtte enda flere i fremtiden.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nye grupper har funksjoner som @-omtaler og gruppeadministratorer, og vil støtte enda flere i fremtiden.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Nye grupper";

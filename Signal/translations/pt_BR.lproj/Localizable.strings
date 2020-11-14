@@ -2117,7 +2117,7 @@
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Atualize este grupo para ativar novos recursos como @menções e administradores. Os membros que não compartilharam seus nomes ou fotos neste grupo serão convidados a participar. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Não é possível atualizar o grupo";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Este grupo não pode ser atualizado para um Novo Grupo porque tem muitos membros. O tamanho máximo de grupos que podem ser atualizados é %@.";
@@ -2255,7 +2255,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "O limite recomendado de membros alcançado";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Adicionar o membro?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Ver a Solicitação";
@@ -3431,7 +3431,7 @@
 "PINNED_CONVERSATION_LIMIT" = "Você só pode fixar até 4 conversas.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Priorizar";
+"PINNED_SECTION_TITLE" = "Fixadas";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Criar um PIN";

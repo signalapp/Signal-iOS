@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "グループリンク";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "管理者を作成";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "管理者にする";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@がこのグループの設定やメンバーを編集できるようになります";
@@ -941,10 +941,10 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "グループから%@を削除しますか?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "管理者から削除";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "管理者権限を取り消す";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@をグループ管理者から削除しますか?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@のグループ管理者権限を取り消しますか?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "最近の会話";

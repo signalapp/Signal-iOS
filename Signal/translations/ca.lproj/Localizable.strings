@@ -1232,7 +1232,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Aquest usuari no es pot afegir al grup fins que no actualitzin el Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "S'ha assolit el nombre màxim de membres de grup: %@.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Foto no vàlida.";
@@ -1532,22 +1532,22 @@
 "GROUP_CALL_NO_ONE_HERE" = "Aquí no hi ha ningú més.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ i %ld més s'han afegit a la trucada.";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ i %ld més han sortit de la trucada.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ s'ha afegit a la trucada.";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ ha sortit de la trucada.";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ i %@ s'han afegit a la trucada.";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ i %@ han sortit de la trucada.";
 
 /* String indicating one person is currently in the call */
 "GROUP_CALL_ONE_IN_THIS_CALL" = "En aquesta trucada: 1 persona";
@@ -1556,7 +1556,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ és en aquesta trucada.";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "Es torna a connectar...";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Inicia una trucada";
@@ -1565,13 +1565,13 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ i %@ són en aquesta trucada.";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "The connection to the call unexpectedly ended.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "S'ha acabat inesperadament la connexió a la trucada.";
 
 /* Text describing the local user in the group call members sheet. */
 "GROUP_CALL_YOU" = "Vós";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vós (en un altre dispositiu)";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Heu creat el grup.";
@@ -2054,25 +2054,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "El nom del grup ara és «%@».";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "Aquest grup s'ha actualitzat a un grup nou.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Un membre no s'han pogut afegir al grup nou i se n'ha suprimit.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "No se us ha pogut afegir al grup nou i se us n'ha suprimit.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ membres no s'han pogut afegir al grup nou i se n'han suprimit.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Un membre no s'ha pogut afegir al grup nou i s'ha convidat a afegir-s'hi.";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "No se us ha pogut afegir al grup nou i se us ha convidat a afegir-vos-hi.";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membres no s'han pogut afegir al grup nou i s'han convidat a afegir-s'hi.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Heu abandonat el grup.";
@@ -2114,19 +2114,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grups Antics vs. grups nous";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Actualitzeu aquest grup i activeu-ne les funcions noves com ara les @mencions i els administradors. Els membres que no hi han compartit el nom o la fotografia es convidaran a afegir-s'hi. %@";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "No es pot actualitzar a un grup nou.";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Aquest grup no es pot actualitzar a un grup nou perquè té massa membres. La mida màxima de grup que es pot actualitzar és %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Quan tots els membres actuals del grup usin la versió del Signal capaç d'afegir-se a un grup nou, aquest grup s'actualitzarà.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Es conservaran tot l'historial i tot el contingut d'abans de l'actualització.";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es crearà un Grup Antic perquè 1 membre usa una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o expulsar-los abans de crear el grup.";
@@ -2153,19 +2153,19 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Aquest és un Grup Antic. Per a accedir a característiques noves com ara @mencions i administradors, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 membre no s'ha pogut tornar a afegir al grup nou. Voleu afegir-l'hi ara?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ membres no s'han pogut tornar a afegir al grup nou. Voleu afegir-los-hi ara?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grup Antic";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Actualitza el grup";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Per accedir a les funcions noves com ara les @mencions i els administradors, actualitzeu aquest grup.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Què són els grups nous?";
@@ -2177,67 +2177,67 @@
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Els grups nous tenen funcions com ara @mencions i administradors de grups, i admetran més funcions en el futur.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Grups nous";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Afegiu-hi membres";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Voleu afegir-hi un membre?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Voleu afegir-hi membres?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Afegiu-hi membres";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Aquest membre no s'ha pogut afegir automàticament al grup nou al moment de l'actualització:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Aquests membres no s'han pogut afegir automàticament al grup nou al moment de l'actualització:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "S'han conservat tot l'historial de missatges i el contingut anteriors a l'actualització.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Aquest membre s'ha suprimit del grup i no podrà tornar a afegir-s'hi fins que no l'actualitzi:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Aquests membres s'han suprimit del grup i no podran tornar a afegir-s'hi fins que no l'actualitzin:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Aquest membre haurà d'acceptar una invitació per tornar a afegir-se a aquest grup i no en rebrà missatges fins que no l'accepti:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Aquests membres hauran d'acceptar una invitació per tornar a afegir-se a aquest grup i no en rebran missatges fins que no l'acceptin:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Aquest membre no és capaç d'afegir-se als grups nous i se suprimirà del grup:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Aquests membres no són capaços d'afegir-se als grups nous i se suprimiran del grup:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Actualitza a grup nou";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Actualitza aquest grup";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Aquest grup no s'ha pogut actualitzar a un grup nou ara mateix.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Aquest grup no s'ha pogut actualitzar a un grup nou perquè no teniu connexió a Internet. Torneu-ho a provar més tard.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "No s'ha pogut completar l'actualització.";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "S'ha actualitzat a grup nou.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "actualitza aquest grup";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Abans d'abandonar-lo trieu un administrador nou per a aquest grup.";
@@ -2249,13 +2249,13 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Trieu un administrador nou";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Els grups del Signal funcionen millor amb %@ membres o menys. Afegir-hi més membres causarà retards d'enviament i recepció de missatges.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "S'ha assolit el límit màxim de membres recomanat.";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Voleu afegir-hi un membre tanmateix?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Mostra la sol·licitud";

@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Link do grupy";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Mianuj administratorem";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Mianuj adminem";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ będzie w stanie edytować tę grupę i jej członków.";
@@ -4484,7 +4484,7 @@
 "SOUNDS_NONE" = "Brak";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Istniejące grupy automatycznie uzyskają te funkcje w przyszłej aktualizacji.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Istniejące grupy automatycznie uzyskają te ulepszenia w przyszłej aktualizacji.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nowa grupa";

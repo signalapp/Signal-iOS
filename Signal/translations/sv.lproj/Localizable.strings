@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Grupplänk";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Gör till adminstratör";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Gör till administratör";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ kommer att kunna redigera denna grupp och dess medlemmar.";
@@ -2114,7 +2114,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. Nya grupper";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uppgradera den här gruppen för att aktivera nya funktioner som @omnämnanden och adminstratörer. Medlemmar som inte har delat sitt namn eller foto i den här gruppen kommer att inbjudas att gå med. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uppgradera den här gruppen för att aktivera nya funktioner som @omnämnanden och administratörer. Medlemmar som inte har delat sitt namn eller foto i den här gruppen kommer att inbjudas att gå med. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Det går inte att uppgradera till Ny grupp";

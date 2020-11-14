@@ -2066,7 +2066,7 @@
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "No se ha podido añadir a %@ participantes al nuevo grupo y han sido expulsad@s.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "No se ha podido añadir a un@ participante al grupo pero ha sido invitad@ a unirse.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "No se ha podido añadir a un@ participante al nuevo grupo pero ha sido invitad@ a unirse.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "No te han podido añadir al nuevo grupo pero te han invitad@ a unirte.";
