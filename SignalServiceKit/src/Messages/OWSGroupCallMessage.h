@@ -7,14 +7,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class PeekInfo;
 @class TSGroupThread;
 
 @interface OWSGroupCallMessage : TSInteraction <OWSReadTracking, OWSPreviewText>
 
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *participantAddresses;
-@property (nonatomic, readonly) SignalServiceAddress *originatorAddress;
-@property (nonatomic, readonly) BOOL hasCallEnded;
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *joinedMemberAddresses;
+@property (nonatomic, readonly) SignalServiceAddress *creatorAddress;
+@property (nonatomic, readonly) BOOL hasEnded;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
@@ -33,9 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithPeekInfo:(PeekInfo *)peekInfo
-                          thread:(TSGroupThread *)thread
-                 sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEraId:(NSString *)eraId
+            joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+                  creatorUuid:(NSUUID *)creatorUuid
+                       thread:(TSGroupThread *)thread
+              sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -50,12 +51,12 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-                    conferenceId:(nullable NSData *)conferenceId
-                    hasCallEnded:(BOOL)hasCallEnded
-                  originatorUuid:(nullable NSString *)originatorUuid
-                participantUuids:(nullable NSArray<NSString *> *)participantUuids
+                     creatorUuid:(nullable NSString *)creatorUuid
+                           eraId:(nullable NSString *)eraId
+                        hasEnded:(BOOL)hasEnded
+               joinedMemberUuids:(nullable NSArray<NSString *> *)joinedMemberUuids
                             read:(BOOL)read
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:conferenceId:hasCallEnded:originatorUuid:participantUuids:read:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:creatorUuid:eraId:hasEnded:joinedMemberUuids:read:));
 
 // clang-format on
 
@@ -63,7 +64,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateWithPeekInfo:(PeekInfo *)peekInfo transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithEraId:(NSString *)eraId
+      joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+            creatorUuid:(NSUUID *)creatorUuid
+               hasEnded:(BOOL)hasEnded
+            transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

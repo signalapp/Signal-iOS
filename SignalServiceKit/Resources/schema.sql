@@ -104,10 +104,10 @@ CREATE
             ,"bodyRanges" BLOB
             ,"offerType" INTEGER
             ,"serverDeliveryTimestamp" INTEGER
-            ,"conferenceId" BLOB
-            ,"hasCallEnded" BOOLEAN
-            ,"originatorUuid" TEXT
-            ,"participantUuids" BLOB
+            ,"eraId" TEXT
+            ,"hasEnded" BOOLEAN
+            ,"creatorUuid" TEXT
+            ,"joinedMemberUuids" BLOB
         )
 ;
 
@@ -941,15 +941,9 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_conferenceId"
-        ON "model_TSInteraction"("conferenceId"
-)
-;
-
-CREATE
-    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_timestamp_and_recordType"
+    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"
         ON "model_TSInteraction"("uniqueThreadId"
-    ,"timestamp"
+    ,"hasEnded"
     ,"recordType"
 )
 ;

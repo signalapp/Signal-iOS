@@ -230,7 +230,7 @@ class CallControls: UIView {
             joinButton.isUserInteractionEnabled = true
             joinButtonActivityIndicator.stopAnimating()
 
-            joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
+            joinButton.setTitle(call.groupCall.peekInfo?.deviceCount == 0 ? startCallText : joinCallText, for: .normal)
         }
     }
 
@@ -260,7 +260,7 @@ extension CallControls: CallObserver {
         updateControls()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         updateControls()
     }
 

@@ -60,7 +60,7 @@ extension GroupCallVideoGrid: CallObserver {
         reloadData()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 

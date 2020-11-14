@@ -73,6 +73,8 @@ public extension AFHTTPSessionManager {
             return Promise(error: OWSAssertionError("HEAD not supported."))
         case .patch:
             return Promise(error: OWSAssertionError("PATCH not supported."))
+        case .delete:
+            return Promise(error: OWSAssertionError("DELETE not supported."))
         }
         return promise
     }

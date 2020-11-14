@@ -332,7 +332,7 @@ class GroupCallMemberSheet: UIViewController {
             } else {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
                 // We can get the list of joined members still, provided we are connected.
-                members += self.call.groupCall.joinedGroupMembers.map { uuid in
+                members += self.call.groupCall.peekInfo?.joinedMembers.map { uuid in
                     let address = SignalServiceAddress(uuid: uuid)
                     let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
                     let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
@@ -346,7 +346,7 @@ class GroupCallMemberSheet: UIViewController {
                         isAudioMuted: nil,
                         isVideoMuted: nil
                     )
-                }
+                } ?? []
             }
 
             return members
@@ -496,7 +496,7 @@ extension GroupCallMemberSheet: CallObserver {
         updateMembers()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 

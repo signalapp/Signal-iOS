@@ -546,7 +546,7 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    public func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    public func groupCallPeekChanged(_ call: SignalCall) {}
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
@@ -678,6 +678,7 @@ extension CallService: CallManagerDelegate {
         case .get: httpMethod = .get
         case .post: httpMethod = .post
         case .put: httpMethod = .put
+        case .delete: httpMethod = .delete
         }
 
         let session = OWSURLSession(

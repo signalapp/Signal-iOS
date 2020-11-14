@@ -172,8 +172,8 @@ class CallHeader: UIView {
                     return self.call.groupCall.sortedRemoteDeviceStates
                         .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
                 } else {
-                    return self.call.groupCall.joinedGroupMembers
-                        .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
+                    return self.call.groupCall.peekInfo?.joinedMembers
+                        .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) } ?? []
                 }
             }
 
@@ -222,7 +222,7 @@ class CallHeader: UIView {
 
     func updateGroupMembersButton() {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
-        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : call.groupCall.joinedGroupMembers.count
+        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : Int(call.groupCall.peekInfo?.deviceCount ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
     }
 
@@ -262,7 +262,7 @@ extension CallHeader: CallObserver {
         updateCallStatusLabel()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }

@@ -104,7 +104,7 @@ protocol CallAudioServiceDelegate: class {
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    func groupCallPeekChanged(_ call: SignalCall) {}
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
 

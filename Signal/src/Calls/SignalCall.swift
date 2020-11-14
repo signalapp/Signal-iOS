@@ -15,7 +15,7 @@ public protocol CallObserver: class {
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall)
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall)
-    func groupCallJoinedMembersChanged(_ call: SignalCall)
+    func groupCallPeekChanged(_ call: SignalCall)
     func groupCallRequestMembershipProof(_ call: SignalCall)
     func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
@@ -272,8 +272,8 @@ extension SignalCall: GroupCallDelegate {
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
-    public func groupCall(onJoinedMembersChanged groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallJoinedMembersChanged(self) }
+    public func groupCall(onPeekChanged groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 
     public func groupCall(requestMembershipProof groupCall: GroupCall) {

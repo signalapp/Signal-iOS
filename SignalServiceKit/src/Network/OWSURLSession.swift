@@ -11,6 +11,7 @@ public enum HTTPMethod {
     case put
     case head
     case patch
+    case delete
 
     public var methodName: String {
         switch self {
@@ -24,6 +25,8 @@ public enum HTTPMethod {
             return "HEAD"
         case .patch:
             return "PATCH"
+        case .delete:
+            return "DELETE"
         }
     }
 
@@ -39,6 +42,8 @@ public enum HTTPMethod {
             return .head
         case "PATCH":
             return .patch
+        case "DELETE":
+            return .delete
         default:
             throw OWSAssertionError("Unknown method: \(String(describing: method))")
         }

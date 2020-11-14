@@ -33,6 +33,7 @@ Pod::Spec.new do |s|
   s.module_map = 'RingRTC/src/ios/SignalRingRTC/SignalRingRTC/SignalRingRTC.modulemap'
 
   s.dependency 'SignalCoreKit'
+  s.dependency 'PromiseKit'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'RingRTC/src/ios/SignalRingRTC/SignalRingRTCTests/**/*.{h,m,swift}'

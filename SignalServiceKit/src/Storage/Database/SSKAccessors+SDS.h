@@ -170,10 +170,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSGroupCallMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
-@property (nonatomic, readonly, nullable) NSData *conferenceId;
-@property (nonatomic, readonly, nullable) NSArray<NSString *> *participantUuids;
-@property (nonatomic, readonly, nullable) NSString *originatorUuid;
-@property (nonatomic, readonly) BOOL hasCallEnded;
+@property (nonatomic, nullable) NSString *eraId;
+@property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
+@property (nonatomic, nullable) NSString *creatorUuid;
+@property (nonatomic, readonly) BOOL hasEnded;
 
 @end
 

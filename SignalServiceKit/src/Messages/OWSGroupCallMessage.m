@@ -14,10 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
-@property (nonatomic, nullable) NSData *conferenceId;
-@property (nonatomic, nullable) NSArray<NSString *> *participantUuids;
-@property (nonatomic, nullable) NSString *originatorUuid;
-@property (nonatomic) BOOL hasCallEnded;
+@property (nonatomic, nullable) NSString *eraId;
+@property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
+@property (nonatomic, nullable) NSString *creatorUuid;
+@property (nonatomic) BOOL hasEnded;
 
 @end
 
@@ -25,9 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGroupCallMessage
 
-- (instancetype)initWithPeekInfo:(PeekInfo *)peekInfo
-                          thread:(TSGroupThread *)thread
-                 sentAtTimestamp:(uint64_t)sentAtTimestamp
+- (instancetype)initWithEraId:(NSString *)eraId
+            joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+                  creatorUuid:(NSUUID *)creatorUuid
+                       thread:(TSGroupThread *)thread
+              sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
     self = [super initInteractionWithTimestamp:sentAtTimestamp thread:thread];
 
@@ -35,7 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    // TODO: set things from PeekInfo
+    self.eraId = eraId;
+    self.joinedMemberUuids = [joinedMemberUuids map:^(NSUUID *uuid) { return uuid.UUIDString; }];
+    self.creatorUuid = creatorUuid.UUIDString;
 
     return self;
 }
@@ -53,10 +57,10 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-                    conferenceId:(nullable NSData *)conferenceId
-                    hasCallEnded:(BOOL)hasCallEnded
-                  originatorUuid:(nullable NSString *)originatorUuid
-                participantUuids:(nullable NSArray<NSString *> *)participantUuids
+                     creatorUuid:(nullable NSString *)creatorUuid
+                           eraId:(nullable NSString *)eraId
+                        hasEnded:(BOOL)hasEnded
+               joinedMemberUuids:(nullable NSArray<NSString *> *)joinedMemberUuids
                             read:(BOOL)read
 {
     self = [super initWithGrdbId:grdbId
@@ -70,10 +74,10 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _conferenceId = conferenceId;
-    _hasCallEnded = hasCallEnded;
-    _originatorUuid = originatorUuid;
-    _participantUuids = participantUuids;
+    _creatorUuid = creatorUuid;
+    _eraId = eraId;
+    _hasEnded = hasEnded;
+    _joinedMemberUuids = joinedMemberUuids;
     _read = read;
 
     return self;
@@ -88,15 +92,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (NSArray<SignalServiceAddress *> *)participantAddresses
+- (NSArray<SignalServiceAddress *> *)joinedMemberAddresses
 {
-    return [self.participantUuids
+    return [self.joinedMemberUuids
         map:^(NSString *uuidString) { return [[SignalServiceAddress alloc] initWithUuidString:uuidString]; }];
 }
 
-- (SignalServiceAddress *)originatorAddress
+- (SignalServiceAddress *)creatorAddress
 {
-    return [[SignalServiceAddress alloc] initWithUuidString:self.originatorUuid];
+    return [[SignalServiceAddress alloc] initWithUuidString:self.creatorUuid];
 }
 
 - (OWSInteractionType)interactionType
@@ -152,11 +156,20 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Some text for in the conversation";
 }
 
-- (void)updateWithPeekInfo:(PeekInfo *)peekInfo transaction:(SDSAnyWriteTransaction *)transaction
+
+- (void)updateWithEraId:(NSString *)eraId
+      joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+            creatorUuid:(NSUUID *)creatorUuid
+               hasEnded:(BOOL)hasEnded
+            transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateGroupCallMessageWithTransaction:transaction
                                              block:^(OWSGroupCallMessage *groupCallMessage) {
-                                                 // TODO: Set values from PeekInfo
+                                                 groupCallMessage.eraId = eraId;
+                                                 groupCallMessage.joinedMemberUuids = [joinedMemberUuids
+                                                     map:^(NSUUID *uuid) { return uuid.UUIDString; }];
+                                                 groupCallMessage.creatorUuid = creatorUuid.UUIDString;
+                                                 groupCallMessage.hasEnded = hasEnded;
                                              }];
 }
 
