@@ -109,6 +109,7 @@
 		"TSErrorMessage.read": "wasRead",
 		"TSIncomingMessage.read": "wasRead",
 		"TSCall.read": "wasRead",
+		"OWSGroupCallMessage.read": "wasRead",
 		"OWSDisappearingMessagesConfiguration.enabled": "isEnabled",
 		"OWSDisappearingMessagesConfiguration.newRecord": "isNewRecord"
 	},

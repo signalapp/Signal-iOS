@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension TSCall {
+public extension OWSGroupCallMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchCall(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSCall? {
+    class func anyFetchGroupCallMessage(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSGroupCallMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? TSCall else {
+        guard let instance = object as? OWSGroupCallMessage else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension TSCall {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateCall(transaction: SDSAnyWriteTransaction, block: (TSCall) -> Void) {
+    func anyUpdateGroupCallMessage(transaction: SDSAnyWriteTransaction, block: (OWSGroupCallMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? TSCall else {
+            guard let instance = object as? OWSGroupCallMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension TSCall {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSCallSerializer: SDSSerializer {
+class OWSGroupCallMessageSerializer: SDSSerializer {
 
-    private let model: TSCall
-    public required init(model: TSCall) {
+    private let model: OWSGroupCallMessage
+    public required init(model: OWSGroupCallMessage) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class TSCallSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
-        let recordType: SDSRecordType = .call
+        let recordType: SDSRecordType = .groupCallMessage
         let uniqueId: String = model.uniqueId
 
         // Properties
@@ -69,7 +69,7 @@ class TSCallSerializer: SDSSerializer {
         let authorPhoneNumber: String? = nil
         let authorUUID: String? = nil
         let body: String? = nil
-        let callType: RPRecentCallType? = model.callType
+        let callType: RPRecentCallType? = nil
         let configurationDurationSeconds: UInt32? = nil
         let configurationIsEnabled: Bool? = nil
         let contactShare: Data? = nil
@@ -113,12 +113,12 @@ class TSCallSerializer: SDSSerializer {
         let infoMessageUserInfo: Data? = nil
         let wasRemotelyDeleted: Bool? = nil
         let bodyRanges: Data? = nil
-        let offerType: TSRecentCallOfferType? = model.offerType
+        let offerType: TSRecentCallOfferType? = nil
         let serverDeliveryTimestamp: UInt64? = nil
-        let conferenceId: Data? = nil
-        let hasCallEnded: Bool? = nil
-        let originatorUuid: String? = nil
-        let participantUuids: Data? = nil
+        let conferenceId: Data? = model.conferenceId
+        let hasCallEnded: Bool? = model.hasCallEnded
+        let originatorUuid: String? = model.originatorUuid
+        let participantUuids: Data? = optionalArchive(model.participantUuids)
 
         return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, conferenceId: conferenceId, hasCallEnded: hasCallEnded, originatorUuid: originatorUuid, participantUuids: participantUuids)
     }

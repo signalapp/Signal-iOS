@@ -10,6 +10,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSGroupCallMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -376,6 +377,8 @@ typedef void (^SystemMessageActionBlock)(void);
 
         return [UIImage
             imageNamed:[NSString stringWithFormat:@"%@-%@-%@-16", offerTypeString, directionString, themeString]];
+    } else if ([interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+        return [UIImage imageNamed:Theme.isDarkThemeEnabled ? @"video-solid-16" : @"video-outline-16"];
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;
@@ -581,6 +584,8 @@ typedef void (^SystemMessageActionBlock)(void);
         return [self actionForInfoMessage:(TSInfoMessage *)interaction];
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         return [self actionForCall:(TSCall *)interaction];
+    } else if ([interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+        return [self actionForGroupCall:(OWSGroupCallMessage *)interaction];
     } else {
         OWSFailDebug(@"Tap for system messages of unknown type: %@", [interaction class]);
         return nil;
@@ -809,6 +814,13 @@ typedef void (^SystemMessageActionBlock)(void);
         case RPRecentCallTypeIncomingIncomplete:
             return nil;
     }
+}
+
+- (nullable SystemMessageAction *)actionForGroupCall:(OWSGroupCallMessage *)groupCallMessage
+{
+    // TODO: join call if no active call, return to call if active call is for thread of this message, no button if
+    // active call otherwise
+    return nil;
 }
 
 #pragma mark - Events

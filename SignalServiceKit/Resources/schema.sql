@@ -104,6 +104,10 @@ CREATE
             ,"bodyRanges" BLOB
             ,"offerType" INTEGER
             ,"serverDeliveryTimestamp" INTEGER
+            ,"conferenceId" BLOB
+            ,"hasCallEnded" BOOLEAN
+            ,"originatorUuid" TEXT
+            ,"participantUuids" BLOB
         )
 ;
 
@@ -933,5 +937,19 @@ CREATE
     INDEX "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible"
         ON "model_TSThread"("isMarkedUnread"
     ,"shouldThreadBeVisible"
+)
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_conferenceId"
+        ON "model_TSInteraction"("conferenceId"
+)
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_timestamp_and_recordType"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"timestamp"
+    ,"recordType"
 )
 ;

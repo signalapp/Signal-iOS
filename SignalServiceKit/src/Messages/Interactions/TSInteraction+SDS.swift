@@ -82,6 +82,10 @@ public struct InteractionRecord: SDSRecord {
     public let bodyRanges: Data?
     public let offerType: TSRecentCallOfferType?
     public let serverDeliveryTimestamp: UInt64?
+    public let conferenceId: Data?
+    public let hasCallEnded: Bool?
+    public let originatorUuid: String?
+    public let participantUuids: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -141,6 +145,10 @@ public struct InteractionRecord: SDSRecord {
         case bodyRanges
         case offerType
         case serverDeliveryTimestamp
+        case conferenceId
+        case hasCallEnded
+        case originatorUuid
+        case participantUuids
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -221,6 +229,10 @@ public extension InteractionRecord {
         bodyRanges = row[54]
         offerType = row[55]
         serverDeliveryTimestamp = row[56]
+        conferenceId = row[57]
+        hasCallEnded = row[58]
+        originatorUuid = row[59]
+        participantUuids = row[60]
     }
 }
 
@@ -445,6 +457,32 @@ extension TSInteraction {
                                                                  configurationIsEnabled: configurationIsEnabled,
                                                                  createdByRemoteName: createdByRemoteName,
                                                                  createdInExistingGroup: createdInExistingGroup)
+
+        case .groupCallMessage:
+
+            let uniqueId: String = record.uniqueId
+            let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = UInt64(recordId)
+            let timestamp: UInt64 = record.timestamp
+            let uniqueThreadId: String = record.threadUniqueId
+            let conferenceId: Data? = SDSDeserialization.optionalData(record.conferenceId, name: "conferenceId")
+            let hasCallEnded: Bool = try SDSDeserialization.required(record.hasCallEnded, name: "hasCallEnded")
+            let originatorUuid: String? = record.originatorUuid
+            let participantUuidsSerialized: Data? = record.participantUuids
+            let participantUuids: [String]? = try SDSDeserialization.optionalUnarchive(participantUuidsSerialized, name: "participantUuids")
+            let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+
+            return OWSGroupCallMessage(grdbId: recordId,
+                                       uniqueId: uniqueId,
+                                       receivedAtTimestamp: receivedAtTimestamp,
+                                       sortId: sortId,
+                                       timestamp: timestamp,
+                                       uniqueThreadId: uniqueThreadId,
+                                       conferenceId: conferenceId,
+                                       hasCallEnded: hasCallEnded,
+                                       originatorUuid: originatorUuid,
+                                       participantUuids: participantUuids,
+                                       read: read)
 
         case .unknownContactBlockOfferMessage:
 
@@ -1256,6 +1294,9 @@ extension TSInteraction: SDSModel {
         case let model as TSCall:
             assert(type(of: model) == TSCall.self)
             return TSCallSerializer(model: model)
+        case let model as OWSGroupCallMessage:
+            assert(type(of: model) == OWSGroupCallMessage.self)
+            return OWSGroupCallMessageSerializer(model: model)
         default:
             return TSInteractionSerializer(model: self)
         }
@@ -3192,6 +3233,44 @@ extension TSInteraction: DeepCopyable {
                           read: read)
         }
 
+        if let modelToCopy = self as? OWSGroupCallMessage {
+            assert(type(of: modelToCopy) == OWSGroupCallMessage.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let receivedAtTimestamp: UInt64 = modelToCopy.receivedAtTimestamp
+            let sortId: UInt64 = modelToCopy.sortId
+            let timestamp: UInt64 = modelToCopy.timestamp
+            let uniqueThreadId: String = modelToCopy.uniqueThreadId
+            let conferenceId: Data? = modelToCopy.conferenceId
+            let hasCallEnded: Bool = modelToCopy.hasCallEnded
+            let originatorUuid: String? = modelToCopy.originatorUuid
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let participantUuids: [String]?
+            if let participantUuidsForCopy = modelToCopy.participantUuids {
+               participantUuids = try DeepCopies.deepCopy(participantUuidsForCopy)
+            } else {
+               participantUuids = nil
+            }
+            let read: Bool = modelToCopy.wasRead
+
+            return OWSGroupCallMessage(grdbId: id,
+                                       uniqueId: uniqueId,
+                                       receivedAtTimestamp: receivedAtTimestamp,
+                                       sortId: sortId,
+                                       timestamp: timestamp,
+                                       uniqueThreadId: uniqueThreadId,
+                                       conferenceId: conferenceId,
+                                       hasCallEnded: hasCallEnded,
+                                       originatorUuid: originatorUuid,
+                                       participantUuids: participantUuids,
+                                       read: read)
+        }
+
         do {
             let modelToCopy = self
             assert(type(of: modelToCopy) == TSInteraction.self)
@@ -3276,6 +3355,10 @@ extension TSInteractionSerializer {
     static let bodyRangesColumn = SDSColumnMetadata(columnName: "bodyRanges", columnType: .blob, isOptional: true)
     static let offerTypeColumn = SDSColumnMetadata(columnName: "offerType", columnType: .int, isOptional: true)
     static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
+    static let conferenceIdColumn = SDSColumnMetadata(columnName: "conferenceId", columnType: .blob, isOptional: true)
+    static let hasCallEndedColumn = SDSColumnMetadata(columnName: "hasCallEnded", columnType: .int, isOptional: true)
+    static let originatorUuidColumn = SDSColumnMetadata(columnName: "originatorUuid", columnType: .unicodeString, isOptional: true)
+    static let participantUuidsColumn = SDSColumnMetadata(columnName: "participantUuids", columnType: .blob, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -3338,7 +3421,11 @@ extension TSInteractionSerializer {
         wasRemotelyDeletedColumn,
         bodyRangesColumn,
         offerTypeColumn,
-        serverDeliveryTimestampColumn
+        serverDeliveryTimestampColumn,
+        conferenceIdColumn,
+        hasCallEndedColumn,
+        originatorUuidColumn,
+        participantUuidsColumn
         ])
 }
 
@@ -3822,8 +3909,12 @@ class TSInteractionSerializer: SDSSerializer {
         let bodyRanges: Data? = nil
         let offerType: TSRecentCallOfferType? = nil
         let serverDeliveryTimestamp: UInt64? = nil
+        let conferenceId: Data? = nil
+        let hasCallEnded: Bool? = nil
+        let originatorUuid: String? = nil
+        let participantUuids: Data? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, conferenceId: conferenceId, hasCallEnded: hasCallEnded, originatorUuid: originatorUuid, participantUuids: participantUuids)
     }
 }
 

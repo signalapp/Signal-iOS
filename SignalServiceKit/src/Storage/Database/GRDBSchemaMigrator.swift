@@ -90,6 +90,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addServerDeliveryTimestamp
         case updateAnimatedStickers
         case updateMarkedUnreadIndex
+        case addGroupCallMessage
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -125,7 +126,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 15
+    public static let grdbSchemaVersionLatest: UInt = 16
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -862,6 +863,31 @@ public class GRDBSchemaMigrator: NSObject {
                     index: "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible",
                     on: "model_TSThread",
                     columns: ["isMarkedUnread", "shouldThreadBeVisible"]
+                )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addGroupCallMessage.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { table in
+                    table.add(column: "conferenceId", .blob)
+                    table.add(column: "hasCallEnded", .boolean)
+                    table.add(column: "originatorUuid", .text)
+                    table.add(column: "participantUuids", .blob)
+                }
+
+                try db.create(
+                    index: "index_model_TSInteraction_on_conferenceId",
+                    on: "model_TSInteraction",
+                    columns: ["conferenceId"]
+                )
+
+                try db.create(
+                    index: "index_model_TSInteraction_on_uniqueThreadId_and_timestamp_and_recordType",
+                    on: "model_TSInteraction",
+                    columns: ["uniqueThreadId", "timestamp", "recordType"]
                 )
             } catch {
                 owsFail("Error: \(error)")
