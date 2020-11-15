@@ -13,7 +13,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent
         
         var isMainAppActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
@@ -31,10 +31,10 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
                 // Modify the notification content here...
                 let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
                 let data = Data(base64Encoded: base64EncodedData)!
-                let decrypter = SSKEnvironment.shared.messageDecrypter
-                let messageManager = SSKEnvironment.shared.messageManager
                 if let envelope = try? MessageWrapper.unwrap(data: data), let data = try? envelope.serializedData() {
-                    let wasReceivedByUD = self.wasReceivedByUD(envelope: envelope)
+                    // TODO TODO TODO
+                    
+                    /*
                     decrypter.decryptEnvelope(envelope,
                                               envelopeData: data,
                                               successBlock: { result, transaction in
@@ -49,6 +49,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
                                                   self.completeWithFailure(content: notificationContent)
                                               }
                     )
+                     */
                 } else {
                     self.completeWithFailure(content: notificationContent)
                 }
@@ -56,6 +57,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         }
     }
     
+    /*
     func handleDecryptionResult(result: OWSMessageDecryptResult, notificationContent: UNMutableNotificationContent, transaction: YapDatabaseReadWriteTransaction) {
         let contentProto = try? SSKProtoContent.parseData(result.plaintextData!)
         var thread: TSThread
@@ -131,6 +133,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             self.contentHandler!(notificationContent)
         }
     }
+     */
     
     func handleMentionIfNecessary(rawMessageBody: String, threadID: String, transaction: YapDatabaseReadWriteTransaction) -> String {
         var string = rawMessageBody

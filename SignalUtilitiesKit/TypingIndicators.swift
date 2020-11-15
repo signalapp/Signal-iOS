@@ -73,10 +73,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         return SSKEnvironment.shared.primaryStorage
     }
 
-    private var syncManager: OWSSyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
-    }
-
     // MARK: -
 
     @objc
@@ -86,8 +82,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         _areTypingIndicatorsEnabled = value
 
         primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
-
-        syncManager.sendConfigurationSyncMessage()
 
         NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
@@ -303,9 +297,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             sendPauseTimer = nil
         }
 
-        private func sendTypingMessageIfNecessary(forThread thread: TSThread, action: TypingIndicatorAction) {
-            Logger.verbose("\(TypingIndicatorMessage.string(forTypingIndicatorAction: action))")
-
+        private func sendTypingMessageIfNecessary(forThread thread: TSThread, action: TypingIndicator.Kind) {
             guard let delegate = delegate else {
                 owsFailDebug("Missing delegate.")
                 return
@@ -320,12 +312,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             if !SessionMetaProtocol.shouldSendTypingIndicator(in: thread) { return }
 
             let typingIndicator = TypingIndicator()
-            typingIndicator.kind = {
-                switch action {
-                case .started: return .started
-                case .stopped: return .stopped
-                }
-            }()
+            typingIndicator.kind = action
             typingIndicator.threadID = thread.uniqueId!
             let destination = Message.Destination.from(thread)
             let job = MessageSendJob(message: typingIndicator, destination: destination)

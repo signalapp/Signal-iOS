@@ -33,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 // this is a label for the account.
 @property (nonatomic) NSString *multipleAccountLabelText;
 
-- (nullable NSString *)contactFullName;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;

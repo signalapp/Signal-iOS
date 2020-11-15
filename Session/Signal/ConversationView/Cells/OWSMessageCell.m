@@ -3,7 +3,6 @@
 //
 
 #import "OWSMessageCell.h"
-#import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
 #import "Session-Swift.h"
@@ -286,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView update];
     
     // Loki: Show the moderator icon if needed
-    if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) { // FIXME: This logic also shouldn't apply to closed groups
+    if (self.viewItem.isGroupThread) { // FIXME: This logic also shouldn't apply to closed groups
         __block SNOpenGroup *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];

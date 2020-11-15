@@ -176,7 +176,7 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
 
         let checkForCancel = category == .incomingMessage
-        if checkForCancel && hasReceivedSyncMessageRecently {
+        if checkForCancel {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             notification.fireDate = Date(timeIntervalSinceNow: kNotificationDelayForRemoteRead)
             notification.timeZone = NSTimeZone.local

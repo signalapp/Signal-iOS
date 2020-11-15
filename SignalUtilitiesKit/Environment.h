@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 
 @class OWSAudioSession;
-@class OWSContactsManager;
 @class OWSPreferences;
 @class OWSSounds;
 @class OWSWindowManager;
@@ -26,7 +25,6 @@
                        windowManager:(OWSWindowManager *)windowManager;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;

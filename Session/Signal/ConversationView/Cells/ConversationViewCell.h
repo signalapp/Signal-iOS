@@ -35,23 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - System Cell
 
-- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId;
-- (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage;
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message;
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message;
-- (void)showFingerprintWithRecipientId:(NSString *)recipientId;
 - (void)showConversationSettings;
-- (void)handleCallTap:(TSCall *)call;
-
-#pragma mark - Offers
-
-- (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction;
-- (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction;
-- (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction;
-
-#pragma mark - Formatting
-
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
 
 #pragma mark - Caching
 
@@ -60,10 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Messages
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
-
-#pragma mark - Contacts
-
-- (OWSContactsManager *)contactsManager;
 
 @end
 

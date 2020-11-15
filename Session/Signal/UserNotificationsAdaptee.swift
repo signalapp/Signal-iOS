@@ -125,7 +125,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         let trigger: UNNotificationTrigger?
         let checkForCancel = category == .incomingMessage
-        if checkForCancel && hasReceivedSyncMessageRecently {
+        if checkForCancel {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else {

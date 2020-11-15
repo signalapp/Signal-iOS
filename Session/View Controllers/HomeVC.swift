@@ -96,8 +96,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         // Set up seed reminder view if needed
         let userDefaults = UserDefaults.standard
         let hasViewedSeed = userDefaults[.hasViewedSeed]
-        let isMasterDevice = userDefaults.isMasterDevice
-        if !hasViewedSeed && isMasterDevice {
+        if !hasViewedSeed {
             view.addSubview(seedReminderView)
             seedReminderView.pin(.leading, to: .leading, of: view)
             seedReminderView.pin(.top, to: .top, of: view)
@@ -108,7 +107,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        if !hasViewedSeed && isMasterDevice {
+        if !hasViewedSeed {
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
         } else {
             tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
@@ -283,13 +282,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.size = profilePictureSize
-        let userHexEncodedPublicKey: String
-        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
-            userHexEncodedPublicKey = masterHexEncodedPublicKey
-        } else {
-            userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        }
-        profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
+        profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)
@@ -413,10 +406,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         }
         delete.backgroundColor = Colors.destructive
         if thread is TSContactThread {
-            var publicKey: String!
-            Storage.read { transaction in
-                publicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: thread.contactIdentifier()!, in: transaction) ?? thread.contactIdentifier()!
-            }
+            let publicKey = thread.contactIdentifier()!
             let blockingManager = SSKEnvironment.shared.blockingManager
             let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
             let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in

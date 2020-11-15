@@ -5,7 +5,7 @@
 #import "OWSMessageUtils.h"
 #import "AppContext.h"
 #import "MIMETypeUtil.h"
-#import "OWSMessageSender.h"
+
 #import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"

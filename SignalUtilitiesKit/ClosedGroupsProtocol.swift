@@ -41,34 +41,27 @@ public final class ClosedGroupsProtocol : NSObject {
         // Generate a key pair for the group
         let groupKeyPair = Curve25519.generateKeyPair()
         let groupPublicKey = groupKeyPair.hexEncodedPublicKey // Includes the "05" prefix
-        // Ensure the current user's master device is the one that's included in the member list
-        members.remove(userPublicKey)
-        members.insert(UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey)
+        // Ensure the current user is included in the member list
+        members.insert(userPublicKey)
         let membersAsData = members.map { Data(hex: $0) }
-        // Create ratchets for all members (and their linked devices)
-        var membersAndLinkedDevices: Set<String> = members
-        for member in members {
-            let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
-            membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
-        }
-        let senderKeys: [ClosedGroupSenderKey] = membersAndLinkedDevices.map { publicKey in
-            let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
+        // Create ratchets for all members
+        let senderKeys: [ClosedGroupSenderKey] = members.map { publicKey in
+            let ratchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
             return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: Data(hex: publicKey))
         }
         // Create the group
-        let admins = [ UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey ]
+        let admins = [ userPublicKey ]
         let adminsAsData = admins.map { Data(hex: $0) }
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let group = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
         thread.usesSharedSenderKeys = true
         thread.save(with: transaction)
-        SSKEnvironment.shared.profileManager.addThread(toProfileWhitelist: thread)
         // Establish sessions if needed
-        establishSessionsIfNeeded(with: [String](members), using: transaction) // Not `membersAndLinkedDevices` as this internally takes care of multi device already
-        // Send a closed group update message to all members (and their linked devices) using established channels
+        establishSessionsIfNeeded(with: [String](members), using: transaction)
+        // Send a closed group update message to all members using established channels
         var promises: [Promise<Void>] = []
-        for member in members { // Not `membersAndLinkedDevices` as this internally takes care of multi device already
+        for member in members {
             guard member != userPublicKey else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
@@ -158,7 +151,7 @@ public final class ClosedGroupsProtocol : NSObject {
                             MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
                         }
                         // Send out the user's new ratchet to all members (minus the removed ones) using established channels
-                        let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+                        let userRatchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
                         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
                         for member in members {
                             guard member != userPublicKey else { continue }
@@ -176,7 +169,7 @@ public final class ClosedGroupsProtocol : NSObject {
             seal.fulfill(())
             // Generate ratchets for any new members
             newSenderKeys = newMembers.map { publicKey in
-                let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
+                let ratchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
                 return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: Data(hex: publicKey))
             }
             // Send a closed group update message to the existing members with the new members' ratchets (this message is aimed at the group)
@@ -212,7 +205,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let newGroupModel = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
-        let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: SSKEnvironment.shared.contactsManager)
+        let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
         infoMessage.save(with: transaction)
         // Return
@@ -227,7 +220,7 @@ public final class ClosedGroupsProtocol : NSObject {
 
     /// The returned promise is fulfilled when the group update message has been sent. It doesn't wait for the user's new ratchet to be distributed.
     public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
             print("[Loki] Can't leave nonexistent closed group.")
@@ -288,7 +281,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let admins = closedGroupUpdate.admins.map { $0.toHexString() }
         // Persist the ratchets
         senderKeys.forEach { senderKey in
-            guard members.contains(senderKey.publicKey.toHexString()) else { return } // TODO: This currently doesn't take into account multi device
+            guard members.contains(senderKey.publicKey.toHexString()) else { return }
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey.toHexString(), ratchet: ratchet, using: transaction)
         }
@@ -297,7 +290,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         if missingSenderKeys.contains(userPublicKey) {
             establishSessionsIfNeeded(with: [String](members), using: transaction)
-            let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+            let userRatchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
             let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
             for member in members {
                 guard member != userPublicKey else { continue }
@@ -324,7 +317,6 @@ public final class ClosedGroupsProtocol : NSObject {
             thread.usesSharedSenderKeys = true
             thread.save(with: transaction)
         }
-        SSKEnvironment.shared.profileManager.addThread(toProfileWhitelist: thread)
         // Add the group to the user's set of public keys to poll for
         Storage.setClosedGroupPrivateKey(groupPrivateKey.toHexString(), for: groupPublicKey, using: transaction)
         // Notify the PN server
@@ -333,7 +325,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
         // Establish sessions if needed
-        establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
+        establishSessionsIfNeeded(with: members, using: transaction)
     }
 
     /// Invoked upon receiving a group update. A group update is sent out when a group's name is changed, when new users are added, when users leave or are
@@ -353,12 +345,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         let group = thread.groupModel
         // Check that the sender is a member of the group (before the update)
-        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
-        for member in group.groupMemberIds {
-            let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
-            membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
-        }
-        guard membersAndLinkedDevices.contains(senderPublicKey) else {
+        guard Set(group.groupMemberIds).contains(senderPublicKey) else {
             return print("[Loki] Ignoring closed group info message from non-member.")
         }
         // Store the ratchets for any new members (it's important that this happens before the code below)
@@ -370,7 +357,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // • Send out the user's new ratchet using established channels if other members of the group left or were removed
         // • Remove the group from the user's set of public keys to poll for if the current user was among the members that were removed
         let oldMembers = group.groupMemberIds
-        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         let wasUserRemoved = !members.contains(userPublicKey)
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
             let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
@@ -384,8 +371,8 @@ public final class ClosedGroupsProtocol : NSObject {
                 // Notify the PN server
                 let _ = LokiPushNotificationManager.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             } else {
-                establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
-                let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+                establishSessionsIfNeeded(with: members, using: transaction)
+                let userRatchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
                 let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
                 for member in members {
                     guard member != userPublicKey else { continue }
@@ -401,10 +388,10 @@ public final class ClosedGroupsProtocol : NSObject {
         // Update the group
         let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
-        // Notify the user if needed (don't notify them if the message just contained linked device sender keys)
+        // Notify the user if needed
         if Set(members) != Set(oldMembers) || Set(admins) != Set(group.groupAdminIds) || name != group.groupName {
             let infoMessageType: TSInfoMessageType = wasUserRemoved ? .typeGroupQuit : .typeGroupUpdate
-            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: SSKEnvironment.shared.contactsManager)
+            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
             let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
@@ -420,19 +407,15 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         let group = groupThread.groupModel
         // Check that the requesting user is a member of the group
-        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
-        for member in group.groupMemberIds {
-            let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
-            membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
-        }
-        guard membersAndLinkedDevices.contains(senderPublicKey) else {
+        let members = Set(group.groupMemberIds)
+        guard members.contains(senderPublicKey) else {
             return print("[Loki] Ignoring closed group sender key request from non-member.")
         }
         // Respond to the request
         print("[Loki] Responding to sender key request from: \(senderPublicKey).")
-        SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction) // This internally takes care of multi device
+        SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction)
         let userRatchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey)
-            ?? SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+            ?? SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
         let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
         thread.save(with: transaction)
@@ -471,11 +454,7 @@ public final class ClosedGroupsProtocol : NSObject {
     public static func shouldIgnoreClosedGroupMessage(_ dataMessage: SSKProtoDataMessage, in thread: TSGroupThread, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
         guard thread.groupModel.groupType == .closedGroup else { return true }
         let publicKey = envelope.source! // Set during UD decryption
-        var result = false
-        Storage.read { transaction in
-            result = !thread.isUserMember(inGroup: publicKey, transaction: transaction)
-        }
-        return result
+        return !thread.isUserMember(inGroup: publicKey)
     }
 
     /// - Note: Deprecated.
@@ -483,10 +462,6 @@ public final class ClosedGroupsProtocol : NSObject {
     public static func shouldIgnoreClosedGroupUpdateMessage(_ dataMessage: SSKProtoDataMessage, in thread: TSGroupThread, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
         guard thread.groupModel.groupType == .closedGroup else { return true }
         let publicKey = envelope.source! // Set during UD decryption
-        var result = false
-        Storage.read { transaction in
-            result = !thread.isUserAdmin(inGroup: publicKey, transaction: transaction)
-        }
-        return result
+        return !thread.isUserAdmin(inGroup: publicKey)
     }
 }

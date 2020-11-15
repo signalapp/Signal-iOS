@@ -4,12 +4,8 @@
 
 #import "OWSReadReceiptManager.h"
 #import "AppReadiness.h"
-#import "OWSLinkedDeviceReadReceipt.h"
-#import "OWSMessageSender.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage.h"
-#import "OWSReadReceiptsForLinkedDevicesMessage.h"
-#import "OWSReceiptsForSenderMessage.h"
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
@@ -122,7 +118,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // we will send to our linked devices.
 //
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSLinkedDeviceReadReceipt *> *toLinkedDevicesReadReceiptMap;
+// @property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSLinkedDeviceReadReceipt *> *toLinkedDevicesReadReceiptMap;
 
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
@@ -152,8 +148,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     _dbConnection = primaryStorage.newDatabaseConnection;
 
-    _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
-
     OWSSingletonAssert();
 
     // Start processing.
@@ -170,11 +164,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 }
 
 #pragma mark - Dependencies
-
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
 
 - (OWSOutgoingReceiptManager *)outgoingReceiptManager
 {
@@ -206,6 +195,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)process
 {
+    // TODO TODO TODO
+    
+    /*
     @synchronized(self)
     {
         OWSLogVerbose(@"Processing read receipts.");
@@ -241,6 +233,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             self.isProcessing = NO;
         }
     }
+     */
 }
 
 #pragma mark - Mark as Read Locally
@@ -262,6 +255,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)messageWasReadLocally:(TSIncomingMessage *)message
 {
+    // TODO TODO TODO
+    
+    /*
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
@@ -298,6 +294,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             [self scheduleProcessing];
         }
     });
+     */
 }
 
 #pragma mark - Read Receipts From Recipient
@@ -375,6 +372,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    /*
     OWSAssertDebug(message);
     OWSAssertDebug(transaction);
 
@@ -395,12 +393,16 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     [message markAsReadAtTimestamp:readReceipt.readTimestamp sendReadReceipt:NO transaction:transaction];
     [readReceipt removeWithTransaction:transaction];
+     */
 }
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
                               readTimestamp:(uint64_t)readTimestamp
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // TODO TODO TODO
+    
+    /*
     OWSAssertDebug(readReceiptProtos);
     OWSAssertDebug(transaction);
 
@@ -439,6 +441,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             [readReceipt saveWithTransaction:transaction];
         }
     }
+     */
 }
 
 - (void)markAsReadOnLinkedDevice:(TSIncomingMessage *)message
@@ -541,8 +544,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     [self.dbConnection setBool:value
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
                   inCollection:OWSReadReceiptManagerCollection];
-
-    [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 
     self.areReadReceiptsEnabledCached = @(value);
 }

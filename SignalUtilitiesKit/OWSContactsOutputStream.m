@@ -3,7 +3,7 @@
 //
 
 #import "OWSContactsOutputStream.h"
-#import "Contact.h"
+
 #import "ContactsManagerProtocol.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
@@ -47,27 +47,6 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         contactBuilder.verified = verified;
     }
 
-    /*
-    UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
-    NSData *_Nullable avatarPng;
-    if (rawAvatar) {
-        avatarPng = UIImagePNGRepresentation(rawAvatar);
-        if (avatarPng) {
-            SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
-            [avatarBuilder setContentType:OWSMimeTypeImagePng];
-            [avatarBuilder setLength:(uint32_t)avatarPng.length];
-
-            NSError *error;
-            SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
-            if (error || !avatar) {
-                OWSLogError(@"could not build protobuf: %@", error);
-                return;
-            }
-            [contactBuilder setAvatar:avatar];
-        }
-    }
-     */
-
     if (profileKeyData) {
         OWSAssertDebug(profileKeyData.length == kAES256_KeyByteLength);
         [contactBuilder setProfileKey:profileKeyData];
@@ -96,12 +75,6 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     uint32_t contactDataLength = (uint32_t)contactData.length;
     [self writeUInt32:contactDataLength];
     [self writeData:contactData];
-
-    /*
-    if (avatarPng) {
-        [self writeData:avatarPng];
-    }
-     */
 }
 
 @end

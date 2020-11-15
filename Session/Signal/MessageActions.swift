@@ -93,9 +93,8 @@ class ConversationViewItemActions: NSObject {
         var actions: [MenuAction] = []
 
         let isGroup = conversationViewItem.isGroupThread;
-        let isRSSFeed = conversationViewItem.isRSSFeed;
         
-        if shouldAllowReply && !isRSSFeed {
+        if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
@@ -105,7 +104,7 @@ class ConversationViewItemActions: NSObject {
             actions.append(copyTextAction)
         }
         
-        if isGroup && !isRSSFeed && conversationViewItem.interaction is TSIncomingMessage {
+        if isGroup && conversationViewItem.interaction is TSIncomingMessage {
             let copyPublicKeyAction = MessageActionBuilder.copyPublicKey(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyPublicKeyAction)
         }
@@ -132,9 +131,8 @@ class ConversationViewItemActions: NSObject {
         var actions: [MenuAction] = []
 
         let isGroup = conversationViewItem.isGroupThread;
-        let isRSSFeed = conversationViewItem.isRSSFeed;
         
-        if shouldAllowReply && !isRSSFeed {
+        if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
@@ -150,7 +148,7 @@ class ConversationViewItemActions: NSObject {
             }
         }
         
-        if isGroup && !isRSSFeed && conversationViewItem.interaction is TSIncomingMessage {
+        if isGroup && conversationViewItem.interaction is TSIncomingMessage {
             let copyPublicKeyAction = MessageActionBuilder.copyPublicKey(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyPublicKeyAction)
         }
@@ -182,9 +180,8 @@ class ConversationViewItemActions: NSObject {
         }
 
         let isGroup = conversationViewItem.isGroupThread;
-        let isRSSFeed = conversationViewItem.isRSSFeed;
         
-        if isGroup && !isRSSFeed && conversationViewItem.interaction is TSIncomingMessage {
+        if isGroup && conversationViewItem.interaction is TSIncomingMessage {
             let copyPublicKeyAction = MessageActionBuilder.copyPublicKey(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(copyPublicKeyAction)
         }

@@ -12,7 +12,6 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_TextOnlyMessage,
     OWSMessageCellType_Audio,
     OWSMessageCellType_GenericAttachment,
-    OWSMessageCellType_ContactShare,
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
 };
@@ -67,7 +66,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
-@property (nonatomic, readonly) BOOL isRSSFeed;
 @property (nonatomic, readonly) BOOL userCanDeleteGroupMessage;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
@@ -163,7 +161,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                          isRSSFeed:(BOOL)isRSSFeed
                         transaction:(YapDatabaseReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle;
 

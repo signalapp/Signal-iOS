@@ -9,7 +9,7 @@
 #import "UIView+OWS.h"
 #import <QuartzCore/QuartzCore.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalUtilitiesKit/NSTimer+OWS.h>
+#import <SessionUtilitiesKit/NSTimer+Proxying.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

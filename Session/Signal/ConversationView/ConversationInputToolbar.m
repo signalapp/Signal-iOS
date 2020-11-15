@@ -5,17 +5,14 @@
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Session-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/NSTimer+OWS.h>
 #import <SignalUtilitiesKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN

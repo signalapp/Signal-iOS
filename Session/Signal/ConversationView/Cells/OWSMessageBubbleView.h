@@ -49,15 +49,6 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem linkPreview:(OWSLinkPreview *)linkPreview;
 
-- (void)didTapContactShareViewItem:(id<ConversationViewItem>)viewItem;
-
-- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
-    NS_SWIFT_NAME(didTapSendMessage(toContactShare:));
-- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
-    NS_SWIFT_NAME(didTapSendInvite(toContactShare:));
-- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
-    NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
-
 @property (nonatomic, readonly, nullable) NSString *lastSearchedText;
 
 @end

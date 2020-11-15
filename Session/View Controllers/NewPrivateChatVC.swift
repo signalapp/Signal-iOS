@@ -147,14 +147,6 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
 private final class EnterPublicKeyVC : UIViewController {
     weak var newPrivateChatVC: NewPrivateChatVC!
     
-    private lazy var userPublicKey: String = {
-        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
-            return masterHexEncodedPublicKey
-        } else {
-            return getUserHexEncodedPublicKey()
-        }
-    }()
-    
     // MARK: Components
     private let publicKeyTextView = TextView(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
     
@@ -186,7 +178,7 @@ private final class EnterPublicKeyVC : UIViewController {
         userPublicKeyLabel.numberOfLines = 0
         userPublicKeyLabel.textAlignment = .center
         userPublicKeyLabel.lineBreakMode = .byCharWrapping
-        userPublicKeyLabel.text = userPublicKey
+        userPublicKeyLabel.text = getUserHexEncodedPublicKey()
         // Set up share button
         let shareButton = Button(style: .unimportant, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
@@ -239,7 +231,7 @@ private final class EnterPublicKeyVC : UIViewController {
     
     // MARK: Interaction
     @objc private func copyPublicKey() {
-        UIPasteboard.general.string = userPublicKey
+        UIPasteboard.general.string = getUserHexEncodedPublicKey()
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.copyButton.setTitle("Copied", for: UIControl.State.normal)
@@ -248,7 +240,7 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc private func sharePublicKey() {
-        let shareVC = UIActivityViewController(activityItems: [ userPublicKey ], applicationActivities: nil)
+        let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
         newPrivateChatVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

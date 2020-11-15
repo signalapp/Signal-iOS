@@ -35,7 +35,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     public weak var delegate: GifPickerViewControllerDelegate?
 
     let thread: TSThread
-    let messageSender: MessageSender
 
     let searchBar: SearchBar
     let layout: GifPickerLayout
@@ -60,9 +59,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     @objc
-    required init(thread: TSThread, messageSender: MessageSender) {
+    required init(thread: TSThread) {
         self.thread = thread
-        self.messageSender = messageSender
 
         self.searchBar = SearchBar()
         self.layout = GifPickerLayout()

@@ -215,8 +215,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value
 {
     [self setValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators toValue:@(value)];
-
-    [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 }
 
 #pragma mark - Calling

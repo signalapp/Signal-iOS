@@ -27,9 +27,8 @@ public class OutageDetection: NSObject {
     }
     private var shouldCheckForOutage = false {
         didSet {
-            // Loki: Don't check for outages
-//            AssertIsOnMainThread()
-//            ensureCheckTimer()
+            AssertIsOnMainThread()
+            ensureCheckTimer()
         }
     }
 

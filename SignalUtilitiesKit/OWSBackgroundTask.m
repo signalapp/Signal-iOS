@@ -4,7 +4,6 @@
 
 #import "OWSBackgroundTask.h"
 #import "AppContext.h"
-#import "NSTimer+OWS.h"
 #import <SessionProtocolKit/SessionProtocolKit.h>
 #import "SSKAsserts.h"
 

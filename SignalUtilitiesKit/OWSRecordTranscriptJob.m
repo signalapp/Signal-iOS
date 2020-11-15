@@ -5,14 +5,12 @@
 #import "OWSRecordTranscriptJob.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSIncomingSentMessageTranscript.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"
-#import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
@@ -32,25 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
-+ (TSNetworkManager *)networkManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-
-    return SSKEnvironment.shared.networkManager;
-}
-
 + (OWSReadReceiptManager *)readReceiptManager
 {
     OWSAssert(SSKEnvironment.shared.readReceiptManager);
 
     return SSKEnvironment.shared.readReceiptManager;
-}
-
-+ (id<ContactsManagerProtocol>)contactsManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.contactsManager);
-
-    return SSKEnvironment.shared.contactsManager;
 }
 
 + (OWSAttachmentDownloads *)attachmentDownloads
@@ -67,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // TODO TODO TODO
+    
+    /*
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
@@ -108,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     if (transcript.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)transcript.thread;
-        if (thread.isPublicChat) {
+        if (thread.isOpenGroup) {
             [outgoingMessage setServerTimestampToReceivedTimestamp:serverTimestamp];
         }
     }
@@ -195,6 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
                                   }];
     }
+     */
 }
 
 #pragma mark -
@@ -202,6 +190,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)processRecipientUpdateWithTranscript:(OWSIncomingSentMessageTranscript *)transcript
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // TODO TODO TODO
+    
+    /*
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
 
@@ -284,6 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
         // This message may have disappeared.
         OWSLogError(@"No matching message with timestamp: %llu.", timestamp);
     }
+     */
 }
 
 @end

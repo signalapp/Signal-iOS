@@ -10,9 +10,7 @@ public enum GroupUtilities {
     }
 
     public static func getClosedGroupMembers(_ closedGroup: TSGroupThread, with transaction: YapDatabaseReadTransaction) -> [String] {
-        return closedGroup.groupModel.groupMemberIds.filter { member in
-            OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: member, in: transaction) == nil // Don't show slave devices
-        }
+        return closedGroup.groupModel.groupMemberIds
     }
 
     public static func getClosedGroupMemberCount(_ closedGroup: TSGroupThread) -> Int {

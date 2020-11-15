@@ -19,7 +19,7 @@ public class TypingIndicatorCell: ConversationViewCell {
     private let kAvatarSize: CGFloat = 36
     private let kAvatarHSpacing: CGFloat = 8
 
-    private let avatarView = AvatarImageView()
+//    private let avatarView = AvatarImageView()
     private let bubbleView = OWSBubbleView()
     private let typingIndicatorView = TypingIndicatorView()
     private var viewConstraints = [NSLayoutConstraint]()
@@ -39,8 +39,8 @@ public class TypingIndicatorCell: ConversationViewCell {
         bubbleView.addSubview(typingIndicatorView)
         contentView.addSubview(bubbleView)
 
-        avatarView.autoSetDimension(.width, toSize: kAvatarSize)
-        avatarView.autoSetDimension(.height, toSize: kAvatarSize)
+//        avatarView.autoSetDimension(.width, toSize: kAvatarSize)
+//        avatarView.autoSetDimension(.height, toSize: kAvatarSize)
     }
 
     @objc
@@ -65,16 +65,16 @@ public class TypingIndicatorCell: ConversationViewCell {
             typingIndicatorView.autoPinBottomToSuperviewMargin(withInset: conversationStyle.textInsetBottom)
             ])
 
-        if let avatarView = configureAvatarView() {
-            contentView.addSubview(avatarView)
-            viewConstraints.append(contentsOf: [
-                bubbleView.autoPinLeading(toTrailingEdgeOf: avatarView, offset: kAvatarHSpacing),
-                bubbleView.autoAlignAxis(.horizontal, toSameAxisOf: avatarView)
-                ])
-
-        } else {
-            avatarView.removeFromSuperview()
-        }
+//        if let avatarView = configureAvatarView() {
+//            contentView.addSubview(avatarView)
+//            viewConstraints.append(contentsOf: [
+//                bubbleView.autoPinLeading(toTrailingEdgeOf: avatarView, offset: kAvatarHSpacing),
+//                bubbleView.autoAlignAxis(.horizontal, toSameAxisOf: avatarView)
+//                ])
+//
+//        } else {
+//            avatarView.removeFromSuperview()
+//        }
     }
 
     private func configureAvatarView() -> UIView? {
@@ -93,15 +93,16 @@ public class TypingIndicatorCell: ConversationViewCell {
             owsFailDebug("Missing authorConversationColorName")
             return nil
         }
-        guard let authorAvatarImage =
-            OWSContactAvatarBuilder(signalId: typingIndicators.recipientId,
-                                    colorName: ConversationColorName(rawValue: colorName),
-                                    diameter: UInt(kAvatarSize)).build() else {
-                                        owsFailDebug("Could build avatar image")
-                                        return nil
-        }
-        avatarView.image = authorAvatarImage
-        return avatarView
+//        guard let authorAvatarImage =
+//            OWSContactAvatarBuilder(signalId: typingIndicators.recipientId,
+//                                    colorName: ConversationColorName(rawValue: colorName),
+//                                    diameter: UInt(kAvatarSize)).build() else {
+//                                        owsFailDebug("Could build avatar image")
+//                                        return nil
+//        }
+//        avatarView.image = authorAvatarImage
+//        return avatarView
+        return UIView()
     }
 
     private func shouldShowAvatar() -> Bool {
@@ -140,8 +141,8 @@ public class TypingIndicatorCell: ConversationViewCell {
         NSLayoutConstraint.deactivate(viewConstraints)
         viewConstraints = [NSLayoutConstraint]()
 
-        avatarView.image = nil
-        avatarView.removeFromSuperview()
+//        avatarView.image = nil
+//        avatarView.removeFromSuperview()
 
         typingIndicatorView.stopAnimation()
     }

@@ -5,8 +5,6 @@
 #import "ConversationViewController.h"
 #import "AppDelegate.h"
 #import <SignalUtilitiesKit/BlockListUIUtils.h>
-#import "BlockListViewController.h"
-#import "ContactsViewHelper.h"
 #import "ConversationCollectionView.h"
 #import "ConversationInputTextView.h"
 #import "ConversationInputToolbar.h"
@@ -16,10 +14,9 @@
 #import "ConversationViewLayout.h"
 #import "ConversationViewModel.h"
 #import "DateUtil.h"
-#import "FingerprintViewController.h"
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
 #import "OWSAudioPlayer.h"
-#import "OWSContactOffersCell.h"
+
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -40,7 +37,6 @@
 #import <SignalUtilitiesKit/TSInvalidIdentityKeyErrorMessage.h>
 #import "UIFont+OWS.h"
 #import "UIViewController+Permissions.h"
-#import "ViewControllerUtils.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
@@ -50,38 +46,27 @@
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SignalUtilitiesKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>
-#import <SignalUtilitiesKit/Contact.h>
-#import <SignalUtilitiesKit/ContactsUpdater.h>
 #import <SignalUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/NSTimer+OWS.h>
-#import <SignalUtilitiesKit/OWSAddToContactsOfferMessage.h>
-#import <SignalUtilitiesKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
 #import <SignalUtilitiesKit/OWSBlockingManager.h>
 #import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalUtilitiesKit/OWSIdentityManager.h>
-#import <SignalUtilitiesKit/OWSMessageManager.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
 #import <SignalUtilitiesKit/OWSMessageUtils.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
 #import <SignalUtilitiesKit/OWSReadReceiptManager.h>
-#import <SignalUtilitiesKit/OWSVerificationStateChangeMessage.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/TSGroupModel.h>
 #import <SignalUtilitiesKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalUtilitiesKit/TSNetworkManager.h>
 #import <SignalUtilitiesKit/TSQuotedMessage.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -109,13 +94,8 @@ typedef enum : NSUInteger {
 #pragma mark -
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
-    ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
     CNContactViewControllerDelegate,
-    ContactEditingDelegate,
-    ContactsPickerDelegate,
-    ContactShareViewHelperDelegate,
-    ContactsViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
     ConversationViewLayoutDelegate,
@@ -197,7 +177,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
-@property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic, nullable) NSDate *lastReloadDate;
 
@@ -257,9 +236,6 @@ typedef enum : NSUInteger {
 - (void)commonInit
 {
     _viewControllerCreatedAt = CACurrentMediaTime();
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
-    _contactShareViewHelper.delegate = self;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
     _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
@@ -273,11 +249,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - Dependencies
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
 - (OWSSessionResetJobQueue *)sessionResetJobQueue
 {
     return AppEnvironment.shared.sessionResetJobQueue;
@@ -286,21 +257,6 @@ typedef enum : NSUInteger {
 - (OWSAudioSession *)audioSession
 {
     return Environment.shared.audioSession;
-}
-
-- (OWSMessageSender *)messageSender
-{
-    return SSKEnvironment.shared.messageSender;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (ContactsUpdater *)contactsUpdater
-{
-    return SSKEnvironment.shared.contactsUpdater;
 }
 
 - (OWSBlockingManager *)blockingManager
@@ -312,16 +268,6 @@ typedef enum : NSUInteger {
 {
     return SSKEnvironment.shared.primaryStorage;
 }
-
-- (TSNetworkManager *)networkManager
-{
-    return SSKEnvironment.shared.networkManager;
-}
-
-//- (OutboundCallInitiator *)outboundCallInitiator
-//{
-//    return AppEnvironment.shared.outboundCallInitiator;
-//}
 
 - (id<OWSTypingIndicators>)typingIndicators
 {
@@ -428,11 +374,11 @@ typedef enum : NSUInteger {
                                                 object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleCalculatingPoWNotification:)
-                                                 name:NSNotification.calculatingPoW
+                                                 name:NSNotification.calculatingMessagePoW
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRoutingNotification:)
-                                                 name:NSNotification.routing
+                                                 name:NSNotification.encryptingMessage
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageSendingNotification:)
@@ -444,12 +390,7 @@ typedef enum : NSUInteger {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageFailedNotification:)
-                                                 name:NSNotification.messageFailed
-                                               object:nil];
-    // Device linking
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleUnexpectedDeviceLinkRequestReceivedNotification)
-                                                 name:NSNotification.unexpectedDeviceLinkRequestReceived
+                                                 name:NSNotification.messageSendingFailed
                                                object:nil];
 }
 
@@ -566,7 +507,7 @@ typedef enum : NSUInteger {
     _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
 
     _conversationViewModel =
-        [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId isRSSFeed:self.isRSSFeed delegate:self];
+        [[ConversationViewModel alloc] initWithThread:thread focusMessageIdOnOpen:focusMessageId delegate:self];
 
     _searchController = [[ConversationSearchController alloc] initWithThread:thread];
     _searchController.delegate = self;
@@ -616,14 +557,7 @@ typedef enum : NSUInteger {
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return !groupThread.isLocalUserInGroup;
-}
-
-- (BOOL)isRSSFeed
-{
-    if (![_thread isKindOfClass:[TSGroupThread class]]) { return NO; }
-    TSGroupThread *thread = (TSGroupThread *)self.thread;
-    return thread.isRSSFeed;
+    return !groupThread.isCurrentUserInGroup;
 }
 
 - (void)hideInputIfNeeded
@@ -639,11 +573,6 @@ typedef enum : NSUInteger {
         [self dismissKeyBoard];
     } else {
         self.inputToolbar.hidden = NO;
-    }
-
-    // Loki: In RSS feeds, don't hide the input bar entirely; just hide the text field inside.
-    if (self.isRSSFeed) {
-        [self.inputToolbar hideInputMethod];
     }
 }
 
@@ -678,7 +607,7 @@ typedef enum : NSUInteger {
 
     if (self.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
-        if (!thread.isPublicChat) { return; }
+        if (!thread.isOpenGroup) { return; }
         __block SNOpenGroup *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
@@ -795,8 +724,6 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSTypingIndicatorCell class]
             forCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSContactOffersCell class]
-            forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSMessageCell class]
             forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
 }
@@ -865,10 +792,6 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 
     self.isViewVisible = YES;
-
-    // We should have already requested contact access at this point, so this should be a no-op
-    // unless it ever becomes possible to load this VC without going via the HomeViewController.
-    [self.contactsManager requestSystemContactsOnce];
 
     [self updateDisappearingMessagesConfiguration];
 
@@ -1001,48 +924,35 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 }
 
-// Returns a collection of the group members who are "no longer verified".
-- (NSArray<NSString *> *)noLongerVerifiedRecipientIds
-{
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-            == OWSVerificationStateNoLongerVerified) {
-            [result addObject:recipientId];
-        }
-    }
-    return [result copy];
-}
-
 - (void)updateSessionRestoreBanner {
-    BOOL isContactThread = [self.thread isKindOfClass:[TSContactThread class]];
-    BOOL shouldDetachBanner = !isContactThread;
-    if (isContactThread) {
-        TSContactThread *thread = (TSContactThread *)self.thread;
-        if (thread.sessionRestoreDevices.count > 0) {
-            if (self.restoreSessionBannerView == nil) {
-                LKSessionRestorationView *bannerView = [[LKSessionRestorationView alloc] initWithThread:thread];
-                [self.view addSubview:bannerView];
-                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:LKValues.mediumSpacing];
-                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:LKValues.largeSpacing];
-                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:LKValues.mediumSpacing];
-                [self.view layoutSubviews];
-                self.restoreSessionBannerView = bannerView;
-                [bannerView setOnRestore:^{
-                    [self restoreSession];
-                }];
-                [bannerView setOnDismiss:^{
-                    [thread removeAllSessionRestoreDevicesWithTransaction:nil];
-                }];
-            }
-        } else {
-            shouldDetachBanner = true;
-        }
-    }
-    if (shouldDetachBanner && self.restoreSessionBannerView != nil) {
-        [self.restoreSessionBannerView removeFromSuperview];
-        self.restoreSessionBannerView = nil;
-    }
+//    BOOL isContactThread = [self.thread isKindOfClass:[TSContactThread class]];
+//    BOOL shouldDetachBanner = !isContactThread;
+//    if (isContactThread) {
+//        TSContactThread *thread = (TSContactThread *)self.thread;
+//        if (thread.sessionRestoreDevices.count > 0) {
+//            if (self.restoreSessionBannerView == nil) {
+//                LKSessionRestorationView *bannerView = [[LKSessionRestorationView alloc] initWithThread:thread];
+//                [self.view addSubview:bannerView];
+//                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:LKValues.mediumSpacing];
+//                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:LKValues.largeSpacing];
+//                [bannerView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:LKValues.mediumSpacing];
+//                [self.view layoutSubviews];
+//                self.restoreSessionBannerView = bannerView;
+//                [bannerView setOnRestore:^{
+//                    [self restoreSession];
+//                }];
+//                [bannerView setOnDismiss:^{
+//                    [thread removeAllSessionRestoreDevicesWithTransaction:nil];
+//                }];
+//            }
+//        } else {
+//            shouldDetachBanner = true;
+//        }
+//    }
+//    if (shouldDetachBanner && self.restoreSessionBannerView != nil) {
+//        [self.restoreSessionBannerView removeFromSuperview];
+//        self.restoreSessionBannerView = nil;
+//    }
 }
 
 - (void)ensureBannerState
@@ -1053,32 +963,6 @@ typedef enum : NSUInteger {
     self.bannerView = nil;
 
     if (self.userHasScrolled) {
-        return;
-    }
-
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-
-    if (noLongerVerifiedRecipientIds.count > 0) {
-        NSString *message;
-        if (noLongerVerifiedRecipientIds.count > 1) {
-            message = NSLocalizedString(@"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
-                @"Indicates that more than one member of this group conversation is no longer verified.");
-        } else {
-            NSString *recipientId = [noLongerVerifiedRecipientIds firstObject];
-            NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
-            NSString *format
-                = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
-                                                  @"Indicates that one member of this group conversation is no longer "
-                                                  @"verified. Embeds {{user's name or phone number}}.")
-                                            : NSLocalizedString(@"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
-                                                  @"Indicates that this 1:1 conversation is no longer verified. Embeds "
-                                                  @"{{user's name or phone number}}."));
-            message = [NSString stringWithFormat:format, displayName];
-        }
-
-        [self createBannerWithTitle:message
-                        bannerColor:[UIColor ows_destructiveRedColor]
-                        tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)];
         return;
     }
 
@@ -1093,20 +977,6 @@ typedef enum : NSUInteger {
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_CONTACT_BLOCKED", @"Indicates that this 1:1 conversation has been blocked.");
         }
-    } else if (self.isGroupConversation) {
-        /*
-        int blockedGroupMemberCount = [self blockedGroupMemberCount];
-        if (blockedGroupMemberCount == 1) {
-            blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
-                @"Indicates that a single member of this group has been blocked.");
-        } else if (blockedGroupMemberCount > 1) {
-            blockStateMessage =
-                [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
-                                               @"Indicates that some members of this group has been blocked. Embeds "
-                                               @"{{the number of blocked users in this group}}."),
-                          [OWSFormat formatInt:blockedGroupMemberCount]];
-        }
-         */
     }
 
     if (blockStateMessage) {
@@ -1115,17 +985,6 @@ typedef enum : NSUInteger {
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
-
-    /*
-    if ([ThreadUtil shouldShowGroupProfileBannerInThread:self.thread blockingManager:self.blockingManager]) {
-        [self createBannerWithTitle:
-                  NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
-                      @"Text for banner in group conversation view that offers to share your profile with this group.")
-                        bannerColor:[UIColor ows_reminderDarkYellowColor]
-                        tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
-        return;
-    }
-     */
 }
 
 - (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
@@ -1198,105 +1057,20 @@ typedef enum : NSUInteger {
     if ([self isBlockedConversation]) {
         // If this a blocked conversation, offer to unblock.
         [self showUnblockConversationUI:nil];
-    } else if (self.isGroupConversation) {
-        // If this a group conversation with at least one blocked member,
-        // Show the block list view.
-        int blockedGroupMemberCount = [self blockedGroupMemberCount];
-        if (blockedGroupMemberCount > 0) {
-            BlockListViewController *vc = [[BlockListViewController alloc] init];
-            [self.navigationController pushViewController:vc animated:YES];
-        }
     }
-}
-
-- (void)groupProfileWhitelistBannerWasTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state != UIGestureRecognizerStateRecognized) {
-        return;
-    }
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^{
-        [self ensureBannerState];
-    }];
 }
 
 - (void)restoreSession {
-    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
-    TSContactThread *thread = (TSContactThread *)self.thread;
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
-            [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
-        }];
-        [weakSelf updateSessionRestoreBanner];
-    });
-}
-
-- (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-        if (noLongerVerifiedRecipientIds.count < 1) {
-            return;
-        }
-        BOOL hasMultiple = noLongerVerifiedRecipientIds.count > 1;
-
-        UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:nil
-                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
-
-        __weak ConversationViewController *weakSelf = self;
-        UIAlertAction *verifyAction = [UIAlertAction
-            actionWithTitle:(hasMultiple ? NSLocalizedString(@"VERIFY_PRIVACY_MULTIPLE",
-                                               @"Label for button or row which allows users to verify the safety "
-                                               @"numbers of multiple users.")
-                                         : NSLocalizedString(@"VERIFY_PRIVACY",
-                                               @"Label for button or row which allows users to verify the safety "
-                                               @"number of another user."))
-                      style:UIAlertActionStyleDefault
-                    handler:^(UIAlertAction *action) {
-                        [weakSelf showNoLongerVerifiedUI];
-                    }];
-        [actionSheet addAction:verifyAction];
-
-        UIAlertAction *dismissAction =
-            [UIAlertAction actionWithTitle:CommonStrings.dismissButton
-                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *action) {
-                                       [weakSelf resetVerificationStateToDefault];
-                                   }];
-        [actionSheet addAction:dismissAction];
-
-        [self dismissKeyBoard];
-        [self presentAlert:actionSheet];
-    }
-}
-
-- (void)resetVerificationStateToDefault
-{
-    OWSAssertIsOnMainThread();
-
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-    for (NSString *recipientId in noLongerVerifiedRecipientIds) {
-        OWSAssertDebug(recipientId.length > 0);
-
-        OWSRecipientIdentity *_Nullable recipientIdentity =
-            [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
-        OWSAssertDebug(recipientIdentity);
-
-        NSData *identityKey = recipientIdentity.identityKey;
-        OWSAssertDebug(identityKey.length > 0);
-        if (identityKey.length < 1) {
-            continue;
-        }
-
-        [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
-                                                   identityKey:identityKey
-                                                   recipientId:recipientId
-                                         isUserInitiatedChange:YES];
-    }
+//    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
+//    TSContactThread *thread = (TSContactThread *)self.thread;
+//    __weak ConversationViewController *weakSelf = self;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//            [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
+//            [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
+//        }];
+//        [weakSelf updateSessionRestoreBanner];
+//    });
 }
 
 - (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completionBlock
@@ -1308,7 +1082,6 @@ typedef enum : NSUInteger {
     [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                 fromViewController:self
                                    blockingManager:self.blockingManager
-                                   contactsManager:self.contactsManager
                                    completionBlock:completionBlock];
 
     [UIView setAnimationsEnabled:YES];
@@ -1370,7 +1143,6 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [ProfileFetcherJob runWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self autoLoadMoreIfNecessary];
@@ -1421,12 +1193,6 @@ typedef enum : NSUInteger {
             break;
         case ConversationViewActionCompose:
             [self popKeyBoard];
-            break;
-        case ConversationViewActionAudioCall:
-            [self startAudioCall];
-            break;
-        case ConversationViewActionVideoCall:
-            [self startVideoCall];
             break;
     }
 
@@ -1567,52 +1333,6 @@ typedef enum : NSUInteger {
 
     const CGFloat kBarButtonSize = 44;
     NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
-    if ([self canCall]) {
-        // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-        // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-        // The contents of the navigation bar are cramped in this view.
-        UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [[UIImage imageNamed:@"button_phone_white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [callButton setImage:image forState:UIControlStateNormal];
-
-        if (OWSWindowManager.sharedManager.hasCall) {
-            callButton.enabled = NO;
-            callButton.userInteractionEnabled = NO;
-            callButton.tintColor = [Theme.navbarIconColor colorWithAlphaComponent:0.7];
-        } else {
-            callButton.enabled = YES;
-            callButton.userInteractionEnabled = YES;
-            callButton.tintColor = Theme.navbarIconColor;
-        }
-
-        UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-
-        // We normally would want to use left and right insets that ensure the button
-        // is square and the icon is centered.  However UINavigationBar doesn't offer us
-        // control over the margins and spacing of its content, and the buttons end up
-        // too far apart and too far from the edge of the screen. So we use a smaller
-        // right inset tighten up the layout.
-        BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-        if (!hasCompactHeader) {
-            imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-            imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-            imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-            imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-        }
-        callButton.imageEdgeInsets = imageEdgeInsets;
-        callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
-        [callButton addTarget:self action:@selector(startAudioCall) forControlEvents:UIControlEventTouchUpInside];
-        callButton.frame = CGRectMake(0,
-            0,
-            round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-            round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        // Loki: Original code
-        // ========
-//        [barButtons
-//            addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton
-//                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
-        // ========
-    }
 
     if (self.disappearingMessagesConfiguration.isEnabled) {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
@@ -1638,102 +1358,6 @@ typedef enum : NSUInteger {
     self.navigationItem.rightBarButtonItems = [barButtons copy];
 }
 
-#pragma mark - Identity
-
-/**
- * Shows confirmation dialog if at least one of the recipient id's is not confirmed.
- *
- * returns YES if an alert was shown
- *          NO if there were no unconfirmed identities
- */
-- (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
-                                                         completion:(void (^)(BOOL didConfirmIdentity))completionHandler
-{
-    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
-        confirmationText:confirmationText
-        contactsManager:self.contactsManager
-        completion:^(BOOL didShowAlert) {
-            // Pre iOS-11, the keyboard and inputAccessoryView will obscure the alert if the keyboard is up when the
-            // alert is presented, so after hiding it, we regain first responder here.
-            if (@available(iOS 11.0, *)) {
-                // do nothing
-            } else {
-                [self becomeFirstResponder];
-            }
-            completionHandler(didShowAlert);
-        }
-        beforePresentationHandler:^(void) {
-            if (@available(iOS 11.0, *)) {
-                // do nothing
-            } else {
-                // Pre iOS-11, the keyboard and inputAccessoryView will obscure the alert if the keyboard is up when the
-                // alert is presented.
-                [self dismissKeyBoard];
-                [self resignFirstResponder];
-            }
-        }];
-}
-
-- (void)showFingerprintWithRecipientId:(NSString *)recipientId
-{
-    // Ensure keyboard isn't hiding the "safety numbers changed" interaction when we
-    // return from FingerprintViewController.
-    [self dismissKeyBoard];
-
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
-}
-
-#pragma mark - Calls
-
-- (void)startAudioCall
-{
-    [self callWithVideo:NO];
-}
-
-- (void)startVideoCall
-{
-    [self callWithVideo:YES];
-}
-
-- (void)callWithVideo:(BOOL)isVideo
-{
-    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
-
-    if (![self canCall]) {
-        OWSLogWarn(@"Tried to initiate a call but thread is not callable.");
-        return;
-    }
-
-    __weak ConversationViewController *weakSelf = self;
-    if ([self isBlockedConversation]) {
-        [self showUnblockConversationUI:^(BOOL isBlocked) {
-            if (!isBlocked) {
-                [weakSelf callWithVideo:isVideo];
-            }
-        }];
-        return;
-    }
-
-    BOOL didShowSNAlert =
-        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[CallStrings confirmAndCallButtonTitle]
-                                                               completion:^(BOOL didConfirmIdentity) {
-                                                                   if (didConfirmIdentity) {
-                                                                       [weakSelf callWithVideo:isVideo];
-                                                                   }
-                                                               }];
-    if (didShowSNAlert) {
-        return;
-    }
-
-//    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier isVideo:isVideo];
-}
-
-- (BOOL)canCall
-{
-    return !(self.isGroupConversation ||
-        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
-}
-
 #pragma mark - Dynamic Text
 
 /**
@@ -1751,18 +1375,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Actions
-
-- (void)showNoLongerVerifiedUI
-{
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-    if (noLongerVerifiedRecipientIds.count > 1) {
-        [self showConversationSettingsAndShowVerification:YES];
-    } else if (noLongerVerifiedRecipientIds.count == 1) {
-        // Pick one in an arbitrary but deterministic manner.
-        NSString *recipientId = noLongerVerifiedRecipientIds.lastObject;
-        [self showFingerprintWithRecipientId:recipientId];
-    }
-}
 
 - (void)showConversationSettings
 {
@@ -1878,40 +1490,22 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
-                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                [self.messageSenderJobQueue addMessage:message transaction:transaction];
-                            }];
-                        }];
+    // TODO TODO TODO
+    
+//    UIAlertAction *resendMessageAction = [UIAlertAction
+//                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+//        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
+//                          style:UIAlertActionStyleDefault
+//                        handler:^(UIAlertAction *action) {
+//                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+//                                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+//                            }];
+//                        }];
 
-    [actionSheet addAction:resendMessageAction];
+//    [actionSheet addAction:resendMessageAction];
 
     [self dismissKeyBoard];
     [self presentAlert:actionSheet];
-}
-
-- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalIdParam
-{
-    if (signalIdParam == nil) {
-        if (self.thread.isGroupThread) {
-            // Before 2.13 we didn't track the recipient id in the identity change error.
-            OWSLogWarn(@"Ignoring tap on legacy nonblocking identity change since it has no signal id");
-            return;
-
-        } else {
-            OWSLogInfo(@"Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
-                self.thread.contactIdentifier);
-            signalIdParam = self.thread.contactIdentifier;
-        }
-    }
-
-    NSString *signalId = signalIdParam;
-
-    [self showFingerprintWithRecipientId:signalId];
 }
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
@@ -1941,85 +1535,6 @@ typedef enum : NSUInteger {
                             }];
                         }];
     [alert addAction:resetSessionAction];
-
-    [self dismissKeyBoard];
-    [self presentAlert:alert];
-}
-
-- (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
-{
-    NSString *keyOwner = [self.contactsManager displayNameForPhoneIdentifier:errorMessage.theirSignalId];
-    NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
-    NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
-
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:titleText
-                                                                         message:nil
-                                                                  preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheet addAction:[OWSAlerts cancelAction]];
-
-    UIAlertAction *showSafteyNumberAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Remote Key Changed actions: Show fingerprint display");
-                                   [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
-                               }];
-    [actionSheet addAction:showSafteyNumberAction];
-
-    UIAlertAction *acceptSafetyNumberAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"accept_safety_number")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Remote Key Changed actions: Accepted new identity key");
-
-        // DEPRECATED: we're no longer creating these incoming SN error's per message,
-        // but there will be some legacy ones in the wild, behind which await
-        // as-of-yet-undecrypted messages
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                                   if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-                                       // Deliberately crash if the user fails to explicitly accept the new identity
-                                       // key. In practice we haven't been creating these messages in over a year.
-                                       [errorMessage throws_acceptNewIdentityKey];
-#pragma clang diagnostic pop
-
-                                   }
-                               }];
-    [actionSheet addAction:acceptSafetyNumberAction];
-
-    [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
-}
-
-- (void)handleCallTap:(TSCall *)call
-{
-    OWSAssertDebug(call);
-
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", self.thread);
-        return;
-    }
-
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:contactThread.contactIdentifier];
-
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:[CallStrings callBackAlertTitle]
-                         message:[NSString stringWithFormat:[CallStrings callBackAlertMessageFormat], displayName]
-                  preferredStyle:UIAlertControllerStyleAlert];
-
-    __weak ConversationViewController *weakSelf = self;
-    UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
-                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action) {
-                                                           [weakSelf startAudioCall];
-                                                       }];
-    [alert addAction:callAction];
-    [alert addAction:[OWSAlerts cancelAction]];
 
     [self dismissKeyBoard];
     [self presentAlert:alert];
@@ -2276,104 +1791,6 @@ typedef enum : NSUInteger {
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(recipientId.length > 0);
-
-    return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
-}
-
-- (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", self.thread);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.recipientId];
-    NSString *title =
-        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
-                                       @"Title format for action sheet that offers to block an unknown user."
-                                       @"Embeds {{the unknown user's name or phone number}}."),
-                  [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
-
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheet addAction:[OWSAlerts cancelAction]];
-
-    UIAlertAction *blockAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
-                                           @"Action sheet that will block an unknown user.")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block_user")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Blocking an unknown user.");
-                                   [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
-                                   // Delete the offers.
-                                   [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                       contactThread.hasDismissedOffers = YES;
-                                       [contactThread saveWithTransaction:transaction];
-                                       [interaction removeWithTransaction:transaction];
-                                   }];
-                               }];
-    [actionSheet addAction:blockAction];
-
-    [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
-}
-
-- (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFailDebug(@"Contact editing not supported");
-        return;
-    }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
-
-    // Delete the offers.
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        contactThread.hasDismissedOffers = YES;
-        [contactThread saveWithTransaction:transaction];
-        [interaction removeWithTransaction:transaction];
-    }];
-}
-
-- (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        // Delete the offers.
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            contactThread.hasDismissedOffers = YES;
-            [contactThread saveWithTransaction:transaction];
-            [interaction removeWithTransaction:transaction];
-        }];
-    }];
-}
-
-- (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
-{
-    [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
-                                                       fromViewController:self
-                                                                  success:successHandler];
-}
-
 #pragma mark - OWSMessageBubbleViewDelegate
 
 - (void)didTapImageViewItem:(id<ConversationViewItem>)viewItem
@@ -2469,41 +1886,6 @@ typedef enum : NSUInteger {
     LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
     viewController.delegate = self;
     [self.navigationController pushViewController:viewController animated:YES];
-}
-
-- (void)didTapContactShareViewItem:(id<ConversationViewItem>)conversationItem
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(conversationItem);
-    OWSAssertDebug(conversationItem.contactShare);
-    OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
-
-    ContactViewController *view = [[ContactViewController alloc] initWithContactShare:conversationItem.contactShare];
-    [self.navigationController pushViewController:view animated:YES];
-}
-
-- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contactShare);
-
-    [self.contactShareViewHelper sendMessageWithContactShare:contactShare fromViewController:self];
-}
-
-- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contactShare);
-
-    [self.contactShareViewHelper showInviteContactWithContactShare:contactShare fromViewController:self];
-}
-
-- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contactShare);
-
-    [self.contactShareViewHelper showAddToContactsWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
@@ -2753,22 +2135,6 @@ typedef enum : NSUInteger {
     self.scrollDownButton.hidden = !shouldShowScrollDownButton;
 }
 
-#pragma mark - Attachment Picking: Contacts
-
-- (void)chooseContactForSending
-{
-    ContactsPicker *contactsPicker =
-        [[ContactsPicker alloc] initWithAllowsMultipleSelection:NO subtitleCellType:SubtitleCellValueNone];
-    contactsPicker.contactsPickerDelegate = self;
-    contactsPicker.title
-        = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
-
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:contactsPicker];
-    [self dismissKeyBoard];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
 #pragma mark - Attachment Picking: Documents
 
 - (void)showAttachmentDocumentPickerMenu
@@ -2815,7 +2181,7 @@ typedef enum : NSUInteger {
 - (void)showGifPicker
 {
     GifPickerViewController *view =
-        [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
+        [[GifPickerViewController alloc] initWithThread:self.thread];
     view.delegate = self;
     OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:view];
 
@@ -2831,7 +2197,6 @@ typedef enum : NSUInteger {
 
     [self showApprovalDialogForAttachment:attachment];
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
 }
 
@@ -3210,34 +2575,6 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)sendContactShare:(ContactShareViewModel *)contactShare
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contactShare);
-
-    OWSLogVerbose(@"Sending contact share.");
-
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-
-    [self.editingDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
-            // preparation rather than duplicated here and in the SAE
-            if (contactShare.avatarImage) {
-                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
-            }
-        }
-        completionBlock:^{
-            TSOutgoingMessage *message =
-                [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord inThread:self.thread];
-            [self messageWasSent:message];
-
-            if (didAddToProfileWhitelist) {
-                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
-            }
-        }];
-}
-
 - (void)showApprovalDialogAfterProcessingVideoURL:(NSURL *)movieURL filename:(nullable NSString *)filename
 {
     OWSAssertIsOnMainThread();
@@ -3486,19 +2823,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    BOOL didShowSNAlert =
-        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                  NSLocalizedString(@"CONFIRMATION_TITLE", @"Generic button text to proceed with an action")
-                                                               completion:^(BOOL didConfirmIdentity) {
-                                                                   if (didConfirmIdentity) {
-                                                                       [weakSelf attachmentButtonPressed];
-                                                                   }
-                                                               }];
-    if (didShowSNAlert) {
-        return;
-    }
-
-
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
@@ -3682,7 +3006,7 @@ typedef enum : NSUInteger {
         groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
 
         NSString *updateGroupInfo =
-            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
+            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel];
 
         groupThread.groupModel = newGroupModel;
         [groupThread saveWithTransaction:transaction];
@@ -3702,32 +3026,38 @@ typedef enum : NSUInteger {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        [self.messageSender sendTemporaryAttachment:dataSource
-            contentType:OWSMimeTypeImagePng
-            inMessage:message
-            success:^{
-                OWSLogDebug(@"Successfully sent group update with avatar");
-                if (successCompletion) {
-                    successCompletion();
-                }
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send group avatar update with error: %@", error);
-            }];
+        
+        // TODO TODO TODO
+        
+//        [self.messageSender sendTemporaryAttachment:dataSource
+//            contentType:OWSMimeTypeImagePng
+//            inMessage:message
+//            success:^{
+//                OWSLogDebug(@"Successfully sent group update with avatar");
+//                if (successCompletion) {
+//                    successCompletion();
+//                }
+//            }
+//            failure:^(NSError *error) {
+//                OWSLogError(@"Failed to send group avatar update with error: %@", error);
+//            }];
     } else {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        [self.messageSender sendMessage:message
-            success:^{
-                OWSLogDebug(@"Successfully sent group update");
-                if (successCompletion) {
-                    successCompletion();
-                }
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send group update with error: %@", error);
-            }];
+        
+        // TODO TODO TODO
+        
+//        [self.messageSender sendMessage:message
+//            success:^{
+//                OWSLogDebug(@"Successfully sent group update");
+//                if (successCompletion) {
+//                    successCompletion();
+//                }
+//            }
+//            failure:^(NSError *error) {
+//                OWSLogError(@"Failed to send group update with error: %@", error);
+//            }];
     }
 
     self.thread = groupThread;
@@ -3773,13 +3103,6 @@ typedef enum : NSUInteger {
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
 {
     return @[];
-}
-
-#pragma mark - ConversationHeaderViewDelegate
-
-- (void)didTapConversationHeaderView:(ConversationHeaderView *)conversationHeaderView
-{
-    [self showConversationSettings];
 }
 
 #ifdef USE_DEBUG_UI
@@ -3909,18 +3232,6 @@ typedef enum : NSUInteger {
             return;
         }
 
-        BOOL didShowSNAlert = [self
-            showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
-                                                             completion:^(BOOL didConfirmIdentity) {
-                                                                 if (didConfirmIdentity) {
-                                                                     [weakSelf tryToSendAttachments:attachments
-                                                                                        messageText:messageText];
-                                                                 }
-                                                             }];
-        if (didShowSNAlert) {
-            return;
-        }
-
         for (SignalAttachment *attachment in attachments) {
             if ([attachment hasError]) {
                 OWSLogWarn(@"Invalid attachment: %@.", attachment ? [attachment errorName] : @"Missing data");
@@ -3929,23 +3240,20 @@ typedef enum : NSUInteger {
             }
         }
 
-        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-
         __block TSOutgoingMessage *message;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            message = [ThreadUtil enqueueMessageWithText:messageText
-                                        mediaAttachments:attachments
-                                                inThread:self.thread
-                                        quotedReplyModel:self.inputToolbar.quotedReply
-                                        linkPreviewDraft:nil
-                                             transaction:transaction];
-        }];
+        
+        // TODO TODO TODO
+        
+//        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+//            message = [ThreadUtil enqueueMessageWithText:messageText
+//                                        mediaAttachments:attachments
+//                                                inThread:self.thread
+//                                        quotedReplyModel:self.inputToolbar.quotedReply
+//                                        linkPreviewDraft:nil
+//                                             transaction:transaction];
+//        }];
 
         [self messageWasSent:message];
-
-        if (didAddToProfileWhitelist) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
-        }
 
         if ([self.thread isKindOfClass:TSContactThread.class]) {
             [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4512,18 +3820,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    BOOL didShowSNAlert =
-        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
-                                                               completion:^(BOOL didConfirmIdentity) {
-                                                                   if (didConfirmIdentity) {
-                                                                       [weakSelf tryToSendTextMessage:text
-                                                                                  updateKeyboardState:NO];
-                                                                   }
-                                                               }];
-    if (didShowSNAlert) {
-        return;
-    }
-
     text = [text ows_stripped];
 
     if (text.length < 1) {
@@ -4534,16 +3830,19 @@ typedef enum : NSUInteger {
     //
     // We convert large text messages to attachments
     // which are presented as normal text messages.
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    
+    // TODO TODO TODO
+    
+//    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     __block TSOutgoingMessage *message;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        message = [ThreadUtil enqueueMessageWithText:text
-                                            inThread:self.thread
-                                    quotedReplyModel:self.inputToolbar.quotedReply
-                                    linkPreviewDraft:self.inputToolbar.linkPreviewDraft
-                                         transaction:transaction];
-    }];
-    [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
+//    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+//        message = [ThreadUtil enqueueMessageWithText:text
+//                                            inThread:self.thread
+//                                    quotedReplyModel:self.inputToolbar.quotedReply
+//                                    linkPreviewDraft:self.inputToolbar.linkPreviewDraft
+//                                         transaction:transaction];
+//    }];
+//    [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
 
     [self messageWasSent:message];
 
@@ -4571,10 +3870,6 @@ typedef enum : NSUInteger {
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.thread setDraft:@"" transaction:transaction];
     }];
-
-    if (didAddToProfileWhitelist) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
-    }
 
     if ([self.thread isKindOfClass:TSContactThread.class]) {
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4889,104 +4184,6 @@ typedef enum : NSUInteger {
     // content to fill the collection view at its current size.
     CGFloat maxContentOffsetY = contentHeight + adjustedContentInset.bottom - self.collectionView.bounds.size.height;
     return maxContentOffsetY;
-}
-
-#pragma mark - ContactsPickerDelegate
-
-- (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
-{
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)contactsPicker:(ContactsPicker *)contactsPicker contactFetchDidFail:(NSError *)error
-{
-    OWSLogDebug(@"with error %@", error);
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
-{
-    OWSAssertDebug(contact);
-
-    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
-    if (!cnContact) {
-        OWSFailDebug(@"Could not load system contact.");
-        return;
-    }
-
-    OWSLogDebug(@"with contact: %@", contact);
-
-    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
-    if (!contactShareRecord) {
-        OWSFailDebug(@"Could not convert system contact.");
-        return;
-    }
-
-    BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
-    for (NSString *recipientId in contact.textSecureIdentifiers) {
-        if (avatarImageData) {
-            break;
-        }
-        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
-        if (avatarImageData) {
-            isProfileAvatar = YES;
-        }
-    }
-    contactShareRecord.isProfileAvatar = isProfileAvatar;
-
-    ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
-
-    // TODO: We should probably show this in the same navigation view controller.
-    ContactShareApprovalViewController *approveContactShare =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
-    OWSAssertDebug(contactsPicker.navigationController);
-    [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
-}
-
-- (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
-{
-    OWSFailDebug(@"with contacts: %@", contacts);
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (BOOL)contactsPicker:(ContactsPicker *)contactsPicker shouldSelectContact:(Contact *)contact
-{
-    // Any reason to preclude contacts?
-    return YES;
-}
-
-#pragma mark - ContactShareApprovalViewControllerDelegate
-
-- (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
-     didApproveContactShare:(ContactShareViewModel *)contactShare
-{
-    OWSLogInfo(@"");
-
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 [self sendContactShare:contactShare];
-                             }];
-}
-
-- (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
-      didCancelContactShare:(ContactShareViewModel *)contactShare
-{
-    OWSLogInfo(@"");
-
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - ContactShareViewHelperDelegate
-
-- (void)didCreateOrEditContact
-{
-    OWSLogInfo(@"");
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Toast
@@ -5424,12 +4621,6 @@ typedef enum : NSUInteger {
         if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
         NSString *hexEncodedPublicKey = targetInteraction.thread.contactIdentifier;
         if (hexEncodedPublicKey == nil) { return; }
-        __block NSString *masterHexEncodedPublicKey;
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction] ?: hexEncodedPublicKey;
-        }];
-        BOOL isSlaveDevice = ![masterHexEncodedPublicKey isEqual:hexEncodedPublicKey];
-        if (isSlaveDevice) { return; }
         if (progress <= self.progressIndicatorView.progress) { return; }
         self.progressIndicatorView.alpha = 1;
         [self.progressIndicatorView setProgress:progress animated:YES];
@@ -5451,16 +4642,6 @@ typedef enum : NSUInteger {
         } completion:^(BOOL finished) {
             [self.progressIndicatorView setProgress:0.0f];
         }];
-    });
-}
-
-- (void)handleUnexpectedDeviceLinkRequestReceivedNotification
-{
-    if (!LKDeviceLinkingUtilities.shouldShowUnexpectedDeviceLinkRequestReceivedAlert) { return; }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Device Link Request Received" message:@"Open the device link screen by going to \"Settings\" > \"Devices\" > \"Link a Device\" to link your devices." preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alert animated:YES completion:nil];
     });
 }
 

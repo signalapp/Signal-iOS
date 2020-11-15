@@ -155,10 +155,6 @@ public class FullTextSearchFinder: NSObject {
 
     // MARK: - Index Building
 
-    private class var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared.contactsManager
-    }
-
     private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread, transaction: YapDatabaseReadTransaction) in
         let groupName = groupThread.groupModel.groupName ?? ""
 
@@ -185,24 +181,9 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId, transaction: transaction)
+        let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true)
 
-        let nationalNumber: String = { (recipientId: String) -> String in
-
-            guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
-                owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
-                return ""
-            }
-
-            guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
-                return ""
-            }
-
-            return String(String.UnicodeScalarView(digitScalars))
-        }(recipientId)
-
-        return "\(recipientId) \(nationalNumber) \(displayName)"
+        return "\(recipientId) \(displayName)"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in

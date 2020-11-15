@@ -3,11 +3,10 @@
 //
 
 #import "SignalRecipient.h"
-#import "OWSDevice.h"
+
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSSocketManager.h"
 
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -42,13 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-- (TSSocketManager *)socketManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.socketManager);
-    
-    return SSKEnvironment.shared.socketManager;
-}
-
 #pragma mark -
 
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
@@ -72,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
    
-    _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
+    _devices = [NSOrderedSet orderedSetWithObject:@(1)];
 
     return self;
 }
@@ -90,10 +82,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Since we use device count to determine whether a user is registered or not,
     // ensure the local user always has at least *this* device.
-    if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
+    if (![_devices containsObject:@(1)]) {
         if ([self.uniqueId isEqualToString:self.tsAccountManager.localNumber]) {
             DDLogInfo(@"Adding primary device to self recipient.");
-            [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
+            [self addDevices:[NSSet setWithObject:@(1)]];
         }
     }
 
@@ -147,17 +139,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (devicesToRemove.count > 0) {
         [self removeDevicesFromRecipient:[NSSet setWithArray:devicesToRemove] transaction:transaction];
     }
-
-    // Device changes
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Device changes can affect the UD access mode for a recipient,
-        // so we need to fetch the profile for this user to update UD access mode.
-        [self.profileManager fetchProfileForRecipientId:self.recipientId];
-        
-        if ([self.recipientId isEqualToString:self.tsAccountManager.localNumber]) {
-            [self.socketManager cycleSocket];
-        }
-    });
 }
 
 - (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction

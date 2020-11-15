@@ -61,171 +61,102 @@ public final class PublicChatPoller : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         return OpenGroupAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
             self.isPolling = false
-            let uniquePublicKeys = Set(messages.map { $0.senderPublicKey })
-            func proceed() {
-                let storage = OWSPrimaryStorage.shared()
-                /*
-                var newDisplayNameUpdatees: Set<String> = []
-                storage.dbReadConnection.read { transaction in
-                    newDisplayNameUpdatees = Set(uniquePublicKeys.filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) != $0 }.compactMap { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) })
+            let storage = OWSPrimaryStorage.shared()
+            // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
+            messages.sorted { $0.serverTimestamp < $1.serverTimestamp }.forEach { message in
+                let senderPublicKey = message.senderPublicKey
+                var wasSentByCurrentUser = (senderPublicKey == getUserHexEncodedPublicKey())
+                func generateDisplayName(from rawDisplayName: String) -> String {
+                    let endIndex = senderPublicKey.endIndex
+                    let cutoffIndex = senderPublicKey.index(endIndex, offsetBy: -8)
+                    return "\(rawDisplayName) (...\(senderPublicKey[cutoffIndex..<endIndex]))"
                 }
-                if !newDisplayNameUpdatees.isEmpty {
-                    let displayNameUpdatees = OpenGroupAPI.displayNameUpdatees[publicChat.id] ?? []
-                    OpenGroupAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
+                let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
+                let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(publicChat.id)
+                let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
+                groupContext.setName(publicChat.displayName)
+                let dataMessage = SSKProtoDataMessage.builder()
+                let attachments: [SSKProtoAttachmentPointer] = message.attachments.compactMap { attachment in
+                    guard attachment.kind == .attachment else { return nil }
+                    let result = SSKProtoAttachmentPointer.builder(id: attachment.serverID)
+                    result.setContentType(attachment.contentType)
+                    result.setSize(UInt32(attachment.size))
+                    result.setFileName(attachment.fileName)
+                    result.setFlags(UInt32(attachment.flags))
+                    result.setWidth(UInt32(attachment.width))
+                    result.setHeight(UInt32(attachment.height))
+                    if let caption = attachment.caption {
+                        result.setCaption(caption)
+                    }
+                    result.setUrl(attachment.url)
+                    return try! result.build()
                 }
-                 */
-                // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
-                messages.sorted { $0.serverTimestamp < $1.serverTimestamp }.forEach { message in
-                    var wasSentByCurrentUser = false
-                    OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                        wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.senderPublicKey, transaction: transaction)
+                dataMessage.setAttachments(attachments)
+                if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
+                    let signalLinkPreview = SSKProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
+                    signalLinkPreview.setTitle(linkPreview.linkPreviewTitle!)
+                    let attachment = SSKProtoAttachmentPointer.builder(id: linkPreview.serverID)
+                    attachment.setContentType(linkPreview.contentType)
+                    attachment.setSize(UInt32(linkPreview.size))
+                    attachment.setFileName(linkPreview.fileName)
+                    attachment.setFlags(UInt32(linkPreview.flags))
+                    attachment.setWidth(UInt32(linkPreview.width))
+                    attachment.setHeight(UInt32(linkPreview.height))
+                    if let caption = linkPreview.caption {
+                        attachment.setCaption(caption)
                     }
-                    var masterPublicKey: String? = nil
-                    storage.dbReadConnection.read { transaction in
-                        masterPublicKey = storage.getMasterHexEncodedPublicKey(for: message.senderPublicKey, in: transaction)
-                    }
-                    let senderPublicKey = masterPublicKey ?? message.senderPublicKey
-                    func generateDisplayName(from rawDisplayName: String) -> String {
-                        let endIndex = senderPublicKey.endIndex
-                        let cutoffIndex = senderPublicKey.index(endIndex, offsetBy: -8)
-                        return "\(rawDisplayName) (...\(senderPublicKey[cutoffIndex..<endIndex]))"
-                    }
-                    var senderDisplayName = ""
-                    if let masterHexEncodedPublicKey = masterPublicKey {
-                        senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
-                    } else {
-                        senderDisplayName = generateDisplayName(from: message.displayName)
-                    }
-                    let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(publicChat.id)
-                    let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
-                    groupContext.setName(publicChat.displayName)
-                    let dataMessage = SSKProtoDataMessage.builder()
-                    let attachments: [SSKProtoAttachmentPointer] = message.attachments.compactMap { attachment in
-                        guard attachment.kind == .attachment else { return nil }
-                        let result = SSKProtoAttachmentPointer.builder(id: attachment.serverID)
-                        result.setContentType(attachment.contentType)
-                        result.setSize(UInt32(attachment.size))
-                        result.setFileName(attachment.fileName)
-                        result.setFlags(UInt32(attachment.flags))
-                        result.setWidth(UInt32(attachment.width))
-                        result.setHeight(UInt32(attachment.height))
-                        if let caption = attachment.caption {
-                            result.setCaption(caption)
-                        }
-                        result.setUrl(attachment.url)
-                        return try! result.build()
-                    }
-                    dataMessage.setAttachments(attachments)
-                    if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
-                        let signalLinkPreview = SSKProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
-                        signalLinkPreview.setTitle(linkPreview.linkPreviewTitle!)
-                        let attachment = SSKProtoAttachmentPointer.builder(id: linkPreview.serverID)
-                        attachment.setContentType(linkPreview.contentType)
-                        attachment.setSize(UInt32(linkPreview.size))
-                        attachment.setFileName(linkPreview.fileName)
-                        attachment.setFlags(UInt32(linkPreview.flags))
-                        attachment.setWidth(UInt32(linkPreview.width))
-                        attachment.setHeight(UInt32(linkPreview.height))
-                        if let caption = linkPreview.caption {
-                            attachment.setCaption(caption)
-                        }
-                        attachment.setUrl(linkPreview.url)
-                        signalLinkPreview.setImage(try! attachment.build())
-                        dataMessage.setPreview([ try! signalLinkPreview.build() ])
-                    }
-                    let profile = SSKProtoDataMessageLokiProfile.builder()
-                    profile.setDisplayName(message.displayName)
-                    if let profilePicture = message.profilePicture {
-                        profile.setProfilePicture(profilePicture.url)
-                        dataMessage.setProfileKey(profilePicture.profileKey)
-                    }
-                    dataMessage.setProfile(try! profile.build())
-                    dataMessage.setTimestamp(message.timestamp)
-                    dataMessage.setGroup(try! groupContext.build())
-                    if let quote = message.quote {
-                        let signalQuote = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
-                        signalQuote.setText(quote.quotedMessageBody)
-                        dataMessage.setQuote(try! signalQuote.build())
-                    }
-                    let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
-                    dataMessage.setBody(body)
-                    if let messageServerID = message.serverID {
-                        let publicChatInfo = SSKProtoPublicChatInfo.builder()
-                        publicChatInfo.setServerID(messageServerID)
-                        dataMessage.setPublicChatInfo(try! publicChatInfo.build())
-                    }
-                    let content = SSKProtoContent.builder()
-                    if !wasSentByCurrentUser {
-                        content.setDataMessage(try! dataMessage.build())
-                    } else {
-                        // The line below is necessary to make it so that when a user sends a message in an open group and then
-                        // deletes and re-joins the open group without closing the app in between, the message isn't ignored.
-                        SyncMessagesProtocol.dropFromSyncMessageTimestampCache(message.timestamp, for: senderPublicKey)
-                        let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
-                        syncMessageSentBuilder.setMessage(try! dataMessage.build())
-                        syncMessageSentBuilder.setDestination(userPublicKey)
-                        syncMessageSentBuilder.setTimestamp(message.timestamp)
-                        let syncMessageSent = try! syncMessageSentBuilder.build()
-                        let syncMessageBuilder = SSKProtoSyncMessage.builder()
-                        syncMessageBuilder.setSent(syncMessageSent)
-                        content.setSyncMessage(try! syncMessageBuilder.build())
-                    }
-                    let envelope = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
-                    envelope.setSource(senderPublicKey)
-                    envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
-                    envelope.setContent(try! content.build().serializedData())
-                    envelope.setServerTimestamp(message.serverTimestamp)
-                    Storage.writeSync { transaction in
-                        transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
-                        let messageServerID = message.serverID
-                        let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), messageServerID: messageServerID)
-                        Storage.write { transaction in
-                            SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
-                        }
-                        // If we got a message from our master device then we should use its profile picture
-                        if let profilePicture = message.profilePicture, masterPublicKey == message.senderPublicKey {
-                            if (message.displayName.count > 0) {
-                                SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterPublicKey!, displayName: message.displayName, with: transaction)
-                            }
-                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarURL: profilePicture.url)
-                            SSKEnvironment.shared.profileManager.setProfileKeyData(profilePicture.profileKey, forRecipientId: masterPublicKey!, avatarURL: profilePicture.url)
-                        }
-                    }
+                    attachment.setUrl(linkPreview.url)
+                    signalLinkPreview.setImage(try! attachment.build())
+                    dataMessage.setPreview([ try! signalLinkPreview.build() ])
                 }
-            }
-            /*
-            let hexEncodedPublicKeysToUpdate = uniquePublicKeys.filter { hexEncodedPublicKey in
-                let timeSinceLastUpdate: TimeInterval
-                if let lastDeviceLinkUpdate = MultiDeviceProtocol.lastDeviceLinkUpdate[hexEncodedPublicKey] {
-                    timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
+                let profile = SSKProtoDataMessageLokiProfile.builder()
+                profile.setDisplayName(message.displayName)
+                if let profilePicture = message.profilePicture {
+                    profile.setProfilePicture(profilePicture.url)
+                    dataMessage.setProfileKey(profilePicture.profileKey)
+                }
+                dataMessage.setProfile(try! profile.build())
+                dataMessage.setTimestamp(message.timestamp)
+                dataMessage.setGroup(try! groupContext.build())
+                if let quote = message.quote {
+                    let signalQuote = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
+                    signalQuote.setText(quote.quotedMessageBody)
+                    dataMessage.setQuote(try! signalQuote.build())
+                }
+                let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
+                dataMessage.setBody(body)
+                if let messageServerID = message.serverID {
+                    let publicChatInfo = SSKProtoPublicChatInfo.builder()
+                    publicChatInfo.setServerID(messageServerID)
+                    dataMessage.setPublicChatInfo(try! publicChatInfo.build())
+                }
+                let content = SSKProtoContent.builder()
+                if !wasSentByCurrentUser {
+                    content.setDataMessage(try! dataMessage.build())
                 } else {
-                    timeSinceLastUpdate = .infinity
+                    let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
+                    syncMessageSentBuilder.setMessage(try! dataMessage.build())
+                    syncMessageSentBuilder.setDestination(userPublicKey)
+                    syncMessageSentBuilder.setTimestamp(message.timestamp)
+                    let syncMessageSent = try! syncMessageSentBuilder.build()
+                    let syncMessageBuilder = SSKProtoSyncMessage.builder()
+                    syncMessageBuilder.setSent(syncMessageSent)
+                    content.setSyncMessage(try! syncMessageBuilder.build())
                 }
-                return timeSinceLastUpdate > MultiDeviceProtocol.deviceLinkUpdateInterval
-            }
-            if !hexEncodedPublicKeysToUpdate.isEmpty {
-                FileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global(qos: .default)) { _ in
-                    proceed()
-                    hexEncodedPublicKeysToUpdate.forEach {
-                        MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy
+                let envelope = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
+                envelope.setSource(senderPublicKey)
+                envelope.setSourceDevice(1)
+                envelope.setContent(try! content.build().serializedData())
+                envelope.setServerTimestamp(message.serverTimestamp)
+                Storage.writeSync { transaction in
+                    transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
+                    let messageServerID = message.serverID
+                    let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), messageServerID: messageServerID)
+                    Storage.write { transaction in
+                        SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
-                }.catch(on: DispatchQueue.global(qos: .default)) { error in
-                    if (error as? DotNetAPI.DotNetAPIError) == DotNetAPI.DotNetAPIError.parsingFailed {
-                        // Don't immediately re-fetch in case of failure due to a parsing error
-                        hexEncodedPublicKeysToUpdate.forEach {
-                            MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy
-                        }
-                    }
-                    proceed()
                 }
-            } else {
-             */
-                DispatchQueue.global(qos: .default).async {
-                    proceed()
-                }
-            /*
             }
-             */
         }
     }
     

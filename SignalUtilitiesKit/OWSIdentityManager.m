@@ -9,13 +9,9 @@
 #import "NotificationsProtocol.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
-#import "OWSMessageSender.h"
-#import "OWSOutgoingNullMessage.h"
-#import "OWSPrimaryStorage+sessionStore.h"
+#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRecipientIdentity.h"
-#import "OWSVerificationStateChangeMessage.h"
-#import "OWSVerificationStateSyncMessage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
@@ -99,15 +95,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark - Dependencies
-
-- (OWSMessageSender *)messageSender
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
 }
 
 #pragma mark -
@@ -281,115 +268,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 
     return NO;
-}
-
-- (void)setVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange
-{
-    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssertDebug(recipientId.length > 0);
-
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self setVerificationState:verificationState
-                       identityKey:identityKey
-                       recipientId:recipientId
-             isUserInitiatedChange:isUserInitiatedChange
-                       transaction:transaction];
-    }];
-}
-
-- (void)setVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange
-             protocolContext:(nullable id)protocolContext
-{
-    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    [self setVerificationState:verificationState
-                   identityKey:identityKey
-                   recipientId:recipientId
-         isUserInitiatedChange:isUserInitiatedChange
-                   transaction:transaction];
-}
-
-- (void)setVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange
-                 transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug(transaction);
-
-    // Ensure a remote identity exists for this key. We may be learning about
-    // it for the first time.
-    [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
-
-    OWSRecipientIdentity *recipientIdentity =
-        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
-
-    if (recipientIdentity == nil) {
-        OWSFailDebug(@"Missing expected identity: %@", recipientId);
-        return;
-    }
-
-    if (recipientIdentity.verificationState == verificationState) {
-        return;
-    }
-
-    OWSLogInfo(@"setVerificationState: %@ (%@ -> %@)",
-        recipientId,
-        OWSVerificationStateToString(recipientIdentity.verificationState),
-        OWSVerificationStateToString(verificationState));
-
-    [recipientIdentity updateWithVerificationState:verificationState transaction:transaction];
-
-    if (isUserInitiatedChange) {
-        [self saveChangeMessagesForRecipientId:recipientId
-                             verificationState:verificationState
-                                 isLocalChange:YES
-                                   transaction:transaction];
-        [self enqueueSyncMessageForVerificationStateForRecipientId:recipientId transaction:transaction];
-    } else {
-        // Cancel any pending verification state sync messages for this recipient.
-        [self clearSyncMessageForRecipientId:recipientId transaction:transaction];
-    }
-
-    [self fireIdentityStateChangeNotification];
-}
-
-- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
-{
-    __block OWSVerificationState result;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self verificationStateForRecipientId:recipientId transaction:transaction];
-    }];
-    return result;
-}
-
-- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
-                                            transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug(transaction);
-
-    OWSRecipientIdentity *_Nullable currentIdentity =
-        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
-
-    if (!currentIdentity) {
-        // We might not know the identity for this recipient yet.
-        return OWSVerificationStateDefault;
-    }
-
-    return currentIdentity.verificationState;
 }
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId
@@ -585,6 +463,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)syncQueuedVerificationStates
 {
+    /*
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -636,50 +515,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             }
         }
     });
-}
-
-- (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
-{
-    OWSAssertDebug(message);
-    OWSAssertDebug(message.verificationForRecipientId.length > 0);
-
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
-    
-    // Send null message to appear as though we're sending a normal message to cover the sync messsage sent
-    // subsequently
-    OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
-                                                                   verificationStateSyncMessage:message];
-
-    // DURABLE CLEANUP - we could replace the custom durability logic in this class
-    // with a durable JobQueue.
-    [self.messageSender sendMessage:nullMessage
-        success:^{
-            OWSLogInfo(@"Successfully sent verification state NullMessage");
-            [self.messageSender sendMessage:message
-                success:^{
-                    OWSLogInfo(@"Successfully sent verification state sync message");
-
-                    // Record that this verification state was successfully synced.
-                    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [self clearSyncMessageForRecipientId:message.verificationForRecipientId
-                                                 transaction:transaction];
-                    }];
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send verification state sync message with error: %@", error);
-                }];
-        }
-        failure:^(NSError *_Nonnull error) {
-            OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
-            if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
-                OWSLogInfo(@"Removing retries for syncing verification state, since user is no longer registered: %@",
-                    message.verificationForRecipientId);
-                // Otherwise this will fail forever.
-                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [self clearSyncMessageForRecipientId:message.verificationForRecipientId transaction:transaction];
-                }];
-            }
-        }];
+     */
 }
 
 - (void)clearSyncMessageForRecipientId:(NSString *)recipientId
@@ -848,50 +684,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         
         [recipientIdentity updateWithVerificationState:verificationState
                                            transaction:transaction];
-        
-        [self saveChangeMessagesForRecipientId:recipientId
-                             verificationState:verificationState
-                                 isLocalChange:NO
-                                   transaction:transaction];
-    }
-}
-
-// We only want to create change messages in response to user activity,
-// on any of their devices.
-- (void)saveChangeMessagesForRecipientId:(NSString *)recipientId
-                       verificationState:(OWSVerificationState)verificationState
-                           isLocalChange:(BOOL)isLocalChange
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug(transaction);
-
-    NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
-
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-    OWSAssertDebug(contactThread);
-    // MJK TODO - should be safe to remove senderTimestamp
-    [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                              thread:contactThread
-                                                                         recipientId:recipientId
-                                                                   verificationState:verificationState
-                                                                       isLocalChange:isLocalChange]];
-
-    for (TSGroupThread *groupThread in
-        [TSGroupThread groupThreadsWithRecipientId:recipientId transaction:transaction]) {
-        // MJK TODO - should be safe to remove senderTimestamp
-        [messages
-            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:groupThread
-                                                                       recipientId:recipientId
-                                                                 verificationState:verificationState
-                                                                     isLocalChange:isLocalChange]];
-    }
-
-    // MJK TODO - why not save in-line, vs storing in an array and saving the array?
-    for (TSMessage *message in messages) {
-        [message saveWithTransaction:transaction];
     }
 }
 

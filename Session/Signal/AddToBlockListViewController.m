@@ -4,8 +4,8 @@
 
 #import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactsViewHelper.h"
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SignalUtilitiesKit/OWSBlockingManager.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,8 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak AddToBlockListViewController *weakSelf = self;
     [BlockListUIUtils showBlockPhoneNumberActionSheet:phoneNumber
                                    fromViewController:self
-                                      blockingManager:self.contactsViewHelper.blockingManager
-                                      contactsManager:self.contactsViewHelper.contactsManager
+                                      blockingManager:SSKEnvironment.shared.blockingManager
                                       completionBlock:^(BOOL isBlocked) {
                                           if (isBlocked) {
                                               [weakSelf.navigationController popViewControllerAnimated:YES];
@@ -65,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(signalAccount);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    return ![helper isRecipientIdBlocked:signalAccount.recipientId];
+    return ![SSKEnvironment.shared.blockingManager isRecipientIdBlocked:signalAccount.recipientId];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
@@ -73,15 +72,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(signalAccount);
 
     __weak AddToBlockListViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+    if ([SSKEnvironment.shared.blockingManager isRecipientIdBlocked:signalAccount.recipientId]) {
         OWSFailDebug(@"Cannot add already blocked user to block list.");
         return;
     }
     [BlockListUIUtils showBlockSignalAccountActionSheet:signalAccount
                                      fromViewController:self
-                                        blockingManager:helper.blockingManager
-                                        contactsManager:helper.contactsManager
+                                        blockingManager:SSKEnvironment.shared.blockingManager
                                         completionBlock:^(BOOL isBlocked) {
                                             if (isBlocked) {
                                                 [weakSelf.navigationController popViewControllerAnimated:YES];

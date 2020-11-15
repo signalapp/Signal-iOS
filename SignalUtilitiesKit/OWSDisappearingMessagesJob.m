@@ -6,7 +6,6 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "ContactsManagerProtocol.h"
-#import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -111,13 +110,6 @@ void AssertIsOnDisappearingMessagesQueue()
     return queue;
 }
 
-#pragma mark - Dependencies
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
 #pragma mark -
 
 - (NSUInteger)deleteExpiredMessages
@@ -218,8 +210,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     NSString *_Nullable remoteContactName = nil;
     if (remoteRecipientId) {
-        remoteContactName = [self.contactsManager displayNameForPhoneIdentifier:remoteRecipientId
-                                                                    transaction:transaction];
+        remoteContactName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:remoteRecipientId avoidingWriteTransaction:YES];
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.

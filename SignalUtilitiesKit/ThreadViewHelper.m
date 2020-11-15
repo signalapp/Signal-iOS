@@ -204,9 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if ([thread isKindOfClass:TSContactThread.class]) {
                     NSString *publicKey = thread.contactIdentifier;
                     if ([LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:publicKey] == nil) { continue; }
-                    if ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:publicKey in:transaction] == nil) {
-                        [threads addObject:thread];
-                    }
+                    [threads addObject:thread];
                 } else {
                     [threads addObject:thread];
                 }

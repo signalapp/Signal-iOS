@@ -9,10 +9,10 @@
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage+SessionStore.h"
-#import "OWSRequestFactory.h"
+
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
-#import "TSNetworkManager.h"
+
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
@@ -106,13 +106,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 }
 
 #pragma mark - Dependencies
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-    
-    return SSKEnvironment.shared.networkManager;
-}
 
 - (id<ProfileManagerProtocol>)profileManager {
     OWSAssertDebug(SSKEnvironment.shared.profileManager);
@@ -318,41 +311,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     });
 }
 
-- (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                   captchaToken:(nullable NSString *)captchaToken
-                        success:(void (^)(void))successBlock
-                        failure:(void (^)(NSError *error))failureBlock
-                smsVerification:(BOOL)isSMS
-
-{
-    if ([self isRegistered]) {
-        failureBlock([NSError errorWithDomain:@"tsaccountmanager.verify" code:4000 userInfo:nil]);
-        return;
-    }
-
-    // The country code of TSAccountManager.phoneNumberAwaitingVerification is used to
-    // determine whether or not to use domain fronting, so it needs to be set _before_
-    // we make our verification code request.
-    self.phoneNumberAwaitingVerification = phoneNumber;
-
-    TSRequest *request =
-        [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
-                                                            captchaToken:captchaToken
-                                                               transport:(isSMS ? TSVerificationTransportSMS
-                                                                                : TSVerificationTransportVoice)];
-    [[TSNetworkManager sharedManager] makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            OWSLogInfo(@"Successfully requested verification code request for number: %@ method:%@",
-                phoneNumber,
-                isSMS ? @"SMS" : @"Voice");
-            successBlock();
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSLogError(@"Failed to request verification code request with error:%@", error);
-            failureBlock(error);
-        }];
-}
-
 - (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
                              success:(void (^)(void))successBlock
                              failure:(void (^)(NSError *error))failureBlock
@@ -380,107 +338,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                           success:successBlock
                           failure:failureBlock
                   smsVerification:NO];
-}
-
-- (void)verifyAccountWithCode:(NSString *)verificationCode
-                          pin:(nullable NSString *)pin
-                      success:(void (^)(void))successBlock
-                      failure:(void (^)(NSError *error))failureBlock
-{
-    NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
-    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
-
-    OWSAssertDebug(authToken);
-    OWSAssertDebug(phoneNumber);
-
-    TSRequest *request = [OWSRequestFactory verifyCodeRequestWithVerificationCode:verificationCode
-                                                                        forNumber:phoneNumber
-                                                                              pin:pin
-                                                                          authKey:authToken];
-
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            long statuscode = response.statusCode;
-
-            switch (statuscode) {
-                case 200:
-                case 204: {
-                    OWSLogInfo(@"Verification code accepted.");
-
-                    [self storeServerAuthToken:authToken];
-
-                    [[[SignalServiceRestClient new] updateAccountAttributesObjC]
-                            .thenInBackground(^{
-                                return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                                    [TSPreKeyManager
-                                        createPreKeysWithSuccess:^{
-                                            resolve(@(1));
-                                        }
-                                        failure:^(NSError *error) {
-                                            resolve(error);
-                                        }];
-                                }];
-                            })
-                            .then(^{
-                                [self.profileManager fetchLocalUsersProfile];
-                            })
-                            .then(^{
-                                successBlock();
-                            })
-                            .catchInBackground(^(NSError *error) {
-                                OWSLogError(@"Error: %@", error);
-                                failureBlock(error);
-                            }) retainUntilComplete];
-
-                    break;
-                }
-                default: {
-                    OWSLogError(@"Unexpected status while verifying code: %ld", statuscode);
-                    NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                    failureBlock(error);
-                    break;
-                }
-            }
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerErrorDomain]);
-
-            OWSLogWarn(@"Error verifying code: %@", error.debugDescription);
-
-            switch (error.code) {
-                case 403: {
-                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeUserError,
-                        NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
-                            "Error message indicating that registration failed due to a missing or incorrect "
-                            "verification code."));
-                    failureBlock(userError);
-                    break;
-                }
-                case 413: {
-                    // In the case of the "rate limiting" error, we want to show the
-                    // "recovery suggestion", not the error's "description."
-                    NSError *userError
-                        = OWSErrorWithCodeDescription(OWSErrorCodeUserError, error.localizedRecoverySuggestion);
-                    failureBlock(userError);
-                    break;
-                }
-                case 423: {
-                    NSString *localizedMessage = NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
-                        "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.");
-                    OWSLogError(@"2FA PIN required: %ld", (long)error.code);
-                    NSError *error
-                        = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN, localizedMessage);
-                    failureBlock(error);
-                    break;
-                }
-                default: {
-                    OWSLogError(@"verifying code failed with unknown error: %@", error);
-                    failureBlock(error);
-                    break;
-                }
-            }
-        }];
 }
 
 #pragma mark Server keying material
@@ -520,28 +377,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                         forKey:TSAccountManager_ServerAuthToken
                   inCollection:TSAccountManager_UserAccountCollection];
     }];
-}
-
-+ (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock
-{
-    TSRequest *request = [OWSRequestFactory unregisterAccountRequest];
-    [[TSNetworkManager sharedManager] makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            OWSLogInfo(@"Successfully unregistered");
-            success();
-
-            // This is called from `[AppSettingsViewController proceedToUnregistration]` whose
-            // success handler calls `[Environment resetAppData]`.
-            // This method, after calling that success handler, fires
-            // `RegistrationStateDidChangeNotification` which is only safe to fire after
-            // the data store is reset.
-
-            [self.sharedInstance postRegistrationStateDidChangeNotification];
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSLogError(@"Failed to unregister with error: %@", error);
-            failureBlock(error);
-        }];
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
@@ -724,20 +559,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             }
         }];
     });
-    return promise;
-}
-
-- (AnyPromise *)performUpdateAccountAttributes
-{
-    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributesObjC];
-    promise = promise.then(^(id value) {
-        // Fetch the local profile, as we may have changed its
-        // account attributes.  Specifically, we need to determine
-        // if all devices for our account now support UD for sync
-        // messages.
-        [self.profileManager fetchLocalUsersProfile];
-    });
-    [promise retainUntilComplete];
     return promise;
 }
 

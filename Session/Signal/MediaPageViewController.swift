@@ -587,7 +587,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             let conversationStyle = ConversationStyle(thread: thread)
             fetchedItem = ConversationInteractionViewItem(interaction: message,
                                                           isGroupThread: thread.isGroupThread(),
-                                                          isRSSFeed: false,
                                                           transaction: transaction,
                                                           conversationStyle: conversationStyle)
         }
@@ -669,10 +668,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     // MARK: Dynamic Header
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
 
     private func senderName(message: TSMessage) -> String {
         switch message {

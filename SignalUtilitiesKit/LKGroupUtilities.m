@@ -3,10 +3,9 @@
 
 @implementation LKGroupUtilities
 
-#define ClosedGroupPrefix @"__textsecure_group__!" // a.k.a. private group chat
+#define ClosedGroupPrefix @"__textsecure_group__!"
 #define MMSGroupPrefix @"__signal_mms_group__!"
-#define OpenGroupPrefix @"__loki_public_chat_group__!" // a.k.a. public group chat
-#define RSSFeedPrefix @"__loki_rss_feed_group__!"
+#define OpenGroupPrefix @"__loki_public_chat_group__!"
 
 +(NSString *)getEncodedOpenGroupID:(NSString *)groupID
 {
@@ -16,16 +15,6 @@
 +(NSData *)getEncodedOpenGroupIDAsData:(NSString *)groupID
 {
     return [[OpenGroupPrefix stringByAppendingString:groupID] dataUsingEncoding:NSUTF8StringEncoding];
-}
-
-+(NSString *)getEncodedRSSFeedID:(NSString *)groupID
-{
-    return [RSSFeedPrefix stringByAppendingString:groupID];
-}
-
-+(NSData *)getEncodedRSSFeedIDAsData:(NSString *)groupID
-{
-    return [[RSSFeedPrefix stringByAppendingString:groupID] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 +(NSString *)getEncodedClosedGroupID:(NSString *)groupID

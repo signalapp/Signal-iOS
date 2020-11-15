@@ -35,9 +35,6 @@ import SignalUtilitiesKit
 //    public var outboundCallInitiator: OutboundCallInitiator
 
     @objc
-    public var messageFetcherJob: MessageFetcherJob
-
-    @objc
     public var accountManager: AccountManager
 
     @objc
@@ -81,9 +78,6 @@ import SignalUtilitiesKit
 
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()
-//        self.callService = CallService()
-//        self.outboundCallInitiator = OutboundCallInitiator()
-        self.messageFetcherJob = MessageFetcherJob()
         self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()

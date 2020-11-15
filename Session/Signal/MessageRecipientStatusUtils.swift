@@ -110,10 +110,6 @@ public class MessageRecipientStatusUtils: NSObject {
             // Use the "long" version of this message here.
             return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
         case .sending:
-            if outgoingMessage.isCalculatingPoW {
-                return (.calculatingPoW, NSLocalizedString("Calculating proof of work", comment: ""))
-            }
-
             if outgoingMessage.hasAttachments() {
                 return (.uploading, NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                          comment: "status message while attachment is uploading"))

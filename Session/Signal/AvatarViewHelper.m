@@ -6,9 +6,9 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/PhoneNumber.h>
+
 #import <SignalUtilitiesKit/TSGroupModel.h>
 #import <SignalUtilitiesKit/TSGroupThread.h>
 #import <SignalUtilitiesKit/TSThread.h>

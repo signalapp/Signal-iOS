@@ -10,10 +10,10 @@
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/ThreadUtil.h>
+
 #import <SignalUtilitiesKit/OWSBlockingManager.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 #import <SignalUtilitiesKit/SSKEnvironment.h>
@@ -226,7 +226,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 - (instancetype)initWithThread:(TSThread *)thread
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
-                     isRSSFeed:(BOOL)isRSSFeed
                       delegate:(id<ConversationViewModelDelegate>)delegate
 {
     self = [super init];
@@ -242,7 +241,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     _persistedViewItems = @[];
     _unsavedOutgoingMessages = @[];
     self.focusMessageIdOnOpen = focusMessageIdOnOpen;
-    _isRSSFeed = isRSSFeed;
     _viewState = [[ConversationViewState alloc] initWithViewItems:@[]];
 
     [self configure];
@@ -267,11 +265,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 - (YapDatabaseConnection *)editingDatabaseConnection
 {
     return self.primaryStorage.dbReadWriteConnection;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
 }
 
 - (OWSBlockingManager *)blockingManager
@@ -303,10 +296,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:OWSApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(typingIndicatorStateDidChange:)
@@ -530,7 +519,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     ThreadDynamicInteractions *dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                                       contactsManager:self.contactsManager
                                        blockingManager:self.blockingManager
                                           dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
@@ -1023,24 +1011,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    // Many OWSProfileManager methods aren't safe to call from inside a database
-    // transaction, so do this work now.
-    //
-    // TODO: It'd be nice if these methods took a transaction.
-    BOOL hasLocalProfile = [self.profileManager hasLocalProfile];
-    BOOL isThreadInProfileWhitelist = [self.profileManager isThreadInProfileWhitelist:self.thread];
-    BOOL hasUnwhitelistedMember = NO;
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if (![self.profileManager isUserInProfileWhitelist:recipientId]) {
-            hasUnwhitelistedMember = YES;
-            break;
-        }
-    }
-
     ConversationProfileState *conversationProfileState = [ConversationProfileState new];
-    conversationProfileState.hasLocalProfile = hasLocalProfile;
-    conversationProfileState.isThreadInProfileWhitelist = isThreadInProfileWhitelist;
-    conversationProfileState.hasUnwhitelistedMember = hasUnwhitelistedMember;
+    conversationProfileState.hasLocalProfile = YES;
+    conversationProfileState.isThreadInProfileWhitelist = YES;
+    conversationProfileState.hasUnwhitelistedMember = NO;
     self.conversationProfileState = conversationProfileState;
 }
 
@@ -1136,15 +1110,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             // Don't create profile whitelist offers for users which are not already blocked.
             shouldHaveAddToProfileWhitelistOffer = NO;
         }
-
-        if ([self.contactsManager hasSignalAccountForRecipientId:recipientId]) {
-            // Only create "add to contacts" offers for non-contacts.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for non-contacts.
-            shouldHaveBlockOffer = NO;
-            // Don't create profile whitelist offers for non-contacts.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
     }
 
     if (hasTooManyOutgoingMessagesToBlock) {
@@ -1214,7 +1179,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
     BOOL isGroupThread = self.thread.isGroupThread;
-    BOOL isRSSFeed = self.isRSSFeed;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
     [self ensureConversationProfileState];
@@ -1228,7 +1192,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               if (!viewItem) {
                   viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
                                                                             isGroupThread:isGroupThread
-                                                                                isRSSFeed:isRSSFeed
                                                                               transaction:transaction
                                                                         conversationStyle:conversationStyle];
               }
@@ -1236,7 +1199,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               viewItemCache[interaction.uniqueId] = viewItem;
               [viewItems addObject:viewItem];
               TSMessage *message = (TSMessage *)viewItem.interaction;
-              if (message.hasAttachmentsInNSE) {
+              if (message.hasUnfetchedAttachmentsFromPN) {
                   [SSKEnvironment.shared.attachmentDownloads downloadAttachmentsForMessage:message
                       transaction:transaction
                       success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
@@ -1534,8 +1497,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 }
                 
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
-                        secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
+                    senderName = [[NSAttributedString alloc] initWithString:[SSKEnvironment.shared.profileManager profileNameForRecipientWithID:incomingSenderId avoidingWriteTransaction:YES]];
                     
                     if ([self.thread isKindOfClass:[TSGroupThread class]]) {
                         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -1558,9 +1520,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // the next message has the same sender avatar and
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
-                if (viewItem.isRSSFeed) {
-                    shouldShowSenderAvatar = NO;
-                } else if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
+                if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
                     shouldShowSenderAvatar = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]);
                 }
             }

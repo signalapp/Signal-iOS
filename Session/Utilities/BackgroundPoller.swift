@@ -9,7 +9,8 @@ public final class BackgroundPoller : NSObject {
     @objc(pollWithCompletionHandler:)
     public static func poll(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         var promises: [Promise<Void>] = []
-        promises.append(AppEnvironment.shared.messageFetcherJob.run()) // FIXME: It'd be nicer to just use Poller directly
+        // TODO TODO TODO
+//        promises.append(AppEnvironment.shared.messageFetcherJob.run()) // FIXME: It'd be nicer to just use Poller directly
         closedGroupPoller = ClosedGroupPoller()
         promises.append(contentsOf: closedGroupPoller.pollOnce())
         var openGroups: [String:OpenGroup] = [:]

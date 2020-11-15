@@ -9,9 +9,8 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
-#import <SignalUtilitiesKit/OWSVerificationStateChangeMessage.h>
 #import <SignalUtilitiesKit/TSCall.h>
 #import <SignalUtilitiesKit/TSErrorMessage.h>
 #import <SignalUtilitiesKit/TSInfoMessage.h>
@@ -290,17 +289,6 @@ typedef void (^SystemMessageActionBlock)(void);
                         : [UIImage imageNamed:@"system_message_disappearing_messages_disabled"]);
                 break;
             }
-            case TSInfoMessageVerificationStateChange:
-                OWSAssertDebug([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
-                if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
-                    OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
-                    BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
-                    if (!isVerified) {
-                        return nil;
-                    }
-                }
-                result = [UIImage imageNamed:@"system_message_verified"];
-                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [UIImage imageNamed:@"system_message_call"];
@@ -398,8 +386,6 @@ typedef void (^SystemMessageActionBlock)(void);
         return [self actionForErrorMessage:(TSErrorMessage *)interaction];
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         return [self actionForInfoMessage:(TSInfoMessage *)interaction];
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        return [self actionForCall:(TSCall *)interaction];
     } else {
         OWSFailDebug(@"Tap for system messages of unknown type: %@", [interaction class]);
         return nil;
@@ -414,21 +400,6 @@ typedef void (^SystemMessageActionBlock)(void);
     switch (message.errorType) {
         case TSErrorMessageInvalidKeyException:
             return nil;
-        case TSErrorMessageNonBlockingIdentityChange:
-            return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
-                          }];
-        case TSErrorMessageWrongTrustedIdentityKey:
-            return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate
-                                  tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
-                          }];
         case TSErrorMessageMissingKeyId:
         case TSErrorMessageNoSession:
         case TSErrorMessageInvalidMessage:
@@ -486,46 +457,10 @@ typedef void (^SystemMessageActionBlock)(void);
                                                   block:^{
                                                       [weakSelf.delegate showConversationSettings];
                                                   }];
-        case TSInfoMessageVerificationStateChange:
-            return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-                          block:^{
-                              [weakSelf.delegate
-                                  showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message)
-                                                                     .recipientId];
-                          }];
     }
 
     OWSLogInfo(@"Unhandled tap for info message: %@", message);
     return nil;
-}
-
-- (nullable SystemMessageAction *)actionForCall:(TSCall *)call
-{
-    OWSAssertDebug(call);
-
-    __weak OWSSystemMessageCell *weakSelf = self;
-    switch (call.callType) {
-        case RPRecentCallTypeIncoming:
-        case RPRecentCallTypeIncomingMissed:
-        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
-        case RPRecentCallTypeIncomingDeclined:
-            return
-                [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
-                                               block:^{
-                                                   [weakSelf.delegate handleCallTap:call];
-                                               }];
-        case RPRecentCallTypeOutgoing:
-        case RPRecentCallTypeOutgoingMissed:
-            return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
-                                                            @"Label for button that lets users call a contact again.")
-                                                  block:^{
-                                                      [weakSelf.delegate handleCallTap:call];
-                                                  }];
-        case RPRecentCallTypeOutgoingIncomplete:
-        case RPRecentCallTypeIncomingIncomplete:
-            return nil;
-    }
 }
 
 #pragma mark - Events

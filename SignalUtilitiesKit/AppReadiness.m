@@ -3,7 +3,6 @@
 //
 
 #import "AppReadiness.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import "AppContext.h"
 #import "SSKAsserts.h"
 

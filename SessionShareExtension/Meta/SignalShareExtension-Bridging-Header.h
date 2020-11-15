@@ -13,7 +13,7 @@
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
@@ -23,5 +23,4 @@
 #import <SignalUtilitiesKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/OWSMath.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>

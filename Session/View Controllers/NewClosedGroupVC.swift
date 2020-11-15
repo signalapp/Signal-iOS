@@ -149,14 +149,6 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc private func createClosedGroup() {
-        if ClosedGroupsProtocol.isSharedSenderKeysEnabled {
-            createSSKClosedGroup()
-        } else {
-            createLegacyClosedGroup()
-        }
-    }
-
-    private func createSSKClosedGroup() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
@@ -176,73 +168,21 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         }
         let selectedContacts = self.selectedContacts
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            FileServerAPI.getDeviceLinks(associatedWith: selectedContacts).then2 { _ -> Promise<TSGroupThread> in
-                var promise: Promise<TSGroupThread>!
-                Storage.writeSync { transaction in
-                    promise = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
-                }
-                return promise
-            }.done(on: DispatchQueue.main) { thread in
+            var promise: Promise<TSGroupThread>!
+            Storage.writeSync { transaction in
+                promise = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+            }
+            let _ = promise.done(on: DispatchQueue.main) { thread in
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
-            }.catch(on: DispatchQueue.main) { _ in
+            }
+            promise.catch(on: DispatchQueue.main) { _ in
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 let title = "Couldn't Create Group"
                 let message = "Please check your internet connection and try again."
                 let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
                 self?.presentAlert(alert)
-            }
-        }
-    }
-
-    private func createLegacyClosedGroup() {
-        func showError(title: String, message: String = "") {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
-            presentAlert(alert)
-        }
-        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
-            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
-        }
-        guard name.count < 64 else {
-            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
-        }
-        guard selectedContacts.count >= 1 else {
-            return showError(title: "Please pick at least 1 group member")
-        }
-        guard selectedContacts.count < 10 else { // Minus one because we're going to include self later
-            return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
-        }
-        let userPublicKey = getUserHexEncodedPublicKey()
-        let storage = OWSPrimaryStorage.shared()
-        var masterPublicKey = ""
-        storage.dbReadConnection.read { transaction in
-            masterPublicKey = storage.getMasterHexEncodedPublicKey(for: userPublicKey, in: transaction) ?? userPublicKey
-        }
-        let members = selectedContacts + [ masterPublicKey ]
-        let admins = [ masterPublicKey ]
-        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength).toHexString())
-        let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
-        let thread = TSGroupThread.getOrCreateThread(with: group)
-        OWSProfileManager.shared().addThread(toProfileWhitelist: thread)
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
-            let message = TSOutgoingMessage(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-            message.update(withCustomMessage: "Closed group created")
-            DispatchQueue.main.async {
-                SSKEnvironment.shared.messageSender.send(message, success: {
-                    DispatchQueue.main.async {
-                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
-                    }
-                }, failure: { error in
-                    let message = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, failedMessageType: .groupCreationFailed)
-                    message.save()
-                    DispatchQueue.main.async {
-                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
-                    }
-                })
             }
         }
     }

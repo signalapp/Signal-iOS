@@ -120,14 +120,6 @@ protocol NotificationPresenterAdaptee: class {
 
     func cancelNotifications(threadId: String)
     func clearAllNotifications()
-
-    var hasReceivedSyncMessageRecently: Bool { get }
-}
-
-extension NotificationPresenterAdaptee {
-    var hasReceivedSyncMessageRecently: Bool {
-        return OWSDeviceManager.shared().hasReceivedSyncMessage(inLastSeconds: 60)
-    }
 }
 
 @objc(OWSNotificationPresenter)
@@ -152,10 +144,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     // MARK: - Dependencies
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
 
     var identityManager: OWSIdentityManager {
         return OWSIdentityManager.shared()
@@ -209,140 +197,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-//    func presentIncomingCall(_ call: SignalCall, callerName: String) {
-//
-//        let notificationTitle: String?
-//        switch previewType {
-//        case .noNameNoPreview:
-//            notificationTitle = nil
-//        case .nameNoPreview, .namePreview:
-//            notificationTitle = callerName
-//        }
-//        let notificationBody = NotificationStrings.incomingCallBody
-//
-//        let remotePhoneNumber = call.remotePhoneNumber
-//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-//
-//        guard let threadId = thread.uniqueId else {
-//            owsFailDebug("threadId was unexpectedly nil")
-//            return
-//        }
-//
-//        let userInfo = [
-//            AppNotificationUserInfoKey.threadId: threadId,
-//            AppNotificationUserInfoKey.localCallId: call.localId.uuidString
-//        ]
-//
-//        DispatchQueue.main.async {
-//            self.adaptee.notify(category: .incomingCall,
-//                                title: notificationTitle,
-//                                body: notificationBody,
-//                                userInfo: userInfo,
-//                                sound: .defaultiOSIncomingRingtone,
-//                                replacingIdentifier: call.localId.uuidString)
-//        }
-//    }
-//
-//    func presentMissedCall(_ call: SignalCall, callerName: String) {
-//        let notificationTitle: String?
-//        switch previewType {
-//        case .noNameNoPreview:
-//            notificationTitle = nil
-//        case .nameNoPreview, .namePreview:
-//            notificationTitle = callerName
-//        }
-//        let notificationBody = NotificationStrings.missedCallBody
-//
-//        let remotePhoneNumber = call.remotePhoneNumber
-//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-//
-//        guard let threadId = thread.uniqueId else {
-//            owsFailDebug("threadId was unexpectedly nil")
-//            return
-//        }
-//
-//        let userInfo = [
-//            AppNotificationUserInfoKey.threadId: threadId,
-//            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
-//        ]
-//
-//        DispatchQueue.main.async {
-//            let sound = self.requestSound(thread: thread)
-//            self.adaptee.notify(category: .missedCall,
-//                                title: notificationTitle,
-//                                body: notificationBody,
-//                                userInfo: userInfo,
-//                                sound: sound,
-//                                replacingIdentifier: call.localId.uuidString)
-//        }
-//    }
-//
-//    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
-//        let notificationTitle: String?
-//        switch previewType {
-//        case .noNameNoPreview:
-//            notificationTitle = nil
-//        case .nameNoPreview, .namePreview:
-//            notificationTitle = callerName
-//        }
-//        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-//
-//        let remotePhoneNumber = call.remotePhoneNumber
-//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-//        guard let threadId = thread.uniqueId else {
-//            owsFailDebug("threadId was unexpectedly nil")
-//            return
-//        }
-//
-//        let userInfo = [
-//            AppNotificationUserInfoKey.threadId: threadId
-//        ]
-//
-//        DispatchQueue.main.async {
-//            let sound = self.requestSound(thread: thread)
-//            self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
-//                                title: notificationTitle,
-//                                body: notificationBody,
-//                                userInfo: userInfo,
-//                                sound: sound,
-//                                replacingIdentifier: call.localId.uuidString)
-//        }
-//    }
-//
-//    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
-//        let notificationTitle: String?
-//        switch previewType {
-//        case .noNameNoPreview:
-//            notificationTitle = nil
-//        case .nameNoPreview, .namePreview:
-//            notificationTitle = callerName
-//        }
-//        let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-//
-//        let remotePhoneNumber = call.remotePhoneNumber
-//        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-//
-//        guard let threadId = thread.uniqueId else {
-//            owsFailDebug("threadId was unexpectedly nil")
-//            return
-//        }
-//
-//        let userInfo = [
-//            AppNotificationUserInfoKey.threadId: threadId,
-//            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
-//        ]
-//
-//        DispatchQueue.main.async {
-//            let sound = self.requestSound(thread: thread)
-//            self.adaptee.notify(category: .missedCall,
-//                                title: notificationTitle,
-//                                body: notificationBody,
-//                                userInfo: userInfo,
-//                                sound: sound,
-//                                replacingIdentifier: call.localId.uuidString)
-//        }
-//    }
-
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
 
         guard !thread.isMuted else {
@@ -359,7 +213,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // for more details.
         let messageText = DisplayableText.filterNotificationText(rawMessageText)
 
-        let senderName = OWSUserProfile.fetch(uniqueId: incomingMessage.authorId, transaction: transaction)?.profileName ?? contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+        let senderName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: incomingMessage.authorId, avoidingWriteTransaction: true)!
 
         let notificationTitle: String?
         switch previewType {
@@ -401,12 +255,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var category = AppNotificationCategory.incomingMessage
-        for recipientId in thread.recipientIdentifiers {
-            if self.identityManager.verificationState(forRecipientId: recipientId) == .noLongerVerified {
-                category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
-                break
-            }
-        }
 
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
@@ -554,14 +402,6 @@ class NotificationActionHandler {
         return SignalApp.shared()
     }
 
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-//    var callUIAdapter: CallUIAdapter {
-//        return AppEnvironment.shared.callService.callUIAdapter
-//    }
-
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
@@ -571,41 +411,6 @@ class NotificationActionHandler {
     }
 
     // MARK: -
-
-//    func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-//        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-//            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
-//        }
-//
-//        guard let localCallId = UUID(uuidString: localCallIdString) else {
-//            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
-//        }
-//
-//        callUIAdapter.answerCall(localId: localCallId)
-//        return Promise.value(())
-//    }
-//
-//    func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-//        guard let recipientId = userInfo[AppNotificationUserInfoKey.callBackNumber] as? String else {
-//            throw NotificationError.failDebug("recipientId was unexpectedly nil")
-//        }
-//
-//        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: false)
-//        return Promise.value(())
-//    }
-//
-//    func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-//        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-//            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
-//        }
-//
-//        guard let localCallId = UUID(uuidString: localCallIdString) else {
-//            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
-//        }
-//
-//        callUIAdapter.declineCall(localId: localCallId)
-//        return Promise.value(())
-//    }
 
     func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
@@ -629,15 +434,18 @@ class NotificationActionHandler {
         }
 
         return markAsRead(thread: thread).then { () -> Promise<Void> in
-            let sendPromise = ThreadUtil.sendMessageNonDurably(text: replyText,
-                                                               thread: thread,
-                                                               quotedReplyModel: nil,
-                                                               messageSender: self.messageSender)
+            // TODO TODO TODO
+            
+//            let sendPromise = ThreadUtil.sendMessageNonDurably(text: replyText,
+//                                                               thread: thread,
+//                                                               quotedReplyModel: nil,
+//                                                               messageSender: self.messageSender)
 
-            return sendPromise.recover { error in
-                Logger.warn("Failed to send reply message from notification with error: \(error)")
-                self.notificationPresenter.notifyForFailedSend(inThread: thread)
-            }
+//            return sendPromise.recover { error in
+//                Logger.warn("Failed to send reply message from notification with error: \(error)")
+//                self.notificationPresenter.notifyForFailedSend(inThread: thread)
+//            }
+            return Promise<Void>.value(())
         }
     }
 
@@ -662,25 +470,6 @@ class NotificationActionHandler {
     private func markAsRead(thread: TSThread) -> Promise<Void> {
         return Storage.write { transaction in
             thread.markAllAsRead(with: transaction)
-        }
-    }
-}
-
-extension ThreadUtil {
-    static var dbReadConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
-    }
-
-    class func sendMessageNonDurably(text: String, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
-        return Promise { resolver in
-            self.dbReadConnection.read { transaction in
-                _ = self.sendMessageNonDurably(withText: text,
-                                               in: thread,
-                                               quotedReplyModel: quotedReplyModel,
-                                               transaction: transaction,
-                                               messageSender: messageSender,
-                                               completion: resolver.resolve)
-            }
         }
     }
 }

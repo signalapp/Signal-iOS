@@ -44,21 +44,6 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (void)generateNewIdentityKeyPair;
 - (void)clearIdentityKey;
 
-- (void)setVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange
-                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
-- (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
-                                            transaction:(YapDatabaseReadTransaction *)transaction;
-
-- (void)setVerificationState:(OWSVerificationState)verificationState
-                 identityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-       isUserInitiatedChange:(BOOL)isUserInitiatedChange;
-
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId;
 
 /**

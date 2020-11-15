@@ -61,7 +61,7 @@ public final class ClosedGroupPoller : NSObject {
                     print("[Loki] Received \(messages.count) new message(s) in closed group with public key: \(publicKey).")
                 }
                 messages.forEach { json in
-                    guard let envelope = SSKProtoEnvelope.from(json) else { return }
+                    guard let envelope = SNProtoEnvelope.from(json) else { return }
                     do {
                         let data = try envelope.serializedData()
                         let job = MessageReceiveJob(data: data)

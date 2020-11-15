@@ -1,6 +1,6 @@
+
 #import <Foundation/Foundation.h>
 #import "SSKAsserts.h"
-#import "OWSContactsManager.h"
 #import "OWSWindowManager.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "OWSPreferences.h"
@@ -11,7 +11,6 @@ static Environment *sharedEnvironment = nil;
 @interface Environment ()
 
 @property (nonatomic) OWSAudioSession *audioSession;
-@property (nonatomic) OWSContactsManager *contactsManager;
 @property (nonatomic) OWSPreferences *preferences;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic) OWSSounds *sounds;
@@ -54,6 +53,7 @@ static Environment *sharedEnvironment = nil;
                        windowManager:(OWSWindowManager *)windowManager
 {
     self = [super init];
+
     if (!self) {
         return self;
     }
@@ -73,11 +73,6 @@ static Environment *sharedEnvironment = nil;
     OWSSingletonAssert();
 
     return self;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
 }
 
 @end

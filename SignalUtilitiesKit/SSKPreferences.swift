@@ -22,8 +22,6 @@ public class SSKPreferences: NSObject {
         }
         set {
             setBool(newValue, key: areLinkPreviewsEnabledKey)
-
-            SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
         }
     }
 

@@ -8,7 +8,7 @@ public extension Message.Destination {
             let groupID = thread.groupModel.groupId
             let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
             return .closedGroup(groupPublicKey: groupPublicKey)
-        } else if let thread = thread as? TSGroupThread, thread.isPublicChat {
+        } else if let thread = thread as? TSGroupThread, thread.isOpenGroup {
             var openGroup: OpenGroup!
             Storage.read { transaction in
                 openGroup = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)

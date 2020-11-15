@@ -6,7 +6,7 @@
 #import "ConversationViewItem.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/MIMETypeUtil.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
+
 #import <SignalUtilitiesKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/TSAttachmentPointer.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
@@ -149,26 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }();
     OWSAssertDebug(authorId.length > 0);
-    
-    if (conversationItem.contactShare) {
-        ContactShareViewModel *contactShare = conversationItem.contactShare;
-        
-        // TODO We deliberately always pass `nil` for `thumbnailImage`, even though we might have a contactShare.avatarImage
-        // because the QuotedReplyViewModel has some hardcoded assumptions that only quoted attachments have
-        // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
-        // contactShare avatar in the quoted reply.
-        return [[self alloc] initWithTimestamp:timestamp
-                                      authorId:authorId
-                                          body:[@"👤 " stringByAppendingString:contactShare.displayName]
-                                    bodySource:TSQuotedMessageContentSourceLocal
-                                thumbnailImage:nil
-                                   contentType:nil
-                                sourceFilename:nil
-                              attachmentStream:nil
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO
-                                      threadId:@""];
-    }
 
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;

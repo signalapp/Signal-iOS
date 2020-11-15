@@ -17,13 +17,9 @@ public enum PushRegistrationError: Error {
 /**
  * Singleton used to integrate with push notification services - registration and routing received remote notifications.
  */
-@objc public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
+@objc public class PushRegistrationManager: NSObject {
 
     // MARK: - Dependencies
-
-    private var messageFetcherJob: MessageFetcherJob {
-        return AppEnvironment.shared.messageFetcherJob
-    }
 
     private var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
@@ -89,34 +85,6 @@ public enum PushRegistrationError: Error {
         }
 
         vanillaTokenResolver.reject(error)
-    }
-
-    // MARK: PKPushRegistryDelegate - voIP Push Token
-
-    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
-        Logger.info("")
-        assert(type == .voIP)
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
-        }
-    }
-
-    public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
-        Logger.info("")
-        assert(type == .voIP)
-        assert(credentials.type == .voIP)
-        guard let voipTokenResolver = self.voipTokenResolver else {
-            owsFailDebug("fulfillVoipTokenPromise was unexpectedly nil")
-            return
-        }
-
-        voipTokenResolver.fulfill(credentials.token)
-    }
-
-    public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
-        // It's not clear when this would happen. We've never previously handled it, but we should at
-        // least start learning if it happens.
-        owsFailDebug("Invalid state")
     }
 
     // MARK: helpers
@@ -198,55 +166,6 @@ public enum PushRegistrationError: Error {
             return pushTokenData.hexEncodedString
         }.ensure {
             self.vanillaTokenPromise = nil
-        }
-    }
-
-    private func registerForVoipPushToken() -> Promise<String> {
-        AssertIsOnMainThread()
-        Logger.info("")
-
-        guard self.voipTokenPromise == nil else {
-            let promise = self.voipTokenPromise!
-            assert(promise.isPending)
-            return promise.map { $0.hexEncodedString }
-        }
-
-        // No pending voip token yet. Create a new promise
-        let (promise, resolver) = Promise<Data>.pending()
-        self.voipTokenPromise = promise
-        self.voipTokenResolver = resolver
-
-        if self.voipRegistry == nil {
-            // We don't create the voip registry in init, because it immediately requests the voip token,
-            // potentially before we're ready to handle it.
-            let voipRegistry = PKPushRegistry(queue: nil)
-            self.voipRegistry  = voipRegistry
-            voipRegistry.desiredPushTypes = [.voIP]
-            voipRegistry.delegate = self
-        }
-
-        guard let voipRegistry = self.voipRegistry else {
-            owsFailDebug("failed to initialize voipRegistry")
-            resolver.reject(PushRegistrationError.assertionError(description: "failed to initialize voipRegistry"))
-            return promise.map { _ in
-                // coerce expected type of returned promise - we don't really care about the value,
-                // since this promise has been rejected. In practice this shouldn't happen
-                String()
-            }
-        }
-
-        // If we've already completed registering for a voip token, resolve it immediately,
-        // rather than waiting for the delegate method to be called.
-        if let voipTokenData = voipRegistry.pushToken(for: .voIP) {
-            Logger.info("using pre-registered voIP token")
-            resolver.fulfill(voipTokenData)
-        }
-
-        return promise.map { (voipTokenData: Data) -> String in
-            Logger.info("successfully registered for voip push notifications")
-            return voipTokenData.hexEncodedString
-        }.ensure {
-            self.voipTokenPromise = nil
         }
     }
 }

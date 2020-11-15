@@ -100,7 +100,8 @@ public final class LokiPushNotificationManager : NSObject {
     public static func objc_register(with token: Data, publicKey: String, isForcedUpdate: Bool) -> AnyPromise {
         return AnyPromise.from(register(with: token, publicKey: publicKey, isForcedUpdate: isForcedUpdate))
     }
-    
+
+    @discardableResult
     static func performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> Promise<Void> {
         let isUsingFullAPNs = UserDefaults.standard[.isUsingFullAPNs]
         guard isUsingFullAPNs else { return Promise<Void> { $0.fulfill(()) } }
@@ -122,32 +123,5 @@ public final class LokiPushNotificationManager : NSObject {
             print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
         }
         return promise
-    }
-    
-    static func notify(for signalMessage: SignalMessage) -> Promise<Void> {
-        let message = LokiMessage.from(signalMessage: signalMessage)!
-        let parameters = [ "data" : message.data.description, "send_to" : message.recipientPublicKey]
-        let url = URL(string: "\(server)/notify")!
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: pnServerPublicKey).map2 { response in
-                guard let json = response["body"] as? JSON else {
-                    return print("[Loki] Couldn't notify PN server.")
-                }
-                guard json["code"] as? Int != 0 else {
-                    return print("[Loki] Couldn't notify PN server due to error: \(json["message"] as? String ?? "nil").")
-                }
-            }
-        }
-        promise.catch2 { error in
-            print("[Loki] Couldn't notify PN server.")
-        }
-        return promise
-    }
-
-    @objc(notifyForMessage:)
-    public static func objc_notify(for signalMessage: SignalMessage) -> AnyPromise {
-        return AnyPromise.from(notify(for: signalMessage))
     }
 }

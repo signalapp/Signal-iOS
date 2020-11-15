@@ -35,7 +35,7 @@ public final class MentionsManager : NSObject {
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
         }
         storage.dbReadConnection.read { transaction in
-            candidates = cache.flatMap { publicKey in
+            candidates = cache.compactMap { publicKey in
                 let uncheckedDisplayName: String?
                 if let publicChat = publicChat {
                     uncheckedDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: publicChat.channel, on: publicChat.server)

@@ -8,7 +8,7 @@
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "SSKEnvironment.h"
-#import "TSNetworkManager.h"
+
 #import "TSStorageHeaders.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

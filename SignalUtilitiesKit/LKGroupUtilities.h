@@ -7,9 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 +(NSString *)getEncodedOpenGroupID:(NSString *)groupID;
 +(NSData *)getEncodedOpenGroupIDAsData:(NSString *)groupID;
 
-+(NSString *)getEncodedRSSFeedID:(NSString *)groupID;
-+(NSData *)getEncodedRSSFeedIDAsData:(NSString *)groupID;
-
 +(NSString *)getEncodedClosedGroupID:(NSString *)groupID;
 +(NSData *)getEncodedClosedGroupIDAsData:(NSString *)groupID;
 

@@ -8,7 +8,7 @@
 #import "OWSBubbleView.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
@@ -550,8 +550,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
             quotedAuthorText = NSLocalizedString(@"You", @"");
         }
     } else {
-        OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId] ?: [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId];
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

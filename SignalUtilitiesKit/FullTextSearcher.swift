@@ -438,14 +438,9 @@ public class FullTextSearcher: NSObject {
         return result
     }
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     private func indexingString(recipientId: String) -> String {
-        let contactName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let profileName = contactsManager.profileName(forRecipientId: recipientId)
+        let profileName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true)
 
-        return "\(recipientId) \(contactName) \(profileName ?? "")"
+        return "\(recipientId) \(profileName ?? "")"
     }
 }

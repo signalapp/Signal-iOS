@@ -122,7 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             TSContactThread *thread = [outgoingMessage.thread as:TSContactThread.class];
             if (thread != nil) {
-                isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:thread.contactIdentifier in:transaction];
+                NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+                isNoteToSelf = ([thread.contactIdentifier isEqual:userPublicKey]);
             }
         }];
         

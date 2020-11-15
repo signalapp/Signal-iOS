@@ -3,7 +3,6 @@
 //
 
 #import "AppContext.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

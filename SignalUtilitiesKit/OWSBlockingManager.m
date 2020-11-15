@@ -6,8 +6,6 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSBlockedPhoneNumbersMessage.h"
-#import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
@@ -81,13 +79,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
-}
-
-- (OWSMessageSender *)messageSender
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
 }
 
 #pragma mark -
@@ -183,11 +174,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId
 {
-    __block NSString *masterPublicKey;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        masterPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:recipientId in:transaction] ?: recipientId;
-    }];
-    return [self.blockedPhoneNumbers containsObject:masterPublicKey];
+    return [self.blockedPhoneNumbers containsObject:recipientId];
 }
 
 #pragma mark - Group Blocking
@@ -356,7 +343,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (void)syncBlockListIfNecessary
 {
-    /*
     OWSAssertDebug(_blockedPhoneNumberSet);
 
     // If we haven't yet successfully synced the current "block list" changes,
@@ -383,12 +369,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     OWSLogInfo(@"retrying sync of block list");
     [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:localBlockedGroupIds];
-     */
 }
 
 - (void)sendBlockListSyncMessageWithPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers
                                         groupIds:(NSArray<NSData *> *)blockedGroupIds
 {
+    // TODO TODO TODO
+    
+    /*
     OWSAssertDebug(blockedPhoneNumbers);
     OWSAssertDebug(blockedGroupIds);
 
@@ -406,6 +394,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         failure:^(NSError *error) {
             OWSLogError(@"Failed to send blocked phone numbers sync message with error: %@", error);
         }];
+     */
 }
 
 /// Records the last block list which we successfully synced.

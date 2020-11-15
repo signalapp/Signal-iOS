@@ -4,9 +4,9 @@
 
 #import "AddToGroupViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactsViewHelper.h"
+
 #import "Session-Swift.h"
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,33 +52,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak AddToGroupViewController *weakSelf = self;
 
-    ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:phoneNumber]) {
+    if ([SSKEnvironment.shared.blockingManager isRecipientIdBlocked:phoneNumber]) {
         [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
                                          fromViewController:self
-                                            blockingManager:helper.blockingManager
-                                            contactsManager:helper.contactsManager
+                                            blockingManager:SSKEnvironment.shared.blockingManager
                                             completionBlock:^(BOOL isBlocked) {
                                                 if (!isBlocked) {
                                                     [weakSelf addToGroup:phoneNumber];
                                                 }
                                             }];
-        return;
-    }
-
-    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-        presentAlertIfNecessaryWithRecipientId:phoneNumber
-                              confirmationText:
-                                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
-                                      @"button title to confirm adding a recipient to a group when their safety "
-                                      @"number has recently changed")
-                               contactsManager:helper.contactsManager
-                                    completion:^(BOOL didConfirmIdentity) {
-                                        if (didConfirmIdentity) {
-                                            [weakSelf addToGroup:phoneNumber];
-                                        }
-                                    }];
-    if (didShowSNAlert) {
         return;
     }
 
@@ -97,38 +79,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(signalAccount);
 
     __weak AddToGroupViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
     if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
         OWSFailDebug(@"Cannot add user to group member if already a member.");
         return;
     }
 
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+    if ([SSKEnvironment.shared.blockingManager isRecipientIdBlocked:signalAccount.recipientId]) {
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                            fromViewController:self
-                                              blockingManager:helper.blockingManager
-                                              contactsManager:helper.contactsManager
+                                              blockingManager:SSKEnvironment.shared.blockingManager
                                               completionBlock:^(BOOL isBlocked) {
                                                   if (!isBlocked) {
                                                       [weakSelf addToGroup:signalAccount.recipientId];
                                                   }
                                               }];
-        return;
-    }
-
-    BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientId
-                              confirmationText:
-                                  NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
-                                      @"button title to confirm adding a recipient to a group when their safety "
-                                      @"number has recently changed")
-                               contactsManager:helper.contactsManager
-                                    completion:^(BOOL didConfirmIdentity) {
-                                        if (didConfirmIdentity) {
-                                            [weakSelf addToGroup:signalAccount.recipientId];
-                                        }
-                                    }];
-    if (didShowSNAlert) {
         return;
     }
 

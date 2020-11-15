@@ -11,7 +11,7 @@
 #import "OWSError.h"
 #import "OWSFileSystem.h"
 #import "OWSPrimaryStorage.h"
-#import "OWSRequestFactory.h"
+
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
@@ -19,7 +19,7 @@
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSMessage.h"
-#import "TSNetworkManager.h"
+
 #import "TSThread.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -95,12 +95,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (TSNetworkManager *)networkManager
-{
-    return SSKEnvironment.shared.networkManager;
-}
-
-
 #pragma mark -
 
 - (instancetype)init
@@ -171,9 +165,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     OWSAssertDebug(attachmentPointer);
 
     [self enqueueJobsForAttachmentStreams:@[]
-                       attachmentPointers:@[
-                           attachmentPointer,
-                       ]
+                       attachmentPointers:@[ attachmentPointer ]
                                   message:nil
                                   success:success
                                   failure:failure];
@@ -290,11 +282,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             [job.attachmentPointer saveWithTransaction:transaction];
 
             if (job.message) {
-                if (!CurrentAppContext().isMainApp) {
-                    job.message.hasAttachmentsInNSE = true;
-                } else {
-                    job.message.hasAttachmentsInNSE = false;
-                }
+                job.message.hasUnfetchedAttachmentsFromPN = !CurrentAppContext().isMainApp;
 
                 [job.message saveWithTransaction:transaction];
                 [job.message touchWithTransaction:transaction];

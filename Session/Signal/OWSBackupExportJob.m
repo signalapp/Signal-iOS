@@ -411,25 +411,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.backupIO = [[OWSBackupIO alloc] initWithJobTempDirPath:self.jobTempDirPath];
 
-    // We need to verify that we have a valid account.
-    // Otherwise, if we re-register on another device, we
-    // continue to backup on our old device, overwriting
-    // backups from the new device.
-    //
-    // We use an arbitrary request that requires authentication
-    // to verify our account state.
-    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
-        [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-            success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-                resolve(@(1));
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                // TODO: We may want to surface this in the UI.
-                OWSLogError(@"could not verify account status: %@.", error);
-                resolve(error);
-            }];
-    }];
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 - (AnyPromise *)fetchAllRecords
