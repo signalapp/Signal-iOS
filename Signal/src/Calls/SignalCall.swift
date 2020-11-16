@@ -30,7 +30,7 @@ extension CallObserver {
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    func groupCallPeekChanged(_ call: SignalCall) {}
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}

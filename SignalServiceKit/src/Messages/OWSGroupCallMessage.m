@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *eraId;
 @property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
 @property (nonatomic, nullable) NSString *creatorUuid;
-@property (nonatomic) BOOL hasEnded;
 
 @end
 

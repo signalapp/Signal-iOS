@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *joinedMemberAddresses;
 @property (nonatomic, readonly) SignalServiceAddress *creatorAddress;
-@property (nonatomic, readonly) BOOL hasEnded;
+@property (nonatomic) BOOL hasEnded;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp

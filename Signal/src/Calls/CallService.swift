@@ -500,15 +500,20 @@ public final class CallService: NSObject {
     // MARK: -
 
     private func updateGroupMembersForCurrentCallIfNecessary() {
-        guard let call = currentCall, call.isGroupCall else { return }
+        guard let call = currentCall, call.isGroupCall,
+              let groupThread = call.thread as? TSGroupThread,
+              let memberInfo = groupMemberInfo(for: groupThread) else { return }
+        call.groupCall.updateGroupMembers(members: memberInfo)
+    }
 
-        guard let groupThread = call.thread as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2,
+    private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
+        guard let groupModel = thread.groupModel as? TSGroupModelV2,
               let groupV2Params = try? groupModel.groupV2Params() else {
-            return owsFailDebug("Unexpected group thread.")
+            owsFailDebug("Unexpected group thread.")
+            return nil
         }
 
-        call.groupCall.updateGroupMembers(members: groupThread.groupMembership.fullMembers.compactMap {
+        return thread.groupMembership.fullMembers.compactMap {
             guard let uuid = $0.uuid else {
                 owsFailDebug("Skipping group member, missing uuid")
                 return nil
@@ -520,7 +525,34 @@ public final class CallService: NSObject {
             }
 
             return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
-        })
+        }
+    }
+
+    private func fetchGroupMembershipProof(for thread: TSGroupThread) -> Promise<Data> {
+        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("unexpectedly missing group model")
+            return Promise(error: OWSAssertionError("Invalid group"))
+        }
+
+        return firstly {
+            try self.groupsV2.fetchGroupExternalCredentials(groupModel: groupModel)
+        }.map(on: .main) { (credential) -> Data in
+            guard let tokenData = credential.token?.data(using: .utf8) else {
+                throw OWSAssertionError("Invalid credential")
+            }
+            return tokenData
+        }
+    }
+
+    fileprivate func peekGroupCall(for thread: TSGroupThread) -> Promise<PeekInfo> {
+        guard let memberInfo = groupMemberInfo(for: thread) else {
+            return Promise(error: OWSAssertionError("Could not fetch group membership"))
+        }
+        return firstly {
+            self.fetchGroupMembershipProof(for: thread)
+        }.then { proof in
+            self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
+        }
     }
 }
 
@@ -549,10 +581,15 @@ extension CallService: CallObserver {
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
     public func groupCallPeekChanged(_ call: SignalCall) {
-        // TODO: Fetch the real PeekInfo from call.groupCall.localDeviceState
-        let peekInfo = PeekInfo()
-        guard let groupThread = call.thread as? TSGroupThread else { return }
-        updateGroupCallMessageWithInfo(peekInfo, for: groupThread)
+        guard let thread = call.thread as? TSGroupThread else {
+            owsFailDebug("Invalid thread for call: \(call)")
+            return
+        }
+        guard let peekInfo = call.groupCall.peekInfo else {
+            Logger.warn("No peek info for call: \(call)")
+            return
+        }
+        updateGroupCallMessageWithInfo(peekInfo, for: thread)
     }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
@@ -561,23 +598,16 @@ extension CallService: CallObserver {
 
         guard call === currentCall else { return cleanupStaleCall(call) }
 
-        guard let groupThread = call.thread as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+        guard let groupThread = call.thread as? TSGroupThread else {
             return owsFailDebug("unexpectedly missing thread")
         }
 
-        do {
-            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel).done(on: .main) { credential in
-                guard let tokenData = credential.token?.data(using: .utf8) else {
-                    throw OWSAssertionError("Invalid credential")
-                }
-
-                call.groupCall.updateMembershipProof(proof: tokenData)
-            }.catch { error in
-                owsFailDebug("Failed to fetch group call credential \(error)")
-            }
-        } catch {
-            owsFailDebug("Failed to fetch group call credential \(error)")
+        firstly {
+            self.fetchGroupMembershipProof(for: groupThread)
+        }.done(on: .main) { proof in
+            call.groupCall.updateMembershipProof(proof: proof)
+        }.catch { error in
+            owsFailDebug("Failed to fetch group call credentials \(error)")
         }
     }
 
@@ -601,6 +631,7 @@ extension CallService: CallObserver {
 extension CallService {
 
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
+        AssertIsOnMainThread()
         let groupCall = (currentCall?.isGroupCall == true) ? currentCall?.groupCall : nil
         let groupCallConnectionState = groupCall?.localDeviceState.connectionState
 
@@ -610,15 +641,18 @@ extension CallService {
             Logger.info("Ignoring peek request for currently connected call")
             return
         }
+        guard let memberInfo = groupMemberInfo(for: thread) else {
+            Logger.error("Failed to fetch group member info to peek \(thread)")
+            return
+        }
 
         firstly {
-            // TODO: Fetch PeekInfo
-            return .value(PeekInfo())
-
-        }.done { info in
+            fetchGroupMembershipProof(for: thread)
+        }.then(on: .main) { proof in
+            self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
+        }.done(on: .main) { info in
             self.updateGroupCallMessageWithInfo(info, for: thread)
-
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("Failed to fetch PeekInfo for \(thread): \(error)")
         }
     }
@@ -630,23 +664,37 @@ extension CallService {
 
             // Update everything that doesn't match the current call era to mark as ended
             results
-                .filter { $0.conferenceId != info.eraId }
+                .filter { $0.eraId != info.eraId }
                 .forEach { toExpire in
-                    toExpire.anyUpdateGroupCallMessage(transaction: writeTx) { $0.hasCallEnded = true }
+                    toExpire.anyUpdateGroupCallMessage(transaction: writeTx) { $0.hasEnded = true }
                 }
 
             // Update the message for the current era if it exists, or insert a new one.
-            let currentEraMessages = results.filter { $0.conferenceId == info.eraId }
+            guard let currentEraId = info.eraId, let creatorUuid = info.creator else {
+                Logger.info("No active call")
+                return
+            }
+            let currentEraMessages = results.filter { $0.eraId == currentEraId }
             owsAssertDebug(currentEraMessages.count <= 1)
 
             if let currentMessage = results.first {
                 currentMessage.anyUpdateGroupCallMessage(transaction: writeTx) { (toUpdate) in
-                    toUpdate.update(with: info, transaction: writeTx)
+                    toUpdate.update(
+                        withEraId: currentEraId,
+                        joinedMemberUuids: info.joinedMembers,
+                        creatorUuid: creatorUuid,
+                        hasEnded: false,
+                        transaction: writeTx)
                 }
             } else {
                 // TODO: Plumb through a more relevant timestamp if available
                 let timestamp = NSDate.ows_millisecondTimeStamp()
-                let newMessage = OWSGroupCallMessage(peekInfo: info, thread: thread, sentAtTimestamp: timestamp )
+                let newMessage = OWSGroupCallMessage(
+                    eraId: currentEraId,
+                    joinedMemberUuids: info.joinedMembers,
+                    creatorUuid: creatorUuid,
+                    thread: thread,
+                    sentAtTimestamp: timestamp)
                 newMessage.anyInsert(transaction: writeTx)
             }
         }
