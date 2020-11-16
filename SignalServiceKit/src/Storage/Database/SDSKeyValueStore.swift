@@ -391,8 +391,8 @@ public class SDSKeyValueStore: NSObject {
     }
 
     private struct PairRecord: Codable, FetchableRecord, PersistableRecord {
-        public let key: String
-        public let value: Data
+        public let key: String?
+        public let value: Data?
     }
 
     private func allPairs(transaction: SDSAnyReadTransaction) -> [PairRecord] {
@@ -410,9 +410,14 @@ public class SDSKeyValueStore: NSObject {
             WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
             """
 
-            return try! PairRecord.fetchAll(grdbTransaction.database,
-                                            sql: sql,
-                                            arguments: [collection])
+            do {
+                return try PairRecord.fetchAll(grdbTransaction.database,
+                                               sql: sql,
+                                               arguments: [collection])
+            } catch {
+                owsFailDebug("Error: \(error)")
+                return []
+            }
         }
     }
 
@@ -421,16 +426,24 @@ public class SDSKeyValueStore: NSObject {
         let pairs = allPairs(transaction: transaction)
         var result = [String: Bool]()
         for pair in pairs {
-            guard let rawObject = parseArchivedValue(pair.value) else {
+            guard let key = pair.key else {
+                owsFailDebug("missing key.")
+                continue
+            }
+            guard let value = pair.value else {
+                owsFailDebug("missing value.")
+                continue
+            }
+            guard let rawObject = parseArchivedValue(value) else {
                 owsFailDebug("Could not parse value.")
                 continue
             }
-            guard let number: NSNumber = parseValueAs(key: pair.key,
+            guard let number: NSNumber = parseValueAs(key: key,
                                                       rawObject: rawObject) else {
                                                         owsFailDebug("Invalid value.")
                                                         continue
             }
-            result[pair.key] = number.boolValue
+            result[key] = number.boolValue
         }
         return result
     }

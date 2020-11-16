@@ -361,9 +361,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
 
-    NSArray<TSThread *> *threads = [self.fullTextSearcher filterThreads:self.threadViewHelper.threads
-                                                         withSearchText:searchTerm
-                                                            transaction:transaction];
+    NSArray<TSThread *> *unfilteredThreads = [self.fullTextSearcher filterThreads:self.threadViewHelper.threads
+                                                                   withSearchText:searchTerm
+                                                                      transaction:transaction];
+    NSMutableArray<TSThread *> *threads = [NSMutableArray new];
+    for (TSThread *thread in unfilteredThreads) {
+        if (thread.canSendToThread) {
+            [threads addObject:thread];
+        }
+    }
 
     NSArray<NSString *> *pinnedThreadIds = PinnedThreadManager.pinnedThreadIds;
 

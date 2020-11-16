@@ -171,7 +171,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
 @property (nonatomic) ScrollContinuity scrollContinuity;
-@property (nonatomic) ScrollContinuity scrollContinuityWhenBackgrounded;
 @property (nonatomic, nullable) NSTimer *scrollUpdateTimer;
 
 @property (nonatomic, readonly) ConversationSearchController *searchController;
@@ -623,23 +622,10 @@ typedef enum : NSUInteger {
 {
     [self startReadTimer];
     [self updateCellsVisible];
-
-    // If we were scrolled to the bottom, do our best to scroll any new
-    // messages onto the screen.
-    if (self.scrollContinuityWhenBackgrounded == kScrollContinuityBottom) {
-        NSIndexPath *indexPathOfUnreadMessagesIndicator = [self indexPathOfUnreadMessagesIndicator];
-        if (indexPathOfUnreadMessagesIndicator != nil) {
-            [self scrollToInteractionWithIndexPath:indexPathOfUnreadMessagesIndicator
-                                onScreenPercentage:1
-                                          position:ScrollToTop
-                                          animated:YES];
-        }
-    }
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
-    self.scrollContinuityWhenBackgrounded = self.scrollContinuity;
     [self updateCellsVisible];
     [self.cellMediaCache removeAllObjects];
 }
@@ -2121,6 +2107,9 @@ typedef enum : NSUInteger {
 - (BOOL)conversationCell:(ConversationViewCell *)cell shouldAllowReplyForItem:(nonnull id<ConversationViewItem>)viewItem
 {
     if (!self.thread.isLocalUserFullMemberOfThread) {
+        return NO;
+    }
+    if (!self.thread.canSendToThread) {
         return NO;
     }
     if (self.threadViewModel.hasPendingMessageRequest) {
@@ -4505,8 +4494,7 @@ typedef enum : NSUInteger {
         }
     }
 
-    if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom
-        && CurrentAppContext().isAppForegroundAndActive) {
+    if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom) {
         NSValue *_Nullable contentOffset =
             [self contentOffsetForLastKnownDistanceFromBottom:self.lastKnownDistanceFromBottom.floatValue];
         if (contentOffset) {

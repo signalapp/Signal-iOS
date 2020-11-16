@@ -77,6 +77,11 @@ public class ReactionManager: NSObject {
                                          transaction: SDSAnyWriteTransaction) throws -> OWSOutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
 
+        let thread = message.thread(transaction: transaction)
+        guard thread.canSendToThread else {
+            throw OWSAssertionError("Cannot send to thread.")
+        }
+
         Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
 
         guard let localAddress = tsAccountManager.localAddress else {

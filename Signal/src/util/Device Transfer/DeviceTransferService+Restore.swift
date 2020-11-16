@@ -178,9 +178,20 @@ extension DeviceTransferService {
                 }
             } else if fileWasAlreadyRestored {
                 Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
-            } else {
+            } else if [
+                DeviceTransferService.databaseIdentifier,
+                DeviceTransferService.databaseWALIdentifier
+            ].contains(file.identifier) {
                 owsFailDebug("unable to restore file that is missing")
                 return false
+            } else {
+                // We sometimes don't receive a file because it goes missing on the old
+                // device between when we generate the manifest and when we perform the
+                // restoration. Our verification process ensures that the only files that
+                // could be missing in this way are non-essential files. It's better to
+                // let the user continue than to lock them out of the app in this state.
+                Logger.info("Skipping restoration of missing file: \(file.identifier)")
+                continue
             }
         }
 
@@ -196,6 +207,12 @@ extension DeviceTransferService {
                 self.pendingWasTransferredClear = false
                 self.tsAccountManager.isTransferInProgress = false
                 SignalApp.shared().showConversationSplitView()
+
+                // After transfer our push token has changed, update it.
+                SyncPushTokensJob.run(
+                    accountManager: AppEnvironment.shared.accountManager,
+                    preferences: Environment.shared.preferences
+                )
             }
         }
 

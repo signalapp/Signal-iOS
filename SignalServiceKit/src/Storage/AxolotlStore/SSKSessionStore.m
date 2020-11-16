@@ -240,9 +240,10 @@ NS_ASSUME_NONNULL_BEGIN
                        deviceId:(int)deviceId
                 protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
-
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
+
+    OWSLogInfo(@"deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
 
     [self deleteSessionForAccountId:contactIdentifier deviceId:deviceId transaction:transaction];
 }
@@ -253,6 +254,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
+
+    OWSLogInfo(@"deleting session for address: %@ device: %d", address, deviceId);
 
     NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
     OWSAssertDebug(accountId.length > 0);
@@ -267,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(accountId.length > 0);
     OWSAssertDebug(deviceId >= 0);
 
-    OWSLogInfo(@"deleting session for contact: %@ device: %d", accountId, deviceId);
+    OWSLogInfo(@"deleting session for accountId: %@ device: %d", accountId, deviceId);
 
     NSDictionary *immutableDictionary = [self.keyValueStore getObjectForKey:accountId transaction:transaction];
 

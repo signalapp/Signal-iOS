@@ -1087,7 +1087,7 @@ extension MessageSender {
                                                        transaction: transaction)
 
         if !devicesToRemove.isEmpty {
-            Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
+            Logger.info("Archiving sessions for extra devices: \(devicesToRemove), \(devicesToRemove)")
             for deviceId in devicesToRemove {
                 sessionStore.archiveSession(for: recipient.address, deviceId: deviceId.int32Value, transaction: transaction)
             }

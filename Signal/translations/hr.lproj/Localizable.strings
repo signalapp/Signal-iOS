@@ -953,7 +953,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Odblokiraj grupu";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Odblokiraj koisnika";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Odblokiraj korisnika";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Uključi zvuk";
@@ -1526,7 +1526,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "U ovom pozivu · %ld osoba";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ i %ld drugih su na ovom pozivu";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ i još %ld osoba/e sudjeluju u ovom pozivu";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Nitko drugi nije ovdje";
@@ -1553,7 +1553,7 @@
 "GROUP_CALL_ONE_IN_THIS_CALL" = "U ovom pozivu · 1 osoba";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ je u ovom pozivu";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ je na ovom pozivu";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Ponovno povezivanje";
