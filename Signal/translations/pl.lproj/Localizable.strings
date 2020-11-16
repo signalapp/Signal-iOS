@@ -2570,7 +2570,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Dodaj nazwę profilu";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "Możesz teraz wybrać ”Zaakceptuj” lub ”Usuń“ dla nowej rozsmowy. Dzięki imionom ludzie będą wiedzieć, kto się z nimi kontaktuje.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Możesz teraz wybrać ”Zaakceptuj” lub ”Usuń“ dla nowej rozmowy. Dzięki imionom ludzie będą wiedzieć, kto się z nimi kontaktuje.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Nazwa Twojego profilu została zapisana.";
