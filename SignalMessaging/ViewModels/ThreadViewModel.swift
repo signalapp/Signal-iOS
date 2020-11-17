@@ -17,6 +17,7 @@ public class ThreadViewModel: NSObject {
     @objc public let hasPendingMessageRequest: Bool
     @objc public let addedToGroupByName: String?
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
+    @objc public let groupCallInProgress: Bool
 
     var isContactThread: Bool {
         return !isGroupThread
@@ -77,6 +78,8 @@ public class ThreadViewModel: NSObject {
         }
 
         self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
+        self.groupCallInProgress =
+            GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction).count > 0
     }
 
     @objc

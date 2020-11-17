@@ -141,7 +141,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isMarkingAsRead;
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
-@property (nonatomic) BOOL isGroupCallActive;
 
 @property (nonatomic, nullable) UIView *bannerView;
 
@@ -1283,10 +1282,9 @@ typedef enum : NSUInteger {
             NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
             if ([self canCall]) {
                 if (self.isGroupConversation) {
-                    // TODO: Show different state if the group call is started.
                     UIBarButtonItem *videoCallButton = [[UIBarButtonItem alloc] init];
 
-                    if (self.isGroupCallActive) {
+                    if (self.threadViewModel.groupCallInProgress) {
                         OWSJoinGroupCallPill *pill = [[OWSJoinGroupCallPill alloc] init];
                         [pill addTarget:self
                                  action:@selector(showGroupCallLobby)
@@ -1424,16 +1422,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Calls
-
-// TODO: Update this value when group call state monitoring is ready
-- (void)setIsGroupCallActive:(BOOL)isGroupCallActive {
-    BOOL didChange = (_isGroupCallActive != isGroupCallActive);
-    _isGroupCallActive = isGroupCallActive;
-
-    if (didChange) {
-        [self updateBarButtonItems];
-    }
-}
 
 - (void)showGroupCallLobby
 {

@@ -54,10 +54,17 @@ class JoinGroupCallPill: UIControl {
         callImageView.autoSetDimensions(to: CGSize(square: 20))
     }
 
+    override var isHighlighted: Bool {
+        didSet {
+            // TODO: Check with design about. Should the color be muted when disabled?
+            alpha = isHighlighted ? 0.5 : 1
+        }
+    }
+
     override var isEnabled: Bool {
         didSet {
-//            TODO: Check with design about. Should the color be muted when disabled?
-//            backgroundPill.backgroundColor = isEnabled ? .ows_accentGreen : .ows_accentRed
+            // TODO: Check with design about. Should the color be muted when disabled?
+            backgroundPill.backgroundColor = isEnabled ? .ows_accentGreen : .ows_gray45
         }
     }
 
