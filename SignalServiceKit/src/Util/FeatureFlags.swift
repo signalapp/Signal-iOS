@@ -287,13 +287,13 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2onlyCreateV1Groups = TestableFlag(false)
 
     @objc
-    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(true)
+    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(false)
 
     @objc
-    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(true)
+    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(false)
 
     @objc
-    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(true)
+    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false)
 
     @objc
     public static let groupsV2migrationsDropOtherMembers = TestableFlag(false)
