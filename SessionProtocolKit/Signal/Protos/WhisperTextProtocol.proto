@@ -1,0 +1,59 @@
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package SPKProtos;
+
+message TSProtoWhisperMessage {
+  // @required
+  optional bytes  ratchetKey      = 1;
+  // @required
+  optional uint32 counter         = 2;
+  optional uint32 previousCounter = 3;
+  // @required
+  optional bytes  ciphertext      = 4;
+}
+
+message TSProtoPreKeyWhisperMessage {
+  optional uint32 registrationId = 5;
+  optional uint32 preKeyId       = 1;
+  // @required
+  optional uint32 signedPreKeyId = 6;
+  // @required
+  optional bytes  baseKey        = 2;
+  // @required
+  optional bytes  identityKey    = 3;
+  // @required
+  optional bytes  message        = 4; // WhisperMessage
+}
+
+message TSProtoKeyExchangeMessage {
+  optional uint32 id               = 1;
+  optional bytes  baseKey          = 2;
+  optional bytes  ratchetKey       = 3;
+  optional bytes  identityKey      = 4;
+  optional bytes  baseKeySignature = 5;
+}
+
+message TSProtoSenderKeyMessage {
+  optional uint32 id         = 1;
+  optional uint32 iteration  = 2;
+  optional bytes  ciphertext = 3;
+}
+
+message TSProtoSenderKeyDistributionMessage {
+  optional uint32 id         = 1;
+  optional uint32 iteration  = 2;
+  optional bytes  chainKey   = 3;
+  optional bytes  signingKey = 4;
+}
+
+message ClosedGroupCiphertextMessage {
+  // @required
+  optional bytes  ciphertext      = 1;
+  // @required
+  optional bytes  senderPublicKey = 2;
+  // @required
+  optional uint32 keyIndex        = 3;
+}
