@@ -1520,7 +1520,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "Group call";
+"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Join Call";
@@ -2415,9 +2415,6 @@
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
-
-/* Title for a button to join a group call */
-"JOIN_CALL_BUTTON" = "Join Call";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Messages disappear after %@.";

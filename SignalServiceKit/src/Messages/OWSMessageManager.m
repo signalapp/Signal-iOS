@@ -1710,7 +1710,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
                                                               forThread:groupThread];
             } else {
-                OWSLogError(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
+                OWSLogWarn(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
             }
 
         } else {
@@ -2158,6 +2158,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate forThread:groupThread];
+        return nil;
     }
 
     NSString *body = dataMessage.body;

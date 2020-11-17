@@ -35,7 +35,6 @@
 
     SSKProtoDataMessageBuilder *builder = [super dataMessageBuilderWithThread:thread transaction:transaction];
     [builder setGroupCallUpdate:updateMessage];
-    // TODO: set a protocol version?
     return builder;
 }
 

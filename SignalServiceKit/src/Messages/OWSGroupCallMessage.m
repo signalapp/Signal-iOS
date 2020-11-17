@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *eraId;
 @property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
 @property (nonatomic, nullable) NSString *creatorUuid;
+@property (nonatomic) BOOL hasEnded;
 
 @end
 
@@ -153,6 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    // TODO: Stable arrange member names
     NSString *memberString = nil;
     BOOL isCreatorInCall = [self.joinedMemberUuids containsObject:self.creatorUuid];
 
@@ -222,6 +224,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                  groupCallMessage.creatorUuid = creatorUuid.UUIDString;
                                                  groupCallMessage.hasEnded = hasEnded;
                                              }];
+}
+
+- (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateGroupCallMessageWithTransaction:transaction block:^(OWSGroupCallMessage *message) {
+        message.hasEnded = hasEnded;
+    }];
 }
 
 #pragma mark - Private

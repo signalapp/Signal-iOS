@@ -630,15 +630,10 @@ extension CallService {
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
         AssertIsOnMainThread()
 
-        // If we're already connected to the group call that we want to peek, ignore
-        // We'll have PeekInfo updates handed to us directly from an observer callback
-        let currentGroupCall = currentCall.flatMap { $0.isGroupCall ? $0.groupCall : nil }
-        let isCurrentGroupCallConnected = (currentGroupCall?.localDeviceState.connectionState == .connected)
-        let isCurrentCallForThread = (currentCall?.thread == thread)
-        let isThreadReceivingAutomaticUpdates = isCurrentCallForThread && isCurrentGroupCallConnected
-
-        guard !isThreadReceivingAutomaticUpdates else {
-            Logger.info("Ignoring peek request for currently connected call")
+        // If the currentCall is for the provided thread, we don't need to perform an explict
+        // peek. Connected calls will receive automatic updates from RingRTC
+        guard (currentCall?.thread != thread) else {
+            Logger.info("Ignoring peek request for the current call")
             return
         }
         guard let memberInfo = groupMemberInfo(for: thread) else {
@@ -665,7 +660,7 @@ extension CallService {
             results
                 .filter { $0.eraId != info.eraId }
                 .forEach { toExpire in
-                    toExpire.anyUpdateGroupCallMessage(transaction: writeTx) { $0.hasEnded = true }
+                    toExpire.update(withHasEnded: true, transaction: writeTx)
                 }
 
             // Update the message for the current era if it exists, or insert a new one.

@@ -1508,8 +1508,7 @@ typedef enum : NSUInteger {
 {
     if (self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        CallService *callService = AppEnvironment.shared.callService;
-        [callService peekCallAndUpdateThread:groupThread];
+        [self.callService peekCallAndUpdateThread:groupThread];
     }
 }
 

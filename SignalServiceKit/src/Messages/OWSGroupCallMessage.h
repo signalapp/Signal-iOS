@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *joinedMemberAddresses;
 @property (nonatomic, readonly) SignalServiceAddress *creatorAddress;
-@property (nonatomic) BOOL hasEnded;
+@property (nonatomic, readonly) BOOL hasEnded;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
@@ -69,6 +69,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
             creatorUuid:(NSUUID *)creatorUuid
                hasEnded:(BOOL)hasEnded
             transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

@@ -818,12 +818,13 @@ typedef void (^SystemMessageActionBlock)(void);
     BOOL isCallActive = (!groupCallMessage.hasEnded && groupCallMessage.joinedMemberAddresses.count > 0);
 
     // TODO: Respect -canCall from ConversationViewController
+    // TODO: "Return to call" if for the current thread. Hide the action is currently in a call
     // For now we'll just check the feature flag
     BOOL canCall = SSKFeatureFlags.groupCalling;
 
     if (isCallActive && canCall) {
         __weak typeof(self) wSelf = self;
-        NSString *actionTitle = NSLocalizedString(@"JOIN_CALL_BUTTON", "Title for a button to join a group call");
+        NSString *actionTitle = NSLocalizedString(@"GROUP_CALL_JOIN_BUTTON", "Button to join an ongoing group call");
         return [SystemMessageAction actionWithTitle:actionTitle
                                               block:^{ [wSelf.delegate handleGroupCallTap]; }
                             accessibilityIdentifier:actionTitle];
