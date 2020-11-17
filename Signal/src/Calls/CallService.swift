@@ -663,9 +663,10 @@ extension CallService {
             owsAssertDebug(currentEraMessages.count <= 1)
 
             if let currentMessage = currentEraMessages.first {
-                currentMessage.anyUpdateGroupCallMessage(transaction: writeTx) { (toUpdate) in
-                    toUpdate.joinedMemberUuids = info.joinedMembers.map { $0.uuidString }
-                }
+                currentMessage.update(
+                    withJoinedMemberUuids: info.joinedMembers,
+                    transaction: writeTx
+                )
             } else {
                 // TODO: Plumb through a more relevant timestamp if available
                 let timestamp = NSDate.ows_millisecondTimeStamp()

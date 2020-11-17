@@ -64,13 +64,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateWithEraId:(NSString *)eraId
-      joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
-            creatorUuid:(NSUUID *)creatorUuid
-               hasEnded:(BOOL)hasEnded
-            transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithJoinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+                        transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

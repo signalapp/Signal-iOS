@@ -214,28 +214,24 @@ NS_ASSUME_NONNULL_BEGIN
     return memberString;
 }
 
-
-- (void)updateWithEraId:(NSString *)eraId
-      joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
-            creatorUuid:(NSUUID *)creatorUuid
-               hasEnded:(BOOL)hasEnded
-            transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateGroupCallMessageWithTransaction:transaction
-                                             block:^(OWSGroupCallMessage *groupCallMessage) {
-                                                 groupCallMessage.eraId = eraId;
-                                                 groupCallMessage.joinedMemberUuids = [joinedMemberUuids
-                                                     map:^(NSUUID *uuid) { return uuid.UUIDString; }];
-                                                 groupCallMessage.creatorUuid = creatorUuid.UUIDString;
-                                                 groupCallMessage.hasEnded = hasEnded;
+                                             block:^(OWSGroupCallMessage *message) {
+                                                 message.hasEnded = hasEnded;
+                                                 message.joinedMemberUuids = @[];
                                              }];
 }
 
-- (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithJoinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self anyUpdateGroupCallMessageWithTransaction:transaction block:^(OWSGroupCallMessage *message) {
-        message.hasEnded = hasEnded;
-    }];
+    [self anyUpdateGroupCallMessageWithTransaction:transaction
+                                             block:^(OWSGroupCallMessage *message) {
+                                                 message.hasEnded = joinedMemberUuids.count == 0;
+                                                 message.joinedMemberUuids = [joinedMemberUuids
+                                                     map:^(NSUUID *uuid) { return uuid.UUIDString; }];
+                                             }];
 }
 
 #pragma mark - Private
