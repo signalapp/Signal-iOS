@@ -382,7 +382,7 @@ class FileContext(BaseContext):
 
     def generate(self, writer):
         writer.extend('''//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1023,19 +1023,17 @@ public func serializedData() throws -> Data {
                 writer.add_objc()
                 writer.add('public func %s(_ valueParam: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
                 writer.push_indent()
-                writer.add('var items = proto.%s' % ( field.name_swift, ) )
-
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
-                    writer.add('items.append(%s(valueParam))' % enum_context.unwrap_func_name() )
+                    param = ('%s(valueParam)' % enum_context.unwrap_func_name() )
                 elif self.is_field_oneof(field):
                     oneof_context = self.context_for_proto_type(field)
-                    writer.add('items.append(%s(valueParam))' % oneof_context.unwrap_func_name() )
+                    param = ('%s(valueParam)' % oneof_context.unwrap_func_name() )
                 elif self.is_field_a_proto(field):
-                    writer.add('items.append(valueParam.proto)')
+                    param = 'valueParam.proto'
                 else:
-                    writer.add('items.append(valueParam)')
-                writer.add('proto.%s = items' % ( field.name_swift, ) )
+                    param = 'valueParam'
+                writer.add('proto.%s.append(%s)' % ( field.name_swift, param ) )
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
