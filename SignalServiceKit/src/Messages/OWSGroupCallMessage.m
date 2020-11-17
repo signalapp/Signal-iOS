@@ -146,10 +146,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
-    NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
-        @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
-    return [NSString stringWithFormat:formatString, creatorDisplayName];
+    if (self.hasEnded) {
+        return NSLocalizedString(
+            @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+    } else {
+        NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
+            @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
+        return [NSString stringWithFormat:formatString, creatorDisplayName];
+    }
 }
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction

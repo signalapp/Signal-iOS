@@ -85,10 +85,6 @@ protocol CallAudioServiceDelegate: class {
         ensureProperAudioSession(call: call)
     }
 
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
-        // do nothing
-    }
-
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         ensureProperAudioSession(call: call)
     }
@@ -103,10 +99,6 @@ protocol CallAudioServiceDelegate: class {
         // in our control.
         ensureProperAudioSession(call: call)
     }
-
-    func groupCallPeekChanged(_ call: SignalCall) {}
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         ensureProperAudioSession(call: call)

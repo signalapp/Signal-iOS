@@ -32,7 +32,11 @@ class GroupCallNotificationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var hasJoined = false
     private func updateActiveMembers() {
+        hasJoined = hasJoined || call.groupCall.localDeviceState.joinState == .joined
+        guard hasJoined else { return }
+
         let newActiveMembers = Set(call.groupCall.remoteDeviceStates.values.map {
             ActiveMember(demuxId: $0.demuxId, uuid: $0.userId)
         })
@@ -106,8 +110,6 @@ class GroupCallNotificationView: UIView {
 }
 
 extension GroupCallNotificationView: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
-
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
@@ -121,17 +123,6 @@ extension GroupCallNotificationView: CallObserver {
 
         updateActiveMembers()
     }
-
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
 }
 
 private class BannerView: UIView {

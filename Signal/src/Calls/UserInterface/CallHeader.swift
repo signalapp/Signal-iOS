@@ -238,12 +238,6 @@ class CallHeader: UIView {
 }
 
 extension CallHeader: CallObserver {
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
-
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
 
@@ -277,10 +271,6 @@ extension CallHeader: CallObserver {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 }
 
 private class GroupMembersButton: UIButton {

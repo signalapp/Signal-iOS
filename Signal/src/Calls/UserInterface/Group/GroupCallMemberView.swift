@@ -254,6 +254,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             return owsFailDebug("Missing remote video view")
         }
 
+        avatarView.isHidden = !(device.videoMuted ?? true)
         videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
         videoView.isFullScreenVideo = isFullScreen
 

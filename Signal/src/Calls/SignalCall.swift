@@ -21,7 +21,7 @@ public protocol CallObserver: class {
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
 }
 
-extension CallObserver {
+public extension CallObserver {
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
@@ -254,17 +254,17 @@ public class SignalCall: NSObject, CallManagerCallReference {
             return owsFailDebug("Tried to update resolutions for individual call")
         }
 
-        groupCall.updateRenderedResolutions(resolutions: groupCallVideoViews.map { device, views -> RenderedResolution in
+        groupCall.updateVideoRequests(resolutions: groupCallVideoViews.map { device, views -> VideoRequest in
             let renderedSize = views.reduce(into: CGSize.zero) { size, videoView in
                 guard let videoView = videoView.value else { return }
                 size = CGSize(width: max(videoView.width, size.width), height: max(videoView.height, size.height))
             }
 
-            return RenderedResolution(
+            return VideoRequest(
                 demuxId: device.demuxId,
                 width: UInt16(renderedSize.width),
                 height: UInt16(renderedSize.height),
-                framerate: nil
+                framerate: renderedSize.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
             )
         })
     }

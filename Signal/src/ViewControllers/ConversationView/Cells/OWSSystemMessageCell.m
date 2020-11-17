@@ -815,6 +815,11 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForGroupCall:(OWSGroupCallMessage *)groupCallMessage
 {
+    // TODO: Check if the current call belongs to this thread.
+    if (self.callService.currentCall != nil) {
+        return nil;
+    }
+
     BOOL isCallActive = (!groupCallMessage.hasEnded && groupCallMessage.joinedMemberAddresses.count > 0);
 
     // TODO: Respect -canCall from ConversationViewController

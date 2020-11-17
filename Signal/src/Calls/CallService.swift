@@ -563,10 +563,6 @@ extension CallService: CallObserver {
         updateIsVideoEnabled()
     }
 
-    public func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    public func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
-    public func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-
     public func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallLocalDeviceStateChanged")
@@ -614,11 +610,6 @@ extension CallService: CallObserver {
         guard call === currentCall else { return cleanupStaleCall(call) }
 
         updateGroupMembersForCurrentCallIfNecessary()
-    }
-
-    public func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
-        owsAssertDebug(call.isGroupCall)
-        Logger.info("groupCallEnded \(reason)")
     }
 }
 

@@ -1175,13 +1175,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.individualCall.remoteVideoTrack)
     }
 
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallPeekChanged(_ call: SignalCall) {}
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
-
     // MARK: - CallAudioServiceDelegate
 
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
