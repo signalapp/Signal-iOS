@@ -667,7 +667,7 @@ extension CallService {
                     withJoinedMemberUuids: info.joinedMembers,
                     transaction: writeTx
                 )
-            } else {
+            } else if !info.joinedMembers.isEmpty {
                 // TODO: Plumb through a more relevant timestamp if available
                 let timestamp = NSDate.ows_millisecondTimeStamp()
                 let newMessage = OWSGroupCallMessage(
