@@ -1,8 +1,9 @@
 import SessionUtilitiesKit
 
-public final class MessageReceiveJob : NSObject, Job,  NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
     private let data: Data
+    public var id: String?
     private let messageServerID: UInt64?
     public var failureCount: UInt = 0
 
@@ -17,31 +18,35 @@ public final class MessageReceiveJob : NSObject, Job,  NSCoding { // NSObject/NS
 
     // MARK: Coding
     public init?(coder: NSCoder) {
-        guard let data = coder.decodeObject(forKey: "data") as! Data? else { return nil }
+        guard let data = coder.decodeObject(forKey: "data") as! Data?,
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.data = data
+        self.id = id
         self.messageServerID = coder.decodeObject(forKey: "messageServerUD") as! UInt64?
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(data, forKey: "data")
+        coder.encode(id, forKey: "id")
         coder.encode(messageServerID, forKey: "messageServerID")
         coder.encode(failureCount, forKey: "failureCount")
     }
 
     // MARK: Running
     public func execute() {
-        Configuration.shared.storage.with { transaction in // Intentionally capture self
+        Configuration.shared.storage.withAsync({ transaction in // Intentionally capture self
             Threading.workQueue.async {
                 do {
-                    let _ = try MessageReceiver.parse(self.data, messageServerID: self.messageServerID, using: transaction)
+                    let message = try MessageReceiver.parse(self.data, using: transaction)
+                    MessageReceiver.handle(message, messageServerID: self.messageServerID, using: transaction)
                     self.handleSuccess()
                 } catch {
                     SNLog("Couldn't parse message due to error: \(error).")
                     self.handleFailure(error: error)
                 }
             }
-        }
+        }, completion: { })
     }
 
     private func handleSuccess() {

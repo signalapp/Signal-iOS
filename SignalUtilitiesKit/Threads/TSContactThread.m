@@ -79,6 +79,11 @@ NSString *const TSContactThreadPrefix = @"c";
     return !![[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactIdentifier];
 }
 
+- (NSString *)name
+{
+    return [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.contactIdentifier avoidingWriteTransaction:YES];
+}
+
 + (NSString *)threadIdFromContactId:(NSString *)contactId {
     return [TSContactThreadPrefix stringByAppendingString:contactId];
 }

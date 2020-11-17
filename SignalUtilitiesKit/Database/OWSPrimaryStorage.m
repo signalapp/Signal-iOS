@@ -9,7 +9,6 @@
 #import "OWSFailedMessagesJob.h"
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
-#import "OWSIncompleteCallsJob.h"
 #import "OWSMediaGalleryFinder.h"
 #import "OWSStorage+Subclass.h"
 #import "SSKEnvironment.h"
@@ -203,7 +202,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];

@@ -22,7 +22,10 @@ public final class ClosedGroupUpdate : ControlMessage {
     }
 
     // MARK: Validation
-    public override var isValid: Bool { kind != nil }
+    public override var isValid: Bool {
+        guard super.isValid else { return false }
+        return kind != nil
+    }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {
@@ -83,7 +86,7 @@ public final class ClosedGroupUpdate : ControlMessage {
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdate? {
-        fatalError("Not implemented.")
+        return nil
     }
 
     public override func toProto() -> SNProtoContent? {

@@ -12,10 +12,10 @@ typedef NS_ENUM(NSUInteger, OWSVerificationState) {
     OWSVerificationStateNoLongerVerified,
 };
 
-@class SSKProtoVerified;
+@class SNProtoVerified;
 
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
-SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
+SNProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
     NSData *identityKey,
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength);

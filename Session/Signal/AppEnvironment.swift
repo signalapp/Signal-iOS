@@ -26,15 +26,6 @@ import SignalUtilitiesKit
     }
 
     @objc
-    public var callMessageHandler: WebRTCCallMessageHandler
-
-//    @objc
-//    public var callService: CallService
-
-//    @objc
-//    public var outboundCallInitiator: OutboundCallInitiator
-
-    @objc
     public var accountManager: AccountManager
 
     @objc
@@ -77,7 +68,6 @@ import SignalUtilitiesKit
     public var backupLazyRestore: BackupLazyRestore
 
     private override init() {
-        self.callMessageHandler = WebRTCCallMessageHandler()
         self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()

@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKProtoEnvelope;
+@class SNProtoEnvelope;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -52,18 +52,18 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                 failedMessageType:(TSErrorMessageType)errorMessageType
                       recipientId:(nullable NSString *)recipientId NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)corruptedMessageWithEnvelope:(SNProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)corruptedMessageInUnknownThread;
 
-+ (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)invalidVersionWithEnvelope:(SNProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)invalidKeyExceptionWithEnvelope:(SNProtoEnvelope *)envelope
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)missingSessionWithEnvelope:(SNProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;

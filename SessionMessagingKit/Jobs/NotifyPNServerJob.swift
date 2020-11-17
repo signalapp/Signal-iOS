@@ -5,6 +5,7 @@ import SessionUtilitiesKit
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
     private let message: SnodeMessage
+    public var id: String?
     public var failureCount: UInt = 0
 
     // MARK: Settings
@@ -17,13 +18,16 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     // MARK: Coding
     public init?(coder: NSCoder) {
-        guard let message = coder.decodeObject(forKey: "message") as! SnodeMessage? else { return nil }
+        guard let message = coder.decodeObject(forKey: "message") as! SnodeMessage?,
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.message = message
+        self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(message, forKey: "message")
+        coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }
 

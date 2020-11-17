@@ -8,8 +8,6 @@
 #import <SignalUtilitiesKit/OWSDatabaseMigration.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionProtocolKit/SessionProtocolKit-Swift.h>
-
-
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSBlockingManager.h>

@@ -11,7 +11,7 @@ public extension UIDevice {
     }
 
     @objc
-    public var hasIPhoneXNotch: Bool {
+    var hasIPhoneXNotch: Bool {
         switch UIScreen.main.nativeBounds.height {
         case 960:
             //  iPad in iPhone compatibility mode (using old iPhone 4 screen size)
@@ -42,12 +42,12 @@ public extension UIDevice {
     }
 
     @objc
-    public var isShorterThanIPhone5: Bool {
+    var isShorterThanIPhone5: Bool {
         return UIScreen.main.bounds.height < 568
     }
 
     @objc
-    public var isIPad: Bool {
+    var isIPad: Bool {
         let isNativeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
         let isCompatabilityModeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.phone && self.model.hasPrefix("iPad")
 
@@ -55,7 +55,7 @@ public extension UIDevice {
     }
 
     @objc
-    public func ows_setOrientation(_ orientation: UIInterfaceOrientation) {
+    func ows_setOrientation(_ orientation: UIInterfaceOrientation) {
         // XXX - This is not officially supported, but there's no other way to programmatically rotate
         // the interface.
         let orientationKey = "orientation"

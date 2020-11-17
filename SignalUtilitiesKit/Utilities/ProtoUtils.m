@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
                           recipientId:(NSString *_Nullable)recipientId
-                   dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
+                   dataMessageBuilder:(SNProtoDataMessageBuilder *)dataMessageBuilder
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(dataMessageBuilder);
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
++ (void)addLocalProfileKeyToDataMessageBuilder:(SNProtoDataMessageBuilder *)dataMessageBuilder
 {
     OWSAssertDebug(dataMessageBuilder);
 
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
                           recipientId:(NSString *)recipientId
-                   callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
+                   callMessageBuilder:(SNProtoCallMessageBuilder *)callMessageBuilder
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(recipientId.length > 0);

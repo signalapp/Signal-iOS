@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *group = groupThread.groupModel;
     OWSAssertDebug(group);
 
-    SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetails builderWithId:group.groupId];
+    SNProtoGroupDetailsBuilder *groupBuilder = [SNProtoGroupDetails builderWithId:group.groupId];
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembers:group.groupMemberIds];
     [groupBuilder setAdmins:group.groupAdminIds];

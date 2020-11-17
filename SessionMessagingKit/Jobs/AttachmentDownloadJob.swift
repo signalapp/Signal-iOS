@@ -2,8 +2,9 @@ import SessionUtilitiesKit
 
 // TODO: Implementation
 
-public final class AttachmentDownloadJob : NSObject, Job,  NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
+    public var id: String?
     public var failureCount: UInt = 0
 
     // MARK: Settings

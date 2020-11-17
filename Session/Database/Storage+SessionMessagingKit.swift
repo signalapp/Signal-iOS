@@ -3,7 +3,8 @@ import PromiseKit
 
 extension Storage : SessionMessagingKitStorageProtocol {
 
-    // MARK: Signal Protocol
+    // MARK: - Signal Protocol
+    
     public func getOrGenerateRegistrationID(using transaction: Any) -> UInt32 {
         SSKEnvironment.shared.tsAccountManager.getOrGenerateRegistrationId(transaction as! YapDatabaseReadWriteTransaction)
     }
@@ -18,7 +19,10 @@ extension Storage : SessionMessagingKitStorageProtocol {
         return try! promise.wait()
     }
 
-    // MARK: Shared Sender Keys
+
+
+    // MARK: - Shared Sender Keys
+
     private static let closedGroupPrivateKeyCollection = "LokiClosedGroupPrivateKeyCollection"
 
     public func getClosedGroupPrivateKey(for publicKey: String) -> String? {
@@ -49,12 +53,28 @@ extension Storage : SessionMessagingKitStorageProtocol {
         getUserClosedGroupPublicKeys().contains(publicKey)
     }
 
-    // MARK: Jobs
-    public func persist(_ job: Job, using transaction: Any) { fatalError("Not implemented.") }
-    public func markJobAsSucceeded(_ job: Job, using transaction: Any) { fatalError("Not implemented.") }
-    public func markJobAsFailed(_ job: Job, using transaction: Any) { fatalError("Not implemented.") }
 
-    // MARK: Authorization
+
+    // MARK: - Jobs
+
+    private static let jobCollection = "SNJobCollection"
+
+    public func persist(_ job: Job, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(job, forKey: job.id!, inCollection: Storage.jobCollection)
+    }
+
+    public func markJobAsSucceeded(_ job: Job, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: job.id!, inCollection: Storage.jobCollection)
+    }
+
+    public func markJobAsFailed(_ job: Job, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: job.id!, inCollection: Storage.jobCollection)
+    }
+
+
+
+    // MARK: - Authorization
+
     private static func getAuthTokenCollection(for server: String) -> String {
         return (server == FileServerAPI.server) ? "LokiStorageAuthTokenCollection" : "LokiGroupChatAuthTokenCollection"
     }
@@ -78,7 +98,10 @@ extension Storage : SessionMessagingKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
     }
 
-    // MARK: Open Group Public Keys
+
+
+    // MARK: - Open Group Public Keys
+
     private static let openGroupPublicKeyCollection = "LokiOpenGroupPublicKeyCollection"
 
     public func getOpenGroupPublicKey(for server: String) -> String? {
@@ -93,7 +116,10 @@ extension Storage : SessionMessagingKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: server, inCollection: Storage.openGroupPublicKeyCollection)
     }
 
-    // MARK: Last Message Server ID
+
+
+    // MARK: - Last Message Server ID
+
     private static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
 
     public func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64? {
@@ -112,7 +138,10 @@ extension Storage : SessionMessagingKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.lastMessageServerIDCollection)
     }
 
-    // MARK: Last Deletion Server ID
+
+
+    // MARK: - Last Deletion Server ID
+
     private static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
 
     public func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64? {
@@ -131,7 +160,10 @@ extension Storage : SessionMessagingKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.lastDeletionServerIDCollection)
     }
 
-    // MARK: Open Group Metadata
+
+
+    // MARK: - Open Group Metadata
+
     private static let openGroupUserCountCollection = "LokiPublicChatUserCountCollection"
     private static let openGroupMessageIDCollection = "LKMessageIDCollection"
 
@@ -154,5 +186,54 @@ extension Storage : SessionMessagingKitStorageProtocol {
     
     public func setLastProfilePictureUploadDate(_ date: Date)  {
         UserDefaults.standard[.lastProfilePictureUpload] = date
+    }
+
+    
+
+    // MARK: - Message Handling
+
+    public func isBlocked(_ publicKey: String) -> Bool {
+        return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
+    }
+
+    public func updateProfile(for publicKey: String, from profile: VisibleMessage.Profile, using transaction: Any) {
+//        let transaction = transaction as! YapDatabaseReadWriteTransaction
+//        let profileManager = SSKEnvironment.shared.profileManager
+//        if let displayName = profile.displayName {
+//            profileManager.updateProfileForContact(withID: publicKey, displayName: displayName, with: transaction)
+//        }
+//        if let profileKey = profile.profileKey, let profilePictureURL = profile.profilePictureURL, profileKey.count == kAES256_KeyByteLength {
+//            profileManager.setProfileKeyData(profileKey, forRecipientId: publicKey, avatarURL: profilePictureURL)
+//        }
+    }
+
+    /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
+    public func persist(_ message: VisibleMessage, using transaction: Any) -> (String, Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let thread = TSContactThread.getOrCreateThread(withContactId: message.sender!, transaction: transaction)
+        let message = TSIncomingMessage.from(message, using: transaction)
+        message.save(with: transaction)
+        return (thread.uniqueId!, message)
+    }
+
+    public func cancelTypingIndicatorsIfNeeded(for threadID: String, senderPublicKey: String) {
+        guard let thread = TSThread.fetch(uniqueId: threadID) else { return }
+        func cancelTypingIndicatorsIfNeeded() {
+            SSKEnvironment.shared.typingIndicators.didReceiveIncomingMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
+        }
+        if Thread.current.isMainThread {
+            cancelTypingIndicatorsIfNeeded()
+        } else {
+            DispatchQueue.main.async {
+                cancelTypingIndicatorsIfNeeded()
+            }
+        }
+    }
+
+    public func notifyUserIfNeeded(for message: Any, threadID: String) {
+        guard let thread = TSThread.fetch(uniqueId: threadID) else { return }
+        Storage.read { transaction in
+            SSKEnvironment.shared.notificationsManager!.notifyUser(for: (message as! TSIncomingMessage), in: thread, transaction: transaction)
+        }
     }
 }

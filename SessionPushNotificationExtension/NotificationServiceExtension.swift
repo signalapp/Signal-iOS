@@ -38,7 +38,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
                     decrypter.decryptEnvelope(envelope,
                                               envelopeData: data,
                                               successBlock: { result, transaction in
-                                                  if let envelope = try? SSKProtoEnvelope.parseData(result.envelopeData) {
+                                                  if let envelope = try? SNProtoEnvelope.parseData(result.envelopeData) {
                                                       messageManager.throws_processEnvelope(envelope, plaintextData: result.plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction, serverID: 0)
                                                       self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
                                                   } else {
@@ -59,7 +59,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     
     /*
     func handleDecryptionResult(result: OWSMessageDecryptResult, notificationContent: UNMutableNotificationContent, transaction: YapDatabaseReadWriteTransaction) {
-        let contentProto = try? SSKProtoContent.parseData(result.plaintextData!)
+        let contentProto = try? SNProtoContent.parseData(result.plaintextData!)
         var thread: TSThread
         var newNotificationBody = ""
         let masterPublicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
@@ -72,7 +72,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             }
             let senderName = OWSUserProfile.fetch(uniqueId: masterPublicKey, transaction: transaction)?.profileName ?? SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterPublicKey)
             displayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
-            let group: SSKProtoGroupContext = contentProto!.dataMessage!.group!
+            let group: SNProtoGroupContext = contentProto!.dataMessage!.group!
             let oldGroupModel = (thread as! TSGroupThread).groupModel
             let removedMembers = NSMutableSet(array: oldGroupModel.groupMemberIds)
             let newGroupModel = TSGroupModel.init(title: group.name,
@@ -185,7 +185,6 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
 
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
-                SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
                 SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
             },
             migrationCompletion: { [weak self] in
@@ -208,7 +207,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         }
     }
     
-    func wasReceivedByUD(envelope: SSKProtoEnvelope) -> Bool {
+    func wasReceivedByUD(envelope: SNProtoEnvelope) -> Bool {
         return (envelope.type == .unidentifiedSender && (!envelope.hasSource || envelope.source!.count < 1))
     }
     

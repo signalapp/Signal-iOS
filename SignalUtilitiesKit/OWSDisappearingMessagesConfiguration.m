@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [self initWithThreadId:threadId
                           enabled:NO
-                  durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
+                  durationSeconds:(NSTimeInterval)OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

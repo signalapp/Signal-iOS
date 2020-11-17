@@ -63,7 +63,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
@@ -80,7 +79,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
     _quotedMessage = quotedMessage;
-    _contactShare = contactShare;
     _linkPreview = linkPreview;
     _openGroupServerMessageID = -1;
 

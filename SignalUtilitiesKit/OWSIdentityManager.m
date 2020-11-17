@@ -527,7 +527,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [transaction removeObjectForKey:recipientId inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
 }
 
-- (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified
+- (void)throws_processIncomingSyncMessage:(SNProtoVerified *)verified
                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(verified);
@@ -548,21 +548,21 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     NSData *identityKey = [rawIdentityKey throws_removeKeyType];
 
     switch (verified.state) {
-        case SSKProtoVerifiedStateDefault:
+        case SNProtoVerifiedStateDefault:
             [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
                                                  recipientId:recipientId
                                                  identityKey:identityKey
                                          overwriteOnConflict:NO
                                                  transaction:transaction];
             break;
-        case SSKProtoVerifiedStateVerified:
+        case SNProtoVerifiedStateVerified:
             [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateVerified
                                                  recipientId:recipientId
                                                  identityKey:identityKey
                                          overwriteOnConflict:YES
                                                  transaction:transaction];
             break;
-        case SSKProtoVerifiedStateUnverified:
+        case SNProtoVerifiedStateUnverified:
             OWSFailDebug(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
                 recipientId,
                 OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));

@@ -6,6 +6,7 @@ public final class JobQueue : NSObject, JobDelegate {
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
+        job.id = UUID().uuidString
         Configuration.shared.storage.persist(job, using: transaction)
         job.delegate = self
         job.execute()

@@ -26,7 +26,10 @@ public final class TypingIndicator : ControlMessage {
     }
 
     // MARK: Validation
-    public override var isValid: Bool { kind != nil }
+    public override var isValid: Bool {
+        guard super.isValid else { return false }
+        return kind != nil
+    }
 
     // MARK: Initialization
     public override init() { super.init() }

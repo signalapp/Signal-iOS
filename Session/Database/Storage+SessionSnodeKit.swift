@@ -1,7 +1,8 @@
 
 extension Storage : SessionSnodeKitStorageProtocol {
 
-    // MARK: Onion Request Paths
+    // MARK: - Onion Request Paths
+
     private static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
 
     public func getOnionRequestPaths() -> [OnionRequestAPI.Path] {
@@ -47,7 +48,10 @@ extension Storage : SessionSnodeKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeAllObjects(inCollection: Storage.onionRequestPathCollection)
     }
 
-    // MARK: Snode Pool
+
+
+    // MARK: - Snode Pool
+
     public func getSnodePool() -> Set<Snode> {
         var result: Set<Snode> = []
         Storage.read { transaction in
@@ -70,7 +74,10 @@ extension Storage : SessionSnodeKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeAllObjects(inCollection: Storage.snodePoolCollection)
     }
 
-    // MARK: Swarm
+
+
+    // MARK: - Swarm
+
     public func getSwarm(for publicKey: String) -> Set<Snode> {
         var result: Set<Snode> = []
         let collection = Storage.getSwarmCollection(for: publicKey)
@@ -96,7 +103,10 @@ extension Storage : SessionSnodeKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeAllObjects(inCollection: collection)
     }
 
-    // MARK: Last Message Hash
+
+
+    // MARK: - Last Message Hash
+
     private static let lastMessageHashCollection = "LokiLastMessageHashCollection"
 
     func getLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String) -> JSON? {
@@ -136,7 +146,10 @@ extension Storage : SessionSnodeKitStorageProtocol {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: Storage.lastMessageHashCollection)
     }
 
-    // MARK: Received Messages
+
+
+    // MARK: - Received Messages
+
     private static let receivedMessagesCollection = "LokiReceivedMessagesCollection"
     
     public func getReceivedMessages(for publicKey: String) -> Set<String> {

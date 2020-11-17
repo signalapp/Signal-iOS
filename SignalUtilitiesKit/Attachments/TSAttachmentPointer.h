@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSBackupFragment;
-@class SSKProtoAttachmentPointer;
+@class SNProtoAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
 
@@ -57,11 +57,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 
-+ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
++ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SNProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)message;
 
 + (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:
-                                        (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
+                                        (NSArray<SNProtoAttachmentPointer *> *)attachmentProtos
                                                     albumMessage:(TSMessage *)message;
 
 #pragma mark - Update With... Methods

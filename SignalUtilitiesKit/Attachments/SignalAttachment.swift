@@ -586,11 +586,7 @@ public class SignalAttachment: NSObject {
             owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
-        guard let data = datas[0] as? Data else {
-            owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
-            return nil
-        }
-        return data
+        return datas[0]
     }
 
     // MARK: Image Attachments

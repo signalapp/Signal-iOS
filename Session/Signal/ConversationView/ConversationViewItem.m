@@ -760,10 +760,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
             return [infoMessage previewTextWithTransaction:transaction];
         }
-        case OWSInteractionType_Call: {
-            TSCall *call = (TSCall *)self.interaction;
-            return [call previewTextWithTransaction:transaction];
-        }
         default:
             OWSFailDebug(@"not a system message.");
             return nil;

@@ -192,7 +192,7 @@ public final class SessionManagementProtocol : NSObject {
     }
 
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:transaction:)
-    public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SNProtoContent, wrappedIn envelope: SNProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
 //        let publicKey = envelope.source! // Set during UD decryption
 //        guard let preKeyBundleMessage = protoContent.prekeyBundleMessage else { return }
 //        print("[Loki] Received a pre key bundle message from: \(publicKey).")

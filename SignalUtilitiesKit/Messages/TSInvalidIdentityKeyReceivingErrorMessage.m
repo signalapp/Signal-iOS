@@ -25,7 +25,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
-    SSKProtoEnvelope *_Nullable _envelope;
+    SNProtoEnvelope *_Nullable _envelope;
 }
 
 @synthesize envelopeData = _envelopeData;
@@ -33,7 +33,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 #ifdef DEBUG
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
-+ (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
++ (nullable instancetype)untrustedKeyWithEnvelope:(SNProtoEnvelope *)envelope
                                   withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSContactThread *contactThread =
@@ -49,7 +49,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                                        inThread:(TSThread *)thread
-                                               incomingEnvelope:(SSKProtoEnvelope *)envelope
+                                               incomingEnvelope:(SNProtoEnvelope *)envelope
 {
     self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
     if (!self) {
@@ -69,11 +69,11 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 }
 #endif
 
-- (nullable SSKProtoEnvelope *)envelope
+- (nullable SNProtoEnvelope *)envelope
 {
     if (!_envelope) {
         NSError *error;
-        SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
+        SNProtoEnvelope *_Nullable envelope = [SNProtoEnvelope parseData:self.envelopeData error:&error];
         if (error || envelope == nil) {
             OWSFailDebug(@"Could not parse proto: %@", error);
         } else {
@@ -120,7 +120,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         return nil;
     }
 
-    if (self.envelope.type != SSKProtoEnvelopeTypePrekeyBundle) {
+    if (self.envelope.type != SNProtoEnvelopeTypePrekeyBundle) {
         OWSLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
         return nil;
     }

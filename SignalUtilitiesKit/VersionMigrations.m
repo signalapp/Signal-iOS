@@ -5,14 +5,11 @@
 #import "VersionMigrations.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "SignalKeyingStorage.h"
-
 #import <SignalUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
-
 #import <SignalUtilitiesKit/TSAccountManager.h>
-
 #import <SignalUtilitiesKit/TSThread.h>
 #import <SignalUtilitiesKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>

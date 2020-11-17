@@ -48,18 +48,17 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return initiated incoming group message
  */
-- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                        authorId:(NSString *)authorId
-                                  sourceDeviceId:(uint32_t)sourceDeviceId
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
-                                 wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                         authorId:(NSString *)authorId
+                   sourceDeviceId:(uint32_t)sourceDeviceId
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  serverTimestamp:(nullable NSNumber *)serverTimestamp
+                  wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

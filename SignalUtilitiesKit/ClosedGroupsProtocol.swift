@@ -248,7 +248,7 @@ public final class ClosedGroupsProtocol : NSObject {
     // MARK: - Receiving
 
     @objc(handleSharedSenderKeysUpdateIfNeeded:from:transaction:)
-    public static func handleSharedSenderKeysUpdateIfNeeded(_ dataMessage: SSKProtoDataMessage, from publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func handleSharedSenderKeysUpdateIfNeeded(_ dataMessage: SNProtoDataMessage, from publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Note that `publicKey` is either the public key of the group or the public key of the
         // sender, depending on how the message was sent
         guard let closedGroupUpdate = dataMessage.closedGroupUpdate, isValid(closedGroupUpdate) else { return }
@@ -260,7 +260,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
     }
 
-    private static func isValid(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate) -> Bool {
+    private static func isValid(_ closedGroupUpdate: SNProtoDataMessageClosedGroupUpdate) -> Bool {
         guard !closedGroupUpdate.groupPublicKey.isEmpty else { return false }
         switch closedGroupUpdate.type {
         case .new: return !(closedGroupUpdate.name ?? "").isEmpty && !(closedGroupUpdate.groupPrivateKey ?? Data()).isEmpty && !closedGroupUpdate.members.isEmpty
@@ -271,7 +271,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
     }
 
-    private static func handleNewGroupMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, using transaction: YapDatabaseReadWriteTransaction) {
+    private static func handleNewGroupMessage(_ closedGroupUpdate: SNProtoDataMessageClosedGroupUpdate, using transaction: YapDatabaseReadWriteTransaction) {
         // Unwrap the message
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         let name = closedGroupUpdate.name
@@ -330,7 +330,7 @@ public final class ClosedGroupsProtocol : NSObject {
 
     /// Invoked upon receiving a group update. A group update is sent out when a group's name is changed, when new users are added, when users leave or are
     /// kicked, or if the group admins are changed.
-    private static func handleInfoMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, from senderPublicKey: String,
+    private static func handleInfoMessage(_ closedGroupUpdate: SNProtoDataMessageClosedGroupUpdate, from senderPublicKey: String,
         using transaction: YapDatabaseReadWriteTransaction) {
         // Unwrap the message
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
@@ -397,7 +397,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
     }
 
-    private static func handleSenderKeyRequestMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, from senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    private static func handleSenderKeyRequestMessage(_ closedGroupUpdate: SNProtoDataMessageClosedGroupUpdate, from senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Prepare
         let userPublicKey = getUserHexEncodedPublicKey()
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
@@ -426,7 +426,7 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     /// Invoked upon receiving a sender key from another user.
-    private static func handleSenderKeyMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, from senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    private static func handleSenderKeyMessage(_ closedGroupUpdate: SNProtoDataMessageClosedGroupUpdate, from senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Prepare
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         guard let senderKey = closedGroupUpdate.senderKeys.first else {
@@ -451,7 +451,7 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     @objc(shouldIgnoreClosedGroupMessage:inThread:wrappedIn:)
-    public static func shouldIgnoreClosedGroupMessage(_ dataMessage: SSKProtoDataMessage, in thread: TSGroupThread, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
+    public static func shouldIgnoreClosedGroupMessage(_ dataMessage: SNProtoDataMessage, in thread: TSGroupThread, wrappedIn envelope: SNProtoEnvelope) -> Bool {
         guard thread.groupModel.groupType == .closedGroup else { return true }
         let publicKey = envelope.source! // Set during UD decryption
         return !thread.isUserMember(inGroup: publicKey)
@@ -459,7 +459,7 @@ public final class ClosedGroupsProtocol : NSObject {
 
     /// - Note: Deprecated.
     @objc(shouldIgnoreClosedGroupUpdateMessage:inThread:wrappedIn:)
-    public static func shouldIgnoreClosedGroupUpdateMessage(_ dataMessage: SSKProtoDataMessage, in thread: TSGroupThread, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
+    public static func shouldIgnoreClosedGroupUpdateMessage(_ dataMessage: SNProtoDataMessage, in thread: TSGroupThread, wrappedIn envelope: SNProtoEnvelope) -> Bool {
         guard thread.groupModel.groupType == .closedGroup else { return true }
         let publicKey = envelope.source! // Set during UD decryption
         return !thread.isUserAdmin(inGroup: publicKey)

@@ -23,17 +23,13 @@
 #import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
 #import <SignalUtilitiesKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalUtilitiesKit/OWSFailedMessagesJob.h>
-#import <SignalUtilitiesKit/OWSIncompleteCallsJob.h>
 #import <SignalUtilitiesKit/OWSMath.h>
-
-#import <SignalUtilitiesKit/OWSPrimaryStorage+Calling.h>
 #import <SignalUtilitiesKit/OWSReadReceiptManager.h>
 #import <SignalUtilitiesKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/TSDatabaseView.h>
 #import <SignalUtilitiesKit/TSPreKeyManager.h>
-
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
 
@@ -558,8 +554,7 @@ static NSTimeInterval launchStartedAt;
     // TODO: or something like that in production.
     [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
-
-    [self.profileManager fetchLocalUsersProfile];
+    
     [self.readReceiptManager prepareCachedValues];
 
     // Disable the SAE until the main app has successfully completed launch process

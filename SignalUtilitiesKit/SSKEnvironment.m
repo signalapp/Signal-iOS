@@ -32,7 +32,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 @implementation SSKEnvironment
 
-@synthesize callMessageHandler = _callMessageHandler;
 @synthesize notificationsManager = _notificationsManager;
 @synthesize objectReadWriteConnection = _objectReadWriteConnection;
 @synthesize sessionStoreDBConnection = _sessionStoreDBConnection;

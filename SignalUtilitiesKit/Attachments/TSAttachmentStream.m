@@ -21,7 +21,7 @@ const NSUInteger ThumbnailDimensionPointsLarge()
 {
     CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
     const CGFloat kMinZoomFactor = 2.f;
-    return MAX(screenSizePoints.width, screenSizePoints.height) * kMinZoomFactor;
+    return (NSUInteger)MAX(screenSizePoints.width, screenSizePoints.height) * kMinZoomFactor;
 }
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
@@ -821,7 +821,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // MARK: Protobuf serialization
 
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
++ (nullable SNProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
 {
     OWSAssertDebug(attachmentId.length > 0);
 
@@ -839,9 +839,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 }
 
 
-- (nullable SSKProtoAttachmentPointer *)buildProto
+- (nullable SNProtoAttachmentPointer *)buildProto
 {
-    SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builderWithId:self.serverId];
+    SNProtoAttachmentPointerBuilder *builder = [SNProtoAttachmentPointer builderWithId:self.serverId];
 
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;
@@ -857,7 +857,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
-    builder.flags = self.isVoiceMessage ? SSKProtoAttachmentPointerFlagsVoiceMessage : 0;
+    builder.flags = self.isVoiceMessage ? SNProtoAttachmentPointerFlagsVoiceMessage : 0;
 
     if (self.shouldHaveImageSize) {
         CGSize imageSize = self.imageSize;
@@ -874,7 +874,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.url = self.downloadURL;
 
     NSError *error;
-    SSKProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
+    SNProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
     if (error || !attachmentProto) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;

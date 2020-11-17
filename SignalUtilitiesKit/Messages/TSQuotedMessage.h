@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKProtoDataMessage;
+@class SNProtoDataMessage;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
@@ -97,7 +97,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 
 
-+ (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
++ (nullable instancetype)quotedMessageForDataMessage:(SNProtoDataMessage *)dataMessage
                                               thread:(TSThread *)thread
                                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

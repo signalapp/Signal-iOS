@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKProtoAttachmentPointer;
+@class SNProtoAttachmentPointer;
 @class TSAttachmentPointer;
 @class YapDatabaseReadWriteTransaction;
 
@@ -99,9 +99,9 @@ typedef void (^OWSThumbnailFailure)(void);
 
 #pragma mark - Protobuf
 
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
++ (nullable SNProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
 
-- (nullable SSKProtoAttachmentPointer *)buildProto;
+- (nullable SNProtoAttachmentPointer *)buildProto;
 
 @end
 

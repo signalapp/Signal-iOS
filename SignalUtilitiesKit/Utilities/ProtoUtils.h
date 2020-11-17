@@ -6,8 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKProtoCallMessageBuilder;
-@class SSKProtoDataMessageBuilder;
+@class SNProtoCallMessageBuilder;
+@class SNProtoDataMessageBuilder;
 @class TSThread;
 
 @interface ProtoUtils : NSObject
@@ -16,13 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
                           recipientId:(NSString *_Nullable)recipientId
-                   dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
+                   dataMessageBuilder:(SNProtoDataMessageBuilder *)dataMessageBuilder;
 
-+ (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
++ (void)addLocalProfileKeyToDataMessageBuilder:(SNProtoDataMessageBuilder *)dataMessageBuilder;
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
                           recipientId:(NSString *)recipientId
-                   callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder;
+                   callMessageBuilder:(SNProtoCallMessageBuilder *)callMessageBuilder;
 
 @end
 

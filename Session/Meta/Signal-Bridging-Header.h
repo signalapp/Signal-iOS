@@ -16,10 +16,8 @@
 #import "ConversationViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
-
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
-
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBackup.h"
@@ -40,7 +38,6 @@
 #import "OWSQRCodeScanningViewController.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
-
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
@@ -54,8 +51,6 @@
 #import <SignalUtilitiesKit/ContactTableViewCell.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSAudioPlayer.h>
-
-
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
@@ -74,14 +69,12 @@
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
-#import <SignalUtilitiesKit/OWSCallMessageHandler.h>
 #import <SignalUtilitiesKit/OWSContactsOutputStream.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SignalUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSIdentityManager.h>
 #import <SignalUtilitiesKit/OWSMediaGalleryFinder.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+Calling.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalUtilitiesKit/OWSRecipientIdentity.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
@@ -90,16 +83,13 @@
 #import <SignalUtilitiesKit/TSAttachment.h>
 #import <SignalUtilitiesKit/TSAttachmentPointer.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
-#import <SignalUtilitiesKit/TSCall.h>
 #import <SignalUtilitiesKit/TSContactThread.h>
 #import <SignalUtilitiesKit/TSErrorMessage.h>
 #import <SignalUtilitiesKit/TSGroupThread.h>
 #import <SignalUtilitiesKit/TSIncomingMessage.h>
 #import <SignalUtilitiesKit/TSInfoMessage.h>
-
 #import <SignalUtilitiesKit/TSOutgoingMessage.h>
 #import <SignalUtilitiesKit/TSPreKeyManager.h>
-
 #import <SignalUtilitiesKit/TSThread.h>
 #import <SignalUtilitiesKit/LKGroupUtilities.h>
 #import <SignalUtilitiesKit/UIImage+OWS.h>

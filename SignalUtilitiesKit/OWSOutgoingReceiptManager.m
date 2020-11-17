@@ -217,7 +217,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     return [sendPromises copy];
 }
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
+- (void)enqueueDeliveryReceiptForEnvelope:(SNProtoEnvelope *)envelope
 {
     [self enqueueReceiptWithRecipientId:envelope.source
                               timestamp:envelope.timestamp

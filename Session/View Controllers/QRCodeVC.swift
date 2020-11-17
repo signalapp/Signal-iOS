@@ -167,10 +167,6 @@ private final class ViewMyQRCodeVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.mediumFontSize)
-//        let text = NSLocalizedString("This is your QR code. Other users can scan it to start a session with you.", comment: "")
-//        let attributedText = NSMutableAttributedString(string: text)
-//        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: (text as NSString).range(of: "your unique public QR code"))
-//        explanationLabel.attributedText = attributedText
         explanationLabel.text = NSLocalizedString("vc_view_my_qr_code_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center

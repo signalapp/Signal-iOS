@@ -33,8 +33,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSBackupFragment.h>
 #import <SignalUtilitiesKit/OWSBlockingManager.h>
-#import <SignalUtilitiesKit/OWSCallMessageHandler.h>
-#import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
 #import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
@@ -77,7 +75,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SignalUtilitiesKit/TSAttachmentPointer.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
-#import <SignalUtilitiesKit/TSCall.h>
 #import <SignalUtilitiesKit/TSContactThread.h>
 #import <SignalUtilitiesKit/TSDatabaseView.h>
 #import <SignalUtilitiesKit/TSErrorMessage.h>
@@ -85,6 +82,8 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/TSGroupThread.h>
 #import <SignalUtilitiesKit/TSIncomingMessage.h>
 #import <SignalUtilitiesKit/TSInfoMessage.h>
+#import <SignalUtilitiesKit/TSInteraction.h>
+#import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/TSOutgoingMessage.h>
 #import <SignalUtilitiesKit/TSPreKeyManager.h>
 #import <SignalUtilitiesKit/TSQuotedMessage.h>

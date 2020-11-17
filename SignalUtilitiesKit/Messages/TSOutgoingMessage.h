@@ -54,10 +54,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMetaMessageRequestInfo,
 };
 
-@class SSKProtoAttachmentPointer;
-@class SSKProtoContentBuilder;
-@class SSKProtoDataMessage;
-@class SSKProtoDataMessageBuilder;
+@class SNProtoAttachmentPointer;
+@class SNProtoContentBuilder;
+@class SNProtoDataMessage;
+@class SNProtoDataMessageBuilder;
 @class SignalRecipient;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
@@ -83,7 +83,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
 // MJK TODO - Can we remove the sender timestamp param?
@@ -96,7 +95,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
@@ -156,7 +154,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  */
 - (nullable id)dataMessageBuilder;
 
-- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
+- (nullable SNProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 /**
  * Allows subclasses to supply a custom content builder that has already prepared part of the message.

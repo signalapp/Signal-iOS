@@ -11,7 +11,6 @@
 #import <SignalUtilitiesKit/OWSBlockingManager.h>
 #import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSCall.h>
 #import <SignalUtilitiesKit/TSContactThread.h>
 #import <SignalUtilitiesKit/TSDatabaseView.h>
 #import <SignalUtilitiesKit/TSIncomingMessage.h>

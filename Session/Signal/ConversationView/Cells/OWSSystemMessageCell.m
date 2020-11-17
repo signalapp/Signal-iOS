@@ -11,7 +11,6 @@
 #import "UIView+OWS.h"
 #import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/TSCall.h>
 #import <SignalUtilitiesKit/TSErrorMessage.h>
 #import <SignalUtilitiesKit/TSInfoMessage.h>
 
@@ -290,8 +289,6 @@ typedef void (^SystemMessageActionBlock)(void);
                 break;
             }
         }
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        result = [UIImage imageNamed:@"system_message_call"];
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;

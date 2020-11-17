@@ -128,7 +128,7 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
+    public class func buildValidatedLinkPreview(dataMessage: SNProtoDataMessage,
                                                 body: String?,
                                                 transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
         guard OWSLinkPreview.featureEnabled else {

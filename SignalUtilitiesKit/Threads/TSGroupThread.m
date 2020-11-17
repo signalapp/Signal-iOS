@@ -246,16 +246,15 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-//    NSMutableSet<NSString *> *newGroupMemberIDs = [NSMutableSet setWithArray:self.groupModel.groupMemberIds];
-//    NSString *userPublicKey = TSAccountManager.localNumber;
-//    if (userPublicKey == nil) { return; }
-//    NSSet<NSString *> *userLinkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userPublicKey in:transaction];
-//    [newGroupMemberIDs minusSet:userLinkedDevices];
-//    self.groupModel.groupMemberIds = newGroupMemberIDs.allObjects;
-//    [self saveWithTransaction:transaction];
-//    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
-//        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.groupThreadUpdated object:self.uniqueId];
-//    }];
+    NSMutableSet<NSString *> *newGroupMemberIDs = [NSMutableSet setWithArray:self.groupModel.groupMemberIds];
+    NSString *userPublicKey = TSAccountManager.localNumber;
+    if (userPublicKey == nil) { return; }
+    [newGroupMemberIDs removeObject:userPublicKey];
+    self.groupModel.groupMemberIds = newGroupMemberIDs.allObjects;
+    [self saveWithTransaction:transaction];
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.groupThreadUpdated object:self.uniqueId];
+    }];
 }
 
 - (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

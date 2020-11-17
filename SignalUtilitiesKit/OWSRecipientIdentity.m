@@ -24,19 +24,19 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     }
 }
 
-SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
+SNProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
 {
     switch (verificationState) {
         case OWSVerificationStateDefault:
-            return SSKProtoVerifiedStateDefault;
+            return SNProtoVerifiedStateDefault;
         case OWSVerificationStateVerified:
-            return SSKProtoVerifiedStateVerified;
+            return SNProtoVerifiedStateVerified;
         case OWSVerificationStateNoLongerVerified:
-            return SSKProtoVerifiedStateUnverified;
+            return SNProtoVerifiedStateUnverified;
     }
 }
 
-SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
+SNProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
     NSData *identityKey,
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength)
@@ -47,7 +47,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     // will figure that out on it's own.
     OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builderWithDestination:destinationRecipientId];
+    SNProtoVerifiedBuilder *verifiedBuilder = [SNProtoVerified builderWithDestination:destinationRecipientId];
     verifiedBuilder.identityKey = identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
 
@@ -61,7 +61,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     }
 
     NSError *error;
-    SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
+    SNProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
     if (error || !verifiedProto) {
         OWSCFailDebug(@"%@ could not build protobuf: %@", @"[BuildVerifiedProtoWithRecipientId]", error);
         return nil;

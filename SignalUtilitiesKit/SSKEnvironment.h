@@ -75,8 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
 
 // This property is configured after Environment is created.
-@property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;
-// This property is configured after Environment is created.
 @property (atomic, nullable) id<NotificationsProtocol> notificationsManager;
 
 @property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;

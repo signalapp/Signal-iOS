@@ -69,8 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(completion);
 
-    OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
-
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self runUpWithTransaction:transaction];
     }

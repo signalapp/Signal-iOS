@@ -29,6 +29,7 @@ public enum MessageSender {
 
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         message.sentTimestamp = NSDate.millisecondTimestamp()
+        message.sender = Configuration.shared.storage.getUserPublicKey()
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey
         case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey

@@ -28,7 +28,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 @class OWSRecipientIdentity;
 @class OWSStorage;
-@class SSKProtoVerified;
+@class SNProtoVerified;
 @class YapDatabaseReadWriteTransaction;
 
 // This class can be safely accessed and used from any thread.
@@ -54,7 +54,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
 // This method can be called from any thread.
-- (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified
+- (void)throws_processIncomingSyncMessage:(SNProtoVerified *)verified
                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;

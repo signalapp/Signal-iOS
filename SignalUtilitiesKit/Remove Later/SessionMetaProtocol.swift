@@ -102,14 +102,14 @@ public final class SessionMetaProtocol : NSObject {
     }
 
     @objc(updateDisplayNameIfNeededForPublicKey:using:transaction:)
-    public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
+    public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SNProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let displayName = profile.displayName, !displayName.isEmpty else { return }
         let profileManager = SSKEnvironment.shared.profileManager
         profileManager.updateProfileForContact(withID: publicKey, displayName: displayName, with: transaction)
     }
 
     @objc(updateProfileKeyIfNeededForPublicKey:using:)
-    public static func updateProfileKeyIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage) {
+    public static func updateProfileKeyIfNeeded(for publicKey: String, using dataMessage: SNProtoDataMessage) {
         guard dataMessage.hasProfileKey, let profileKey = dataMessage.profileKey else { return }
         guard profileKey.count == kAES256_KeyByteLength else {
             return print("[Loki] Unexpected profile key size: \(profileKey.count).")

@@ -30,4 +30,10 @@ public protocol SessionMessagingKitStorageProtocol {
     func getIDForMessage(withServerID serverID: UInt64) -> UInt64?
     func setOpenGroupDisplayName(to displayName: String, for publicKey: String, on channel: UInt64, server: String, using transaction: Any)
     func setLastProfilePictureUploadDate(_ date: Date) // Stored in user defaults so no transaction is needed
+    func isBlocked(_ publicKey: String) -> Bool
+    func updateProfile(for publicKey: String, from profile: VisibleMessage.Profile, using transaction: Any)
+    /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
+    func persist(_ message: VisibleMessage, using transaction: Any) -> (String, Any)
+    func cancelTypingIndicatorsIfNeeded(for threadID: String, senderPublicKey: String)
+    func notifyUserIfNeeded(for message: Any, threadID: String)
 }

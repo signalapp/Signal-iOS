@@ -211,7 +211,7 @@ BOOL IsNoteToSelfEnabled(void)
     [self.dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
                                         usingBlock:^(
-                                            TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+                                            TSInteraction *interaction, YapDatabaseReadTransaction *t) {
 
                                             block(interaction);
                                         }];

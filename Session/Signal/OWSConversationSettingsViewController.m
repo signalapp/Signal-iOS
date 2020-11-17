@@ -937,7 +937,7 @@ static CGRect oldframe;
 {
     if (self.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return !groupThread.isCurrentUserInGroup;
+        return !groupThread.isCurrentUserMemberInGroup;
     }
 
     return NO;

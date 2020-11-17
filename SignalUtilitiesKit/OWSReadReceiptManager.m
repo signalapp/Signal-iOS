@@ -396,7 +396,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
      */
 }
 
-- (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
+- (void)processReadReceiptsFromLinkedDevice:(NSArray<SNProtoSyncMessageRead *> *)readReceiptProtos
                               readTimestamp:(uint64_t)readTimestamp
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -406,7 +406,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(readReceiptProtos);
     OWSAssertDebug(transaction);
 
-    for (SSKProtoSyncMessageRead *readReceiptProto in readReceiptProtos) {
+    for (SNProtoSyncMessageRead *readReceiptProto in readReceiptProtos) {
         NSString *_Nullable senderId = readReceiptProto.sender;
         uint64_t messageIdTimestamp = readReceiptProto.timestamp;
 

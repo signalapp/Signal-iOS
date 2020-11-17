@@ -30,13 +30,13 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssertDebug(signalAccount);
     OWSAssertDebug(contactsManager);
 
-    SSKProtoContactDetailsBuilder *contactBuilder =
-        [SSKProtoContactDetails builderWithNumber:signalAccount.recipientId];
+    SNProtoContactDetailsBuilder *contactBuilder =
+        [SNProtoContactDetails builderWithNumber:signalAccount.recipientId];
     [contactBuilder setName:[LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:signalAccount.recipientId] ?: signalAccount.recipientId];
     [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {
-        SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithRecipientId(recipientIdentity.recipientId,
+        SNProtoVerified *_Nullable verified = BuildVerifiedProtoWithRecipientId(recipientIdentity.recipientId,
             [recipientIdentity.identityKey prependKeyType],
             recipientIdentity.verificationState,
             0);

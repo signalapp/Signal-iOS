@@ -73,12 +73,12 @@ public final class PublicChatPoller : NSObject {
                 }
                 let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
                 let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(publicChat.id)
-                let groupContext = SSKProtoGroupContext.builder(id: id, type: .deliver)
+                let groupContext = SNProtoGroupContext.builder(id: id, type: .deliver)
                 groupContext.setName(publicChat.displayName)
-                let dataMessage = SSKProtoDataMessage.builder()
-                let attachments: [SSKProtoAttachmentPointer] = message.attachments.compactMap { attachment in
+                let dataMessage = SNProtoDataMessage.builder()
+                let attachments: [SNProtoAttachmentPointer] = message.attachments.compactMap { attachment in
                     guard attachment.kind == .attachment else { return nil }
-                    let result = SSKProtoAttachmentPointer.builder(id: attachment.serverID)
+                    let result = SNProtoAttachmentPointer.builder(id: attachment.serverID)
                     result.setContentType(attachment.contentType)
                     result.setSize(UInt32(attachment.size))
                     result.setFileName(attachment.fileName)
@@ -93,9 +93,9 @@ public final class PublicChatPoller : NSObject {
                 }
                 dataMessage.setAttachments(attachments)
                 if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
-                    let signalLinkPreview = SSKProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
+                    let signalLinkPreview = SNProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
                     signalLinkPreview.setTitle(linkPreview.linkPreviewTitle!)
-                    let attachment = SSKProtoAttachmentPointer.builder(id: linkPreview.serverID)
+                    let attachment = SNProtoAttachmentPointer.builder(id: linkPreview.serverID)
                     attachment.setContentType(linkPreview.contentType)
                     attachment.setSize(UInt32(linkPreview.size))
                     attachment.setFileName(linkPreview.fileName)
@@ -109,7 +109,7 @@ public final class PublicChatPoller : NSObject {
                     signalLinkPreview.setImage(try! attachment.build())
                     dataMessage.setPreview([ try! signalLinkPreview.build() ])
                 }
-                let profile = SSKProtoDataMessageLokiProfile.builder()
+                let profile = SNProtoDataMessageLokiProfile.builder()
                 profile.setDisplayName(message.displayName)
                 if let profilePicture = message.profilePicture {
                     profile.setProfilePicture(profilePicture.url)
@@ -119,31 +119,31 @@ public final class PublicChatPoller : NSObject {
                 dataMessage.setTimestamp(message.timestamp)
                 dataMessage.setGroup(try! groupContext.build())
                 if let quote = message.quote {
-                    let signalQuote = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
+                    let signalQuote = SNProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
                     signalQuote.setText(quote.quotedMessageBody)
                     dataMessage.setQuote(try! signalQuote.build())
                 }
                 let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
                 dataMessage.setBody(body)
                 if let messageServerID = message.serverID {
-                    let publicChatInfo = SSKProtoPublicChatInfo.builder()
+                    let publicChatInfo = SNProtoPublicChatInfo.builder()
                     publicChatInfo.setServerID(messageServerID)
                     dataMessage.setPublicChatInfo(try! publicChatInfo.build())
                 }
-                let content = SSKProtoContent.builder()
+                let content = SNProtoContent.builder()
                 if !wasSentByCurrentUser {
                     content.setDataMessage(try! dataMessage.build())
                 } else {
-                    let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
+                    let syncMessageSentBuilder = SNProtoSyncMessageSent.builder()
                     syncMessageSentBuilder.setMessage(try! dataMessage.build())
                     syncMessageSentBuilder.setDestination(userPublicKey)
                     syncMessageSentBuilder.setTimestamp(message.timestamp)
                     let syncMessageSent = try! syncMessageSentBuilder.build()
-                    let syncMessageBuilder = SSKProtoSyncMessage.builder()
+                    let syncMessageBuilder = SNProtoSyncMessage.builder()
                     syncMessageBuilder.setSent(syncMessageSent)
                     content.setSyncMessage(try! syncMessageBuilder.build())
                 }
-                let envelope = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
+                let envelope = SNProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
                 envelope.setSource(senderPublicKey)
                 envelope.setSourceDevice(1)
                 envelope.setContent(try! content.build().serializedData())

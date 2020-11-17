@@ -276,7 +276,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                          quotedMessage:quotedMessage
-                                                          contactShare:nil
                                                            linkPreview:linkPreview];
 }
 
@@ -294,7 +293,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
-                                                          contactShare:nil
                                                            linkPreview:nil];
 }
 
@@ -307,7 +305,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
 {
     self = [super initMessageWithTimestamp:timestamp
@@ -317,7 +314,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:expireStartedAt
                              quotedMessage:quotedMessage
-                              contactShare:contactShare
                                linkPreview:linkPreview];
     if (!self) {
         return self;
@@ -345,16 +341,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
-    NSArray<NSString *> *recipientIds;
-//    if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-//        NSString *_Nullable localNumber = [TSAccountManager localNumber];
-//        OWSAssertDebug(localNumber);
-//        recipientIds = @[
-//            localNumber,
-//        ];
-//    } else {
-//        recipientIds = [thread recipientIdentifiers];
-//    }
+    NSArray<NSString *> *recipientIds = [thread recipientIdentifiers];
     for (NSString *recipientId in recipientIds) {
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
         recipientState.state = OWSOutgoingMessageRecipientStateSending;
@@ -884,7 +871,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     TSThread *thread = self.thread;
     OWSAssertDebug(thread);
 
-    SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
+    SNProtoDataMessageBuilder *builder = [SNProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
 
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
@@ -905,25 +892,25 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
-        SSKProtoGroupContextType groupMessageType;
+        SNProtoGroupContextType groupMessageType;
         switch (self.groupMetaMessage) {
             case TSGroupMetaMessageQuit:
-                groupMessageType = SSKProtoGroupContextTypeQuit;
+                groupMessageType = SNProtoGroupContextTypeQuit;
                 break;
             case TSGroupMetaMessageUpdate:
             case TSGroupMetaMessageNew:
-                groupMessageType = SSKProtoGroupContextTypeUpdate;
+                groupMessageType = SNProtoGroupContextTypeUpdate;
                 break;
             default:
-                groupMessageType = SSKProtoGroupContextTypeDeliver;
+                groupMessageType = SNProtoGroupContextTypeDeliver;
                 break;
         }
-        SSKProtoGroupContextBuilder *groupBuilder =
-            [SSKProtoGroupContext builderWithId:gThread.groupModel.groupId type:groupMessageType];
-        if (groupMessageType == SSKProtoGroupContextTypeUpdate) {
+        SNProtoGroupContextBuilder *groupBuilder =
+            [SNProtoGroupContext builderWithId:gThread.groupModel.groupId type:groupMessageType];
+        if (groupMessageType == SNProtoGroupContextTypeUpdate) {
             if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                 attachmentWasGroupAvatar = YES;
-                SSKProtoAttachmentPointer *_Nullable attachmentProto =
+                SNProtoAttachmentPointer *_Nullable attachmentProto =
                     [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
                 if (!attachmentProto) {
                     OWSFailDebug(@"could not build protobuf.");
@@ -937,7 +924,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             [groupBuilder setAdmins:gThread.groupModel.groupAdminIds];
         }
         NSError *error;
-        SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
+        SNProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
         if (error || !groupContextProto) {
             OWSFailDebug(@"could not build protobuf: %@.", error);
             return nil;
@@ -949,7 +936,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            SSKProtoAttachmentPointer *_Nullable attachmentProto =
+            SNProtoAttachmentPointer *_Nullable attachmentProto =
                 [TSAttachmentStream buildProtoForAttachmentId:attachmentId];
             if (!attachmentProto) {
                 OWSFailDebug(@"could not build protobuf.");
@@ -961,10 +948,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     // Quoted Reply
-    SSKProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
+    SNProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
     if (quotedMessageBuilder) {
         NSError *error;
-        SSKProtoDataMessageQuote *_Nullable quoteProto = [quotedMessageBuilder buildAndReturnError:&error];
+        SNProtoDataMessageQuote *_Nullable quoteProto = [quotedMessageBuilder buildAndReturnError:&error];
         if (error || !quoteProto) {
             OWSFailDebug(@"could not build protobuf: %@.", error);
             return nil;
@@ -974,13 +961,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     // Link Preview
     if (self.linkPreview) {
-        SSKProtoDataMessagePreviewBuilder *previewBuilder =
-            [SSKProtoDataMessagePreview builderWithUrl:self.linkPreview.urlString];
+        SNProtoDataMessagePreviewBuilder *previewBuilder =
+            [SNProtoDataMessagePreview builderWithUrl:self.linkPreview.urlString];
         if (self.linkPreview.title.length > 0) {
             [previewBuilder setTitle:self.linkPreview.title];
         }
         if (self.linkPreview.imageAttachmentId) {
-            SSKProtoAttachmentPointer *_Nullable attachmentProto =
+            SNProtoAttachmentPointer *_Nullable attachmentProto =
                 [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId];
             if (!attachmentProto) {
                 OWSFailDebug(@"Could not build link preview image protobuf.");
@@ -990,7 +977,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         }
 
         NSError *error;
-        SSKProtoDataMessagePreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
+        SNProtoDataMessagePreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
         if (error || !previewProto) {
             OWSFailDebug(@"Could not build link preview protobuf: %@.", error);
         } else {
@@ -1001,15 +988,15 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return builder;
 }
 
-- (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilder
+- (nullable SNProtoDataMessageQuoteBuilder *)quotedMessageBuilder
 {
     if (!self.quotedMessage) {
         return nil;
     }
     TSQuotedMessage *quotedMessage = self.quotedMessage;
 
-    SSKProtoDataMessageQuoteBuilder *quoteBuilder =
-        [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp author:quotedMessage.authorId];
+    SNProtoDataMessageQuoteBuilder *quoteBuilder =
+        [SNProtoDataMessageQuote builderWithId:quotedMessage.timestamp author:quotedMessage.authorId];
 
     BOOL hasQuotedText = NO;
     BOOL hasQuotedAttachment = NO;
@@ -1022,8 +1009,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
             hasQuotedAttachment = YES;
 
-            SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
-                [SSKProtoDataMessageQuoteQuotedAttachment builder];
+            SNProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
+                [SNProtoDataMessageQuoteQuotedAttachment builder];
 
             quotedAttachmentBuilder.contentType = attachment.contentType;
             quotedAttachmentBuilder.fileName = attachment.sourceFilename;
@@ -1033,7 +1020,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             }
 
             NSError *error;
-            SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
+            SNProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
                 [quotedAttachmentBuilder buildAndReturnError:&error];
             if (error || !quotedAttachmentMessage) {
                 OWSFailDebug(@"could not build protobuf: %@", error);
@@ -1053,10 +1040,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
-- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (nullable SNProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssertDebug(self.thread);
-    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
+    SNProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (builder == nil) {
         OWSFailDebug(@"Couldn't build protobuf.");
         return nil;
@@ -1073,14 +1060,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         displayName = profileManager.localProfileName;
     }
     NSString *profilePictureURL = profileManager.profilePictureURL;
-    SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
+    SNProtoDataMessageLokiProfileBuilder *profileBuilder = [SNProtoDataMessageLokiProfile builder];
     [profileBuilder setDisplayName:displayName];
     [profileBuilder setProfilePicture:profilePictureURL ?: @""];
-    SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
+    SNProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
     [builder setProfile:profile];
     
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
+    SNProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
     if (error != nil || dataProto == nil) {
         OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
         return nil;
@@ -1089,14 +1076,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 
 - (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient {
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
+    SNProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
 
     if (dataMessage == nil) {
         OWSFailDebug(@"Couldn't build protobuf.");
         return nil;
     }
     
-    SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
+    SNProtoContentBuilder *contentBuilder = SNProtoContent.builder;
     [contentBuilder setDataMessage:dataMessage];
     
     return contentBuilder;
@@ -1104,7 +1091,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    SSKProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient];
+    SNProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient];
 
     NSError *error;
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];

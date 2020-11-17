@@ -59,7 +59,6 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                           expiresInSeconds:0
                            expireStartedAt:0
                              quotedMessage:nil
-                              contactShare:nil
                                linkPreview:nil];
 
     if (!self) {
@@ -84,7 +83,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
 }
 
-- (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
+- (instancetype)initWithEnvelope:(SNProtoEnvelope *)envelope
                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
@@ -143,7 +142,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     }
 }
 
-+ (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)corruptedMessageWithEnvelope:(SNProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -159,7 +158,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                          failedMessageType:TSErrorMessageInvalidMessage];
 }
 
-+ (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)invalidVersionWithEnvelope:(SNProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -167,7 +166,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         failedMessageType:TSErrorMessageInvalidVersion];
 }
 
-+ (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)invalidKeyExceptionWithEnvelope:(SNProtoEnvelope *)envelope
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -175,7 +174,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         failedMessageType:TSErrorMessageInvalidKeyException];
 }
 
-+ (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
++ (instancetype)missingSessionWithEnvelope:(SNProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return

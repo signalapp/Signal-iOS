@@ -1,7 +1,7 @@
 
 @objc(LKSignalMessage)
 public final class SignalMessage : NSObject {
-    @objc public let type: SSKProtoEnvelope.SSKProtoEnvelopeType
+    @objc public let type: SNProtoEnvelope.SNProtoEnvelopeType
     @objc public let timestamp: UInt64
     @objc public let senderPublicKey: String
     @objc public let senderDeviceID: UInt32
@@ -13,7 +13,7 @@ public final class SignalMessage : NSObject {
     
     public var ttl: UInt64? { return objc_ttl != 0 ? objc_ttl : nil }
     
-    @objc public init(type: SSKProtoEnvelope.SSKProtoEnvelopeType, timestamp: UInt64, senderID: String, senderDeviceID: UInt32,
+    @objc public init(type: SNProtoEnvelope.SNProtoEnvelopeType, timestamp: UInt64, senderID: String, senderDeviceID: UInt32,
         content: String, recipientID: String, ttl: UInt64, isPing: Bool) {
         self.type = type
         self.timestamp = timestamp

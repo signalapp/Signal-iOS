@@ -7,13 +7,18 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public var sentTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
     public var recipient: String?
+    public var sender: String?
 
     public class var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
 
     public override init() { }
 
     // MARK: Validation
-    public var isValid: Bool { true }
+    public var isValid: Bool {
+        if let sentTimestamp = sentTimestamp { guard sentTimestamp > 0 else { return false } }
+        if let receivedTimestamp = receivedTimestamp { guard receivedTimestamp > 0 else { return false } }
+        return sender != nil && recipient != nil
+    }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {

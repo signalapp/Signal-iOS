@@ -11,7 +11,10 @@ public final class ExpirationTimerUpdate : ControlMessage {
     }
 
     // MARK: Validation
-    public override var isValid: Bool { duration != nil }
+    public override var isValid: Bool {
+        guard super.isValid else { return false }
+        return duration != nil
+    }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {

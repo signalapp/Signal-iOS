@@ -5,6 +5,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     public var delegate: JobDelegate?
     private let message: Message
     private let destination: Message.Destination
+    public var id: String?
     public var failureCount: UInt = 0
 
     // MARK: Settings
@@ -22,7 +23,8 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     // MARK: Coding
     public init?(coder: NSCoder) {
         guard let message = coder.decodeObject(forKey: "message") as! Message?,
-            var rawDestination = coder.decodeObject(forKey: "destination") as! String? else { return nil }
+            var rawDestination = coder.decodeObject(forKey: "destination") as! String?,
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.message = message
         if rawDestination.removePrefix("contact(") {
             guard rawDestination.removeSuffix(")") else { return nil }
@@ -41,11 +43,13 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
         } else {
             return nil
         }
+        self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(message, forKey: "message")
+        coder.encode(id, forKey: "id")
         switch destination {
         case .contact(let publicKey): coder.encode("contact(\(publicKey))", forKey: "destination")
         case .closedGroup(let groupPublicKey): coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
@@ -56,7 +60,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Running
     public func execute() {
-        Configuration.shared.storage.with { transaction in // Intentionally capture self
+        Configuration.shared.storage.withAsync({ transaction in // Intentionally capture self
             Threading.workQueue.async {
                 MessageSender.send(self.message, to: self.destination, using: transaction).done(on: Threading.workQueue) {
                     self.handleSuccess()
@@ -65,7 +69,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                     self.handleFailure(error: error)
                 }
             }
-        }
+        }, completion: { })
     }
 
     private func handleSuccess() {

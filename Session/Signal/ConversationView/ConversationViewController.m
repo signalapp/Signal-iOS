@@ -16,7 +16,6 @@
 #import "DateUtil.h"
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
 #import "OWSAudioPlayer.h"
-
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -27,7 +26,6 @@
 #import "Session-Swift.h"
 #import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import "TSAttachmentPointer.h"
-#import <SignalUtilitiesKit/TSCall.h>
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
@@ -45,7 +43,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSContactOffersInteraction.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
@@ -557,7 +554,7 @@ typedef enum : NSUInteger {
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return !groupThread.isCurrentUserInGroup;
+    return !groupThread.isCurrentUserMemberInGroup;
 }
 
 - (void)hideInputIfNeeded

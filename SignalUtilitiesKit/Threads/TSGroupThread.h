@@ -36,7 +36,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 + (NSString *)defaultGroupName;
 
-- (BOOL)isCurrentUserInGroup;
+- (BOOL)isCurrentUserMemberInGroup;
 - (BOOL)isUserMemberInGroup:(NSString *)publicKey;
 - (BOOL)isUserAdminInGroup:(NSString *)publicKey;
 

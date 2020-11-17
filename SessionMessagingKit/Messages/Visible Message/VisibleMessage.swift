@@ -14,6 +14,7 @@ public final class VisibleMessage : Message {
 
     // MARK: Validation
     public override var isValid: Bool {
+        guard super.isValid else { return false }
         if !attachmentIDs.isEmpty { return true }
         if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
         return false

@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
++ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SNProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)albumMessage
 {
     if (attachmentProto.id < 1) {
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSAttachmentType attachmentType = TSAttachmentTypeDefault;
     if ([attachmentProto hasFlags]) {
         UInt32 flags = attachmentProto.flags;
-        if ((flags & (UInt32)SSKProtoAttachmentPointerFlagsVoiceMessage) > 0) {
+        if ((flags & (UInt32)SNProtoAttachmentPointerFlagsVoiceMessage) > 0) {
             attachmentType = TSAttachmentTypeVoiceMessage;
         }
     }
@@ -176,14 +176,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:
-                                        (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
+                                        (NSArray<SNProtoAttachmentPointer *> *)attachmentProtos
                                                     albumMessage:(TSMessage *)albumMessage
 {
     OWSAssertDebug(attachmentProtos);
     OWSAssertDebug(albumMessage);
 
     NSMutableArray *attachmentPointers = [NSMutableArray new];
-    for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
+    for (SNProtoAttachmentPointer *attachmentProto in attachmentProtos) {
         TSAttachmentPointer *_Nullable attachmentPointer =
             [self attachmentPointerFromProto:attachmentProto albumMessage:albumMessage];
         if (attachmentPointer) {
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug([self isDecimalNumberText:self.uniqueId]);
         if ([self isDecimalNumberText:self.uniqueId]) {
             // For legacy instances, try to parse the serverId from the uniqueId.
-            self.serverId = [self.uniqueId integerValue];
+            self.serverId = (UInt64)[self.uniqueId integerValue];
         } else {
             OWSLogError(@"invalid legacy attachment uniqueId: %@.", self.uniqueId);
         }

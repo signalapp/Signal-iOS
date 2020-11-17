@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
-@property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 @property BOOL skipSave;
 // Open groups
@@ -44,7 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

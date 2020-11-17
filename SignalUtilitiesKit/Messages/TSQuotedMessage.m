@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
++ (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(SNProtoDataMessage *)dataMessage
                                                    thread:(TSThread *)thread
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoDataMessageQuote *quoteProto = [dataMessage quote];
+    SNProtoDataMessageQuote *quoteProto = [dataMessage quote];
 
     if (quoteProto.id == 0) {
         OWSFailDebug(@"quoted message missing id");
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
-    for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
+    for (SNProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
         hasAttachment = YES;
         OWSAttachmentInfo *attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
                                                                                 contentType:quotedAttachment.contentType
@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
                 thread.uniqueId,
                 (unsigned long)timestamp);
 
-            SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
+            SNProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *_Nullable thumbnailPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto albumMessage:nil];
             if (thumbnailPointer) {
