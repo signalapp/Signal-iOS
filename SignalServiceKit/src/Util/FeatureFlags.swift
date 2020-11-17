@@ -166,7 +166,7 @@ public class FeatureFlags: BaseFlags {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let isUsingProductionService = false
+    public static let isUsingProductionService = true
 
     @objc
     public static let useOrphanDataCleaner = true
