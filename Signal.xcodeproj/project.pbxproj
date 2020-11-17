@@ -234,6 +234,7 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
+		7B4933F4256485E500160515 /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4933F3256485E400160515 /* HTMLMetadata.swift */; };
 		7BC01A3E241F40AB00BC7C55 /* NotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */; };
 		7BC01A42241F40AB00BC7C55 /* SessionPushNotificationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
@@ -1589,6 +1590,7 @@
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		7B4933F3256485E400160515 /* HTMLMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadata.swift; sourceTree = "<group>"; };
 		7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionPushNotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtension.swift; sourceTree = "<group>"; };
 		7BC01A3F241F40AB00BC7C55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3355,6 +3357,7 @@
 		C33FD9AC255A548A00E217F9 /* SignalUtilitiesKit */ = {
 			isa = PBXGroup;
 			children = (
+				7B4933F3256485E400160515 /* HTMLMetadata.swift */,
 				C33FDC09255A581D00E217F9 /* AccountServiceClient.swift */,
 				C33FDBC3255A581700E217F9 /* AnyPromise+Conversion.swift */,
 				C33FDB8A255A581200E217F9 /* AppContext.h */,
@@ -5754,6 +5757,7 @@
 				C33FDCB3255A582000E217F9 /* TSContactThread.m in Sources */,
 				C33FDC45255A581F00E217F9 /* AppVersion.m in Sources */,
 				C33FDD2A255A582000E217F9 /* OWSMessageServiceParams.m in Sources */,
+				7B4933F4256485E500160515 /* HTMLMetadata.swift in Sources */,
 				C33FDC7F255A582000E217F9 /* OWSCountryMetadata.m in Sources */,
 				C33FDC84255A582000E217F9 /* LokiMessage.swift in Sources */,
 				C33FDC7C255A582000E217F9 /* TSAttachment.m in Sources */,
