@@ -676,7 +676,7 @@ extension CallService {
             let currentEraMessages = results.filter { $0.eraId == currentEraId }
             owsAssertDebug(currentEraMessages.count <= 1)
 
-            if let currentMessage = results.first {
+            if let currentMessage = currentEraMessages.first {
                 currentMessage.anyUpdateGroupCallMessage(transaction: writeTx) { (toUpdate) in
                     toUpdate.update(
                         withEraId: currentEraId,
@@ -695,6 +695,13 @@ extension CallService {
                     thread: thread,
                     sentAtTimestamp: timestamp)
                 newMessage.anyInsert(transaction: writeTx)
+
+                // Post a notification when learning about a new group call if: we didn't create it and we're not currently in the call.
+                let isCurrentCall = (self.currentCall?.thread == thread)
+                let isLocalUserCreator = SignalServiceAddress(uuid: creatorUuid).isLocalAddress
+                if !isCurrentCall, !isLocalUserCreator {
+                    AppEnvironment.shared.notificationPresenter.notifyUser(for: newMessage, thread: thread, wantsSound: true, transaction: writeTx)
+                }
             }
         }
     }

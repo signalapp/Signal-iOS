@@ -636,12 +636,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         notifyUser(for: errorMessage as TSMessage, thread: thread, wantsSound: true, transaction: transaction)
     }
 
-    public func notifyUser(for infoMessage: TSInfoMessage, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
-        notifyUser(for: infoMessage as TSMessage, thread: thread, wantsSound: wantsSound, transaction: transaction)
-    }
-
-    private func notifyUser(for infoOrErrorMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
-
+    public func notifyUser(for previewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
         let notificationTitle: String?
         let threadIdentifier: String?
         switch self.previewType {
@@ -658,13 +653,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview, .nameNoPreview:
             notificationBody = NotificationStrings.incomingMessageBody
         case .namePreview:
-            notificationBody = infoOrErrorMessage.previewText(transaction: transaction)
+            notificationBody = previewableInteraction.previewText(transaction: transaction)
         }
 
         let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.messageId: infoOrErrorMessage.uniqueId
+            AppNotificationUserInfoKey.messageId: previewableInteraction.uniqueId
         ]
 
         transaction.addAsyncCompletion {
