@@ -1504,7 +1504,8 @@ typedef enum : NSUInteger {
     return YES;
 }
 
-- (void)refreshCallState {
+- (void)refreshCallState
+{
     if (self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         CallService *callService = AppEnvironment.shared.callService;

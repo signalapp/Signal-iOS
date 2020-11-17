@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class TSErrorMessage;
 @class TSIncomingMessage;
-@class TSInfoMessage;
 @class TSInteraction;
 @class TSOutgoingMessage;
 @class TSThread;

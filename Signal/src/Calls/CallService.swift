@@ -542,23 +542,12 @@ public final class CallService: NSObject {
         }
 
         return firstly {
-            try self.groupsV2.fetchGroupExternalCredentials(groupModel: groupModel)
+            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel)
         }.map(on: .main) { (credential) -> Data in
             guard let tokenData = credential.token?.data(using: .utf8) else {
                 throw OWSAssertionError("Invalid credential")
             }
             return tokenData
-        }
-    }
-
-    fileprivate func peekGroupCall(for thread: TSGroupThread) -> Promise<PeekInfo> {
-        guard let memberInfo = groupMemberInfo(for: thread) else {
-            return Promise(error: OWSAssertionError("Could not fetch group membership"))
-        }
-        return firstly {
-            self.fetchGroupMembershipProof(for: thread)
-        }.then { proof in
-            self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
         }
     }
 }
@@ -640,12 +629,15 @@ extension CallService {
     @objc
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
         AssertIsOnMainThread()
-        let groupCall = (currentCall?.isGroupCall == true) ? currentCall?.groupCall : nil
-        let groupCallConnectionState = groupCall?.localDeviceState.connectionState
 
-        guard currentCall?.thread != thread || groupCallConnectionState != .connected else {
-            // If we're already connected to the group call that we want to peek, ignore
-            // We'll have PeekInfo updates handed to us directly from an observer callback
+        // If we're already connected to the group call that we want to peek, ignore
+        // We'll have PeekInfo updates handed to us directly from an observer callback
+        let currentGroupCall = currentCall.map { $0.isGroupCall ? $0.groupCall : nil }
+        let isCurrentGroupCallConnected = (currentGroupCall??.localDeviceState.connectionState == .connected)
+        let isCurrentCallForThread = (currentCall?.thread == thread)
+        let isThreadReceivingAutomaticUpdates = isCurrentCallForThread && isCurrentGroupCallConnected
+
+        guard !isThreadReceivingAutomaticUpdates else {
             Logger.info("Ignoring peek request for currently connected call")
             return
         }
