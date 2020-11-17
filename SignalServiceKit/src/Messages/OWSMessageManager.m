@@ -1707,7 +1707,8 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (groupThread) {
-                [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate forThread:groupThread];
+                [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
+                                                              forThread:groupThread];
             } else {
                 OWSLogError(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
             }
@@ -2156,8 +2157,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
-                                                      forThread:groupThread];
+        [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate forThread:groupThread];
     }
 
     NSString *body = dataMessage.body;

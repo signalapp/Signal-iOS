@@ -796,9 +796,7 @@ typedef void (^SystemMessageActionBlock)(void);
             }
             return
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
-                                               block:^{
-                                                   [weakSelf.delegate handleIndividualCallTap:call];
-                                               }
+                                               block:^{ [weakSelf.delegate handleIndividualCallTap:call]; }
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
@@ -807,9 +805,7 @@ typedef void (^SystemMessageActionBlock)(void);
             }
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
-                                                  block:^{
-                                                      [weakSelf.delegate handleIndividualCallTap:call];
-                                                  }
+                                                  block:^{ [weakSelf.delegate handleIndividualCallTap:call]; }
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_again")];
         case RPRecentCallTypeOutgoingIncomplete:
         case RPRecentCallTypeIncomingIncomplete:
@@ -827,9 +823,9 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (isCallActive && canCall) {
         __weak typeof(self) wSelf = self;
-        return [SystemMessageAction actionWithTitle:@"Join Call" block:^{
-            [wSelf.delegate handleGroupCallTap];
-        } accessibilityIdentifier:@"Join Call"];
+        return [SystemMessageAction actionWithTitle:@"Join Call"
+                                              block:^{ [wSelf.delegate handleGroupCallTap]; }
+                            accessibilityIdentifier:@"Join Call"];
     } else {
         return nil;
     }

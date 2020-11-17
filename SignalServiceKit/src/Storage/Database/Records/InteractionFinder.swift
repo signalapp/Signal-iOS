@@ -919,7 +919,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         """
 
         var groupCalls: [OWSGroupCallMessage] = []
-        let cursor = OWSGroupCallMessage.grdbFetchCursor(sql: sql, arguments: [thread.uniqueId], transaction: transaction.unwrapGrdbRead)
+        let cursor = OWSGroupCallMessage.grdbFetchCursor(
+            sql: sql,
+            arguments: [thread.uniqueId],
+            transaction: transaction.unwrapGrdbRead)
 
         do {
             while let interaction = try cursor.next() {

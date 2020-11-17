@@ -146,7 +146,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
-    NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE", @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
+    NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
+        @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
     return [NSString stringWithFormat:formatString, creatorDisplayName];
 }
 
@@ -155,7 +156,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *memberString = nil;
     BOOL isCreatorInCall = [self.joinedMemberUuids containsObject:self.creatorUuid];
 
-    NSString *(^participantName)(NSUInteger) = ^NSString *(NSUInteger idx) {
+    NSString * (^participantName)(NSUInteger) = ^NSString *(NSUInteger idx)
+    {
         if (self.joinedMemberAddresses.count <= idx) {
             OWSFailDebug(@"Out of bounds");
             return nil;
@@ -165,31 +167,41 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     if (self.hasEnded) {
-        memberString = NSLocalizedString(@"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+        memberString = NSLocalizedString(
+            @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
 
     } else if (self.joinedMemberUuids.count >= 4) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT", @"Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2");
-        memberString = [NSString stringWithFormat:formatString, participantName(0), participantName(1), (self.joinedMemberUuids.count - 2)];
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
+            @"Text explaining that there are more than three people in the group call. Embeds two {member name}s and "
+            @"memberCount-2");
+        memberString = [NSString
+            stringWithFormat:formatString, participantName(0), participantName(1), (self.joinedMemberUuids.count - 2)];
 
     } else if (self.joinedMemberUuids.count == 3) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT", @"Text explaining that there are three people in the group call. Embeds two {member name}s");
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
+            @"Text explaining that there are three people in the group call. Embeds two {member name}s");
         memberString = [NSString stringWithFormat:formatString, participantName(0), participantName(1)];
 
     } else if (self.joinedMemberUuids.count == 2) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT", @"Text explaining that there are two people in the group call. Embeds two {member name}s");
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+            @"Text explaining that there are two people in the group call. Embeds two {member name}s");
         memberString = [NSString stringWithFormat:formatString, participantName(0), participantName(1)];
 
     } else if (isCreatorInCall) {
-        // If the originator is the only participant, the wording is "X started a group call" instead of "X is in a group call"
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE", @"Text explaining that someone started a group call. Embeds {{call originator display name}}");
+        // If the originator is the only participant, the wording is "X started a group call" instead of "X is in a
+        // group call"
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
+            @"Text explaining that someone started a group call. Embeds {{call originator display name}}");
         memberString = [NSString stringWithFormat:formatString, participantName(0)];
 
     } else if (self.joinedMemberUuids.count == 1) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT", @"Text explaining that there is one person in the group call. Embeds {member name}");
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+            @"Text explaining that there is one person in the group call. Embeds {member name}");
         memberString = [NSString stringWithFormat:formatString, participantName(0)];
 
     } else {
-        memberString = NSLocalizedString(@"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+        memberString = NSLocalizedString(
+            @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
     }
 
     return memberString;

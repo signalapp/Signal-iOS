@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @class ThreadlessErrorMessage;
 
-@protocol ContactsManagerProtocol, OWSPreviewText;
+@protocol ContactsManagerProtocol;
+@protocol OWSPreviewText;
 
 @protocol NotificationsProtocol <NSObject>
 

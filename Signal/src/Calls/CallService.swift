@@ -632,8 +632,8 @@ extension CallService {
 
         // If we're already connected to the group call that we want to peek, ignore
         // We'll have PeekInfo updates handed to us directly from an observer callback
-        let currentGroupCall = currentCall.map { $0.isGroupCall ? $0.groupCall : nil }
-        let isCurrentGroupCallConnected = (currentGroupCall??.localDeviceState.connectionState == .connected)
+        let currentGroupCall = currentCall.flatMap { $0.isGroupCall ? $0.groupCall : nil }
+        let isCurrentGroupCallConnected = (currentGroupCall?.localDeviceState.connectionState == .connected)
         let isCurrentCallForThread = (currentCall?.thread == thread)
         let isThreadReceivingAutomaticUpdates = isCurrentCallForThread && isCurrentGroupCallConnected
 
@@ -659,7 +659,7 @@ extension CallService {
 
     fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread) {
         databaseStorage.write { writeTx in
-            let results: [OWSGroupCallMessage] = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
+            let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
 
             // Update everything that doesn't match the current call era to mark as ended
             results
@@ -695,7 +695,11 @@ extension CallService {
                 let isCurrentCall = (self.currentCall?.thread == thread)
                 let isLocalUserCreator = SignalServiceAddress(uuid: creatorUuid).isLocalAddress
                 if !isCurrentCall, !isLocalUserCreator {
-                    AppEnvironment.shared.notificationPresenter.notifyUser(for: newMessage, thread: thread, wantsSound: true, transaction: writeTx)
+                    AppEnvironment.shared.notificationPresenter.notifyUser(
+                        for: newMessage,
+                        thread: thread,
+                        wantsSound: true,
+                        transaction: writeTx)
                 }
             }
         }
