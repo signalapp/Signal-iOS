@@ -7,8 +7,6 @@ import SignalServiceKit
 
 class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
 
-    // MARK: - Sending
-
     var lastJoinStatus: Bool = false
     var currentCall: SignalCall? {
         didSet {

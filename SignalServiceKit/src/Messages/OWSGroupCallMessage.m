@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
         // If the originator is the only participant, the wording is "X started a group call" instead of "X is in a
         // group call"
         NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
-            @"Text explaining that someone started a group call. Embeds {{call originator display name}}");
+            @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
         memberString = [NSString stringWithFormat:formatString, participantName(0)];
 
     } else if (self.joinedMemberUuids.count == 1) {

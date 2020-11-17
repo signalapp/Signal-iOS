@@ -823,9 +823,10 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (isCallActive && canCall) {
         __weak typeof(self) wSelf = self;
-        return [SystemMessageAction actionWithTitle:@"Join Call"
+        NSString *actionTitle = NSLocalizedString(@"JOIN_CALL_BUTTON", "Title for a button to join a group call");
+        return [SystemMessageAction actionWithTitle:actionTitle
                                               block:^{ [wSelf.delegate handleGroupCallTap]; }
-                            accessibilityIdentifier:@"Join Call"];
+                            accessibilityIdentifier:actionTitle];
     } else {
         return nil;
     }
