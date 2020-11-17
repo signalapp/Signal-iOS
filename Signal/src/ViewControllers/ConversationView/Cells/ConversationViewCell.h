@@ -64,7 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage
                                                 oldGroupModel:(TSGroupModel *)oldGroupModel
                                                 newGroupModel:(TSGroupModel *)newGroupModel;
-- (void)handleCallTap:(TSCall *)call;
+- (void)handleIndividualCallTap:(TSCall *)call;
+- (void)handleGroupCallTap;
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
                  withNewNameComponents:(NSPersonNameComponents *)newNameComponents;
 

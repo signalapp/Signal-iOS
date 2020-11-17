@@ -779,6 +779,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForCall:(TSCall *)call
 {
+    // TODO: Respect -canCall from ConversationViewController
     OWSAssertDebug(call);
 
     __weak OWSSystemMessageCell *weakSelf = self;
@@ -796,7 +797,7 @@ typedef void (^SystemMessageActionBlock)(void);
             return
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
                                                block:^{
-                                                   [weakSelf.delegate handleCallTap:call];
+                                                   [weakSelf.delegate handleIndividualCallTap:call];
                                                }
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
@@ -807,7 +808,7 @@ typedef void (^SystemMessageActionBlock)(void);
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
                                                   block:^{
-                                                      [weakSelf.delegate handleCallTap:call];
+                                                      [weakSelf.delegate handleIndividualCallTap:call];
                                                   }
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_again")];
         case RPRecentCallTypeOutgoingIncomplete:
@@ -818,9 +819,20 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForGroupCall:(OWSGroupCallMessage *)groupCallMessage
 {
-    // TODO: join call if no active call, return to call if active call is for thread of this message, no button if
-    // active call otherwise
-    return nil;
+    BOOL isCallActive = (!groupCallMessage.hasEnded && groupCallMessage.joinedMemberAddresses.count > 0);
+
+    // TODO: Respect -canCall from ConversationViewController
+    // For now we'll just check the feature flag
+    BOOL canCall = SSKFeatureFlags.groupCalling;
+
+    if (isCallActive && canCall) {
+        __weak typeof(self) wSelf = self;
+        return [SystemMessageAction actionWithTitle:@"Join Call" block:^{
+            [wSelf.delegate handleGroupCallTap];
+        } accessibilityIdentifier:@"Join Call"];
+    } else {
+        return nil;
+    }
 }
 
 #pragma mark - Events

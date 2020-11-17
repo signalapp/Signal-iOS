@@ -1873,7 +1873,7 @@ typedef enum : NSUInteger {
     [self presentActionSheet:actionSheet];
 }
 
-- (void)handleCallTap:(TSCall *)call
+- (void)handleIndividualCallTap:(TSCall *)call
 {
     OWSAssertDebug(call);
 
@@ -1910,6 +1910,11 @@ typedef enum : NSUInteger {
     [self.inputToolbar clearDesiredKeyboard];
     [self dismissKeyBoard];
     [self presentActionSheet:alert];
+}
+
+- (void)handleGroupCallTap
+{
+    [self showGroupCallLobby];
 }
 
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
