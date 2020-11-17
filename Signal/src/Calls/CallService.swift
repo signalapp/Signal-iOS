@@ -351,6 +351,13 @@ public final class CallService: NSObject {
         case .group(let groupCall):
             groupCall.leave()
             groupCall.disconnect()
+
+            // Kick off a peek now that we've disconnected to get an updated participant state.
+            if let thread = call.thread as? TSGroupThread {
+                peekCallAndUpdateThread(thread)
+            } else {
+                owsFailDebug("Invalid thread type")
+            }
         }
 
         // Apparently WebRTC will sometimes disable device orientation notifications.
@@ -630,6 +637,7 @@ extension CallService: CallObserver {
 
 extension CallService {
 
+    @objc
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
         AssertIsOnMainThread()
         let groupCall = (currentCall?.isGroupCall == true) ? currentCall?.groupCall : nil
@@ -678,12 +686,7 @@ extension CallService {
 
             if let currentMessage = currentEraMessages.first {
                 currentMessage.anyUpdateGroupCallMessage(transaction: writeTx) { (toUpdate) in
-                    toUpdate.update(
-                        withEraId: currentEraId,
-                        joinedMemberUuids: info.joinedMembers,
-                        creatorUuid: creatorUuid,
-                        hasEnded: false,
-                        transaction: writeTx)
+                    toUpdate.joinedMemberUuids = info.joinedMembers.map { $0.uuidString }
                 }
             } else {
                 // TODO: Plumb through a more relevant timestamp if available

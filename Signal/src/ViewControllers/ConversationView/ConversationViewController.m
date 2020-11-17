@@ -702,6 +702,7 @@ typedef enum : NSUInteger {
     }
     [self ensureBottomViewType];
     [self updateInputToolbarLayout];
+    [self refreshCallState];
 
     // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
     // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
@@ -1501,6 +1502,14 @@ typedef enum : NSUInteger {
     }
 
     return YES;
+}
+
+- (void)refreshCallState {
+    if (self.thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        CallService *callService = AppEnvironment.shared.callService;
+        [callService peekCallAndUpdateThread:groupThread];
+    }
 }
 
 #pragma mark - Dynamic Text
