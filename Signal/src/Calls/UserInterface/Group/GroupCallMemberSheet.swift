@@ -317,7 +317,7 @@ class GroupCallMemberSheet: UIViewController {
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
                 let displayName = NSLocalizedString(
                     "GROUP_CALL_YOU",
-                    comment: "Text describing the local user in the group call members sheet."
+                    comment: "Text describing the local user as a participant in a group call."
                 )
                 let comparableName = displayName
 

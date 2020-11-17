@@ -909,6 +909,32 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return result
     }
 
+    public static func unendedCallsForGroupThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> [OWSGroupCallMessage] {
+        let sql: String = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
+        AND \(interactionColumn: .hasEnded) IS FALSE
+        AND \(interactionColumn: .threadUniqueId) = ?
+        """
+
+        var groupCalls: [OWSGroupCallMessage] = []
+        let cursor = OWSGroupCallMessage.grdbFetchCursor(sql: sql, arguments: [thread.uniqueId], transaction: transaction.unwrapGrdbRead)
+
+        do {
+            while let interaction = try cursor.next() {
+                guard let groupCall = interaction as? OWSGroupCallMessage, !groupCall.hasEnded else {
+                    owsFailDebug("Unexpectedly result: \(interaction.timestamp)")
+                    continue
+                }
+                groupCalls.append(groupCall)
+            }
+        } catch {
+            owsFailDebug("unexpected error \(error)")
+        }
+        return groupCalls
+    }
+
     static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String] {
         let sql: String = """
         SELECT \(interactionColumn: .uniqueId)

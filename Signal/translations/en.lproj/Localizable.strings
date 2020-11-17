@@ -1519,13 +1519,16 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
+/* Text in conversation view for a group call that has since ended */
+"GROUP_CALL_ENDED_MESSAGE" = "Group call";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Join Call";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
 
-/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+/* Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2 */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
 
 /* Text explaining that you are the only person currently in the group call */
@@ -1564,13 +1567,19 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
-/* Text explaining that there are two people in the group call. Embeds {member name} */
+/* Text explaining that someone started a group call. Embeds {{call originator display name}} */
+"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+
+/* Text explaining that there are three people in the group call. Embeds two {member name}s */
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other in this call";
+
+/* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "The connection to the call unexpectedly ended.";
 
-/* Text describing the local user in the group call members sheet. */
+/* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "You";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */

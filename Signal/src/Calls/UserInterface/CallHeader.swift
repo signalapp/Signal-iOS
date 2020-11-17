@@ -203,13 +203,13 @@ class CallHeader: UIView {
                 case 2:
                     let formatString = NSLocalizedString(
                         "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are two people in the group call. Embeds {member name}"
+                        comment: "Text explaining that there are two people in the group call. Embeds two {member name}s"
                     )
                     callTitleText = String(format: formatString, memberNames[0], memberNames[1])
                 default:
                     let formatString = NSLocalizedString(
                         "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
+                        comment: "Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2"
                     )
                     callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
                 }

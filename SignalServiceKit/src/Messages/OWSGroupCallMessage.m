@@ -145,14 +145,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    // TODO: Return "Originator started the call" here
-    return @"Call started";
+    NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress];
+    NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE", @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
+    return [NSString stringWithFormat:formatString, creatorDisplayName];
 }
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    // TODO: Return the dynamic list of participants, etc. here
-    return @"Some text for in the conversation";
+    NSString *memberString = nil;
+    BOOL isCreatorInCall = [self.joinedMemberUuids containsObject:self.creatorUuid];
+
+    if (self.hasEnded) {
+        memberString = NSLocalizedString(@"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+
+    } else if (self.joinedMemberUuids.count >= 4) {
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT", @"Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2");
+        memberString = [NSString stringWithFormat:formatString, [self participantNameAtIndex:0], [self participantNameAtIndex:1], (self.joinedMemberUuids.count - 2)];
+
+    } else if (self.joinedMemberUuids.count == 3) {
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT", @"Text explaining that there are three people in the group call. Embeds two {member name}s");
+        memberString = [NSString stringWithFormat:formatString, [self participantNameAtIndex:0], [self participantNameAtIndex:1]];
+
+    } else if (self.joinedMemberUuids.count == 2) {
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT", @"Text explaining that there are two people in the group call. Embeds two {member name}s");
+        memberString = [NSString stringWithFormat:formatString, [self participantNameAtIndex:0], [self participantNameAtIndex:1]];
+
+    } else if (isCreatorInCall) {
+        // If the originator is the only participant, the wording is "X started a group call" instead of "X is in a group call"
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE", @"Text explaining that someone started a group call. Embeds {{call originator display name}}");
+        memberString = [NSString stringWithFormat:formatString, [self participantNameAtIndex:0]];
+
+    } else if (self.joinedMemberUuids.count == 1) {
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT", @"Text explaining that there is one person in the group call. Embeds {member name}");
+        memberString = [NSString stringWithFormat:formatString, [self participantNameAtIndex:0]];
+
+    } else {
+        memberString = NSLocalizedString(@"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+    }
+
+    return memberString;
 }
 
 
@@ -170,6 +201,27 @@ NS_ASSUME_NONNULL_BEGIN
                                                  groupCallMessage.creatorUuid = creatorUuid.UUIDString;
                                                  groupCallMessage.hasEnded = hasEnded;
                                              }];
+}
+
+#pragma mark - Private
+
+- (NSString *)participantNameAtIndex:(NSUInteger)index
+{
+    if (self.joinedMemberAddresses.count <= index) {
+        OWSFailDebug(@"Out of bounds");
+        return nil;
+    }
+    SignalServiceAddress *address = self.joinedMemberAddresses[index];
+    return [self participantNameForAddress:address];
+}
+
+- (NSString *)participantNameForAddress:(SignalServiceAddress *)address
+{
+    if (address.isLocalAddress) {
+        return NSLocalizedString(@"GROUP_CALL_YOU", "Text describing the local user as a participant in a group call.");
+    } else {
+        return [SSKEnvironment.shared.contactsManager displayNameForAddress:address];
+    }
 }
 
 @end

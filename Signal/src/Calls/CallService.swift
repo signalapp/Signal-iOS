@@ -606,7 +606,7 @@ extension CallService: CallObserver {
             self.fetchGroupMembershipProof(for: groupThread)
         }.done(on: .main) { proof in
             call.groupCall.updateMembershipProof(proof: proof)
-        }.catch { error in
+        }.catch(on: .main) { error in
             owsFailDebug("Failed to fetch group call credentials \(error)")
         }
     }
@@ -659,8 +659,7 @@ extension CallService {
 
     fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread) {
         databaseStorage.write { writeTx in
-            // TODO: Build InteractionFinder method to find unended OWSGroupCallMessages for the current thread
-            let results: [OWSGroupCallMessage] = []
+            let results: [OWSGroupCallMessage] = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
 
             // Update everything that doesn't match the current call era to mark as ended
             results
