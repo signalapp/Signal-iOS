@@ -167,7 +167,7 @@ public extension GroupV2Params {
         let duration = (token.isEnabled
             ? token.durationSeconds
             : 0)
-        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
         blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.disappearingMessagesDuration(duration))
         let blobData = try blobBuilder.buildSerializedData()
         let encryptedTimerData = try encryptBlob(blobData)
@@ -197,7 +197,7 @@ public extension GroupV2Params {
     }
 
     func encryptGroupName(_ value: String) throws -> Data {
-        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
         blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.title(value))
         let blobData = try blobBuilder.buildSerializedData()
         let encryptedTimerData = try encryptBlob(blobData)
@@ -219,7 +219,7 @@ public extension GroupV2Params {
     }
 
     func encryptGroupAvatar(_ value: Data) throws -> Data {
-        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
         blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.avatar(value))
         let blobData = try blobBuilder.buildSerializedData()
         let encryptedTimerData = try encryptBlob(blobData)

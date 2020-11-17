@@ -71,9 +71,6 @@ public protocol GroupsV2: AnyObject {
 
     func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
 
-    func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
-                                          ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
-
     func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction)
 
     func processProfileKeyUpdates()
@@ -119,6 +116,9 @@ public protocol GroupsV2Swift: GroupsV2 {
                        changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
+
+    func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
+                                          ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions
 
     func updateGroupWithChangeActions(groupId: Data,
                                       changeActionsProto: GroupsProtoGroupChangeActions,

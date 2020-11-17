@@ -88,7 +88,7 @@ public struct StorageService {
         }
 
         public func buildRecord() throws -> StorageServiceProtoManifestRecordKey {
-            let builder = StorageServiceProtoManifestRecordKey.builder(data: data, type: type)
+            var builder = StorageServiceProtoManifestRecordKey.builder(data: data, type: type)
             return try builder.build()
         }
 
@@ -149,25 +149,25 @@ public struct StorageService {
         }
 
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.contact(contact))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
         public init(identifier: StorageIdentifier, groupV1: StorageServiceProtoGroupV1Record) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.groupV1(groupV1))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
         public init(identifier: StorageIdentifier, groupV2: StorageServiceProtoGroupV2Record) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.groupV2(groupV2))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
         public init(identifier: StorageIdentifier, account: StorageServiceProtoAccountRecord) throws {
-            let storageRecord = StorageServiceProtoStorageRecord.builder()
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.account(account))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
@@ -237,7 +237,7 @@ public struct StorageService {
         Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count), deleteAllExistingRecords: \(deleteAllExistingRecords)")
 
         return DispatchQueue.global().async(.promise) {
-            let builder = StorageServiceProtoWriteOperation.builder()
+            var builder = StorageServiceProtoWriteOperation.builder()
 
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
@@ -315,7 +315,7 @@ public struct StorageService {
         guard !keys.isEmpty else { return Promise.value([]) }
 
         return DispatchQueue.global().async(.promise) {
-            let builder = StorageServiceProtoReadOperation.builder()
+            var builder = StorageServiceProtoReadOperation.builder()
             builder.setReadKey(keys.map { $0.data })
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
@@ -465,7 +465,7 @@ public extension StorageService {
         for i in 0...4 {
             let identifier = StorageService.StorageIdentifier.generate(type: .contact)
 
-            let contactRecordBuilder = StorageServiceProtoContactRecord.builder()
+            var contactRecordBuilder = StorageServiceProtoContactRecord.builder()
             contactRecordBuilder.setServiceUuid(testNames[i])
 
             recordsInManifest.append(try! StorageItem(identifier: identifier, contact: try! contactRecordBuilder.build()))
@@ -486,7 +486,7 @@ public extension StorageService {
             }
 
             // set keys
-            let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
+            var newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
             newManifestBuilder.setKeys(recordsInManifest.map { try! $0.identifier.buildRecord() })
 
             return (try! newManifestBuilder.build(), existingKeys ?? [])
@@ -601,11 +601,11 @@ public extension StorageService {
 
         // Try and update a manifest version that already exists
         }.map {
-            let oldManifestBuilder = StorageServiceProtoManifestRecord.builder(version: 0)
+            var oldManifestBuilder = StorageServiceProtoManifestRecord.builder(version: 0)
 
             let identifier = StorageIdentifier.generate(type: .contact)
 
-            let recordBuilder = StorageServiceProtoContactRecord.builder()
+            var recordBuilder = StorageServiceProtoContactRecord.builder()
             recordBuilder.setServiceUuid(testNames[0])
 
             oldManifestBuilder.setKeys([try! identifier.buildRecord()])

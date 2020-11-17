@@ -46,7 +46,7 @@ extension StorageServiceProtoContactRecord {
             throw StorageService.StorageError.accountMissing
         }
 
-        let builder = StorageServiceProtoContactRecord.builder()
+        var builder = StorageServiceProtoContactRecord.builder()
 
         if let phoneNumber = address.phoneNumber {
             builder.setServiceE164(phoneNumber)
@@ -282,7 +282,7 @@ extension StorageServiceProtoGroupV1Record {
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoGroupV1Record {
 
-        let builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
+        var builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
 
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
@@ -414,7 +414,7 @@ extension StorageServiceProtoGroupV2Record {
         let groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
         let groupId = groupContextInfo.groupId
 
-        let builder = StorageServiceProtoGroupV2Record.builder(masterKey: masterKeyData)
+        var builder = StorageServiceProtoGroupV2Record.builder(masterKey: masterKeyData)
 
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
@@ -602,7 +602,7 @@ extension StorageServiceProtoAccountRecord {
             throw OWSAssertionError("Missing local address")
         }
 
-        let builder = StorageServiceProtoAccountRecord.builder()
+        var builder = StorageServiceProtoAccountRecord.builder()
 
         if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
             builder.setProfileKey(profileKey)
@@ -865,7 +865,7 @@ extension PinnedThreadManager {
 
         var pinnedConversationProtos = [StorageServiceProtoAccountRecordPinnedConversation]()
         for pinnedThread in pinnedThreads {
-            let pinnedConversationBuilder = StorageServiceProtoAccountRecordPinnedConversation.builder()
+            var pinnedConversationBuilder = StorageServiceProtoAccountRecordPinnedConversation.builder()
 
             if let groupThread = pinnedThread as? TSGroupThread {
                 if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
@@ -887,7 +887,7 @@ extension PinnedThreadManager {
                 }
 
             } else if let contactThread = pinnedThread as? TSContactThread {
-                let contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
+                var contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
                 if let uuidString = contactThread.contactAddress.uuidString {
                     contactBuilder.setUuid(uuidString)
                 } else if let e164 = contactThread.contactAddress.phoneNumber {

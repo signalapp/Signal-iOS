@@ -14,31 +14,30 @@ public enum DeviceTransferProtoError: Error {
 
 // MARK: - DeviceTransferProtoFile
 
-public class DeviceTransferProtoFile: NSObject, Codable {
+public struct DeviceTransferProtoFile: Codable, CustomDebugStringConvertible {
 
     // MARK: - DeviceTransferProtoFileBuilder
 
-    public class func builder(identifier: String, relativePath: String, estimatedSize: UInt64) -> DeviceTransferProtoFileBuilder {
+    public static func builder(identifier: String, relativePath: String, estimatedSize: UInt64) -> DeviceTransferProtoFileBuilder {
         return DeviceTransferProtoFileBuilder(identifier: identifier, relativePath: relativePath, estimatedSize: estimatedSize)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoFileBuilder {
-        let builder = DeviceTransferProtoFileBuilder(identifier: identifier, relativePath: relativePath, estimatedSize: estimatedSize)
+        var builder = DeviceTransferProtoFileBuilder(identifier: identifier, relativePath: relativePath, estimatedSize: estimatedSize)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
         return builder
     }
 
-    public class DeviceTransferProtoFileBuilder: NSObject {
+    public struct DeviceTransferProtoFileBuilder {
 
         private var proto = DeviceTransferProtos_File()
 
-        fileprivate override init() {}
+        fileprivate init() {}
 
         fileprivate init(identifier: String, relativePath: String, estimatedSize: UInt64) {
-            super.init()
 
             setIdentifier(identifier)
             setRelativePath(relativePath)
@@ -46,30 +45,30 @@ public class DeviceTransferProtoFile: NSObject, Codable {
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setIdentifier(_ valueParam: String?) {
+        public mutating func setIdentifier(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.identifier = valueParam
         }
 
-        public func setIdentifier(_ valueParam: String) {
+        public mutating func setIdentifier(_ valueParam: String) {
             proto.identifier = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setRelativePath(_ valueParam: String?) {
+        public mutating func setRelativePath(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.relativePath = valueParam
         }
 
-        public func setRelativePath(_ valueParam: String) {
+        public mutating func setRelativePath(_ valueParam: String) {
             proto.relativePath = valueParam
         }
 
-        public func setEstimatedSize(_ valueParam: UInt64) {
+        public mutating func setEstimatedSize(_ valueParam: UInt64) {
             proto.estimatedSize = valueParam
         }
 
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
 
@@ -108,17 +107,16 @@ public class DeviceTransferProtoFile: NSObject, Codable {
         self.estimatedSize = estimatedSize
     }
 
-    @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
     }
 
-    public convenience init(serializedData: Data) throws {
+    public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_File(serializedData: serializedData)
         try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: DeviceTransferProtos_File) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_File) throws {
         let identifier = proto.identifier
 
         let relativePath = proto.relativePath
@@ -135,7 +133,7 @@ public class DeviceTransferProtoFile: NSObject, Codable {
                   estimatedSize: estimatedSize)
     }
 
-    public required convenience init(from decoder: Swift.Decoder) throws {
+    public init(from decoder: Swift.Decoder) throws {
         let singleValueContainer = try decoder.singleValueContainer()
         let serializedData = try singleValueContainer.decode(Data.self)
         try self.init(serializedData: serializedData)
@@ -145,7 +143,7 @@ public class DeviceTransferProtoFile: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
-    public override var debugDescription: String {
+    public var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -168,57 +166,56 @@ extension DeviceTransferProtoFile.DeviceTransferProtoFileBuilder {
 
 // MARK: - DeviceTransferProtoDefault
 
-public class DeviceTransferProtoDefault: NSObject, Codable {
+public struct DeviceTransferProtoDefault: Codable, CustomDebugStringConvertible {
 
     // MARK: - DeviceTransferProtoDefaultBuilder
 
-    public class func builder(key: String, encodedValue: Data) -> DeviceTransferProtoDefaultBuilder {
+    public static func builder(key: String, encodedValue: Data) -> DeviceTransferProtoDefaultBuilder {
         return DeviceTransferProtoDefaultBuilder(key: key, encodedValue: encodedValue)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoDefaultBuilder {
-        let builder = DeviceTransferProtoDefaultBuilder(key: key, encodedValue: encodedValue)
+        var builder = DeviceTransferProtoDefaultBuilder(key: key, encodedValue: encodedValue)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
         return builder
     }
 
-    public class DeviceTransferProtoDefaultBuilder: NSObject {
+    public struct DeviceTransferProtoDefaultBuilder {
 
         private var proto = DeviceTransferProtos_Default()
 
-        fileprivate override init() {}
+        fileprivate init() {}
 
         fileprivate init(key: String, encodedValue: Data) {
-            super.init()
 
             setKey(key)
             setEncodedValue(encodedValue)
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setKey(_ valueParam: String?) {
+        public mutating func setKey(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.key = valueParam
         }
 
-        public func setKey(_ valueParam: String) {
+        public mutating func setKey(_ valueParam: String) {
             proto.key = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setEncodedValue(_ valueParam: Data?) {
+        public mutating func setEncodedValue(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
             proto.encodedValue = valueParam
         }
 
-        public func setEncodedValue(_ valueParam: Data) {
+        public mutating func setEncodedValue(_ valueParam: Data) {
             proto.encodedValue = valueParam
         }
 
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
 
@@ -253,17 +250,16 @@ public class DeviceTransferProtoDefault: NSObject, Codable {
         self.encodedValue = encodedValue
     }
 
-    @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
     }
 
-    public convenience init(serializedData: Data) throws {
+    public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_Default(serializedData: serializedData)
         try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: DeviceTransferProtos_Default) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_Default) throws {
         let key = proto.key
 
         let encodedValue = proto.encodedValue
@@ -277,7 +273,7 @@ public class DeviceTransferProtoDefault: NSObject, Codable {
                   encodedValue: encodedValue)
     }
 
-    public required convenience init(from decoder: Swift.Decoder) throws {
+    public init(from decoder: Swift.Decoder) throws {
         let singleValueContainer = try decoder.singleValueContainer()
         let serializedData = try singleValueContainer.decode(Data.self)
         try self.init(serializedData: serializedData)
@@ -287,7 +283,7 @@ public class DeviceTransferProtoDefault: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
-    public override var debugDescription: String {
+    public var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -310,31 +306,30 @@ extension DeviceTransferProtoDefault.DeviceTransferProtoDefaultBuilder {
 
 // MARK: - DeviceTransferProtoDatabase
 
-public class DeviceTransferProtoDatabase: NSObject, Codable {
+public struct DeviceTransferProtoDatabase: Codable, CustomDebugStringConvertible {
 
     // MARK: - DeviceTransferProtoDatabaseBuilder
 
-    public class func builder(key: Data, database: DeviceTransferProtoFile, wal: DeviceTransferProtoFile) -> DeviceTransferProtoDatabaseBuilder {
+    public static func builder(key: Data, database: DeviceTransferProtoFile, wal: DeviceTransferProtoFile) -> DeviceTransferProtoDatabaseBuilder {
         return DeviceTransferProtoDatabaseBuilder(key: key, database: database, wal: wal)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoDatabaseBuilder {
-        let builder = DeviceTransferProtoDatabaseBuilder(key: key, database: database, wal: wal)
+        var builder = DeviceTransferProtoDatabaseBuilder(key: key, database: database, wal: wal)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
         return builder
     }
 
-    public class DeviceTransferProtoDatabaseBuilder: NSObject {
+    public struct DeviceTransferProtoDatabaseBuilder {
 
         private var proto = DeviceTransferProtos_Database()
 
-        fileprivate override init() {}
+        fileprivate init() {}
 
         fileprivate init(key: Data, database: DeviceTransferProtoFile, wal: DeviceTransferProtoFile) {
-            super.init()
 
             setKey(key)
             setDatabase(database)
@@ -342,36 +337,36 @@ public class DeviceTransferProtoDatabase: NSObject, Codable {
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setKey(_ valueParam: Data?) {
+        public mutating func setKey(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
             proto.key = valueParam
         }
 
-        public func setKey(_ valueParam: Data) {
+        public mutating func setKey(_ valueParam: Data) {
             proto.key = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setDatabase(_ valueParam: DeviceTransferProtoFile?) {
+        public mutating func setDatabase(_ valueParam: DeviceTransferProtoFile?) {
             guard let valueParam = valueParam else { return }
             proto.database = valueParam.proto
         }
 
-        public func setDatabase(_ valueParam: DeviceTransferProtoFile) {
+        public mutating func setDatabase(_ valueParam: DeviceTransferProtoFile) {
             proto.database = valueParam.proto
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setWal(_ valueParam: DeviceTransferProtoFile?) {
+        public mutating func setWal(_ valueParam: DeviceTransferProtoFile?) {
             guard let valueParam = valueParam else { return }
             proto.wal = valueParam.proto
         }
 
-        public func setWal(_ valueParam: DeviceTransferProtoFile) {
+        public mutating func setWal(_ valueParam: DeviceTransferProtoFile) {
             proto.wal = valueParam.proto
         }
 
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
 
@@ -410,17 +405,16 @@ public class DeviceTransferProtoDatabase: NSObject, Codable {
         self.wal = wal
     }
 
-    @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
     }
 
-    public convenience init(serializedData: Data) throws {
+    public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_Database(serializedData: serializedData)
         try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: DeviceTransferProtos_Database) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_Database) throws {
         let key = proto.key
 
         let database = try DeviceTransferProtoFile(proto.database)
@@ -437,7 +431,7 @@ public class DeviceTransferProtoDatabase: NSObject, Codable {
                   wal: wal)
     }
 
-    public required convenience init(from decoder: Swift.Decoder) throws {
+    public init(from decoder: Swift.Decoder) throws {
         let singleValueContainer = try decoder.singleValueContainer()
         let serializedData = try singleValueContainer.decode(Data.self)
         try self.init(serializedData: serializedData)
@@ -447,7 +441,7 @@ public class DeviceTransferProtoDatabase: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
-    public override var debugDescription: String {
+    public var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -470,17 +464,17 @@ extension DeviceTransferProtoDatabase.DeviceTransferProtoDatabaseBuilder {
 
 // MARK: - DeviceTransferProtoManifest
 
-public class DeviceTransferProtoManifest: NSObject, Codable {
+public struct DeviceTransferProtoManifest: Codable, CustomDebugStringConvertible {
 
     // MARK: - DeviceTransferProtoManifestBuilder
 
-    public class func builder(grdbSchemaVersion: UInt64) -> DeviceTransferProtoManifestBuilder {
+    public static func builder(grdbSchemaVersion: UInt64) -> DeviceTransferProtoManifestBuilder {
         return DeviceTransferProtoManifestBuilder(grdbSchemaVersion: grdbSchemaVersion)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoManifestBuilder {
-        let builder = DeviceTransferProtoManifestBuilder(grdbSchemaVersion: grdbSchemaVersion)
+        var builder = DeviceTransferProtoManifestBuilder(grdbSchemaVersion: grdbSchemaVersion)
         if let _value = database {
             builder.setDatabase(_value)
         }
@@ -496,67 +490,60 @@ public class DeviceTransferProtoManifest: NSObject, Codable {
         return builder
     }
 
-    public class DeviceTransferProtoManifestBuilder: NSObject {
+    public struct DeviceTransferProtoManifestBuilder {
 
         private var proto = DeviceTransferProtos_Manifest()
 
-        fileprivate override init() {}
+        fileprivate init() {}
 
         fileprivate init(grdbSchemaVersion: UInt64) {
-            super.init()
 
             setGrdbSchemaVersion(grdbSchemaVersion)
         }
 
-        public func setGrdbSchemaVersion(_ valueParam: UInt64) {
+        public mutating func setGrdbSchemaVersion(_ valueParam: UInt64) {
             proto.grdbSchemaVersion = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
-        public func setDatabase(_ valueParam: DeviceTransferProtoDatabase?) {
+        public mutating func setDatabase(_ valueParam: DeviceTransferProtoDatabase?) {
             guard let valueParam = valueParam else { return }
             proto.database = valueParam.proto
         }
 
-        public func setDatabase(_ valueParam: DeviceTransferProtoDatabase) {
+        public mutating func setDatabase(_ valueParam: DeviceTransferProtoDatabase) {
             proto.database = valueParam.proto
         }
 
-        public func addAppDefaults(_ valueParam: DeviceTransferProtoDefault) {
-            var items = proto.appDefaults
-            items.append(valueParam.proto)
-            proto.appDefaults = items
+        public mutating func addAppDefaults(_ valueParam: DeviceTransferProtoDefault) {
+            proto.appDefaults.append(valueParam.proto)
         }
 
-        public func setAppDefaults(_ wrappedItems: [DeviceTransferProtoDefault]) {
+        public mutating func setAppDefaults(_ wrappedItems: [DeviceTransferProtoDefault]) {
             proto.appDefaults = wrappedItems.map { $0.proto }
         }
 
-        public func addStandardDefaults(_ valueParam: DeviceTransferProtoDefault) {
-            var items = proto.standardDefaults
-            items.append(valueParam.proto)
-            proto.standardDefaults = items
+        public mutating func addStandardDefaults(_ valueParam: DeviceTransferProtoDefault) {
+            proto.standardDefaults.append(valueParam.proto)
         }
 
-        public func setStandardDefaults(_ wrappedItems: [DeviceTransferProtoDefault]) {
+        public mutating func setStandardDefaults(_ wrappedItems: [DeviceTransferProtoDefault]) {
             proto.standardDefaults = wrappedItems.map { $0.proto }
         }
 
-        public func addFiles(_ valueParam: DeviceTransferProtoFile) {
-            var items = proto.files
-            items.append(valueParam.proto)
-            proto.files = items
+        public mutating func addFiles(_ valueParam: DeviceTransferProtoFile) {
+            proto.files.append(valueParam.proto)
         }
 
-        public func setFiles(_ wrappedItems: [DeviceTransferProtoFile]) {
+        public mutating func setFiles(_ wrappedItems: [DeviceTransferProtoFile]) {
             proto.files = wrappedItems.map { $0.proto }
         }
 
-        public func setEstimatedTotalSize(_ valueParam: UInt64) {
+        public mutating func setEstimatedTotalSize(_ valueParam: UInt64) {
             proto.estimatedTotalSize = valueParam
         }
 
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
 
@@ -610,17 +597,16 @@ public class DeviceTransferProtoManifest: NSObject, Codable {
         self.files = files
     }
 
-    @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
     }
 
-    public convenience init(serializedData: Data) throws {
+    public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_Manifest(serializedData: serializedData)
         try self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: DeviceTransferProtos_Manifest) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_Manifest) throws {
         let grdbSchemaVersion = proto.grdbSchemaVersion
 
         var database: DeviceTransferProtoDatabase?
@@ -649,7 +635,7 @@ public class DeviceTransferProtoManifest: NSObject, Codable {
                   files: files)
     }
 
-    public required convenience init(from decoder: Swift.Decoder) throws {
+    public init(from decoder: Swift.Decoder) throws {
         let singleValueContainer = try decoder.singleValueContainer()
         let serializedData = try singleValueContainer.decode(Data.self)
         try self.init(serializedData: serializedData)
@@ -659,7 +645,7 @@ public class DeviceTransferProtoManifest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
-    public override var debugDescription: String {
+    public var debugDescription: String {
         return "\(proto)"
     }
 }

@@ -15,7 +15,7 @@ extension DeviceTransferService {
         case unsupportedVersion
     }
 
-    enum TransferState: Equatable {
+    enum TransferState {
         case idle
         case incoming(
             oldDevicePeerId: MCPeerID,

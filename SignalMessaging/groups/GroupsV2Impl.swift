@@ -1410,11 +1410,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
         let masterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
 
-        let contentsV1Builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.builder()
+        var contentsV1Builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.builder()
         contentsV1Builder.setGroupMasterKey(masterKey)
         contentsV1Builder.setInviteLinkPassword(inviteLinkPassword)
 
-        let builder = GroupsProtoGroupInviteLink.builder()
+        var builder = GroupsProtoGroupInviteLink.builder()
         builder.setContents(GroupsProtoGroupInviteLinkOneOfContents.contentsV1(try contentsV1Builder.build()))
         let protoData = try builder.buildSerializedData()
 
@@ -1895,7 +1895,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return (groupInviteLinkPreview, localProfileKeyCredential)
             }
         }.map(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, localProfileKeyCredential: ProfileKeyCredential) -> GroupsProtoGroupChangeActions in
-            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+            var actionsBuilder = GroupsProtoGroupChangeActions.builder()
 
             let oldRevision = groupInviteLinkPreview.revision
             let newRevision = oldRevision + 1
@@ -1908,13 +1908,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             switch groupInviteLinkPreview.addFromInviteLinkAccess {
             case .any:
                 let role = TSGroupMemberRole.`normal`
-                let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
+                var actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                            role: role.asProtoRole,
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
-                let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
+                var actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))
                 actionsBuilder.addAddRequestingMembers(try actionBuilder.build())
@@ -2056,10 +2056,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let newRevision = oldRevision + 1
             revisionForPlaceholderModel.set(newRevision)
 
-            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+            var actionsBuilder = GroupsProtoGroupChangeActions.builder()
             actionsBuilder.setRevision(newRevision)
 
-            let actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
+            var actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
             let userId = try groupV2Params.userId(forUuid: localUuid)
             actionBuilder.setDeletedUserID(userId)
             actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
