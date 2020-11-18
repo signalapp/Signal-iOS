@@ -1172,8 +1172,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // Only allow deletion on incoming messages if the user has moderation permission
         return [SNOpenGroupAPI isUserModerator:self.userHexEncodedPublicKey forChannel:publicChat.channel onServer:publicChat.server];
     } else {
-        // Only allow deletion on outgoing messages if the user was the sender (i.e. it was not sent from another linked device)
-        return [self.interaction.actualSenderHexEncodedPublicKey isEqual:self.userHexEncodedPublicKey];
+        return YES;
     }
 }
 

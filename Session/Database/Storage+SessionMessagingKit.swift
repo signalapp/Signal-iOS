@@ -57,18 +57,27 @@ extension Storage : SessionMessagingKitStorageProtocol {
 
     // MARK: - Jobs
 
-    private static let jobCollection = "SNJobCollection"
-
     public func persist(_ job: Job, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(job, forKey: job.id!, inCollection: Storage.jobCollection)
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(job, forKey: job.id!, inCollection: type(of: job).collection)
     }
 
     public func markJobAsSucceeded(_ job: Job, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: job.id!, inCollection: Storage.jobCollection)
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: job.id!, inCollection: type(of: job).collection)
     }
 
     public func markJobAsFailed(_ job: Job, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: job.id!, inCollection: Storage.jobCollection)
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: job.id!, inCollection: type(of: job).collection)
+    }
+
+    public func getAllPendingJobs(of type: Job.Type) -> [Job] {
+        var result: [Job] = []
+        Storage.read { transaction in
+            transaction.enumerateRows(inCollection: type.collection) { _, object, _, _ in
+                guard let job = object as? Job else { return }
+                result.append(job)
+            }
+        }
+        return result
     }
 
 
@@ -216,8 +225,48 @@ extension Storage : SessionMessagingKitStorageProtocol {
         return (thread.uniqueId!, message)
     }
 
-    public func cancelTypingIndicatorsIfNeeded(for threadID: String, senderPublicKey: String) {
-        guard let thread = TSThread.fetch(uniqueId: threadID) else { return }
+    public func showTypingIndicatorIfNeeded(for senderPublicKey: String) {
+        var threadOrNil: TSContactThread?
+        Storage.read { transaction in
+            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+        }
+        guard let thread = threadOrNil else { return } // Ignore if the thread doesn't exist yet
+        func showTypingIndicatorsIfNeeded() {
+            SSKEnvironment.shared.typingIndicators.didReceiveTypingStartedMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
+        }
+        if Thread.current.isMainThread {
+            showTypingIndicatorsIfNeeded()
+        } else {
+            DispatchQueue.main.async {
+                showTypingIndicatorsIfNeeded()
+            }
+        }
+    }
+
+    public func hideTypingIndicatorIfNeeded(for senderPublicKey: String) {
+        var threadOrNil: TSContactThread?
+        Storage.read { transaction in
+            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+        }
+        guard let thread = threadOrNil else { return } // Ignore if the thread doesn't exist yet
+        func hideTypingIndicatorsIfNeeded() {
+            SSKEnvironment.shared.typingIndicators.didReceiveTypingStoppedMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
+        }
+        if Thread.current.isMainThread {
+            hideTypingIndicatorsIfNeeded()
+        } else {
+            DispatchQueue.main.async {
+                hideTypingIndicatorsIfNeeded()
+            }
+        }
+    }
+
+    public func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String) {
+        var threadOrNil: TSContactThread?
+        Storage.read { transaction in
+            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+        }
+        guard let thread = threadOrNil else { return } // Ignore if the thread doesn't exist yet
         func cancelTypingIndicatorsIfNeeded() {
             SSKEnvironment.shared.typingIndicators.didReceiveIncomingMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
         }

@@ -8,6 +8,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     public var failureCount: UInt = 0
 
     // MARK: Settings
+    public class var collection: String { return "AttachmentUploadJobCollection" }
     public static let maxFailureCount: UInt = 20
 
     // MARK: Coding

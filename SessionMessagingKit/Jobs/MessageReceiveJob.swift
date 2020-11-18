@@ -8,6 +8,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     public var failureCount: UInt = 0
 
     // MARK: Settings
+    public class var collection: String { return "MessageReceiveJobCollection" }
     public static let maxFailureCount: UInt = 10
 
     // MARK: Initialization

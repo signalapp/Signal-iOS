@@ -9,6 +9,7 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
     public var failureCount: UInt = 0
 
     // MARK: Settings
+    public class var collection: String { return "NotifyPNServerJobCollection" }
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization

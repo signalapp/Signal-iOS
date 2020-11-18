@@ -5,6 +5,7 @@ public protocol Job : class, NSCoding {
     var id: String? { get set }
     var failureCount: UInt { get set }
 
+    static var collection: String { get }
     static var maxFailureCount: UInt { get }
 
     func execute()

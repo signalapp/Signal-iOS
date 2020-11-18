@@ -76,14 +76,38 @@ internal enum MessageReceiver {
 
     internal static func handle(_ message: Message, messageServerID: UInt64?, using transaction: Any) {
         switch message {
-        case is ReadReceipt: break
-        case is SessionRequest: break
-        case is TypingIndicator: break
-        case is ClosedGroupUpdate: break
-        case is ExpirationTimerUpdate: break
+        case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
+        case let message as SessionRequest: handleSessionRequest(message, using: transaction)
+        case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
+        case let message as ClosedGroupUpdate: handleClosedGroupUpdate(message, using: transaction)
+        case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as VisibleMessage: handleVisibleMessage(message, using: transaction)
         default: fatalError()
         }
+    }
+
+    private static func handleReadReceipt(_ message: ReadReceipt, using transaction: Any) {
+
+    }
+
+    private static func handleSessionRequest(_ message: SessionRequest, using transaction: Any) {
+
+    }
+
+    private static func handleTypingIndicator(_ message: TypingIndicator, using transaction: Any) {
+        let storage = Configuration.shared.storage
+        switch message.kind! {
+        case .started: storage.showTypingIndicatorIfNeeded(for: message.sender!)
+        case .stopped: storage.hideTypingIndicatorIfNeeded(for: message.sender!)
+        }
+    }
+
+    private static func handleClosedGroupUpdate(_ message: ClosedGroupUpdate, using transaction: Any) {
+
+    }
+
+    private static func handleExpirationTimerUpdate(_ message: ExpirationTimerUpdate, using transaction: Any) {
+
     }
 
     private static func handleVisibleMessage(_ message: VisibleMessage, using transaction: Any) {
@@ -96,7 +120,7 @@ internal enum MessageReceiver {
         let (threadID, tsIncomingMessage) = storage.persist(message, using: transaction)
         message.threadID = threadID
         // Cancel any typing indicators
-        storage.cancelTypingIndicatorsIfNeeded(for: message.threadID!, senderPublicKey: message.sender!)
+        storage.cancelTypingIndicatorsIfNeeded(for: message.sender!)
         // Notify the user if needed
         storage.notifyUserIfNeeded(for: tsIncomingMessage, threadID: threadID)
     }

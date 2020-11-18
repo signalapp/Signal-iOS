@@ -6,10 +6,18 @@ public final class JobQueue : NSObject, JobDelegate {
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
-        job.id = UUID().uuidString
+        job.id = String(NSDate.millisecondTimestamp())
         Configuration.shared.storage.persist(job, using: transaction)
         job.delegate = self
         job.execute()
+    }
+
+    @objc public func resumePendingJobs() {
+        let allJobTypes: [Job.Type] = [ AttachmentDownloadJob.self, AttachmentUploadJob.self, MessageReceiveJob.self, MessageSendJob.self, NotifyPNServerJob.self ]
+        allJobTypes.forEach { type in
+            let allPendingJobs = Configuration.shared.storage.getAllPendingJobs(of: type)
+            allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { $0.execute() } // Retry the oldest jobs first
+        }
     }
 
     public func handleJobSucceeded(_ job: Job) {

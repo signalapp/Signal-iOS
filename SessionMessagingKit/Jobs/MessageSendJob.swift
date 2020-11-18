@@ -9,6 +9,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     public var failureCount: UInt = 0
 
     // MARK: Settings
+    public class var collection: String { return "MessageSendJobCollection" }
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
