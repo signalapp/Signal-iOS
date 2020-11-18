@@ -79,7 +79,20 @@ class GroupCallNotificationView: UIView {
         isPresentingNotification = true
 
         addSubview(bannerView)
-        bannerView.autoPinWidthToSuperviewMargins()
+        bannerView.autoHCenterInSuperview()
+
+        // Prefer to be full width, but don't exceed the maximum width
+        bannerView.autoSetDimension(.width, toSize: 512, relation: .lessThanOrEqual)
+        bannerView.autoMatch(
+            .width,
+            to: .width,
+            of: self,
+            withOffset: -(layoutMargins.left + layoutMargins.right),
+            relation: .lessThanOrEqual
+        )
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            bannerView.autoPinWidthToSuperviewMargins()
+        }
 
         let onScreenConstraint = bannerView.autoPinEdge(toSuperviewMargin: .top)
         onScreenConstraint.isActive = false
@@ -234,10 +247,13 @@ private class BannerView: UIView {
 
         let label = UILabel()
         hStack.addArrangedSubview(label)
+        label.setCompressionResistanceHorizontalHigh()
         label.numberOfLines = 0
         label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         label.textColor = .ows_white
         label.text = actionText
+
+        hStack.addArrangedSubview(.hStretchingSpacer())
     }
 
     required init?(coder: NSCoder) {
