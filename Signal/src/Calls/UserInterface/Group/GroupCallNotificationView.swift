@@ -34,21 +34,22 @@ class GroupCallNotificationView: UIView {
 
     private var hasJoined = false
     private func updateActiveMembers() {
-        hasJoined = hasJoined || call.groupCall.localDeviceState.joinState == .joined
-        guard hasJoined else { return }
-
         let newActiveMembers = Set(call.groupCall.remoteDeviceStates.values.map {
             ActiveMember(demuxId: $0.demuxId, uuid: $0.userId)
         })
 
-        let joinedMembers = newActiveMembers.subtracting(activeMembers)
-        let leftMembers = activeMembers.subtracting(newActiveMembers)
+        if hasJoined {
+            let joinedMembers = newActiveMembers.subtracting(activeMembers)
+            let leftMembers = activeMembers.subtracting(newActiveMembers)
 
-        membersPendingJoinNotification.subtract(leftMembers)
-        membersPendingJoinNotification.formUnion(joinedMembers)
+            membersPendingJoinNotification.subtract(leftMembers)
+            membersPendingJoinNotification.formUnion(joinedMembers)
 
-        membersPendingLeaveNotification.subtract(joinedMembers)
-        membersPendingLeaveNotification.formUnion(leftMembers)
+            membersPendingLeaveNotification.subtract(joinedMembers)
+            membersPendingLeaveNotification.formUnion(leftMembers)
+        } else {
+            hasJoined = call.groupCall.localDeviceState.joinState == .joined
+        }
 
         activeMembers = newActiveMembers
 
