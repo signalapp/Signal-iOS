@@ -11,10 +11,6 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         return TSAccountManager.sharedInstance()
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     public override func run() {
         Logger.debug("")
 
@@ -24,7 +20,14 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         }
         
         DispatchQueue.global().async {
-            SessionManagementProtocol.rotateSignedPreKey()
+            let storage = OWSPrimaryStorage.shared()
+            let signedPreKeyRecord = storage.generateRandomSignedRecord()
+            signedPreKeyRecord.markAsAcceptedByService()
+            storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            TSPreKeyManager.clearPreKeyUpdateFailureCount()
+            TSPreKeyManager.clearSignedPreKeyRecords()
+            print("[Loki] Signed pre key rotated successfully.")
             self.reportSuccess()
         }
     }

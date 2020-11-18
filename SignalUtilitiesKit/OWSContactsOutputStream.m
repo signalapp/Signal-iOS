@@ -3,8 +3,6 @@
 //
 
 #import "OWSContactsOutputStream.h"
-
-#import "ContactsManagerProtocol.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSBlockingManager.h"

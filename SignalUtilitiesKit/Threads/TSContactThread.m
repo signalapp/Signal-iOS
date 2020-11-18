@@ -3,7 +3,6 @@
 //
 
 #import "TSContactThread.h"
-#import "ContactsManagerProtocol.h"
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"

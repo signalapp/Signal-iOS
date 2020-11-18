@@ -3,7 +3,6 @@
 //
 
 #import "TSInfoMessage.h"
-#import "ContactsManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import <SessionProtocolKit/SessionProtocolKit.h>
 #import <YapDatabase/YapDatabaseConnection.h>

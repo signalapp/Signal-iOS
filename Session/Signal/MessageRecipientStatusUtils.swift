@@ -14,7 +14,6 @@ import SignalUtilitiesKit
     case read
     case failed
     case skipped
-    case calculatingPoW
 }
 
 @objc
@@ -165,8 +164,6 @@ public class MessageRecipientStatusUtils: NSObject {
             return "failed"
         case .skipped:
             return "skipped"
-        case .calculatingPoW:
-            return "calculatingPoW"
         }
     }
 }

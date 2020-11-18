@@ -2,7 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalUtilitiesKit/ContactsManagerProtocol.h>
 #import <SignalUtilitiesKit/TSYapDatabaseObject.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>
 

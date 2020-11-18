@@ -16,10 +16,6 @@ public class RefreshPreKeysOperation: OWSOperation {
         return TSAccountManager.sharedInstance()
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     private var identityKeyManager: OWSIdentityManager {
         return OWSIdentityManager.shared()
     }
@@ -33,7 +29,15 @@ public class RefreshPreKeysOperation: OWSOperation {
         }
         
         DispatchQueue.global().async {
-            SessionManagementProtocol.refreshSignedPreKey()
+            let storage = OWSPrimaryStorage.shared()
+            guard storage.currentSignedPrekeyId() == nil else { return }
+            let signedPreKeyRecord = storage.generateRandomSignedRecord()
+            signedPreKeyRecord.markAsAcceptedByService()
+            storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            TSPreKeyManager.clearPreKeyUpdateFailureCount()
+            TSPreKeyManager.clearSignedPreKeyRecords()
+            print("[Loki] Signed pre key refreshed successfully.")
             self.reportSuccess()
         }
     }

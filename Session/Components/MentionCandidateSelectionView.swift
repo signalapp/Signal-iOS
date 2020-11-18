@@ -1,6 +1,4 @@
 
-// MARK: - User Selection View
-
 @objc(LKMentionCandidateSelectionView)
 final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
     @objc var mentionCandidates: [Mention] = [] { didSet { tableView.reloadData() } }
@@ -173,7 +171,8 @@ private extension MentionCandidateSelectionView {
     }
 }
 
-// MARK: Delegate
+// MARK: - Delegate
+
 @objc(LKMentionCandidateSelectionViewDelegate)
 protocol MentionCandidateSelectionViewDelegate {
 

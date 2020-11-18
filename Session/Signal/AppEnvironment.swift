@@ -86,10 +86,7 @@ import SignalUtilitiesKit
 
     @objc
     public func setup() {
-//        callService.createCallUIAdapter()
-
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManager = notificationPresenter
-//        SSKEnvironment.shared.callMessageHandler = callMessageHandler
     }
 }

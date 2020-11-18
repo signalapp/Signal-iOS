@@ -166,7 +166,7 @@ final class ConversationCell : UITableViewCell {
             let image: UIImage
             let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
             switch status {
-            case .calculatingPoW, .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
+            case .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
             case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck").asTintedImage(color: Colors.text)!
             case .read:
                 statusIndicatorView.backgroundColor = isLightMode ? .black : .white

@@ -36,14 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   preferredStyle:UIAlertControllerStyleActionSheet];
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
-//    UIAlertAction *takePictureAction = [UIAlertAction
-//        actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
-//                  style:UIAlertActionStyleDefault
-//                handler:^(UIAlertAction *_Nonnull action) {
-//                    [self takePicture];
-//                }];
-//    [actionSheet addAction:takePictureAction];
-
     UIAlertAction *choosePictureAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                   style:UIAlertActionStyleDefault

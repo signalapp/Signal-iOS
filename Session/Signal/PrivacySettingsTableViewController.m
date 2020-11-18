@@ -269,18 +269,12 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [self.preferences setIsSystemCallLogEnabled:sender.isOn];
-
-    // rebuild callUIAdapter since CallKit configuration changed.
-//    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [self.preferences setIsCallKitEnabled:sender.isOn];
-
-    // rebuild callUIAdapter since CallKit vs not changed.
-//    [AppEnvironment.shared.callService createCallUIAdapter];
 
     // Show/Hide dependent switch: CallKit privacy
     [self updateTableContents];

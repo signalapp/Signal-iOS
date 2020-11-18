@@ -5,7 +5,6 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "AppContext.h"
 #import "AppReadiness.h"
-#import "ContactsManagerProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"

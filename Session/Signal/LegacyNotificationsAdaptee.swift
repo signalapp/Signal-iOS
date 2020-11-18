@@ -18,30 +18,6 @@ struct LegacyNotificationConfig {
 
     static func notificationAction(_ action: AppNotificationAction) -> UIUserNotificationAction {
         switch action {
-//        case .answerCall:
-//            let mutableAction = UIMutableUserNotificationAction()
-//            mutableAction.identifier = action.identifier
-//            mutableAction.title = CallStrings.answerCallButtonTitle
-//            mutableAction.activationMode = .foreground
-//            mutableAction.isDestructive = false
-//            mutableAction.isAuthenticationRequired = false
-//            return mutableAction
-//        case .callBack:
-//            let mutableAction = UIMutableUserNotificationAction()
-//            mutableAction.identifier = action.identifier
-//            mutableAction.title = CallStrings.callBackButtonTitle
-//            mutableAction.activationMode = .foreground
-//            mutableAction.isDestructive = false
-//            mutableAction.isAuthenticationRequired = true
-//            return mutableAction
-//        case .declineCall:
-//            let mutableAction = UIMutableUserNotificationAction()
-//            mutableAction.identifier = action.identifier
-//            mutableAction.title = CallStrings.declineCallButtonTitle
-//            mutableAction.activationMode = .background
-//            mutableAction.isDestructive = false
-//            mutableAction.isAuthenticationRequired = false
-//            return mutableAction
         case .markAsRead:
             let mutableAction = UIMutableUserNotificationAction()
             mutableAction.identifier = action.identifier
@@ -283,12 +259,6 @@ public class LegacyNotificationActionHandler: NSObject {
         }
 
         switch action {
-//        case .answerCall:
-//            return try actionHandler.answerCall(userInfo: userInfo)
-//        case .callBack:
-//            return try actionHandler.callBack(userInfo: userInfo)
-//        case .declineCall:
-//            return try actionHandler.declineCall(userInfo: userInfo)
         case .markAsRead:
             return try actionHandler.markAsRead(userInfo: userInfo)
         case .reply:

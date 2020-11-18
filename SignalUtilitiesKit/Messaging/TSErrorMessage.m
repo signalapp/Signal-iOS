@@ -3,7 +3,6 @@
 //
 
 #import "TSErrorMessage.h"
-#import "ContactsManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"

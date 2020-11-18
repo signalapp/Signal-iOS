@@ -37,7 +37,7 @@
     return [[MMSGroupPrefix stringByAppendingString:groupID] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
-+(NSString *)getEncodedGroupID: (NSData *)groupID
++(NSString *)getEncodedGroupID:(NSData *)groupID
 {
     return [[NSString alloc] initWithData:groupID encoding:NSUTF8StringEncoding];
 }
@@ -54,13 +54,7 @@
 
 +(NSData *)getDecodedGroupIDAsData:(NSData *)groupID
 {
-    OWSAssertDebug(groupID.length > 0);
-    NSString *encodedGroupID = [[NSString alloc]initWithData:groupID encoding:NSUTF8StringEncoding];
-    NSString *decodedGroupID = [encodedGroupID componentsSeparatedByString:@"!"][0];
-    if ([encodedGroupID componentsSeparatedByString:@"!"].count > 1) {
-        decodedGroupID = [encodedGroupID componentsSeparatedByString:@"!"][1];
-    }
-    return [decodedGroupID dataUsingEncoding:NSUTF8StringEncoding];
+    return [[LKGroupUtilities getDecodedGroupID:groupID] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 @end

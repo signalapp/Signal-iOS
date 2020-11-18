@@ -8,7 +8,7 @@ import PromiseKit
 @objc(SSKCreatePreKeysOperation)
 public class CreatePreKeysOperation: OWSOperation {
 
-    private var primaryStorage: OWSPrimaryStorage {
+    private var storage: OWSPrimaryStorage {
         return OWSPrimaryStorage.shared()
     }
 
@@ -23,7 +23,11 @@ public class CreatePreKeysOperation: OWSOperation {
             identityKeyManager.generateNewIdentityKeyPair()
         }
 
-        SessionManagementProtocol.createPreKeys()
+        let signedPreKeyRecord = storage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        print("[Loki] Pre keys created successfully.")
         reportSuccess()
     }
 }
