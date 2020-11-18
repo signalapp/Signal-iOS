@@ -1,10 +1,6 @@
 
 public extension Storage {
 
-    internal enum ClosedGroupRatchetCollectionType {
-        case old, current
-    }
-
     // MARK: Ratchets
     internal static func getClosedGroupRatchetCollection(_ collection: ClosedGroupRatchetCollectionType, for groupPublicKey: String) -> String {
         switch collection {
@@ -27,7 +23,7 @@ public extension Storage {
         transaction.setObject(ratchet, forKey: senderPublicKey, inCollection: collection)
     }
 
-    internal static func getAllClosedGroupRatchets(for groupPublicKey: String, from collection: ClosedGroupRatchetCollectionType = .current) -> [(senderPublicKey: String, ratchet: ClosedGroupRatchet)] {
+    public static func getAllClosedGroupRatchets(for groupPublicKey: String, from collection: ClosedGroupRatchetCollectionType = .current) -> [(senderPublicKey: String, ratchet: ClosedGroupRatchet)] {
         let collection = getClosedGroupRatchetCollection(collection, for: groupPublicKey)
         var result: [(senderPublicKey: String, ratchet: ClosedGroupRatchet)] = []
         read { transaction in
@@ -45,7 +41,7 @@ public extension Storage {
         })
     }
 
-    internal static func removeAllClosedGroupRatchets(for groupPublicKey: String, from collection: ClosedGroupRatchetCollectionType = .current, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func removeAllClosedGroupRatchets(for groupPublicKey: String, from collection: ClosedGroupRatchetCollectionType = .current, using transaction: YapDatabaseReadWriteTransaction) {
         let collection = getClosedGroupRatchetCollection(collection, for: groupPublicKey)
         transaction.removeAllObjects(inCollection: collection)
     }

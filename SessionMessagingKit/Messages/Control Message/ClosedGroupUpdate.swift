@@ -23,8 +23,17 @@ public final class ClosedGroupUpdate : ControlMessage {
 
     // MARK: Validation
     public override var isValid: Bool {
-        guard super.isValid else { return false }
-        return kind != nil
+        guard super.isValid, let kind = kind else { return false }
+        switch kind {
+        case .new(let groupPublicKey, let name, let groupPrivateKey, _, let members, let admins):
+            return !groupPublicKey.isEmpty && !name.isEmpty && !groupPrivateKey.isEmpty && !members.isEmpty && !admins.isEmpty // senderKeys may be empty
+        case .info(let groupPublicKey, let name, _, let members, let admins):
+            return !groupPublicKey.isEmpty && !name.isEmpty && !members.isEmpty && !admins.isEmpty // senderKeys may be empty
+        case .senderKeyRequest(let groupPublicKey):
+            return !groupPublicKey.isEmpty
+        case .senderKey(let groupPublicKey, _):
+            return !groupPublicKey.isEmpty
+        }
     }
 
     // MARK: Coding
@@ -86,7 +95,26 @@ public final class ClosedGroupUpdate : ControlMessage {
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdate? {
-        return nil
+        guard let closedGroupUpdateProto = proto.dataMessage?.closedGroupUpdate else { return nil }
+        let groupPublicKey = closedGroupUpdateProto.groupPublicKey
+        let kind: Kind
+        switch closedGroupUpdateProto.type {
+        case .new:
+            guard let name = closedGroupUpdateProto.name, let groupPrivateKey = closedGroupUpdateProto.groupPrivateKey else { return nil }
+            let senderKeys = closedGroupUpdateProto.senderKeys.map { ClosedGroupSenderKey.fromProto($0) }
+            kind = .new(groupPublicKey: groupPublicKey, name: name, groupPrivateKey: groupPrivateKey,
+                senderKeys: senderKeys, members: closedGroupUpdateProto.members, admins: closedGroupUpdateProto.admins)
+        case .info:
+            guard let name = closedGroupUpdateProto.name else { return nil }
+            let senderKeys = closedGroupUpdateProto.senderKeys.map { ClosedGroupSenderKey.fromProto($0) }
+            kind = .info(groupPublicKey: groupPublicKey, name: name, senderKeys: senderKeys, members: closedGroupUpdateProto.members, admins: closedGroupUpdateProto.admins)
+        case .senderKeyRequest:
+            kind = .senderKeyRequest(groupPublicKey: groupPublicKey)
+        case .senderKey:
+            guard let senderKeyProto = closedGroupUpdateProto.senderKeys.first else { return nil }
+            kind = .senderKey(groupPublicKey: groupPublicKey, senderKey: ClosedGroupSenderKey.fromProto(senderKeyProto))
+        }
+        return ClosedGroupUpdate(kind: kind)
     }
 
     public override func toProto() -> SNProtoContent? {
@@ -130,6 +158,10 @@ public final class ClosedGroupUpdate : ControlMessage {
 
 private extension ClosedGroupSenderKey {
 
+    static func fromProto(_ proto: SNProtoDataMessageClosedGroupUpdateSenderKey) -> ClosedGroupSenderKey {
+        return ClosedGroupSenderKey(chainKey: proto.chainKey, keyIndex: UInt(proto.keyIndex), publicKey: proto.publicKey)
+    }
+    
     func toProto() throws -> SNProtoDataMessageClosedGroupUpdateSenderKey {
         return try SNProtoDataMessageClosedGroupUpdateSenderKey.builder(chainKey: chainKey, keyIndex: UInt32(keyIndex), publicKey: publicKey).build()
     }

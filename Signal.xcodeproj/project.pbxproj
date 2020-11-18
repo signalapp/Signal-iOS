@@ -922,6 +922,8 @@
 		C3CA3B1D255CF3C800F4C6D4 /* MessageSender+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */; };
 		C3CA3B2F255CF84E00F4C6D4 /* NullMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CA3B2E255CF84E00F4C6D4 /* NullMessage.swift */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
+		C3D697382564DCE6004AF766 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D697372564DCE6004AF766 /* MessageHandler.swift */; };
+		C3D6974A2564DEDC004AF766 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D697492564DEDC004AF766 /* MessageHandler.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
@@ -2042,6 +2044,8 @@
 		C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSender+Utilities.swift"; sourceTree = "<group>"; };
 		C3CA3B2E255CF84E00F4C6D4 /* NullMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NullMessage.swift; sourceTree = "<group>"; };
 		C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPoller.swift; sourceTree = "<group>"; };
+		C3D697372564DCE6004AF766 /* MessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHandler.swift; sourceTree = "<group>"; };
+		C3D697492564DEDC004AF766 /* MessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHandler.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditClosedGroupVC.swift; sourceTree = "<group>"; };
@@ -2705,6 +2709,7 @@
 				C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */,
 				C300A5FB2554B0A000555489 /* MessageReceiver.swift */,
 				C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */,
+				C3D697372564DCE6004AF766 /* MessageHandler.swift */,
 			);
 			path = "Sending & Receiving";
 			sourceTree = "<group>";
@@ -3811,6 +3816,7 @@
 				C3550A02255DD6D900194B6A /* AppDelegate+OpenGroupAPI.swift */,
 				C3F0A62B255C9937007BE2A3 /* AppDelegate+SharedSenderKeys.swift */,
 				C3F0A5EB255C970D007BE2A3 /* Configuration.swift */,
+				C3D697492564DEDC004AF766 /* MessageHandler.swift */,
 				B8CCF63B239757C10091D419 /* Components */,
 				C31F812425258F9C00DD9FD9 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
@@ -5208,6 +5214,7 @@
 				C352A349255781F400338F3E /* AttachmentDownloadJob.swift in Sources */,
 				C352A30925574D8500338F3E /* Message+Destination.swift in Sources */,
 				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
+				C3D697382564DCE6004AF766 /* MessageHandler.swift in Sources */,
 				C352A2FF25574B6300338F3E /* MessageSendJob.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
@@ -5380,6 +5387,7 @@
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */,
+				C3D6974A2564DEDC004AF766 /* MessageHandler.swift in Sources */,
 				B886B4A72398B23E00211ABE /* QRCodeVC.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */,

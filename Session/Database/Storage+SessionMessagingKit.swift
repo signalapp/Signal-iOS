@@ -201,124 +201,20 @@ extension Storage : SessionMessagingKitStorageProtocol {
 
     // MARK: - Message Handling
 
-    public func isBlocked(_ publicKey: String) -> Bool {
-        return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
-    }
-
-    public func updateProfile(for publicKey: String, from profile: VisibleMessage.Profile, using transaction: Any) {
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let profileManager = SSKEnvironment.shared.profileManager
-        if let displayName = profile.displayName {
-            profileManager.updateProfileForContact(withID: publicKey, displayName: displayName, with: transaction)
-        }
-        if let profileKey = profile.profileKey, let profilePictureURL = profile.profilePictureURL, profileKey.count == kAES256_KeyByteLength {
-            profileManager.setProfileKeyData(profileKey, forRecipientId: publicKey, avatarURL: profilePictureURL)
-        }
-    }
-
     /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
-    public func persist(_ message: VisibleMessage, using transaction: Any) -> (String, Any) {
+    public func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, Any)? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let thread = TSContactThread.getOrCreateThread(withContactId: message.sender!, transaction: transaction)
+        var threadOrNil: TSThread?
+        if let groupPublicKey = groupPublicKey {
+            guard Storage.shared.isClosedGroup(groupPublicKey) else { return nil }
+            let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+            threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
+        } else {
+            threadOrNil = TSContactThread.getOrCreateThread(withContactId: message.sender!, transaction: transaction)
+        }
+        guard let thread = threadOrNil else { return nil }
         let message = TSIncomingMessage.from(message, associatedWith: thread, using: transaction)
         message.save(with: transaction)
         return (thread.uniqueId!, message)
-    }
-
-    public func showTypingIndicatorIfNeeded(for senderPublicKey: String) {
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        func showTypingIndicatorsIfNeeded() {
-            SSKEnvironment.shared.typingIndicators.didReceiveTypingStartedMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
-        }
-        if Thread.current.isMainThread {
-            showTypingIndicatorsIfNeeded()
-        } else {
-            DispatchQueue.main.async {
-                showTypingIndicatorsIfNeeded()
-            }
-        }
-    }
-
-    public func hideTypingIndicatorIfNeeded(for senderPublicKey: String) {
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        func hideTypingIndicatorsIfNeeded() {
-            SSKEnvironment.shared.typingIndicators.didReceiveTypingStoppedMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
-        }
-        if Thread.current.isMainThread {
-            hideTypingIndicatorsIfNeeded()
-        } else {
-            DispatchQueue.main.async {
-                hideTypingIndicatorsIfNeeded()
-            }
-        }
-    }
-
-    public func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String) {
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        func cancelTypingIndicatorsIfNeeded() {
-            SSKEnvironment.shared.typingIndicators.didReceiveIncomingMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
-        }
-        if Thread.current.isMainThread {
-            cancelTypingIndicatorsIfNeeded()
-        } else {
-            DispatchQueue.main.async {
-                cancelTypingIndicatorsIfNeeded()
-            }
-        }
-    }
-
-    public func notifyUserIfNeeded(for message: Any, threadID: String) {
-        guard let thread = TSThread.fetch(uniqueId: threadID) else { return }
-        Storage.read { transaction in
-            SSKEnvironment.shared.notificationsManager!.notifyUser(for: (message as! TSIncomingMessage), in: thread, transaction: transaction)
-        }
-    }
-
-    public func markMessagesAsRead(_ timestamps: [UInt64], from senderPublicKey: String, at timestamp: UInt64) {
-        SSKEnvironment.shared.readReceiptManager.processReadReceipts(fromRecipientId: senderPublicKey, sentTimestamps: timestamps.map { NSNumber(value: $0) }, readTimestamp: timestamp)
-    }
-
-    public func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, using transaction: Any) {
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
-        configuration.save(with: transaction)
-        let senderDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: senderPublicKey, transaction: transaction)
-        let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.millisecondTimestamp(), thread: thread,
-            configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
-        message.save(with: transaction)
-        SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
-    }
-
-    public func disableExpirationTimer(for senderPublicKey: String, using transaction: Any) {
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
-        configuration.save(with: transaction)
-        let senderDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: senderPublicKey, transaction: transaction)
-        let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.millisecondTimestamp(), thread: thread,
-            configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
-        message.save(with: transaction)
-        SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
 }

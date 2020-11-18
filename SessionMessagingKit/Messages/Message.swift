@@ -8,6 +8,8 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public var receivedTimestamp: UInt64?
     public var recipient: String?
     public var sender: String?
+    public var groupPublicKey: String?
+    public var openGroupServerMessageID: UInt64?
 
     public class var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
 

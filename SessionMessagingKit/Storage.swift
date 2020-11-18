@@ -62,15 +62,6 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Message Handling
 
-    func isBlocked(_ publicKey: String) -> Bool
-    func updateProfile(for publicKey: String, from profile: VisibleMessage.Profile, using transaction: Any)
     /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
-    func persist(_ message: VisibleMessage, using transaction: Any) -> (String, Any)
-    func showTypingIndicatorIfNeeded(for senderPublicKey: String)
-    func hideTypingIndicatorIfNeeded(for senderPublicKey: String)
-    func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String)
-    func notifyUserIfNeeded(for message: Any, threadID: String)
-    func markMessagesAsRead(_ timestamps: [UInt64], from senderPublicKey: String, at timestamp: UInt64)
-    func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, using transaction: Any)
-    func disableExpirationTimer(for senderPublicKey: String, using transaction: Any)
+    func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, Any)?
 }

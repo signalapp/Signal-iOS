@@ -3,7 +3,7 @@ public extension TSIncomingMessage {
 
     static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
         let sender = visibleMessage.sender!
-        return TSIncomingMessage(
+        let result = TSIncomingMessage(
             timestamp: visibleMessage.receivedTimestamp!,
             in: thread,
             authorId: sender,
@@ -16,5 +16,7 @@ public extension TSIncomingMessage {
             serverTimestamp: nil,
             wasReceivedByUD: true
         )
+        result.openGroupServerMessageID = visibleMessage.openGroupServerMessageID ?? 0
+        return result
     }
 }

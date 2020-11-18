@@ -128,7 +128,7 @@ public final class ClosedGroupsProtocol : NSObject {
                 Storage.writeSync { transaction in
                     let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
                     for (senderPublicKey, oldRatchet) in allOldRatchets {
-                        let collection = Storage.ClosedGroupRatchetCollectionType.old
+                        let collection = ClosedGroupRatchetCollectionType.old
                         Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
                     }
                     // Delete all ratchets (it's important that this happens * after * sending out the update)
@@ -362,7 +362,7 @@ public final class ClosedGroupsProtocol : NSObject {
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
             let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
             for (senderPublicKey, oldRatchet) in allOldRatchets {
-                let collection = Storage.ClosedGroupRatchetCollectionType.old
+                let collection = ClosedGroupRatchetCollectionType.old
                 Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
             }
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)

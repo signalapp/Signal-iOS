@@ -4,7 +4,7 @@ extension AppDelegate : OpenGroupAPIDelegate {
     public func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: OpenGroupInfo) {
         let storage = OWSPrimaryStorage.shared()
         let publicChatID = "\(server).\(channel)"
-        Storage.writeSync { transaction in
+        Storage.write { transaction in
             // Update user count
             storage.setUserCount(info.memberCount, forPublicChatWithID: publicChatID, in: transaction)
             let groupThread = TSGroupThread.getOrCreateThread(withGroupId: publicChatID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)

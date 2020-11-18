@@ -102,7 +102,7 @@ public final class LokiPushNotificationManager : NSObject {
     }
 
     @discardableResult
-    static func performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> Promise<Void> {
+    public static func performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> Promise<Void> {
         let isUsingFullAPNs = UserDefaults.standard[.isUsingFullAPNs]
         guard isUsingFullAPNs else { return Promise<Void> { $0.fulfill(()) } }
         let parameters = [ "closedGroupPublicKey" : closedGroupPublicKey, "pubKey" : publicKey]
