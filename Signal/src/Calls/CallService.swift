@@ -11,7 +11,7 @@ protocol CallServiceObserver: class {
     /**
      * Fired whenever the call changes.
      */
-    func didUpdateCall(call: SignalCall?)
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?)
 }
 
 @objc
@@ -37,6 +37,7 @@ public final class CallService: NSObject {
     @objc
     public let individualCallService = IndividualCallService()
     let groupCallMessageHandler = GroupCallUpdateMessageHandler()
+    let groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
 
     lazy private(set) var audioService = CallAudioService()
 
@@ -57,14 +58,12 @@ public final class CallService: NSObject {
             // Prevent device from sleeping while we have an active call.
             if oldValue != newValue {
                 if let oldValue = oldValue {
-                    oldValue.removeObserver(audioService)
                     DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
                 }
 
                 if let newValue = newValue {
                     assert(calls.contains(newValue))
                     DeviceSleepManager.shared.addBlock(blockObject: newValue)
-                    newValue.addObserverAndSyncState(observer: audioService)
 
                     if newValue.isIndividualCall { individualCallService.startCallTimer() }
                 } else {
@@ -75,7 +74,7 @@ public final class CallService: NSObject {
             Logger.debug("\(oldValue as Optional) -> \(newValue as Optional)")
 
             for observer in observers.elements {
-                observer.didUpdateCall(call: newValue)
+                observer.didUpdateCall(from: oldValue, to: newValue)
             }
         }
         get {
@@ -110,6 +109,7 @@ public final class CallService: NSObject {
         SwiftSingletons.register(self)
         callManager.delegate = self
         addObserverAndSyncState(observer: groupCallMessageHandler)
+        addObserverAndSyncState(observer: groupCallRemoteVideoManager)
 
         NotificationCenter.default.addObserver(
             self,
@@ -144,7 +144,7 @@ public final class CallService: NSObject {
         observers.append(observer)
 
         // Synchronize observer with current call state
-        observer.didUpdateCall(call: currentCall)
+        observer.didUpdateCall(from: nil, to: currentCall)
     }
 
     // The observer-related methods should be invoked on the main thread.

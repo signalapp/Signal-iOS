@@ -41,7 +41,7 @@ class GroupCallVideoOverflow: UICollectionView {
 
         autoSetDimension(.height, toSize: Self.itemHeight)
 
-        register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
+        register(GroupCallVideoOverflowCell.self, forCellWithReuseIdentifier: GroupCallVideoOverflowCell.reuseIdentifier)
         dataSource = self
 
         call.addObserverAndSyncState(observer: self)
@@ -95,9 +95,9 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier,
+            withReuseIdentifier: GroupCallVideoOverflowCell.reuseIdentifier,
             for: indexPath
-        ) as! GroupCallVideoGridCell
+        ) as! GroupCallVideoOverflowCell
 
         guard let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
@@ -125,5 +125,28 @@ extension GroupCallVideoOverflow: CallObserver {
         owsAssertDebug(call.isGroupCall)
 
         reloadData()
+    }
+}
+
+class GroupCallVideoOverflowCell: UICollectionViewCell {
+    static let reuseIdentifier = "GroupCallVideoOverflowCell"
+    private let memberView = GroupCallRemoteMemberView(mode: .videoOverflow)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        contentView.addSubview(memberView)
+        memberView.autoPinEdgesToSuperviewEdges()
+
+        contentView.layer.cornerRadius = 10
+        contentView.clipsToBounds = true
+    }
+
+    func configure(call: SignalCall, device: RemoteDeviceState) {
+        memberView.configure(call: call, device: device)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

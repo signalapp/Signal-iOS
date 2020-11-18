@@ -155,9 +155,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 }
 
 class GroupCallRemoteMemberView: GroupCallMemberView {
-    var videoView: RemoteVideoView?
-    var currentDevice: RemoteDeviceState?
-    var currentTrack: RTCVideoTrack?
+    private weak var videoView: GroupCallRemoteVideoView?
 
     let avatarView = AvatarImageView()
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
@@ -184,7 +182,13 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
     }
 
-    override init() {
+    let mode: Mode
+    enum Mode: Equatable {
+        case videoGrid, videoOverflow, speaker
+    }
+
+    init(mode: Mode) {
+        self.mode = mode
         super.init()
 
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
@@ -196,7 +200,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     private var hasBeenConfigured = false
-    func configure(call: SignalCall, device: RemoteDeviceState, isFullScreen: Bool = false) {
+    func configure(call: SignalCall, device: RemoteDeviceState, isSpeakerView: Bool = false) {
         hasBeenConfigured = true
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
@@ -222,7 +226,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
-        muteIndicatorImage.isHidden = isFullScreen || device.audioMuted != true
+        muteIndicatorImage.isHidden = isSpeakerView || device.audioMuted != true
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
 
@@ -230,25 +234,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             colorName: conversationColorName
         ).themeColor
 
-        // We can't re-use the same video view if the device has changed,
-        // otherwise we'd end up rendering frames from someone elses video
-        if currentDevice?.demuxId != device.demuxId {
-            if let oldVideoView = videoView, let oldDevice = currentDevice {
-                call.unregisterRemoteVideoView(oldVideoView, for: oldDevice)
-            }
-            videoView?.removeFromSuperview()
-            videoView = nil
-        }
-
-        if videoView == nil {
-            let videoView = RemoteVideoView()
-            self.videoView = videoView
-            insertSubview(videoView, belowSubview: muteIndicatorImage)
-            videoView.frame = bounds
-            call.registerRemoteVideoView(videoView, for: device)
-        }
-
-        currentDevice = device
+        if videoView?.superview == self { videoView?.removeFromSuperview() }
+        let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, mode: mode)
+        insertSubview(newVideoView, belowSubview: muteIndicatorImage)
+        newVideoView.frame = bounds
+        videoView = newVideoView
 
         guard let videoView = videoView else {
             return owsFailDebug("Missing remote video view")
@@ -256,15 +246,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         avatarView.isHidden = !(device.videoMuted ?? true)
         videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
-        videoView.isFullScreenVideo = isFullScreen
-
-        currentTrack?.remove(videoView)
-        currentTrack = nil
-
-        if let track = device.videoTrack {
-            track.add(videoView)
-            currentTrack = track
-        }
+        videoView.isFullScreenVideo = isSpeakerView
     }
 
     private func updateDimensions() {

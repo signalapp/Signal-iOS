@@ -96,7 +96,7 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
 
 class GroupCallVideoGridCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoGridCell"
-    private let memberView = GroupCallRemoteMemberView()
+    private let memberView = GroupCallRemoteMemberView(mode: .videoGrid)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -119,8 +119,11 @@ class GroupCallVideoGridCell: UICollectionViewCell {
 
 extension GroupCall {
     var sortedRemoteDeviceStates: [RemoteDeviceState] {
+        // TODO: Sort by something better, for now we use
+        // demuxId because it's stable, but eventually
+        // RingRTC will provide us a 'joined time'
         return remoteDeviceStates
             .values
-            .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
+            .sorted { $0.demuxId < $1.demuxId }
     }
 }

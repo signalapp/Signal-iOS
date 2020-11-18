@@ -54,6 +54,8 @@ protocol CallAudioServiceDelegate: class {
             assert(!Thread.isMainThread)
             self.audioRouteDidChange()
         }
+
+        AppEnvironment.shared.callService.addObserverAndSyncState(observer: self)
     }
 
     deinit {
@@ -593,5 +595,12 @@ protocol CallAudioServiceDelegate: class {
 
     func playLeaveSound() {
         play(sound: .groupCallLeave)
+    }
+}
+
+extension CallAudioService: CallServiceObserver {
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        oldValue?.removeObserver(self)
+        newValue?.addObserverAndSyncState(observer: self)
     }
 }

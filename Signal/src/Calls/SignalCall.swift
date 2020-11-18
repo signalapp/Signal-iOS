@@ -224,50 +224,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
         return -connectedDate.timeIntervalSinceNow
     }
-
-    // MARK: - Remote Video Views
-    private var groupCallVideoViews = [RemoteDeviceState: [Weak<RemoteVideoView>]]()
-
-    func registerRemoteVideoView(_ videoView: RemoteVideoView, for device: RemoteDeviceState) {
-        AssertIsOnMainThread()
-        var videoViews = groupCallVideoViews[device] ?? []
-        if !videoViews.contains(where: { $0.value == videoView }) {
-            videoViews.append(Weak(value: videoView))
-        }
-        groupCallVideoViews[device] = videoViews.filter { $0.value != nil }
-
-        updateRenderedResolutions()
-    }
-
-    func unregisterRemoteVideoView(_ videoView: RemoteVideoView, for device: RemoteDeviceState) {
-        AssertIsOnMainThread()
-        let videoViews = groupCallVideoViews[device] ?? []
-        groupCallVideoViews[device] = videoViews.filter { $0.value != nil && $0.value != videoView }
-
-        updateRenderedResolutions()
-    }
-
-    func updateRenderedResolutions() {
-        AssertIsOnMainThread()
-
-        guard let groupCall = groupCall else {
-            return owsFailDebug("Tried to update resolutions for individual call")
-        }
-
-        groupCall.updateVideoRequests(resolutions: groupCallVideoViews.map { device, views -> VideoRequest in
-            let renderedSize = views.reduce(into: CGSize.zero) { size, videoView in
-                guard let videoView = videoView.value else { return }
-                size = CGSize(width: max(videoView.width, size.width), height: max(videoView.height, size.height))
-            }
-
-            return VideoRequest(
-                demuxId: device.demuxId,
-                width: UInt16(renderedSize.width),
-                height: UInt16(renderedSize.height),
-                framerate: renderedSize.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
-            )
-        })
-    }
 }
 
 extension SignalCall: GroupCallDelegate {

@@ -19,7 +19,7 @@ class GroupCallViewController: UIViewController {
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
 
     private let localMemberView = GroupCallLocalMemberView()
-    private let speakerView = GroupCallRemoteMemberView()
+    private let speakerView = GroupCallRemoteMemberView(mode: .speaker)
 
     private var speakerPage = UIView()
 
@@ -250,7 +250,11 @@ class GroupCallViewController: UIViewController {
         )
 
         if let speakerState = groupCall.sortedRemoteDeviceStates.first {
-            speakerView.configure(call: call, device: speakerState, isFullScreen: true)
+            speakerView.configure(
+                call: call,
+                device: speakerState,
+                isSpeakerView: true
+            )
         }
 
         guard !isCallMinimized else { return }
