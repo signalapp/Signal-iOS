@@ -712,7 +712,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             // Start a download task.
 
             guard let assetSegment = assetRequest.firstWaitingSegment() else {
-                owsFailDebug("queued asset request does not have a waiting segment.")
+                print("queued asset request does not have a waiting segment.")
                 return
             }
             assetSegment.state = .downloading
@@ -753,13 +753,13 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         }
         guard let data = data,
         data.count > 0 else {
-            owsFailDebug("Asset size response missing data.")
+            print("Asset size response missing data.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard let httpResponse = response as? HTTPURLResponse else {
-            owsFailDebug("Asset size response is invalid.")
+            print("Asset size response is invalid.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -767,7 +767,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         var firstContentRangeString: String?
         for header in httpResponse.allHeaderFields.keys {
             guard let headerString = header as? String else {
-                owsFailDebug("Invalid header: \(header)")
+                print("Invalid header: \(header)")
                 continue
             }
             if headerString.lowercased() == "content-range" {
@@ -775,7 +775,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             }
         }
         guard let contentRangeString = firstContentRangeString else {
-            owsFailDebug("Asset size response is missing content range.")
+            print("Asset size response is missing content range.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -791,13 +791,13 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         }
         guard contentLengthString.count > 0,
             let contentLength = Int(contentLengthString) else {
-            owsFailDebug("Asset size response has unparsable content length.")
+            print("Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard contentLength > 0 else {
-            owsFailDebug("Asset size response has invalid content length.")
+            print("Asset size response has invalid content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
