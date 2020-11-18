@@ -44,7 +44,11 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
                     self.handleSuccess()
                 } catch {
                     SNLog("Couldn't parse message due to error: \(error).")
-                    self.handleFailure(error: error)
+                    if let error = error as? MessageReceiver.Error, !error.isRetryable {
+                        self.handlePermanentFailure(error: error)
+                    } else {
+                        self.handleFailure(error: error)
+                    }
                 }
             }
         }, completion: { })
@@ -52,6 +56,10 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     private func handleSuccess() {
         delegate?.handleJobSucceeded(self)
+    }
+
+    private func handlePermanentFailure(error: Error) {
+        delegate?.handleJobFailedPermanently(self, with: error)
     }
 
     private func handleFailure(error: Error) {

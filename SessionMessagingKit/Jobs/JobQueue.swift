@@ -47,6 +47,20 @@ public final class JobQueue : NSObject, JobDelegate {
         })
     }
 
+    public func handleJobFailedPermanently(_ job: Job, with error: Error) {
+        job.failureCount += 1
+        let storage = Configuration.shared.storage
+        storage.withAsync({ transaction in
+            storage.persist(job, using: transaction)
+        }, completion: { // Intentionally capture self
+            storage.withAsync({ transaction in
+                storage.markJobAsFailed(job, using: transaction)
+            }, completion: {
+                // Do nothing
+            })
+        })
+    }
+
     private func getRetryInterval(for job: Job) -> TimeInterval {
         // Arbitrary backoff factor...
         // try  1 delay:  0.00s

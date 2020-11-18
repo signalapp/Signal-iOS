@@ -33,6 +33,7 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSBackupFragment.h>
 #import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>

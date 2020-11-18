@@ -1,5 +1,9 @@
 import SessionUtilitiesKit
 
+// TODO:
+// • Threads don't show up on the first message; only on the second.
+// • Profile pictures aren't showing up.
+
 internal enum MessageReceiver {
 
     internal enum Error : LocalizedError {
@@ -14,6 +18,13 @@ internal enum MessageReceiver {
         case noGroupPrivateKey
         case sharedSecretGenerationFailed
         case selfSend
+
+        internal var isRetryable: Bool {
+            switch self {
+            case .invalidMessage, .unknownMessage, .unknownEnvelopeType, .noData, .senderBlocked, .selfSend: return false
+            default: return true
+            }
+        }
 
         internal var errorDescription: String? {
             switch self {
@@ -57,6 +68,7 @@ internal enum MessageReceiver {
         let message: Message? = {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
             if let sessionRequest = SessionRequest.fromProto(proto) { return sessionRequest }
+            if let nullMessage = NullMessage.fromProto(proto) { return nullMessage }
             if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
             if let closedGroupUpdate = ClosedGroupUpdate.fromProto(proto) { return closedGroupUpdate }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
@@ -78,6 +90,7 @@ internal enum MessageReceiver {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as SessionRequest: handleSessionRequest(message, using: transaction)
+        case let message as NullMessage: handleNullMessage(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupUpdate: handleClosedGroupUpdate(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
@@ -87,11 +100,15 @@ internal enum MessageReceiver {
     }
 
     private static func handleReadReceipt(_ message: ReadReceipt, using transaction: Any) {
-
+        Configuration.shared.storage.markMessagesAsRead(message.timestamps!, from: message.sender!, at: message.receivedTimestamp!)
     }
 
     private static func handleSessionRequest(_ message: SessionRequest, using transaction: Any) {
+        // TODO: Implement
+    }
 
+    private static func handleNullMessage(_ message: NullMessage, using transaction: Any) {
+        // TODO: Implement
     }
 
     private static func handleTypingIndicator(_ message: TypingIndicator, using transaction: Any) {
@@ -107,7 +124,12 @@ internal enum MessageReceiver {
     }
 
     private static func handleExpirationTimerUpdate(_ message: ExpirationTimerUpdate, using transaction: Any) {
-
+        let storage = Configuration.shared.storage
+        if message.duration! > 0 {
+            storage.setExpirationTimer(to: message.duration!, for: message.sender!, using: transaction)
+        } else {
+            storage.disableExpirationTimer(for: message.sender!, using: transaction)
+        }
     }
 
     private static func handleVisibleMessage(_ message: VisibleMessage, using transaction: Any) {

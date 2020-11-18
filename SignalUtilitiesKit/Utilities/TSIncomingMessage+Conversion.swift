@@ -1,9 +1,8 @@
 
 public extension TSIncomingMessage {
 
-    static func from(_ visibleMessage: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
+    static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
         let sender = visibleMessage.sender!
-        let thread = TSContactThread.getOrCreateThread(withContactId: sender, transaction: transaction)
         return TSIncomingMessage(
             timestamp: visibleMessage.receivedTimestamp!,
             in: thread,
