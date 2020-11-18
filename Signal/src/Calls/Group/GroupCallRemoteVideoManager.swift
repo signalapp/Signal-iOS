@@ -7,8 +7,8 @@ import SignalRingRTC
 
 class GroupCallRemoteVideoManager {
     private var currentGroupCall: GroupCall? {
-        guard let groupCall = AppEnvironment.shared.callService.currentCall?.groupCall else { return nil }
-        return groupCall
+        guard let call = AppEnvironment.shared.callService.currentCall, call.isGroupCall else { return nil }
+        return call.groupCall
     }
 
     // MARK: - Remote Video Views
@@ -44,9 +44,7 @@ class GroupCallRemoteVideoManager {
         updateVideoRequestsDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { [weak self] _ in
             AssertIsOnMainThread()
             guard let self = self else { return }
-            guard let groupCall = self.currentGroupCall else {
-                return owsFailDebug("Tried to update resolutions for individual call")
-            }
+            guard let groupCall = self.currentGroupCall else { return }
 
             let videoRequests = self.videoViews.reduce(into: [UInt32: CGSize]()) { result, entry in
                 let demuxId = entry.key
