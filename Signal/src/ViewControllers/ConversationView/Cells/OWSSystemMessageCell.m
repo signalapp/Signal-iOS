@@ -56,7 +56,7 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic) UIStackView *contentStackView;
 @property (nonatomic) UIView *cellBackgroundView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
-@property (nonatomic, nullable) SystemMessageAction *action;
+@property (nonatomic, nullable) SystemMessageAction *buttonAction;
 @property (nonatomic) MessageSelectionView *selectionView;
 @property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 
@@ -161,30 +161,12 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
-    [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
-    [self.button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
-
     TSInteraction *interaction = self.viewItem.interaction;
-
-    self.action = [self actionForInteraction:interaction];
-
     self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+    [self configureTitleLabelForInteraction:interaction];
+    [self configureButtonForInteraction:interaction];
 
-    [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGSize titleSize = [self titleSize];
-
-    if (self.action) {
-        [self.button setTitle:self.action.title forState:UIControlStateNormal];
-        UIFont *buttonFont = UIFont.ows_dynamicTypeFootnoteFont.ows_semibold;
-        self.button.titleLabel.font = buttonFont;
-        self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
-        self.button.hidden = NO;
-    } else {
-        self.button.accessibilityIdentifier = nil;
-        self.button.hidden = YES;
-    }
-    CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
-
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
 
     self.contentStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
@@ -448,13 +430,12 @@ typedef void (^SystemMessageActionBlock)(void);
     return iconName;
 }
 
-- (void)applyTitleForInteraction:(TSInteraction *)interaction
-                           label:(UILabel *)label
+- (void)configureTitleLabelForInteraction:(TSInteraction *)interaction
 {
     OWSAssertDebug(interaction);
-    OWSAssertDebug(label);
+    OWSAssertDebug(self.titleLabel);
 
-    label.textColor = [self textColorForInteraction:interaction];
+    self.titleLabel.textColor = [self textColorForInteraction:interaction];
     NSMutableAttributedString *labelText = [NSMutableAttributedString new];
 
     if (self.viewItem.systemMessageGroupUpdates.count > 0) {
@@ -462,7 +443,7 @@ typedef void (^SystemMessageActionBlock)(void);
             NSString *_Nullable iconName = [self iconNameForGroupUpdate:update.type];
             if (iconName != nil) {
                 [labelText appendTemplatedImageNamed:iconName
-                                                font:label.font
+                                                font:self.titleLabel.font
                                      heightReference:ImageAttachmentHeightReferenceLineHeight];
                 [labelText append:@"  " attributes:@{}];
             } else {
@@ -490,7 +471,7 @@ typedef void (^SystemMessageActionBlock)(void);
         UIImage *_Nullable icon = [self iconForInteraction:interaction];
         if (icon) {
             [labelText appendImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                              font:label.font
+                              font:self.titleLabel.font
                    heightReference:ImageAttachmentHeightReferenceLineHeight];
             [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"  "]];
         }
@@ -511,7 +492,26 @@ typedef void (^SystemMessageActionBlock)(void);
         }
     }
 
-    label.attributedText = labelText;
+    self.titleLabel.attributedText = labelText;
+}
+
+- (void)configureButtonForInteraction:(TSInteraction *)interaction
+{
+    self.buttonAction = [self actionForInteraction:interaction];
+
+    self.button.hidden = (self.buttonAction == nil);
+    self.button.accessibilityIdentifier = self.buttonAction.accessibilityIdentifier;
+    self.button.titleLabel.font = UIFont.ows_dynamicTypeFootnoteFont.ows_semibold;
+    [self.button setTitle:self.buttonAction.title forState:UIControlStateNormal];
+
+    if ([interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+        UIColor *buttonTitleColor = Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha90Color : UIColor.whiteColor;
+        [self.button setTitleColor:buttonTitleColor forState:UIControlStateNormal];
+        [self.button setBackgroundColor:UIColor.ows_accentGreenColor];
+    } else {
+        [self.button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
+        [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+    }
 }
 
 - (CGFloat)topVMargin
@@ -552,7 +552,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
     CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
 
-    [self applyTitleForInteraction:interaction label:self.titleLabel];
+    [self configureTitleLabelForInteraction:interaction];
     CGSize titleSize = [self titleSize];
     result.height += titleSize.height;
 
@@ -863,10 +863,10 @@ typedef void (^SystemMessageActionBlock)(void);
         } else {
             [self.delegate conversationCell:self didSelectViewItem:self.viewItem];
         }
-    } else if (!self.action.block) {
+    } else if (!self.buttonAction.block) {
         OWSFailDebug(@"Missing action");
     } else {
-        self.action.block();
+        self.buttonAction.block();
     }
 }
 
@@ -882,7 +882,7 @@ typedef void (^SystemMessageActionBlock)(void);
 {
     [super prepareForReuse];
 
-    self.action = nil;
+    self.buttonAction = nil;
     self.selectionView.alpha = 1.0;
     self.selected = NO;
 }
