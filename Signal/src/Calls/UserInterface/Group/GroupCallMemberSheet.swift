@@ -9,7 +9,7 @@ import SignalRingRTC
 class GroupCallMemberSheet: UIViewController {
     let contentView = UIView()
     let handle = UIView()
-    weak var backdropView: UIView?
+    let backdropView = UIView()
 
     let tableView = UITableView(frame: .zero, style: .grouped)
     let call: SignalCall
@@ -167,7 +167,7 @@ class GroupCallMemberSheet: UIViewController {
 
             // If the height is decreasing, adjust the relevant view's proporitionally
             if newHeight < startingHeight {
-                backdropView?.alpha = 1 - (startingHeight - newHeight) / startingHeight
+                backdropView.alpha = 1 - (startingHeight - newHeight) / startingHeight
             }
 
             // Update our height to reflect the new position
@@ -226,7 +226,7 @@ class GroupCallMemberSheet: UIViewController {
                     self.view.layoutIfNeeded()
                 }
 
-                self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
+                self.backdropView.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
                 self.heightConstraint?.constant = finalHeight
                 self.view.layoutIfNeeded()
@@ -240,7 +240,7 @@ class GroupCallMemberSheet: UIViewController {
         default:
             resetInteractiveTransition()
 
-            backdropView?.alpha = 1
+            backdropView.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
             heightConstraint?.constant = startingHeight
@@ -453,7 +453,18 @@ private class GroupCallMemberSheetAnimationController: UIPresentationController 
         return vc.backdropView
     }
 
+    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        backdropView?.backgroundColor = Theme.backdropColor
+    }
+
     override func presentationTransitionWillBegin() {
+        guard let containerView = containerView, let backdropView = backdropView else { return }
+        backdropView.alpha = 0
+        containerView.addSubview(backdropView)
+        backdropView.autoPinEdgesToSuperviewEdges()
+        containerView.layoutIfNeeded()
+
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView?.alpha = 1
         }, completion: nil)
@@ -462,7 +473,9 @@ private class GroupCallMemberSheetAnimationController: UIPresentationController 
     override func dismissalTransitionWillBegin() {
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView?.alpha = 0
-        }, completion: nil)
+        }, completion: { _ in
+            self.backdropView?.removeFromSuperview()
+        })
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
