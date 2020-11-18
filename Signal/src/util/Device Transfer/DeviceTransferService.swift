@@ -278,7 +278,10 @@ class DeviceTransferService: NSObject {
     // MARK: -
 
     @objc func didEnterBackground() {
-        if transferState != .idle {
+        switch transferState {
+        case .idle:
+            break
+        default:
             notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .cancel) }
         }
 

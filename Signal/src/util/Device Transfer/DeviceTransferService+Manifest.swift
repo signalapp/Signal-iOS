@@ -8,7 +8,7 @@ import MultipeerConnectivity
 
 extension DeviceTransferService {
     func buildManifest() throws -> DeviceTransferProtoManifest {
-        let manifestBuilder = DeviceTransferProtoManifest.builder(grdbSchemaVersion: UInt64(GRDBSchemaMigrator.grdbSchemaVersionLatest))
+        var manifestBuilder = DeviceTransferProtoManifest.builder(grdbSchemaVersion: UInt64(GRDBSchemaMigrator.grdbSchemaVersionLatest))
         var estimatedTotalSize: UInt64 = 0
 
         // Database

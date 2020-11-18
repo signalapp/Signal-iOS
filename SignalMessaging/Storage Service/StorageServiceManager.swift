@@ -811,7 +811,7 @@ class StorageServiceOperation: OWSOperation {
     private func buildManifestRecord(manifestVersion: UInt64,
                                      identifiers identifiersParam: [StorageService.StorageIdentifier]) throws -> StorageServiceProtoManifestRecord {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
-        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
+        var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
         manifestBuilder.setKeys(try identifiers.map { try $0.buildRecord() })
         return try manifestBuilder.build()
     }

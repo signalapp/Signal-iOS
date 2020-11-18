@@ -34,7 +34,7 @@ public class GroupsV2Protos {
     public class func buildMemberProto(profileKeyCredential: ProfileKeyCredential,
                                        role: GroupsProtoMemberRole,
                                        groupV2Params: GroupV2Params) throws -> GroupsProtoMember {
-        let builder = GroupsProtoMember.builder()
+        var builder = GroupsProtoMember.builder()
         builder.setRole(role)
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
                                                          groupV2Params: groupV2Params)
@@ -46,9 +46,9 @@ public class GroupsV2Protos {
                                               role: GroupsProtoMemberRole,
                                               localUuid: UUID,
                                               groupV2Params: GroupV2Params) throws -> GroupsProtoPendingMember {
-        let builder = GroupsProtoPendingMember.builder()
+        var builder = GroupsProtoPendingMember.builder()
 
-        let memberBuilder = GroupsProtoMember.builder()
+        var memberBuilder = GroupsProtoMember.builder()
         memberBuilder.setRole(role)
         let userId = try groupV2Params.userId(forUuid: uuid)
         if DebugFlags.groupsV2corruptInvites.get() {
@@ -64,7 +64,7 @@ public class GroupsV2Protos {
 
     public class func buildRequestingMemberProto(profileKeyCredential: ProfileKeyCredential,
                                                  groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
-        let builder = GroupsProtoRequestingMember.builder()
+        var builder = GroupsProtoRequestingMember.builder()
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
                                                          groupV2Params: groupV2Params)
         builder.setPresentation(presentationData)
@@ -95,7 +95,7 @@ public class GroupsV2Protos {
         }
         // Collect credentials for all members except self.
 
-        let groupBuilder = GroupsProtoGroup.builder()
+        var groupBuilder = GroupsProtoGroup.builder()
         let initialRevision: UInt32 = 0
         groupBuilder.setRevision(initialRevision)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
@@ -178,7 +178,7 @@ public class GroupsV2Protos {
     }
 
     public class func buildAccessProto(groupAccess: GroupAccess) throws -> GroupsProtoAccessControl {
-        let builder = GroupsProtoAccessControl.builder()
+        var builder = GroupsProtoAccessControl.builder()
         builder.setAttributes(groupAccess.attributes.protoAccess)
         builder.setMembers(groupAccess.members.protoAccess)
         builder.setAddFromInviteLink(groupAccess.addFromInviteLink.protoAccess)
@@ -197,7 +197,7 @@ public class GroupsV2Protos {
     public class func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                                changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
-        let builder = SSKProtoGroupContextV2.builder()
+        var builder = SSKProtoGroupContextV2.builder()
         builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
         builder.setRevision(groupModel.revision)
 
