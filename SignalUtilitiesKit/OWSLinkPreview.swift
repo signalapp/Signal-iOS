@@ -496,8 +496,8 @@ public class OWSLinkPreview: MTLModel {
             return Promise.value(cachedInfo)
         }
         return downloadLink(url: previewUrl)
-            .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
-                return parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
+            .then(on: DispatchQueue.global()) { (data, response) -> Promise<OWSLinkPreviewDraft> in
+                return parseLinkDataAndBuildDraft(linkData: data, response: response, linkUrlString: previewUrl)
             }.then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
                 guard linkPreviewDraft.isValid() else {
                     throw LinkPreviewError.noPreview
@@ -507,9 +507,14 @@ public class OWSLinkPreview: MTLModel {
                 return Promise.value(linkPreviewDraft)
         }
     }
+    
+    // Twitter doesn't return OpenGraph tags to Signal
+    // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
+    // If this ever changes, we can switch back to our default User-Agent
+    private static let userAgentString = "WhatsApp"
 
     class func downloadLink(url urlString: String,
-                            remainingRetries: UInt = 3) -> Promise<Data> {
+                            remainingRetries: UInt = 3) -> Promise<(Data, URLResponse)> {
 
         Logger.verbose("url: \(urlString)")
 
@@ -529,11 +534,13 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Could not configure url: \(urlString).")
             return Promise(error: LinkPreviewError.assertionFailure)
         }
+        
+        sessionManager.requestSerializer.setValue(self.userAgentString, forHTTPHeaderField: "User-Agent")
 
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, resolver) = Promise<(Data, URLResponse)>.pending()
         sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
-                           headers: [:],
+                           headers: nil,
                            progress: nil,
                            success: { task, value in
 
@@ -559,7 +566,7 @@ public class OWSLinkPreview: MTLModel {
                                 resolver.reject(LinkPreviewError.invalidContent)
                                 return
                             }
-                            resolver.fulfill(data)
+                            resolver.fulfill((data, response))
         },
                            failure: { _, error in
                             Logger.verbose("Error: \(error)")
@@ -576,8 +583,8 @@ public class OWSLinkPreview: MTLModel {
                                 return
                             }
                             OWSLinkPreview.downloadLink(url: urlString, remainingRetries: remainingRetries - 1)
-                            .done(on: DispatchQueue.global()) { (data) in
-                                resolver.fulfill(data)
+                            .done(on: DispatchQueue.global()) { (data, response) in
+                                resolver.fulfill((data, response))
                             }.catch(on: DispatchQueue.global()) { (error) in
                                 resolver.reject(error)
                             }.retainUntilComplete()
@@ -662,9 +669,10 @@ public class OWSLinkPreview: MTLModel {
     }
 
     class func parseLinkDataAndBuildDraft(linkData: Data,
+                                          response: URLResponse,
                                           linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
         do {
-            let contents = try parse(linkData: linkData)
+            let contents = try parse(linkData: linkData, response: response)
 
             let title = contents.title
             guard let imageUrl = contents.imageUrl else {
@@ -699,9 +707,9 @@ public class OWSLinkPreview: MTLModel {
         }
     }
 
-    class func parse(linkData: Data) throws -> OWSLinkPreviewContents {
-        guard let linkText = String(bytes: linkData, encoding: .utf8) else {
-            owsFailDebug("Could not parse link text.")
+    class func parse(linkData: Data, response: URLResponse) throws -> OWSLinkPreviewContents {
+        guard let linkText = String(data: linkData, urlResponse: response) else {
+            print("Could not parse link text.")
             throw LinkPreviewError.invalidInput
         }
         
