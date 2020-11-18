@@ -733,6 +733,10 @@ public extension TSMessage {
     var isSyncMessage: Bool {
         nil != self as? OWSOutgoingSyncMessage
     }
+
+    var isCallMessage: Bool {
+        nil != self as? OWSOutgoingCallMessage
+    }
 }
 
 // MARK: -
