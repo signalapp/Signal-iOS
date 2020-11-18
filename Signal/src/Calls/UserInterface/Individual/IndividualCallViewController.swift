@@ -347,7 +347,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         remoteVideoView.isUserInteractionEnabled = false
         remoteVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "remoteVideoView")
         remoteVideoView.isHidden = true
-        remoteVideoView.isFullScreenVideo = true
+        remoteVideoView.isGroupCall = false
         view.addSubview(remoteVideoView)
 
         // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".

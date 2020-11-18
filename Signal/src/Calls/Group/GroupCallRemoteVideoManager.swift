@@ -23,6 +23,7 @@ class GroupCallRemoteVideoManager {
 
         let videoView = GroupCallRemoteVideoView(demuxId: device.demuxId)
         videoView.sizeDelegate = self
+        videoView.isGroupCall = true
 
         currentVideoViewsDevice[mode] = videoView
         videoViews[device.demuxId] = currentVideoViewsDevice
@@ -144,9 +145,9 @@ class GroupCallRemoteVideoView: UIView {
         sizeDelegate?.groupCallRemoteVideoViewDidChangeSuperview(remoteVideoView: self)
     }
 
-    var isFullScreenVideo: Bool {
-        get { remoteVideoView.isFullScreenVideo }
-        set { remoteVideoView.isFullScreenVideo = newValue }
+    var isGroupCall: Bool {
+        get { remoteVideoView.isGroupCall }
+        set { remoteVideoView.isGroupCall = newValue }
     }
 
     var isRenderingVideo: Bool { videoTrack != nil }

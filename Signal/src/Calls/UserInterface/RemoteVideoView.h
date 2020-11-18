@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RemoteVideoView : UIView <RTCVideoRenderer>
 
-@property (atomic) BOOL isFullScreenVideo;
+@property (atomic) BOOL isGroupCall;
 
 @end
 

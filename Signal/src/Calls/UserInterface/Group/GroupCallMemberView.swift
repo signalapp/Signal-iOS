@@ -200,7 +200,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     private var hasBeenConfigured = false
-    func configure(call: SignalCall, device: RemoteDeviceState, isSpeakerView: Bool = false) {
+    func configure(call: SignalCall, device: RemoteDeviceState) {
         hasBeenConfigured = true
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
@@ -226,7 +226,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
-        muteIndicatorImage.isHidden = isSpeakerView || device.audioMuted != true
+        muteIndicatorImage.isHidden = mode == .speaker || device.audioMuted != true
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
 
@@ -246,7 +246,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         avatarView.isHidden = !(device.videoMuted ?? true)
         videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
-        videoView.isFullScreenVideo = isSpeakerView
     }
 
     private func updateDimensions() {

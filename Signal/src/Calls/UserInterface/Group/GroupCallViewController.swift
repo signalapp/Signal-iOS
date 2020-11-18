@@ -252,8 +252,7 @@ class GroupCallViewController: UIViewController {
         if let speakerState = groupCall.sortedRemoteDeviceStates.first {
             speakerView.configure(
                 call: call,
-                device: speakerState,
-                isSpeakerView: true
+                device: speakerState
             )
         }
 
