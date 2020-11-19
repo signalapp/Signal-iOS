@@ -14,6 +14,7 @@ class GroupCallMemberView: UIView {
 
     lazy var muteLeadingConstraint = muteIndicatorImage.autoPinEdge(toSuperviewEdge: .leading, withInset: muteInsets)
     lazy var muteBottomConstraint = muteIndicatorImage.autoPinEdge(toSuperviewEdge: .bottom, withInset: muteInsets)
+    lazy var muteHeightConstraint = muteIndicatorImage.autoSetDimension(.height, toSize: muteHeight)
 
     var muteInsets: CGFloat {
         layoutIfNeeded()
@@ -22,6 +23,16 @@ class GroupCallMemberView: UIView {
             return 9
         } else {
             return 4
+        }
+    }
+
+    var muteHeight: CGFloat {
+        layoutIfNeeded()
+
+        if width > 200 && UIDevice.current.isIPad {
+            return 20
+        } else {
+            return 16
         }
     }
 
@@ -49,7 +60,7 @@ class GroupCallMemberView: UIView {
         muteIndicatorImage.contentMode = .scaleAspectFit
         muteIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
         addSubview(muteIndicatorImage)
-        muteIndicatorImage.autoSetDimensions(to: CGSize(square: 16))
+        muteIndicatorImage.autoMatch(.width, to: .height, of: muteIndicatorImage)
     }
 
     required init?(coder: NSCoder) {
@@ -134,6 +145,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         muteIndicatorImage.isHidden = isFullScreen || !call.groupCall.isOutgoingAudioMuted
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
+        muteHeightConstraint.constant = muteHeight
 
         videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
 
@@ -150,6 +162,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.frame = bounds
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
+        muteHeightConstraint.constant = muteHeight
         videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
     }
 }
@@ -229,6 +242,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         muteIndicatorImage.isHidden = mode == .speaker || device.audioMuted != true
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
+        muteHeightConstraint.constant = muteHeight
 
         noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
             colorName: conversationColorName
@@ -251,6 +265,9 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     private func updateDimensions() {
         guard hasBeenConfigured else { return }
         videoView?.frame = bounds
+        muteLeadingConstraint.constant = muteInsets
+        muteBottomConstraint.constant = -muteInsets
+        muteHeightConstraint.constant = muteHeight
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
     }
 }
