@@ -1571,7 +1571,7 @@
 "GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
 
 /* Text explaining that there are three people in the group call. Embeds two {member name}s */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
 
 /* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
@@ -1581,6 +1581,9 @@
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "You";
+
+/* Text explaining that you are in the group call. */
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";

@@ -72,6 +72,10 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         owsFail("TODO")
     }
 
+    public func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return "Fake name"
+    }
+
     public func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
         return "Fake name"
     }

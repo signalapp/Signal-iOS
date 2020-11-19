@@ -144,6 +144,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.hasEnded) {
@@ -159,59 +164,71 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    // TODO: Stable arrange member names
-    NSString *memberString = nil;
-    BOOL isCreatorInCall = [self.joinedMemberUuids containsObject:self.creatorUuid];
+    NSString *moreThanThreeFormat = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
+        @"Text explaining that there are more than three people in the group call. Embeds two {member name}s and "
+        @"memberCount-2");
+    NSString *threeFormat = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
+        @"Text explaining that there are three people in the group call. Embeds two {member name}s");
+    NSString *twoFormat = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+        @"Text explaining that there are two people in the group call. Embeds two {member name}s");
+    NSString *onlyCreatorFormat = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
+        @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
+    NSString *onlyYouFormat
+        = NSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE_FORMAT", @"Text explaining that you are in the group call.");
+    NSString *onlyOneFormat = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+        @"Text explaining that there is one person in the group call. Embeds {member name}");
+    NSString *endedString = NSLocalizedString(
+        @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
 
-    NSString * (^participantName)(NSUInteger) = ^NSString *(NSUInteger idx)
-    {
-        if (self.joinedMemberAddresses.count <= idx) {
-            OWSFailDebug(@"Out of bounds");
-            return nil;
-        }
-        SignalServiceAddress *address = self.joinedMemberAddresses[idx];
-        return [self participantNameForAddress:address transaction:transaction];
-    };
+
+    // Sort the addresses to prioritize the local user and originator, then the rest of the participants alphabetically
+    NSArray<SignalServiceAddress *> *sortedAddresses = [self.joinedMemberAddresses
+        sortedArrayUsingComparator:^NSComparisonResult(SignalServiceAddress *obj1, SignalServiceAddress *obj2) {
+            if ([obj1 isEqualToAddress:obj2]) {
+                return NSOrderedSame;
+            } else if (obj1.isLocalAddress || obj2.isLocalAddress) {
+                return obj1.isLocalAddress ? NSOrderedAscending : NSOrderedDescending;
+            } else if ([obj1 isEqualToAddress:self.creatorAddress] || [obj2 isEqualToAddress:self.creatorAddress]) {
+                return [obj1 isEqualToAddress:self.creatorAddress] ? NSOrderedAscending : NSOrderedDescending;
+            } else {
+                NSString *compareString1 = [self.contactsManager comparableNameForAddress:obj1 transaction:transaction];
+                NSString *compareString2 = [self.contactsManager comparableNameForAddress:obj2 transaction:transaction];
+                return [compareString1 compare:compareString2];
+            }
+        }];
 
     if (self.hasEnded) {
-        memberString = NSLocalizedString(
-            @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+        return endedString;
 
-    } else if (self.joinedMemberUuids.count >= 4) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-            @"Text explaining that there are more than three people in the group call. Embeds two {member name}s and "
-            @"memberCount-2");
-        memberString = [NSString
-            stringWithFormat:formatString, participantName(0), participantName(1), (self.joinedMemberUuids.count - 2)];
+    } else if (sortedAddresses.count >= 4) {
+        NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+        NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
+        return [NSString stringWithFormat:moreThanThreeFormat, firstName, secondName, (sortedAddresses.count - 2)];
 
-    } else if (self.joinedMemberUuids.count == 3) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
-            @"Text explaining that there are three people in the group call. Embeds two {member name}s");
-        memberString = [NSString stringWithFormat:formatString, participantName(0), participantName(1)];
+    } else if (sortedAddresses.count == 3) {
+        NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+        NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
+        return [NSString stringWithFormat:threeFormat, firstName, secondName];
 
-    } else if (self.joinedMemberUuids.count == 2) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-            @"Text explaining that there are two people in the group call. Embeds two {member name}s");
-        memberString = [NSString stringWithFormat:formatString, participantName(0), participantName(1)];
+    } else if (sortedAddresses.count == 2) {
+        NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+        NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
+        return [NSString stringWithFormat:twoFormat, firstName, secondName];
 
-    } else if (isCreatorInCall) {
-        // If the originator is the only participant, the wording is "X started a group call" instead of "X is in a
-        // group call"
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
-            @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
-        memberString = [NSString stringWithFormat:formatString, participantName(0)];
+    } else if (sortedAddresses.count == 1 && [sortedAddresses[0] isEqualToAddress:self.creatorAddress]) {
+        NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+        return [NSString stringWithFormat:onlyCreatorFormat, name];
 
-    } else if (self.joinedMemberUuids.count == 1) {
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
-            @"Text explaining that there is one person in the group call. Embeds {member name}");
-        memberString = [NSString stringWithFormat:formatString, participantName(0)];
+    } else if (sortedAddresses.count == 1 && sortedAddresses[0].isLocalAddress) {
+        return onlyYouFormat;
+
+    } else if (sortedAddresses.count == 1) {
+        NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+        return [NSString stringWithFormat:onlyOneFormat, name];
 
     } else {
-        memberString = NSLocalizedString(
-            @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+        return endedString;
     }
-
-    return memberString;
 }
 
 - (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction
@@ -241,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (address.isLocalAddress) {
         return NSLocalizedString(@"GROUP_CALL_YOU", "Text describing the local user as a participant in a group call.");
     } else {
-        return [SSKEnvironment.shared.contactsManager displayNameForAddress:address transaction:transaction];
+        return [self.contactsManager displayNameForAddress:address transaction:transaction];
     }
 }
 
