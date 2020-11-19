@@ -93,7 +93,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
     }
 
     @objc
-    public let thread: TSThread?
+    public let thread: TSThread
 
     public var error: CallError?
     public enum CallError: Error {

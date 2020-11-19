@@ -829,7 +829,7 @@ extension CallService: CallManagerDelegate {
         call2: SignalCall
     ) -> Bool {
         Logger.info("shouldCompareCalls")
-        return call1.thread?.uniqueId == call2.thread?.uniqueId
+        return call1.thread.uniqueId == call2.thread.uniqueId
     }
 
     // MARK: - 1:1 Call Delegates

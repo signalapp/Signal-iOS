@@ -114,18 +114,20 @@ class NotificationActionHandler {
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: .main) { notificationMessage in
             let thread = notificationMessage.thread
+            let currentCall = AppEnvironment.shared.callService.currentCall
+            let isGroupCallMessage = notificationMessage.interaction is OWSGroupCallMessage
 
-            // If this happens when the the app is not, visible we skip the animation so the thread
-            // can be visible to the user immediately upon opening the app, rather than having to watch
-            // it animate in from the homescreen.
-            let shouldAnimate = UIApplication.shared.applicationState == .active
-
-            if notificationMessage.interaction is OWSGroupCallMessage {
-                self.signalApp.presentConversation(for: thread, action: .groupCallLobby, animated: shouldAnimate)
+            if isGroupCallMessage, currentCall?.thread.uniqueId == thread.uniqueId {
+                OWSWindowManager.shared.returnToCallView()
+            } else if let thread = thread as? TSGroupThread, isGroupCallMessage, currentCall == nil {
+                GroupCallViewController.presentLobby(thread: thread)
             } else {
+                // If this happens when the the app is not, visible we skip the animation so the thread
+                // can be visible to the user immediately upon opening the app, rather than having to watch
+                // it animate in from the homescreen.
                 self.signalApp.presentConversationAndScrollToFirstUnreadMessage(
                     forThreadId: thread.uniqueId,
-                    animated: shouldAnimate
+                    animated: UIApplication.shared.applicationState == .active
                 )
             }
         }
