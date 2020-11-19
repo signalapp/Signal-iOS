@@ -370,12 +370,12 @@ typedef enum : NSUInteger {
                                                   name:NSNotification.groupThreadUpdated
                                                 object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleCalculatingPoWNotification:)
-                                                 name:NSNotification.calculatingMessagePoW
+                                             selector:@selector(handleEncryptingMessageNotification:)
+                                                 name:NSNotification.encryptingMessage
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRoutingNotification:)
-                                                 name:NSNotification.encryptingMessage
+                                             selector:@selector(handleCalculatingMessagePoWNotification:)
+                                                 name:NSNotification.calculatingMessagePoW
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleMessageSendingNotification:)
@@ -386,7 +386,7 @@ typedef enum : NSUInteger {
                                                  name:NSNotification.messageSent
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleMessageFailedNotification:)
+                                             selector:@selector(handleMessageSendingFailedNotification:)
                                                  name:NSNotification.messageSendingFailed
                                                object:nil];
 }
@@ -3816,47 +3816,30 @@ typedef enum : NSUInteger {
 
     text = [text ows_stripped];
 
-    if (text.length < 1) {
-        return;
-    }
-
-    // Limit outgoing text messages to 16kb.
-    //
-    // We convert large text messages to attachments
-    // which are presented as normal text messages.
+    if (text.length < 1) { return; }
     
     SNVisibleMessage *message = [SNVisibleMessage new];
+    [message setSentTimestamp:[NSDate millisecondTimestamp]];
     message.text = text;
     message.quote = [SNQuote from:self.inputToolbar.quotedReply];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [SNMessageSender send:message inThread:self.thread usingTransaction:transaction];
     }];
-
+    
     TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
     
-    [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
+    [tsMessage save];
 
+    [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
+    
     [self messageWasSent:tsMessage];
 
-    // Clearing the text message is a key part of the send animation.
-    // It takes 10-15ms, but we do it inline rather than dispatch async
-    // since the send can't feel "complete" without it.
-    [BenchManager benchWithTitle:@"clearTextMessageAnimated"
-                           block:^{
-                               [self.inputToolbar clearTextMessageAnimated:YES];
-                               [self resetMentions];
-                           }];
-    [BenchManager completeEventWithEventId:@"fromSendUntil_clearTextMessageAnimated"];
+    [self.inputToolbar clearTextMessageAnimated:YES];
+    
+    [self resetMentions];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        // After sending we want to return from the numeric keyboard to the
-        // alphabetical one. Because this is so slow (40-50ms), we prefer it
-        // happens async, after any more essential send UI work is done.
-        [BenchManager benchWithTitle:@"toggleDefaultKeyboard"
-                               block:^{
-                                   [self.inputToolbar toggleDefaultKeyboard];
-                               }];
-        [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
+        [self.inputToolbar toggleDefaultKeyboard];
     });
 
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4554,13 +4537,13 @@ typedef enum : NSUInteger {
     [self updateScrollDownButtonLayout];
 }
 
-- (void)handleCalculatingPoWNotification:(NSNotification *)notification
+- (void)handleEncryptingMessageNotification:(NSNotification *)notification
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
     [self setProgressIfNeededTo:0.25f forMessageWithTimestamp:timestamp];
 }
 
-- (void)handleRoutingNotification:(NSNotification *)notification
+- (void)handleCalculatingMessagePoWNotification:(NSNotification *)notification
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
     [self setProgressIfNeededTo:0.50f forMessageWithTimestamp:timestamp];
@@ -4582,7 +4565,7 @@ typedef enum : NSUInteger {
     });
 }
 
-- (void)handleMessageFailedNotification:(NSNotification *)notification
+- (void)handleMessageSendingFailedNotification:(NSNotification *)notification
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
     [self hideProgressIndicatorViewForMessageWithTimestamp:timestamp];
@@ -4590,11 +4573,7 @@ typedef enum : NSUInteger {
 
 - (void)setProgressIfNeededTo:(float)progress forMessageWithTimestamp:(NSNumber *)timestamp
 {
-    if ([self.handledMessageTimestamps contains:^BOOL(NSNumber *t) {
-        return [t isEqual:timestamp];
-    }]) {
-        return;
-    }
+    if ([self.handledMessageTimestamps containsObject:timestamp]) { return; }
     dispatch_async(dispatch_get_main_queue(), ^{
         __block TSInteraction *targetInteraction;
         [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {

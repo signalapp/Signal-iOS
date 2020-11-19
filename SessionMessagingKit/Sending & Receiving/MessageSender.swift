@@ -31,7 +31,9 @@ public final class MessageSender : NSObject {
     }
 
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
-        message.sentTimestamp = NSDate.millisecondTimestamp()
+        if message.sentTimestamp == nil { // Visible messages will already have the sent timestamp set
+            message.sentTimestamp = NSDate.millisecondTimestamp()
+        }
         message.sender = Configuration.shared.storage.getUserPublicKey()
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey

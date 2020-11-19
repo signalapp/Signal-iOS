@@ -8,10 +8,14 @@
             expiration = disappearingMessagesConfiguration.isEnabled ? disappearingMessagesConfiguration.durationSeconds : 0
         }
         return TSOutgoingMessage(
+            outgoingMessageWithTimestamp: visibleMessage.sentTimestamp!,
             in: thread,
             messageBody: visibleMessage.text,
-            attachmentId: nil,
+            attachmentIds: NSMutableArray(),
             expiresInSeconds: expiration,
+            expireStartedAt: 0,
+            isVoiceMessage: false,
+            groupMetaMessage: .unspecified,
             quotedMessage: nil,
             linkPreview: nil
         )

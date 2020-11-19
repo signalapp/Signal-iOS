@@ -47,4 +47,9 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public func toProto() -> SNProtoContent? {
         preconditionFailure("toProto() is abstract and must be overridden.")
     }
+    
+    // MARK: General
+    @objc public func setSentTimestamp(_ sentTimestamp: UInt64) {
+        self.sentTimestamp = sentTimestamp
+    }
 }
