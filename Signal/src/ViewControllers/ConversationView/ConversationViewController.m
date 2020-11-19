@@ -1935,7 +1935,11 @@ typedef enum : NSUInteger {
 
 - (void)handleGroupCallTap
 {
-    [self showGroupCallLobby];
+    if ([self.callService.currentCall.thread.uniqueId isEqualToString:self.thread.uniqueId]) {
+        // TODO
+    } else {
+        [self showGroupCallLobby];
+    }
 }
 
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
@@ -2279,6 +2283,11 @@ typedef enum : NSUInteger {
 - (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell
 {
     return self.threadViewModel.hasPendingMessageRequest;
+}
+
+- (BOOL)isCallingSupported
+{
+    return [self canCall];
 }
 
 - (BOOL)isShowingSelectionUI

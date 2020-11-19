@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)conversationCell:(ConversationViewCell *)cell didEndLongpress:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell didTapReactions:(id<ConversationViewItem>)viewItem;
 - (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell;
+@property (nonatomic, readonly) BOOL isCallingSupported;
 
 #pragma mark - Selection
 

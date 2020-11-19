@@ -92,6 +92,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         didSet { AssertIsOnMainThread() }
     }
 
+    @objc
     public let thread: TSThread?
 
     public var error: CallError?

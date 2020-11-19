@@ -7,6 +7,7 @@ import SignalRingRTC
 import PromiseKit
 
 // All Observer methods will be invoked from the main thread.
+@objc(OWSCallServiceObserver)
 protocol CallServiceObserver: class {
     /**
      * Fired whenever the call changes.
@@ -138,6 +139,7 @@ public final class CallService: NSObject {
     private var observers = WeakArray<CallServiceObserver>()
 
     // The observer-related methods should be invoked on the main thread.
+    @objc
     func addObserverAndSyncState(observer: CallServiceObserver) {
         AssertIsOnMainThread()
 
@@ -148,6 +150,7 @@ public final class CallService: NSObject {
     }
 
     // The observer-related methods should be invoked on the main thread.
+    @objc
     func removeObserver(_ observer: CallServiceObserver) {
         AssertIsOnMainThread()
         observers.removeAll { $0 === observer }

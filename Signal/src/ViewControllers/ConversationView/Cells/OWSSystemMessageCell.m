@@ -791,6 +791,7 @@ typedef void (^SystemMessageActionBlock)(void);
         case RPRecentCallTypeIncomingAnsweredElsewhere:
         case RPRecentCallTypeIncomingDeclinedElsewhere:
         case RPRecentCallTypeIncomingBusyElsewhere:
+            // If delegate is nil, include the action. This way we always oversize instead of undersize.
             if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
                 return nil;
             }
@@ -800,6 +801,7 @@ typedef void (^SystemMessageActionBlock)(void);
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
+            // If delegate is nil, include the action. This way we always oversize instead of undersize.
             if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
                 return nil;
             }
@@ -815,21 +817,20 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForGroupCall:(OWSGroupCallMessage *)groupCallMessage
 {
-    // TODO: Check if the current call belongs to this thread.
-    if (self.callService.currentCall != nil) {
-        return nil;
-    }
-
+    // Assume the current thread supports calling if we have no delegate. This ensures we always
+    // overestimate cell measurement in cases where the current thread doesn't support calling.
+    BOOL isCallingSupported = !self.delegate || self.delegate.isCallingSupported;
     BOOL isCallActive = (!groupCallMessage.hasEnded && groupCallMessage.joinedMemberAddresses.count > 0);
 
-    // TODO: Respect -canCall from ConversationViewController
-    // TODO: "Return to call" if for the current thread. Hide the action is currently in a call
-    // For now we'll just check the feature flag
-    BOOL canCall = SSKFeatureFlags.groupCalling;
+    if (isCallingSupported && isCallActive) {
+        NSString *currentCallThreadId = self.callService.currentCall.thread.uniqueId;
+        BOOL isCurrentCallForThread = [currentCallThreadId isEqualToString:self.viewItem.thread.uniqueId];
 
-    if (isCallActive && canCall) {
+        NSString *joinTitle = NSLocalizedString(@"GROUP_CALL_JOIN_BUTTON", "Button to join an ongoing group call");
+        NSString *returnTitle = NSLocalizedString(@"CALL_RETURN_BUTTON", "Button to return to the current call");
+        NSString *actionTitle = isCurrentCallForThread ? returnTitle : joinTitle;
+
         __weak typeof(self) wSelf = self;
-        NSString *actionTitle = NSLocalizedString(@"GROUP_CALL_JOIN_BUTTON", "Button to join an ongoing group call");
         return [SystemMessageAction actionWithTitle:actionTitle
                                               block:^{ [wSelf.delegate handleGroupCallTap]; }
                             accessibilityIdentifier:actionTitle];
