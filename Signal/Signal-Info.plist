@@ -7,7 +7,7 @@
 		<key>OSXVersion</key>
 		<string>10.15.7</string>
 		<key>WebRTCCommit</key>
-		<string>4a375d5e51a837f52ea5dd13932863ca945faf95 Dev build with group calling support #17</string>
+		<string>f2786c89438a93c1b65a6bea630f8dc1f9a3cd1c Dev build with group calling support #18</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
