@@ -99,16 +99,15 @@ public class RemoteConfig: BaseFlags {
     // Will only offer migrations if all members can be migrated.
     @objc
     public static var groupsV2MigrationAutoMigrations: Bool {
-        return false
-//        guard FeatureFlags.groupsV2Migrations else {
-//            return false
-//        }
-//        // If either of the "blocking migrations" or "manual migrations" flags
-//        // are set, auto migrations are also enabled.
-//        return (DebugFlags.groupsV2migrationsForceEnableAutoMigrations.get() ||
-//                    isEnabled(.groupsV2autoMigrations) ||
-//                    isEnabled(.groupsV2manualMigrations) ||
-//                    isEnabled(.groupsV2blockingMigrations))
+        guard FeatureFlags.groupsV2Migrations else {
+            return false
+        }
+        // If either of the "blocking migrations" or "manual migrations" flags
+        // are set, auto migrations are also enabled.
+        return (DebugFlags.groupsV2migrationsForceEnableAutoMigrations.get() ||
+                    isEnabled(.groupsV2autoMigrations) ||
+                    isEnabled(.groupsV2manualMigrations) ||
+                    isEnabled(.groupsV2blockingMigrations))
     }
 
     // Controls whether or not the client will show the manual migration UI.
