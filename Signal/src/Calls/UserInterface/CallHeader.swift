@@ -155,7 +155,7 @@ class CallHeader: UIView {
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.sortedRemoteDeviceStates.count > 1
+        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.remoteDeviceStates.count > 1
     }
 
     func updateCallTitleLabel() {
@@ -169,7 +169,7 @@ class CallHeader: UIView {
         } else {
             let memberNames: [String] = databaseStorage.uiRead { transaction in
                 if self.call.groupCall.localDeviceState.joinState == .joined {
-                    return self.call.groupCall.sortedRemoteDeviceStates
+                    return self.call.groupCall.remoteDeviceStates.sortedByAddedTime
                         .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
                 } else {
                     return self.call.groupCall.peekInfo?.joinedMembers

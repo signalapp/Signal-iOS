@@ -287,7 +287,7 @@ class GroupCallMemberSheet: UIViewController {
             var members = [JoinedMember]()
 
             if self.call.groupCall.localDeviceState.joinState == .joined {
-                members += self.call.groupCall.sortedRemoteDeviceStates.map { member in
+                members += self.call.groupCall.remoteDeviceStates.values.map { member in
                     let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
                     let displayName: String
                     let comparableName: String

@@ -240,7 +240,7 @@ class GroupCallViewController: UIViewController {
 
         switch groupCall.localDeviceState.joinState {
         case .joined:
-            if groupCall.sortedRemoteDeviceStates.count > 0 {
+            if groupCall.remoteDeviceStates.count > 0 {
                 speakerPage.addSubview(speakerView)
                 speakerView.autoPinEdgesToSuperviewEdges()
 
@@ -284,7 +284,7 @@ class GroupCallViewController: UIViewController {
             isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
         )
 
-        if let speakerState = groupCall.sortedRemoteDeviceStates.first {
+        if let speakerState = groupCall.remoteDeviceStates.sortedBySpeakerTime.first {
             speakerView.configure(
                 call: call,
                 device: speakerState
@@ -388,7 +388,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     var remoteVideoViewReference: UIView { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
-        guard let firstMember = groupCall.sortedRemoteDeviceStates.first else {
+        guard let firstMember = groupCall.remoteDeviceStates.sortedByAddedTime.first else {
             return tsAccountManager.localAddress!
         }
         return firstMember.address

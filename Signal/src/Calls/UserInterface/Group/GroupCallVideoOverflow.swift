@@ -89,12 +89,12 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
-        let joinedRemoteDeviceStates = call.groupCall.sortedRemoteDeviceStates
+        let joinedRemoteDeviceStates = call.groupCall.remoteDeviceStates.sortedBySpeakerTime
 
         guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
 
         // We reverse this as we're rendering in the inverted direction.
-        return Array(joinedRemoteDeviceStates[firstOverflowMemberIndex..<joinedRemoteDeviceStates.count]).reversed()
+        return Array(joinedRemoteDeviceStates[firstOverflowMemberIndex..<joinedRemoteDeviceStates.count]).sortedByAddedTime.reversed()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

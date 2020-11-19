@@ -29,8 +29,13 @@ class GroupCallVideoGrid: UICollectionView {
 }
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
+    var gridRemoteDeviceStates: [RemoteDeviceState] {
+        let remoteDeviceStates = call.groupCall.remoteDeviceStates.sortedBySpeakerTime
+        return Array(remoteDeviceStates[0..<min(maxItems, call.groupCall.remoteDeviceStates.count)]).sortedByAddedTime
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(maxItems, call.groupCall.remoteDeviceStates.count)
+        return gridRemoteDeviceStates.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -39,7 +44,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             for: indexPath
         ) as! GroupCallVideoGridCell
 
-        guard let remoteDevice = call.groupCall.sortedRemoteDeviceStates[safe: indexPath.row] else {
+        guard let remoteDevice = gridRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
             return cell
         }
@@ -90,7 +95,7 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
     var maxItems: Int { maxColumns * maxRows }
 
     func deviceState(for index: Int) -> RemoteDeviceState? {
-        return call.groupCall.sortedRemoteDeviceStates[safe: index]
+        return gridRemoteDeviceStates[safe: index]
     }
 }
 
@@ -117,13 +122,26 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     }
 }
 
-extension GroupCall {
-    var sortedRemoteDeviceStates: [RemoteDeviceState] {
-        // TODO: Sort by something better, for now we use
-        // demuxId because it's stable, but eventually
-        // RingRTC will provide us a 'joined time'
-        return remoteDeviceStates
-            .values
-            .sorted { $0.demuxId < $1.demuxId }
+extension Sequence where Element: RemoteDeviceState {
+    /// The first person to join the call is the first item in the list.
+    var sortedByAddedTime: [RemoteDeviceState] {
+        return sorted { $0.addedTime < $1.addedTime }
+    }
+
+    /// The most recent speaker is the first item in the list.
+    var sortedBySpeakerTime: [RemoteDeviceState] {
+        return sorted { $0.speakerTime > $1.speakerTime }
+    }
+}
+
+extension Dictionary where Value: RemoteDeviceState {
+    /// The first person to join the call is the first item in the list.
+    var sortedByAddedTime: [RemoteDeviceState] {
+        return values.sortedByAddedTime
+    }
+
+    /// The most recent speaker is the first item in the list.
+    var sortedBySpeakerTime: [RemoteDeviceState] {
+        return values.sortedBySpeakerTime
     }
 }
