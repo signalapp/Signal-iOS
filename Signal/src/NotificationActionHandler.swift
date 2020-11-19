@@ -110,20 +110,25 @@ class NotificationActionHandler {
     }
 
     func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        AssertIsOnMainThread()
+        return firstly { () -> Promise<NotificationMessage> in
+            self.notificationMessage(forUserInfo: userInfo)
+        }.done(on: .main) { notificationMessage in
+            let thread = notificationMessage.thread
 
-        guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-            throw OWSAssertionError("threadId was unexpectedly nil")
+            // If this happens when the the app is not, visible we skip the animation so the thread
+            // can be visible to the user immediately upon opening the app, rather than having to watch
+            // it animate in from the homescreen.
+            let shouldAnimate = UIApplication.shared.applicationState == .active
+
+            if notificationMessage.interaction is OWSGroupCallMessage {
+                self.signalApp.presentConversation(for: thread, action: .groupCallLobby, animated: shouldAnimate)
+            } else {
+                self.signalApp.presentConversationAndScrollToFirstUnreadMessage(
+                    forThreadId: thread.uniqueId,
+                    animated: shouldAnimate
+                )
+            }
         }
-
-        // If this happens when the the app is not, visible we skip the animation so the thread
-        // can be visible to the user immediately upon opening the app, rather than having to watch
-        // it animate in from the homescreen.
-        signalApp.presentConversationAndScrollToFirstUnreadMessage(
-            forThreadId: threadId,
-            animated: UIApplication.shared.applicationState == .active
-        )
-        return Promise.value(())
     }
 
     func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
@@ -152,7 +157,7 @@ class NotificationActionHandler {
 
     private struct NotificationMessage {
         let thread: TSThread
-        let interaction: TSInteraction
+        let interaction: TSInteraction?
         let hasPendingMessageRequest: Bool
     }
 
@@ -161,26 +166,37 @@ class NotificationActionHandler {
             guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
                 throw OWSAssertionError("threadId was unexpectedly nil")
             }
-            guard let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String else {
-                throw OWSAssertionError("messageId was unexpectedly nil")
-            }
+            let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String
 
             return try self.databaseStorage.read { (transaction) throws -> NotificationMessage in
                 guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
                     throw OWSAssertionError("unable to find thread with id: \(threadId)")
                 }
-                guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
-                    throw OWSAssertionError("unable to find interaction with id: \(messageId)")
+
+                let interaction: TSInteraction?
+                if let messageId = messageId {
+                    interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction)
+                } else {
+                    interaction = nil
                 }
+
                 let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
-                return NotificationMessage(thread: thread, interaction: interaction, hasPendingMessageRequest: hasPendingMessageRequest)
+
+                return NotificationMessage(
+                    thread: thread,
+                    interaction: interaction,
+                    hasPendingMessageRequest: hasPendingMessageRequest
+                )
             }
         }
     }
 
     private func markMessageAsRead(notificationMessage: NotificationMessage) -> Promise<Void> {
+        guard let interaction = notificationMessage.interaction else {
+            return Promise(error: OWSAssertionError("missing interaction"))
+        }
         let (promise, resolver) = Promise<Void>.pending()
-        self.readReceiptManager.markAsReadLocally(beforeSortId: notificationMessage.interaction.sortId,
+        self.readReceiptManager.markAsReadLocally(beforeSortId: interaction.sortId,
                                                   thread: notificationMessage.thread,
                                                   hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest) {
                                                     resolver.fulfill(())

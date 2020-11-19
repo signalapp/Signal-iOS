@@ -1084,6 +1084,9 @@ typedef enum : NSUInteger {
         case ConversationViewActionVideoCall:
             [self startIndividualVideoCall];
             break;
+        case ConversationViewActionGroupCallLobby:
+            [self showGroupCallLobby];
+            break;
     }
 
     // Clear the "on open" state after the view has been presented.
