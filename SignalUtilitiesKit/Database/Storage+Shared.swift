@@ -1,8 +1,6 @@
 
 extension Storage {
 
-    public static let shared = Storage()
-
     public func with(_ work: @escaping (Any) -> Void) {
         Storage.writeSync { work($0) }
     }
@@ -19,5 +17,7 @@ extension Storage {
         return OWSIdentityManager.shared().identityKeyPair()
     }
 
-    public func getUserDisplayName() -> String? { fatalError() }
+    public func getUserDisplayName() -> String? {
+        return SSKEnvironment.shared.profileManager.localProfileName()
+    }
 }

@@ -290,7 +290,7 @@ BOOL IsNoteToSelfEnabled(void)
                                 }
                                 id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
                                 if (unread.read) {
-                                    [LKLogger print:@"Found an already read message in the * unseen * messages list."];
+                                    NSLog(@"Found an already read message in the * unseen * messages list.");
                                     return;
                                 }
                                 [messages addObject:unread];
@@ -312,7 +312,7 @@ BOOL IsNoteToSelfEnabled(void)
         }
         id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
         if (unread.read) {
-            [LKLogger print:@"Found an already read message in the * unread * messages list."];
+            NSLog(@"Found an already read message in the * unread * messages list.");
             return;
         }
         count += 1;

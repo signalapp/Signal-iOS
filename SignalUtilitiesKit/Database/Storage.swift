@@ -6,10 +6,12 @@ import PromiseKit
 // • Executing a write transaction from within a write transaction is NOT allowed.
 
 @objc(LKStorage)
-public final class Storage : NSObject {
+public final class Storage : NSObject, SessionMessagingKitStorageProtocol, SessionProtocolKitStorageProtocol, SessionSnodeKitStorageProtocol {
     public static let serialQueue = DispatchQueue(label: "Storage.serialQueue", qos: .userInitiated)
 
     private static var owsStorage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    
+    @objc public static let shared = Storage()
 
     // MARK: Reading
 
@@ -20,13 +22,6 @@ public final class Storage : NSObject {
 
     @objc(readWithBlock:)
     public static func read(with block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        // FIXME: For some reason the code below appears to be causing crashes even though it *should*
-        // be in line with the YapDatabase docs
-        /*
-        let isMainThread = Thread.current.isMainThread
-        let connection = isMainThread ? owsStorage.uiDatabaseConnection : owsStorage.dbReadConnection
-        connection.read(block)
-         */
         owsStorage.dbReadConnection.read(block)
     }
 
@@ -68,7 +63,6 @@ public final class Storage : NSObject {
     }
 
     /// Blocks the calling thread until the write has finished.
-    @discardableResult
     @objc(writeSyncWithBlock:)
     public static func writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
         try! write(with: block, completion: { }).wait() // The promise returned by write(with:completion:) never rejects

@@ -9,10 +9,7 @@ public extension Message.Destination {
             let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
             return .closedGroup(groupPublicKey: groupPublicKey)
         } else if let thread = thread as? TSGroupThread, thread.isOpenGroup {
-            var openGroup: OpenGroup!
-            Storage.read { transaction in
-                openGroup = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)
-            }
+            let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)!
             return .openGroup(channel: openGroup.channel, server: openGroup.server)
         } else {
             preconditionFailure("TODO: Handle legacy closed groups.")

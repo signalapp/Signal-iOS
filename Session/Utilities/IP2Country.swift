@@ -52,7 +52,7 @@ final class IP2Country {
 
     func populateCacheIfNeeded() -> Bool {
         if OnionRequestAPI.paths.isEmpty {
-            OnionRequestAPI.paths = Storage.getOnionRequestPaths()
+            OnionRequestAPI.paths = Storage.shared.getOnionRequestPaths()
         }
         let paths = OnionRequestAPI.paths
         guard !paths.isEmpty else { return false }

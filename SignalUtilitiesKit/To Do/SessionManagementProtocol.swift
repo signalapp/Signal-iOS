@@ -96,10 +96,10 @@ public final class SessionManagementProtocol : NSObject {
         let hasSession = storage.containsSession(publicKey, deviceId: Int32(1), protocolContext: transaction)
         guard !hasSession else { return }
         // Check that we didn't already send a session request
-        let hasSentSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) > 0)
+        let hasSentSessionRequest = (Storage.shared.getSessionRequestSentTimestamp(for: publicKey) > 0)
         let hasSentSessionRequestExpired = SessionManagementProtocol.hasSentSessionRequestExpired(for: publicKey)
         if hasSentSessionRequestExpired {
-            Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
+            Storage.shared.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
         }
         guard !hasSentSessionRequest || hasSentSessionRequestExpired else { return }
         // Create the thread if needed
@@ -107,7 +107,7 @@ public final class SessionManagementProtocol : NSObject {
         thread.save(with: transaction)
         // Send the session request
         print("[Loki] Sending session request to: \(publicKey).")
-        Storage.setSessionRequestSentTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
+        Storage.shared.setSessionRequestSentTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
         let sessionRequest = SessionRequest()
         sessionRequest.preKeyBundle = storage.generatePreKeyBundle(forContact: publicKey)
         MessageSender.send(sessionRequest, in: thread, using: transaction)
@@ -185,8 +185,8 @@ public final class SessionManagementProtocol : NSObject {
     }
 
     private static func shouldProcessSessionRequest(from publicKey: String, at timestamp: UInt64) -> Bool {
-        let sentTimestamp = Storage.getSessionRequestSentTimestamp(for: publicKey)
-        let processedTimestamp = Storage.getSessionRequestProcessedTimestamp(for: publicKey)
+        let sentTimestamp = Storage.shared.getSessionRequestSentTimestamp(for: publicKey)
+        let processedTimestamp = Storage.shared.getSessionRequestProcessedTimestamp(for: publicKey)
         let restorationTimestamp = UInt64(storage.getRestorationTime() * 1000)
         return timestamp > sentTimestamp && timestamp > processedTimestamp && timestamp > restorationTimestamp
     }

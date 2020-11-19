@@ -605,10 +605,7 @@ typedef enum : NSUInteger {
     if (self.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
         if (!thread.isOpenGroup) { return; }
-        __block SNOpenGroup *publicChat;
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
-        }];
+        SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:thread.uniqueId];
         [SNOpenGroupAPI getInfoForChannelWithID:publicChat.channel onServer:publicChat.server]
         .thenOn(dispatch_get_main_queue(), ^(id userCount) {
             [self.headerView updateSubtitleForCurrentStatus];
@@ -3823,8 +3820,14 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // Limit outgoing text messages to 16kb.
+    //
+    // We convert large text messages to attachments
+    // which are presented as normal text messages.
+    
     SNVisibleMessage *message = [SNVisibleMessage new];
     message.text = text;
+    message.quote = [SNQuote from:self.inputToolbar.quotedReply];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [SNMessageSender send:message inThread:self.thread usingTransaction:transaction];
     }];

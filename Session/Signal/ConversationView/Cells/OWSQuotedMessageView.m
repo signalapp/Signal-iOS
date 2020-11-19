@@ -553,8 +553,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
         __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId];
         
         if (quotedAuthor == self.quotedMessage.authorId) {
+            SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:self.quotedMessage.threadId];
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                SNOpenGroup *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.quotedMessage.threadId transaction:transaction];
                 if (publicChat != nil) {
                     quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
                 } else {

@@ -9,11 +9,7 @@ public final class DisplayNameUtilities2 : NSObject {
         // Case 1: The public key belongs to the user themselves
         if publicKey == getUserHexEncodedPublicKey() { return SSKEnvironment.shared.profileManager.localProfileName() ?? publicKey }
         // Case 2: The given thread is an open group
-        var openGroup: OpenGroup? = nil
-        Storage.read { transaction in
-            openGroup = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
-        }
-        if let openGroup = openGroup {
+        if let openGroup = Storage.shared.getOpenGroup(for: threadID) {
             var displayName: String? = nil
             Storage.read { transaction in
                 displayName = transaction.object(forKey: publicKey, inCollection: openGroup.id) as! String?

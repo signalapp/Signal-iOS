@@ -6,7 +6,7 @@ import PromiseKit
 public final class PublicChatManager : NSObject {
     private let storage = OWSPrimaryStorage.shared()
     @objc public var chats: [String:OpenGroup] = [:]
-    private var pollers: [String:PublicChatPoller] = [:]
+    private var pollers: [String:OpenGroupPoller] = [:]
     private var isPolling = false
     
     private var userHexEncodedPublicKey: String? {
@@ -35,7 +35,7 @@ public final class PublicChatManager : NSObject {
             if let poller = pollers[threadID] {
                 poller.startIfNeeded()
             } else {
-                let poller = PublicChatPoller(for: publicChat)
+                let poller = OpenGroupPoller(for: publicChat)
                 poller.startIfNeeded()
                 pollers[threadID] = poller
             }
@@ -73,7 +73,7 @@ public final class PublicChatManager : NSObject {
             let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
            
             // Save the group chat
-            LokiDatabaseUtilities.setPublicChat(chat, for: thread.uniqueId!, in: transaction)
+            Storage.shared.setOpenGroup(chat, for: thread.uniqueId!, using: transaction)
         }
         
         // Update chats and pollers
@@ -88,20 +88,18 @@ public final class PublicChatManager : NSObject {
     }
     
     @objc func refreshChatsAndPollers() {
-        storage.dbReadConnection.read { transaction in
-            let newChats = LokiDatabaseUtilities.getAllPublicChats(in: transaction)
-            
-            // Remove any chats that don't exist in the database
-            let removedChatThreadIds = self.chats.keys.filter { !newChats.keys.contains($0) }
-            removedChatThreadIds.forEach { threadID in
-                let poller = self.pollers.removeValue(forKey: threadID)
-                poller?.stop()
-            }
-            
-            // Only append to chats if we have a thread for the chat
-            self.chats = newChats.filter { (threadID, group) in
-                return TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) != nil
-            }
+        let newChats = Storage.shared.getAllUserOpenGroups()
+        
+        // Remove any chats that don't exist in the database
+        let removedChatThreadIds = self.chats.keys.filter { !newChats.keys.contains($0) }
+        removedChatThreadIds.forEach { threadID in
+            let poller = self.pollers.removeValue(forKey: threadID)
+            poller?.stop()
+        }
+        
+        // Only append to chats if we have a thread for the chat
+        self.chats = newChats.filter { (threadID, group) in
+            return TSGroupThread.fetch(uniqueId: threadID) != nil
         }
         
         if (isPolling) { startPollersIfNeeded() }
@@ -113,13 +111,13 @@ public final class PublicChatManager : NSObject {
         // Reset the last message cache
         if let chat = self.chats[threadId] {
             Storage.write { transaction in
-                Storage.clearAllData(for: chat.channel, on: chat.server, using: transaction)
+                Storage.shared.clearAllData(for: chat.channel, on: chat.server, using: transaction)
             }
         }
         
         // Remove the chat from the db
-        Storage.writeSync { transaction in
-            LokiDatabaseUtilities.removePublicChat(for: threadId, in: transaction)
+        Storage.write { transaction in
+            Storage.shared.removeOpenGroup(for: threadId, using: transaction)
         }
 
         refreshChatsAndPollers()

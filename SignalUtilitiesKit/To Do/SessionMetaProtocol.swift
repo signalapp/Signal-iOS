@@ -27,12 +27,10 @@ public final class SessionMetaProtocol : NSObject {
         guard let thread = thread as? TSGroupThread else { preconditionFailure("Can't get destinations for group message in non-group thread.") }
         var result: Set<String> = []
         if thread.isOpenGroup {
-            storage.dbReadConnection.read { transaction in
-                if let openGroup = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction) {
-                    result = [ openGroup.server ] // Aim the message at the open group server
-                } else {
-                    // Should never occur
-                }
+            if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
+                result = [ openGroup.server ] // Aim the message at the open group server
+            } else {
+                // Should never occur
             }
         } else {
             if let groupThread = thread as? TSGroupThread, groupThread.usesSharedSenderKeys {

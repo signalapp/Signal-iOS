@@ -1089,10 +1089,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isOpenGroupMessage) return;
         
-        __block SNOpenGroup *publicChat;
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
-        }];
+        SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
         if (publicChat == nil) return;
         
         // Delete the message
@@ -1162,10 +1159,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!message.isOpenGroupMessage) return true;
     
     // Ensure we have the details needed to contact the server
-    __block SNOpenGroup *publicChat;
-    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
-    }];
+    SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
     if (publicChat == nil) return true;
     
     if (interationType == OWSInteractionType_IncomingMessage) {

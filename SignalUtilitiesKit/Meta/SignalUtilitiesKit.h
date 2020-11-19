@@ -52,6 +52,7 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+SignedPreKeyStore.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
+#import <SignalUtilitiesKit/OWSQuotedReplyModel.h>
 #import <SignalUtilitiesKit/OWSReadReceiptManager.h>
 #import <SignalUtilitiesKit/OWSSearchBar.h>
 #import <SignalUtilitiesKit/OWSSyncManagerProtocol.h>

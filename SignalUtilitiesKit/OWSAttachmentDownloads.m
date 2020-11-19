@@ -338,7 +338,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 - (void)continueDownloadIfPossible
 {
     if (self.attachmentDownloadJobQueue.count > 0) {
-        [LKLogger print:@"[Loki] Continuing unfinished attachment download tasks."];
+        NSLog(@"[Loki] Continuing unfinished attachment download tasks.");
         [self startDownloadIfPossible];
     }
 }

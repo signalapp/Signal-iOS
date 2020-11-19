@@ -1,8 +1,8 @@
 import SessionMessagingKit
 
-final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegate {
+public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegate {
 
-    static let shared = MessageReceiverDelegate()
+    public static let shared = MessageReceiverDelegate()
 
 
 
@@ -156,7 +156,7 @@ final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegat
 
     // MARK: - Closed Groups
 
-    func handleNewGroup(_ message: ClosedGroupUpdate, using transaction: Any) {
+    public func handleNewGroup(_ message: ClosedGroupUpdate, using transaction: Any) {
         guard case let .new(groupPublicKeyAsData, name, groupPrivateKey, senderKeys, membersAsData, adminsAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let groupPublicKey = groupPublicKeyAsData.toHexString()
@@ -185,7 +185,7 @@ final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegat
             }
         }
         missingSenderKeys.subtracting([ userPublicKey ]).forEach { publicKey in
-            (UIApplication.shared.delegate as! AppDelegate).requestSenderKey(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
+            MessageSenderDelegate.shared.requestSenderKey(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
         }
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -200,15 +200,15 @@ final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegat
             thread.save(with: transaction)
         }
         // Add the group to the user's set of public keys to poll for
-        Storage.setClosedGroupPrivateKey(groupPrivateKey.toHexString(), for: groupPublicKey, using: transaction)
+        Storage.shared.setClosedGroupPrivateKey(groupPrivateKey.toHexString(), for: groupPublicKey, using: transaction)
         // Notify the PN server
-        let _ = LokiPushNotificationManager.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
+        let _ = PushNotificationManager.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
     }
 
-    func handleGroupUpdate(_ message: ClosedGroupUpdate, using transaction: Any) {
+    public func handleGroupUpdate(_ message: ClosedGroupUpdate, using transaction: Any) {
         guard case let .info(groupPublicKeyAsData, name, senderKeys, membersAsData, adminsAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let groupPublicKey = groupPublicKeyAsData.toHexString()
@@ -236,16 +236,16 @@ final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegat
         let userPublicKey = getUserHexEncodedPublicKey()
         let wasUserRemoved = !members.contains(userPublicKey)
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
-            let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
+            let allOldRatchets = Storage.shared.getAllClosedGroupRatchets(for: groupPublicKey)
             for (senderPublicKey, oldRatchet) in allOldRatchets {
                 let collection = ClosedGroupRatchetCollectionType.old
                 Storage.shared.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
             }
-            Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
+            Storage.shared.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
             if wasUserRemoved {
-                Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+                Storage.shared.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
                 // Notify the PN server
-                let _ = LokiPushNotificationManager.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
+                let _ = PushNotificationManager.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             } else {
                 let userRatchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
                 let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
@@ -272,7 +272,7 @@ final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegat
         }
     }
 
-    func handleSenderKeyRequest(_ message: ClosedGroupUpdate, using transaction: Any) {
+    public func handleSenderKeyRequest(_ message: ClosedGroupUpdate, using transaction: Any) {
         guard case let .senderKeyRequest(groupPublicKeyAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let userPublicKey = getUserHexEncodedPublicKey()
@@ -301,7 +301,7 @@ final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiverDelegat
         MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
     }
 
-    func handleSenderKey(_ message: ClosedGroupUpdate, using transaction: Any) {
+    public func handleSenderKey(_ message: ClosedGroupUpdate, using transaction: Any) {
         guard case let .senderKey(groupPublicKeyAsData, senderKey) = message.kind else { return }
         let groupPublicKey = groupPublicKeyAsData.toHexString()
         guard senderKey.publicKey.toHexString() == message.sender! else {

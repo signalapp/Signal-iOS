@@ -64,7 +64,7 @@
 }
 
 - (PreKeyRecord *)generateAndStorePreKeyRecordForContact:(NSString *)hexEncodedPublicKey {
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Generating new pre key record for: %@.", hexEncodedPublicKey]];
+    NSLog([NSString stringWithFormat:@"[Loki] Generating new pre key record for: %@.", hexEncodedPublicKey]);
     OWSAssertDebug(hexEncodedPublicKey.length > 0);
     
     NSArray<PreKeyRecord *> *records = [self generatePreKeyRecords:1];
@@ -94,7 +94,7 @@
         [signedPreKeyRecord markAsAcceptedByService];
         [self storeSignedPreKey:signedPreKeyRecord.Id signedPreKeyRecord:signedPreKeyRecord];
         [self setCurrentSignedPrekeyId:signedPreKeyRecord.Id];
-        [LKLogger print:@"[Loki] Signed pre key refreshed successfully."];
+        NSLog(@"[Loki] Signed pre key refreshed successfully.");
     }
 
     SignedPreKeyRecord *_Nullable signedPreKey = self.currentSignedPreKey;
@@ -127,14 +127,14 @@
                                             data:preKeyBundle.signedPreKeyPublic]) {
                 @throw [NSException exceptionWithName:InvalidKeyException reason:@"KeyIsNotValidlySigned" userInfo:nil];
             }
-            [LKLogger print:[NSString stringWithFormat:@"[Loki] Generated a new pre key bundle for: %@.", hexEncodedPublicKey]];
+            NSLog([NSString stringWithFormat:@"[Loki] Generated a new pre key bundle for: %@.", hexEncodedPublicKey]);
             return preKeyBundle;
         } @catch (NSException *exception) {
             failureCount += 1;
             forceClean = YES;
         }
     }
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Failed to generate a valid pre key bundle for: %@.", hexEncodedPublicKey]];
+    NSLog([NSString stringWithFormat:@"[Loki] Failed to generate a valid pre key bundle for: %@.", hexEncodedPublicKey]);
     return nil;
 }
 
@@ -144,14 +144,14 @@
 
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction setObject:bundle forKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Stored pre key bundle from: %@.", hexEncodedPublicKey]];
+    NSLog([NSString stringWithFormat:@"[Loki] Stored pre key bundle from: %@.", hexEncodedPublicKey]);
     // FIXME: I don't think the line below is good for anything
     [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ }];
 }
 
 - (void)removePreKeyBundleForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction removeObjectForKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Removed pre key bundle from: %@.", hexEncodedPublicKey]];
+    NSLog([NSString stringWithFormat:@"[Loki] Removed pre key bundle from: %@.", hexEncodedPublicKey]);
 }
 
 # pragma mark - Open Groups

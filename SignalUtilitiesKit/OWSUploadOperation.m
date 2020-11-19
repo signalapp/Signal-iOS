@@ -80,10 +80,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     
     [self fireNotificationWithProgress:0];
     
-    __block SNOpenGroup *publicChat;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.threadID transaction:transaction];
-    }];
+    SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:self.threadID];
     NSString *server = (publicChat != nil) ? publicChat.server : SNFileServerAPI.server;
     
     [[SNFileServerAPI uploadAttachment:attachmentStream withID:self.attachmentId toServer:server]

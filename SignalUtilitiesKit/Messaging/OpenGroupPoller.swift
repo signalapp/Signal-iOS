@@ -1,8 +1,8 @@
 import PromiseKit
 
-@objc(LKPublicChatPoller)
-public final class PublicChatPoller : NSObject {
-    private let publicChat: OpenGroup
+@objc(LKOpenGroupPoller)
+public final class OpenGroupPoller : NSObject {
+    private let openGroup: OpenGroup
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var pollForModeratorsTimer: Timer? = nil
@@ -17,9 +17,9 @@ public final class PublicChatPoller : NSObject {
     private let pollForDisplayNamesInterval: TimeInterval = 60
     
     // MARK: Lifecycle
-    @objc(initForPublicChat:)
-    public init(for publicChat: OpenGroup) {
-        self.publicChat = publicChat
+    @objc(initForOpenGroup:)
+    public init(for openGroup: OpenGroup) {
+        self.openGroup = openGroup
         super.init()
     }
     
@@ -57,24 +57,23 @@ public final class PublicChatPoller : NSObject {
     public func pollForNewMessages() -> Promise<Void> {
         guard !self.isPolling else { return Promise.value(()) }
         self.isPolling = true
-        let publicChat = self.publicChat
+        let openGroup = self.openGroup
         let userPublicKey = getUserHexEncodedPublicKey()
-        return OpenGroupAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
+        return OpenGroupAPI.getMessages(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { messages in
             self.isPolling = false
-            let storage = OWSPrimaryStorage.shared()
             // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
             messages.sorted { $0.serverTimestamp < $1.serverTimestamp }.forEach { message in
                 let senderPublicKey = message.senderPublicKey
-                var wasSentByCurrentUser = (senderPublicKey == getUserHexEncodedPublicKey())
+                let wasSentByCurrentUser = (senderPublicKey == getUserHexEncodedPublicKey())
                 func generateDisplayName(from rawDisplayName: String) -> String {
                     let endIndex = senderPublicKey.endIndex
                     let cutoffIndex = senderPublicKey.index(endIndex, offsetBy: -8)
                     return "\(rawDisplayName) (...\(senderPublicKey[cutoffIndex..<endIndex]))"
                 }
-                let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
-                let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(publicChat.id)
+                let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: openGroup.channel, on: openGroup.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
+                let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
                 let groupContext = SNProtoGroupContext.builder(id: id, type: .deliver)
-                groupContext.setName(publicChat.displayName)
+                groupContext.setName(openGroup.displayName)
                 let dataMessage = SNProtoDataMessage.builder()
                 let attachments: [SNProtoAttachmentPointer] = message.attachments.compactMap { attachment in
                     guard attachment.kind == .attachment else { return nil }
@@ -126,9 +125,9 @@ public final class PublicChatPoller : NSObject {
                 let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
                 dataMessage.setBody(body)
                 if let messageServerID = message.serverID {
-                    let publicChatInfo = SNProtoPublicChatInfo.builder()
-                    publicChatInfo.setServerID(messageServerID)
-                    dataMessage.setPublicChatInfo(try! publicChatInfo.build())
+                    let openGroupInfo = SNProtoPublicChatInfo.builder()
+                    openGroupInfo.setServerID(messageServerID)
+                    dataMessage.setPublicChatInfo(try! openGroupInfo.build())
                 }
                 let content = SNProtoContent.builder()
                 if !wasSentByCurrentUser {
@@ -148,8 +147,8 @@ public final class PublicChatPoller : NSObject {
                 envelope.setSourceDevice(1)
                 envelope.setContent(try! content.build().serializedData())
                 envelope.setServerTimestamp(message.serverTimestamp)
-                Storage.writeSync { transaction in
-                    transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
+                Storage.write { transaction in
+                    transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: openGroup.id)
                     let messageServerID = message.serverID
                     let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), messageServerID: messageServerID)
                     Storage.write { transaction in
@@ -161,8 +160,8 @@ public final class PublicChatPoller : NSObject {
     }
     
     private func pollForDeletedMessages() {
-        let publicChat = self.publicChat
-        let _ = OpenGroupAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
+        let openGroup = self.openGroup
+        let _ = OpenGroupAPI.getDeletedMessageServerIDs(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
             Storage.writeSync { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt($0), in: transaction) }
                 deletedMessageIDs.forEach { messageID in
@@ -173,10 +172,10 @@ public final class PublicChatPoller : NSObject {
     }
     
     private func pollForModerators() {
-        let _ = OpenGroupAPI.getModerators(for: publicChat.channel, on: publicChat.server)
+        let _ = OpenGroupAPI.getModerators(for: openGroup.channel, on: openGroup.server)
     }
     
     private func pollForDisplayNames() {
-        let _ = OpenGroupAPI.getDisplayNames(for: publicChat.channel, on: publicChat.server)
+        let _ = OpenGroupAPI.getDisplayNames(for: openGroup.channel, on: openGroup.server)
     }
 }

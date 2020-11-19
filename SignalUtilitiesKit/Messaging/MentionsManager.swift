@@ -30,19 +30,16 @@ public final class MentionsManager : NSObject {
         guard let cache = userPublicKeyCache[threadID] else { return [] }
         var candidates: [Mention] = []
         // Gather candidates
-        var publicChat: OpenGroup?
-        storage.dbReadConnection.read { transaction in
-            publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
-        }
+        let openGroup = Storage.shared.getOpenGroup(for: threadID)
         storage.dbReadConnection.read { transaction in
             candidates = cache.compactMap { publicKey in
-                let uncheckedDisplayName: String?
-                if let publicChat = publicChat {
-                    uncheckedDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: publicChat.channel, on: publicChat.server)
+                let displayNameOrNil: String?
+                if let openGroup = openGroup {
+                    displayNameOrNil = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: openGroup.channel, on: openGroup.server)
                 } else {
-                    uncheckedDisplayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
+                    displayNameOrNil = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
                 }
-                guard let displayName = uncheckedDisplayName else { return nil }
+                guard let displayName = displayNameOrNil else { return nil }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }
                 return Mention(publicKey: publicKey, displayName: displayName)
             }

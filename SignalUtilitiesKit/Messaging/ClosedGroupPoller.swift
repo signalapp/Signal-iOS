@@ -45,7 +45,7 @@ public final class ClosedGroupPoller : NSObject {
     // MARK: Private API
     private func poll() -> [Promise<Void>] {
         guard isPolling else { return [] }
-        let publicKeys = Storage.getUserClosedGroupPublicKeys()
+        let publicKeys = Storage.shared.getUserClosedGroupPublicKeys()
         return publicKeys.map { publicKey in
             let promise = SnodeAPI.getSwarm(for: publicKey).then2 { [weak self] swarm -> Promise<[JSON]> in
                 // randomElement() uses the system's default random generator, which is cryptographically secure

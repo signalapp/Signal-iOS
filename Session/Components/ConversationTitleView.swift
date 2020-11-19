@@ -167,7 +167,8 @@ final class ConversationTitleView : UIView {
     }
     
     @objc func updateSubtitleForCurrentStatus() {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.subtitleLabel.isHidden = false
             let subtitle = NSMutableAttributedString()
             if let muteEndDate = self.thread.mutedUntilDate, self.thread.isMuted {
@@ -178,15 +179,12 @@ final class ConversationTitleView : UIView {
                 dateFormatter.dateStyle = .medium
                 subtitle.append(NSAttributedString(string: "Muted until " + dateFormatter.string(from: muteEndDate)))
             } else if let thread = self.thread as? TSGroupThread {
-                let storage = OWSPrimaryStorage.shared()
                 var userCount: Int?
                 if thread.groupModel.groupType == .closedGroup {
                     userCount = GroupUtilities.getClosedGroupMemberCount(thread)
                 } else if thread.groupModel.groupType == .openGroup {
-                    storage.dbReadConnection.read { transaction in
-                        if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {
-                            userCount = storage.getUserCount(for: publicChat, in: transaction)
-                        }
+                    if let openGroup = Storage.shared.getOpenGroup(for: self.thread.uniqueId!) {
+                        userCount = Storage.shared.getUserCount(forOpenGroupWithID: openGroup.id)
                     }
                 }
                 if let userCount = userCount {

@@ -408,10 +408,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    __block NSDictionary *publicChats;
-    [SSKEnvironment.shared.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
-    }];
+    NSDictionary *publicChats = [LKStorage.shared getAllUserOpenGroups];
 
     NSSet *servers = [NSSet setWithArray:[publicChats.allValues map:^NSString *(SNOpenGroup *publicChat) { return publicChat.server; }]];
 

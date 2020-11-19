@@ -286,10 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     // Loki: Show the moderator icon if needed
     if (self.viewItem.isGroupThread) { // FIXME: This logic also shouldn't apply to closed groups
-        __block SNOpenGroup *publicChat;
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
-        }];
+        SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:self.viewItem.interaction.uniqueThreadId];
         if (publicChat != nil) {
             BOOL isModerator = [SNOpenGroupAPI isUserModerator:incomingMessage.authorId forChannel:publicChat.channel onServer:publicChat.server];
             UIImage *moderatorIcon = [UIImage imageNamed:@"Crown"];

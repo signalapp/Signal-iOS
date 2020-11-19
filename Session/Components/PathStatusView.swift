@@ -18,7 +18,7 @@ final class PathStatusView : UIView {
         layer.cornerRadius = Values.pathStatusViewSize / 2
         layer.masksToBounds = false
         if OnionRequestAPI.paths.isEmpty {
-            OnionRequestAPI.paths = Storage.getOnionRequestPaths()
+            OnionRequestAPI.paths = Storage.shared.getOnionRequestPaths()
         }
         let color = (!OnionRequestAPI.paths.isEmpty) ? Colors.accent : Colors.pathsBuilding
         setColor(to: color, isAnimated: false)

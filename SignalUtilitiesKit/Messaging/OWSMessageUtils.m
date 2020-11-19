@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
                 if (unread.read) {
-                    [LKLogger print:@"Found an already read message in the * unread * messages list."];
+                    NSLog(@"Found an already read message in the * unread * messages list.");
                     return;
                 }
                 count += 1;

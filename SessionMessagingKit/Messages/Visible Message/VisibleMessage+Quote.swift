@@ -10,6 +10,8 @@ public extension VisibleMessage {
 
         public var isValid: Bool { timestamp != nil && publicKey != nil && text != nil }
 
+        public override init() { super.init() }
+        
         internal init(timestamp: UInt64, publicKey: String, text: String) {
             self.timestamp = timestamp
             self.publicKey = publicKey
