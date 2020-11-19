@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)update
                              forThread:(TSGroupThread *)groupThread
-        NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:));
+               serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
+        NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
 
 @end
 

@@ -1708,7 +1708,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             if (groupThread) {
                 [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
-                                                              forThread:groupThread];
+                                                              forThread:groupThread
+                                                serverReceivedTimestamp:envelope.serverTimestamp];
             } else {
                 OWSLogWarn(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
             }
@@ -2157,7 +2158,9 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate forThread:groupThread];
+        [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
+                                                      forThread:groupThread
+                                        serverReceivedTimestamp:envelope.serverTimestamp];
         return nil;
     }
 

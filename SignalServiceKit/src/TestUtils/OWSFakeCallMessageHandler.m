@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)update
                              forThread:(TSGroupThread *)groupThread
+               serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
 {
     OWSLogInfo(@"");
 }

@@ -584,7 +584,7 @@ extension CallService: CallObserver {
             Logger.warn("No peek info for call: \(call)")
             return
         }
-        updateGroupCallMessageWithInfo(peekInfo, for: thread)
+        updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
     }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
@@ -620,8 +620,13 @@ extension CallService: CallObserver {
 
 extension CallService {
 
-    @objc
+    @objc @available(swift, obsoleted: 1.0)
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
+        self.peekCallAndUpdateThread(thread)
+    }
+
+    @objc
+    func peekCallAndUpdateThread(_ thread: TSGroupThread, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
         AssertIsOnMainThread()
 
         // If the currentCall is for the provided thread, we don't need to perform an explict
@@ -640,13 +645,13 @@ extension CallService {
         }.then(on: .main) { proof in
             self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
         }.done(on: .main) { info in
-            self.updateGroupCallMessageWithInfo(info, for: thread)
+            self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
         }.catch(on: .main) { error in
             Logger.error("Failed to fetch PeekInfo for \(thread): \(error)")
         }
     }
 
-    fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread) {
+    fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) {
         databaseStorage.write { writeTx in
             let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
 
@@ -671,8 +676,6 @@ extension CallService {
                     transaction: writeTx
                 )
             } else if !info.joinedMembers.isEmpty {
-                // TODO: Plumb through a more relevant timestamp if available
-                let timestamp = NSDate.ows_millisecondTimeStamp()
                 let newMessage = OWSGroupCallMessage(
                     eraId: currentEraId,
                     joinedMemberUuids: info.joinedMembers,

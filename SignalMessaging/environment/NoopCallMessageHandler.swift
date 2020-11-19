@@ -31,7 +31,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFailDebug("")
     }
 
-    public func receivedGroupCallUpdateMessage(_ update: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread) {
+    public func receivedGroupCallUpdateMessage(_ update: SSKProtoDataMessageGroupCallUpdate, for groupThread: TSGroupThread, serverReceivedTimestamp: UInt64) {
         owsFailDebug("")
     }
 }

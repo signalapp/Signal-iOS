@@ -19,9 +19,9 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
         }
     }
 
-    func handleUpdateMessage(_ message: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread) {
+    func handleUpdateMessage(_ message: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread, serverReceivedTimestamp: UInt64) {
         DispatchQueue.main.async {
-            AppEnvironment.shared.callService.peekCallAndUpdateThread(thread)
+            AppEnvironment.shared.callService.peekCallAndUpdateThread(thread, triggerEventTimestamp: serverReceivedTimestamp)
         }
     }
 
