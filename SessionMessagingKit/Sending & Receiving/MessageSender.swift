@@ -130,11 +130,15 @@ public final class MessageSender : NSObject {
             seal.reject(error)
         }
         let _ = promise.done(on: DispatchQueue.main) {
+            let storage = Configuration.shared.storage
+            storage.withAsync({ transaction in
+                Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
+            }, completion: { })
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-            Configuration.shared.storage.with { transaction in
+            storage.with { transaction in
                 JobQueue.shared.add(notifyPNServerJob, using: transaction)
             }
         }

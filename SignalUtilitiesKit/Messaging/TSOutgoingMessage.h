@@ -140,8 +140,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isOnline;
 
-/// Loki: Time to live for the message in milliseconds.
 @property (nonatomic, readonly) uint ttl;
+
++ (nullable instancetype)findMessageWithTimestamp:(uint64_t)timestamp;
 
 /**
  * The data representation of this message, to be encrypted, before being sent.

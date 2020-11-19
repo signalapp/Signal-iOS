@@ -6,7 +6,7 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSString+SSK.h"
-
+#import "TSDatabaseSecondaryIndexes.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileManagerProtocol.h"
 #import "ProtoUtils.h"
@@ -500,6 +500,20 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (BOOL)isOnline
 {
     return NO;
+}
+
++ (nullable instancetype)findMessageWithTimestamp:(uint64_t)timestamp
+{
+    __block TSOutgoingMessage *result;
+    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [TSDatabaseSecondaryIndexes enumerateMessagesWithTimestamp:timestamp withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+            TSInteraction *interaction = [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+            if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                result = (TSOutgoingMessage *)interaction;
+            }
+        } usingTransaction:transaction];
+    }];
+    return result;
 }
 
 - (OWSInteractionType)interactionType

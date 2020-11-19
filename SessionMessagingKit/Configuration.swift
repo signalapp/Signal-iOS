@@ -2,6 +2,7 @@ import SessionProtocolKit
 
 public struct Configuration {
     public let storage: SessionMessagingKitStorageProtocol
+    public let messageSenderDelegate: MessageSenderDelegate
     public let messageReceiverDelegate: MessageReceiverDelegate
     public let signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore
     public let identityKeyStore: IdentityKeyStore
@@ -18,6 +19,7 @@ public enum SNMessagingKit { // Just to make the external API nice
 
     public static func configure(
         storage: SessionMessagingKitStorageProtocol,
+        messageSenderDelegate: MessageSenderDelegate,
         messageReceiverDelegate: MessageReceiverDelegate,
         signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore,
         identityKeyStore: IdentityKeyStore,
@@ -29,6 +31,7 @@ public enum SNMessagingKit { // Just to make the external API nice
     ) {
         Configuration.shared = Configuration(
             storage: storage,
+            messageSenderDelegate: messageSenderDelegate,
             messageReceiverDelegate: messageReceiverDelegate,
             signalStorage: signalStorage,
             identityKeyStore: identityKeyStore,
