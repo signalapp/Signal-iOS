@@ -75,7 +75,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Add the group to the user's set of public keys to poll for
         Storage.shared.setClosedGroupPrivateKey(groupKeyPair.privateKey.toHexString(), for: groupPublicKey, using: transaction)
         // Notify the PN server
-        promises.append(PushNotificationManager.performOperation(.subscribe, for: groupPublicKey, publicKey: userPublicKey))
+        promises.append(PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: userPublicKey))
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
@@ -138,7 +138,7 @@ public final class ClosedGroupsProtocol : NSObject {
                     if isUserLeaving {
                         Storage.shared.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
                         // Notify the PN server
-                        let _ = PushNotificationManager.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
+                        let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
                     } else {
                         // Send closed group update messages to any new members using established channels
                         for member in newMembers {

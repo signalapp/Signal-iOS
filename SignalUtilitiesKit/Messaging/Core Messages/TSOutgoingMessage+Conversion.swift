@@ -16,7 +16,7 @@
             expireStartedAt: 0,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
-            quotedMessage: nil,
+            quotedMessage: TSQuotedMessage.from(visibleMessage.quote),
             linkPreview: nil
         )
     }

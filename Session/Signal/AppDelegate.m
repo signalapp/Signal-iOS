@@ -669,9 +669,9 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) {
-        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
+        __unused AnyPromise *promise = [LKPushNotificationAPI registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
     } else {
-        __unused AnyPromise *promise = [LKPushNotificationManager unregisterWithToken:deviceToken isForcedUpdate:NO];
+        __unused AnyPromise *promise = [LKPushNotificationAPI unregisterWithToken:deviceToken isForcedUpdate:NO];
     }
 }
 
@@ -857,7 +857,7 @@ static NSTimeInterval launchStartedAt;
     NSString *hexEncodedDeviceToken = [userDefaults stringForKey:@"deviceToken"];
     if (isUsingFullAPNs && hexEncodedDeviceToken != nil) {
         NSData *deviceToken = [NSData dataFromHexString:hexEncodedDeviceToken];
-        [[LKPushNotificationManager unregisterWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete];
+        [[LKPushNotificationAPI unregisterWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete];
     }
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.identityManager clearIdentityKey];

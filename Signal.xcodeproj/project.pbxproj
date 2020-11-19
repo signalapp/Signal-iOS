@@ -264,7 +264,7 @@
 		B8CCF63F23975CFB0091D419 /* JoinPublicChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */; };
 		B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF6422397711F0091D419 /* SettingsVC.swift */; };
 		B8D8F0F32565F98E0092EF10 /* LKUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB6B255A580F00E217F9 /* LKUserDefaults.swift */; };
-		B8D8F0F42565F98E0092EF10 /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBDE255A581900E217F9 /* PushNotificationManager.swift */; };
+		B8D8F0F42565F98E0092EF10 /* PushNotificationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */; };
 		B8D8F12E2565FC910092EF10 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB36255A580B00E217F9 /* Storage.swift */; };
 		B8D8F1382566120F0092EF10 /* Storage+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */; };
 		B8D8F16A256615DE0092EF10 /* Storage+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */; };
@@ -1623,7 +1623,7 @@
 		C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageUtils.m; sourceTree = "<group>"; };
 		C33FDBD8255A581900E217F9 /* SignalIOS.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOS.pb.swift; sourceTree = "<group>"; };
 		C33FDBDD255A581900E217F9 /* OWSDisappearingMessagesJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesJob.m; sourceTree = "<group>"; };
-		C33FDBDE255A581900E217F9 /* PushNotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
+		C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationAPI.swift; sourceTree = "<group>"; };
 		C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKGroupUtilities.m; sourceTree = "<group>"; };
 		C33FDBE9255A581A00E217F9 /* TSInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInteraction.m; sourceTree = "<group>"; };
 		C33FDBEB255A581B00E217F9 /* OWSBlockingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBlockingManager.h; sourceTree = "<group>"; };
@@ -1685,7 +1685,7 @@
 		C38EF212255B6D3A007E1867 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = SignalUtilitiesKit/UI/Theme.h; sourceTree = SOURCE_ROOT; };
 		C38EF214255B6D3A007E1867 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = SignalUtilitiesKit/UI/Theme.m; sourceTree = SOURCE_ROOT; };
 		C38EF223255B6D5D007E1867 /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AttachmentSharing.m; path = SignalUtilitiesKit/Utilities/AttachmentSharing.m; sourceTree = SOURCE_ROOT; };
-		C38EF224255B6D5D007E1867 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignalAttachment.swift; path = SignalUtilitiesKit/Attachments/SignalAttachment.swift; sourceTree = SOURCE_ROOT; };
+		C38EF224255B6D5D007E1867 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignalAttachment.swift; path = SignalUtilitiesKit/Messaging/Attachments/SignalAttachment.swift; sourceTree = SOURCE_ROOT; };
 		C38EF225255B6D5D007E1867 /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AttachmentSharing.h; path = SignalUtilitiesKit/Utilities/AttachmentSharing.h; sourceTree = SOURCE_ROOT; };
 		C38EF226255B6D5D007E1867 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareViewDelegate.swift; path = SignalUtilitiesKit/Utilities/ShareViewDelegate.swift; sourceTree = SOURCE_ROOT; };
 		C38EF227255B6D5D007E1867 /* OWSVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSVideoPlayer.swift; path = SignalUtilitiesKit/Utilities/OWSVideoPlayer.swift; sourceTree = SOURCE_ROOT; };
@@ -1722,8 +1722,8 @@
 		C38EF2A4255B6D93007E1867 /* ProfilePictureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfilePictureView.swift; path = SignalUtilitiesKit/UI/ProfilePictureView.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2B1255B6D9C007E1867 /* UIViewController+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIViewController+Utilities.swift"; path = "SignalUtilitiesKit/UI/UIViewController+Utilities.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF2B2255B6D9C007E1867 /* UIView+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+Utilities.swift"; path = "SignalUtilitiesKit/UI/UIView+Utilities.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF2BE255B6DA6007E1867 /* TSUnreadIndicatorInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSUnreadIndicatorInteraction.h; path = SignalUtilitiesKit/Messaging/TSUnreadIndicatorInteraction.h; sourceTree = SOURCE_ROOT; };
-		C38EF2C1255B6DA6007E1867 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSUnreadIndicatorInteraction.m; path = SignalUtilitiesKit/Messaging/TSUnreadIndicatorInteraction.m; sourceTree = SOURCE_ROOT; };
+		C38EF2BE255B6DA6007E1867 /* TSUnreadIndicatorInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSUnreadIndicatorInteraction.h; path = "SignalUtilitiesKit/Messaging/Read Tracking/TSUnreadIndicatorInteraction.h"; sourceTree = SOURCE_ROOT; };
+		C38EF2C1255B6DA6007E1867 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSUnreadIndicatorInteraction.m; path = "SignalUtilitiesKit/Messaging/Read Tracking/TSUnreadIndicatorInteraction.m"; sourceTree = SOURCE_ROOT; };
 		C38EF2CF255B6DAE007E1867 /* OWSProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSProfileManager.m; path = "SignalUtilitiesKit/To Do/OWSProfileManager.m"; sourceTree = SOURCE_ROOT; };
 		C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSUserProfile.m; path = "SignalUtilitiesKit/To Do/OWSUserProfile.m"; sourceTree = SOURCE_ROOT; };
 		C38EF2D2255B6DAF007E1867 /* OWSProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSProfileManager.h; path = "SignalUtilitiesKit/To Do/OWSProfileManager.h"; sourceTree = SOURCE_ROOT; };
@@ -1790,8 +1790,8 @@
 		C38EF383255B6DD1007E1867 /* ApprovalRailCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ApprovalRailCellView.swift; path = SignalUtilitiesKit/UI/ApprovalRailCellView.swift; sourceTree = SOURCE_ROOT; };
 		C38EF384255B6DD2007E1867 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentCaptionViewController.swift; path = SignalUtilitiesKit/UI/AttachmentCaptionViewController.swift; sourceTree = SOURCE_ROOT; };
 		C38EF397255B6DD9007E1867 /* ThreadViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThreadViewModel.swift; path = SignalUtilitiesKit/ThreadViewModel.swift; sourceTree = SOURCE_ROOT; };
-		C38EF398255B6DD9007E1867 /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSQuotedReplyModel.h; path = SignalUtilitiesKit/Messaging/OWSQuotedReplyModel.h; sourceTree = SOURCE_ROOT; };
-		C38EF39A255B6DD9007E1867 /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSQuotedReplyModel.m; path = SignalUtilitiesKit/Messaging/OWSQuotedReplyModel.m; sourceTree = SOURCE_ROOT; };
+		C38EF398255B6DD9007E1867 /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSQuotedReplyModel.h; path = SignalUtilitiesKit/Messaging/Quotes/OWSQuotedReplyModel.h; sourceTree = SOURCE_ROOT; };
+		C38EF39A255B6DD9007E1867 /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSQuotedReplyModel.m; path = SignalUtilitiesKit/Messaging/Quotes/OWSQuotedReplyModel.m; sourceTree = SOURCE_ROOT; };
 		C38EF3A8255B6DE4007E1867 /* ImageEditorTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTextViewController.swift; path = SignalUtilitiesKit/UI/ImageEditorTextViewController.swift; sourceTree = SOURCE_ROOT; };
 		C38EF3A9255B6DE4007E1867 /* ImageEditorPinchGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPinchGestureRecognizer.swift; path = SignalUtilitiesKit/UI/ImageEditorPinchGestureRecognizer.swift; sourceTree = SOURCE_ROOT; };
 		C38EF3AA255B6DE4007E1867 /* ImageEditorItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorItem.swift; path = SignalUtilitiesKit/UI/ImageEditorItem.swift; sourceTree = SOURCE_ROOT; };
@@ -2761,7 +2761,6 @@
 				C3851CE3256250FA0061EEB0 /* To Do */,
 				C3CA3B11255CF17200F4C6D4 /* Utilities */,
 				C3851CD225624B060061EEB0 /* UI */,
-				C38BBA0B255E31EC0041B9A3 /* Attachments */,
 				C38BBA0C255E32020041B9A3 /* Threads */,
 				C38BBA0D255E321C0041B9A3 /* Messaging */,
 				C38BBA0E255E32440041B9A3 /* Database */,
@@ -2909,6 +2908,144 @@
 				C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */,
 			);
 			path = CSV;
+			sourceTree = "<group>";
+		};
+		C379DC6825672B5E0002D4EB /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		C379DC7125672B8F0002D4EB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDAC0255A580100E217F9 /* OWSIncomingMessageFinder.h */,
+				C33FDB1E255A580900E217F9 /* OWSIncomingMessageFinder.m */,
+				C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */,
+				C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C379DC7A25672BDB0002D4EB /* Sending & Receiving */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDB34255A580B00E217F9 /* ClosedGroupPoller.swift */,
+				C3CA3B12255CF18200F4C6D4 /* Destination+Conversion.swift */,
+				C3D697492564DEDC004AF766 /* MessageReceiverDelegate.swift */,
+				B8D8F1EF256621180092EF10 /* MessageSenderDelegate.swift */,
+				C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */,
+				B8D8F21925662A4D0092EF10 /* OpenGroupAPIDelegate.swift */,
+				C33FDA8C255A57FD00E217F9 /* OpenGroupPoller.swift */,
+				C33FDB3A255A580B00E217F9 /* Poller.swift */,
+				C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */,
+			);
+			path = "Sending & Receiving";
+			sourceTree = "<group>";
+		};
+		C379DC7B25672C020002D4EB /* Mentions */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDA7E255A57FB00E217F9 /* Mention.swift */,
+				C33FDA81255A57FC00E217F9 /* MentionsManager.swift */,
+			);
+			path = Mentions;
+			sourceTree = "<group>";
+		};
+		C379DC8425672C3E0002D4EB /* Quotes */ = {
+			isa = PBXGroup;
+			children = (
+				C38EF398255B6DD9007E1867 /* OWSQuotedReplyModel.h */,
+				C38EF39A255B6DD9007E1867 /* OWSQuotedReplyModel.m */,
+				B840729F2565F1670037CB17 /* Quote+Conversion.swift */,
+				C33FDAD5255A580300E217F9 /* TSQuotedMessage.h */,
+				C33FDB83255A581100E217F9 /* TSQuotedMessage.m */,
+			);
+			path = Quotes;
+			sourceTree = "<group>";
+		};
+		C379DC8525672C790002D4EB /* Disappearing Messages */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDADA255A580400E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.h */,
+				C33FDA6B255A57FA00E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.m */,
+				C33FDAD9255A580300E217F9 /* OWSDisappearingMessagesConfiguration.h */,
+				C33FDBA4255A581400E217F9 /* OWSDisappearingMessagesConfiguration.m */,
+				C33FDC05255A581D00E217F9 /* OWSDisappearingMessagesFinder.h */,
+				C33FDA86255A57FC00E217F9 /* OWSDisappearingMessagesFinder.m */,
+				C33FDA80255A57FC00E217F9 /* OWSDisappearingMessagesJob.h */,
+				C33FDBDD255A581900E217F9 /* OWSDisappearingMessagesJob.m */,
+			);
+			path = "Disappearing Messages";
+			sourceTree = "<group>";
+		};
+		C379DC8625672CAF0002D4EB /* Link Previews */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */,
+			);
+			path = "Link Previews";
+			sourceTree = "<group>";
+		};
+		C379DC8725672CD30002D4EB /* Read Tracking */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDABD255A580100E217F9 /* OWSOutgoingReceiptManager.h */,
+				C33FDB6F255A580F00E217F9 /* OWSOutgoingReceiptManager.m */,
+				C33FDB1D255A580900E217F9 /* OWSReadReceiptManager.h */,
+				C33FDA71255A57FA00E217F9 /* OWSReadReceiptManager.m */,
+				C33FDAE1255A580400E217F9 /* OWSReadTracking.h */,
+				C38EF2BE255B6DA6007E1867 /* TSUnreadIndicatorInteraction.h */,
+				C38EF2C1255B6DA6007E1867 /* TSUnreadIndicatorInteraction.m */,
+			);
+			path = "Read Tracking";
+			sourceTree = "<group>";
+		};
+		C379DC9025672D490002D4EB /* Blocking */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDBEB255A581B00E217F9 /* OWSBlockingManager.h */,
+				C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */,
+			);
+			path = Blocking;
+			sourceTree = "<group>";
+		};
+		C379DCA925672DBD0002D4EB /* Typing Indicators */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDA87255A57FC00E217F9 /* TypingIndicators.swift */,
+			);
+			path = "Typing Indicators";
+			sourceTree = "<group>";
+		};
+		C379DCAA25672E7B0002D4EB /* Core Messages */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDB5D255A580E00E217F9 /* TSErrorMessage_privateConstructor.h */,
+				C33FDBB0255A581500E217F9 /* TSErrorMessage.h */,
+				C33FDAE7255A580500E217F9 /* TSErrorMessage.m */,
+				C33FDB9C255A581300E217F9 /* TSIncomingMessage.h */,
+				C33FDA97255A57FE00E217F9 /* TSIncomingMessage.m */,
+				C3B7845C25649DA600ADB2E7 /* TSIncomingMessage+Conversion.swift */,
+				C33FDADD255A580400E217F9 /* TSInfoMessage.h */,
+				C33FDC0C255A581E00E217F9 /* TSInfoMessage.m */,
+				C33FDAE6255A580400E217F9 /* TSInteraction.h */,
+				C33FDBE9255A581A00E217F9 /* TSInteraction.m */,
+				C33FDB8C255A581200E217F9 /* TSInvalidIdentityKeyErrorMessage.h */,
+				C33FDB74255A581000E217F9 /* TSInvalidIdentityKeyErrorMessage.m */,
+				C33FDA7B255A57FB00E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.h */,
+				C33FDBCB255A581800E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m */,
+				C33FDBA6255A581400E217F9 /* TSInvalidIdentityKeySendingErrorMessage.h */,
+				C33FDB55255A580D00E217F9 /* TSInvalidIdentityKeySendingErrorMessage.m */,
+				C33FDA70255A57FA00E217F9 /* TSMessage.h */,
+				C33FDB60255A580E00E217F9 /* TSMessage.m */,
+				C33FDB48255A580C00E217F9 /* TSOutgoingMessage.h */,
+				C33FDB56255A580D00E217F9 /* TSOutgoingMessage.m */,
+				B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */,
+			);
+			path = "Core Messages";
 			sourceTree = "<group>";
 		};
 		C3851CD225624B060061EEB0 /* UI */ = {
@@ -3067,67 +3204,18 @@
 		C38BBA0D255E321C0041B9A3 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
-				C33FDB3A255A580B00E217F9 /* Poller.swift */,
-				C33FDB34255A580B00E217F9 /* ClosedGroupPoller.swift */,
-				C33FDA8C255A57FD00E217F9 /* OpenGroupPoller.swift */,
-				C33FDBDE255A581900E217F9 /* PushNotificationManager.swift */,
-				C3CA3B12255CF18200F4C6D4 /* Destination+Conversion.swift */,
-				C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */,
-				C3B7845C25649DA600ADB2E7 /* TSIncomingMessage+Conversion.swift */,
-				B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */,
-				B840729F2565F1670037CB17 /* Quote+Conversion.swift */,
-				B8D8F1EF256621180092EF10 /* MessageSenderDelegate.swift */,
-				C3D697492564DEDC004AF766 /* MessageReceiverDelegate.swift */,
-				B8D8F21925662A4D0092EF10 /* OpenGroupAPIDelegate.swift */,
-				C3CA3B1C255CF3C800F4C6D4 /* MessageSender+Utilities.swift */,
-				C33FDA7E255A57FB00E217F9 /* Mention.swift */,
-				C33FDA81255A57FC00E217F9 /* MentionsManager.swift */,
-				C38EF398255B6DD9007E1867 /* OWSQuotedReplyModel.h */,
-				C38EF39A255B6DD9007E1867 /* OWSQuotedReplyModel.m */,
-				C38EF2BE255B6DA6007E1867 /* TSUnreadIndicatorInteraction.h */,
-				C38EF2C1255B6DA6007E1867 /* TSUnreadIndicatorInteraction.m */,
-				C33FDAD9255A580300E217F9 /* OWSDisappearingMessagesConfiguration.h */,
-				C33FDBA4255A581400E217F9 /* OWSDisappearingMessagesConfiguration.m */,
-				C33FDC05255A581D00E217F9 /* OWSDisappearingMessagesFinder.h */,
-				C33FDA86255A57FC00E217F9 /* OWSDisappearingMessagesFinder.m */,
-				C33FDA80255A57FC00E217F9 /* OWSDisappearingMessagesJob.h */,
-				C33FDBDD255A581900E217F9 /* OWSDisappearingMessagesJob.m */,
-				C33FDBEB255A581B00E217F9 /* OWSBlockingManager.h */,
-				C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */,
-				C33FDAC0255A580100E217F9 /* OWSIncomingMessageFinder.h */,
-				C33FDB1E255A580900E217F9 /* OWSIncomingMessageFinder.m */,
-				C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */,
-				C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */,
-				C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */,
-				C33FDABD255A580100E217F9 /* OWSOutgoingReceiptManager.h */,
-				C33FDB6F255A580F00E217F9 /* OWSOutgoingReceiptManager.m */,
-				C33FDAE1255A580400E217F9 /* OWSReadTracking.h */,
-				C33FDB1D255A580900E217F9 /* OWSReadReceiptManager.h */,
-				C33FDA71255A57FA00E217F9 /* OWSReadReceiptManager.m */,
-				C33FDA87255A57FC00E217F9 /* TypingIndicators.swift */,
-				C33FDADA255A580400E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.h */,
-				C33FDA6B255A57FA00E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.m */,
-				C33FDB5D255A580E00E217F9 /* TSErrorMessage_privateConstructor.h */,
-				C33FDBB0255A581500E217F9 /* TSErrorMessage.h */,
-				C33FDAE7255A580500E217F9 /* TSErrorMessage.m */,
-				C33FDB9C255A581300E217F9 /* TSIncomingMessage.h */,
-				C33FDA97255A57FE00E217F9 /* TSIncomingMessage.m */,
-				C33FDADD255A580400E217F9 /* TSInfoMessage.h */,
-				C33FDC0C255A581E00E217F9 /* TSInfoMessage.m */,
-				C33FDAE6255A580400E217F9 /* TSInteraction.h */,
-				C33FDBE9255A581A00E217F9 /* TSInteraction.m */,
-				C33FDB8C255A581200E217F9 /* TSInvalidIdentityKeyErrorMessage.h */,
-				C33FDB74255A581000E217F9 /* TSInvalidIdentityKeyErrorMessage.m */,
-				C33FDA7B255A57FB00E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.h */,
-				C33FDBCB255A581800E217F9 /* TSInvalidIdentityKeyReceivingErrorMessage.m */,
-				C33FDBA6255A581400E217F9 /* TSInvalidIdentityKeySendingErrorMessage.h */,
-				C33FDB55255A580D00E217F9 /* TSInvalidIdentityKeySendingErrorMessage.m */,
-				C33FDA70255A57FA00E217F9 /* TSMessage.h */,
-				C33FDB60255A580E00E217F9 /* TSMessage.m */,
-				C33FDB48255A580C00E217F9 /* TSOutgoingMessage.h */,
-				C33FDB56255A580D00E217F9 /* TSOutgoingMessage.m */,
-				C33FDAD5255A580300E217F9 /* TSQuotedMessage.h */,
-				C33FDB83255A581100E217F9 /* TSQuotedMessage.m */,
+				C38BBA0B255E31EC0041B9A3 /* Attachments */,
+				C379DC9025672D490002D4EB /* Blocking */,
+				C379DCAA25672E7B0002D4EB /* Core Messages */,
+				C379DC8525672C790002D4EB /* Disappearing Messages */,
+				C379DC8625672CAF0002D4EB /* Link Previews */,
+				C379DC7B25672C020002D4EB /* Mentions */,
+				C379DC6825672B5E0002D4EB /* Notifications */,
+				C379DC8425672C3E0002D4EB /* Quotes */,
+				C379DC8725672CD30002D4EB /* Read Tracking */,
+				C379DC7A25672BDB0002D4EB /* Sending & Receiving */,
+				C379DCA925672DBD0002D4EB /* Typing Indicators */,
+				C379DC7125672B8F0002D4EB /* Utilities */,
 			);
 			path = Messaging;
 			sourceTree = "<group>";
@@ -4991,7 +5079,7 @@
 				C33FDC58255A582000E217F9 /* ReverseDispatchQueue.swift in Sources */,
 				C38EF3F4255B6DF7007E1867 /* ContactCellView.m in Sources */,
 				C33FDD29255A582000E217F9 /* OWSOutgoingReceiptManager.m in Sources */,
-				B8D8F0F42565F98E0092EF10 /* PushNotificationManager.swift in Sources */,
+				B8D8F0F42565F98E0092EF10 /* PushNotificationAPI.swift in Sources */,
 				C33FDC78255A582000E217F9 /* TSConstants.m in Sources */,
 				C38EF324255B6DBF007E1867 /* Bench.swift in Sources */,
 				C38EF292255B6D86007E1867 /* VersionMigrations.m in Sources */,

@@ -202,7 +202,7 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
         // Add the group to the user's set of public keys to poll for
         Storage.shared.setClosedGroupPrivateKey(groupPrivateKey.toHexString(), for: groupPublicKey, using: transaction)
         // Notify the PN server
-        let _ = PushNotificationManager.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
+        let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
@@ -245,7 +245,7 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
             if wasUserRemoved {
                 Storage.shared.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
                 // Notify the PN server
-                let _ = PushNotificationManager.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
+                let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             } else {
                 let userRatchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
                 let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))

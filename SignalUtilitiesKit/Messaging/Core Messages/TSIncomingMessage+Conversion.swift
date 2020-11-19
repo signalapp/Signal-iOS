@@ -1,7 +1,7 @@
 
 public extension TSIncomingMessage {
 
-    static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
+    static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread) -> TSIncomingMessage {
         let sender = visibleMessage.sender!
         let result = TSIncomingMessage(
             timestamp: visibleMessage.sentTimestamp!,
@@ -11,7 +11,7 @@ public extension TSIncomingMessage {
             messageBody: visibleMessage.text!,
             attachmentIds: [],
             expiresInSeconds: 0,
-            quotedMessage: nil,
+            quotedMessage: TSQuotedMessage.from(visibleMessage.quote),
             linkPreview: nil,
             serverTimestamp: nil,
             wasReceivedByUD: true

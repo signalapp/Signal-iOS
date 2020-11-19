@@ -1,7 +1,7 @@
 import PromiseKit
 
-@objc(LKPushNotificationManager)
-public final class PushNotificationManager : NSObject {
+@objc(LKPushNotificationAPI)
+public final class PushNotificationAPI : NSObject {
 
     // MARK: Settings
     public static let server = "https://live.apns.getsession.org"

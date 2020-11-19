@@ -37,14 +37,16 @@ public final class SessionRequest : ControlMessage {
         Configuration.shared.storage.with { transaction in
             registrationID = Configuration.shared.storage.getOrGenerateRegistrationID(using: transaction)
         }
-        guard let preKeyBundle = PreKeyBundle(registrationId: Int32(registrationID),
-                                        deviceId: 1,
-                                        preKeyId: Int32(preKeyBundleProto.prekeyID),
-                                        preKeyPublic: preKeyBundleProto.prekey,
-                                        signedPreKeyPublic: preKeyBundleProto.signedKey,
-                                        signedPreKeyId: Int32(preKeyBundleProto.signedKeyID),
-                                        signedPreKeySignature: preKeyBundleProto.signature,
-                                        identityKey: preKeyBundleProto.identityKey) else { return nil }
+        guard let preKeyBundle = PreKeyBundle(
+            registrationId: Int32(registrationID),
+            deviceId: 1,
+            preKeyId: Int32(preKeyBundleProto.prekeyID),
+            preKeyPublic: preKeyBundleProto.prekey,
+            signedPreKeyPublic: preKeyBundleProto.signedKey,
+            signedPreKeyId: Int32(preKeyBundleProto.signedKeyID),
+            signedPreKeySignature: preKeyBundleProto.signature,
+            identityKey: preKeyBundleProto.identityKey
+        ) else { return nil }
         return SessionRequest(preKeyBundle: preKeyBundle)
     }
 

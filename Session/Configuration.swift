@@ -15,8 +15,8 @@ final class Configuration : NSObject {
             sessionRestorationImplementation: SessionRestorationImplementation(),
             certificateValidator: SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot()),
             openGroupAPIDelegate: OpenGroupAPIDelegate.shared,
-            pnServerURL: PushNotificationManager.server,
-            pnServerPublicKey: PushNotificationManager.serverPublicKey
+            pnServerURL: PushNotificationAPI.server,
+            pnServerPublicKey: PushNotificationAPI.serverPublicKey
         )
         SessionProtocolKit.configure(storage: Storage.shared, sharedSenderKeysDelegate: MessageSenderDelegate.shared)
         SessionSnodeKit.configure(storage: Storage.shared)

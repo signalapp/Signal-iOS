@@ -550,15 +550,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
             quotedAuthorText = NSLocalizedString(@"You", @"");
         }
     } else {
-        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId];
+        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId] ?: self.quotedMessage.authorId;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
-            SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:self.quotedMessage.threadId];
+            SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:self.quotedMessage.threadId];
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                if (publicChat != nil) {
-                    quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
-                } else {
-                    quotedAuthor = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.quotedMessage.authorId];
+                if (openGroup != nil) {
+                    quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:openGroup.channel on:openGroup.server using:transaction];
                 }
             }];
         }

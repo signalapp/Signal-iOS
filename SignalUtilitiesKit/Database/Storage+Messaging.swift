@@ -28,7 +28,7 @@ extension Storage {
             threadOrNil = TSContactThread.getOrCreateThread(withContactId: message.sender!, transaction: transaction)
         }
         guard let thread = threadOrNil else { return nil }
-        let message = TSIncomingMessage.from(message, associatedWith: thread, using: transaction)
+        let message = TSIncomingMessage.from(message, associatedWith: thread)
         message.save(with: transaction)
         return (thread.uniqueId!, message)
     }
