@@ -366,7 +366,6 @@
 		C33FDC61255A582000E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAA7255A57FF00E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC62255A582000E217F9 /* BuildConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */; };
 		C33FDC64255A582000E217F9 /* NSObject+Casting.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAAA255A580000E217F9 /* NSObject+Casting.m */; };
-		C33FDC69255A582000E217F9 /* String+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAAF255A580000E217F9 /* String+Trimming.swift */; };
 		C33FDC6B255A582000E217F9 /* OWSStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB1255A580000E217F9 /* OWSStorage.m */; };
 		C33FDC6D255A582000E217F9 /* TSContactThread.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAB3255A580000E217F9 /* TSContactThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC71255A582000E217F9 /* OWSFailedMessagesJob.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAB7255A580100E217F9 /* OWSFailedMessagesJob.m */; };
@@ -1458,7 +1457,6 @@
 		C33FDAA7255A57FF00E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSPrimaryStorage+SignedPreKeyStore.h"; sourceTree = "<group>"; };
 		C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildConfiguration.swift; sourceTree = "<group>"; };
 		C33FDAAA255A580000E217F9 /* NSObject+Casting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Casting.m"; sourceTree = "<group>"; };
-		C33FDAAF255A580000E217F9 /* String+Trimming.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Trimming.swift"; sourceTree = "<group>"; };
 		C33FDAB1255A580000E217F9 /* OWSStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSStorage.m; sourceTree = "<group>"; };
 		C33FDAB3255A580000E217F9 /* TSContactThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactThread.h; sourceTree = "<group>"; };
 		C33FDAB7255A580100E217F9 /* OWSFailedMessagesJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFailedMessagesJob.m; sourceTree = "<group>"; };
@@ -3557,7 +3555,6 @@
 			isa = PBXGroup;
 			children = (
 				C33FDB6B255A580F00E217F9 /* LKUserDefaults.swift */,
-				C33FDAAF255A580000E217F9 /* String+Trimming.swift */,
 				C33FDB80255A581100E217F9 /* Notification+Loki.swift */,
 				C33FDBC1255A581700E217F9 /* GeneralUtilities.swift */,
 				C33FDA73255A57FA00E217F9 /* ECKeyPair+Hexadecimal.swift */,
@@ -4929,7 +4926,6 @@
 				C33FDD2F255A582000E217F9 /* AppReadiness.m in Sources */,
 				C33FDCEC255A582000E217F9 /* SSKIncrementingIdFinder.swift in Sources */,
 				C33FDC7B255A582000E217F9 /* NSSet+Functional.m in Sources */,
-				C33FDC69255A582000E217F9 /* String+Trimming.swift in Sources */,
 				C33FDCB7255A582000E217F9 /* LRUCache.swift in Sources */,
 				B8D8F1F0256621180092EF10 /* MessageSenderDelegate.swift in Sources */,
 				C38EF405255B6DF7007E1867 /* OWSButton.swift in Sources */,
