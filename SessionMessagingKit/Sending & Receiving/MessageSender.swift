@@ -2,7 +2,8 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
 
-public enum MessageSender {
+@objc(SNMessageSender)
+public final class MessageSender : NSObject {
 
     public enum Error : LocalizedError {
         case invalidMessage
@@ -19,6 +20,8 @@ public enum MessageSender {
             }
         }
     }
+    
+    private override init() { }
 
     public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         switch destination {

@@ -181,7 +181,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true)!
+        let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true) ?? recipientId
 
         return "\(recipientId) \(displayName)"
     }

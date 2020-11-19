@@ -238,6 +238,7 @@
 		B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408F239DD75000A248E7 /* RestoreVC.swift */; };
 		B82B4094239DF15900A248E7 /* ConversationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B4093239DF15900A248E7 /* ConversationTitleView.swift */; };
 		B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */; };
+		B84072962565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
 		B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C223A1BD1200AAF6CD /* SeedVC.swift */; };
@@ -1344,6 +1345,7 @@
 		B82B4093239DF15900A248E7 /* ConversationTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleView.swift; sourceTree = "<group>"; };
 		B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationButtonSet.swift; sourceTree = "<group>"; };
 		B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Scaling.swift"; sourceTree = "<group>"; };
+		B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Conversion.swift"; sourceTree = "<group>"; };
 		B84664F4235022F30083A1CD /* MentionUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionUtilities.swift; sourceTree = "<group>"; };
 		B847570023D568EB00759540 /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedReminderView.swift; sourceTree = "<group>"; };
@@ -3643,6 +3645,7 @@
 				C38EF23A255B6D66007E1867 /* NSAttributedString+OWS.m */,
 				C38EF237255B6D65007E1867 /* UIDevice+featureSupport.swift */,
 				C3B7845C25649DA600ADB2E7 /* TSIncomingMessage+Conversion.swift */,
+				B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -4811,6 +4814,7 @@
 				C33FDC41255A581F00E217F9 /* TypingIndicators.swift in Sources */,
 				C33FDC7D255A582000E217F9 /* OWSDispatch.m in Sources */,
 				C33FDC2E255A581F00E217F9 /* ClosedGroupsProtocol.swift in Sources */,
+				B84072962565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift in Sources */,
 				C38EF247255B6D67007E1867 /* NSAttributedString+OWS.m in Sources */,
 				C33FDC99255A582000E217F9 /* PublicChatManager.swift in Sources */,
 				C33FDCB9255A582000E217F9 /* DisplayNameUtilities.swift in Sources */,

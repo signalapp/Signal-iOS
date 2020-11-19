@@ -3,7 +3,7 @@ public extension Message.Destination {
 
     static func from(_ thread: TSThread) -> Message.Destination {
         if let thread = thread as? TSContactThread {
-            return .contact(publicKey: thread.uniqueId!)
+            return .contact(publicKey: thread.contactIdentifier())
         } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys {
             let groupID = thread.groupModel.groupId
             let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)

@@ -213,7 +213,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // for more details.
         let messageText = DisplayableText.filterNotificationText(rawMessageText)
 
-        let senderName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: incomingMessage.authorId, avoidingWriteTransaction: true)!
+        let senderName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: incomingMessage.authorId, avoidingWriteTransaction: true) ?? incomingMessage.authorId
 
         let notificationTitle: String?
         switch previewType {

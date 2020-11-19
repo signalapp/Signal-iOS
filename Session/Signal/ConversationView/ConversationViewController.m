@@ -3823,25 +3823,17 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // Limit outgoing text messages to 16kb.
-    //
-    // We convert large text messages to attachments
-    // which are presented as normal text messages.
-    
-    // TODO TODO TODO
-    
-//    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    __block TSOutgoingMessage *message;
-//    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-//        message = [ThreadUtil enqueueMessageWithText:text
-//                                            inThread:self.thread
-//                                    quotedReplyModel:self.inputToolbar.quotedReply
-//                                    linkPreviewDraft:self.inputToolbar.linkPreviewDraft
-//                                         transaction:transaction];
-//    }];
-//    [self.conversationViewModel appendUnsavedOutgoingTextMessage:message];
+    SNVisibleMessage *message = [SNVisibleMessage new];
+    message.text = text;
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [SNMessageSender send:message inThread:self.thread usingTransaction:transaction];
+    }];
 
-    [self messageWasSent:message];
+    TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
+    
+    [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
+
+    [self messageWasSent:tsMessage];
 
     // Clearing the text message is a key part of the send animation.
     // It takes 10-15ms, but we do it inline rather than dispatch async
@@ -3867,12 +3859,6 @@ typedef enum : NSUInteger {
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.thread setDraft:@"" transaction:transaction];
     }];
-
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
-        }];
-    }
 }
 
 - (void)voiceMemoGestureDidStart
