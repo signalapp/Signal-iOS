@@ -4,7 +4,7 @@ public extension TSIncomingMessage {
     static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
         let sender = visibleMessage.sender!
         let result = TSIncomingMessage(
-            timestamp: visibleMessage.receivedTimestamp!,
+            timestamp: visibleMessage.sentTimestamp!,
             in: thread,
             authorId: sender,
             sourceDeviceId: 1,

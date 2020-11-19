@@ -85,6 +85,7 @@ internal enum MessageReceiver {
         if let message = message {
             message.sender = sender
             message.recipient = Configuration.shared.storage.getUserPublicKey()
+            message.sentTimestamp = envelope.timestamp
             message.receivedTimestamp = NSDate.millisecondTimestamp()
             message.groupPublicKey = groupPublicKey
             message.openGroupServerMessageID = messageServerID
