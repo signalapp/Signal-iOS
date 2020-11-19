@@ -46,20 +46,20 @@ class GroupCallRemoteVideoManager {
             guard let self = self else { return }
             guard let groupCall = self.currentGroupCall else { return }
 
-            let videoRequests = self.videoViews.reduce(into: [UInt32: CGSize]()) { result, entry in
-                let demuxId = entry.key
-                let renderingVideoViews = entry.value.values.filter { $0.isRenderingVideo }
+            let videoRequests: [VideoRequest] = groupCall.remoteDeviceStates.map { demuxId, _ in
+                guard let renderingVideoViews = self.videoViews[demuxId]?.values.filter({ $0.isRenderingVideo }),
+                      !renderingVideoViews.isEmpty else {
+                    return VideoRequest(demuxId: demuxId, width: 0, height: 0, framerate: nil)
+                }
 
-                var size = result[demuxId] ?? .zero
-                size.width = max(renderingVideoViews.reduce(into: 0, { $0 = max($0, $1.currentSize.width) }), size.width)
-                size.height = max(renderingVideoViews.reduce(into: 0, { $0 = max($0, $1.currentSize.height) }), size.height)
-                result[demuxId] = size
-            }.map { demuxId, size in
+                let width = renderingVideoViews.reduce(into: 0, { $0 = max($0, $1.currentSize.width) })
+                let height = renderingVideoViews.reduce(into: 0, { $0 = max($0, $1.currentSize.height) })
+
                 return VideoRequest(
                     demuxId: demuxId,
-                    width: UInt16(size.width),
-                    height: UInt16(size.height),
-                    framerate: size.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
+                    width: UInt16(width),
+                    height: UInt16(height),
+                    framerate: height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
                 )
             }
 

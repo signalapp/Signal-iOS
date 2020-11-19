@@ -19,6 +19,7 @@ class GroupCallVideoGrid: UICollectionView {
 
         register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
         dataSource = self
+        delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -26,6 +27,21 @@ class GroupCallVideoGrid: UICollectionView {
     }
 
     deinit { call.removeObserver(self) }
+}
+
+extension GroupCallVideoGrid: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoGridCell else { return }
+        cell.cleanupVideoViews()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoGridCell else { return }
+        guard let remoteDevice = gridRemoteDeviceStates[safe: indexPath.row] else {
+            return owsFailDebug("missing member address")
+        }
+        cell.configureRemoteVideo(device: remoteDevice)
+    }
 }
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
@@ -120,17 +136,31 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    func cleanupVideoViews() {
+        memberView.cleanupVideoViews()
+    }
+
+    func configureRemoteVideo(device: RemoteDeviceState) {
+        memberView.configureRemoteVideo(device: device)
+    }
 }
 
 extension Sequence where Element: RemoteDeviceState {
     /// The first person to join the call is the first item in the list.
     var sortedByAddedTime: [RemoteDeviceState] {
-        return sorted { $0.addedTime < $1.addedTime }
+        return sorted { lhs, rhs in
+            if lhs.addedTime == rhs.addedTime { return lhs.demuxId < rhs.demuxId }
+            return lhs.addedTime < rhs.addedTime
+        }
     }
 
     /// The most recent speaker is the first item in the list.
     var sortedBySpeakerTime: [RemoteDeviceState] {
-        return sorted { $0.speakerTime > $1.speakerTime }
+        return sorted { lhs, rhs in
+            if lhs.speakerTime == rhs.speakerTime { return lhs.demuxId < rhs.demuxId }
+            return lhs.speakerTime > rhs.speakerTime
+        }
     }
 }
 

@@ -46,6 +46,7 @@ class GroupCallVideoOverflow: UICollectionView {
 
         register(GroupCallVideoOverflowCell.self, forCellWithReuseIdentifier: GroupCallVideoOverflowCell.reuseIdentifier)
         dataSource = self
+        self.delegate = self
 
         call.addObserverAndSyncState(observer: self)
         hasInitialized = true
@@ -82,6 +83,21 @@ class GroupCallVideoOverflow: UICollectionView {
         } else {
             super.reloadData()
         }
+    }
+}
+
+extension GroupCallVideoOverflow: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoOverflowCell else { return }
+        cell.cleanupVideoViews()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoOverflowCell else { return }
+        guard let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row] else {
+            return owsFailDebug("missing member address")
+        }
+        cell.configureRemoteVideo(device: remoteDevice)
     }
 }
 
@@ -156,5 +172,13 @@ class GroupCallVideoOverflowCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func cleanupVideoViews() {
+        memberView.cleanupVideoViews()
+    }
+
+    func configureRemoteVideo(device: RemoteDeviceState) {
+        memberView.configureRemoteVideo(device: device)
     }
 }

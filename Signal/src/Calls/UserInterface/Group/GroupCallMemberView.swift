@@ -248,6 +248,24 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             colorName: conversationColorName
         ).themeColor
 
+        configureRemoteVideo(device: device)
+    }
+
+    private func updateDimensions() {
+        guard hasBeenConfigured else { return }
+        videoView?.frame = bounds
+        muteLeadingConstraint.constant = muteInsets
+        muteBottomConstraint.constant = -muteInsets
+        muteHeightConstraint.constant = muteHeight
+        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+    }
+
+    func cleanupVideoViews() {
+        if videoView?.superview == self { videoView?.removeFromSuperview() }
+        videoView = nil
+    }
+
+    func configureRemoteVideo(device: RemoteDeviceState) {
         if videoView?.superview == self { videoView?.removeFromSuperview() }
         let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, mode: mode)
         insertSubview(newVideoView, belowSubview: muteIndicatorImage)
@@ -260,15 +278,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         avatarView.isHidden = !(device.videoMuted ?? true)
         videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
-    }
-
-    private func updateDimensions() {
-        guard hasBeenConfigured else { return }
-        videoView?.frame = bounds
-        muteLeadingConstraint.constant = muteInsets
-        muteBottomConstraint.constant = -muteInsets
-        muteHeightConstraint.constant = muteHeight
-        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
     }
 }
 
