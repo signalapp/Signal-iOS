@@ -45,6 +45,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)startCall:(UIViewController<CallViewControllerWindowReference> *)callViewController;
 - (void)endCall:(UIViewController<CallViewControllerWindowReference> *)callViewController;
 - (void)leaveCallView;
+- (void)returnToCallView;
 @property (nonatomic, readonly) BOOL hasCall;
 
 @end

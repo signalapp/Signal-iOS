@@ -1936,7 +1936,7 @@ typedef enum : NSUInteger {
 - (void)handleGroupCallTap
 {
     if ([self.callService.currentCall.thread.uniqueId isEqualToString:self.thread.uniqueId]) {
-        // TODO
+        [OWSWindowManager.shared returnToCallView];
     } else {
         [self showGroupCallLobby];
     }

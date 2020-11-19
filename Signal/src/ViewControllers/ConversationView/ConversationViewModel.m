@@ -1287,8 +1287,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          transaction:transaction];
             }
         } else if (interactionType == OWSInteractionType_Call) {
+            NSString *threadId = self.thread.uniqueId;
             NSString *activeCallThreadId = self.callService.currentCall.thread.uniqueId;
-            BOOL isAnotherThreadInCall = activeCallThreadId && ![self.thread.uniqueId isEqualToString:activeCallThreadId];
+            BOOL isAnotherThreadInCall = activeCallThreadId && ![threadId isEqualToString:activeCallThreadId];
 
             BOOL wasCollapsed = viewItem.shouldCollapseSystemMessageAction;
             viewItem.shouldCollapseSystemMessageAction = wasCollapsed || isAnotherThreadInCall;
@@ -1514,9 +1515,7 @@ NS_ASSUME_NONNULL_BEGIN
     // If the call state changed for the current thread, we may want to hide the Call action.
     // When registering, CallObserver sends the currentCall synchronously. Since we register
     // during -viewDidLoad, ordering gets a bit messed up. It's okay if we async for a bit later.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateForTransientItems];
-    });
+    dispatch_async(dispatch_get_main_queue(), ^{ [self updateForTransientItems]; });
 }
 
 @end

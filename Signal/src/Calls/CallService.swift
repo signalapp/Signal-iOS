@@ -626,7 +626,7 @@ extension CallService {
 
         // If the currentCall is for the provided thread, we don't need to perform an explict
         // peek. Connected calls will receive automatic updates from RingRTC
-        guard (currentCall?.thread != thread) else {
+        guard currentCall?.thread != thread else {
             Logger.info("Ignoring peek request for the current call")
             return
         }
