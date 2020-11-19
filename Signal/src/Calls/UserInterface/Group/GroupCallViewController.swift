@@ -99,6 +99,7 @@ class GroupCallViewController: UIViewController {
 
     override func loadView() {
         view = UIView()
+        view.clipsToBounds = true
 
         view.backgroundColor = .ows_black
 
@@ -143,6 +144,31 @@ class GroupCallViewController: UIViewController {
             self.videoOverflow.reloadData()
             self.scrollView.contentOffset = wasOnSpeakerPage ? CGPoint(x: 0, y: size.height) : .zero
         }, completion: nil)
+    }
+
+    private var hasAppeared = false
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard !hasAppeared else { return }
+        hasAppeared = true
+
+        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot rootViewController")
+        }
+
+        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+        splitViewSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.transform = .scale(1.5)
+        view.alpha = 0
+
+        UIView.animate(withDuration: 0.2, animations: {
+            self.view.alpha = 1
+            self.view.transform = .identity
+        }) { _ in
+            splitViewSnapshot.removeFromSuperview()
+        }
     }
 
     private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.remoteDeviceStates.count }
@@ -300,7 +326,20 @@ class GroupCallViewController: UIViewController {
     func dismissCall() {
         callService.terminate(call: call)
 
-        OWSWindowManager.shared.endCall(self)
+        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+            OWSWindowManager.shared.endCall(self)
+            return owsFailDebug("failed to snapshot rootViewController")
+        }
+
+        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+        splitViewSnapshot.autoPinEdgesToSuperviewEdges()
+
+        UIView.animate(withDuration: 0.2, animations: {
+            self.view.alpha = 0
+        }) { _ in
+            splitViewSnapshot.removeFromSuperview()
+            OWSWindowManager.shared.endCall(self)
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
