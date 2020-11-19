@@ -189,6 +189,15 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    func updateVideoOverflowTrailingConstraint() {
+        var trailingConstraintConstant = -(GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4)
+        if view.width + trailingConstraintConstant > videoOverflow.contentSize.width {
+            trailingConstraintConstant += 16
+        }
+        videoOverflowTrailingConstraint.constant = trailingConstraintConstant
+        view.layoutIfNeeded()
+    }
+
     private func updateMemberViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
         view.layoutIfNeeded()
 
@@ -197,8 +206,8 @@ class GroupCallViewController: UIViewController {
         let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
 
         videoOverflowTopConstraint.constant = yMax - videoOverflow.height
-        videoOverflowTrailingConstraint.constant = -(GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4)
-        view.layoutIfNeeded()
+
+        updateVideoOverflowTrailingConstraint()
 
         localMemberView.removeFromSuperview()
         speakerView.removeFromSuperview()

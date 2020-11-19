@@ -7,6 +7,7 @@ import SignalRingRTC
 
 protocol GroupCallVideoOverflowDelegate: class {
     var firstOverflowMemberIndex: Int { get }
+    func updateVideoOverflowTrailingConstraint()
 }
 
 class GroupCallVideoOverflow: UICollectionView {
@@ -16,6 +17,8 @@ class GroupCallVideoOverflow: UICollectionView {
     class var itemHeight: CGFloat {
         return UIDevice.current.isIPad ? 96 : 72
     }
+
+    private var hasInitialized = false
 
     init(call: SignalCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
@@ -45,6 +48,7 @@ class GroupCallVideoOverflow: UICollectionView {
         dataSource = self
 
         call.addObserverAndSyncState(observer: self)
+        hasInitialized = true
     }
 
     required init?(coder: NSCoder) {
@@ -57,6 +61,10 @@ class GroupCallVideoOverflow: UICollectionView {
     private var hadVisibleCells = false
     override func reloadData() {
         guard !isAnimating else { return }
+
+        defer {
+            if hasInitialized { overflowDelegate?.updateVideoOverflowTrailingConstraint() }
+        }
 
         let hasVisibleCells = overflowedRemoteDeviceStates.count > 0
 
