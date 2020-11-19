@@ -26,7 +26,7 @@ public final class SessionManagementProtocol : NSObject {
         signedPreKeyRecord.markAsAcceptedByService()
         storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
         storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-        print("[Loki] Pre keys created successfully.")
+        SNLog("Pre keys created successfully.")
     }
 
     @objc(refreshSignedPreKey)
@@ -42,7 +42,7 @@ public final class SessionManagementProtocol : NSObject {
         storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
         TSPreKeyManager.clearPreKeyUpdateFailureCount()
         TSPreKeyManager.clearSignedPreKeyRecords()
-        print("[Loki] Signed pre key refreshed successfully.")
+        SNLog("Signed pre key refreshed successfully.")
     }
 
     @objc(rotateSignedPreKey)
@@ -55,7 +55,7 @@ public final class SessionManagementProtocol : NSObject {
         storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
         TSPreKeyManager.clearPreKeyUpdateFailureCount()
         TSPreKeyManager.clearSignedPreKeyRecords()
-        print("[Loki] Signed pre key rotated successfully.")
+        SNLog("Signed pre key rotated successfully.")
     }
 
     // MARK: - Sending
@@ -106,7 +106,7 @@ public final class SessionManagementProtocol : NSObject {
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
         // Send the session request
-        print("[Loki] Sending session request to: \(publicKey).")
+        SNLog("Sending session request to: \(publicKey).")
         Storage.shared.setSessionRequestSentTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
         let sessionRequest = SessionRequest()
         sessionRequest.preKeyBundle = storage.generatePreKeyBundle(forContact: publicKey)
@@ -139,7 +139,7 @@ public final class SessionManagementProtocol : NSObject {
     public static func startSessionReset(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
 //        // Check preconditions
 //        guard let thread = thread as? TSContactThread else {
-//            return print("[Loki] Can't restore session for non contact thread.")
+//            return SNLog("Can't restore session for non contact thread.")
 //        }
 //        // Send end session messages to the devices requiring session restoration
 //        let devices = thread.sessionRestoreDevices // TODO: Rename this to something that reads better
@@ -195,12 +195,12 @@ public final class SessionManagementProtocol : NSObject {
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SNProtoContent, wrappedIn envelope: SNProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
 //        let publicKey = envelope.source! // Set during UD decryption
 //        guard let preKeyBundleMessage = protoContent.prekeyBundleMessage else { return }
-//        print("[Loki] Received a pre key bundle message from: \(publicKey).")
+//        SNLog("Received a pre key bundle message from: \(publicKey).")
 //        guard let preKeyBundle = preKeyBundleMessage.getPreKeyBundle(with: transaction) else {
-//            return print("[Loki] Couldn't parse pre key bundle received from: \(publicKey).")
+//            return SNLog("Couldn't parse pre key bundle received from: \(publicKey).")
 //        }
 //        if !shouldProcessSessionRequest(from: publicKey, at: envelope.timestamp) {
-//            return print("[Loki] Ignoring session request from: \(publicKey).")
+//            return SNLog("Ignoring session request from: \(publicKey).")
 //        }
 //        storage.setPreKeyBundle(preKeyBundle, forContact: publicKey, transaction: transaction)
 //        Storage.setSessionRequestProcessedTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
@@ -210,7 +210,7 @@ public final class SessionManagementProtocol : NSObject {
     @objc(handleEndSessionMessageReceivedInThread:using:)
     public static func handleEndSessionMessageReceived(in thread: TSContactThread, using transaction: YapDatabaseReadWriteTransaction) {
 //        let publicKey = thread.contactIdentifier()
-//        print("[Loki] End session message received from: \(publicKey).")
+//        SNLog("End session message received from: \(publicKey).")
 //        // Notify the user
 //        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetInProgress)
 //        infoMessage.save(with: transaction)

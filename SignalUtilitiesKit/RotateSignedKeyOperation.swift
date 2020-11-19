@@ -27,7 +27,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
-            print("[Loki] Signed pre key rotated successfully.")
+            SNLog("Signed pre key rotated successfully.")
             self.reportSuccess()
         }
     }

@@ -9,7 +9,7 @@ public final class MessageSenderDelegate : SessionMessagingKit.MessageSenderDele
     }
     
     public func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) {
-        print("[Loki] Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")
+        SNLog("Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
         thread.save(with: transaction)

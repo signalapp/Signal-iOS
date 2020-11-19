@@ -1702,17 +1702,17 @@
 		C38EF240255B6D67007E1867 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+OWS.swift"; path = "SignalUtilitiesKit/UI/UIView+OWS.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF241255B6D67007E1867 /* Collection+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Collection+OWS.swift"; path = "SignalUtilitiesKit/Utilities/Collection+OWS.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF242255B6D67007E1867 /* UIColor+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+OWS.m"; path = "SignalUtilitiesKit/UI/UIColor+OWS.m"; sourceTree = SOURCE_ROOT; };
-		C38EF26C255B6D79007E1867 /* OWSResaveCollectionDBMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSResaveCollectionDBMigration.m; path = SignalUtilitiesKit/Database/OWSResaveCollectionDBMigration.m; sourceTree = SOURCE_ROOT; };
-		C38EF26D255B6D79007E1867 /* OWSDatabaseMigrationRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDatabaseMigrationRunner.m; path = SignalUtilitiesKit/Database/OWSDatabaseMigrationRunner.m; sourceTree = SOURCE_ROOT; };
-		C38EF26E255B6D79007E1867 /* OWSResaveCollectionDBMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSResaveCollectionDBMigration.h; path = SignalUtilitiesKit/Database/OWSResaveCollectionDBMigration.h; sourceTree = SOURCE_ROOT; };
-		C38EF26F255B6D79007E1867 /* OWSDatabaseMigrationRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSDatabaseMigrationRunner.h; path = SignalUtilitiesKit/Database/OWSDatabaseMigrationRunner.h; sourceTree = SOURCE_ROOT; };
-		C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDatabaseMigration.m; path = SignalUtilitiesKit/Database/OWSDatabaseMigration.m; sourceTree = SOURCE_ROOT; };
-		C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSDatabaseMigration.h; path = SignalUtilitiesKit/Database/OWSDatabaseMigration.h; sourceTree = SOURCE_ROOT; };
+		C38EF26C255B6D79007E1867 /* OWSResaveCollectionDBMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSResaveCollectionDBMigration.m; path = SignalUtilitiesKit/Database/Migration/OWSResaveCollectionDBMigration.m; sourceTree = SOURCE_ROOT; };
+		C38EF26D255B6D79007E1867 /* OWSDatabaseMigrationRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDatabaseMigrationRunner.m; path = SignalUtilitiesKit/Database/Migration/OWSDatabaseMigrationRunner.m; sourceTree = SOURCE_ROOT; };
+		C38EF26E255B6D79007E1867 /* OWSResaveCollectionDBMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSResaveCollectionDBMigration.h; path = SignalUtilitiesKit/Database/Migration/OWSResaveCollectionDBMigration.h; sourceTree = SOURCE_ROOT; };
+		C38EF26F255B6D79007E1867 /* OWSDatabaseMigrationRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSDatabaseMigrationRunner.h; path = SignalUtilitiesKit/Database/Migration/OWSDatabaseMigrationRunner.h; sourceTree = SOURCE_ROOT; };
+		C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDatabaseMigration.m; path = SignalUtilitiesKit/Database/Migration/OWSDatabaseMigration.m; sourceTree = SOURCE_ROOT; };
+		C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSDatabaseMigration.h; path = SignalUtilitiesKit/Database/Migration/OWSDatabaseMigration.h; sourceTree = SOURCE_ROOT; };
 		C38EF281255B6D84007E1867 /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSAudioSession.swift; path = SignalUtilitiesKit/Utilities/OWSAudioSession.swift; sourceTree = SOURCE_ROOT; };
-		C38EF282255B6D84007E1867 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalKeyingStorage.m; path = SignalUtilitiesKit/Database/SignalKeyingStorage.m; sourceTree = SOURCE_ROOT; };
+		C38EF282255B6D84007E1867 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignalKeyingStorage.m; path = SignalUtilitiesKit/Database/Utilities/SignalKeyingStorage.m; sourceTree = SOURCE_ROOT; };
 		C38EF283255B6D84007E1867 /* VersionMigrations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VersionMigrations.h; path = SignalUtilitiesKit/VersionMigrations.h; sourceTree = SOURCE_ROOT; };
 		C38EF284255B6D84007E1867 /* AppSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppSetup.h; path = SignalUtilitiesKit/AppSetup.h; sourceTree = SOURCE_ROOT; };
-		C38EF285255B6D84007E1867 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalKeyingStorage.h; path = SignalUtilitiesKit/Database/SignalKeyingStorage.h; sourceTree = SOURCE_ROOT; };
+		C38EF285255B6D84007E1867 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignalKeyingStorage.h; path = SignalUtilitiesKit/Database/Utilities/SignalKeyingStorage.h; sourceTree = SOURCE_ROOT; };
 		C38EF286255B6D85007E1867 /* VersionMigrations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VersionMigrations.m; path = SignalUtilitiesKit/VersionMigrations.m; sourceTree = SOURCE_ROOT; };
 		C38EF287255B6D85007E1867 /* AppSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppSetup.m; path = SignalUtilitiesKit/AppSetup.m; sourceTree = SOURCE_ROOT; };
 		C38EF288255B6D85007E1867 /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSSounds.h; path = SignalUtilitiesKit/OWSSounds.h; sourceTree = SOURCE_ROOT; };
@@ -1780,36 +1780,36 @@
 		C38EF356255B6DCB007E1867 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSNavigationController.m; path = SignalUtilitiesKit/UI/OWSNavigationController.m; sourceTree = SOURCE_ROOT; };
 		C38EF357255B6DCC007E1867 /* MessageApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageApprovalViewController.swift; path = SignalUtilitiesKit/UI/MessageApprovalViewController.swift; sourceTree = SOURCE_ROOT; };
 		C38EF358255B6DCC007E1867 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MediaMessageView.swift; path = SignalUtilitiesKit/UI/MediaMessageView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF37C255B6DCF007E1867 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentTextToolbar.swift; path = SignalUtilitiesKit/UI/AttachmentTextToolbar.swift; sourceTree = SOURCE_ROOT; };
-		C38EF37D255B6DCF007E1867 /* AttachmentApprovalInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentApprovalInputAccessoryView.swift; path = SignalUtilitiesKit/UI/AttachmentApprovalInputAccessoryView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF37E255B6DD0007E1867 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentItemCollection.swift; path = SignalUtilitiesKit/UI/AttachmentItemCollection.swift; sourceTree = SOURCE_ROOT; };
-		C38EF37F255B6DD0007E1867 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentApprovalViewController.swift; path = SignalUtilitiesKit/UI/AttachmentApprovalViewController.swift; sourceTree = SOURCE_ROOT; };
-		C38EF380255B6DD0007E1867 /* AttachmentTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentTextView.swift; path = SignalUtilitiesKit/UI/AttachmentTextView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF381255B6DD1007E1867 /* AttachmentCaptionToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentCaptionToolbar.swift; path = SignalUtilitiesKit/UI/AttachmentCaptionToolbar.swift; sourceTree = SOURCE_ROOT; };
-		C38EF382255B6DD1007E1867 /* AttachmentPrepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentPrepViewController.swift; path = SignalUtilitiesKit/UI/AttachmentPrepViewController.swift; sourceTree = SOURCE_ROOT; };
+		C38EF37C255B6DCF007E1867 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentTextToolbar.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentTextToolbar.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF37D255B6DCF007E1867 /* AttachmentApprovalInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentApprovalInputAccessoryView.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentApprovalInputAccessoryView.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF37E255B6DD0007E1867 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentItemCollection.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentItemCollection.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF37F255B6DD0007E1867 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentApprovalViewController.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentApprovalViewController.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF380255B6DD0007E1867 /* AttachmentTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentTextView.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentTextView.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF381255B6DD1007E1867 /* AttachmentCaptionToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentCaptionToolbar.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentCaptionToolbar.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF382255B6DD1007E1867 /* AttachmentPrepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentPrepViewController.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentPrepViewController.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF383255B6DD1007E1867 /* ApprovalRailCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ApprovalRailCellView.swift; path = SignalUtilitiesKit/UI/ApprovalRailCellView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF384255B6DD2007E1867 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentCaptionViewController.swift; path = SignalUtilitiesKit/UI/AttachmentCaptionViewController.swift; sourceTree = SOURCE_ROOT; };
+		C38EF384255B6DD2007E1867 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentCaptionViewController.swift; path = "SignalUtilitiesKit/UI/Attachment Approval/AttachmentCaptionViewController.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF397255B6DD9007E1867 /* ThreadViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThreadViewModel.swift; path = SignalUtilitiesKit/ThreadViewModel.swift; sourceTree = SOURCE_ROOT; };
 		C38EF398255B6DD9007E1867 /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSQuotedReplyModel.h; path = SignalUtilitiesKit/Messaging/Quotes/OWSQuotedReplyModel.h; sourceTree = SOURCE_ROOT; };
 		C38EF39A255B6DD9007E1867 /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSQuotedReplyModel.m; path = SignalUtilitiesKit/Messaging/Quotes/OWSQuotedReplyModel.m; sourceTree = SOURCE_ROOT; };
-		C38EF3A8255B6DE4007E1867 /* ImageEditorTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTextViewController.swift; path = SignalUtilitiesKit/UI/ImageEditorTextViewController.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3A9255B6DE4007E1867 /* ImageEditorPinchGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPinchGestureRecognizer.swift; path = SignalUtilitiesKit/UI/ImageEditorPinchGestureRecognizer.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3AA255B6DE4007E1867 /* ImageEditorItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorItem.swift; path = SignalUtilitiesKit/UI/ImageEditorItem.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3AB255B6DE4007E1867 /* ImageEditorStrokeItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorStrokeItem.swift; path = SignalUtilitiesKit/UI/ImageEditorStrokeItem.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3AC255B6DE4007E1867 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPanGestureRecognizer.swift; path = SignalUtilitiesKit/UI/ImageEditorPanGestureRecognizer.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3AD255B6DE4007E1867 /* ImageEditorTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTransform.swift; path = SignalUtilitiesKit/UI/ImageEditorTransform.swift; sourceTree = SOURCE_ROOT; };
+		C38EF3A8255B6DE4007E1867 /* ImageEditorTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTextViewController.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorTextViewController.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3A9255B6DE4007E1867 /* ImageEditorPinchGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPinchGestureRecognizer.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorPinchGestureRecognizer.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3AA255B6DE4007E1867 /* ImageEditorItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorItem.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorItem.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3AB255B6DE4007E1867 /* ImageEditorStrokeItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorStrokeItem.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorStrokeItem.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3AC255B6DE4007E1867 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPanGestureRecognizer.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorPanGestureRecognizer.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3AD255B6DE4007E1867 /* ImageEditorTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTransform.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorTransform.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3AE255B6DE5007E1867 /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OrderedDictionary.swift; path = SignalUtilitiesKit/Utilities/OrderedDictionary.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3AF255B6DE5007E1867 /* ImageEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorView.swift; path = SignalUtilitiesKit/UI/ImageEditorView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3B0255B6DE5007E1867 /* ImageEditorCropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorCropViewController.swift; path = SignalUtilitiesKit/UI/ImageEditorCropViewController.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3B1255B6DE5007E1867 /* ImageEditorBrushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorBrushViewController.swift; path = SignalUtilitiesKit/UI/ImageEditorBrushViewController.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3B2255B6DE5007E1867 /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPaletteView.swift; path = SignalUtilitiesKit/UI/ImageEditorPaletteView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3B3255B6DE6007E1867 /* ImageEditorTextItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTextItem.swift; path = SignalUtilitiesKit/UI/ImageEditorTextItem.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3B4255B6DE6007E1867 /* ImageEditorContents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorContents.swift; path = SignalUtilitiesKit/UI/ImageEditorContents.swift; sourceTree = SOURCE_ROOT; };
+		C38EF3AF255B6DE5007E1867 /* ImageEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorView.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorView.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3B0255B6DE5007E1867 /* ImageEditorCropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorCropViewController.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorCropViewController.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3B1255B6DE5007E1867 /* ImageEditorBrushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorBrushViewController.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorBrushViewController.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3B2255B6DE5007E1867 /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorPaletteView.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorPaletteView.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3B3255B6DE6007E1867 /* ImageEditorTextItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorTextItem.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorTextItem.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3B4255B6DE6007E1867 /* ImageEditorContents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorContents.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorContents.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3B5255B6DE6007E1867 /* OWSViewController+ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "OWSViewController+ImageEditor.swift"; path = "SignalUtilitiesKit/UI/OWSViewController+ImageEditor.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorModel.swift; path = SignalUtilitiesKit/UI/ImageEditorModel.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorCanvasView.swift; path = SignalUtilitiesKit/UI/ImageEditorCanvasView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3D1255B6DEE007E1867 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThreadViewHelper.m; path = SignalUtilitiesKit/Database/ThreadViewHelper.m; sourceTree = SOURCE_ROOT; };
-		C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadViewHelper.h; path = SignalUtilitiesKit/Database/ThreadViewHelper.h; sourceTree = SOURCE_ROOT; };
+		C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorModel.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorModel.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorCanvasView.swift; path = "SignalUtilitiesKit/UI/Image Editing/ImageEditorCanvasView.swift"; sourceTree = SOURCE_ROOT; };
+		C38EF3D1255B6DEE007E1867 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThreadViewHelper.m; path = SignalUtilitiesKit/Database/Utilities/ThreadViewHelper.m; sourceTree = SOURCE_ROOT; };
+		C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadViewHelper.h; path = SignalUtilitiesKit/Database/Utilities/ThreadViewHelper.h; sourceTree = SOURCE_ROOT; };
 		C38EF3D3255B6DEE007E1867 /* OWSSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSSearchBar.h; path = SignalUtilitiesKit/UI/OWSSearchBar.h; sourceTree = SOURCE_ROOT; };
 		C38EF3D4255B6DEE007E1867 /* DisappearingTimerConfigurationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DisappearingTimerConfigurationView.swift; path = SignalUtilitiesKit/UI/DisappearingTimerConfigurationView.swift; sourceTree = SOURCE_ROOT; };
 		C38EF3D6255B6DEF007E1867 /* ContactCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactCellView.m; path = "SignalUtilitiesKit/To Do/ContactCellView.m"; sourceTree = SOURCE_ROOT; };
@@ -3048,9 +3048,137 @@
 			path = "Core Messages";
 			sourceTree = "<group>";
 		};
+		C379DCC3256732800002D4EB /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDB36255A580B00E217F9 /* Storage.swift */,
+				B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */,
+				B8D8F17625661AFA0092EF10 /* Storage+Jobs.swift */,
+				B8D8F19225661BF80092EF10 /* Storage+Messaging.swift */,
+				B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */,
+				B8D8F18825661BA50092EF10 /* Storage+OpenGroups.swift */,
+				C33FDB8B255A581200E217F9 /* Storage+SessionManagement.swift */,
+				C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */,
+				C3F0A607255C98A6007BE2A3 /* Storage+SnodeAPI.swift */,
+				C31F812525258FB000DD9FD9 /* Storage+VolumeSamples.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		C379DCC4256732980002D4EB /* YapDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDAA1255A57FF00E217F9 /* TSYapDatabaseObject.h */,
+				C33FDA90255A57FD00E217F9 /* TSYapDatabaseObject.m */,
+				C33FDA6D255A57FA00E217F9 /* YapDatabase+Promise.swift */,
+				C33FDB5F255A580E00E217F9 /* YapDatabaseConnection+OWS.h */,
+				C33FDB43255A580C00E217F9 /* YapDatabaseConnection+OWS.m */,
+				C33FDA88255A57FD00E217F9 /* YapDatabaseTransaction+OWS.h */,
+				C33FDB5B255A580E00E217F9 /* YapDatabaseTransaction+OWS.m */,
+			);
+			path = YapDatabase;
+			sourceTree = "<group>";
+		};
+		C379DCC5256732B00002D4EB /* OWSStorage */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDA67255A57F900E217F9 /* OWSPrimaryStorage.h */,
+				C33FDC02255A581D00E217F9 /* OWSPrimaryStorage.m */,
+				C33FDBBA255A581600E217F9 /* OWSPrimaryStorage+keyFromIntLong.h */,
+				C33FDB99255A581300E217F9 /* OWSPrimaryStorage+keyFromIntLong.m */,
+				C33FDB47255A580C00E217F9 /* OWSPrimaryStorage+PreKeyStore.h */,
+				C33FDB50255A580D00E217F9 /* OWSPrimaryStorage+PreKeyStore.m */,
+				C33FDB03255A580700E217F9 /* OWSPrimaryStorage+SessionStore.h */,
+				C33FDAF3255A580500E217F9 /* OWSPrimaryStorage+SessionStore.m */,
+				C33FDAA7255A57FF00E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.h */,
+				C33FDAF7255A580600E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.m */,
+				C33FDAFE255A580600E217F9 /* OWSStorage.h */,
+				C33FDAB1255A580000E217F9 /* OWSStorage.m */,
+			);
+			path = OWSStorage;
+			sourceTree = "<group>";
+		};
+		C379DCD6256732CE0002D4EB /* Keychain */ = {
+			isa = PBXGroup;
+			children = (
+				C33FDBBC255A581600E217F9 /* SSKKeychainStorage.swift */,
+			);
+			path = Keychain;
+			sourceTree = "<group>";
+		};
+		C379DCE7256732EF0002D4EB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */,
+				C38EF3D1255B6DEE007E1867 /* ThreadViewHelper.m */,
+				C38EF285255B6D84007E1867 /* SignalKeyingStorage.h */,
+				C38EF282255B6D84007E1867 /* SignalKeyingStorage.m */,
+				C33FDAB9255A580100E217F9 /* OWSStorage+Subclass.h */,
+				C33FDA69255A57F900E217F9 /* SSKPreferences.swift */,
+				C33FDB25255A580900E217F9 /* TSDatabaseSecondaryIndexes.h */,
+				C33FDB20255A580900E217F9 /* TSDatabaseSecondaryIndexes.m */,
+				C33FDB2C255A580A00E217F9 /* TSDatabaseView.h */,
+				C33FDB46255A580C00E217F9 /* TSDatabaseView.m */,
+				C33FDBA0255A581400E217F9 /* TSStorageHeaders.h */,
+				C33FDBEF255A581B00E217F9 /* TSStorageKeys.h */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C379DCE82567330E0002D4EB /* Migration */ = {
+			isa = PBXGroup;
+			children = (
+				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
+				C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */,
+				C38EF26F255B6D79007E1867 /* OWSDatabaseMigrationRunner.h */,
+				C38EF26D255B6D79007E1867 /* OWSDatabaseMigrationRunner.m */,
+				C38EF26E255B6D79007E1867 /* OWSResaveCollectionDBMigration.h */,
+				C38EF26C255B6D79007E1867 /* OWSResaveCollectionDBMigration.m */,
+			);
+			path = Migration;
+			sourceTree = "<group>";
+		};
+		C379DCE9256733390002D4EB /* Image Editing */ = {
+			isa = PBXGroup;
+			children = (
+				C38EF3B1255B6DE5007E1867 /* ImageEditorBrushViewController.swift */,
+				C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */,
+				C38EF3B4255B6DE6007E1867 /* ImageEditorContents.swift */,
+				C38EF3B0255B6DE5007E1867 /* ImageEditorCropViewController.swift */,
+				C38EF3AA255B6DE4007E1867 /* ImageEditorItem.swift */,
+				C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */,
+				C38EF3B2255B6DE5007E1867 /* ImageEditorPaletteView.swift */,
+				C38EF3AC255B6DE4007E1867 /* ImageEditorPanGestureRecognizer.swift */,
+				C38EF3A9255B6DE4007E1867 /* ImageEditorPinchGestureRecognizer.swift */,
+				C38EF3AB255B6DE4007E1867 /* ImageEditorStrokeItem.swift */,
+				C38EF3B3255B6DE6007E1867 /* ImageEditorTextItem.swift */,
+				C38EF3A8255B6DE4007E1867 /* ImageEditorTextViewController.swift */,
+				C38EF3AD255B6DE4007E1867 /* ImageEditorTransform.swift */,
+				C38EF3AF255B6DE5007E1867 /* ImageEditorView.swift */,
+			);
+			path = "Image Editing";
+			sourceTree = "<group>";
+		};
+		C379DCEA2567334F0002D4EB /* Attachment Approval */ = {
+			isa = PBXGroup;
+			children = (
+				C38EF37D255B6DCF007E1867 /* AttachmentApprovalInputAccessoryView.swift */,
+				C38EF37F255B6DD0007E1867 /* AttachmentApprovalViewController.swift */,
+				C38EF381255B6DD1007E1867 /* AttachmentCaptionToolbar.swift */,
+				C38EF384255B6DD2007E1867 /* AttachmentCaptionViewController.swift */,
+				C38EF37E255B6DD0007E1867 /* AttachmentItemCollection.swift */,
+				C38EF382255B6DD1007E1867 /* AttachmentPrepViewController.swift */,
+				C38EF37C255B6DCF007E1867 /* AttachmentTextToolbar.swift */,
+				C38EF380255B6DD0007E1867 /* AttachmentTextView.swift */,
+			);
+			path = "Attachment Approval";
+			sourceTree = "<group>";
+		};
 		C3851CD225624B060061EEB0 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C379DCEA2567334F0002D4EB /* Attachment Approval */,
+				C379DCE9256733390002D4EB /* Image Editing */,
 				C38EF2A4255B6D93007E1867 /* ProfilePictureView.swift */,
 				B8C2B2C72563685C00551B4D /* CircleView.swift */,
 				C38EF23D255B6D66007E1867 /* UIView+OWS.h */,
@@ -3061,14 +3189,6 @@
 				C38EF23C255B6D66007E1867 /* UIColor+OWS.h */,
 				C38EF242255B6D67007E1867 /* UIColor+OWS.m */,
 				C38EF2A2255B6D93007E1867 /* Identicon+ObjC.swift */,
-				C38EF37D255B6DCF007E1867 /* AttachmentApprovalInputAccessoryView.swift */,
-				C38EF37F255B6DD0007E1867 /* AttachmentApprovalViewController.swift */,
-				C38EF381255B6DD1007E1867 /* AttachmentCaptionToolbar.swift */,
-				C38EF384255B6DD2007E1867 /* AttachmentCaptionViewController.swift */,
-				C38EF37E255B6DD0007E1867 /* AttachmentItemCollection.swift */,
-				C38EF382255B6DD1007E1867 /* AttachmentPrepViewController.swift */,
-				C38EF37C255B6DCF007E1867 /* AttachmentTextToolbar.swift */,
-				C38EF380255B6DD0007E1867 /* AttachmentTextView.swift */,
 				C38EF358255B6DCC007E1867 /* MediaMessageView.swift */,
 				C38EF357255B6DCC007E1867 /* MessageApprovalViewController.swift */,
 				C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */,
@@ -3101,20 +3221,6 @@
 				C38EF3D8255B6DF0007E1867 /* OWSTextView.h */,
 				C38EF3DF255B6DF2007E1867 /* OWSTextView.m */,
 				C38EF3E9255B6DF6007E1867 /* Toast.swift */,
-				C38EF3B1255B6DE5007E1867 /* ImageEditorBrushViewController.swift */,
-				C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */,
-				C38EF3B4255B6DE6007E1867 /* ImageEditorContents.swift */,
-				C38EF3B0255B6DE5007E1867 /* ImageEditorCropViewController.swift */,
-				C38EF3AA255B6DE4007E1867 /* ImageEditorItem.swift */,
-				C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */,
-				C38EF3B2255B6DE5007E1867 /* ImageEditorPaletteView.swift */,
-				C38EF3AC255B6DE4007E1867 /* ImageEditorPanGestureRecognizer.swift */,
-				C38EF3A9255B6DE4007E1867 /* ImageEditorPinchGestureRecognizer.swift */,
-				C38EF3AB255B6DE4007E1867 /* ImageEditorStrokeItem.swift */,
-				C38EF3B3255B6DE6007E1867 /* ImageEditorTextItem.swift */,
-				C38EF3A8255B6DE4007E1867 /* ImageEditorTextViewController.swift */,
-				C38EF3AD255B6DE4007E1867 /* ImageEditorTransform.swift */,
-				C38EF3AF255B6DE5007E1867 /* ImageEditorView.swift */,
 				C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */,
 				C38EF2F0255B6DBB007E1867 /* OWSAnyTouchGestureRecognizer.m */,
 				C38EF303255B6DBE007E1867 /* BlockListUIUtils.h */,
@@ -3187,6 +3293,8 @@
 		C38BBA0C255E32020041B9A3 /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */,
+				C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */,
 				B8C2B33B2563770800551B4D /* ThreadUtil.h */,
 				B8C2B331256376F000551B4D /* ThreadUtil.m */,
 				C33FDAB3255A580000E217F9 /* TSContactThread.h */,
@@ -3223,54 +3331,12 @@
 		C38BBA0E255E32440041B9A3 /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				C33FDB36255A580B00E217F9 /* Storage.swift */,
-				B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */,
-				B8D8F17625661AFA0092EF10 /* Storage+Jobs.swift */,
-				B8D8F19225661BF80092EF10 /* Storage+Messaging.swift */,
-				B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */,
-				B8D8F18825661BA50092EF10 /* Storage+OpenGroups.swift */,
-				C33FDB8B255A581200E217F9 /* Storage+SessionManagement.swift */,
-				C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */,
-				C3F0A607255C98A6007BE2A3 /* Storage+SnodeAPI.swift */,
-				C31F812525258FB000DD9FD9 /* Storage+VolumeSamples.swift */,
-				C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */,
-				C38EF3D1255B6DEE007E1867 /* ThreadViewHelper.m */,
-				C38EF285255B6D84007E1867 /* SignalKeyingStorage.h */,
-				C38EF282255B6D84007E1867 /* SignalKeyingStorage.m */,
-				C33FDAB9255A580100E217F9 /* OWSStorage+Subclass.h */,
-				C33FDA69255A57F900E217F9 /* SSKPreferences.swift */,
-				C33FDB25255A580900E217F9 /* TSDatabaseSecondaryIndexes.h */,
-				C33FDB20255A580900E217F9 /* TSDatabaseSecondaryIndexes.m */,
-				C33FDB2C255A580A00E217F9 /* TSDatabaseView.h */,
-				C33FDB46255A580C00E217F9 /* TSDatabaseView.m */,
-				C33FDBA0255A581400E217F9 /* TSStorageHeaders.h */,
-				C33FDBEF255A581B00E217F9 /* TSStorageKeys.h */,
-				C33FDBBC255A581600E217F9 /* SSKKeychainStorage.swift */,
-				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
-				C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */,
-				C38EF26F255B6D79007E1867 /* OWSDatabaseMigrationRunner.h */,
-				C38EF26D255B6D79007E1867 /* OWSDatabaseMigrationRunner.m */,
-				C38EF26E255B6D79007E1867 /* OWSResaveCollectionDBMigration.h */,
-				C38EF26C255B6D79007E1867 /* OWSResaveCollectionDBMigration.m */,
-				C33FDA67255A57F900E217F9 /* OWSPrimaryStorage.h */,
-				C33FDC02255A581D00E217F9 /* OWSPrimaryStorage.m */,
-				C33FDBBA255A581600E217F9 /* OWSPrimaryStorage+keyFromIntLong.h */,
-				C33FDB99255A581300E217F9 /* OWSPrimaryStorage+keyFromIntLong.m */,
-				C33FDB47255A580C00E217F9 /* OWSPrimaryStorage+PreKeyStore.h */,
-				C33FDB50255A580D00E217F9 /* OWSPrimaryStorage+PreKeyStore.m */,
-				C33FDB03255A580700E217F9 /* OWSPrimaryStorage+SessionStore.h */,
-				C33FDAF3255A580500E217F9 /* OWSPrimaryStorage+SessionStore.m */,
-				C33FDAA7255A57FF00E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.h */,
-				C33FDAF7255A580600E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.m */,
-				C33FDAFE255A580600E217F9 /* OWSStorage.h */,
-				C33FDAB1255A580000E217F9 /* OWSStorage.m */,
-				C33FDAA1255A57FF00E217F9 /* TSYapDatabaseObject.h */,
-				C33FDA90255A57FD00E217F9 /* TSYapDatabaseObject.m */,
-				C33FDA6D255A57FA00E217F9 /* YapDatabase+Promise.swift */,
-				C33FDB5F255A580E00E217F9 /* YapDatabaseConnection+OWS.h */,
-				C33FDB43255A580C00E217F9 /* YapDatabaseConnection+OWS.m */,
-				C33FDA88255A57FD00E217F9 /* YapDatabaseTransaction+OWS.h */,
-				C33FDB5B255A580E00E217F9 /* YapDatabaseTransaction+OWS.m */,
+				C379DCD6256732CE0002D4EB /* Keychain */,
+				C379DCE82567330E0002D4EB /* Migration */,
+				C379DCC5256732B00002D4EB /* OWSStorage */,
+				C379DCC3256732800002D4EB /* Storage */,
+				C379DCE7256732EF0002D4EB /* Utilities */,
+				C379DCC4256732980002D4EB /* YapDatabase */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -3650,8 +3716,6 @@
 				C33FDBC1255A581700E217F9 /* GeneralUtilities.swift */,
 				C33FDA73255A57FA00E217F9 /* ECKeyPair+Hexadecimal.swift */,
 				C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */,
-				C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */,
-				C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */,
 				C33FDC16255A581E00E217F9 /* FunctionalUtil.h */,
 				C33FDB17255A580800E217F9 /* FunctionalUtil.m */,
 				C33FDB8F255A581200E217F9 /* ParamParser.swift */,

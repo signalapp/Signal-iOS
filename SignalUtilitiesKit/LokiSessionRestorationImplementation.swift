@@ -15,11 +15,11 @@ public final class SessionRestorationImplementation : NSObject, SessionRestorati
     public func validatePreKeyWhisperMessage(for publicKey: String, preKeyWhisperMessage: PreKeyWhisperMessage, using transaction: Any) throws {
         guard let transaction = transaction as? YapDatabaseReadTransaction else { return }
         guard let storedPreKey = storage.getPreKeyRecord(forContact: publicKey, transaction: transaction) else {
-            print("[Loki] Missing pre key bundle.")
+            SNLog("Missing pre key bundle.")
             throw Error.missingPreKey
         }
         guard storedPreKey.id == preKeyWhisperMessage.prekeyID else {
-            print("[Loki] Received a PreKeyWhisperMessage from an unknown source.")
+            SNLog("Received a PreKeyWhisperMessage from an unknown source.")
             throw Error.invalidPreKeyID
         }
     }
@@ -36,7 +36,7 @@ public final class SessionRestorationImplementation : NSObject, SessionRestorati
         guard let transaction = transaction as? YapDatabaseReadWriteTransaction else { return }
         guard !publicKey.isEmpty else { return }
         guard let thread = TSContactThread.getWithContactId(publicKey, transaction: transaction) else {
-            return print("[Loki] A new session was adopted but the thread couldn't be found for: \(publicKey).")
+            return SNLog("A new session was adopted but the thread couldn't be found for: \(publicKey).")
         }
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetDone)

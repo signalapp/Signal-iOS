@@ -64,7 +64,7 @@ final class IP2Country {
             IP2Country.isInitialized = true
             NotificationCenter.default.post(name: .onionRequestPathCountriesLoaded, object: nil)
         }
-        print("[Loki] Finished preloading onion request path countries.")
+        SNLog("Finished preloading onion request path countries.")
         return true
     }
 }

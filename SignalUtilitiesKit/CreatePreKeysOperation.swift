@@ -27,7 +27,7 @@ public class CreatePreKeysOperation: OWSOperation {
         signedPreKeyRecord.markAsAcceptedByService()
         storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
         storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-        print("[Loki] Pre keys created successfully.")
+        SNLog("Pre keys created successfully.")
         reportSuccess()
     }
 }

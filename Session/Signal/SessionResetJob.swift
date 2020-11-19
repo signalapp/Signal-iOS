@@ -131,7 +131,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                     message.save(with: transaction)
                     
                     // Loki: We have initiated a session reset
-                    print("[Loki] Session reset initiated.")
+                    SNLog("Session reset initiated.")
                     self.contactThread.sessionResetStatus = .initiated
                     self.contactThread.save(with: transaction)
                 }

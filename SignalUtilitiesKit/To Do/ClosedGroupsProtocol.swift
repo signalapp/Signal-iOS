@@ -89,7 +89,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            print("[Loki] Can't update nonexistent closed group.")
+            SNLog("Can't update nonexistent closed group.")
             return Promise(error: Error.noThread)
         }
         let group = thread.groupModel
@@ -99,7 +99,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let admins = group.groupAdminIds
         let adminsAsData = admins.map { Data(hex: $0) }
         guard let groupPrivateKey = Storage.shared.getClosedGroupPrivateKey(for: groupPublicKey) else {
-            print("[Loki] Couldn't get private key for closed group.")
+            SNLog("Couldn't get private key for closed group.")
             return Promise(error: Error.noPrivateKey)
         }
         let wasAnyUserRemoved = Set(members).intersection(oldMembers) != oldMembers
@@ -108,7 +108,7 @@ public final class ClosedGroupsProtocol : NSObject {
         var newSenderKeys: [ClosedGroupSenderKey] = []
         if wasAnyUserRemoved {
             if isUserLeaving && removedMembers.count != 1 {
-                print("[Loki] Can't remove self and others simultaneously.")
+                SNLog("Can't remove self and others simultaneously.")
                 return Promise(error: Error.invalidUpdate)
             }
             // Establish sessions if needed
@@ -223,7 +223,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            print("[Loki] Can't leave nonexistent closed group.")
+            SNLog("Can't leave nonexistent closed group.")
             return Promise(error: Error.noThread)
         }
         let group = thread.groupModel
@@ -233,7 +233,7 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     public static func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
-        print("[Loki] Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")
+        SNLog("Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")
         // Establish session if needed
         SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction)
         // Send the request

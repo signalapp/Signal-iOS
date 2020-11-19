@@ -110,7 +110,7 @@ public final class SessionMetaProtocol : NSObject {
     public static func updateProfileKeyIfNeeded(for publicKey: String, using dataMessage: SNProtoDataMessage) {
         guard dataMessage.hasProfileKey, let profileKey = dataMessage.profileKey else { return }
         guard profileKey.count == kAES256_KeyByteLength else {
-            return print("[Loki] Unexpected profile key size: \(profileKey.count).")
+            return SNLog("Unexpected profile key size: \(profileKey.count).")
         }
         let profilePictureURL = dataMessage.profile?.profilePicture
         let profileManager = SSKEnvironment.shared.profileManager

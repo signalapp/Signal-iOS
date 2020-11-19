@@ -217,12 +217,12 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
         // Get the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Ignoring closed group info message for nonexistent group.")
+            return SNLog("Ignoring closed group info message for nonexistent group.")
         }
         let group = thread.groupModel
         // Check that the sender is a member of the group (before the update)
         guard Set(group.groupMemberIds).contains(message.sender!) else {
-            return print("[Loki] Ignoring closed group info message from non-member.")
+            return SNLog("Ignoring closed group info message from non-member.")
         }
         // Store the ratchets for any new members (it's important that this happens before the code below)
         senderKeys.forEach { senderKey in
@@ -279,16 +279,16 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
         let groupPublicKey = groupPublicKeyAsData.toHexString()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let groupThread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Ignoring closed group sender key request for nonexistent group.")
+            return SNLog("Ignoring closed group sender key request for nonexistent group.")
         }
         let group = groupThread.groupModel
         // Check that the requesting user is a member of the group
         let members = Set(group.groupMemberIds)
         guard members.contains(message.sender!) else {
-            return print("[Loki] Ignoring closed group sender key request from non-member.")
+            return SNLog("Ignoring closed group sender key request from non-member.")
         }
         // Respond to the request
-        print("[Loki] Responding to sender key request from: \(message.sender!).")
+        SNLog("Responding to sender key request from: \(message.sender!).")
         SessionManagementProtocol.sendSessionRequestIfNeeded(to: message.sender!, using: transaction)
         let userRatchet = Storage.shared.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey)
             ?? SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
@@ -305,10 +305,10 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
         guard case let .senderKey(groupPublicKeyAsData, senderKey) = message.kind else { return }
         let groupPublicKey = groupPublicKeyAsData.toHexString()
         guard senderKey.publicKey.toHexString() == message.sender! else {
-            return print("[Loki] Ignoring invalid closed group sender key.")
+            return SNLog("Ignoring invalid closed group sender key.")
         }
         // Store the sender key
-        print("[Loki] Received a sender key from: \(message.sender!).")
+        SNLog("Received a sender key from: \(message.sender!).")
         let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
         Storage.shared.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: message.sender!, ratchet: ratchet, using: transaction)
     }

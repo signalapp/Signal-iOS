@@ -37,7 +37,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
-            print("[Loki] Signed pre key refreshed successfully.")
+            SNLog("Signed pre key refreshed successfully.")
             self.reportSuccess()
         }
     }

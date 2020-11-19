@@ -27,15 +27,15 @@ public final class PushNotificationAPI : NSObject {
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
-                    return print("[Loki] Couldn't unregister from push notifications.")
+                    return SNLog("Couldn't unregister from push notifications.")
                 }
                 guard json["code"] as? Int != 0 else {
-                    return print("[Loki] Couldn't unregister from push notifications due to error: \(json["message"] as? String ?? "nil").")
+                    return SNLog("Couldn't unregister from push notifications due to error: \(json["message"] as? String ?? "nil").")
                 }
             }
         }
         promise.catch2 { error in
-            print("[Loki] Couldn't unregister from push notifications.")
+            SNLog("Couldn't unregister from push notifications.")
         }
         // Unsubscribe from all closed groups
         Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroup in
@@ -56,7 +56,7 @@ public final class PushNotificationAPI : NSObject {
         let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
         let now = Date().timeIntervalSince1970
         guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
-            print("[Loki] Device token hasn't changed or expired; no need to re-upload.")
+            SNLog("Device token hasn't changed or expired; no need to re-upload.")
             return Promise<Void> { $0.fulfill(()) }
         }
         let parameters = [ "token" : hexEncodedToken, "pubKey" : publicKey ]
@@ -66,10 +66,10 @@ public final class PushNotificationAPI : NSObject {
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
-                    return print("[Loki] Couldn't register device token.")
+                    return SNLog("Couldn't register device token.")
                 }
                 guard json["code"] as? Int != 0 else {
-                    return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
+                    return SNLog("Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
                 }
                 userDefaults[.deviceToken] = hexEncodedToken
                 userDefaults[.lastDeviceTokenUpload] = now
@@ -77,7 +77,7 @@ public final class PushNotificationAPI : NSObject {
             }
         }
         promise.catch2 { error in
-            print("[Loki] Couldn't register device token.")
+            SNLog("Couldn't register device token.")
         }
         // Subscribe to all closed groups
         Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroup in
@@ -102,15 +102,15 @@ public final class PushNotificationAPI : NSObject {
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
-                    return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
+                    return SNLog("Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
                 }
                 guard json["code"] as? Int != 0 else {
-                    return print("[Loki] Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
+                    return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
                 }
             }
         }
         promise.catch2 { error in
-            print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
+            SNLog("Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
         }
         return promise
     }

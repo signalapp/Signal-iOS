@@ -30,13 +30,13 @@ public final class Poller : NSObject {
     // MARK: Public API
     @objc public func startIfNeeded() {
         guard !isPolling else { return }
-        print("[Loki] Started polling.")
+        SNLog("Started polling.")
         isPolling = true
         setUpPolling()
     }
 
     @objc public func stop() {
-        print("[Loki] Stopped polling.")
+        SNLog("Stopped polling.")
         isPolling = false
         usedSnodes.removeAll()
     }
@@ -73,7 +73,7 @@ public final class Poller : NSObject {
                 if let error = error as? Error, error == .pollLimitReached {
                     self?.pollCount = 0
                 } else {
-                    print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
+                    SNLog("Polling \(nextSnode) failed; dropping it and switching to next snode.")
                     SnodeAPI.dropSnodeFromSwarmIfNeeded(nextSnode, publicKey: userPublicKey)
                 }
                 self?.pollNextSnode(seal: seal)
@@ -90,7 +90,7 @@ public final class Poller : NSObject {
             guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
             let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
             if !messages.isEmpty {
-                print("[Loki] Received \(messages.count) new message(s).")
+                SNLog("Received \(messages.count) new message(s).")
             }
             messages.forEach { json in
                 guard let envelope = SNProtoEnvelope.from(json) else { return }
@@ -101,7 +101,7 @@ public final class Poller : NSObject {
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
                 } catch {
-                    print("[Loki] Failed to deserialize envelope due to error: \(error).")
+                    SNLog("Failed to deserialize envelope due to error: \(error).")
                 }
             }
             strongSelf.pollCount += 1

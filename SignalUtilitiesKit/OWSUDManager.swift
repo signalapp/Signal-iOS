@@ -446,7 +446,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
             return certificate
         } catch {
-            print("[Loki] Couldn't get UD sender certificate due to error: \(error).")
+            SNLog("Couldn't get UD sender certificate due to error: \(error).")
             return nil
         }
     }

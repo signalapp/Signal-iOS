@@ -58,7 +58,7 @@ public final class ClosedGroupPoller : NSObject {
             promise.done2 { [weak self] messages in
                 guard let self = self, self.isPolling else { return }
                 if !messages.isEmpty {
-                    print("[Loki] Received \(messages.count) new message(s) in closed group with public key: \(publicKey).")
+                    SNLog("Received \(messages.count) new message(s) in closed group with public key: \(publicKey).")
                 }
                 messages.forEach { json in
                     guard let envelope = SNProtoEnvelope.from(json) else { return }
@@ -69,12 +69,12 @@ public final class ClosedGroupPoller : NSObject {
                             SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                         }
                     } catch {
-                        print("[Loki] Failed to deserialize envelope due to error: \(error).")
+                        SNLog("Failed to deserialize envelope due to error: \(error).")
                     }
                 }
             }
             promise.catch2 { error in
-                print("[Loki] Polling failed for closed group with public key: \(publicKey) due to error: \(error).")
+                SNLog("Polling failed for closed group with public key: \(publicKey) due to error: \(error).")
             }
             return promise.map { _ in }
         }
