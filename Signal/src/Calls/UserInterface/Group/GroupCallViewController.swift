@@ -265,6 +265,12 @@ class GroupCallViewController: UIViewController {
             )
         }
 
+        // Setting the speakerphone before we join the call will fail,
+        // but we can re-apply the setting here in case it did not work.
+        if groupCall.isOutgoingVideoMuted && !callService.audioService.hasExternalInputs {
+            callService.audioService.requestSpeakerphone(isEnabled: callControls.audioSourceButton.isSelected)
+        }
+
         guard !isCallMinimized else { return }
 
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty
@@ -462,7 +468,14 @@ extension GroupCallViewController: CallControlsDelegate {
 
     func didPressVideo(sender: UIButton) {
         sender.isSelected = !sender.isSelected
+
         callService.updateIsLocalVideoMuted(isLocalVideoMuted: !sender.isSelected)
+
+        // When turning off video, default speakerphone to on.
+        if !sender.isSelected && !callService.audioService.hasExternalInputs {
+            callControls.audioSourceButton.isSelected = true
+            callService.audioService.requestSpeakerphone(isEnabled: true)
+        }
     }
 
     func didPressFlipCamera(sender: UIButton) {

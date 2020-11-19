@@ -126,7 +126,7 @@ protocol CallAudioServiceDelegate: class {
             do {
                 try self.avAudioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
             } catch {
-                owsFailDebug("failed to set \(#function) = \(isEnabled) with error: \(error)")
+                Logger.warn("failed to set \(#function) = \(isEnabled) with error: \(error)")
             }
         }
     }

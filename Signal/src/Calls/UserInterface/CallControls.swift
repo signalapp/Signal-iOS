@@ -25,7 +25,7 @@ class CallControls: UIView {
         button.unselectedBackgroundColor = .ows_accentRed
         return button
     }()
-    private lazy var audioSourceButton = createButton(
+    private(set) lazy var audioSourceButton = createButton(
         iconName: "speaker-solid-28",
         action: #selector(CallControlsDelegate.didPressAudioSource)
     )
