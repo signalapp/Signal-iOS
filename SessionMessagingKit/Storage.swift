@@ -42,7 +42,6 @@ public protocol SessionMessagingKitStorageProtocol {
     func setOpenGroupPublicKey(for server: String, to newValue: String, using transaction: Any)
 
     // MARK: - Last Message Server ID
-
     func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64?
     func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
     func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any)
@@ -64,4 +63,6 @@ public protocol SessionMessagingKitStorageProtocol {
 
     /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
     func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, Any)?
+    /// Returns the IDs of the saved attachments.
+    func save(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String]
 }

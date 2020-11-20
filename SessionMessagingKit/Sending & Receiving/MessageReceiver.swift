@@ -47,7 +47,7 @@ internal enum MessageReceiver {
         }
     }
 
-    internal static func parse(_ data: Data, messageServerID: UInt64?, using transaction: Any) throws -> Message {
+    internal static func parse(_ data: Data, messageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
         // Decrypt the contents
@@ -90,13 +90,13 @@ internal enum MessageReceiver {
             message.groupPublicKey = groupPublicKey
             message.openGroupServerMessageID = messageServerID
             guard message.isValid else { throw Error.invalidMessage }
-            return message
+            return (message, proto)
         } else {
             throw Error.unknownMessage
         }
     }
 
-    internal static func handle(_ message: Message, using transaction: Any) throws {
+    internal static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as SessionRequest: handleSessionRequest(message, using: transaction)
@@ -104,7 +104,7 @@ internal enum MessageReceiver {
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupUpdate: handleClosedGroupUpdate(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
-        case let message as VisibleMessage: try handleVisibleMessage(message, using: transaction)
+        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, using: transaction)
         default: fatalError()
         }
     }
@@ -148,14 +148,18 @@ internal enum MessageReceiver {
         }
     }
 
-    private static func handleVisibleMessage(_ message: VisibleMessage, using transaction: Any) throws {
+    private static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
         let delegate = Configuration.shared.messageReceiverDelegate
+        let storage = Configuration.shared.storage
+        // Handle attachments
+        let attachments = delegate.parseAttachments(from: proto.dataMessage!.attachments)
+        message.attachmentIDs = storage.save(attachments, using: transaction)
         // Update profile if needed
         if let profile = message.profile {
             delegate.updateProfile(for: message.sender!, from: profile, using: transaction)
         }
         // Persist the message
-        guard let (threadID, tsIncomingMessage) = Configuration.shared.storage.persist(message, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+        guard let (threadID, tsIncomingMessage) = storage.persist(message, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Cancel any typing indicators
         delegate.cancelTypingIndicatorsIfNeeded(for: message.sender!)

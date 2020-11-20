@@ -32,4 +32,12 @@ extension Storage {
         message.save(with: transaction)
         return (thread.uniqueId!, message)
     }
+
+    public func save(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String] {
+        return attachments.map { attachment in
+            let tsAttachment = TSAttachmentPointer.from(attachment)
+            tsAttachment.save(with: transaction as! YapDatabaseReadWriteTransaction)
+            return tsAttachment.uniqueId!
+        }
+    }
 }

@@ -39,8 +39,8 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
         Configuration.shared.storage.withAsync({ transaction in // Intentionally capture self
             Threading.workQueue.async {
                 do {
-                    let message = try MessageReceiver.parse(self.data, messageServerID: self.messageServerID, using: transaction)
-                    try MessageReceiver.handle(message, using: transaction)
+                    let (message, proto) = try MessageReceiver.parse(self.data, messageServerID: self.messageServerID, using: transaction)
+                    try MessageReceiver.handle(message, associatedWithProto: proto, using: transaction)
                     self.handleSuccess()
                 } catch {
                     SNLog("Couldn't parse message due to error: \(error).")

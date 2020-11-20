@@ -14,4 +14,5 @@ public protocol MessageReceiverDelegate {
     func handleGroupUpdate(_ message: ClosedGroupUpdate, using transaction: Any)
     func handleSenderKeyRequest(_ message: ClosedGroupUpdate, using transaction: Any)
     func handleSenderKey(_ message: ClosedGroupUpdate, using transaction: Any)
+    func parseAttachments(from protos: [SNProtoAttachmentPointer]) -> [VisibleMessage.Attachment]
 }

@@ -38,7 +38,7 @@ public final class VisibleMessage : Message {
         guard let dataMessage = proto.dataMessage else { return nil }
         let result = VisibleMessage()
         result.text = dataMessage.body
-        result.attachmentIDs = [] // TODO: Attachments
+        // Attachments are handled in MessageReceiver
         if let quoteProto = dataMessage.quote, let quote = Quote.fromProto(quoteProto) { result.quote = quote }
         if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
         // TODO: Contact

@@ -312,4 +312,40 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
         let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
         Storage.shared.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: message.sender!, ratchet: ratchet, using: transaction)
     }
+
+
+
+    // MARK: - Attachments
+
+    public func parseAttachments(from protos: [SNProtoAttachmentPointer]) -> [VisibleMessage.Attachment] {
+        return protos.compactMap { proto in
+            let result = VisibleMessage.Attachment()
+            result.fileName = proto.fileName
+            func inferContentType() -> String {
+                guard let fileName = result.fileName, let fileExtension = URL(string: fileName)?.pathExtension else { return OWSMimeTypeApplicationOctetStream }
+                return MIMETypeUtil.mimeType(forFileExtension: fileExtension) ?? OWSMimeTypeApplicationOctetStream
+            }
+            result.contentType = proto.contentType ?? inferContentType()
+            result.key = proto.key
+            result.digest = proto.digest
+            let kind: VisibleMessage.Attachment.Kind
+            if proto.hasFlags && (proto.flags & UInt32(SNProtoAttachmentPointer.SNProtoAttachmentPointerFlags.voiceMessage.rawValue)) > 0 {
+                kind = .voiceMessage
+            } else {
+                kind = .generic
+            }
+            result.kind = kind
+            result.caption = proto.hasCaption ? proto.caption : nil
+            let size: CGSize
+            if proto.hasWidth && proto.width > 0 && proto.hasHeight && proto.height > 0 {
+                size = CGSize(width: Int(proto.width), height: Int(proto.height))
+            } else {
+                size = CGSize.zero
+            }
+            result.size = size
+            result.sizeInBytes = proto.size > 0 ? UInt(proto.size) : nil
+            result.url = proto.url
+            return result.isValid ? result : nil
+        }
+    }
 }
