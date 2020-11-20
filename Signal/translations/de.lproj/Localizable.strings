@@ -65,7 +65,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit dieser Gruppe teilen?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Möchtest du diesen Benutzer zu deinen Kontakten hinzufügen?";
+"ADD_TO_CONTACTS_OFFER" = "Möchtest du diesen Nutzer zu deinen Kontakten hinzufügen?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Zu weiterer Gruppe hinzufügen";
@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_TITLE" = "Zu einer weiteren Gruppe hinzufügen";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit diesem Benutzer teilen?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit diesem Nutzer teilen?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Verstanden";
@@ -374,13 +374,13 @@
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blockierte Gruppen";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blockierte Benutzer";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blockierte Nutzer";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Gruppe bereits blockiert.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Benutzer bereits blockiert.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Nutzer bereits blockiert.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Freigeben";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ wurde blockiert.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Benutzer blockiert";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Nutzer blockiert";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Gruppe blockiert";
@@ -425,7 +425,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestehende Mitglieder können dich jetzt wieder zur Gruppe hinzufügen.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockierte Benutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockierte Nutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Neu: Verwische Gesichter oder zeichne zum Verwischen in beliebige Bereiche.";
@@ -480,6 +480,9 @@
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Entgangener Anruf, da sich die Sicherheitsnummer des Anrufers geändert hat.";
+
+/* Button to return to the current call */
+"CALL_RETURN_BUTTON" = "Return To Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Keine Antwort";
@@ -548,7 +551,7 @@
 "CAMERA_BUTTON_LABEL" = "Kamera";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Dieser Benutzer kann nicht verifiziert werden, bevor ihr Nachrichten ausgetauscht habt.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Dieser Nutzer kann nicht verifiziert werden, bevor ihr Nachrichten ausgetauscht habt.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fehler";
@@ -605,16 +608,16 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Rufnummernsuche";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Benutzernamensuche";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Nutzernamensuche";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um zu sehen, welche deiner Kontakte Signal verwenden.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dies setzt die App in ihren Ursprungszustand zurück. Dabei werden alle deine Nachrichten und dein Benutzerkonto vom Server gelöscht. Nach Abschluss des Vorgangs beendet sich die App automatisch.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dies setzt die App in ihren Ursprungszustand zurück. Dabei werden alle deine Nachrichten und dein Nutzerkonto vom Server gelöscht. Nach Abschluss des Vorgangs beendet sich die App automatisch.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Möchtest du dein Benutzerkonto wirklich löschen?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Möchtest du dein Nutzerkonto wirklich löschen?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Dies setzt die App in ihren Ursprungszustand zurück. Dabei werden alle deine Nachrichten von diesem Gerät gelöscht. Du kannst immer wieder mit deinem Gerät koppeln, aber es werden dabei keine gelöschten Nachrichten wiederhergestellt. Nach Abschluss dieses Vorgangs beendet sich die App automatisch.";
@@ -827,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Wähle aus, wer Gruppenname, -foto und die Ablaufzeit für verschwindende Nachrichten bearbeiten kann.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Du wirst von diesem Benutzer keine Nachrichten oder Aktualisierungen mehr erhalten.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Du wirst von diesem Nutzer keine Nachrichten oder Aktualisierungen mehr erhalten.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Du wirst von dieser Gruppe keine Nachrichten oder Aktualisierungen mehr erhalten.";
@@ -836,7 +839,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Gruppe blockieren";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Benutzer blockieren";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Nutzer blockieren";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktdetails";
@@ -953,7 +956,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Gruppe freigeben";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Benutzer freigeben";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Nutzer freigeben";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Stummschaltung aufheben";
@@ -968,7 +971,7 @@
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Alle Mitglieder anzeigen";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Dieser Benutzer ist in deinen Kontakten";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Dieser Nutzer ist in deinen Kontakten";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profil teilen";
@@ -1229,7 +1232,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Gruppe bearbeiten";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Dieser Benutzer kann erst dann zur Gruppe hinzugefügt werden, wenn er Signal aktualisiert hat.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Dieser Nutzer kann erst dann zur Gruppe hinzugefügt werden, wenn er Signal aktualisiert hat.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximale Gruppengröße von %@ Mitgliedern erreicht.";
@@ -1328,7 +1331,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Senden nicht möglich aufgrund veralteter Sicherheitsdaten.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachricht konnte nicht versendet werden, da du den Benutzer blockiert hast.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachricht konnte nicht versendet werden, da du den Nutzer blockiert hast.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal konnte keine Verbindung zum Internet herstellen. Bitte versuche es erneut.";
@@ -1403,7 +1406,7 @@
 "ERROR_SENDING_EXPIRED" = "Deine Signal-Version ist veraltet. Zum Versenden weiterer Nachrichten bitte aktualisieren.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Benutzer: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Nutzer: %@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Deine Signal-Version ist abgelaufen! Bitte antippen, um auf die neueste Version zu aktualisieren.";
@@ -1496,7 +1499,7 @@
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Nur Admins";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Jeder Benutzer";
+"GROUP_ACCESS_LEVEL_ANY" = "Jeder Nutzer";
 
 /* Description of the 'all members' access level. */
 "GROUP_ACCESS_LEVEL_MEMBER" = "Alle Mitglieder";
@@ -1519,17 +1522,23 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Nur Admins können diese Option ändern.";
 
+/* Text in conversation view for a group call that has since ended */
+"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Anruf beitreten";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Anrufteilnehmer · %ld Personen";
 
-/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+/* Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2 */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ und %ld Weitere nehmen an diesem Anruf teil";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Niemand anderes ist hier";
+
+/* Text explaining to the user that nobody has joined this call yet. */
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ und %ld Weitere sind dem Anruf beigetreten";
@@ -1556,19 +1565,28 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ nimmt an diesem Anruf teil";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Neu verbinden";
+"GROUP_CALL_RECONNECTING" = "Verbindung wird neu hergestellt";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Anruf starten";
 
-/* Text explaining that there are two people in the group call. Embeds {member name} */
+/* Text explaining that someone started a group call. Embeds {{call creator display name}} */
+"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+
+/* Text explaining that there are three people in the group call. Embeds two {member name}s */
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
+
+/* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ und %@ nehmen an diesem Anruf teil";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Die Verbindung zum Anruf wurde unerwartet beendet.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Die Anrufsverbindung wurde unerwartet getrennt.";
 
-/* Text describing the local user in the group call members sheet. */
+/* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Du";
+
+/* Text explaining that you are in the group call. */
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Du (an einem anderen Gerät)";
@@ -1676,7 +1694,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Benutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Nutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "Einladung versendet";
@@ -1685,7 +1703,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Einladungen versendet";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Diese Benutzer können von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Sie wurden eingeladen beizutreten, werden aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen haben.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Diese Nutzer können von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Sie wurden eingeladen beizutreten, werden aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen haben.";
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "Mitgliedseinladungen";
@@ -2057,13 +2075,13 @@
 "GROUP_WAS_MIGRATED" = "Diese Gruppe wurde auf eine Gruppe neuen Typs aktualisiert.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Ein Mitglied konnte der Gruppe neuen Typs nicht hinzugefügt werden und wurde daher aus der Gruppe gelöscht.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Ein Mitglied konnte der Gruppe neuen Typs nicht hinzugefügt werden und wurde daher aus der Gruppe entfernt.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Du konntest der Gruppe neuen Typs nicht hinzugefügt werden und wurdest daher aus der Gruppe entfernt.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ Mitglieder konnten der Gruppe neuen Typs nicht hinzugefügt werden und wurden daher aus der Gruppe gelöscht.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ Mitglieder konnten der Gruppe neuen Typs nicht hinzugefügt werden und wurden daher aus der Gruppe entfernt.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Ein Mitglied konnte der Gruppe neuen Typs nicht hinzugefügt werden und wurde daher eingeladen, beizutreten.";
@@ -2081,7 +2099,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Wähle einen neuen Admin für diese Gruppe, bevor du sie verlässt.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Benutzer bereits in Gruppe.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Nutzer bereits in Gruppe.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Einladung konnte nicht angenommen werden.";
@@ -2114,19 +2132,31 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Gruppen alten vs. neuen Typs";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Aktualisiere diese Gruppe für neue Funktionen, wie @Erwähnungen und Admins. Mitglieder, die ihren Namen und Foto in dieser Gruppe noch nicht geteilt haben, werden eingeladen beizutreten. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Aktualisiere diese Gruppe für neue Funktionen wie @Erwähnungen und Admins. Mitglieder, die ihre Namen und Fotos nicht mit dieser Gruppe geteilt haben, werden eingeladen, beizutreten. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Keine Aktualisierung zu einer Gruppe neuen Typs möglich";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Diese Gruppe alten Typs kann nicht zu einer Gruppe neuen Typs aktualisiert werden. Die maximale Gruppengröße von %@ Mitgliedern ist überschritten.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Diese Gruppe kann nicht zu einer Gruppe neuen Typs aktualisiert werden. Die maximale Gruppengröße von %@ Mitgliedern ist überschritten.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Sobald alle derzeitigen Gruppenmitglieder eine zu Gruppen neuen Typs fähige Signal-Version verwenden, wird diese Gruppe aktualisiert.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Der Nachrichtenverlauf und die Medieninhalte werden durch die Aktualisierung erhalten bleiben.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Der bestehende Nachrichtenverlauf und die Medieninhalte werden durch die Aktualisierung erhalten bleiben.";
+
+/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+
+/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es wird eine Gruppe alten Typs erstellt, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Gruppe neuen Typs mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen.";
@@ -2144,28 +2174,28 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dies ist eine Gruppe alten Typs. Funktionen wie Gruppen-Admins sind nur in Gruppen neuen Typs verfügbar. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Diese Gruppe alten Typs ist noch nicht bereit für eine Aktualisierung zu einer Gruppe neuen Typs. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Diese Gruppe alten Typs kann nicht zu einer Gruppe neuen Typs aktualisiert werden. Die maximale Gruppengröße ist überschritten. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dies ist eine Gruppe alten Typs. Für neue Funktionen wie @Erwähnungen und Admins, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Ein Mitglied konnte der Gruppe neuen Typs nicht wieder hinzugefügt werden. Möchtest du es jetzt hinzufügen?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ Mitglieder konnten der Gruppe neuen Typs nicht wieder hinzugefügt werden. Möchtest du sie jetzt hinzufügen?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Gruppe alten Typs";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Gruppe aktualisieren";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Für neue Funktionen, wie @Erwähnungen und Admins, aktualisiere diese Gruppe.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Aktualisiere diese Gruppe für neue Funktionen wie @Erwähnungen und Admins.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Was sind Gruppen neuen Typs?";
@@ -2192,52 +2222,52 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Mitglieder hinzufügen";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Dieses Mitglied konnte bei der Aktualisierung zur Gruppe neuen Typs nicht automatisch hinzugefügt werden:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Diese Mitglieder konnten bei der Aktualisierung zur Gruppe neuen Typs nicht automatisch hinzugefügt werden:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Der vor der Aktualisierung bestehende Nachrichtenverlauf und die Medieninhalte wurden erhalten.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Dieses Mitglied wurde aus der Gruppe entfernt und wird nicht wieder beitreten können, bis es Signal aktualisiert hat.";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Diese Mitglieder wurden aus der Gruppe entfernt und werden nicht wieder beitreten können, bis sie Signal aktualisiert haben.";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Dieses Mitglied muss eine Einladung zum erneuten Gruppenbeitritt annehmen und wird bis dahin keine Gruppennachrichten erhalten:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Diese Mitglieder müssen eine Einladung zum erneuten Gruppenbeitritt annehmen und werden bis dahin keine Gruppennachrichten erhalten:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Dieses Mitglied kann Gruppen neuen Typs nicht beitreten und wird daher aus der Gruppe entfernt:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Diese Mitglieder können Gruppen neuen Typs nicht beitreten und werden daher aus der Gruppe entfernt:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Aktualisiere zu einer Gruppe neuen Typs";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Zu Gruppe neuen Typs aktualisieren";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Aktualisiere diese Gruppe";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Diese Gruppe aktualisieren";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Diese Gruppe konnte aktuell nicht zu einer Gruppe neuen Typs aktualisiert werden.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Diese Gruppe konnte nicht zu einer Gruppe neuen Typs aktualisiert werden, da du nicht mit dem Internet verbunden bist. Bitte versuche es später erneut.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Aktualisierung konnte nicht abgeschlossen werden";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Zu einer Gruppe neuen Typs aktualisiert.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "diese Gruppe aktualisieren";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Wähle vor Verlassen der Gruppe mindestens einen neuen Gruppen-Admin.";
@@ -2255,7 +2285,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Empfohlene Mitgliederanzahl erreicht";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Mitglied trotzdem hinzufügen?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Anfrage anzeigen";
@@ -2402,7 +2432,10 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Freunde einladen";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Gleichzeitiges Einladen mehrerer Benutzer beginnt eine Gruppennachricht, deren Empfänger sich gegenseitig sehen können.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Gleichzeitiges Einladen mehrerer Nutzer beginnt eine Gruppennachricht, deren Empfänger sich gegenseitig sehen können.";
+
+/* Button to join an active group call */
+"JOIN_CALL_PILL_BUTTON" = "Beitreten";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Nachrichten verschwinden nach %@.";
@@ -2711,13 +2744,13 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Löschen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Unterhaltung mit %@ fortsetzen und deinen Namen und dein Foto mit diesem Benutzer teilen?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Unterhaltung mit %@ fortsetzen und deinen Namen und dein Foto mit diesem Nutzer teilen?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Unterhaltung mit dieser Gruppe fortsetzen und deinen Namen und dein Foto mit deren Mitgliedern teilen?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Darf %@ dir Nachrichten schreiben und deinen Namen und dein Foto sehen? Der Benutzer weiß nicht, dass du seine Nachricht gesehen hast, bis du die Anfrage annimmst.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Darf %@ dir Nachrichten schreiben und deinen Namen und dein Foto sehen? Der Nutzer weiß nicht, dass du seine Nachricht gesehen hast, bis du die Anfrage annimmst.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Möchtest du dieser Gruppe beitreten und deinen Namen und dein Foto mit deren Mitgliedern teilen? Sie wissen nicht, dass du ihre Nachrichten gesehen hast, bis du die Einladung annimmst.";
@@ -2816,7 +2849,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kannst keine weiteren Geräte koppeln.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du hast die maximale Anzahl an Geräten erreicht, die du derzeit mit deinem Benutzerkonto koppeln kannst. Bitte entferne ein Gerät und versuche es erneut.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du hast die maximale Anzahl an Geräten erreicht, die du derzeit mit deinem Nutzerkonto koppeln kannst. Bitte entferne ein Gerät und versuche es erneut.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du wirst keine Mitteilungen über stummgeschaltete Unterhaltungen erhalten.";
@@ -2848,6 +2881,9 @@
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Neue Gruppe konnte nicht erstellt werden. Überprüfe deine Internetverbindung und versuche es erneut.";
 
+/* Indicates that a group member does not support New Groups. */
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Es ist ein Gruppenname erforderlich.";
 
@@ -2864,7 +2900,7 @@
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Gruppe benennen";
 
 /* a title for the selected section of the 'recipient picker' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andere Benutzer";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andere Nutzer";
 
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Mitglieder auswählen";
@@ -2882,7 +2918,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Suchen";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Benutzer suchen";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Nutzer suchen";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontakte über Rufnummer suchen";
@@ -2897,7 +2933,7 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Neue Nachricht an:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Kein Benutzer gefunden. Via SMS einladen?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Kein Nutzer gefunden. Via SMS einladen?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notiz an mich";
@@ -2987,7 +3023,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Überspringen und neue PIN erstellen";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Benutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN-Eingabe überspringen?";
@@ -3047,7 +3083,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Mehr über PINs erfahren";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Zum Schutz deiner Privatsphäre und zur Sicherheit deines Benutzerkontos wurde dieses für 7 Tage gesperrt.\n\nNach Ablauf von 7 Tagen ohne Aktivität wirst du diese Rufnummer erneut registrieren können. ohne deine PIN zu benötigen. Alle Inhalte werden dabei gelöscht.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Zum Schutz deiner Privatsphäre und zur Sicherheit deines Nutzerkontos wurde dieses für 7 Tage gesperrt.\n\nNach Ablauf von 7 Tagen ohne Aktivität wirst du diese Rufnummer erneut registrieren können. ohne deine PIN zu benötigen. Alle Inhalte werden dabei gelöscht.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Mehr über gesperrte Konten erfahren";
@@ -3515,7 +3551,7 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Foto entfernen";
 
 /* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Benutzername erstellen";
+"PROFILE_VIEW_CREATE_USERNAME" = "Nutzername erstellen";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Dein Nachname ist zu lang.";
@@ -3551,7 +3587,7 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Benutzername";
+"PROFILE_VIEW_USERNAME_FIELD" = "Nutzername";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Als gelesen markieren";
@@ -3647,7 +3683,7 @@
 "READ_ACTION" = "Gelesen";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Benutzer kann nicht ausgewählt werden.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Nutzer kann nicht ausgewählt werden.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ich habe meine PIN vergessen.";
@@ -3656,16 +3692,16 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hilfe benötigt?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Benutzerkontos 7 Tage warten.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Nutzerkontos 7 Tage warten.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von 4+ Zeichen. Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Benutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von 4+ Zeichen. Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer Code von mindestens 4 Ziffern. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Benutzerkontos 7 Tage warten.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer Code von mindestens 4 Ziffern. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Nutzerkontos 7 Tage warten.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Benutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Du hast %lu verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.";
@@ -3674,7 +3710,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Benutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du hast 1 verbleibenden Versuch. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Falsche PIN";
@@ -3746,7 +3782,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Ablehnen";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Die eingegebene Rufnummer ist bereits auf einem anderen Server registriert. Lösche bitte zuerst dein Benutzerkonto auf dem Server und versuche es dann erneut.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Die eingegebene Rufnummer ist bereits auf einem anderen Server registriert. Lösche bitte zuerst dein Nutzerkonto auf dem Server und versuche es dann erneut.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Neuen Admin wählen";
@@ -3767,7 +3803,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Nein, danke";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Wir glauben an Datenschutz.</bold>\n\nSignal verfolgt dich nicht und sammelt auch nicht deine Daten. Um Signal für alle zu verbessern, stützen wir uns auf Rückmeldungen der Benutzer, <bold>und wir wären sehr an deinen interessiert</bold>.\n\nZum besseren Verständnis darüber, wie du Signal nutzt, führen wir eine Umfrage durch. Unsere Umfrage sammelt keinerlei Daten, die Rückschlüsse auf deine Identität erlauben. Falls du weiteres Feedback geben möchtest,  kannst du optional deine Kontaktinformationen hinterlassen.\n\nWenn du einige Minuten erübrigen kannst, würden wir sehr gerne von dir hören.";
+"RESEARCH_MODAL_PLEA" = "<bold>Wir glauben an Datenschutz.</bold>\n\nSignal verfolgt dich nicht und sammelt auch nicht deine Daten. Um Signal für alle zu verbessern, stützen wir uns auf Rückmeldungen der Nutzer, <bold>und wir wären sehr an deinen interessiert</bold>.\n\nZum besseren Verständnis darüber, wie du Signal nutzt, führen wir eine Umfrage durch. Unsere Umfrage sammelt keinerlei Daten, die Rückschlüsse auf deine Identität erlauben. Falls du weiteres Feedback geben möchtest,  kannst du optional deine Kontaktinformationen hinterlassen.\n\nWenn du einige Minuten erübrigen kannst, würden wir sehr gerne von dir hören.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "An Umfrage teilnehmen";
@@ -3977,7 +4013,7 @@
 "SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, Benutzername, Nummer";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, Nutzername, Nummer";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Name oder Nummer suchen";
@@ -4103,7 +4139,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Bei Aktivierung wird Signal versuchen, Zensurmaßnahmen zu umgehen. Aktiviere diese Funktion nur dann, wenn du dich an einem Ort befindest, an dem Signal zensiert wird.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Die Zensurumgehung wurde aufgrund der Rufnummer deines Benutzerkontos aktiviert.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Die Zensurumgehung wurde aufgrund der Rufnummer deines Nutzerkontos aktiviert.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Du hast die Zensurumgehung manuell deaktiviert.";
@@ -4202,7 +4238,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Sicherung erfolgreich";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Blockierten Benutzer hinzufügen";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Blockierten Nutzer hinzufügen";
 
 /* An explanation of the 'blocked' setting */
 "SETTINGS_BLOCK_LIST_FOOTER" = "Liste von blockierten Kontakten und Gruppen.";
@@ -4229,7 +4265,7 @@
 "SETTINGS_COPYRIGHT" = "Urheberrecht Signal Messenger \nLizensiert unter GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Benutzerkonto löschen";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Nutzerkonto löschen";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Alle Daten löschen";
@@ -4595,7 +4631,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Mitglied von %@, %@ und %lu weiteren Gruppen";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kannst in dieser Unterhaltung an dich selbst gerichtete Notizen hinzufügen. Falls dein Benutzerkonto gekoppelte Geräte besitzt, werden neue Notizen synchronisiert.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kannst in dieser Unterhaltung an dich selbst gerichtete Notizen hinzufügen. Falls dein Nutzerkonto gekoppelte Geräte besitzt, werden neue Notizen synchronisiert.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Mitglied von %@";
@@ -4670,7 +4706,7 @@
 "UNARCHIVE_ACTION" = "In Eingang verschieben";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Benutzer nicht in deinen Kontakten. Möchtest du diesen Benutzer blockieren?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Nutzer nicht in deinen Kontakten. Möchtest du diesen Nutzer blockieren?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Unbekannter Kontakt";
@@ -4778,43 +4814,43 @@
 "UPGRADE_IOS_ALERT_TITLE" = "iOS aktualisieren";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Benutzernamen sind bei Signal optional. Falls du dich dafür entscheidest, einen Benutzernamen zu erstellen, werden andere Nutzer dich über diesen finden und kontaktieren können, ohne deine Rufnummer zu kennen.";
+"USERNAME_DESCRIPTION" = "Nutzernamen sind bei Signal optional. Falls du dich dafür entscheidest, einen Nutzernamen zu erstellen, werden andere Nutzer dich über diesen finden und kontaktieren können, ohne deine Rufnummer zu kennen.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Benutzername";
+"USERNAME_FIELD" = "Nutzername";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Benutzernamen dürfen nur a-z, 0-9 und »_« enthalten";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Nutzernamen dürfen nur a-z, 0-9 und »_« enthalten";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Während der Suche nach dem Benutzernamen ist ein Fehler aufgetreten. Bitte versuche es später erneut.";
+"USERNAME_LOOKUP_ERROR" = "Während der Suche nach dem Nutzernamen ist ein Fehler aufgetreten. Bitte versuche es später erneut.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ ist kein Signal-Nutzer. Achte darauf, dass du den vollständigen Benutzernamen eingegeben hast.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ ist kein Signal-Nutzer. Achte darauf, dass du den vollständigen Nutzernamen eingegeben hast.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "Benutzer nicht gefunden";
+"USERNAME_NOT_FOUND_TITLE" = "Nutzer nicht gefunden";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Benutzername eingeben";
+"USERNAME_PLACEHOLDER" = "Nutzername eingeben";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Benutzernamen dürfen mit keiner Zahl beginnen.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Nutzernamen dürfen mit keiner Zahl beginnen.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Benutzername";
+"USERNAME_TITLE" = "Nutzername";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Benutzernamen müssen aus mindestens 4 Zeichen bestehen.";
+"USERNAME_TOO_SHORT_ERROR" = "Nutzernamen müssen aus mindestens 4 Zeichen bestehen.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ ist vergeben.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Benutzername konnte nicht aktualisiert werden.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Nutzername konnte nicht aktualisiert werden.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Gerätename darf nicht leer sein";

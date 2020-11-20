@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ne zdaj";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Sprejmi novo varnostno število";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Sprejmi novo varnostno številko";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Priponka";
@@ -164,7 +164,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Label for the archive button for conversations list view */
-"ARCHIVE_ACTION" = "Premakni v arhiv";
+"ARCHIVE_ACTION" = "Arhiviraj";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Dosežena omejitev števila znakov.";
@@ -480,6 +480,9 @@
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Zgrešen klic zaradi spremenjenega varnostnega števila klicočega.";
+
+/* Button to return to the current call */
+"CALL_RETURN_BUTTON" = "Return To Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Neodgovorjeno";
@@ -803,7 +806,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d od %d zadetkov";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "Nastavitve klepeta";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Dodaj člane/ice";
@@ -992,7 +995,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "S ponastavitvijo seje boste zopet lahko prejemali sporočila osebe %@, ne bo pa mogoče obnoviti okvarjenih sporočil iz preteklosti.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Ponastavitev omogoča prejemanje nadaljnjih sporočil od %@, a ne bo obnovila že pokvarjenih sporočil.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Izberite kodo države";
@@ -1202,7 +1205,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kadar je vklopljeno, bodo poslana in prejeta sporočila tega klepeta po ogledu izginila.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Sporočila trenutno izginejo po %@";
@@ -1331,7 +1334,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Sporočilo ni moglo biti poslano, ker je uporabnik/ca blokiran/a.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal se ni mogel povezati s internetom. Prosimo poskusite znova.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal se ni mogel povezati s spletom. Prosimo poskusite znova.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Pošiljanje sporočila ni uspelo zaradi pomanjkanja veljavnih prejemnikov.";
@@ -1355,7 +1358,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Prišlo je do neznane napake.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Oseba ni uporabnik/ca aplikacije Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Stik ne uporablja aplikacije Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Prenos priponk ni bil uspešen.";
@@ -1379,7 +1382,7 @@
 "ERROR_MESSAGE_NO_SESSION" = "Za ta stik ni na voljo nobena seja.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Varnostno število je bilo spremenjeno.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Varnostna številka je bila spremenjena.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Varnostno število z uporabikom %@ je bilo spremenjeno.";
@@ -1415,13 +1418,13 @@
 "EXPIRATION_WARNING_TODAY" = "Vaša različica aplikacije Signal bo danes potekla. Tapnite za nadgradnjo na zadnjo različico.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Preveč neuspešnih poskusov s tem/to uporabnikom/co. Prosimo poskusite spet kasneje.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Preveč neuspešnih poskusov s tem stikom. Prosimo poskusite spet kasneje.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Varnostno število z uporabnikom/co %@ je bilo spremenjeno. Pred ponovnim poskusom pošiljanja bi morda želeli preveriti njegovo/njeno istovetnost.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Varnostna številka za %@ je bilo pred kratkim spremenjena. Pred ponovnim poskusom pošiljanja bi morda želeli preveriti njeno istovetnost.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Varnostnega števila ni bilo mogoče potrditi!";
+"FAILED_VERIFICATION_TITLE" = "Varnostne številke ni bilo mogoče preveriti!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označi kot potrjeno";
@@ -1519,17 +1522,23 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
+/* Text in conversation view for a group call that has since ended */
+"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Pridruži se klicu";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
 
-/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+/* Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2 */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Tu ni nikogar drugega";
+
+/* Text explaining to the user that nobody has joined this call yet. */
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
@@ -1561,14 +1570,23 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Začni klic";
 
-/* Text explaining that there are two people in the group call. Embeds {member name} */
+/* Text explaining that someone started a group call. Embeds {{call creator display name}} */
+"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+
+/* Text explaining that there are three people in the group call. Embeds two {member name}s */
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
+
+/* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "The connection to the call unexpectedly ended.";
 
-/* Text describing the local user in the group call members sheet. */
+/* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Vi";
+
+/* Text explaining that you are in the group call. */
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
@@ -2128,6 +2146,18 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Zgodovina pogovorov in medijskih datotek bo ohranjena.";
 
+/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+
+/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
 
@@ -2216,7 +2246,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ti/te člani/ce se ne morejo pridružiti Novim skupinam, zato so bili/e odstranjeni/e iz skupine:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Nadgradi v Novo skupino";
@@ -2357,7 +2387,7 @@
 "IN_CALL_RINGING_VIDEO" = "Video Call…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Odgovorjeno. Uveljavljam zaščito...";
+"IN_CALL_SECURING" = "Odgovorjeno. Izvajam zaščito...";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Končan klic.";
@@ -2403,6 +2433,9 @@
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Vabilo večim uporabnikom/cam hkrati bo ustvarilo skupinsko sporočilo, prejemniki/ce bodo lahko videli drug drugega.";
+
+/* Button to join an active group call */
+"JOIN_CALL_PILL_BUTTON" = "Pridruži se";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Sporočila bodo izginila po %@.";
@@ -2471,13 +2504,13 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Povezovanje naprav ni bilo uspešno";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ta naprava bo lahko videla vaše skupine in stike, dostopala do vaših klepetov in pošiljala sporočila v vašem imenu.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Povežem to napravo?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Poskusi znova";
+"LINK_DEVICE_RESTART" = "Ponovno";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skenirajte kodo QR, prikazano na napravi, ki jo želite povezati.";
@@ -2795,10 +2828,10 @@
 "MISSED_CALL" = "Zgrešen klic";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Za video klice z aplikacijo Signal je potrebno omogočiti dostop do kamere. To lahko storite v Nastavitvah iOS.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Za video klice s Signalom  je potrebno v iOS nastavitvah omogočiti dostop do kamere.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Aplikacija Signal potrebuje dostop do vaše kamere";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal potrebuje dostop do vaše kamere";
 
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "To lahko omogočite v sistemskih nastavitvah iOS.";
@@ -2813,10 +2846,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Za ta namen potrebuje aplikacija Signal dostop do vaših fotografij.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Ne morete dodajati novih napav.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Ne morete dodajati še več naprav.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Prišli ste do maksimalnega števila naprav, ki jih trenutno lahko povežete z vašim računom. Prosimo odstranite kako izmed njih in poskusite znova.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosegli ste največje število naprav, ki jih lahko povežete z vašim računom. Odstranite katero od njih in poskusite znova.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
@@ -2828,7 +2861,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Preskoči";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Preverite, če ste povezani z internetom in poskusite znova.";
+"NETWORK_ERROR_RECOVERY" = "Preverite spletno povezavo in poskusite znova.";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Išči po telefonski številki";
@@ -2847,6 +2880,9 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Nove skupine ni bilo mogoče ustvariti. Preverite internetno povezavo in poskusite znova.";
+
+/* Indicates that a group member does not support New Groups. */
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Skupina mora imeti ime.";
@@ -2933,13 +2969,13 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Želite vklopiti obvestila?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Dejanja: \"Označi kot prebrano\", \"Odgovori\" in \"Pokliči nazaj.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "Dejanja vključujejo \"Označi kot prebrano\", \"Odgovori\" in \"Pokliči nazaj.\"";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ne pošiljatelj, ne sporočilo";
+"NOTIFICATIONS_NONE" = "Brez imena ali vsebine";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Predvajanje, kadar je aplikacija odprta";
+"NOTIFICATIONS_SECTION_INAPP" = "Predvajaj, ko je aplikacija odprta";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Zvoki";
@@ -2951,13 +2987,13 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Ime, vsebina, dejanja";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Samo pošiljatelj";
+"NOTIFICATIONS_SENDER_ONLY" = "Zgolj ime";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Prikaži";
 
 /* Label for the 'ok' button. */
-"OK" = "OK";
+"OK" = "V redu";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Napačen PIN. Število poskusov je izčrpano.";
@@ -3110,10 +3146,10 @@
 "OPEN_SETTINGS_BUTTON" = "Nastavitve";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Uporabnik/ca %@ je izklopil/a izginjajoča sporočila.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je izklopil/a izginjajoča sporočila.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Uporabnik/ca %@ je nastavil/a čas poteka sporočil na %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je nastavil/a čas poteka sporočil na %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "V omrežju Signal prihaja do tehničnih težav. Ekipa vzdrževalcev se trudi, da bodo čim hitreje odpravljene.";
@@ -3470,31 +3506,31 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Izbriši potrditve";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Izgleda, da ne gre za varnostno število z osebo %@. Ste prepričani, da potrjujete pravo osebo?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "To ni videti kot varnostna številka za %@. Ste prepričani, da preverjate pravi stik?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Številka v vašem odložišču ni enaka varnostni številki za ta klepet.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "V vašem odložišču ni bilo zaznati varnostnega števila. Ste ga pravilno prekopirali?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "V vašem odložišču ni varnostne številke. Ste jo pravilno prekopirali?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Vsak par uporabnikov aplikacije Signal ima skupno varnostno število. Preverite, če oseba %@ prikazuje 'vajino' skupno varnostno število.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Vsak par uporabnikov aplikacije Signal ima skupno varnostno številko. Prepričajte se, da%@ prikazuje 'vajino' skupno varnostno številko.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Nameščeno imate zastarelo različico aplikacije Signal. Za pregled in potrditev jo je potrebno nadgraditi.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Uporabljate zastarelo različico Signala. Za preverjanje jo morate posodobiti.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vaš partner ima nameščeno zastarelo različico aplikacije Signal. Za pregled in potrditev jo je potrebno nadgraditi.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vaš partner uporablja zastarelo različico Signala. Za preverjanje jo je potrebno nadgraditi.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirana koda ne izgleda kot varnostno število. Je na obeh napravah nameščena zadnja različica aplikacije Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirana koda ne izgleda kot varnostna številka. Je na obeh napravah nameščena zadnja različica Signala?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Če želite potrditi istovetnost uporabnika/ce %@ pri od-konca-do-konca šifrirani komunikaciji, primerjajte gornja števila s števili na napravi te osebe.\n\nNamesto tega lahko tudi skenirate kodo na napravi partnerja, ali njega/njo prosite, naj skenira vašo.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Če želite potrditi varnost %@ šifrirane komunikacijie primerjajte zgornjo številko s številko na drugi napravi.\n\nNamesto tega lahko tudi skenirate kodo na napravi sogovornika, ali ta skenira vašo.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Preverjanje istovetnosti";
+"PRIVACY_VERIFICATION_TITLE" = "Varnostna številka";
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Označi kot potrjeno";
@@ -3713,7 +3749,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vašega računa na moremo aktivirati dokler ne potrdite kode, ki smo vam jo poslali.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Ta format telefonskih številk ni podprt, prosimo obrnite se na center za podporo.";
+"REGISTRATION_NON_VALID_NUMBER" = "Takšen zapis telefonske številke ni podprt, obrnite se na center za podporo.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonska številka";
@@ -3722,10 +3758,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Pred pošiljanjem sporočil se morate registrirati.";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikacija ni bila uspešna";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Neuspešna overitev";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Števila, ki ste jih vnesli, niso identična poslanim. Bi jih želeli še enkrat preveriti?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Številke, ki ste jih vnesli, niso enaka poslanim. Bi jih želeli še enkrat preveriti?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Napačen PIN za prijavo v omrežje.";
@@ -3746,7 +3782,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Zavrni";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonska številka, s katero se želite registrirati, je že bila ragistrirana na drugem strežniku. Prosimo, da se najprej odjavite od tam in nato poskusite znova.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonska številka, s katero se želite registrirati, je že bila registrirana na drugem strežniku. Prosimo, da se najprej odjavite od tam in nato poskusite znova.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Določite novega skrbnika";
@@ -3776,7 +3812,7 @@
 "RESEARCH_MODAL_TITLE" = "Raziskava Signal";
 
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Poskusi znova";
+"RETRY_BUTTON_TEXT" = "Ponovno";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Vseeno dodaj v skupino";
@@ -3800,13 +3836,13 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Preglej";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Najino varnostno število:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Najina varnostna številka:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Varnostno število z uporabnikom/co %@ je bilo spremenjeno. Ga želite pregledati?";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Varnostna številka za %@ je bila spremenjena. Morda jo boste želeli preveriti.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Skenirajte kodo QR na napravi vašega partnerja.";
+"SCAN_CODE_INSTRUCTIONS" = "Skenirajte kodo QR na napravi vašega stika.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Skeniraj kodo QR";
@@ -4223,7 +4259,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vsi klici bodo posredovani preko strežnika Signal. S tem boste klicani strani onemogočili, da bi odkrila vaš naslov IP. Kvaliteta klica bo zaradi tega slabša.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "Počisti zgodovino klepeta";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Vse pravice Signal Messenger\nPod licenco GPLv3";
@@ -4247,7 +4283,7 @@
 "SETTINGS_HELP" = "Pomoč";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "Počisti zgodovino klepeta";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informacije";
@@ -4388,7 +4424,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Vklopi zaščito zaslona";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prepreči aplikaciji Signal, da bi bila prikazana v preklopniku med aplikacijami.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prepreči predogledom Signala, da bi bili prikazani v preklopniku med aplikacijami.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Zvoki";
@@ -4472,7 +4508,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Deli preko Signala";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži varnostno število";
+"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži varnostno številko";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
@@ -4550,10 +4586,10 @@
 "STICKERS_UNINSTALL_BUTTON" = "Odstrani";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Varnostno število z uporabnikom/co %@ se ujema. Tega/to uporabnika/co lahko označite kot potrjenega/no.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Varnostna številka za %@ se ujema. Ta stik lahko označite kot potrjenega.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Varnostno število se ujema!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Varnostni številki se ujemata!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "Kontaktirajte nas";
@@ -4667,7 +4703,7 @@
 "TXT_DELETE_TITLE" = "Izbriši";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "Premakni v nabiralnik";
+"UNARCHIVE_ACTION" = "Od-arhiviraj";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Uporabnik/ca ni med vašimi stiki. Bi ga/jo želeli blokirati?";
@@ -4712,7 +4748,7 @@
 "UNKNOWN_VALUE" = "Neznano";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Prekini povezavo";
+"UNLINK_ACTION" = "Odklopi povezavo";
 
 /* Alert message to confirm unlinking a device */
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Če naprava ne bo povezana, ne bo več mogla pošiljati ali prejemati sporočil.";
@@ -4724,10 +4760,10 @@
 "UNLINKED_WARNING" = "Naprava ni več povezana. Za nadaljevanje komunikacije ponovno povežite Signal s svojim telefonom.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Aplikaciji Signal ni uspelo odstraniti vaše naprave.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal ni mogel odstraniti vaše naprave.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Nepoimenovana naprava";
+"UNNAMED_DEVICE" = "Naprava nima imena";
 
 /* Pressing this button upins a thread */
 "UNPIN_ACTION" = "Unpin";
@@ -4838,7 +4874,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Status istovetnosti je bil spremenjen.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Pregled varnostnega števila";
+"VERIFY_PRIVACY" = "Prikaz varnostne številke";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Preglej varnostna števila";
@@ -4868,7 +4904,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Glasovno sporočilo";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dokončajte nastavitev na aplikaciji Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dokončajte nastavitev v programu Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Izbrisali ste to sporočilo.";
