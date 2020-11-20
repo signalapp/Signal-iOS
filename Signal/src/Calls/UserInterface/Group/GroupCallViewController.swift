@@ -466,6 +466,8 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
+        defer { updateCallUI() }
+
         guard reason != .deviceExplicitlyDisconnected else { return }
 
         let title: String

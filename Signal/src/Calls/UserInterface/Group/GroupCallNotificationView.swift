@@ -137,6 +137,13 @@ extension GroupCallNotificationView: CallObserver {
 
         updateActiveMembers()
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        AssertIsOnMainThread()
+        owsAssertDebug(call.isGroupCall)
+
+        updateActiveMembers()
+    }
 }
 
 private class BannerView: UIView {

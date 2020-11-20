@@ -262,6 +262,10 @@ extension CallControls: CallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         updateControls()
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        updateControls()
+    }
 }
 
 extension CallControls: CallAudioServiceDelegate {

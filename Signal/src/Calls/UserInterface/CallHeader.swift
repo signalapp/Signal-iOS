@@ -272,6 +272,15 @@ extension CallHeader: CallObserver {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        callDurationTimer?.invalidate()
+        callDurationTimer = nil
+
+        updateCallTitleLabel()
+        updateCallStatusLabel()
+        updateGroupMembersButton()
+    }
 }
 
 private class GroupMembersButton: UIButton {

@@ -515,6 +515,13 @@ extension GroupCallMemberSheet: CallObserver {
 
         updateMembers()
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        AssertIsOnMainThread()
+        owsAssertDebug(call.isGroupCall)
+
+        updateMembers()
+    }
 }
 
 private class GroupCallMemberCell: UITableViewCell {

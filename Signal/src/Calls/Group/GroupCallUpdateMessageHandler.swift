@@ -52,4 +52,8 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
             sendUpdateMessageForThread(groupThread)
         }
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        lastJoinStatus = false
+    }
 }
