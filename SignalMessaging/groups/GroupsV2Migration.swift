@@ -172,6 +172,9 @@ public extension GroupsV2Migration {
             // waking up from a VOIP push.
             return
         }
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
 
         DispatchQueue.global().async {
             var groupThreads = [TSGroupThread]()
