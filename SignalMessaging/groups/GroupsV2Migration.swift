@@ -288,6 +288,8 @@ public extension GroupsV2Migration {
                 Logger.warn("Error: \(error)")
             } else if case GroupsV2Error.localUserNotInGroup = error {
                 Logger.warn("Error: \(error)")
+            } else if case GroupsV2Error.groupCannotBeMigrated = error {
+                Logger.info("Error: \(error)")
             } else {
                 owsFailDebug("Error: \(error)")
             }
