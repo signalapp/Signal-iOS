@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if DEVICE_SUPPORTS_METAL
     DispatchMainThreadSafe(^{
-        if (UIDevice.currentDevice.isIPad || !self.isFullScreenVideo) {
+        if (UIDevice.currentDevice.isIPad || self.isGroupCall) {
             BOOL isLandscape = self.width > self.height;
             BOOL remoteIsLandscape = frame.rotation == RTCVideoRotation_180 || frame.rotation == RTCVideoRotation_0;
 

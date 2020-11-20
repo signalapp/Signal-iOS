@@ -165,4 +165,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
+@interface OWSGroupCallMessage (SDS)
+
+@property (nonatomic, getter=wasRead) BOOL read;
+@property (nonatomic, nullable) NSString *eraId;
+@property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
+@property (nonatomic, nullable) NSString *creatorUuid;
+@property (nonatomic, readonly) BOOL hasEnded;
+
+@end
+
 NS_ASSUME_NONNULL_END

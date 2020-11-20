@@ -10,6 +10,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSGroupCallMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -55,7 +56,7 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic) UIStackView *contentStackView;
 @property (nonatomic) UIView *cellBackgroundView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
-@property (nonatomic, nullable) SystemMessageAction *action;
+@property (nonatomic, nullable) SystemMessageAction *buttonAction;
 @property (nonatomic) MessageSelectionView *selectionView;
 @property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 
@@ -160,30 +161,12 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
-    [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
-    [self.button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
-
     TSInteraction *interaction = self.viewItem.interaction;
-
-    self.action = [self actionForInteraction:interaction];
-
     self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+    [self configureTitleLabelForInteraction:interaction];
+    [self configureButtonForInteraction:interaction];
 
-    [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGSize titleSize = [self titleSize];
-
-    if (self.action) {
-        [self.button setTitle:self.action.title forState:UIControlStateNormal];
-        UIFont *buttonFont = UIFont.ows_dynamicTypeFootnoteFont.ows_semibold;
-        self.button.titleLabel.font = buttonFont;
-        self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
-        self.button.hidden = NO;
-    } else {
-        self.button.accessibilityIdentifier = nil;
-        self.button.hidden = YES;
-    }
-    CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
-
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
 
     self.contentStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
@@ -376,6 +359,8 @@ typedef void (^SystemMessageActionBlock)(void);
 
         return [UIImage
             imageNamed:[NSString stringWithFormat:@"%@-%@-%@-16", offerTypeString, directionString, themeString]];
+    } else if ([interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+        return [UIImage imageNamed:Theme.isDarkThemeEnabled ? @"video-solid-16" : @"video-outline-16"];
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;
@@ -445,13 +430,12 @@ typedef void (^SystemMessageActionBlock)(void);
     return iconName;
 }
 
-- (void)applyTitleForInteraction:(TSInteraction *)interaction
-                           label:(UILabel *)label
+- (void)configureTitleLabelForInteraction:(TSInteraction *)interaction
 {
     OWSAssertDebug(interaction);
-    OWSAssertDebug(label);
+    OWSAssertDebug(self.titleLabel);
 
-    label.textColor = [self textColorForInteraction:interaction];
+    self.titleLabel.textColor = [self textColorForInteraction:interaction];
     NSMutableAttributedString *labelText = [NSMutableAttributedString new];
 
     if (self.viewItem.systemMessageGroupUpdates.count > 0) {
@@ -459,7 +443,7 @@ typedef void (^SystemMessageActionBlock)(void);
             NSString *_Nullable iconName = [self iconNameForGroupUpdate:update.type];
             if (iconName != nil) {
                 [labelText appendTemplatedImageNamed:iconName
-                                                font:label.font
+                                                font:self.titleLabel.font
                                      heightReference:ImageAttachmentHeightReferenceLineHeight];
                 [labelText append:@"  " attributes:@{}];
             } else {
@@ -487,7 +471,7 @@ typedef void (^SystemMessageActionBlock)(void);
         UIImage *_Nullable icon = [self iconForInteraction:interaction];
         if (icon) {
             [labelText appendImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-                              font:label.font
+                              font:self.titleLabel.font
                    heightReference:ImageAttachmentHeightReferenceLineHeight];
             [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"  "]];
         }
@@ -508,7 +492,26 @@ typedef void (^SystemMessageActionBlock)(void);
         }
     }
 
-    label.attributedText = labelText;
+    self.titleLabel.attributedText = labelText;
+}
+
+- (void)configureButtonForInteraction:(TSInteraction *)interaction
+{
+    self.buttonAction = [self actionForInteraction:interaction];
+
+    self.button.hidden = (self.buttonAction == nil);
+    self.button.accessibilityIdentifier = self.buttonAction.accessibilityIdentifier;
+    self.button.titleLabel.font = UIFont.ows_dynamicTypeFootnoteFont.ows_semibold;
+    [self.button setTitle:self.buttonAction.title forState:UIControlStateNormal];
+
+    if ([interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+        UIColor *buttonTitleColor = Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha90Color : UIColor.whiteColor;
+        [self.button setTitleColor:buttonTitleColor forState:UIControlStateNormal];
+        [self.button setBackgroundColor:UIColor.ows_accentGreenColor];
+    } else {
+        [self.button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
+        [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+    }
 }
 
 - (CGFloat)topVMargin
@@ -549,7 +552,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
     CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
 
-    [self applyTitleForInteraction:interaction label:self.titleLabel];
+    [self configureTitleLabelForInteraction:interaction];
     CGSize titleSize = [self titleSize];
     result.height += titleSize.height;
 
@@ -581,6 +584,8 @@ typedef void (^SystemMessageActionBlock)(void);
         return [self actionForInfoMessage:(TSInfoMessage *)interaction];
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         return [self actionForCall:(TSCall *)interaction];
+    } else if ([interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+        return [self actionForGroupCall:(OWSGroupCallMessage *)interaction];
     } else {
         OWSFailDebug(@"Tap for system messages of unknown type: %@", [interaction class]);
         return nil;
@@ -774,6 +779,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForCall:(TSCall *)call
 {
+    // TODO: Respect -canCall from ConversationViewController
     OWSAssertDebug(call);
 
     __weak OWSSystemMessageCell *weakSelf = self;
@@ -785,29 +791,51 @@ typedef void (^SystemMessageActionBlock)(void);
         case RPRecentCallTypeIncomingAnsweredElsewhere:
         case RPRecentCallTypeIncomingDeclinedElsewhere:
         case RPRecentCallTypeIncomingBusyElsewhere:
+            // If delegate is nil, include the action. This way we always oversize instead of undersize.
             if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
                 return nil;
             }
             return
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
-                                               block:^{
-                                                   [weakSelf.delegate handleCallTap:call];
-                                               }
+                                               block:^{ [weakSelf.delegate handleIndividualCallTap:call]; }
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
+            // If delegate is nil, include the action. This way we always oversize instead of undersize.
             if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
                 return nil;
             }
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
-                                                  block:^{
-                                                      [weakSelf.delegate handleCallTap:call];
-                                                  }
+                                                  block:^{ [weakSelf.delegate handleIndividualCallTap:call]; }
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_again")];
         case RPRecentCallTypeOutgoingIncomplete:
         case RPRecentCallTypeIncomingIncomplete:
             return nil;
+    }
+}
+
+- (nullable SystemMessageAction *)actionForGroupCall:(OWSGroupCallMessage *)groupCallMessage
+{
+    // Assume the current thread supports calling if we have no delegate. This ensures we always
+    // overestimate cell measurement in cases where the current thread doesn't support calling.
+    BOOL isCallingSupported = !self.delegate || self.delegate.isCallingSupported;
+    BOOL isCallActive = (!groupCallMessage.hasEnded && groupCallMessage.joinedMemberAddresses.count > 0);
+
+    if (isCallingSupported && isCallActive) {
+        NSString *currentCallThreadId = self.callService.currentCall.thread.uniqueId;
+        BOOL isCurrentCallForThread = [currentCallThreadId isEqualToString:self.viewItem.thread.uniqueId];
+
+        NSString *joinTitle = NSLocalizedString(@"GROUP_CALL_JOIN_BUTTON", "Button to join an ongoing group call");
+        NSString *returnTitle = NSLocalizedString(@"CALL_RETURN_BUTTON", "Button to return to the current call");
+        NSString *actionTitle = isCurrentCallForThread ? returnTitle : joinTitle;
+
+        __weak typeof(self) wSelf = self;
+        return [SystemMessageAction actionWithTitle:actionTitle
+                                              block:^{ [wSelf.delegate handleGroupCallTap]; }
+                            accessibilityIdentifier:actionTitle];
+    } else {
+        return nil;
     }
 }
 
@@ -836,10 +864,10 @@ typedef void (^SystemMessageActionBlock)(void);
         } else {
             [self.delegate conversationCell:self didSelectViewItem:self.viewItem];
         }
-    } else if (!self.action.block) {
+    } else if (!self.buttonAction.block) {
         OWSFailDebug(@"Missing action");
     } else {
-        self.action.block();
+        self.buttonAction.block();
     }
 }
 
@@ -855,7 +883,7 @@ typedef void (^SystemMessageActionBlock)(void);
 {
     [super prepareForReuse];
 
-    self.action = nil;
+    self.buttonAction = nil;
     self.selectionView.alpha = 1.0;
     self.selected = NO;
 }

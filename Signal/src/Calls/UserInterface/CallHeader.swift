@@ -26,7 +26,6 @@ class CallHeader: UIView {
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
     private let groupMembersButton = GroupMembersButton()
-    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
 
     private let call: SignalCall
     private weak var delegate: CallHeaderDelegate!
@@ -98,8 +97,6 @@ class CallHeader: UIView {
         addShadow(to: callTitleLabel)
 
         vStack.addArrangedSubview(callTitleLabel)
-        callTitleLabel.setContentHuggingVerticalHigh()
-        callTitleLabel.setCompressionResistanceHigh()
 
         // Status label
 
@@ -109,8 +106,6 @@ class CallHeader: UIView {
         addShadow(to: callStatusLabel)
 
         vStack.addArrangedSubview(callStatusLabel)
-        callStatusLabel.setContentHuggingVerticalHigh()
-        callStatusLabel.setCompressionResistanceHigh()
 
         // Group members button
 
@@ -122,7 +117,6 @@ class CallHeader: UIView {
         addShadow(to: groupMembersButton)
 
         hStack.addArrangedSubview(groupMembersButton)
-        hStack.addArrangedSubview(groupMembersButtonPlaceholder)
 
         updateCallTitleLabel()
         updateCallStatusLabel()
@@ -161,7 +155,7 @@ class CallHeader: UIView {
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.sortedRemoteDeviceStates.count > 1
+        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.remoteDeviceStates.count > 1
     }
 
     func updateCallTitleLabel() {
@@ -175,14 +169,11 @@ class CallHeader: UIView {
         } else {
             let memberNames: [String] = databaseStorage.uiRead { transaction in
                 if self.call.groupCall.localDeviceState.joinState == .joined {
-                    return self.call.groupCall.sortedRemoteDeviceStates
+                    return self.call.groupCall.remoteDeviceStates.sortedByAddedTime
                         .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
                 } else {
-                    // TODO: For now, we can only use `joinedGroupMembers` before you join.
-                    // We might be able to just always use it here.
-                    return self.call.groupCall.joinedGroupMembers
-                        .filter { !SignalServiceAddress(uuid: $0).isLocalAddress }
-                        .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
+                    return self.call.groupCall.peekInfo?.joinedMembers
+                        .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) } ?? []
                 }
             }
 
@@ -212,13 +203,19 @@ class CallHeader: UIView {
                 case 2:
                     let formatString = NSLocalizedString(
                         "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are two people in the group call. Embeds {member name}"
+                        comment: "Text explaining that there are two people in the group call. Embeds two {member name}s"
+                    )
+                    callTitleText = String(format: formatString, memberNames[0], memberNames[1])
+                case 3:
+                    let formatString = NSLocalizedString(
+                        "GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
+                        comment: "Text explaining that there are three people in the group call. Embeds two {member name}s"
                     )
                     callTitleText = String(format: formatString, memberNames[0], memberNames[1])
                 default:
                     let formatString = NSLocalizedString(
                         "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
+                        comment: "Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2"
                     )
                     callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
                 }
@@ -231,10 +228,8 @@ class CallHeader: UIView {
 
     func updateGroupMembersButton() {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
-        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : call.groupCall.joinedGroupMembers.count
+        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : Int(call.groupCall.peekInfo?.deviceCount ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
-        groupMembersButton.isHidden = remoteMemberCount < 2
-        groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
     required init?(coder: NSCoder) {
@@ -243,12 +238,6 @@ class CallHeader: UIView {
 }
 
 extension CallHeader: CallObserver {
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
-
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
 
@@ -273,7 +262,7 @@ extension CallHeader: CallObserver {
         updateCallStatusLabel()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }
@@ -282,10 +271,6 @@ extension CallHeader: CallObserver {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 }
 
 private class GroupMembersButton: UIButton {
@@ -310,6 +295,8 @@ private class GroupMembersButton: UIButton {
         countLabel.autoPinEdge(.leading, to: .trailing, of: iconImageView, withOffset: 5)
         countLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
         countLabel.autoAlignAxis(.horizontal, toSameAxisOf: iconImageView)
+        countLabel.setContentHuggingHorizontalHigh()
+        countLabel.setCompressionResistanceHorizontalHigh()
     }
 
     func updateMemberCount(_ count: Int) {

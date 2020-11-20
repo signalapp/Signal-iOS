@@ -15,10 +15,25 @@ public protocol CallObserver: class {
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall)
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall)
-    func groupCallJoinedMembersChanged(_ call: SignalCall)
+    func groupCallPeekChanged(_ call: SignalCall)
     func groupCallRequestMembershipProof(_ call: SignalCall)
     func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
+}
+
+public extension CallObserver {
+    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
+    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
+    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
+    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
+    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
+
+    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+    func groupCallPeekChanged(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 }
 
 @objc
@@ -77,7 +92,8 @@ public class SignalCall: NSObject, CallManagerCallReference {
         didSet { AssertIsOnMainThread() }
     }
 
-    public let thread: TSThread?
+    @objc
+    public let thread: TSThread
 
     public var error: CallError?
     public enum CallError: Error {
@@ -117,6 +133,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
         guard let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
             groupId: thread.groupModel.groupId,
+            sfuUrl: TSConstants.sfuURL,
             videoCaptureController: videoCaptureController
         ) else {
             owsFailDebug("Failed to create group call")
@@ -208,50 +225,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
         return -connectedDate.timeIntervalSinceNow
     }
-
-    // MARK: - Remote Video Views
-    private var groupCallVideoViews = [RemoteDeviceState: [Weak<RemoteVideoView>]]()
-
-    func registerRemoteVideoView(_ videoView: RemoteVideoView, for device: RemoteDeviceState) {
-        AssertIsOnMainThread()
-        var videoViews = groupCallVideoViews[device] ?? []
-        if !videoViews.contains(where: { $0.value == videoView }) {
-            videoViews.append(Weak(value: videoView))
-        }
-        groupCallVideoViews[device] = videoViews.filter { $0.value != nil }
-
-        updateRenderedResolutions()
-    }
-
-    func unregisterRemoteVideoView(_ videoView: RemoteVideoView, for device: RemoteDeviceState) {
-        AssertIsOnMainThread()
-        let videoViews = groupCallVideoViews[device] ?? []
-        groupCallVideoViews[device] = videoViews.filter { $0.value != nil && $0.value != videoView }
-
-        updateRenderedResolutions()
-    }
-
-    func updateRenderedResolutions() {
-        AssertIsOnMainThread()
-
-        guard let groupCall = groupCall else {
-            return owsFailDebug("Tried to update resolutions for individual call")
-        }
-
-        groupCall.updateRenderedResolutions(resolutions: groupCallVideoViews.map { device, views -> RenderedResolution in
-            let renderedSize = views.reduce(into: CGSize.zero) { size, videoView in
-                guard let videoView = videoView.value else { return }
-                size = CGSize(width: max(videoView.width, size.width), height: max(videoView.height, size.height))
-            }
-
-            return RenderedResolution(
-                demuxId: device.demuxId,
-                width: UInt16(renderedSize.width),
-                height: UInt16(renderedSize.height),
-                framerate: nil
-            )
-        })
-    }
 }
 
 extension SignalCall: GroupCallDelegate {
@@ -271,8 +244,8 @@ extension SignalCall: GroupCallDelegate {
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
-    public func groupCall(onJoinedMembersChanged groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallJoinedMembersChanged(self) }
+    public func groupCall(onPeekChanged groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 
     public func groupCall(requestMembershipProof groupCall: GroupCall) {

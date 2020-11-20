@@ -15,11 +15,6 @@ public protocol CallViewControllerWindowReference: class {
 }
 
 @objc
-public protocol ReturnToCallViewControllerDelegate: class {
-    func returnToCallWasTapped(_ viewController: ReturnToCallViewController)
-}
-
-@objc
 public class ReturnToCallViewController: UIViewController {
 
     @objc
@@ -38,9 +33,6 @@ public class ReturnToCallViewController: UIViewController {
             return nineBySixteen
         }
     }
-
-    @objc
-    public weak var delegate: ReturnToCallViewControllerDelegate?
 
     private weak var callViewController: CallViewControllerWindowReference?
 
@@ -77,6 +69,13 @@ public class ReturnToCallViewController: UIViewController {
         ).build()
 
         animatePipPresentation(snapshot: callViewSnapshot)
+    }
+
+    @objc
+    public func resignCall() {
+        callViewController?.localVideoViewReference.removeFromSuperview()
+        callViewController?.remoteVideoViewReference.removeFromSuperview()
+        callViewController = nil
     }
 
     private lazy var avatarView = AvatarImageView()
@@ -212,10 +211,7 @@ public class ReturnToCallViewController: UIViewController {
 
     @objc
     private func handleTap(sender: UITapGestureRecognizer) {
-        callViewController?.localVideoViewReference.removeFromSuperview()
-        callViewController?.remoteVideoViewReference.removeFromSuperview()
-        callViewController = nil
-        self.delegate?.returnToCallWasTapped(self)
+        OWSWindowManager.shared.returnToCallView()
     }
 
     // MARK: Orientation

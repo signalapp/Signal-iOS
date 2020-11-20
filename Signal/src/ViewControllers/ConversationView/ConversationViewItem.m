@@ -1331,8 +1331,16 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             }
         }
         case OWSInteractionType_Call: {
-            TSCall *call = (TSCall *)self.interaction;
-            return [call previewTextWithTransaction:transaction];
+            if ([self.interaction isKindOfClass:[OWSGroupCallMessage class]]) {
+                OWSGroupCallMessage *groupCallMessage = (OWSGroupCallMessage *)self.interaction;
+                return [groupCallMessage systemTextWithTransaction:transaction];
+            } else if ([self.interaction isKindOfClass:[TSCall class]]) {
+                TSCall *call = (TSCall *)self.interaction;
+                return [call previewTextWithTransaction:transaction];
+            } else {
+                OWSFailDebug(@"Unexpected call type");
+                return nil;
+            }
         }
         default:
             OWSFailDebug(@"not a system message.");

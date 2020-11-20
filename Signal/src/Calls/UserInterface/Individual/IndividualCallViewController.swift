@@ -347,7 +347,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         remoteVideoView.isUserInteractionEnabled = false
         remoteVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "remoteVideoView")
         remoteVideoView.isHidden = true
-        remoteVideoView.isFullScreenVideo = true
+        remoteVideoView.isGroupCall = false
         view.addSubview(remoteVideoView)
 
         // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
@@ -1174,13 +1174,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         AssertIsOnMainThread()
         updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.individualCall.remoteVideoTrack)
     }
-
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
     // MARK: - CallAudioServiceDelegate
 

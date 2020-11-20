@@ -32,19 +32,24 @@ class GroupCallNotificationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var hasJoined = false
     private func updateActiveMembers() {
         let newActiveMembers = Set(call.groupCall.remoteDeviceStates.values.map {
             ActiveMember(demuxId: $0.demuxId, uuid: $0.userId)
         })
 
-        let joinedMembers = newActiveMembers.subtracting(activeMembers)
-        let leftMembers = activeMembers.subtracting(newActiveMembers)
+        if hasJoined {
+            let joinedMembers = newActiveMembers.subtracting(activeMembers)
+            let leftMembers = activeMembers.subtracting(newActiveMembers)
 
-        membersPendingJoinNotification.subtract(leftMembers)
-        membersPendingJoinNotification.formUnion(joinedMembers)
+            membersPendingJoinNotification.subtract(leftMembers)
+            membersPendingJoinNotification.formUnion(joinedMembers)
 
-        membersPendingLeaveNotification.subtract(joinedMembers)
-        membersPendingLeaveNotification.formUnion(leftMembers)
+            membersPendingLeaveNotification.subtract(joinedMembers)
+            membersPendingLeaveNotification.formUnion(leftMembers)
+        } else {
+            hasJoined = call.groupCall.localDeviceState.joinState == .joined
+        }
 
         activeMembers = newActiveMembers
 
@@ -74,7 +79,20 @@ class GroupCallNotificationView: UIView {
         isPresentingNotification = true
 
         addSubview(bannerView)
-        bannerView.autoPinWidthToSuperviewMargins()
+        bannerView.autoHCenterInSuperview()
+
+        // Prefer to be full width, but don't exceed the maximum width
+        bannerView.autoSetDimension(.width, toSize: 512, relation: .lessThanOrEqual)
+        bannerView.autoMatch(
+            .width,
+            to: .width,
+            of: self,
+            withOffset: -(layoutMargins.left + layoutMargins.right),
+            relation: .lessThanOrEqual
+        )
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            bannerView.autoPinWidthToSuperviewMargins()
+        }
 
         let onScreenConstraint = bannerView.autoPinEdge(toSuperviewMargin: .top)
         onScreenConstraint.isActive = false
@@ -106,8 +124,6 @@ class GroupCallNotificationView: UIView {
 }
 
 extension GroupCallNotificationView: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
-
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
@@ -115,23 +131,12 @@ extension GroupCallNotificationView: CallObserver {
         updateActiveMembers()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
         updateActiveMembers()
     }
-
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
 }
 
 private class BannerView: UIView {
@@ -242,10 +247,13 @@ private class BannerView: UIView {
 
         let label = UILabel()
         hStack.addArrangedSubview(label)
+        label.setCompressionResistanceHorizontalHigh()
         label.numberOfLines = 0
         label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         label.textColor = .ows_white
         label.text = actionText
+
+        hStack.addArrangedSubview(.hStretchingSpacer())
     }
 
     required init?(coder: NSCoder) {

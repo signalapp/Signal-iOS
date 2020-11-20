@@ -702,6 +702,7 @@ typedef enum : NSUInteger {
     }
     [self ensureBottomViewType];
     [self updateInputToolbarLayout];
+    [self refreshCallState];
 
     // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
     // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
@@ -1083,6 +1084,9 @@ typedef enum : NSUInteger {
         case ConversationViewActionVideoCall:
             [self startIndividualVideoCall];
             break;
+        case ConversationViewActionGroupCallLobby:
+            [self showGroupCallLobby];
+            break;
     }
 
     // Clear the "on open" state after the view has been presented.
@@ -1281,12 +1285,21 @@ typedef enum : NSUInteger {
             NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
             if ([self canCall]) {
                 if (self.isGroupConversation) {
-                    // TODO: Show different state if the group call is started.
-                    UIBarButtonItem *videoCallButton =
-                        [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:self
-                                                        action:@selector(showGroupCallLobby)];
+                    UIBarButtonItem *videoCallButton = [[UIBarButtonItem alloc] init];
+
+                    if (self.threadViewModel.groupCallInProgress) {
+                        OWSJoinGroupCallPill *pill = [[OWSJoinGroupCallPill alloc] init];
+                        [pill addTarget:self
+                                 action:@selector(showGroupCallLobby)
+                       forControlEvents:UIControlEventTouchUpInside];
+                        [videoCallButton setCustomView:pill];
+                    } else {
+                        UIImage *image = [Theme iconImage:ThemeIconVideoCall];
+                        [videoCallButton setImage:image];
+                        videoCallButton.target = self;
+                        videoCallButton.action = @selector(showGroupCallLobby);
+                    }
+
                     videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
                     videoCallButton.accessibilityLabel
                         = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
@@ -1501,6 +1514,14 @@ typedef enum : NSUInteger {
     }
 
     return YES;
+}
+
+- (void)refreshCallState
+{
+    if (self.thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        [self.callService peekCallAndUpdateThread:groupThread];
+    }
 }
 
 #pragma mark - Dynamic Text
@@ -1873,7 +1894,7 @@ typedef enum : NSUInteger {
     [self presentActionSheet:actionSheet];
 }
 
-- (void)handleCallTap:(TSCall *)call
+- (void)handleIndividualCallTap:(TSCall *)call
 {
     OWSAssertDebug(call);
 
@@ -1910,6 +1931,15 @@ typedef enum : NSUInteger {
     [self.inputToolbar clearDesiredKeyboard];
     [self dismissKeyBoard];
     [self presentActionSheet:alert];
+}
+
+- (void)handleGroupCallTap
+{
+    if ([self.callService.currentCall.thread.uniqueId isEqualToString:self.thread.uniqueId]) {
+        [OWSWindowManager.shared returnToCallView];
+    } else {
+        [self showGroupCallLobby];
+    }
 }
 
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
@@ -2253,6 +2283,11 @@ typedef enum : NSUInteger {
 - (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell
 {
     return self.threadViewModel.hasPendingMessageRequest;
+}
+
+- (BOOL)isCallingSupported
+{
+    return [self canCall];
 }
 
 - (BOOL)isShowingSelectionUI

@@ -104,6 +104,10 @@ CREATE
             ,"bodyRanges" BLOB
             ,"offerType" INTEGER
             ,"serverDeliveryTimestamp" INTEGER
+            ,"eraId" TEXT
+            ,"hasEnded" BOOLEAN
+            ,"creatorUuid" TEXT
+            ,"joinedMemberUuids" BLOB
         )
 ;
 
@@ -933,5 +937,13 @@ CREATE
     INDEX "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible"
         ON "model_TSThread"("isMarkedUnread"
     ,"shouldThreadBeVisible"
+)
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"hasEnded"
+    ,"recordType"
 )
 ;

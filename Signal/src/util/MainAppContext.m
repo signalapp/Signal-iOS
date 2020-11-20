@@ -313,7 +313,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (CGRect)frame
 {
-    return UIApplication.sharedApplication.keyWindow.frame;
+    return self.mainWindow.frame;
 }
 
 - (UIInterfaceOrientation)interfaceOrientation

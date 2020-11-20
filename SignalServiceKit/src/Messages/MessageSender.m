@@ -756,7 +756,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         TSContactThread *contactThread = (TSContactThread *)thread;
         // In the "self-send" aka "Note to Self" special case, we only
         // need to send a sync message with a delivery receipt.
-        if (contactThread.contactAddress.isLocalAddress && !message.isSyncMessage) {
+        if (contactThread.contactAddress.isLocalAddress && !message.isSyncMessage && !message.isCallMessage) {
             // Send to self.
             OWSAssertDebug(sendInfo.recipients.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
@@ -1054,8 +1054,8 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     if (messageSend.isLocalAddress) {
-        OWSAssertDebug([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
-        // Messages sent to the "local number" should be sync messages.
+        OWSAssertDebug(message.isSyncMessage || message.isCallMessage);
+        // Messages sent to the "local number" should be sync messages or call messages.
         //
         // We can skip sending sync messages if we know that we have no linked
         // devices. However, we need to be sure to handle the case where the
@@ -1107,7 +1107,6 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
         if (!mayHaveLinkedDevices && !hasDeviceMessages) {
             OWSLogInfo(@"Ignoring sync message without secondary devices: %@", [message class]);
-            OWSAssertDebug([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // This emulates the completion logic of an actual successful send (see below).

@@ -326,10 +326,10 @@ extension CallUIAdaptee {
 
     // MARK: - CallServiceObserver
 
-    internal func didUpdateCall(call: SignalCall?) {
+    internal func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         AssertIsOnMainThread()
 
-        guard let call = call, call.isIndividualCall else { return }
+        guard let call = newValue, call.isIndividualCall else { return }
 
         callService.audioService.handleRinging = adaptee(for: call).hasManualRinger
     }

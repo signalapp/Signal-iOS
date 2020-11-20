@@ -10,6 +10,7 @@ private protocol TSConstantsProtocol: class {
     var contactDiscoveryURL: String { get }
     var keyBackupURL: String { get }
     var storageServiceURL: String { get }
+    var sfuURL: String { get }
     var kUDTrustRoot: String { get }
 
     var censorshipReflectorHost: String { get }
@@ -63,6 +64,8 @@ public class TSConstants: NSObject {
     public static var keyBackupURL: String { return shared.keyBackupURL }
     @objc
     public static var storageServiceURL: String { return shared.storageServiceURL }
+    @objc
+    public static var sfuURL: String { return shared.sfuURL }
     @objc
     public static var kUDTrustRoot: String { return shared.kUDTrustRoot }
 
@@ -158,6 +161,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let contactDiscoveryURL = "https://api.directory.signal.org"
     public let keyBackupURL = "https://api.backup.signal.org"
     public let storageServiceURL = "https://storage.signal.org"
+    public let sfuURL = "https://sfu.voip.signal.org"
     public let kUDTrustRoot = "BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
 
     public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
@@ -204,6 +208,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let contactDiscoveryURL = "https://api-staging.directory.signal.org"
     public let keyBackupURL = "https://api-staging.backup.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
+    public let sfuURL = "https://sfu.voip.signal.org"
     public let kUDTrustRoot = "BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
 
     public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"

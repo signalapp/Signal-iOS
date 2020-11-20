@@ -7,6 +7,7 @@ import SignalRingRTC
 
 protocol GroupCallVideoOverflowDelegate: class {
     var firstOverflowMemberIndex: Int { get }
+    func updateVideoOverflowTrailingConstraint()
 }
 
 class GroupCallVideoOverflow: UICollectionView {
@@ -16,6 +17,8 @@ class GroupCallVideoOverflow: UICollectionView {
     class var itemHeight: CGFloat {
         return UIDevice.current.isIPad ? 96 : 72
     }
+
+    private var hasInitialized = false
 
     init(call: SignalCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
@@ -41,10 +44,12 @@ class GroupCallVideoOverflow: UICollectionView {
 
         autoSetDimension(.height, toSize: Self.itemHeight)
 
-        register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
+        register(GroupCallVideoOverflowCell.self, forCellWithReuseIdentifier: GroupCallVideoOverflowCell.reuseIdentifier)
         dataSource = self
+        self.delegate = self
 
         call.addObserverAndSyncState(observer: self)
+        hasInitialized = true
     }
 
     required init?(coder: NSCoder) {
@@ -57,6 +62,10 @@ class GroupCallVideoOverflow: UICollectionView {
     private var hadVisibleCells = false
     override func reloadData() {
         guard !isAnimating else { return }
+
+        defer {
+            if hasInitialized { overflowDelegate?.updateVideoOverflowTrailingConstraint() }
+        }
 
         let hasVisibleCells = overflowedRemoteDeviceStates.count > 0
 
@@ -77,16 +86,31 @@ class GroupCallVideoOverflow: UICollectionView {
     }
 }
 
+extension GroupCallVideoOverflow: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoOverflowCell else { return }
+        cell.cleanupVideoViews()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoOverflowCell else { return }
+        guard let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row] else {
+            return owsFailDebug("missing member address")
+        }
+        cell.configureRemoteVideo(device: remoteDevice)
+    }
+}
+
 extension GroupCallVideoOverflow: UICollectionViewDataSource {
     var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
-        let joinedRemoteDeviceStates = call.groupCall.sortedRemoteDeviceStates
+        let joinedRemoteDeviceStates = call.groupCall.remoteDeviceStates.sortedBySpeakerTime
 
         guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
 
         // We reverse this as we're rendering in the inverted direction.
-        return Array(joinedRemoteDeviceStates[firstOverflowMemberIndex..<joinedRemoteDeviceStates.count]).reversed()
+        return Array(joinedRemoteDeviceStates[firstOverflowMemberIndex..<joinedRemoteDeviceStates.count]).sortedByAddedTime.reversed()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -95,9 +119,9 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier,
+            withReuseIdentifier: GroupCallVideoOverflowCell.reuseIdentifier,
             for: indexPath
-        ) as! GroupCallVideoGridCell
+        ) as! GroupCallVideoOverflowCell
 
         guard let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
@@ -120,21 +144,41 @@ extension GroupCallVideoOverflow: CallObserver {
         reloadData()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
         reloadData()
     }
+}
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+class GroupCallVideoOverflowCell: UICollectionViewCell {
+    static let reuseIdentifier = "GroupCallVideoOverflowCell"
+    private let memberView = GroupCallRemoteMemberView(mode: .videoOverflow)
 
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
+        contentView.addSubview(memberView)
+        memberView.autoPinEdgesToSuperviewEdges()
+
+        contentView.layer.cornerRadius = 10
+        contentView.clipsToBounds = true
+    }
+
+    func configure(call: SignalCall, device: RemoteDeviceState) {
+        memberView.configure(call: call, device: device)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func cleanupVideoViews() {
+        memberView.cleanupVideoViews()
+    }
+
+    func configureRemoteVideo(device: RemoteDeviceState) {
+        memberView.configureRemoteVideo(device: device)
+    }
 }

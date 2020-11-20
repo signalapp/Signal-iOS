@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface ConversationViewModel () <UIDatabaseSnapshotDelegate>
+@interface ConversationViewModel () <UIDatabaseSnapshotDelegate, OWSCallServiceObserver>
 
 @property (nonatomic, weak) id<ConversationViewModelDelegate> delegate;
 
@@ -241,6 +241,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSProfileManager shared];
 }
 
+- (CallService *)callService
+{
+    return AppEnvironment.shared.callService;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -265,6 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
+    [self.callService addObserverAndSyncStateWithObserver:self];
 }
 
 - (void)profileWhitelistDidChange:(NSNotification *)notification
@@ -326,6 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
+    [self.callService removeObserver:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -1279,6 +1286,13 @@ NS_ASSUME_NONNULL_BEGIN
                 viewItem.senderProfileName = [self.profileManager fullNameForAddress:infoMessage.profileChangeAddress
                                                                          transaction:transaction];
             }
+        } else if (interactionType == OWSInteractionType_Call) {
+            NSString *threadId = self.thread.uniqueId;
+            NSString *activeCallThreadId = self.callService.currentCall.thread.uniqueId;
+            BOOL isAnotherThreadInCall = activeCallThreadId && ![threadId isEqualToString:activeCallThreadId];
+
+            BOOL wasCollapsed = viewItem.shouldCollapseSystemMessageAction;
+            viewItem.shouldCollapseSystemMessageAction = wasCollapsed || isAnotherThreadInCall;
         }
 
         uint64_t collapseCutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:self.collapseCutoffDate];
@@ -1492,6 +1506,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldShowThreadDetails
 {
     return !self.canLoadOlderItems;
+}
+
+#pragma mark - <OWSCallServiceObserver>
+
+- (void)didUpdateCallFrom:(nullable SignalCall *)oldValue to:(nullable SignalCall *)newValue
+{
+    // If the call state changed for the current thread, we may want to hide the Call action.
+    // When registering, CallObserver sends the currentCall synchronously. Since we register
+    // during -viewDidLoad, ordering gets a bit messed up. It's okay if we async for a bit later.
+    dispatch_async(dispatch_get_main_queue(), ^{ [self updateForTransientItems]; });
 }
 
 @end

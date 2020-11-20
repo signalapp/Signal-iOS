@@ -59,6 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"");
 }
 
+- (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)update
+                             forThread:(TSGroupThread *)groupThread
+               serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
+{
+    OWSLogInfo(@"");
+}
+
 @end
 
 #endif

@@ -7,11 +7,12 @@ import SignalRingRTC
 import PromiseKit
 
 // All Observer methods will be invoked from the main thread.
+@objc(OWSCallServiceObserver)
 protocol CallServiceObserver: class {
     /**
      * Fired whenever the call changes.
      */
-    func didUpdateCall(call: SignalCall?)
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?)
 }
 
 @objc
@@ -36,6 +37,8 @@ public final class CallService: NSObject {
 
     @objc
     public let individualCallService = IndividualCallService()
+    let groupCallMessageHandler = GroupCallUpdateMessageHandler()
+    let groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
 
     lazy private(set) var audioService = CallAudioService()
 
@@ -56,14 +59,12 @@ public final class CallService: NSObject {
             // Prevent device from sleeping while we have an active call.
             if oldValue != newValue {
                 if let oldValue = oldValue {
-                    oldValue.removeObserver(audioService)
                     DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
                 }
 
                 if let newValue = newValue {
                     assert(calls.contains(newValue))
                     DeviceSleepManager.shared.addBlock(blockObject: newValue)
-                    newValue.addObserverAndSyncState(observer: audioService)
 
                     if newValue.isIndividualCall { individualCallService.startCallTimer() }
                 } else {
@@ -74,7 +75,7 @@ public final class CallService: NSObject {
             Logger.debug("\(oldValue as Optional) -> \(newValue as Optional)")
 
             for observer in observers.elements {
-                observer.didUpdateCall(call: newValue)
+                observer.didUpdateCall(from: oldValue, to: newValue)
             }
         }
         get {
@@ -108,6 +109,8 @@ public final class CallService: NSObject {
 
         SwiftSingletons.register(self)
         callManager.delegate = self
+        addObserverAndSyncState(observer: groupCallMessageHandler)
+        addObserverAndSyncState(observer: groupCallRemoteVideoManager)
 
         NotificationCenter.default.addObserver(
             self,
@@ -136,16 +139,18 @@ public final class CallService: NSObject {
     private var observers = WeakArray<CallServiceObserver>()
 
     // The observer-related methods should be invoked on the main thread.
+    @objc
     func addObserverAndSyncState(observer: CallServiceObserver) {
         AssertIsOnMainThread()
 
         observers.append(observer)
 
         // Synchronize observer with current call state
-        observer.didUpdateCall(call: currentCall)
+        observer.didUpdateCall(from: nil, to: currentCall)
     }
 
     // The observer-related methods should be invoked on the main thread.
+    @objc
     func removeObserver(_ observer: CallServiceObserver) {
         AssertIsOnMainThread()
         observers.removeAll { $0 === observer }
@@ -214,6 +219,7 @@ public final class CallService: NSObject {
         switch call.mode {
         case .group(let groupCall):
             groupCall.isOutgoingAudioMuted = isLocalAudioMuted
+            call.groupCall(onLocalDeviceStateChanged: groupCall)
         case .individual(let individualCall):
             individualCall.isMuted = isLocalAudioMuted
             individualCallService.ensureAudioState(call: call)
@@ -272,6 +278,7 @@ public final class CallService: NSObject {
         switch call.mode {
         case .group(let groupCall):
             groupCall.isOutgoingVideoMuted = isLocalVideoMuted
+            call.groupCall(onLocalDeviceStateChanged: groupCall)
         case .individual(let individualCall):
             individualCall.hasLocalVideo = !isLocalVideoMuted
         }
@@ -347,6 +354,13 @@ public final class CallService: NSObject {
         case .group(let groupCall):
             groupCall.leave()
             groupCall.disconnect()
+
+            // Kick off a peek now that we've disconnected to get an updated participant state.
+            if let thread = call.thread as? TSGroupThread {
+                peekCallAndUpdateThread(thread)
+            } else {
+                owsFailDebug("Invalid thread type")
+            }
         }
 
         // Apparently WebRTC will sometimes disable device orientation notifications.
@@ -496,15 +510,20 @@ public final class CallService: NSObject {
     // MARK: -
 
     private func updateGroupMembersForCurrentCallIfNecessary() {
-        guard let call = currentCall, call.isGroupCall else { return }
+        guard let call = currentCall, call.isGroupCall,
+              let groupThread = call.thread as? TSGroupThread,
+              let memberInfo = groupMemberInfo(for: groupThread) else { return }
+        call.groupCall.updateGroupMembers(members: memberInfo)
+    }
 
-        guard let groupThread = call.thread as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2,
+    private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
+        guard let groupModel = thread.groupModel as? TSGroupModelV2,
               let groupV2Params = try? groupModel.groupV2Params() else {
-            return owsFailDebug("Unexpected group thread.")
+            owsFailDebug("Unexpected group thread.")
+            return nil
         }
 
-        call.groupCall.updateGroupMembers(members: groupThread.groupMembership.fullMembers.compactMap {
+        return thread.groupMembership.fullMembers.compactMap {
             guard let uuid = $0.uuid else {
                 owsFailDebug("Skipping group member, missing uuid")
                 return nil
@@ -516,7 +535,23 @@ public final class CallService: NSObject {
             }
 
             return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
-        })
+        }
+    }
+
+    private func fetchGroupMembershipProof(for thread: TSGroupThread) -> Promise<Data> {
+        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("unexpectedly missing group model")
+            return Promise(error: OWSAssertionError("Invalid group"))
+        }
+
+        return firstly {
+            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel)
+        }.map(on: .main) { (credential) -> Data in
+            guard let tokenData = credential.token?.data(using: .utf8) else {
+                throw OWSAssertionError("Invalid credential")
+            }
+            return tokenData
+        }
     }
 }
 
@@ -531,10 +566,6 @@ extension CallService: CallObserver {
         updateIsVideoEnabled()
     }
 
-    public func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    public func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
-    public func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-
     public func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallLocalDeviceStateChanged")
@@ -544,7 +575,17 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    public func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    public func groupCallPeekChanged(_ call: SignalCall) {
+        guard let thread = call.thread as? TSGroupThread else {
+            owsFailDebug("Invalid thread for call: \(call)")
+            return
+        }
+        guard let peekInfo = call.groupCall.peekInfo else {
+            Logger.warn("No peek info for call: \(call)")
+            return
+        }
+        updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
+    }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
@@ -552,23 +593,16 @@ extension CallService: CallObserver {
 
         guard call === currentCall else { return cleanupStaleCall(call) }
 
-        guard let groupThread = call.thread as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+        guard let groupThread = call.thread as? TSGroupThread else {
             return owsFailDebug("unexpectedly missing thread")
         }
 
-        do {
-            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel).done(on: .main) { credential in
-                guard let tokenData = credential.token?.data(using: .utf8) else {
-                    throw OWSAssertionError("Invalid credential")
-                }
-
-                call.groupCall.updateMembershipProof(proof: tokenData)
-            }.catch { error in
-                owsFailDebug("Failed to fetch group call credential \(error)")
-            }
-        } catch {
-            owsFailDebug("Failed to fetch group call credential \(error)")
+        firstly {
+            self.fetchGroupMembershipProof(for: groupThread)
+        }.done(on: .main) { proof in
+            call.groupCall.updateMembershipProof(proof: proof)
+        }.catch(on: .main) { error in
+            owsFailDebug("Failed to fetch group call credentials \(error)")
         }
     }
 
@@ -580,10 +614,88 @@ extension CallService: CallObserver {
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
+}
 
-    public func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
-        owsAssertDebug(call.isGroupCall)
-        Logger.info("groupCallEnded \(reason)")
+// MARK: - Group call participant updates
+
+extension CallService {
+
+    @objc @available(swift, obsoleted: 1.0)
+    func peekCallAndUpdateThread(_ thread: TSGroupThread) {
+        self.peekCallAndUpdateThread(thread)
+    }
+
+    @objc
+    func peekCallAndUpdateThread(_ thread: TSGroupThread, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
+        AssertIsOnMainThread()
+
+        // If the currentCall is for the provided thread, we don't need to perform an explict
+        // peek. Connected calls will receive automatic updates from RingRTC
+        guard currentCall?.thread != thread else {
+            Logger.info("Ignoring peek request for the current call")
+            return
+        }
+        guard let memberInfo = groupMemberInfo(for: thread) else {
+            Logger.error("Failed to fetch group member info to peek \(thread)")
+            return
+        }
+
+        firstly {
+            fetchGroupMembershipProof(for: thread)
+        }.then(on: .main) { proof in
+            self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
+        }.done(on: .main) { info in
+            self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
+        }.catch(on: .main) { error in
+            Logger.error("Failed to fetch PeekInfo for \(thread): \(error)")
+        }
+    }
+
+    fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) {
+        databaseStorage.write { writeTx in
+            let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
+
+            // Update everything that doesn't match the current call era to mark as ended
+            results
+                .filter { $0.eraId != info.eraId }
+                .forEach { toExpire in
+                    toExpire.update(withHasEnded: true, transaction: writeTx)
+                }
+
+            // Update the message for the current era if it exists, or insert a new one.
+            guard let currentEraId = info.eraId, let creatorUuid = info.creator else {
+                Logger.info("No active call")
+                return
+            }
+            let currentEraMessages = results.filter { $0.eraId == currentEraId }
+            owsAssertDebug(currentEraMessages.count <= 1)
+
+            if let currentMessage = currentEraMessages.first {
+                currentMessage.update(
+                    withJoinedMemberUuids: info.joinedMembers,
+                    transaction: writeTx
+                )
+            } else if !info.joinedMembers.isEmpty {
+                let newMessage = OWSGroupCallMessage(
+                    eraId: currentEraId,
+                    joinedMemberUuids: info.joinedMembers,
+                    creatorUuid: creatorUuid,
+                    thread: thread,
+                    sentAtTimestamp: timestamp)
+                newMessage.anyInsert(transaction: writeTx)
+
+                // Post a notification when learning about a new group call if: we didn't create it and we're not currently in the call.
+                let isCurrentCall = (self.currentCall?.thread == thread)
+                let isLocalUserCreator = SignalServiceAddress(uuid: creatorUuid).isLocalAddress
+                if !isCurrentCall, !isLocalUserCreator {
+                    AppEnvironment.shared.notificationPresenter.notifyUser(
+                        for: newMessage,
+                        thread: thread,
+                        wantsSound: true,
+                        transaction: writeTx)
+                }
+            }
+        }
     }
 }
 
@@ -676,6 +788,7 @@ extension CallService: CallManagerDelegate {
         case .get: httpMethod = .get
         case .post: httpMethod = .post
         case .put: httpMethod = .put
+        case .delete: httpMethod = .delete
         }
 
         let session = OWSURLSession(
@@ -683,6 +796,18 @@ extension CallService: CallManagerDelegate {
             configuration: OWSURLSession.defaultURLSessionConfiguration()
         )
         session.require2xxOr3xx = false
+        session.allowRedirects = true
+        session.customRedirectHandler = { request in
+            var request = request
+
+            if let authHeader = headers.first(where: {
+                $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
+            }) {
+                request.addValue(authHeader.value, forHTTPHeaderField: authHeader.key)
+            }
+
+            return request
+        }
 
         firstly(on: .sharedUtility) {
             session.dataTaskPromise(url, method: httpMethod, headers: headers, body: body)
@@ -704,7 +829,7 @@ extension CallService: CallManagerDelegate {
         call2: SignalCall
     ) -> Bool {
         Logger.info("shouldCompareCalls")
-        return call1.thread?.uniqueId == call2.thread?.uniqueId
+        return call1.thread.uniqueId == call2.thread.uniqueId
     }
 
     // MARK: - 1:1 Call Delegates

@@ -25,7 +25,7 @@ class CallControls: UIView {
         button.unselectedBackgroundColor = .ows_accentRed
         return button
     }()
-    private lazy var audioSourceButton = createButton(
+    private(set) lazy var audioSourceButton = createButton(
         iconName: "speaker-solid-28",
         action: #selector(CallControlsDelegate.didPressAudioSource)
     )
@@ -230,7 +230,8 @@ class CallControls: UIView {
             joinButton.isUserInteractionEnabled = true
             joinButtonActivityIndicator.stopAnimating()
 
-            joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
+            let deviceCount = call.groupCall.peekInfo?.deviceCount ?? 0
+            joinButton.setTitle(deviceCount == 0 ? startCallText : joinCallText, for: .normal)
         }
     }
 
@@ -249,28 +250,18 @@ class CallControls: UIView {
 }
 
 extension CallControls: CallObserver {
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
-
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
         updateControls()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         updateControls()
     }
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         updateControls()
     }
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 }
 
 extension CallControls: CallAudioServiceDelegate {

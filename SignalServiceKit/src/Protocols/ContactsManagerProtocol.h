@@ -62,6 +62,7 @@ typedef NSString *ConversationColorName NS_STRING_ENUM;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
+- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
 

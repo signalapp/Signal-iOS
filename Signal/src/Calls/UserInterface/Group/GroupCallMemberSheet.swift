@@ -9,7 +9,7 @@ import SignalRingRTC
 class GroupCallMemberSheet: UIViewController {
     let contentView = UIView()
     let handle = UIView()
-    weak var backdropView: UIView?
+    let backdropView = UIView()
 
     let tableView = UITableView(frame: .zero, style: .grouped)
     let call: SignalCall
@@ -64,6 +64,7 @@ class GroupCallMemberSheet: UIViewController {
         tableView.autoPinEdgesToSuperviewEdges()
 
         tableView.register(GroupCallMemberCell.self, forCellReuseIdentifier: GroupCallMemberCell.reuseIdentifier)
+        tableView.register(GroupCallEmptyCell.self, forCellReuseIdentifier: GroupCallEmptyCell.reuseIdentifier)
 
         // Support tapping the backdrop to cancel the action sheet.
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapBackdrop(_:)))
@@ -166,7 +167,7 @@ class GroupCallMemberSheet: UIViewController {
 
             // If the height is decreasing, adjust the relevant view's proporitionally
             if newHeight < startingHeight {
-                backdropView?.alpha = 1 - (startingHeight - newHeight) / startingHeight
+                backdropView.alpha = 1 - (startingHeight - newHeight) / startingHeight
             }
 
             // Update our height to reflect the new position
@@ -225,7 +226,7 @@ class GroupCallMemberSheet: UIViewController {
                     self.view.layoutIfNeeded()
                 }
 
-                self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
+                self.backdropView.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
                 self.heightConstraint?.constant = finalHeight
                 self.view.layoutIfNeeded()
@@ -239,7 +240,7 @@ class GroupCallMemberSheet: UIViewController {
         default:
             resetInteractiveTransition()
 
-            backdropView?.alpha = 1
+            backdropView.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
             heightConstraint?.constant = startingHeight
@@ -286,7 +287,7 @@ class GroupCallMemberSheet: UIViewController {
             var members = [JoinedMember]()
 
             if self.call.groupCall.localDeviceState.joinState == .joined {
-                members += self.call.groupCall.sortedRemoteDeviceStates.map { member in
+                members += self.call.groupCall.remoteDeviceStates.values.map { member in
                     let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
                     let displayName: String
                     let comparableName: String
@@ -316,7 +317,7 @@ class GroupCallMemberSheet: UIViewController {
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
                 let displayName = NSLocalizedString(
                     "GROUP_CALL_YOU",
-                    comment: "Text describing the local user in the group call members sheet."
+                    comment: "Text describing the local user as a participant in a group call."
                 )
                 let comparableName = displayName
 
@@ -331,7 +332,7 @@ class GroupCallMemberSheet: UIViewController {
             } else {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
                 // We can get the list of joined members still, provided we are connected.
-                members += self.call.groupCall.joinedGroupMembers.map { uuid in
+                members += self.call.groupCall.peekInfo?.joinedMembers.map { uuid in
                     let address = SignalServiceAddress(uuid: uuid)
                     let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
                     let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
@@ -345,7 +346,7 @@ class GroupCallMemberSheet: UIViewController {
                         isAudioMuted: nil,
                         isVideoMuted: nil
                     )
-                }
+                } ?? []
             }
 
             return members
@@ -359,10 +360,14 @@ class GroupCallMemberSheet: UIViewController {
 
 extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sortedMembers.count
+        return sortedMembers.count > 0 ? sortedMembers.count : 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard !sortedMembers.isEmpty else {
+            return tableView.dequeueReusableCell(withIdentifier: GroupCallEmptyCell.reuseIdentifier, for: indexPath)
+        }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: GroupCallMemberCell.reuseIdentifier, for: indexPath)
 
         guard let memberCell = cell as? GroupCallMemberCell else {
@@ -391,11 +396,13 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
                 comment: "String indicating how many people are current in the call"
             )
             label.text = String(format: formatString, sortedMembers.count)
-        } else {
+        } else if sortedMembers.count > 0 {
             label.text = NSLocalizedString(
                 "GROUP_CALL_ONE_IN_THIS_CALL",
                 comment: "String indicating one person is currently in the call"
             )
+        } else {
+            label.text = nil
         }
 
         let labelContainer = UIView()
@@ -446,7 +453,18 @@ private class GroupCallMemberSheetAnimationController: UIPresentationController 
         return vc.backdropView
     }
 
+    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+        backdropView?.backgroundColor = Theme.backdropColor
+    }
+
     override func presentationTransitionWillBegin() {
+        guard let containerView = containerView, let backdropView = backdropView else { return }
+        backdropView.alpha = 0
+        containerView.addSubview(backdropView)
+        backdropView.autoPinEdgesToSuperviewEdges()
+        containerView.layoutIfNeeded()
+
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView?.alpha = 1
         }, completion: nil)
@@ -455,7 +473,9 @@ private class GroupCallMemberSheetAnimationController: UIPresentationController 
     override func dismissalTransitionWillBegin() {
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView?.alpha = 0
-        }, completion: nil)
+        }, completion: { _ in
+            self.backdropView?.removeFromSuperview()
+        })
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -489,23 +509,12 @@ extension GroupCallMemberSheet: CallObserver {
         updateMembers()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
         updateMembers()
     }
-
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
 }
 
 private class GroupCallMemberCell: UITableViewCell {
@@ -576,5 +585,42 @@ private class GroupCallMemberCell: UITableViewCell {
             nameLabel.text = item.displayName
             avatarView.image = avatarBuilder.build()
         }
+    }
+}
+
+private class GroupCallEmptyCell: UITableViewCell {
+    static let reuseIdentifier = "GroupCallEmptyCell"
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        backgroundColor = .clear
+        selectionStyle = .none
+
+        layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "sad-cat"))
+        imageView.contentMode = .scaleAspectFit
+        contentView.addSubview(imageView)
+        imageView.autoSetDimensions(to: CGSize(square: 160))
+        imageView.autoHCenterInSuperview()
+        imageView.autoPinTopToSuperviewMargin(withInset: 32)
+
+        let label = UILabel()
+        label.font = .ows_dynamicTypeSubheadlineClamped
+        label.textColor = Theme.darkThemePrimaryColor
+        label.text = NSLocalizedString("GROUP_CALL_NOBODY_IS_IN_YET",
+                                       comment: "Text explaining to the user that nobody has joined this call yet.")
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        contentView.addSubview(label)
+        label.autoPinWidthToSuperviewMargins()
+        label.autoPinBottomToSuperviewMargin()
+        label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 16)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

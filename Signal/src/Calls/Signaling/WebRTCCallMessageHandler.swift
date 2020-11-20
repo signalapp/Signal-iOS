@@ -164,4 +164,13 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             messageAgeSec: messageAgeSec
         )
     }
+
+    public func receivedGroupCallUpdateMessage(
+        _ update: SSKProtoDataMessageGroupCallUpdate,
+        for groupThread: TSGroupThread,
+        serverReceivedTimestamp: UInt64) {
+
+        Logger.info("Received group call update for thread \(groupThread)")
+        callService.groupCallMessageHandler.handleUpdateMessage(update, for: groupThread, serverReceivedTimestamp: serverReceivedTimestamp)
+    }
 }

@@ -5462,6 +5462,118 @@ extension SSKProtoDataMessageBodyRange.SSKProtoDataMessageBodyRangeBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageGroupCallUpdate
+
+@objc
+public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessageGroupCallUpdateBuilder
+
+    @objc
+    public class func builder() -> SSKProtoDataMessageGroupCallUpdateBuilder {
+        return SSKProtoDataMessageGroupCallUpdateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageGroupCallUpdateBuilder {
+        let builder = SSKProtoDataMessageGroupCallUpdateBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessageGroupCallUpdateBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.GroupCallUpdate()
+
+        @objc
+        fileprivate override init() {}
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessageGroupCallUpdate {
+            return try SSKProtoDataMessageGroupCallUpdate(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageGroupCallUpdate(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.GroupCallUpdate
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.GroupCallUpdate) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.GroupCallUpdate(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.GroupCallUpdate) throws {
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageGroupCallUpdate -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageGroupCallUpdate -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageGroupCallUpdate {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageGroupCallUpdate.SSKProtoDataMessageGroupCallUpdateBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageGroupCallUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -5583,6 +5695,9 @@ public class SSKProtoDataMessage: NSObject, Codable {
             builder.setDelete(_value)
         }
         builder.setBodyRanges(bodyRanges)
+        if let _value = groupCallUpdate {
+            builder.setGroupCallUpdate(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5758,6 +5873,17 @@ public class SSKProtoDataMessage: NSObject, Codable {
             proto.bodyRanges = wrappedItems.map { $0.proto }
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setGroupCallUpdate(_ valueParam: SSKProtoDataMessageGroupCallUpdate?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupCallUpdate = valueParam.proto
+        }
+
+        public func setGroupCallUpdate(_ valueParam: SSKProtoDataMessageGroupCallUpdate) {
+            proto.groupCallUpdate = valueParam.proto
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -5804,6 +5930,9 @@ public class SSKProtoDataMessage: NSObject, Codable {
 
     @objc
     public let bodyRanges: [SSKProtoDataMessageBodyRange]
+
+    @objc
+    public let groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?
 
     @objc
     public var body: String? {
@@ -5892,7 +6021,8 @@ public class SSKProtoDataMessage: NSObject, Codable {
                  sticker: SSKProtoDataMessageSticker?,
                  reaction: SSKProtoDataMessageReaction?,
                  delete: SSKProtoDataMessageDelete?,
-                 bodyRanges: [SSKProtoDataMessageBodyRange]) {
+                 bodyRanges: [SSKProtoDataMessageBodyRange],
+                 groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -5904,6 +6034,7 @@ public class SSKProtoDataMessage: NSObject, Codable {
         self.reaction = reaction
         self.delete = delete
         self.bodyRanges = bodyRanges
+        self.groupCallUpdate = groupCallUpdate
     }
 
     @objc
@@ -5960,6 +6091,11 @@ public class SSKProtoDataMessage: NSObject, Codable {
         var bodyRanges: [SSKProtoDataMessageBodyRange] = []
         bodyRanges = try proto.bodyRanges.map { try SSKProtoDataMessageBodyRange($0) }
 
+        var groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?
+        if proto.hasGroupCallUpdate {
+            groupCallUpdate = try SSKProtoDataMessageGroupCallUpdate(proto.groupCallUpdate)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -5974,7 +6110,8 @@ public class SSKProtoDataMessage: NSObject, Codable {
                   sticker: sticker,
                   reaction: reaction,
                   delete: delete,
-                  bodyRanges: bodyRanges)
+                  bodyRanges: bodyRanges,
+                  groupCallUpdate: groupCallUpdate)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {

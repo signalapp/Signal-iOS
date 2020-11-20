@@ -54,6 +54,8 @@ protocol CallAudioServiceDelegate: class {
             assert(!Thread.isMainThread)
             self.audioRouteDidChange()
         }
+
+        AppEnvironment.shared.callService.addObserverAndSyncState(observer: self)
     }
 
     deinit {
@@ -85,10 +87,6 @@ protocol CallAudioServiceDelegate: class {
         ensureProperAudioSession(call: call)
     }
 
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
-        // do nothing
-    }
-
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         ensureProperAudioSession(call: call)
     }
@@ -103,10 +101,6 @@ protocol CallAudioServiceDelegate: class {
         // in our control.
         ensureProperAudioSession(call: call)
     }
-
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         ensureProperAudioSession(call: call)
@@ -132,7 +126,7 @@ protocol CallAudioServiceDelegate: class {
             do {
                 try self.avAudioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
             } catch {
-                owsFailDebug("failed to set \(#function) = \(isEnabled) with error: \(error)")
+                Logger.warn("failed to set \(#function) = \(isEnabled) with error: \(error)")
             }
         }
     }
@@ -601,5 +595,12 @@ protocol CallAudioServiceDelegate: class {
 
     func playLeaveSound() {
         play(sound: .groupCallLeave)
+    }
+}
+
+extension CallAudioService: CallServiceObserver {
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        oldValue?.removeObserver(self)
+        newValue?.addObserverAndSyncState(observer: self)
     }
 }

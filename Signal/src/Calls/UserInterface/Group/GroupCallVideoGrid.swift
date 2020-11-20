@@ -19,6 +19,7 @@ class GroupCallVideoGrid: UICollectionView {
 
         register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
         dataSource = self
+        delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -28,9 +29,29 @@ class GroupCallVideoGrid: UICollectionView {
     deinit { call.removeObserver(self) }
 }
 
+extension GroupCallVideoGrid: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoGridCell else { return }
+        cell.cleanupVideoViews()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? GroupCallVideoGridCell else { return }
+        guard let remoteDevice = gridRemoteDeviceStates[safe: indexPath.row] else {
+            return owsFailDebug("missing member address")
+        }
+        cell.configureRemoteVideo(device: remoteDevice)
+    }
+}
+
 extension GroupCallVideoGrid: UICollectionViewDataSource {
+    var gridRemoteDeviceStates: [RemoteDeviceState] {
+        let remoteDeviceStates = call.groupCall.remoteDeviceStates.sortedBySpeakerTime
+        return Array(remoteDeviceStates[0..<min(maxItems, call.groupCall.remoteDeviceStates.count)]).sortedByAddedTime
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(maxItems, call.groupCall.remoteDeviceStates.count)
+        return gridRemoteDeviceStates.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -39,7 +60,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             for: indexPath
         ) as! GroupCallVideoGridCell
 
-        guard let remoteDevice = call.groupCall.sortedRemoteDeviceStates[safe: indexPath.row] else {
+        guard let remoteDevice = gridRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
             return cell
         }
@@ -60,23 +81,12 @@ extension GroupCallVideoGrid: CallObserver {
         reloadData()
     }
 
-    func groupCallJoinedMembersChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
         reloadData()
     }
-
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
-
-    func groupCallRequestMembershipProof(_ call: SignalCall) {}
-    func groupCallRequestGroupMembers(_ call: SignalCall) {}
-
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
 }
 
 extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
@@ -101,13 +111,13 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
     var maxItems: Int { maxColumns * maxRows }
 
     func deviceState(for index: Int) -> RemoteDeviceState? {
-        return call.groupCall.sortedRemoteDeviceStates[safe: index]
+        return gridRemoteDeviceStates[safe: index]
     }
 }
 
 class GroupCallVideoGridCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoGridCell"
-    private let memberView = GroupCallRemoteMemberView()
+    private let memberView = GroupCallRemoteMemberView(mode: .videoGrid)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -126,12 +136,42 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    func cleanupVideoViews() {
+        memberView.cleanupVideoViews()
+    }
+
+    func configureRemoteVideo(device: RemoteDeviceState) {
+        memberView.configureRemoteVideo(device: device)
+    }
 }
 
-extension GroupCall {
-    var sortedRemoteDeviceStates: [RemoteDeviceState] {
-        return remoteDeviceStates
-            .values
-            .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
+extension Sequence where Element: RemoteDeviceState {
+    /// The first person to join the call is the first item in the list.
+    var sortedByAddedTime: [RemoteDeviceState] {
+        return sorted { lhs, rhs in
+            if lhs.addedTime == rhs.addedTime { return lhs.demuxId < rhs.demuxId }
+            return lhs.addedTime < rhs.addedTime
+        }
+    }
+
+    /// The most recent speaker is the first item in the list.
+    var sortedBySpeakerTime: [RemoteDeviceState] {
+        return sorted { lhs, rhs in
+            if lhs.speakerTime == rhs.speakerTime { return lhs.demuxId < rhs.demuxId }
+            return lhs.speakerTime > rhs.speakerTime
+        }
+    }
+}
+
+extension Dictionary where Value: RemoteDeviceState {
+    /// The first person to join the call is the first item in the list.
+    var sortedByAddedTime: [RemoteDeviceState] {
+        return values.sortedByAddedTime
+    }
+
+    /// The most recent speaker is the first item in the list.
+    var sortedBySpeakerTime: [RemoteDeviceState] {
+        return values.sortedBySpeakerTime
     }
 }
