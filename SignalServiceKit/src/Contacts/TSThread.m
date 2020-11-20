@@ -494,6 +494,9 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
             return NO;
         }
     }
+    if (interaction.isGroupMigrationMessage) {
+        return NO;
+    }
 
     return YES;
 }
@@ -549,10 +552,9 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     }
 
     int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
-    BOOL isGroupMigrationMessage = [self isGroupMigrationMessage:message];
-    BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible && !isGroupMigrationMessage;
+    BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
 
-    BOOL needsToClearArchived = self.isArchived && wasMessageInserted && !isGroupMigrationMessage;
+    BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
 
     // Don't clear archived during migrations.
     if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
@@ -565,7 +567,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
         needsToClearArchived = NO;
     }
 
-    BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId && !isGroupMigrationMessage;
+    BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
 
     BOOL needsToClearIsMarkedUnread = self.isMarkedUnread && wasMessageInserted;
 
@@ -593,22 +595,6 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     } else {
         [self scheduleTouchFinalizationWithTransaction:transaction];
     }
-}
-
-- (BOOL)isGroupMigrationMessage:(TSInteraction *)message
-{
-    if (![message isKindOfClass:[TSInfoMessage class]]) {
-        return NO;
-    }
-    TSInfoMessage *infoMessage = (TSInfoMessage *)message;
-    if (infoMessage.messageType != TSInfoMessageTypeGroupUpdate) {
-        return NO;
-    }
-    TSGroupModel *_Nullable newGroupModel = infoMessage.newGroupModel;
-    if (newGroupModel == nil) {
-        return NO;
-    }
-    return newGroupModel.wasJustMigratedToV2;
 }
 
 - (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction

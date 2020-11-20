@@ -5,6 +5,9 @@
 import Foundation
 
 public extension TSMessage {
+
+    // MARK: - Reactions
+
     var reactionFinder: ReactionFinder {
         return ReactionFinder(uniqueMessageId: uniqueId)
     }
@@ -150,5 +153,25 @@ public extension TSMessage {
         DispatchQueue.main.async {
             SSKEnvironment.shared.notificationsManager.cancelNotifications(messageId: self.uniqueId)
         }
+    }
+}
+
+// MARK: -
+
+public extension TSInteraction {
+
+    @objc
+    var isGroupMigrationMessage: Bool {
+        guard let message = self as? TSInfoMessage else {
+            return false
+        }
+        guard message.messageType == .typeGroupUpdate else {
+            return false
+        }
+        guard let newGroupModel = message.newGroupModel else {
+            owsFailDebug("Missing newGroupModel.")
+            return false
+        }
+        return newGroupModel.wasJustMigratedToV2
     }
 }

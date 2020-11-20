@@ -1079,7 +1079,8 @@ NS_ASSUME_NONNULL_BEGIN
                         break;
                     }
                     previousViewItem.shouldCollapseSystemMessageAction
-                        = previousInfoMessage.messageType == infoMessage.messageType;
+                        = (previousInfoMessage.messageType == infoMessage.messageType
+                            && !previousInfoMessage.isGroupMigrationMessage);
                     break;
                 }
                 case OWSInteractionType_Call:
