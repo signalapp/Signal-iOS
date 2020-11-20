@@ -6,7 +6,7 @@
 #import "Environment.h"
 #import "OWSAudioPlayer.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 #import <SignalUtilitiesKit/TSThread.h>
 #import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>

@@ -3,6 +3,14 @@
 FOUNDATION_EXPORT double SessionUtilitiesKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char SessionUtilitiesKitVersionString[];
 
+#import <SessionUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/DataSource.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSDate+Timestamp.h>
 #import <SessionUtilitiesKit/NSTimer+Proxying.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionUtilitiesKit/TSRequest.h>
+#import <SessionUtilitiesKit/TSYapDatabaseObject.h>
+#import <SessionUtilitiesKit/UIImage+OWS.h>
+

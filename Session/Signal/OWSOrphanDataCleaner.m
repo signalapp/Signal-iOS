@@ -10,7 +10,7 @@
 #import <SignalUtilitiesKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSInteraction.h>

@@ -1,13 +1,8 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
-#import <SignalUtilitiesKit/TSYapDatabaseObject.h>
+#import <SessionUtilitiesKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentPointer;
-@class TSMessage;
 
 typedef NS_ENUM(NSUInteger, TSAttachmentType) {
     TSAttachmentTypeDefault = 0,
@@ -45,7 +40,6 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 @property (nonatomic, readonly, nullable) NSString *caption;
 @property (nonatomic, nullable) NSString *albumMessageId;
-- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 // `migrateAlbumMessageId` is only used in the migration to the new multi-attachment message scheme,
 // and shouldn't be used as a general purpose setter. Instead, `albumMessageId` should be passed as

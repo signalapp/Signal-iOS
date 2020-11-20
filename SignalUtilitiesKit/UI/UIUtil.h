@@ -4,7 +4,7 @@
 
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/UIImage+OWS.h>
 
 #define ACCESSIBILITY_IDENTIFIER_WITH_NAME(_root_view, _variable_name)                                                 \

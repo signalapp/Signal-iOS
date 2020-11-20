@@ -133,11 +133,11 @@ public class DotNetAPI : NSObject {
     }
 
     @objc(uploadAttachment:withID:toServer:)
-    public static func objc_uploadAttachment(_ attachment: AttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
+    public static func objc_uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
         return AnyPromise.from(uploadAttachment(attachment, with: attachmentID, to: server))
     }
 
-    public static func uploadAttachment(_ attachment: AttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
+    public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
         let isEncryptionRequired = (server == FileServerAPI.server)
         return Promise<Void>() { seal in
             func proceed(with token: String) {

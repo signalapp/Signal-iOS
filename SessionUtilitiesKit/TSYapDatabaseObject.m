@@ -3,10 +3,8 @@
 //
 
 #import "TSYapDatabaseObject.h"
-#import "OWSPrimaryStorage.h"
-#import "SSKEnvironment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -92,11 +90,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self class] dbReadWriteConnection];
 }
 
-- (OWSPrimaryStorage *)primaryStorage
-{
-    return [[self class] primaryStorage];
-}
-
 #pragma mark Class Methods
 
 + (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
@@ -110,8 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    OWSJanksUI();
-
     // We use TSYapDatabaseObject's dbReadWriteConnection (not OWSPrimaryStorage's
     // dbReadConnection) for consistency, since we tend to [TSYapDatabaseObject
     // save] and want to write to the same connection we read from.  To get true
@@ -122,14 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSJanksUI();
-
-    return SSKEnvironment.shared.objectReadWriteConnection;
-}
-
-+ (OWSPrimaryStorage *)primaryStorage
-{
-    return [OWSPrimaryStorage sharedManager];
+    return SNConfiguration.shared.owsPrimaryStorage.dbReadWriteConnection;
 }
 
 + (NSString *)collection
@@ -206,8 +190,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock
 {
-    OWSAssertDebug(transaction);
-
     changeBlock(self);
 
     NSString *collection = [[self class] collection];
@@ -236,9 +218,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
     if (!latest) {
-        if (!ignoreMissing) {
-            OWSFailDebug(@"`latest` was unexpectedly nil");
-        }
         return;
     }
 

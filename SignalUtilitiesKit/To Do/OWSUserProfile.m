@@ -6,10 +6,10 @@
 #import <PromiseKit/AnyPromise.h>
 
 
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
 #import <SignalUtilitiesKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

@@ -1,7 +1,3 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
 import Foundation
 import AVFoundation
 
@@ -16,7 +12,7 @@ public enum OWSMediaError: Error {
     }
 
     @objc public class func thumbnail(forImageAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
-        Logger.verbose("thumbnailing image: \(path)")
+        SNLog("thumbnailing image: \(path)")
 
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
@@ -34,7 +30,7 @@ public enum OWSMediaError: Error {
     }
 
     @objc public class func thumbnail(forVideoAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
-        Logger.verbose("thumbnailing video: \(path)")
+        SNLog("thumbnailing video: \(path)")
 
         guard isVideoOfValidContentTypeAndSize(path: path) else {
             throw OWSMediaError.failure(description: "Media file has missing or invalid length.")
@@ -58,7 +54,7 @@ public enum OWSMediaError: Error {
 
     @objc public class func isValidVideo(path: String) -> Bool {
         guard isVideoOfValidContentTypeAndSize(path: path) else {
-            Logger.error("Media file has missing or invalid length.")
+            SNLog("Media file has missing or invalid length.")
             return false
         }
 
@@ -69,21 +65,21 @@ public enum OWSMediaError: Error {
 
     private class func isVideoOfValidContentTypeAndSize(path: String) -> Bool {
         guard FileManager.default.fileExists(atPath: path) else {
-            Logger.error("Media file missing.")
+            SNLog("Media file missing.")
             return false
         }
         let fileExtension = URL(fileURLWithPath: path).pathExtension
         guard let contentType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) else {
-            Logger.error("Media file has unknown content type.")
+            SNLog("Media file has unknown content type.")
             return false
         }
         guard MIMETypeUtil.isSupportedVideoMIMEType(contentType) else {
-            Logger.error("Media file has invalid content type.")
+            SNLog("Media file has invalid content type.")
             return false
         }
 
         guard let fileSize = OWSFileSystem.fileSize(ofPath: path) else {
-            Logger.error("Media file has unknown length.")
+            SNLog("Media file has unknown length.")
             return false
         }
         return fileSize.uintValue <= kMaxFileSizeVideo
@@ -97,11 +93,11 @@ public enum OWSMediaError: Error {
             maxTrackSize.height = max(maxTrackSize.height, trackSize.height)
         }
         if maxTrackSize.width < 1.0 || maxTrackSize.height < 1.0 {
-            Logger.error("Invalid video size: \(maxTrackSize)")
+            SNLog("Invalid video size: \(maxTrackSize)")
             return false
         }
         if maxTrackSize.width > kMaxVideoDimensions || maxTrackSize.height > kMaxVideoDimensions {
-            Logger.error("Invalid video dimensions: \(maxTrackSize)")
+            SNLog("Invalid video dimensions: \(maxTrackSize)")
             return false
         }
         return true
@@ -115,15 +111,15 @@ public enum OWSMediaError: Error {
      * https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
     @objc
-    public static var kMaxFileSizeAnimatedImage: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
+    public static var kMaxFileSizeAnimatedImage: UInt { Configuration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeImage: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
+    public static var kMaxFileSizeImage: UInt { Configuration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeVideo: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
+    public static var kMaxFileSizeVideo: UInt { Configuration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeAudio: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
+    public static var kMaxFileSizeAudio: UInt { Configuration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeGeneric: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
+    public static var kMaxFileSizeGeneric: UInt { Configuration.shared.maxFileSize }
 
     @objc
     public static let kMaxVideoDimensions: CGFloat = 3 * 1024

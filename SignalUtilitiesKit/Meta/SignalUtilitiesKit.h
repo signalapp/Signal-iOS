@@ -8,7 +8,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 @import SessionSnodeKit;
 @import SessionUtilitiesKit;
 
-#import <SignalUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppSetup.h>
 #import <SignalUtilitiesKit/AppVersion.h>
@@ -17,7 +16,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/LKGroupUtilities.h>
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NotificationsProtocol.h>
 #import <SignalUtilitiesKit/NSArray+Functional.h>
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
@@ -38,7 +36,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSHTTPSecurityPolicy.h>
 #import <SignalUtilitiesKit/OWSIdentityManager.h>

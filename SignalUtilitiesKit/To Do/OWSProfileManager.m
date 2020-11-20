@@ -8,14 +8,14 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "UIUtil.h"
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppReadiness.h>
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NSData+Image.h>
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSBlockingManager.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
 #import <SignalUtilitiesKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>

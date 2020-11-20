@@ -5,7 +5,7 @@
 #import "UIView+OWS.h"
 #import "OWSMath.h"
 
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

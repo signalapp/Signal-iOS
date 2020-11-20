@@ -10,7 +10,7 @@
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/OWSTextField.h>

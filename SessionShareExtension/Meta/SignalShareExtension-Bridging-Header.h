@@ -19,7 +19,7 @@
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
 #import <SignalUtilitiesKit/VersionMigrations.h>
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/OWSMath.h>

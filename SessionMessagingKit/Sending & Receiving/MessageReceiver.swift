@@ -74,8 +74,6 @@ internal enum MessageReceiver {
         // Parse the message
         let message: Message? = {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
-            if let sessionRequest = SessionRequest.fromProto(proto) { return sessionRequest }
-            if let nullMessage = NullMessage.fromProto(proto) { return nullMessage }
             if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
             if let closedGroupUpdate = ClosedGroupUpdate.fromProto(proto) { return closedGroupUpdate }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
@@ -99,8 +97,6 @@ internal enum MessageReceiver {
     internal static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
-        case let message as SessionRequest: handleSessionRequest(message, using: transaction)
-        case let message as NullMessage: handleNullMessage(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupUpdate: handleClosedGroupUpdate(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
@@ -111,14 +107,6 @@ internal enum MessageReceiver {
 
     private static func handleReadReceipt(_ message: ReadReceipt, using transaction: Any) {
         Configuration.shared.messageReceiverDelegate.markMessagesAsRead(message.timestamps!, from: message.sender!, at: message.receivedTimestamp!)
-    }
-
-    private static func handleSessionRequest(_ message: SessionRequest, using transaction: Any) {
-        // We might not need this anymore
-    }
-
-    private static func handleNullMessage(_ message: NullMessage, using transaction: Any) {
-        // We might not need this anymore
     }
 
     private static func handleTypingIndicator(_ message: TypingIndicator, using transaction: Any) {
@@ -152,8 +140,22 @@ internal enum MessageReceiver {
         let delegate = Configuration.shared.messageReceiverDelegate
         let storage = Configuration.shared.storage
         // Handle attachments
-        let attachments = delegate.parseAttachments(from: proto.dataMessage!.attachments)
-        message.attachmentIDs = storage.save(attachments, using: transaction)
+        let attachments: [VisibleMessage.Attachment] = proto.dataMessage!.attachments.compactMap { proto in
+            guard let attachment = VisibleMessage.Attachment.fromProto(proto) else { return nil }
+            return attachment.isValid ? attachment : nil
+        }
+        let attachmentIDs = storage.save(attachments, using: transaction)
+        message.attachmentIDs = attachmentIDs
+        storage.withAsync({ transaction in
+            attachmentIDs.forEach { attachmentID in
+                let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID)
+                if CurrentAppContext().isMainAppAndActive {
+                    JobQueue.shared.add(downloadJob, using: transaction)
+                } else {
+                    JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
+                }
+            }
+        }, completion: { })
         // Update profile if needed
         if let profile = message.profile {
             delegate.updateProfile(for: message.sender!, from: profile, using: transaction)

@@ -7,7 +7,7 @@
 #import "OWSProgressView.h"
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/OWSUploadOperation.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
 

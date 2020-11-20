@@ -5,7 +5,7 @@
 #import "OWSQuotedReplyModel.h"
 #import "ConversationViewItem.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 
 #import <SignalUtilitiesKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/TSAttachmentPointer.h>

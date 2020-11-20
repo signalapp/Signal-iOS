@@ -64,7 +64,7 @@
 #import <SignalUtilitiesKit/UIViewController+OWS.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/DataSource.h>
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NSData+Image.h>
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
@@ -72,7 +72,7 @@
 #import <SignalUtilitiesKit/OWSContactsOutputStream.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSIdentityManager.h>
 #import <SignalUtilitiesKit/OWSMediaGalleryFinder.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>

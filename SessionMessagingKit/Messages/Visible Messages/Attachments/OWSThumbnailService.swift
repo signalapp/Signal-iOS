@@ -75,12 +75,6 @@ private struct OWSThumbnailRequest {
     // arrive so that we prioritize the most recent view state.
     private var thumbnailRequestStack = [OWSThumbnailRequest]()
 
-    private override init() {
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
-
     private func canThumbnailAttachment(attachment: TSAttachmentStream) -> Bool {
         return attachment.isImage || attachment.isAnimated || attachment.isVideo
     }
@@ -117,8 +111,6 @@ private struct OWSThumbnailRequest {
                 thumbnailRequest.success(loadedThumbnail)
             }
         } catch {
-            Logger.error("Could not create thumbnail: \(error)")
-
             DispatchQueue.global().async {
                 thumbnailRequest.failure(error)
             }
@@ -145,8 +137,6 @@ private struct OWSThumbnailRequest {
             }
             return OWSLoadedThumbnail(image: image, filePath: thumbnailPath)
         }
-
-        Logger.verbose("Creating thumbnail of size: \(thumbnailRequest.thumbnailDimensionPoints)")
 
         let thumbnailDirPath = (thumbnailPath as NSString).deletingLastPathComponent
         guard OWSFileSystem.ensureDirectoryExists(thumbnailDirPath) else {

@@ -50,7 +50,7 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
 #import <SignalUtilitiesKit/OWSBlockingManager.h>

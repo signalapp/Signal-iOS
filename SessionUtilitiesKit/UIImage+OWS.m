@@ -1,9 +1,4 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
 #import "UIImage+OWS.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     CGSize originalSize = self.size;
     if (originalSize.width < 1 || originalSize.height < 1) {
-        OWSLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
         return nil;
     }
 
@@ -61,14 +55,12 @@ NS_ASSUME_NONNULL_BEGIN
         thumbnailSize.height = maxDimensionPoints;
     }
     if (thumbnailSize.width < 1 || thumbnailSize.height < 1) {
-        OWSLogError(@"Invalid thumbnail size: %@", NSStringFromCGSize(thumbnailSize));
         return nil;
     }
 
     UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
     CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
     if (context == NULL) {
-        OWSLogError(@"Couldn't create context.");
         return nil;
     }
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
@@ -141,7 +133,6 @@ NS_ASSUME_NONNULL_BEGIN
             break;
 
         default:
-            OWSFailDebug(@"Invalid image orientation");
             return nil;
     }
 
@@ -176,15 +167,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)resizedImageToFillPixelSize:(CGSize)dstSize
 {
-    OWSAssertDebug(dstSize.width > 0);
-    OWSAssertDebug(dstSize.height > 0);
-
     UIImage *normalized = [self normalizedImage];
 
     // Get the size in pixels, not points.
     CGSize srcSize = CGSizeMake(CGImageGetWidth(normalized.CGImage), CGImageGetHeight(normalized.CGImage));
-    OWSAssertDebug(srcSize.width > 0);
-    OWSAssertDebug(srcSize.height > 0);
 
     CGFloat widthRatio = srcSize.width / dstSize.width;
     CGFloat heightRatio = srcSize.height / dstSize.height;
@@ -193,13 +179,11 @@ NS_ASSUME_NONNULL_BEGIN
         drawRect.origin.y = 0;
         drawRect.size.height = dstSize.height;
         drawRect.size.width = dstSize.height * srcSize.width / srcSize.height;
-        OWSAssertDebug(drawRect.size.width > dstSize.width);
         drawRect.origin.x = (drawRect.size.width - dstSize.width) * -0.5f;
     } else {
         drawRect.origin.x = 0;
         drawRect.size.width = dstSize.width;
         drawRect.size.height = dstSize.width * srcSize.height / srcSize.width;
-        OWSAssertDebug(drawRect.size.height >= dstSize.height);
         drawRect.origin.y = (drawRect.size.height - dstSize.height) * -0.5f;
     }
 
@@ -214,17 +198,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIImage *)imageWithColor:(UIColor *)color
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(color);
-
     return [self imageWithColor:color size:CGSizeMake(1.f, 1.f)];
 }
 
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(color);
-
     CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
     UIGraphicsBeginImageContextWithOptions(rect.size, NO, 1.f);
     CGContextRef context = UIGraphicsGetCurrentContext();

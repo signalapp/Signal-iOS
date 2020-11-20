@@ -7,6 +7,10 @@ public final class MessageSenderDelegate : SessionMessagingKit.MessageSenderDele
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
+
+    public func handleFailedMessageSend(_ message: Message, using transaction: Any) {
+        // TODO: Implement
+    }
     
     public func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) {
         SNLog("Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")

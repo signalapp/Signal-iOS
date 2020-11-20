@@ -1,12 +1,8 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
 #import "NSData+Image.h"
 #import "MIMETypeUtil.h"
 #import "OWSFileSystem.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,7 +32,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         = (isAnimated ? OWSMediaUtils.kMaxFileSizeAnimatedImage : OWSMediaUtils.kMaxFileSizeImage);
     NSUInteger fileSize = self.length;
     if (fileSize > kMaxFileSize) {
-        OWSLogWarn(@"Oversize image.");
         return NO;
     }
 
@@ -58,35 +53,29 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         mimeType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
     }
     if (mimeType.length < 1) {
-        OWSLogError(@"Image has unknown MIME type.");
         return NO;
     }
     NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:filePath];
     if (!fileSize) {
-        OWSLogError(@"Could not determine file size.");
         return NO;
     }
 
     BOOL isAnimated = [MIMETypeUtil isSupportedAnimatedMIMEType:mimeType];
     if (isAnimated) {
         if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeAnimatedImage) {
-            OWSLogWarn(@"Oversize animated image.");
             return NO;
         }
     } else if ([MIMETypeUtil isSupportedImageMIMEType:mimeType]) {
         if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeImage) {
-            OWSLogWarn(@"Oversize still image.");
             return NO;
         }
     } else {
-        OWSLogError(@"Image has unsupported MIME type.");
         return NO;
     }
 
     NSError *error = nil;
     NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     if (!data || error) {
-        OWSLogError(@"Could not read image data: %@", error);
         return NO;
     }
 
@@ -95,7 +84,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     }
 
     if (![self ows_hasValidImageDimensionsAtPath:filePath isAnimated:isAnimated]) {
-        OWSLogError(@"%@ image had invalid dimensions.", self.logTag);
         return NO;
     }
 
@@ -131,8 +119,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)ows_hasValidImageDimensionWithImageSource:(CGImageSourceRef)imageSource isAnimated:(BOOL)isAnimated
 {
-    OWSAssertDebug(imageSource);
-
     NSDictionary *imageProperties
         = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, NULL);
 
@@ -142,14 +128,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
     NSNumber *widthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelWidth];
     if (!widthNumber) {
-        OWSLogError(@"widthNumber was unexpectedly nil");
         return NO;
     }
     CGFloat width = widthNumber.floatValue;
 
     NSNumber *heightNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelHeight];
     if (!heightNumber) {
-        OWSLogError(@"heightNumber was unexpectedly nil");
         return NO;
     }
     CGFloat height = heightNumber.floatValue;
@@ -158,7 +142,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
      * key is a CFNumberRef. */
     NSNumber *depthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyDepth];
     if (!depthNumber) {
-        OWSLogError(@"depthNumber was unexpectedly nil");
         return NO;
     }
     NSUInteger depthBits = depthNumber.unsignedIntegerValue;
@@ -169,12 +152,10 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
      * The value of this key is CFStringRef. */
     NSString *colorModel = imageProperties[(__bridge NSString *)kCGImagePropertyColorModel];
     if (!colorModel) {
-        OWSLogError(@"colorModel was unexpectedly nil");
         return NO;
     }
     if (![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelRGB]
         && ![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelGray]) {
-        OWSLogError(@"Invalid colorModel: %@", colorModel);
         return NO;
     }
 
@@ -188,7 +169,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
     CGFloat actualBytes = width * height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {
-        OWSLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f", width, height, bytesPerPixel);
         return NO;
     }
 
@@ -328,7 +308,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 + (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(NSString *)mimeType
 {
     if (![NSData ows_isValidImageAtPath:filePath mimeType:mimeType]) {
-        OWSLogError(@"Invalid image.");
         return CGSizeZero;
     }
     NSURL *url = [NSURL fileURLWithPath:filePath];
@@ -336,7 +315,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     // With CGImageSource we avoid loading the whole image into memory.
     CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)url, NULL);
     if (!source) {
-        OWSFailDebug(@"Could not load image: %@", url);
         return CGSizeZero;
     }
 
@@ -357,8 +335,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
             if (orientation) {
                 imageSize = [self applyImageOrientation:(UIImageOrientation)orientation.intValue toImageSize:imageSize];
             }
-        } else {
-            OWSFailDebug(@"Could not determine size of image: %@", url);
         }
     }
     CFRelease(source);
@@ -390,7 +366,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     // With CGImageSource we avoid loading the whole image into memory.
     CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)url, NULL);
     if (!source) {
-        OWSFailDebug(@"Could not load image: %@", url);
         return NO;
     }
 
@@ -407,7 +382,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         } else {
             // This is not an error; kCGImagePropertyHasAlpha is an optional
             // property.
-            OWSLogWarn(@"Could not determine transparency of image: %@", url);
             result = NO;
         }
     }

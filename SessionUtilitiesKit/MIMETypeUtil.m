@@ -1,10 +1,5 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
-
 #import "MIMETypeUtil.h"
 #import "OWSFileSystem.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 #if TARGET_OS_IPHONE
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -382,7 +377,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
         return [self filePathForData:uniqueId withFileExtension:fileExtension inFolder:folder];
     }
 
-    OWSLogError(@"Got asked for path of file %@ which is unsupported", contentType);
     // Use a fallback file extension.
     return [self filePathForData:uniqueId withFileExtension:kDefaultFileExtension inFolder:folder];
 }
@@ -475,10 +469,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     NSMutableSet<NSString *> *result = [NSMutableSet new];
     for (NSString *mimeType in mimeTypes) {
         NSString *_Nullable utiType = [self utiTypeForMIMEType:mimeType];
-        if (!utiType) {
-            OWSFailDebug(@"unknown utiType for mimetype: %@", mimeType);
-            continue;
-        }
+        if (!utiType) { continue; }
         [result addObject:utiType];
     }
     return result;
@@ -1593,8 +1584,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (nullable NSString *)mimeTypeForFileExtension:(NSString *)fileExtension
 {
-    OWSAssertDebug(fileExtension.length > 0);
-
     return [self genericExtensionTypesToMIMETypes][fileExtension];
 }
 
@@ -2614,8 +2603,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (nullable NSString *)utiTypeForFileExtension:(NSString *)fileExtension
 {
-    OWSAssertDebug(fileExtension.length > 0);
-
     NSString *_Nullable utiType = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
         kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
     return utiType;

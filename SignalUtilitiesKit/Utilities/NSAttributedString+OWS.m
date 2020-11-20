@@ -4,7 +4,7 @@
 
 #import "NSAttributedString+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,10 +6,14 @@ public final class JobQueue : NSObject, JobDelegate {
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
+        addWithoutExecuting(job, using: transaction)
+        job.execute()
+    }
+
+    @objc public func addWithoutExecuting(_ job: Job, using transaction: Any) {
         job.id = String(NSDate.millisecondTimestamp())
         Configuration.shared.storage.persist(job, using: transaction)
         job.delegate = self
-        job.execute()
     }
 
     @objc public func resumePendingJobs() {

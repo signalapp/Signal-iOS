@@ -138,11 +138,14 @@ public final class MessageSender : NSObject {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-            storage.with { transaction in
+            storage.withAsync({ transaction in
                 JobQueue.shared.add(notifyPNServerJob, using: transaction)
-            }
+            }, completion: { })
         }
         let _ = promise.catch(on: DispatchQueue.main) { _ in
+            Configuration.shared.storage.withAsync({ transaction in
+                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, using: transaction)
+            }, completion: { })
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
             }

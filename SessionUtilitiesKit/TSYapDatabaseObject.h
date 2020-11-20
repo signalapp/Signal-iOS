@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+#import <YapDatabase/YapDatabase.h>
 #import <Mantle/MTLModel+NSCoding.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -70,9 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (YapDatabaseConnection *)dbReadConnection;
 - (YapDatabaseConnection *)dbReadWriteConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
-
-- (OWSPrimaryStorage *)primaryStorage;
-+ (OWSPrimaryStorage *)primaryStorage;
 
 /**
  *  Fetches the object with the provided identifier

@@ -1,4 +1,5 @@
 import PromiseKit
+import YapDatabase
 
 // Some important notes about YapDatabase:
 //
@@ -6,10 +7,10 @@ import PromiseKit
 // • Executing a write transaction from within a write transaction is NOT allowed.
 
 @objc(LKStorage)
-public final class Storage : NSObject, SessionMessagingKitStorageProtocol, SessionProtocolKitStorageProtocol, SessionSnodeKitStorageProtocol {
+public final class Storage : NSObject {
     public static let serialQueue = DispatchQueue(label: "Storage.serialQueue", qos: .userInitiated)
 
-    private static var owsStorage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    private static var owsStorage: OWSPrimaryStorageProtocol { Configuration.shared.owsPrimaryStorage }
     
     @objc public static let shared = Storage()
 

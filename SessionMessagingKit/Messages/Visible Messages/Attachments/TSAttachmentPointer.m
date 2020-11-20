@@ -1,14 +1,9 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
 #import "TSAttachmentPointer.h"
-#import "OWSBackupFragment.h"
 #import "TSAttachmentStream.h"
-#import <SignalUtilitiesKit/MIMETypeUtil.h>
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -86,8 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssertDebug(attachmentStream);
-
     self = [super initForRestoreWithUniqueId:attachmentStream.uniqueId
                                  contentType:attachmentStream.contentType
                               sourceFilename:attachmentStream.sourceFilename
@@ -109,21 +102,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                 albumMessage:(nullable TSMessage *)albumMessage
 {
     if (attachmentProto.id < 1) {
-        OWSFailDebug(@"Invalid attachment id.");
         return nil;
     }
-    /*
-    if (attachmentProto.key.length < 1) {
-        OWSFailDebug(@"Invalid attachment key.");
-        return nil;
-    }
-     */
+
     NSString *_Nullable fileName = attachmentProto.fileName;
     NSString *_Nullable contentType = attachmentProto.contentType;
     if (contentType.length < 1) {
         // Content type might not set if the sending client can't
         // infer a MIME type from the file extension.
-        OWSLogWarn(@"Invalid attachment content type.");
         NSString *_Nullable fileExtension = [fileName pathExtension].lowercaseString;
         if (fileExtension.length > 0) {
             contentType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
@@ -148,11 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
         caption = attachmentProto.caption;
     }
 
-    NSString *_Nullable albumMessageId;
-    if (albumMessage != nil) {
-        albumMessageId = albumMessage.uniqueId;
-    }
-
     CGSize mediaSize = CGSizeZero;
     if (attachmentProto.hasWidth && attachmentProto.hasHeight && attachmentProto.width > 0
         && attachmentProto.height > 0) {
@@ -166,22 +147,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      contentType:contentType
                                                                   sourceFilename:fileName
                                                                          caption:caption
-                                                                  albumMessageId:albumMessageId
+                                                                  albumMessageId:0
                                                                   attachmentType:attachmentType
                                                                        mediaSize:mediaSize];
-    
-    pointer.downloadURL = attachmentProto.url; // Loki
+    pointer.downloadURL = attachmentProto.url;
     
     return pointer;
 }
 
-+ (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:
-                                        (NSArray<SNProtoAttachmentPointer *> *)attachmentProtos
++ (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:(NSArray<SNProtoAttachmentPointer *> *)attachmentProtos
                                                     albumMessage:(TSMessage *)albumMessage
 {
-    OWSAssertDebug(attachmentProtos);
-    OWSAssertDebug(albumMessage);
-
     NSMutableArray *attachmentPointers = [NSMutableArray new];
     for (SNProtoAttachmentPointer *attachmentProto in attachmentProtos) {
         TSAttachmentPointer *_Nullable attachmentPointer =
@@ -203,61 +179,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Legacy instances of TSAttachmentPointer apparently used the serverId as their
     // uniqueId.
     if (attachmentSchemaVersion < 2 && self.serverId == 0) {
-        OWSAssertDebug([self isDecimalNumberText:self.uniqueId]);
         if ([self isDecimalNumberText:self.uniqueId]) {
             // For legacy instances, try to parse the serverId from the uniqueId.
             self.serverId = (UInt64)[self.uniqueId integerValue];
-        } else {
-            OWSLogError(@"invalid legacy attachment uniqueId: %@.", self.uniqueId);
         }
     }
-}
-
-- (nullable OWSBackupFragment *)lazyRestoreFragment
-{
-    if (!self.lazyRestoreFragmentId) {
-        return nil;
-    }
-    OWSBackupFragment *_Nullable backupFragment =
-        [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
-    OWSAssertDebug(backupFragment);
-    return backupFragment;
-}
-
-#pragma mark - Update With... Methods
-
-- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(lazyRestoreFragment);
-    OWSAssertDebug(transaction);
-
-    if (!lazyRestoreFragment.uniqueId) {
-        // If metadata hasn't been saved yet, save now.
-        [lazyRestoreFragment saveWithTransaction:transaction];
-
-        OWSAssertDebug(lazyRestoreFragment.uniqueId);
-    }
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSAttachmentPointer *attachment) {
-                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
-                             }];
-}
-
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-#ifdef DEBUG
-    if (self.uniqueId.length > 0) {
-        id _Nullable oldObject = [transaction objectForKey:self.uniqueId inCollection:TSAttachment.collection];
-        if ([oldObject isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"We should never overwrite a TSAttachmentStream with a TSAttachmentPointer.");
-        }
-    } else {
-        OWSFailDebug(@"Missing uniqueId.");
-    }
-#endif
-
-    [super saveWithTransaction:transaction];
 }
 
 @end

@@ -1,9 +1,5 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
-
-#import <SignalUtilitiesKit/DataSource.h>
-#import <SignalUtilitiesKit/TSAttachment.h>
+#import <SessionUtilitiesKit/DataSource.h>
+#import <SessionMessagingKit/TSAttachment.h>
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
@@ -19,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);
 
-@interface TSAttachmentStream : TSAttachment <SNAttachmentStream>
+@interface TSAttachmentStream : TSAttachment
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithContentType:(NSString *)contentType

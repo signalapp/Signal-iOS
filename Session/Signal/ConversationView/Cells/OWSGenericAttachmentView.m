@@ -10,7 +10,7 @@
 
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
-#import <SignalUtilitiesKit/MimeTypeUtil.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
 #import <SignalCoreKit/NSString+OWS.h>

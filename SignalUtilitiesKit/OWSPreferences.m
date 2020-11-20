@@ -3,7 +3,7 @@
 //
 
 #import "OWSPreferences.h"
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
 #import <SignalUtilitiesKit/OWSSyncManagerProtocol.h>

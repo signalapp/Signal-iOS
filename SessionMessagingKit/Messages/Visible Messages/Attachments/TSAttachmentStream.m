@@ -1,16 +1,11 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
 #import "TSAttachmentStream.h"
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
-#import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -149,21 +144,17 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                               sourceFilename:self.sourceFilename
                                                     inFolder:attachmentsFolder];
     if (!filePath) {
-        OWSFailDebug(@"Could not generate path for attachment.");
         return;
     }
     if (![filePath hasPrefix:attachmentsFolder]) {
-        OWSFailDebug(@"Attachment paths should all be in the attachments folder.");
         return;
     }
     NSString *localRelativeFilePath = [filePath substringFromIndex:attachmentsFolder.length];
     if (localRelativeFilePath.length < 1) {
-        OWSFailDebug(@"Empty local relative attachment paths.");
         return;
     }
 
     self.localRelativeFilePath = localRelativeFilePath;
-    OWSAssertDebug(self.originalFilePath);
 }
 
 #pragma mark - File Management
@@ -173,7 +164,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     *error = nil;
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
         return nil;
     }
     return [NSData dataWithContentsOfFile:filePath options:0 error:error];
@@ -181,28 +171,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (BOOL)writeData:(NSData *)data error:(NSError **)error
 {
-    OWSAssertDebug(data);
-
     *error = nil;
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
 - (BOOL)writeDataSource:(DataSource *)dataSource
 {
-    OWSAssertDebug(dataSource);
-
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [dataSource writeToPath:filePath];
 }
 
@@ -218,8 +200,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 + (nullable NSError *)migrateToSharedData
 {
-    OWSLogInfo(@"");
-
     return [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
                        sharedDataFilePath:self.sharedDataAttachmentsDirPath];
 }
@@ -239,7 +219,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (nullable NSString *)originalFilePath
 {
     if (!self.localRelativeFilePath) {
-        OWSFailDebug(@"Attachment missing local file path.");
         return nil;
     }
 
@@ -250,7 +229,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     NSString *filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Attachment missing local file path.");
         return nil;
     }
 
@@ -268,7 +246,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (NSString *)thumbnailsDirPath
 {
     if (!self.localRelativeFilePath) {
-        OWSFailDebug(@"Attachment missing local file path.");
         return nil;
     }
 
@@ -288,7 +265,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
         return nil;
     }
     return [NSURL fileURLWithPath:filePath];
@@ -300,30 +276,19 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     NSString *thumbnailsDirPath = self.thumbnailsDirPath;
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
-        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailsDirPath error:&error];
-        if (error || !success) {
-            OWSLogError(@"remove thumbnails dir failed with: %@", error);
-        }
+        [[NSFileManager defaultManager] removeItemAtPath:thumbnailsDirPath error:&error];
     }
 
     NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
     if (legacyThumbnailPath) {
-        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:legacyThumbnailPath error:&error];
-
-        if (error || !success) {
-            OWSLogError(@"remove legacy thumbnail failed with: %@", error);
-        }
+        [[NSFileManager defaultManager] removeItemAtPath:legacyThumbnailPath error:&error];
     }
 
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
         return;
     }
-    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-    if (error || !success) {
-        OWSLogError(@"remove file failed with: %@", error);
-    }
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -353,13 +318,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (BOOL)isValidImage
 {
-    OWSAssertDebug(self.isImage || self.isAnimated);
-
     BOOL result;
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidImageCached) {
-            OWSLogVerbose(@"Updating isValidImageCached.");
             self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
                                                               mimeType:self.contentType]);
             didUpdateCache = YES;
@@ -378,13 +340,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (BOOL)isValidVideo
 {
-    OWSAssertDebug(self.isVideo);
-
     BOOL result;
     BOOL didUpdateCache = NO;
     @synchronized(self) {
         if (!self.isValidVideoCached) {
-            OWSLogVerbose(@"Updating isValidVideoCached.");
             self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
             didUpdateCache = YES;
         }
@@ -423,16 +382,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (nullable NSData *)validStillImageData
 {
     if ([self isVideo]) {
-        OWSFailDebug(@"isVideo was unexpectedly true");
         return nil;
     }
     if ([self isAnimated]) {
-        OWSFailDebug(@"isAnimated was unexpectedly true");
         return nil;
     }
 
     if (![NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType]) {
-        OWSFailDebug(@"skipping invalid image");
         return nil;
     }
 
@@ -452,7 +408,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                          maxDimension:ThumbnailDimensionPointsLarge()
                                                                 error:&error];
     if (error || !image) {
-        OWSLogError(@"Could not create video still: %@.", error);
         return nil;
     }
     return image;
@@ -468,15 +423,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         [fileManager contentsOfDirectoryAtURL:fileURL includingPropertiesForKeys:nil options:0 error:&error];
 
     if (error) {
-        OWSFailDebug(@"failed to get contents of attachments folder: %@ with error: %@", self.attachmentsFolder, error);
         return;
     }
 
     for (NSURL *url in contents) {
         [fileManager removeItemAtURL:url error:&error];
-        if (error) {
-            OWSFailDebug(@"failed to remove item at path: %@ with error: %@", url, error);
-        }
     }
 }
 
@@ -529,8 +480,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (CGSize)cachedMediaSize
 {
-    OWSAssertDebug(self.shouldHaveImageSize);
-
     @synchronized(self) {
         if (self.cachedImageWidth && self.cachedImageHeight) {
             return CGSizeMake(self.cachedImageWidth.floatValue, self.cachedImageHeight.floatValue);
@@ -544,8 +493,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
 {
-    OWSAssertDebug(changeBlock);
-
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSString *collection = [TSAttachmentStream collection];
         TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
@@ -555,9 +502,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             // _very_ rare.
             //
             // An exception is incoming group avatar updates which we don't ever save.
-            OWSLogWarn(@"Attachment not yet saved.");
         } else if (![latestInstance isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Attachment has unexpected type: %@", latestInstance.class);
+            // Shouldn't occur
         } else {
             changeBlock(latestInstance);
 
@@ -570,9 +516,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (CGFloat)calculateAudioDurationSeconds
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug([self isAudio]);
-
     NSError *error;
     AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.originalMediaURL error:&error];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
@@ -583,15 +526,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
-        OWSLogError(@"Could not find audio duration: %@", self.originalMediaURL);
         return 0;
     }
 }
 
 - (CGFloat)audioDurationSeconds
 {
-    OWSAssertIsOnMainThread();
-
     if (self.cachedAudioDurationSeconds) {
         return self.cachedAudioDurationSeconds.floatValue;
     }
@@ -686,7 +626,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
         UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
         if (!image) {
-            OWSFailDebug(@"couldn't load image.");
             // Any time we return nil from this method we have to call the failure handler
             // or else the caller waits for an async thumbnail
             failure();
@@ -699,7 +638,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                     thumbnailDimensionPoints:thumbnailDimensionPoints
                                                      success:success
                                                      failure:^(NSError *error) {
-                                                         OWSLogError(@"Failed to create thumbnail: %@", error);
                                                          failure();
                                                      }];
     return nil;
@@ -737,7 +675,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
     if (!loadedThumbnail) {
-        OWSLogInfo(@"Couldn't load small thumbnail sync.");
         return nil;
     }
     return loadedThumbnail.image;
@@ -747,13 +684,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
     if (!loadedThumbnail) {
-        OWSLogInfo(@"Couldn't load small thumbnail sync.");
         return nil;
     }
     NSError *error;
     NSData *_Nullable data = [loadedThumbnail dataAndReturnError:&error];
     if (error || !data) {
-        OWSFailDebug(@"Couldn't load thumbnail data: %@", error);
         return nil;
     }
     return data;
@@ -769,7 +704,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         NSArray<NSString *> *_Nullable fileNames =
             [[NSFileManager defaultManager] contentsOfDirectoryAtPath:thumbnailsDirPath error:&error];
         if (error || !fileNames) {
-            OWSFailDebug(@"contentsOfDirectoryAtPath failed with error: %@", error);
+            // Do nothing
         } else {
             for (NSString *fileName in fileNames) {
                 NSString *filePath = [thumbnailsDirPath stringByAppendingPathComponent:fileName];
@@ -812,7 +747,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
     if (!success || error) {
-        OWSLogError(@"Couldn't copy attachment data for message sent to self: %@.", error);
         return nil;
     }
 
@@ -823,14 +757,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 + (nullable SNProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
 {
-    OWSAssertDebug(attachmentId.length > 0);
-
     // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
     // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
     // but should be straight forward.
     TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        OWSLogError(@"Unexpected type for attachment builder: %@", attachment);
         return nil;
     }
 
@@ -843,10 +774,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     SNProtoAttachmentPointerBuilder *builder = [SNProtoAttachmentPointer builderWithId:self.serverId];
 
-    OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
-    OWSLogVerbose(@"Sending attachment with filename: '%@'", self.sourceFilename);
     if (self.sourceFilename.length > 0) {
         builder.fileName = self.sourceFilename;
     }
@@ -876,7 +805,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     NSError *error;
     SNProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
     if (error || !attachmentProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
     return attachmentProto;

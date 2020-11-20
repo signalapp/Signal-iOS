@@ -12,7 +12,7 @@
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/TSAttachment.h>
 #import <SignalUtilitiesKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSMessage.h>

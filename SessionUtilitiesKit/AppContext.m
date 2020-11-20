@@ -1,7 +1,3 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
-
 #import "AppContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,8 +23,6 @@ static id<AppContext> currentAppContext = nil;
 
 id<AppContext> CurrentAppContext(void)
 {
-    OWSCAssertDebug(currentAppContext);
-
     return currentAppContext;
 }
 
@@ -38,8 +32,6 @@ void SetCurrentAppContext(id<AppContext> appContext)
     //
     // App extensions may be opened multiple times in the same process,
     // so statics will persist.
-    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp);
-
     currentAppContext = appContext;
 }
 
@@ -52,8 +44,6 @@ void ClearCurrentAppContextForTests()
 
 void ExitShareExtension(void)
 {
-    OWSLogInfo(@"ExitShareExtension");
-    [DDLog flushLog];
     exit(0);
 }
 

@@ -1,7 +1,3 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *OWSTemporaryDirectory(void);
 NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void);
 void ClearOldTemporaryDirectories(void);
+void ClearOldTemporaryDirectoriesSync(void);
 
 @interface OWSFileSystem : NSObject
 
@@ -52,7 +49,6 @@ void ClearOldTemporaryDirectories(void);
 + (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension;
 
 + (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath;
-+ (void)logAttributesOfItemAtPathRecursively:(NSString *)path;
 
 @end
 

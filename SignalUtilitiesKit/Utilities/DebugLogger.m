@@ -5,8 +5,8 @@
 #import "DebugLogger.h"
 #import "OWSScrubbingLogFormatter.h"
 
-#import <SignalUtilitiesKit/AppContext.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
 #import <CocoaLumberjack/DDTTYLogger.h>
