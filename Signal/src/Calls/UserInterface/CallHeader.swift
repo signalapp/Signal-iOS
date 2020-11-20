@@ -260,6 +260,7 @@ extension CallHeader: CallObserver {
 
         updateCallTitleLabel()
         updateCallStatusLabel()
+        updateGroupMembersButton()
     }
 
     func groupCallPeekChanged(_ call: SignalCall) {
