@@ -180,7 +180,11 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                             do {
                                 try self.process(groupDetails: nextGroup, transaction: transaction)
                             } catch {
-                                owsFailDebug("Error: \(error)")
+                                if case GroupsV2Error.groupDowngradeNotAllowed = error {
+                                    Logger.warn("Error: \(error)")
+                                } else {
+                                    owsFailDebug("Error: \(error)")
+                                }
                             }
                         }
                     }

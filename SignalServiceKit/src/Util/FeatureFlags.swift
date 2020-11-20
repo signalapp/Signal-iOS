@@ -287,7 +287,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2onlyCreateV1Groups = TestableFlag(false)
 
     @objc
-    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(false)
+    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.qa))
 
     @objc
     public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(false)

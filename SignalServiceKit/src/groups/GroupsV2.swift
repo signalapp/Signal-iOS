@@ -26,6 +26,7 @@ public enum GroupsV2Error: Error {
     case groupDoesNotExistOnService
     case groupNeedsToBeMigrated
     case groupCannotBeMigrated
+    case groupDowngradeNotAllowed
 }
 
 // MARK: -
