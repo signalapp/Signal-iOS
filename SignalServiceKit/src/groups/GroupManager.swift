@@ -2081,7 +2081,8 @@ public class GroupManager: NSObject {
 
         if newGroupModel.groupsVersion == .V1,
             groupThread.groupModel.groupsVersion == .V2 {
-            throw OWSAssertionError("Cannot downgrade migrated group from v2 to v1.")
+            Logger.warn("Cannot downgrade migrated group from v2 to v1.")
+            throw GroupsV2Error.groupDowngradeNotAllowed
         }
 
         // Step 2: Update DM configuration in database, if necessary.

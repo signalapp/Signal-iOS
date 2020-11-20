@@ -1518,7 +1518,7 @@ typedef enum : NSUInteger {
 
 - (void)refreshCallState
 {
-    if (self.thread.isGroupThread) {
+    if (self.thread.isGroupV2Thread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         [self.callService peekCallAndUpdateThread:groupThread];
     }

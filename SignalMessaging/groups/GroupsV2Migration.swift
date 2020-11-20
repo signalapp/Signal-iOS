@@ -172,6 +172,9 @@ public extension GroupsV2Migration {
             // waking up from a VOIP push.
             return
         }
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
 
         DispatchQueue.global().async {
             var groupThreads = [TSGroupThread]()
@@ -324,14 +327,15 @@ fileprivate extension GroupsV2Migration {
             }
         }
 
-        Logger.verbose("migrationMode: \(migrationMode)")
-
         return firstly(on: .global()) { () -> Promise<Void> in
             GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.map(on: .global()) { () -> UnmigratedState in
             try Self.loadUnmigratedState(groupId: groupId)
         }.then(on: .global()) { (unmigratedState: UnmigratedState) -> Promise<UnmigratedState> in
-            firstly {
+            let groupName = unmigratedState.groupThread.groupModel.groupName ?? "Unnamed group"
+            Logger.verbose("Trying to migrate: \(groupName), mode: \(migrationMode)")
+
+            return firstly {
                 Self.tryToPrepareMembersForMigration(migrationMode: migrationMode,
                                                      unmigratedState: unmigratedState)
             }.map(on: .global()) {
@@ -915,7 +919,7 @@ public class GroupsV2MigrationInfo: NSObject {
 
 // MARK: -
 
-public enum GroupsV2MigrationMode {
+public enum GroupsV2MigrationMode: Equatable {
     // Manual migration; only available if all users can be
     // added (but not invited).
     case manualMigrationPolite

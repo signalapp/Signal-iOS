@@ -51,6 +51,17 @@ NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...)
         NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
 }
 
+NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...)
+{
+    va_list args;
+    va_start(args, descriptionFormat);
+    NSString *description = [[NSString alloc] initWithFormat:descriptionFormat arguments:args];
+    va_end(args);
+    OWSLogWarn(@"%@", description);
+    return OWSErrorWithCodeDescription(OWSErrorCodeGenericFailure,
+        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+}
+
 NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, SignalServiceAddress *address)
 {
     return [NSError

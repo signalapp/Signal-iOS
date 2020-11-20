@@ -271,7 +271,9 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
                                    success:(void (^)(RemoteAttestationAuth *))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return failureHandler(OWSErrorMakeGenericError(@"Not registered."));
+    }
 
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequestForService:service];
     [[TSNetworkManager shared] makeRequest:request
