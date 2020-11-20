@@ -471,14 +471,21 @@ extension GroupCallViewController: CallObserver {
         guard reason != .deviceExplicitlyDisconnected else { return }
 
         let title: String
-        switch reason {
-        case .hasMaxDevices:
-            let formatString = NSLocalizedString(
-                "GROUP_CALL_HAS_MAX_DEVICES_FORMAT",
-                comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
-            )
-            title = String(format: formatString, groupCall.peekInfo?.maxDevices ?? 5)
-        default:
+
+        if reason == .hasMaxDevices {
+            if let maxDevices = groupCall.maxDevices {
+                let formatString = NSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_FORMAT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                )
+                title = String(format: formatString, maxDevices)
+            } else {
+                title = NSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                )
+            }
+        } else {
             owsFailDebug("Group call ended with reason \(reason)")
             title = NSLocalizedString(
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",

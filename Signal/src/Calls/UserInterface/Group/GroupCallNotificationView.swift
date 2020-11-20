@@ -142,6 +142,11 @@ extension GroupCallNotificationView: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
+        hasJoined = false
+        activeMembers.removeAll()
+        membersPendingJoinNotification.removeAll()
+        membersPendingLeaveNotification.removeAll()
+
         updateActiveMembers()
     }
 }

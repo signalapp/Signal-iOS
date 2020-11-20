@@ -76,6 +76,14 @@ class CallControls: UIView {
         }
         button.contentEdgeInsets = UIEdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 11)
         button.addSubview(joinButtonActivityIndicator)
+        button.setTitle(
+            NSLocalizedString(
+                "GROUP_CALL_IS_FULL",
+                comment: "Text explaining the group call is full"
+            ),
+            for: .disabled
+        )
+        button.setTitleColor(.ows_whiteAlpha40, for: .disabled)
         joinButtonActivityIndicator.autoCenterInSuperview()
         return button
     }()
@@ -221,12 +229,16 @@ class CallControls: UIView {
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
 
-        if call.groupCall.localDeviceState.joinState == .joining {
+        if call.groupCall.isFull {
+            joinButton.isEnabled = false
+        } else if call.groupCall.localDeviceState.joinState == .joining {
+            joinButton.isEnabled = true
             joinButton.isUserInteractionEnabled = false
             joinButtonActivityIndicator.startAnimating()
 
             joinButton.setTitle("", for: .normal)
         } else {
+            joinButton.isEnabled = true
             joinButton.isUserInteractionEnabled = true
             joinButtonActivityIndicator.stopAnimating()
 
