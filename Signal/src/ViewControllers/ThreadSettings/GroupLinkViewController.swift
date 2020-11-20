@@ -190,8 +190,11 @@ public class GroupLinkViewController: OWSTableViewController {
 
     @objc
     func didToggleApproveNewMembers(_ sender: UISwitch) {
+        guard groupModelV2.isGroupInviteLinkEnabled else {
+            return
+        }
         let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
-        guard canEditGroupLinkSettings && groupModelV2.isGroupInviteLinkEnabled else {
+        guard canEditGroupLinkSettings else {
             let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
                                             comment: "Message indicating that a feature can only be used by group admins.")
             showToast(message: message)
