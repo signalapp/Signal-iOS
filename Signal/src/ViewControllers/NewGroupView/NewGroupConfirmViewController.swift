@@ -95,12 +95,24 @@ public class NewGroupConfirmViewController: OWSViewController {
             let learnMoreText = CommonStrings.learnMore
             if membersDoNotSupportGroupsV2.count > 1 {
                 let memberCountText = OWSFormat.formatInt(membersDoNotSupportGroupsV2.count)
-                let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N",
+                let legacyGroupFormat: String
+                if GroupManager.areMigrationsBlocking {
+                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N",
+                                                          comment: "Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
+                } else {
+                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N",
                                                           comment: "Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
+                }
                 legacyGroupText = String(format: legacyGroupFormat, memberCountText, learnMoreText)
             } else {
-                let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1",
+                let legacyGroupFormat: String
+                if GroupManager.areMigrationsBlocking {
+                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1",
+                                                          comment: "Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}.")
+               } else {
+                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1",
                                                           comment: "Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}.")
+                }
                 legacyGroupText = String(format: legacyGroupFormat, learnMoreText)
             }
             let attributedString = NSMutableAttributedString(string: legacyGroupText)
@@ -148,6 +160,11 @@ public class NewGroupConfirmViewController: OWSViewController {
 
     @objc
     func didTapLegacyGroupView(sender: UIGestureRecognizer) {
+        showLegacyGroupAlert()
+    }
+
+    @objc
+    func showLegacyGroupAlert() {
         let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
         guard !membersDoNotSupportGroupsV2.isEmpty else {
             return
@@ -175,12 +192,21 @@ public class NewGroupConfirmViewController: OWSViewController {
         }.compactMap { $0.address }
 
         if members.count > 0 {
+            let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2.map { $0.address }
+
             for address in members {
                 section.add(OWSTableItem(
                     customCellBlock: {
                         let cell = ContactTableViewCell()
 
                         cell.selectionStyle = .none
+
+                        if GroupManager.areMigrationsBlocking,
+                           membersDoNotSupportGroupsV2.contains(address) {
+                            let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
+                                                            comment: "Indicates that a group member does not support New Groups.")
+                            cell.setAttributedSubtitle(warning.attributedString())
+                        }
 
                         cell.configure(withRecipientAddress: address)
 
@@ -214,6 +240,13 @@ public class NewGroupConfirmViewController: OWSViewController {
                 Self.showMissingGroupNameAlert()
              return
         }
+        let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
+        if GroupManager.areMigrationsBlocking,
+           !membersDoNotSupportGroupsV2.isEmpty {
+            showLegacyGroupAlert()
+            return
+        }
+
         let avatarData = newGroupState.avatarData
         let memberSet = Set([localAddress] + recipientSet.orderedMembers.compactMap { $0.address })
         let members = Array(memberSet)
@@ -414,13 +447,24 @@ class NewLegacyGroupView: UIView {
         headerLabel.lineBreakMode = .byWordWrapping
         headerLabel.font = UIFont.ows_dynamicTypeBody
         if v1Members.count > 1 {
-            let format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT",
+            let format: String
+            if GroupManager.areMigrationsBlocking {
+                format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT",
+                                           comment: "Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
+            } else {
+                format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT",
                                            comment: "Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
+            }
             let formattedCount = OWSFormat.formatInt(v1Members.count)
             headerLabel.text = String(format: format, formattedCount)
         } else {
-            headerLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1",
-                                                 comment: "Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups.")
+            if GroupManager.areMigrationsBlocking {
+                headerLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1",
+                                                     comment: "Title for alert that explains that a new group cannot be created 1 member does not support v2 groups.")
+            } else {
+                headerLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1",
+                                                     comment: "Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups.")
+            }
         }
         headerLabel.textAlignment = .center
 

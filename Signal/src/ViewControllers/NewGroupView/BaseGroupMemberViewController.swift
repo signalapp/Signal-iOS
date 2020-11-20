@@ -549,9 +549,6 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
-        guard DebugFlags.groupsV2memberStatusIndicators else {
-            return nil
-        }
         guard let address = recipient.address else {
             owsFailDebug("Recipient missing address.")
             return nil
@@ -570,6 +567,14 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         guard !items.isEmpty else {
+            return nil
+        }
+        if GroupManager.areMigrationsBlocking {
+            let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
+                                            comment: "Indicates that a group member does not support New Groups.")
+            return warning.attributedString()
+       }
+        guard DebugFlags.groupsV2memberStatusIndicators else {
             return nil
         }
         return NSAttributedString(string: items.joined(separator: ", "),
