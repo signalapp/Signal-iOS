@@ -216,24 +216,25 @@ extension ConversationViewController: MessageRequestDelegate {
     func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool) {
         AssertIsOnMainThread()
 
+        let thread = self.thread
         let completion = {
             SDSDatabaseStorage.shared.asyncWrite { transaction in
                 if unblockThread {
-                    self.blockingManager.removeBlockedThread(self.thread, wasLocallyInitiated: true, transaction: transaction)
+                    self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
                 }
 
                 // Whitelist the thread
-                self.profileManager.addThread(toProfileWhitelist: self.thread, transaction: transaction)
+                self.profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
 
                 // Send a sync message notifying our other devices the request was accepted
                 self.syncManager.sendMessageRequestResponseSyncMessage(
-                    thread: self.thread,
+                    thread: thread,
                     responseType: .accept,
                     transaction: transaction
                 )
 
                 // Send our profile key to the sender
-                let profileKeyMessage = OWSProfileKeyMessage(thread: self.thread)
+                let profileKeyMessage = OWSProfileKeyMessage(thread: thread)
                 SSKEnvironment.shared.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
             }
         }

@@ -213,8 +213,8 @@
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasGroupsV2Capability = [GroupManager doesUserHaveGroupsV2CapabilityWithAddress:localAddress
                                                                             transaction:transaction];
-        hasGroupsV2Capability = [GroupManager doesUserHaveGroupsV2MigrationCapabilityWithAddress:localAddress
-                                                                                     transaction:transaction];
+        hasGroupMigrationCapability = [GroupManager doesUserHaveGroupsV2MigrationCapabilityWithAddress:localAddress
+                                                                                           transaction:transaction];
     }];
 
     OWSTableSection *section = [OWSTableSection new];
