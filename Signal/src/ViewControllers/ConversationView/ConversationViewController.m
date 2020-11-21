@@ -1290,10 +1290,12 @@ typedef enum : NSUInteger {
                     if (self.threadViewModel.groupCallInProgress) {
                         OWSJoinGroupCallPill *pill = [[OWSJoinGroupCallPill alloc] init];
                         [pill addTarget:self
-                                 action:@selector(showGroupLobbyOrActiveCall)
-                       forControlEvents:UIControlEventTouchUpInside];
-                        NSString *returnString = NSLocalizedString(@"RETURN_CALL_PILL_BUTTON", comment: "Button to return to current group call");
-                        NSString *joinString = NSLocalizedString(@"JOIN_CALL_PILL_BUTTON", comment: "Button to join an active group call");
+                                      action:@selector(showGroupLobbyOrActiveCall)
+                            forControlEvents:UIControlEventTouchUpInside];
+                        NSString *returnString = NSLocalizedString(@"RETURN_CALL_PILL_BUTTON", comment
+                                                                   : "Button to return to current group call");
+                        NSString *joinString = NSLocalizedString(@"JOIN_CALL_PILL_BUTTON", comment
+                                                                 : "Button to join an active group call");
                         pill.buttonText = self.isCurrentCallForThread ? returnString : joinString;
                         [videoCallButton setCustomView:pill];
                     } else {

@@ -637,7 +637,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for previewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
-        guard !thread.isMuted || previewableInteraction is TSErrorMessage else {
+        guard !thread.isMuted else {
             return
         }
 
