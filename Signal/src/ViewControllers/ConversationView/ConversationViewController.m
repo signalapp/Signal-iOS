@@ -1085,7 +1085,7 @@ typedef enum : NSUInteger {
             [self startIndividualVideoCall];
             break;
         case ConversationViewActionGroupCallLobby:
-            [self showGroupCallLobby];
+            [self showLobbyOrActiveCall];
             break;
     }
 
@@ -1290,17 +1290,20 @@ typedef enum : NSUInteger {
                     if (self.threadViewModel.groupCallInProgress) {
                         OWSJoinGroupCallPill *pill = [[OWSJoinGroupCallPill alloc] init];
                         [pill addTarget:self
-                                 action:@selector(showGroupCallLobby)
+                                 action:@selector(showLobbyOrActiveCall)
                        forControlEvents:UIControlEventTouchUpInside];
+                        NSString *returnString = NSLocalizedString(@"RETURN_CALL_PILL_BUTTON", comment: "Button to return to current group call");
+                        NSString *joinString = NSLocalizedString(@"JOIN_CALL_PILL_BUTTON", comment: "Button to join an active group call");
+                        pill.buttonText = self.isCurrentCallForThread ? returnString : joinString;
                         [videoCallButton setCustomView:pill];
                     } else {
                         UIImage *image = [Theme iconImage:ThemeIconVideoCall];
                         [videoCallButton setImage:image];
                         videoCallButton.target = self;
-                        videoCallButton.action = @selector(showGroupCallLobby);
+                        videoCallButton.action = @selector(showLobbyOrActiveCall);
                     }
 
-                    videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
+                    videoCallButton.enabled = (self.callService.currentCall == nil) || self.isCurrentCallForThread;
                     videoCallButton.accessibilityLabel
                         = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
                     [barButtons addObject:videoCallButton];
@@ -1426,8 +1429,13 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (void)showGroupCallLobby
+- (void)showLobbyOrActiveCall
 {
+    if (self.isCurrentCallForThread) {
+        [OWSWindowManager.shared returnToCallView];
+        return;
+    }
+
     if (!self.isGroupConversation) {
         OWSFailDebug(@"Tried to present group call for non-group thread.");
         return;
@@ -1933,13 +1941,15 @@ typedef enum : NSUInteger {
     [self presentActionSheet:alert];
 }
 
+- (BOOL)isCurrentCallForThread
+{
+    TSThread *currentCallThread = self.callService.currentCall.thread;
+    return [self.thread.uniqueId isEqualToString:currentCallThread.uniqueId];
+}
+
 - (void)handleGroupCallTap
 {
-    if ([self.callService.currentCall.thread.uniqueId isEqualToString:self.thread.uniqueId]) {
-        [OWSWindowManager.shared returnToCallView];
-    } else {
-        [self showGroupCallLobby];
-    }
+    [self showLobbyOrActiveCall];
 }
 
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address

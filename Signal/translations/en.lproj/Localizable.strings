@@ -3826,6 +3826,9 @@
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
 
+/* Button to return to current group call */
+"RETURN_CALL_PILL_BUTTON" = "Return";
+
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Add to Group Anyway";
 
