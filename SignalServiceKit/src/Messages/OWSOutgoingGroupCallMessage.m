@@ -5,14 +5,22 @@
 #import "OWSOutgoingGroupCallMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
+@interface OWSOutgoingGroupCallMessage ()
+@property (strong, nonatomic, nullable) NSString *eraId;
+@end
+
 @implementation OWSOutgoingGroupCallMessage
 
-- (instancetype)initWithThread:(TSGroupThread *)thread
+- (instancetype)initWithThread:(TSGroupThread *)thread eraId:(nullable NSString *)eraId
 {
     OWSAssertDebug(thread);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    return [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    if (self) {
+        _eraId = eraId;
+    }
+    return self;
 }
 
 - (BOOL)shouldBeSaved
@@ -27,6 +35,8 @@
 
     NSError *_Nullable error = nil;
     SSKProtoDataMessageGroupCallUpdateBuilder *updateBuilder = [SSKProtoDataMessageGroupCallUpdate builder];
+    [updateBuilder setEraID:self.eraId];
+
     SSKProtoDataMessageGroupCallUpdate *_Nullable updateMessage = [updateBuilder buildAndReturnError:&error];
     if (error || !updateMessage) {
         OWSFailDebug(@"Couldn't build GroupCallUpdate message");

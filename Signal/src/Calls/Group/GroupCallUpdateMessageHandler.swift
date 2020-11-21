@@ -8,12 +8,32 @@ import SignalRingRTC
 
 class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
 
-    var lastJoinStatus: Bool = false
+    var didSendJoinMessage: Bool = false
 
-    func sendUpdateMessageForThread(_ thread: TSGroupThread) {
+    func sendJoinMessageForCallIfNecessary(_ signalCall: SignalCall) {
+        guard !didSendJoinMessage else { return }
+        guard signalCall.isGroupCall, let groupCall = signalCall.groupCall else { return }
+        guard let eraId = groupCall.peekInfo?.eraId else { return }
+        guard let groupThread = signalCall.thread as? TSGroupThread else { return }
+        guard groupCall.localDeviceState.joinState == .joined else { return }
+
+        sendUpdateMessageForThread(groupThread, eraId: eraId)
+        didSendJoinMessage = true
+    }
+
+    func sendLeaveMessageForCallIfNecessary(_ signalCall: SignalCall) {
+        guard didSendJoinMessage else { return }
+        guard signalCall.isGroupCall, let groupCall = signalCall.groupCall else { return }
+        guard let groupThread = signalCall.thread as? TSGroupThread else { return }
+
+        sendUpdateMessageForThread(groupThread, eraId: groupCall.peekInfo?.eraId)
+        didSendJoinMessage = false
+    }
+
+    func sendUpdateMessageForThread(_ thread: TSGroupThread, eraId: String?) {
         Logger.info("Sending call update message for thread \(thread)")
 
-        let updateMessage = OWSOutgoingGroupCallMessage(thread: thread)
+        let updateMessage = OWSOutgoingGroupCallMessage(thread: thread, eraId: eraId)
         let messagePreparer = updateMessage.asPreparer
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
             SSKEnvironment.shared.messageSenderJobQueue.add(message: messagePreparer, transaction: writeTx)
@@ -22,20 +42,19 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
 
     func handleUpdateMessage(_ message: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread, serverReceivedTimestamp: UInt64) {
         DispatchQueue.main.async {
-            AppEnvironment.shared.callService.peekCallAndUpdateThread(thread, triggerEventTimestamp: serverReceivedTimestamp)
+            AppEnvironment.shared.callService.peekCallAndUpdateThread(
+                thread,
+                expectedEraId: message.eraID,
+                triggerEventTimestamp: serverReceivedTimestamp)
         }
     }
 
     // MARK: - CallServiceObserver
 
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        // If the last call was last seen as "Joined" make sure to send an update message for leaving
-        // Then reset our join status to false so we'll send an update message when joining the next call
-        if lastJoinStatus, let oldThread = oldValue?.thread as? TSGroupThread {
-            sendUpdateMessageForThread(oldThread)
+        if let oldValue = oldValue {
+            sendLeaveMessageForCallIfNecessary(oldValue)
         }
-        lastJoinStatus = false
-
         oldValue?.removeObserver(self)
         newValue?.addObserverAndSyncState(observer: self)
     }
@@ -44,17 +63,21 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call == AppEnvironment.shared.callService.currentCall)
-        guard call.isGroupCall else { return owsFailDebug("Expected a group call") }
-        guard let groupThread = call.thread as? TSGroupThread else { return owsFailDebug("Unexpected thread type") }
+        guard call.isGroupCall, let groupCall = call.groupCall else { return owsFailDebug("Expected a group call") }
 
-        let isJoined = (call.groupCall.localDeviceState.joinState == .joined)
-        if isJoined != lastJoinStatus {
-            lastJoinStatus = isJoined
-            sendUpdateMessageForThread(groupThread)
+        let isJoined = (groupCall.localDeviceState.joinState == .joined)
+        if isJoined {
+            sendJoinMessageForCallIfNecessary(call)
+        } else {
+            sendLeaveMessageForCallIfNecessary(call)
         }
     }
 
+    func groupCallPeekChanged(_ call: SignalCall) {
+        sendJoinMessageForCallIfNecessary(call)
+    }
+
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
-        lastJoinStatus = false
+        didSendJoinMessage = false
     }
 }

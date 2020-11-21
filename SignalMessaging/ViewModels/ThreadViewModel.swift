@@ -78,8 +78,9 @@ public class ThreadViewModel: NSObject {
         }
 
         self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
-        self.groupCallInProgress =
-            GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction).count > 0
+        self.groupCallInProgress = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction)
+            .filter { $0.joinedMemberAddresses.count > 0 }
+            .count > 0
     }
 
     @objc

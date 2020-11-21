@@ -1576,6 +1576,9 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
+/* Text in conversation view for a group call that someone started. We don't know who. */
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
