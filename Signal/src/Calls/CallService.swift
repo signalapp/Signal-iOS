@@ -659,6 +659,7 @@ extension CallService {
         }.done(on: .main) { info in
             // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
             // We may have a more appropriate timestamp waiting in the message processing queue.
+            Logger.info("Fetched group call PeekInfo for thread: \(thread) eraId: \(info.eraId ?? "(null)")")
             if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
                 self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
             }
@@ -719,6 +720,7 @@ extension CallService {
         databaseStorage.write { writeTx in
             guard !GRDBInteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
 
+            Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
             let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
             message.anyInsert(transaction: writeTx)
         }

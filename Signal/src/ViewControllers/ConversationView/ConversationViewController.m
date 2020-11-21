@@ -1085,7 +1085,7 @@ typedef enum : NSUInteger {
             [self startIndividualVideoCall];
             break;
         case ConversationViewActionGroupCallLobby:
-            [self showLobbyOrActiveCall];
+            [self showGroupLobbyOrActiveCall];
             break;
     }
 
@@ -1290,7 +1290,7 @@ typedef enum : NSUInteger {
                     if (self.threadViewModel.groupCallInProgress) {
                         OWSJoinGroupCallPill *pill = [[OWSJoinGroupCallPill alloc] init];
                         [pill addTarget:self
-                                 action:@selector(showLobbyOrActiveCall)
+                                 action:@selector(showGroupLobbyOrActiveCall)
                        forControlEvents:UIControlEventTouchUpInside];
                         NSString *returnString = NSLocalizedString(@"RETURN_CALL_PILL_BUTTON", comment: "Button to return to current group call");
                         NSString *joinString = NSLocalizedString(@"JOIN_CALL_PILL_BUTTON", comment: "Button to join an active group call");
@@ -1300,7 +1300,7 @@ typedef enum : NSUInteger {
                         UIImage *image = [Theme iconImage:ThemeIconVideoCall];
                         [videoCallButton setImage:image];
                         videoCallButton.target = self;
-                        videoCallButton.action = @selector(showLobbyOrActiveCall);
+                        videoCallButton.action = @selector(showGroupLobbyOrActiveCall);
                     }
 
                     videoCallButton.enabled = (self.callService.currentCall == nil) || self.isCurrentCallForThread;
@@ -1429,7 +1429,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (void)showLobbyOrActiveCall
+- (void)showGroupLobbyOrActiveCall
 {
     if (self.isCurrentCallForThread) {
         [OWSWindowManager.shared returnToCallView];
@@ -1949,7 +1949,7 @@ typedef enum : NSUInteger {
 
 - (void)handleGroupCallTap
 {
-    [self showLobbyOrActiveCall];
+    [self showGroupLobbyOrActiveCall];
 }
 
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
