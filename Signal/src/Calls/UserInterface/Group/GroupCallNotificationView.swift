@@ -137,6 +137,18 @@ extension GroupCallNotificationView: CallObserver {
 
         updateActiveMembers()
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        AssertIsOnMainThread()
+        owsAssertDebug(call.isGroupCall)
+
+        hasJoined = false
+        activeMembers.removeAll()
+        membersPendingJoinNotification.removeAll()
+        membersPendingLeaveNotification.removeAll()
+
+        updateActiveMembers()
+    }
 }
 
 private class BannerView: UIView {

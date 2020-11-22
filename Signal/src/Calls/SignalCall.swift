@@ -286,3 +286,14 @@ extension SignalCall: IndividualCallDelegate {
         observers.elements.forEach { $0.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: isVideoMuted) }
     }
 }
+
+extension GroupCall {
+    public var isFull: Bool {
+        guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else { return false }
+        return peekInfo.deviceCount >= maxDevices
+    }
+    public var maxDevices: UInt32? {
+        guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else { return nil }
+        return maxDevices
+    }
+}

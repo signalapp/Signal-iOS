@@ -466,21 +466,41 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
+        defer { updateCallUI() }
+
         guard reason != .deviceExplicitlyDisconnected else { return }
 
-        owsFailDebug("Group call ended with reason \(reason)")
+        let title: String
 
-        // TODO: Show better error to user?
-        let actionSheet = ActionSheetController(
-            title: NSLocalizedString(
+        if reason == .hasMaxDevices {
+            if let maxDevices = groupCall.maxDevices {
+                let formatString = NSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_FORMAT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                )
+                title = String(format: formatString, maxDevices)
+            } else {
+                title = NSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                )
+            }
+        } else {
+            owsFailDebug("Group call ended with reason \(reason)")
+            title = NSLocalizedString(
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",
                 comment: "An error displayed to the user when the group call unexpectedly ends."
             )
-        )
+        }
+
+        let actionSheet = ActionSheetController(title: title)
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.okButton,
             style: .default,
-            handler: nil
+            handler: { [weak self] _ in
+                guard reason == .hasMaxDevices else { return }
+                self?.dismissCall()
+            }
         ))
         presentActionSheet(actionSheet)
     }

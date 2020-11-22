@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalRingRTC
 
 class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
 
@@ -51,5 +52,9 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
             lastJoinStatus = isJoined
             sendUpdateMessageForThread(groupThread)
         }
+    }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        lastJoinStatus = false
     }
 }

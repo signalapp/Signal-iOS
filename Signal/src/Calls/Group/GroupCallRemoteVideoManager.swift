@@ -101,6 +101,10 @@ extension GroupCallRemoteVideoManager: CallObserver {
             videoViews.values.forEach { $0.configure(for: device) }
         }
     }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        videoViews.keys.forEach { destroyRemoteVideoView(for: $0) }
+    }
 }
 
 private protocol GroupCallRemoteVideoViewSizeDelegate: class {

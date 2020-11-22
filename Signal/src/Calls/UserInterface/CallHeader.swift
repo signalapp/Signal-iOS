@@ -260,6 +260,7 @@ extension CallHeader: CallObserver {
 
         updateCallTitleLabel()
         updateCallStatusLabel()
+        updateGroupMembersButton()
     }
 
     func groupCallPeekChanged(_ call: SignalCall) {
@@ -269,6 +270,15 @@ extension CallHeader: CallObserver {
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         updateCallTitleLabel()
+        updateGroupMembersButton()
+    }
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        callDurationTimer?.invalidate()
+        callDurationTimer = nil
+
+        updateCallTitleLabel()
+        updateCallStatusLabel()
         updateGroupMembersButton()
     }
 }
