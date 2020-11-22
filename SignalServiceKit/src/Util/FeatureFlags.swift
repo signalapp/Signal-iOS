@@ -199,7 +199,7 @@ public class FeatureFlags: BaseFlags {
     public static let supportAnimatedStickers_AnimatedWebp = true
 
     @objc
-    public static let groupCalling = build.includes(.qa)
+    public static let groupCalling = build.includes(.beta)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
