@@ -9,7 +9,7 @@
 #import <SignalUtilitiesKit/UIView+OWS.h>
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/OWSUploadOperation.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

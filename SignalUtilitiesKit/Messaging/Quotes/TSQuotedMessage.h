@@ -3,7 +3,7 @@
 //
 
 #import <Mantle/MTLModel.h>
-#import <SignalUtilitiesKit/TSYapDatabaseObject.h>
+#import <SessionUtilitiesKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

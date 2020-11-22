@@ -61,8 +61,12 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Message Handling
 
-    /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
-    func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, Any)?
+    /// Returns the ID of the thread the message was stored under along with the ID of the `TSIncomingMessage` that was constructed.
+    func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, String)?
     /// Returns the IDs of the saved attachments.
-    func save(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String]
+    func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String]
+    /// Also touches the associated message.
+    func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any)
+    /// Also touches the associated message.
+    func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
 }

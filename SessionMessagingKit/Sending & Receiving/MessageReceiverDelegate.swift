@@ -6,7 +6,7 @@ public protocol MessageReceiverDelegate {
     func showTypingIndicatorIfNeeded(for senderPublicKey: String)
     func hideTypingIndicatorIfNeeded(for senderPublicKey: String)
     func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String)
-    func notifyUserIfNeeded(for message: Any, threadID: String)
+    func notifyUserIfNeeded(forMessageWithID messageID: String, threadID: String)
     func markMessagesAsRead(_ timestamps: [UInt64], from senderPublicKey: String, at timestamp: UInt64)
     func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, groupPublicKey: String?, using transaction: Any)
     func disableExpirationTimer(for senderPublicKey: String, groupPublicKey: String?, using transaction: Any)

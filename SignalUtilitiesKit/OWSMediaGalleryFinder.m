@@ -12,6 +12,7 @@
 #import <YapDatabase/YapDatabaseViewTypes.h>
 #import <YapDatabase/YapWhitelistBlacklist.h>
 #import <SessionProtocolKit/SessionProtocolKit.h>
+#import "TSAttachment+Albums.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

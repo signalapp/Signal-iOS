@@ -13,8 +13,8 @@
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SignalUtilitiesKit/TSAttachment.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachment.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/TSThread.h>
 

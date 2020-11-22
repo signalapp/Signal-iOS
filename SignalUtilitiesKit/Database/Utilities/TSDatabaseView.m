@@ -3,7 +3,7 @@
 //
 
 #import "TSDatabaseView.h"
-
+#import "TSAttachmentPointer+Backups.h"
 #import "OWSReadTracking.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"

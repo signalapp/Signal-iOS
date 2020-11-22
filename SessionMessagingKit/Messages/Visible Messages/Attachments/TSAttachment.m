@@ -244,13 +244,6 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     return _contentType.filterFilename;
 }
 
-#pragma mark - Relationships
-
-- (void)migrateAlbumMessageId:(NSString *)albumMesssageId
-{
-    _albumMessageId = albumMesssageId;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

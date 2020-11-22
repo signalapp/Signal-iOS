@@ -12,7 +12,7 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 

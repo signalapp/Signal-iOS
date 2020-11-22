@@ -16,8 +16,8 @@ extension Storage {
         return try! promise.wait()
     }
     
-    /// Returns the ID of the thread the message was stored under along with the `TSIncomingMessage` that was constructed.
-    public func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, Any)? {
+    /// Returns the ID of the thread the message was stored under along with the ID of the `TSIncomingMessage` that was constructed.
+    public func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, String)? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
@@ -30,14 +30,32 @@ extension Storage {
         guard let thread = threadOrNil else { return nil }
         let message = TSIncomingMessage.from(message, associatedWith: thread)
         message.save(with: transaction)
-        return (thread.uniqueId!, message)
+        return (thread.uniqueId!, message.uniqueId!)
     }
 
-    public func save(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String] {
+    /// Returns the IDs of the saved attachments.
+    public func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String] {
         return attachments.map { attachment in
             let tsAttachment = TSAttachmentPointer.from(attachment)
             tsAttachment.save(with: transaction as! YapDatabaseReadWriteTransaction)
             return tsAttachment.uniqueId!
         }
+    }
+    
+    /// Also touches the associated message.
+    public func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        pointer.state = state
+        pointer.save(with: transaction)
+        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else { return }
+        tsIncomingMessage.touch(with: transaction)
+    }
+    
+    /// Also touches the associated message.
+    public func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        stream.save(with: transaction)
+        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else { return }
+        tsIncomingMessage.touch(with: transaction)
     }
 }

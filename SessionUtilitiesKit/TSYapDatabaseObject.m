@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return SNConfiguration.shared.owsPrimaryStorage.dbReadWriteConnection;
+    return SNUtilitiesKitConfiguration.shared.owsPrimaryStorage.dbReadWriteConnection;
 }
 
 + (NSString *)collection

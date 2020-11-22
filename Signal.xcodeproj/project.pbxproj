@@ -263,6 +263,10 @@
 		B8CCF63723961D6D0091D419 /* NewPrivateChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */; };
 		B8CCF63F23975CFB0091D419 /* JoinPublicChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */; };
 		B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF6422397711F0091D419 /* SettingsVC.swift */; };
+		B8D797B2256B25A1007C59DF /* TSAttachmentPointer+Backups.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D797B1256B25A1007C59DF /* TSAttachmentPointer+Backups.m */; };
+		B8D797C3256B25A8007C59DF /* TSAttachmentPointer+Backups.h in Headers */ = {isa = PBXBuildFile; fileRef = B8D797B0256B2590007C59DF /* TSAttachmentPointer+Backups.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B8D797D5256B2715007C59DF /* TSAttachment+Albums.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D797D4256B2715007C59DF /* TSAttachment+Albums.m */; };
+		B8D797DF256B2737007C59DF /* TSAttachment+Albums.h in Headers */ = {isa = PBXBuildFile; fileRef = B8D797DE256B2732007C59DF /* TSAttachment+Albums.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8D8F0F32565F98E0092EF10 /* LKUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB6B255A580F00E217F9 /* LKUserDefaults.swift */; };
 		B8D8F0F42565F98E0092EF10 /* PushNotificationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */; };
 		B8D8F1382566120F0092EF10 /* Storage+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */; };
@@ -1385,6 +1389,10 @@
 		B8CCF638239721E20091D419 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicChatVC.swift; sourceTree = "<group>"; };
 		B8CCF6422397711F0091D419 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
+		B8D797B0256B2590007C59DF /* TSAttachmentPointer+Backups.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TSAttachmentPointer+Backups.h"; sourceTree = "<group>"; };
+		B8D797B1256B25A1007C59DF /* TSAttachmentPointer+Backups.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "TSAttachmentPointer+Backups.m"; sourceTree = "<group>"; };
+		B8D797D4256B2715007C59DF /* TSAttachment+Albums.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "TSAttachment+Albums.m"; sourceTree = "<group>"; };
+		B8D797DE256B2732007C59DF /* TSAttachment+Albums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TSAttachment+Albums.h"; sourceTree = "<group>"; };
 		B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+ClosedGroups.swift"; sourceTree = "<group>"; };
 		B8D8F17625661AFA0092EF10 /* Storage+Jobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Jobs.swift"; sourceTree = "<group>"; };
 		B8D8F18825661BA50092EF10 /* Storage+OpenGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OpenGroups.swift"; sourceTree = "<group>"; };
@@ -3289,6 +3297,10 @@
 			children = (
 				C379DCFD25673DBC0002D4EB /* Attachment+Conversion.swift */,
 				C38EF224255B6D5D007E1867 /* SignalAttachment.swift */,
+				B8D797B0256B2590007C59DF /* TSAttachmentPointer+Backups.h */,
+				B8D797B1256B25A1007C59DF /* TSAttachmentPointer+Backups.m */,
+				B8D797DE256B2732007C59DF /* TSAttachment+Albums.h */,
+				B8D797D4256B2715007C59DF /* TSAttachment+Albums.m */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -3970,6 +3982,7 @@
 				C33FDC97255A582000E217F9 /* TSInfoMessage.h in Headers */,
 				C33FDC6D255A582000E217F9 /* TSContactThread.h in Headers */,
 				C33FDC3A255A581F00E217F9 /* OWSDisappearingMessagesJob.h in Headers */,
+				B8D797C3256B25A8007C59DF /* TSAttachmentPointer+Backups.h in Headers */,
 				C33FDD6A255A582000E217F9 /* TSErrorMessage.h in Headers */,
 				C33FDDA9255A582000E217F9 /* TSStorageKeys.h in Headers */,
 				C33FDC7A255A582000E217F9 /* OWSIncomingMessageFinder.h in Headers */,
@@ -4029,6 +4042,7 @@
 				C33FDCC8255A582000E217F9 /* NSError+MessageSending.h in Headers */,
 				C38EF403255B6DF7007E1867 /* ContactCellView.h in Headers */,
 				C33FDCA0255A582000E217F9 /* TSInteraction.h in Headers */,
+				B8D797DF256B2737007C59DF /* TSAttachment+Albums.h in Headers */,
 				C33FDD68255A582000E217F9 /* SignalAccount.h in Headers */,
 				C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */,
 				C33FDC4F255A582000E217F9 /* OWSChunkedOutputStream.h in Headers */,
@@ -5155,6 +5169,7 @@
 				C33FDCEE255A582000E217F9 /* ClosedGroupPoller.swift in Sources */,
 				C38EF3BD255B6DE7007E1867 /* ImageEditorTransform.swift in Sources */,
 				C38EF24F255B6D67007E1867 /* UIColor+OWS.m in Sources */,
+				B8D797D5256B2715007C59DF /* TSAttachment+Albums.m in Sources */,
 				C33FDC9A255A582000E217F9 /* ByteParser.m in Sources */,
 				C38EF293255B6D86007E1867 /* AppSetup.m in Sources */,
 				C33FDDC0255A582000E217F9 /* SignalAccount.m in Sources */,
@@ -5202,6 +5217,7 @@
 				C38EF38D255B6DD2007E1867 /* AttachmentCaptionViewController.swift in Sources */,
 				C33FDC2D255A581F00E217F9 /* ECKeyPair+Hexadecimal.swift in Sources */,
 				C33FDDC6255A582000E217F9 /* TSInfoMessage.m in Sources */,
+				B8D797B2256B25A1007C59DF /* TSAttachmentPointer+Backups.m in Sources */,
 				C38EF319255B6DBF007E1867 /* Weak.swift in Sources */,
 				C38EF31C255B6DBF007E1867 /* Searcher.swift in Sources */,
 				C38EF2B3255B6D9C007E1867 /* UIViewController+Utilities.swift in Sources */,

@@ -5,6 +5,7 @@ import SignalCoreKit
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
     private let attachmentID: String
+    private let tsIncomingMessageID: String
     public var id: String?
     public var failureCount: UInt = 0
 
@@ -23,18 +24,22 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
-    public init(attachmentID: String) {
+    public init(attachmentID: String, tsIncomingMessageID: String) {
         self.attachmentID = attachmentID
+        self.tsIncomingMessageID = tsIncomingMessageID
     }
 
     // MARK: Coding
     public init?(coder: NSCoder) {
-        guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String? else { return nil }
+        guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
+            let tsIncomingMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String? else { return nil }
         self.attachmentID = attachmentID
+        self.tsIncomingMessageID = tsIncomingMessageID
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
+        coder.encode(tsIncomingMessageID, forKey: "tsIncomingMessageID")
     }
 
     // MARK: Running
@@ -42,19 +47,30 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         guard let pointer = TSAttachmentPointer.fetch(uniqueId: attachmentID) else {
             return handleFailure(error: Error.noAttachment)
         }
+        let storage = Configuration.shared.storage
+        storage.withAsync({ transaction in
+            storage.setAttachmentState(to: .downloading, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+        }, completion: { })
         let temporaryFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth() + UUID().uuidString)
-        FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in // Intentionally capture self
+        let handleFailure: (Swift.Error) -> Void = { error in // Intentionally capture self
+            OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+            storage.withAsync({ transaction in
+                storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+            }, completion: { })
+            self.handleFailure(error: error)
+        }
+        FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
             do {
                 try data.write(to: temporaryFilePath, options: .atomic)
             } catch {
-                return self.handleFailure(error: error)
+                return handleFailure(error)
             }
             let plaintext: Data
             if let key = pointer.encryptionKey, let digest = pointer.digest {
                 do {
                     plaintext = try Cryptography.decryptAttachment(data, withKey: key, digest: digest, unpaddedSize: pointer.byteCount)
                 } catch {
-                    return self.handleFailure(error: error)
+                    return handleFailure(error)
                 }
             } else {
                 plaintext = data // Open group attachments are unencrypted
@@ -63,15 +79,14 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             do {
                 try stream.write(plaintext)
             } catch {
-                return self.handleFailure(error: error)
+                return handleFailure(error)
             }
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-            Configuration.shared.storage.withAsync({ transaction in
-                stream.save(with: transaction as! YapDatabaseReadWriteTransaction)
-                // TODO: Update the message
+            storage.withAsync({ transaction in
+                storage.persist(stream, associatedWith: self.tsIncomingMessageID, using: transaction)
             }, completion: { })
         }.catch(on: DispatchQueue.global()) { error in
-            self.handleFailure(error: error)
+            handleFailure(error)
         }
     }
 

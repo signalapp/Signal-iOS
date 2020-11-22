@@ -9,10 +9,10 @@
 #import <SignalUtilitiesKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
-
+#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSInteraction.h>
 #import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/TSQuotedMessage.h>

@@ -63,9 +63,9 @@
 #import <SignalUtilitiesKit/UIView+OWS.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>
 #import <SignalUtilitiesKit/AppVersion.h>
-#import <SignalUtilitiesKit/DataSource.h>
+#import <SessionUtilitiesKit/DataSource.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
-#import <SignalUtilitiesKit/NSData+Image.h>
+#import <SessionUtilitiesKit/NSData+Image.h>
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
@@ -80,9 +80,9 @@
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SignalRecipient.h>
 #import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSAttachment.h>
-#import <SignalUtilitiesKit/TSAttachmentPointer.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachment.h>
+#import <SessionMessagingKit/TSAttachmentPointer.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSContactThread.h>
 #import <SignalUtilitiesKit/TSErrorMessage.h>
 #import <SignalUtilitiesKit/TSGroupThread.h>
@@ -92,7 +92,7 @@
 #import <SignalUtilitiesKit/TSPreKeyManager.h>
 #import <SignalUtilitiesKit/TSThread.h>
 #import <SignalUtilitiesKit/LKGroupUtilities.h>
-#import <SignalUtilitiesKit/UIImage+OWS.h>
+#import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>

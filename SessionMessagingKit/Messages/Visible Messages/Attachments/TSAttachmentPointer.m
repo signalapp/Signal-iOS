@@ -15,16 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-
-@interface TSAttachmentPointer ()
-
-// Optional property.  Only set for attachments which need "lazy backup restore."
-@property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
-
-@end
-
-#pragma mark -
-
 @implementation TSAttachmentPointer
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

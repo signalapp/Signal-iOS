@@ -7,7 +7,7 @@ import PromiseKit
 import SignalUtilitiesKit
 
 @objc(OWSSessionResetJobQueue)
-public class SessionResetJobQueue: NSObject, JobQueue {
+public class SessionResetJobQueue: NSObject, SignalUtilitiesKit.JobQueue {
 
     @objc(addContactThread:transaction:)
     public func add(contactThread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {

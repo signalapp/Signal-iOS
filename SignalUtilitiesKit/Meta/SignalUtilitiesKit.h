@@ -12,14 +12,12 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/AppSetup.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/BlockListUIUtils.h>
-#import <SignalUtilitiesKit/DataSource.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/LKGroupUtilities.h>
 #import <SignalUtilitiesKit/NotificationsProtocol.h>
 #import <SignalUtilitiesKit/NSArray+Functional.h>
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
-#import <SignalUtilitiesKit/NSData+Image.h>
 #import <SignalUtilitiesKit/NSError+MessageSending.h>
 #import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
@@ -72,8 +70,8 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SSKMessageSenderJobRecord.h>
 #import <SignalUtilitiesKit/Theme.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
-#import <SignalUtilitiesKit/TSAttachmentPointer.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SignalUtilitiesKit/TSAttachment+Albums.h>
+#import <SignalUtilitiesKit/TSAttachmentPointer+Backups.h>
 #import <SignalUtilitiesKit/TSContactThread.h>
 #import <SignalUtilitiesKit/TSDatabaseView.h>
 #import <SignalUtilitiesKit/TSErrorMessage.h>
@@ -88,7 +86,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/TSQuotedMessage.h>
 #import <SignalUtilitiesKit/TSThread.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/UIImage+OWS.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIView+OWS.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>

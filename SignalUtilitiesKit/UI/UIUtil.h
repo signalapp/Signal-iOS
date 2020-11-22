@@ -5,7 +5,7 @@
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
-#import <SignalUtilitiesKit/UIImage+OWS.h>
+#import <SessionUtilitiesKit/UIImage+OWS.h>
 
 #define ACCESSIBILITY_IDENTIFIER_WITH_NAME(_root_view, _variable_name)                                                 \
     ([NSString stringWithFormat:@"%@.%@", _root_view.class, _variable_name])

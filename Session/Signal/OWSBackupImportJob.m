@@ -11,7 +11,7 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalUtilitiesKit/OWSBackgroundTask.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SignalUtilitiesKit/TSAttachment.h>
+#import <SessionMessagingKit/TSAttachment.h>
 #import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/TSThread.h>
 

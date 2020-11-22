@@ -139,16 +139,24 @@ internal enum MessageReceiver {
     private static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
         let delegate = Configuration.shared.messageReceiverDelegate
         let storage = Configuration.shared.storage
-        // Handle attachments
+        // Parse & persist attachments
         let attachments: [VisibleMessage.Attachment] = proto.dataMessage!.attachments.compactMap { proto in
             guard let attachment = VisibleMessage.Attachment.fromProto(proto) else { return nil }
             return attachment.isValid ? attachment : nil
         }
-        let attachmentIDs = storage.save(attachments, using: transaction)
+        let attachmentIDs = storage.persist(attachments, using: transaction)
         message.attachmentIDs = attachmentIDs
+        // Update profile if needed
+        if let profile = message.profile {
+            delegate.updateProfile(for: message.sender!, from: profile, using: transaction)
+        }
+        // Persist the message
+        guard let (threadID, tsIncomingMessageID) = storage.persist(message, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+        message.threadID = threadID
+        // Start attachment downloads if needed
         storage.withAsync({ transaction in
             attachmentIDs.forEach { attachmentID in
-                let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID)
+                let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
                 if CurrentAppContext().isMainAppAndActive {
                     JobQueue.shared.add(downloadJob, using: transaction)
                 } else {
@@ -156,16 +164,9 @@ internal enum MessageReceiver {
                 }
             }
         }, completion: { })
-        // Update profile if needed
-        if let profile = message.profile {
-            delegate.updateProfile(for: message.sender!, from: profile, using: transaction)
-        }
-        // Persist the message
-        guard let (threadID, tsIncomingMessage) = storage.persist(message, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
-        message.threadID = threadID
         // Cancel any typing indicators
         delegate.cancelTypingIndicatorsIfNeeded(for: message.sender!)
         // Notify the user if needed
-        delegate.notifyUserIfNeeded(for: tsIncomingMessage, threadID: threadID)
+        delegate.notifyUserIfNeeded(forMessageWithID: tsIncomingMessageID, threadID: threadID)
     }
 }

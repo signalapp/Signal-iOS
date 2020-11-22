@@ -1,5 +1,5 @@
 
-@objc(SNConfiguration)
+@objc(SNUtilitiesKitConfiguration)
 public final class Configuration : NSObject {
     @objc public let owsPrimaryStorage: OWSPrimaryStorageProtocol
     public let maxFileSize: UInt

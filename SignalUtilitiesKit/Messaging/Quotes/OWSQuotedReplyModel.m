@@ -6,10 +6,9 @@
 #import "ConversationViewItem.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
-
 #import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSAttachmentPointer.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachmentPointer.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSIncomingMessage.h>
 #import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/TSOutgoingMessage.h>

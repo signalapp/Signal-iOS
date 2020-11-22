@@ -12,7 +12,7 @@
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalCoreKit/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN

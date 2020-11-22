@@ -11,7 +11,7 @@
 #import "Session-Swift.h"
 #import "AnyPromise.h"
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
-#import <SignalUtilitiesKit/NSData+Image.h>
+#import <SessionUtilitiesKit/NSData+Image.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 
 #import <SignalUtilitiesKit/TSInteraction.h>

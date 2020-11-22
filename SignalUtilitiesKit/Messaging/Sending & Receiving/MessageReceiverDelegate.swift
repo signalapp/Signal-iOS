@@ -89,10 +89,10 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
 
     // MARK: - Notifications
 
-    public func notifyUserIfNeeded(for message: Any, threadID: String) {
-        guard let thread = TSThread.fetch(uniqueId: threadID) else { return }
+    public func notifyUserIfNeeded(forMessageWithID messageID: String, threadID: String) {
+        guard let message = TSIncomingMessage.fetch(uniqueId: messageID), let thread = TSThread.fetch(uniqueId: threadID) else { return }
         Storage.read { transaction in
-            SSKEnvironment.shared.notificationsManager!.notifyUser(for: (message as! TSIncomingMessage), in: thread, transaction: transaction)
+            SSKEnvironment.shared.notificationsManager!.notifyUser(for: message, in: thread, transaction: transaction)
         }
     }
 
