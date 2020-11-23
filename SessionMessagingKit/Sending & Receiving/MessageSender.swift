@@ -38,10 +38,11 @@ public final class MessageSender : NSObject {
     }
 
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+        let storage = Configuration.shared.storage
         if message.sentTimestamp == nil { // Visible messages will already have the sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        message.sender = Configuration.shared.storage.getUserPublicKey()
+        message.sender = storage.getUserPublicKey()
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey
         case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
@@ -137,7 +138,6 @@ public final class MessageSender : NSObject {
             seal.reject(error)
         }
         let _ = promise.done(on: DispatchQueue.main) {
-            let storage = Configuration.shared.storage
             storage.withAsync({ transaction in
                 Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
@@ -150,7 +150,7 @@ public final class MessageSender : NSObject {
             }, completion: { })
         }
         let _ = promise.catch(on: DispatchQueue.main) { _ in
-            Configuration.shared.storage.withAsync({ transaction in
+            storage.withAsync({ transaction in
                 Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, using: transaction)
             }, completion: { })
             if case .contact(_) = destination {
@@ -161,6 +161,7 @@ public final class MessageSender : NSObject {
     }
 
     internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+        let storage = Configuration.shared.storage
         message.sentTimestamp = NSDate.millisecondTimestamp()
         switch destination {
         case .contact(_): preconditionFailure()
@@ -177,11 +178,16 @@ public final class MessageSender : NSObject {
         guard let message = message as? VisibleMessage,
             let openGroupMessage = OpenGroupMessage.from(message, for: server) else { return Promise(error: Error.invalidMessage) }
         let promise = OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server)
-        let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-            // TODO: Save server message ID
+        let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
+            message.openGroupServerMessageID = openGroupMessage.serverID
+            storage.withAsync({ transaction in
+                Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
+            }, completion: { })
         }
         promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-            // TODO: Handle failure
+            storage.withAsync({ transaction in
+                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, using: transaction)
+            }, completion: { })
         }
         return promise.map { _ in }
     }

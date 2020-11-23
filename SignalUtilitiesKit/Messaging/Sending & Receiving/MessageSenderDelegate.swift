@@ -5,6 +5,9 @@ public final class MessageSenderDelegate : SessionMessagingKit.MessageSenderDele
     
     public func handleSuccessfulMessageSend(_ message: Message, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        if let openGroupServerMessageID = message.openGroupServerMessageID {
+            tsMessage.openGroupServerMessageID = openGroupServerMessageID
+        }
         tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
 

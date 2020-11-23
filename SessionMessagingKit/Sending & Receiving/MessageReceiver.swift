@@ -10,11 +10,11 @@ internal enum MessageReceiver {
         case noData
         case senderBlocked
         case noThread
+        case selfSend
         // Shared sender keys
         case invalidGroupPublicKey
         case noGroupPrivateKey
         case sharedSecretGenerationFailed
-        case selfSend
 
         internal var isRetryable: Bool {
             switch self {
@@ -42,6 +42,7 @@ internal enum MessageReceiver {
     }
 
     internal static func parse(_ data: Data, messageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
+        let userPublicKey = Configuration.shared.storage.getUserPublicKey()
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
         // Decrypt the contents
@@ -57,6 +58,8 @@ internal enum MessageReceiver {
         }
         // Don't process the envelope any further if the sender is blocked
         guard !Configuration.shared.messageReceiverDelegate.isBlocked(sender) else { throw Error.senderBlocked }
+        // Ignore self sends
+        guard sender != userPublicKey else { throw Error.selfSend }
         // Parse the proto
         let proto: SNProtoContent
         do {
@@ -76,7 +79,7 @@ internal enum MessageReceiver {
         }()
         if let message = message {
             message.sender = sender
-            message.recipient = Configuration.shared.storage.getUserPublicKey()
+            message.recipient = userPublicKey
             message.sentTimestamp = envelope.timestamp
             message.receivedTimestamp = NSDate.millisecondTimestamp()
             message.groupPublicKey = groupPublicKey
