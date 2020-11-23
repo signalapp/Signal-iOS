@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *moreThanThreeFormat = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
         @"Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
-        @"participant2, %3$ld participantCount-2 }}");
+        @"participant2, %3$@ participantCount-2 }}");
     NSString *threeFormat = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
         @"Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
         @"participant2 }}");
@@ -214,7 +214,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (sortedAddresses.count >= 4) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
         NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
-        return [NSString stringWithFormat:moreThanThreeFormat, firstName, secondName, (sortedAddresses.count - 2)];
+        NSString *remainingCount = [OWSFormat formatInt:(sortedAddresses.count - 2)];
+        return [NSString stringWithFormat:moreThanThreeFormat, firstName, secondName, remainingCount];
 
     } else if (sortedAddresses.count == 3) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];

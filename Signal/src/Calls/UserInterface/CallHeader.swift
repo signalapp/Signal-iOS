@@ -215,9 +215,9 @@ class CallHeader: UIView {
                 default:
                     let formatString = NSLocalizedString(
                         "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$ld participantCount-2 }}"
+                        comment: "Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }}"
                     )
-                    callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
+                    callTitleText = String(format: formatString, memberNames[0], memberNames[1], OWSFormat.formatInt(memberNames.count - 2))
                 }
             }
         }

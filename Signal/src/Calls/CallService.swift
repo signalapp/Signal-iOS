@@ -688,10 +688,17 @@ extension CallService {
             owsAssertDebug(currentEraMessages.count <= 1)
 
             if let currentMessage = currentEraMessages.first {
+                let wasOldMessageEmpty = currentMessage.joinedMemberUuids?.count == 0 && !currentMessage.hasEnded
+
                 currentMessage.update(
                     withJoinedMemberUuids: info.joinedMembers,
                     creatorUuid: creatorUuid,
                     transaction: writeTx)
+
+                // Only motify if the message we updated had no participants
+                if wasOldMessageEmpty {
+                    self.postUserNotificationIfNecessary(message: currentMessage, transaction: writeTx)
+                }
 
             } else if !info.joinedMembers.isEmpty {
                 let newMessage = OWSGroupCallMessage(
@@ -701,17 +708,7 @@ extension CallService {
                     thread: thread,
                     sentAtTimestamp: timestamp)
                 newMessage.anyInsert(transaction: writeTx)
-
-                // Post a notification when learning about a new group call if: we didn't create it and we're not currently in the call.
-                let isCurrentCall = (self.currentCall?.thread == thread)
-                let isLocalUserCreator = SignalServiceAddress(uuid: creatorUuid).isLocalAddress
-                if !isCurrentCall, !isLocalUserCreator {
-                    AppEnvironment.shared.notificationPresenter.notifyUser(
-                        for: newMessage,
-                        thread: thread,
-                        wantsSound: true,
-                        transaction: writeTx)
-                }
+                self.postUserNotificationIfNecessary(message: newMessage, transaction: writeTx)
             }
         }
     }
@@ -724,6 +721,21 @@ extension CallService {
             let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
             message.anyInsert(transaction: writeTx)
         }
+    }
+
+    fileprivate func postUserNotificationIfNecessary(message: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+        // The message can't be for the current call
+        guard self.currentCall?.thread.uniqueId != message.uniqueThreadId else { return }
+        // The creator of the call must be known, and it can't be the local user
+        guard let creator = message.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
+        // The message must have at least one participant
+        guard (message.joinedMemberUuids?.count ?? 0) > 0 else { return }
+
+        guard let thread = TSGroupThread.anyFetch(uniqueId: message.uniqueThreadId, transaction: transaction) else {
+            owsFailDebug("Unknown thread")
+            return
+        }
+        AppEnvironment.shared.notificationPresenter.notifyUser(for: message, thread: thread, wantsSound: true, transaction: transaction)
     }
 }
 
