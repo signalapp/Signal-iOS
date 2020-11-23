@@ -629,6 +629,8 @@ extension CallService {
     func peekCallAndUpdateThread(_ thread: TSGroupThread, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
         AssertIsOnMainThread()
 
+        guard FeatureFlags.groupCalling else { return }
+
         // If the currentCall is for the provided thread, we don't need to perform an explict
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
