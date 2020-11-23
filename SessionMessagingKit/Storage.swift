@@ -37,6 +37,10 @@ public protocol SessionMessagingKitStorageProtocol {
     func setAuthToken(for server: String, to newValue: String, using transaction: Any)
     func removeAuthToken(for server: String, using transaction: Any)
 
+    // MARK: - Open Groups
+    
+    func getOpenGroup(for threadID: String) -> OpenGroup?
+    
     // MARK: - Open Group Public Keys
 
     func getOpenGroupPublicKey(for server: String) -> String?
