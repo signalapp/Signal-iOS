@@ -950,7 +950,7 @@ static CGRect oldframe;
     if (gThread.usesSharedSenderKeys) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [[LKClosedGroupsProtocol leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
+            [[SNMessageSenderDelegate leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
         }];
     }
 
@@ -1197,21 +1197,7 @@ static CGRect oldframe;
 
 - (void)resetSecureSession
 {
-    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
-    TSContactThread *thread = (TSContactThread *)self.thread;
-    __weak OWSConversationSettingsViewController *weakSelf = self;
-    NSString *message = @"This may help if you're having encryption problems in this conversation. Your messages will be kept.";
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Reset Secure Session?" message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") style:UIAlertActionStyleDefault handler:nil]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Reset" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
-            }];
-            [weakSelf.navigationController popViewControllerAnimated:YES];
-        });
-    }]];
-    [self presentViewController:alert animated:YES completion:nil];
+    
 }
 
 #pragma mark - Notifications

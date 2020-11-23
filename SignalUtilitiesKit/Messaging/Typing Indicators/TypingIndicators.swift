@@ -309,7 +309,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 return
             }
 
-            if !SessionMetaProtocol.shouldSendTypingIndicator(in: thread) { return }
+            if thread.isGroupThread() { return } // Don't send typing indicators in group threads
 
             let typingIndicator = TypingIndicator()
             typingIndicator.kind = action

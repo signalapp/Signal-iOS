@@ -165,10 +165,12 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
         TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
 
-        if (![LKSessionMetaProtocol shouldSendReceiptInThread:thread]) {
+        if (thread.isGroupThread) { // Don't send receipts in group threads
             continue;
         }
 
+        // TODO TODO TODO
+        
         /*
         OWSReceiptsForSenderMessage *message;
         NSString *receiptName;

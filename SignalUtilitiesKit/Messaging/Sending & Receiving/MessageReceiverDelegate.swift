@@ -289,7 +289,6 @@ public final class MessageReceiverDelegate : SessionMessagingKit.MessageReceiver
         }
         // Respond to the request
         SNLog("Responding to sender key request from: \(message.sender!).")
-        SessionManagementProtocol.sendSessionRequestIfNeeded(to: message.sender!, using: transaction)
         let userRatchet = Storage.shared.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey)
             ?? SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))

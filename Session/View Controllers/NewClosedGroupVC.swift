@@ -157,20 +157,20 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
         }
-        guard name.count < ClosedGroupsProtocol.maxNameSize else {
+        guard name.count < 64 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
         guard selectedContacts.count >= 1 else {
             return showError(title: "Please pick at least 1 group member")
         }
-        guard selectedContacts.count < ClosedGroupsProtocol.groupSizeLimit else { // Minus one because we're going to include self later
+        guard selectedContacts.count < 20 else { // Minus one because we're going to include self later
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
         let selectedContacts = self.selectedContacts
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             var promise: Promise<TSGroupThread>!
             Storage.writeSync { transaction in
-                promise = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+                promise = MessageSenderDelegate.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
             }
             let _ = promise.done(on: DispatchQueue.main) { thread in
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)

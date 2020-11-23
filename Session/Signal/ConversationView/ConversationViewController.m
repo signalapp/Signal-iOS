@@ -3248,12 +3248,6 @@ typedef enum : NSUInteger {
 //        }];
 
         [self messageWasSent:message];
-
-        if ([self.thread isKindOfClass:TSContactThread.class]) {
-            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
-            }];
-        }
     });
 }
 

@@ -1,7 +1,9 @@
 import PromiseKit
 
-public final class MessageSenderDelegate : SessionMessagingKit.MessageSenderDelegate, SharedSenderKeysDelegate {
+@objc(SNMessageSenderDelegate)
+public final class MessageSenderDelegate : NSObject, SessionMessagingKit.MessageSenderDelegate, SharedSenderKeysDelegate {
 
+    // MARK: Error
     public enum Error : LocalizedError {
         case noThread
         case noPrivateKey
@@ -16,8 +18,12 @@ public final class MessageSenderDelegate : SessionMessagingKit.MessageSenderDele
         }
     }
     
+    // MARK: Initialization
     public static let shared = MessageSenderDelegate()
     
+    private override init() { }
+    
+    // MARK: Sending
     public func handleSuccessfulMessageSend(_ message: Message, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         if let openGroupServerMessageID = message.openGroupServerMessageID {
@@ -30,6 +36,7 @@ public final class MessageSenderDelegate : SessionMessagingKit.MessageSenderDele
         // TODO: Implement
     }
     
+    // MARK: Closed Groups
     public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
         var members = members
