@@ -54,10 +54,14 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         let temporaryFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth() + UUID().uuidString)
         let handleFailure: (Swift.Error) -> Void = { error in // Intentionally capture self
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-            storage.withAsync({ transaction in
-                storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
-            }, completion: { })
-            self.handleFailure(error: error)
+            if let error = error as? Error, case .noAttachment = error {
+                storage.withAsync({ transaction in
+                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+                }, completion: { })
+                self.handlePermanentFailure(error: error)
+            } else {
+                self.handleFailure(error: error)
+            }
         }
         FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
             do {
@@ -92,6 +96,10 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
 
     private func handleSuccess() {
         delegate?.handleJobSucceeded(self)
+    }
+    
+    private func handlePermanentFailure(error: Swift.Error) {
+        delegate?.handleJobFailedPermanently(self, with: error)
     }
 
     private func handleFailure(error: Swift.Error) {

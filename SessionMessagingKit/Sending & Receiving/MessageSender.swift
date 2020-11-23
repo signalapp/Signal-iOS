@@ -11,6 +11,13 @@ public final class MessageSender : NSObject {
         case proofOfWorkCalculationFailed
         case noUserPublicKey
 
+        internal var isRetryable: Bool {
+            switch self {
+            case .invalidMessage, .protoConversionFailed, .proofOfWorkCalculationFailed: return false
+            default: return true
+            }
+        }
+        
         public var errorDescription: String? {
             switch self {
             case .invalidMessage: return "Invalid message."

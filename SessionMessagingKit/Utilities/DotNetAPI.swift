@@ -22,6 +22,10 @@ public class DotNetAPI : NSObject {
         case decryptionFailed
         case maxFileSizeExceeded
 
+        internal var isRetryable: Bool {
+            return false
+        }
+        
         public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."

@@ -69,7 +69,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 if storage.getAttachmentUploadJob(for: attachment.uniqueId!) != nil {
                     // Wait for it to finish
                 } else {
-                    let job = AttachmentUploadJob()
+                    let job = AttachmentUploadJob(attachmentID: attachment.uniqueId!, threadID: message.threadID!)
                     storage.withAsync({ transaction in
                         JobQueue.shared.add(job, using: transaction)
                     }, completion: { })
@@ -83,7 +83,11 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                     self.handleSuccess()
                 }.catch(on: Threading.workQueue) { error in
                     SNLog("Couldn't send message due to error: \(error).")
-                    self.handleFailure(error: error)
+                    if let error = error as? MessageSender.Error, !error.isRetryable {
+                        self.handlePermanentFailure(error: error)
+                    } else {
+                        self.handleFailure(error: error)
+                    }
                 }
             }
         }, completion: { })
@@ -91,6 +95,10 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     private func handleSuccess() {
         delegate?.handleJobSucceeded(self)
+    }
+    
+    private func handlePermanentFailure(error: Error) {
+        delegate?.handleJobFailedPermanently(self, with: error)
     }
 
     private func handleFailure(error: Error) {

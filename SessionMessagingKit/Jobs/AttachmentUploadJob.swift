@@ -48,18 +48,29 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         guard !stream.isUploaded else { return handleSuccess() } // Should never occur
         let openGroup = Configuration.shared.storage.getOpenGroup(for: threadID)
         let server = openGroup?.server ?? FileServerAPI.server
+        // FIXME: A lot of what's currently happening in FileServerAPI should really be happening here
         FileServerAPI.uploadAttachment(stream, with: attachmentID, to: server).done(on: DispatchQueue.global(qos: .userInitiated)) { // Intentionally capture self
             self.handleSuccess()
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            self.handleFailure(error: error)
+            if let error = error as? Error, case .noAttachment = error {
+                self.handlePermanentFailure(error: error)
+            } else if let error = error as? DotNetAPI.Error, !error.isRetryable {
+                self.handlePermanentFailure(error: error)
+            } else {
+                self.handleFailure(error: error)
+            }
         }
     }
 
     private func handleSuccess() {
         delegate?.handleJobSucceeded(self)
     }
+    
+    private func handlePermanentFailure(error: Swift.Error) {
+        delegate?.handleJobFailedPermanently(self, with: error)
+    }
 
-    private func handleFailure(error: Error) {
+    private func handleFailure(error: Swift.Error) {
         delegate?.handleJobFailed(self, with: error)
     }
 }
