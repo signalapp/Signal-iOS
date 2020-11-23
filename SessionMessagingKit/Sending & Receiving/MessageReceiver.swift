@@ -1,11 +1,5 @@
 import SessionUtilitiesKit
 
-// TODO:
-// • Threads don't show up on the first message; only on the second.
-// • Profile pictures aren't showing up.
-// • Check that message expiration works.
-// • Open group messages (sync messages).
-
 internal enum MessageReceiver {
 
     internal enum Error : LocalizedError {

@@ -10,7 +10,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Settings
     public class var collection: String { return "MessageSendJobCollection" }
-    public static let maxFailureCount: UInt = 20
+    public static let maxFailureCount: UInt = 10
 
     // MARK: Initialization
     @objc public convenience init(message: Message, publicKey: String) { self.init(message: message, destination: .contact(publicKey: publicKey)) }
@@ -61,7 +61,23 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Running
     public func execute() {
-        Configuration.shared.storage.withAsync({ transaction in // Intentionally capture self
+        let storage = Configuration.shared.storage
+        if let message = message as? VisibleMessage {
+            let attachments = message.attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0) }
+            let attachmentsToUpload = attachments.filter { !$0.isUploaded }
+            attachmentsToUpload.forEach { attachment in
+                if storage.getAttachmentUploadJob(for: attachment.uniqueId!) != nil {
+                    // Wait for it to finish
+                } else {
+                    let job = AttachmentUploadJob()
+                    storage.withAsync({ transaction in
+                        JobQueue.shared.add(job, using: transaction)
+                    }, completion: { })
+                }
+            }
+            if !attachmentsToUpload.isEmpty { delegate?.postpone(self); return } // Wait for all attachments to upload before continuing
+        }
+        storage.withAsync({ transaction in // Intentionally capture self
             Threading.workQueue.async {
                 MessageSender.send(self.message, to: self.destination, using: transaction).done(on: Threading.workQueue) {
                     self.handleSuccess()

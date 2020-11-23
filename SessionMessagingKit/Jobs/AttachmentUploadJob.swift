@@ -11,6 +11,9 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     public class var collection: String { return "AttachmentUploadJobCollection" }
     public static let maxFailureCount: UInt = 20
 
+    // MARK: Initialization
+    public override init() { }
+    
     // MARK: Coding
     public init?(coder: NSCoder) { }
 

@@ -29,6 +29,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func markJobAsSucceeded(_ job: Job, using transaction: Any)
     func markJobAsFailed(_ job: Job, using transaction: Any)
     func getAllPendingJobs(of type: Job.Type) -> [Job]
+    func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob?
 
     // MARK: - Authorization
 

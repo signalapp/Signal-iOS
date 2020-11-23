@@ -64,6 +64,10 @@ public final class JobQueue : NSObject, JobDelegate {
             })
         })
     }
+    
+    public func postpone(_ job: Job) {
+        Timer.weakScheduledTimer(withTimeInterval: 3, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
+    }
 
     private func getRetryInterval(for job: Job) -> TimeInterval {
         // Arbitrary backoff factor...
