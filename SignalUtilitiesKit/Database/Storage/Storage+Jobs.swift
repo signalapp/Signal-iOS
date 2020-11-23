@@ -23,4 +23,8 @@ extension Storage {
         }
         return result
     }
+    
+    public func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob? {
+        return nil // TODO: Implement
+    }
 }
