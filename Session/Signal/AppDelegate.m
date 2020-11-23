@@ -217,6 +217,10 @@ static NSTimeInterval launchStartedAt;
 
     [SNConfiguration performMainSetup];
 
+    if (CurrentAppContext().isMainApp) {
+        [SNJobQueue resumePendingJobs];
+    }
+
     [LKAppearanceUtilities switchToSessionAppearance];
 
     if (CurrentAppContext().isRunningTests) {

@@ -25,6 +25,16 @@ extension Storage {
     }
     
     public func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob? {
-        return nil // TODO: Implement
+        var result: [AttachmentUploadJob] = []
+        Storage.read { transaction in
+            transaction.enumerateRows(inCollection: AttachmentUploadJob.collection) { _, object, _, _ in
+                guard let job = object as? AttachmentUploadJob, job.attachmentID == attachmentID else { return }
+                result.append(job)
+            }
+        }
+        #if DEBUG
+        assert(result.isEmpty || result.count == 1)
+        #endif
+        return result.first
     }
 }

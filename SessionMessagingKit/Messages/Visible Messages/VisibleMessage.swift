@@ -55,7 +55,14 @@ public final class VisibleMessage : Message {
             dataMessage = SNProtoDataMessage.builder()
         }
         if let text = text { dataMessage.setBody(text) }
-        // TODO: Attachments
+        let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0) }
+        if !attachments.allSatisfy({ $0.isUploaded }) {
+            #if DEBUG
+            preconditionFailure("Sending a message before all associated attachments have been uploaded.")
+            #endif
+        }
+        let attachmentProtos = attachments.compactMap { TSAttachmentStream.buildProto(forAttachmentId: $0.uniqueId!) }
+        dataMessage.setAttachments(attachmentProtos)
         if let quote = quote, let quoteProto = quote.toProto() { dataMessage.setQuote(quoteProto) }
         if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto() { dataMessage.setPreview([ linkPreviewProto ]) }
         // TODO: Contact
