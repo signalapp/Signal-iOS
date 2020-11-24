@@ -32,14 +32,19 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     // MARK: Coding
     public init?(coder: NSCoder) {
         guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
-            let tsIncomingMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String? else { return nil }
+            let tsIncomingMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String?,
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
         self.tsIncomingMessageID = tsIncomingMessageID
+        self.id = id
+        self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
         coder.encode(tsIncomingMessageID, forKey: "tsIncomingMessageID")
+        coder.encode(id, forKey: "id")
+        coder.encode(failureCount, forKey: "failureCount")
     }
 
     // MARK: Running

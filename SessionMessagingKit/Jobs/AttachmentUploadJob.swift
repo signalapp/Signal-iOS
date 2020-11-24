@@ -30,14 +30,19 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     // MARK: Coding
     public init?(coder: NSCoder) {
         guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
-            let threadID = coder.decodeObject(forKey: "threadID") as! String? else { return nil }
+            let threadID = coder.decodeObject(forKey: "threadID") as! String?,
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
         self.threadID = threadID
+        self.id = id
+        self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
         coder.encode(threadID, forKey: "threadID")
+        coder.encode(id, forKey: "id")
+        coder.encode(failureCount, forKey: "failureCount")
     }
 
     // MARK: Running
