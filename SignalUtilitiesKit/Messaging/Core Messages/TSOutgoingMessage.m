@@ -602,8 +602,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
                                  // Mark any "sending" recipients as "failed."
-                                 for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
-                                          .allValues) {
+                                 for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap.allValues) {
                                      if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
                                          recipientState.state = OWSOutgoingMessageRecipientStateFailed;
                                      }

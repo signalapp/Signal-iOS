@@ -432,12 +432,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                              }];
 }
 
-#pragma mark - Open Groups
-
-- (BOOL)isOpenGroupMessage {
-    return self.openGroupServerMessageID > 0;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

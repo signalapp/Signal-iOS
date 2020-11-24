@@ -26,9 +26,8 @@ public final class MessageSenderDelegate : NSObject, SessionMessagingKit.Message
     // MARK: Sending
     public func handleSuccessfulMessageSend(_ message: Message, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        if let openGroupServerMessageID = message.openGroupServerMessageID {
-            tsMessage.openGroupServerMessageID = openGroupServerMessageID
-        }
+        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
+        tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
         tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
 

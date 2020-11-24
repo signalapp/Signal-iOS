@@ -17,6 +17,7 @@ public extension TSIncomingMessage {
             wasReceivedByUD: true
         )
         result.openGroupServerMessageID = visibleMessage.openGroupServerMessageID ?? 0
+        result.isOpenGroupMessage = result.openGroupServerMessageID != 0
         return result
     }
 }
