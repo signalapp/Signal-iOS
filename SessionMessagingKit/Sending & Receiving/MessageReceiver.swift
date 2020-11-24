@@ -2,6 +2,7 @@ import SessionUtilitiesKit
 
 internal enum MessageReceiver {
 
+    // MARK: Error
     internal enum Error : LocalizedError {
         case invalidMessage
         case unknownMessage
@@ -41,6 +42,7 @@ internal enum MessageReceiver {
         }
     }
 
+    // MARK: Parsing
     internal static func parse(_ data: Data, messageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
         let userPublicKey = Configuration.shared.storage.getUserPublicKey()
         // Parse the envelope
@@ -91,6 +93,7 @@ internal enum MessageReceiver {
         }
     }
 
+    // MARK: Handling
     internal static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)

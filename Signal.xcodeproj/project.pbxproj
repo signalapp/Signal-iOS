@@ -538,7 +538,6 @@
 		C3402FE52559036600EA6424 /* SessionUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C331FF1B2558F9D300070591 /* SessionUIKit.framework */; };
 		C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */; };
 		C3471ED42555386B00297E91 /* AESGCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D72553860B00C340D1 /* AESGCM.swift */; };
-		C3471F4225553A4D00297E91 /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4125553A4D00297E91 /* Threading.swift */; };
 		C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */; };
 		C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3471FA32555439E00297E91 /* Notification+MessageSender.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
@@ -1658,7 +1657,6 @@
 		C33FDC1E255A581F00E217F9 /* OWSUploadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUploadOperation.m; sourceTree = "<group>"; };
 		C33FDC1F255A581F00E217F9 /* LokiSessionRestorationImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LokiSessionRestorationImplementation.swift; sourceTree = "<group>"; };
 		C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSender+Encryption.swift"; sourceTree = "<group>"; };
-		C3471F4125553A4D00297E91 /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageReceiver+Decryption.swift"; sourceTree = "<group>"; };
 		C3471FA32555439E00297E91 /* Notification+MessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+MessageSender.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
@@ -3410,7 +3408,6 @@
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */,
-				C3471F4125553A4D00297E91 /* Threading.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -5309,7 +5306,6 @@
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				C3D9E3BE25676AD70040E4F3 /* TSAttachmentPointer.m in Sources */,
-				C3471F4225553A4D00297E91 /* Threading.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
 				C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */,
 				C3A7222A2558C1E40043A11F /* DotNetAPI.swift in Sources */,

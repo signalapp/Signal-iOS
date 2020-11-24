@@ -3,9 +3,9 @@ import SessionUtilitiesKit
 import SignalCoreKit
 
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public let attachmentID: String
+    public let tsIncomingMessageID: String
     public var delegate: JobDelegate?
-    private let attachmentID: String
-    private let tsIncomingMessageID: String
     public var id: String?
     public var failureCount: UInt = 0
 

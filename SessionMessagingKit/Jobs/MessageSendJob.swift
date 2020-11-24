@@ -2,9 +2,9 @@ import SessionUtilitiesKit
 
 @objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
-    public var delegate: JobDelegate?
     public let message: Message
-    private let destination: Message.Destination
+    public let destination: Message.Destination
+    public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
 
@@ -50,12 +50,12 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     public func encode(with coder: NSCoder) {
         coder.encode(message, forKey: "message")
-        coder.encode(id, forKey: "id")
         switch destination {
         case .contact(let publicKey): coder.encode("contact(\(publicKey))", forKey: "destination")
         case .closedGroup(let groupPublicKey): coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
         case .openGroup(let channel, let server): coder.encode("openGroup(\(channel), \(server))")
         }
+        coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }
 
@@ -79,16 +79,14 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
         }
         // FIXME: This doesn't yet handle the attachment side of link previews, quotes, etc.
         storage.withAsync({ transaction in // Intentionally capture self
-            Threading.workQueue.async {
-                MessageSender.send(self.message, to: self.destination, using: transaction).done(on: Threading.workQueue) {
-                    self.handleSuccess()
-                }.catch(on: Threading.workQueue) { error in
-                    SNLog("Couldn't send message due to error: \(error).")
-                    if let error = error as? MessageSender.Error, !error.isRetryable {
-                        self.handlePermanentFailure(error: error)
-                    } else {
-                        self.handleFailure(error: error)
-                    }
+            MessageSender.send(self.message, to: self.destination, using: transaction).done(on: DispatchQueue.global(qos: .userInitiated)) {
+                self.handleSuccess()
+            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                SNLog("Couldn't send message due to error: \(error).")
+                if let error = error as? MessageSender.Error, !error.isRetryable {
+                    self.handlePermanentFailure(error: error)
+                } else {
+                    self.handleFailure(error: error)
                 }
             }
         }, completion: { })

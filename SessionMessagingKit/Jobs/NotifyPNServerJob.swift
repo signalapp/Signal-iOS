@@ -3,8 +3,8 @@ import SessionSnodeKit
 import SessionUtilitiesKit
 
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public let message: SnodeMessage
     public var delegate: JobDelegate?
-    private let message: SnodeMessage
     public var id: String?
     public var failureCount: UInt = 0
 

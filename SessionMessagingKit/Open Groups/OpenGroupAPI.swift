@@ -16,7 +16,6 @@ public final class OpenGroupAPI : DotNetAPI {
     private static let maxRetryCount: UInt = 4
 
     public static let profilePictureType = "network.loki.messenger.avatar"
-    
     @objc public static let openGroupMessageType = "network.loki.messenger.publicChat"
 
     // MARK: Open Group Public Key Validation

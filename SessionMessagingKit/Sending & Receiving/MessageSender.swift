@@ -5,6 +5,7 @@ import SessionUtilitiesKit
 @objc(SNMessageSender)
 public final class MessageSender : NSObject {
 
+    // MARK: Error
     public enum Error : LocalizedError {
         case invalidMessage
         case protoConversionFailed
@@ -27,9 +28,11 @@ public final class MessageSender : NSObject {
             }
         }
     }
-    
+
+    // MARK: Initialization
     private override init() { }
 
+    // MARK: Convenience
     public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         switch destination {
         case .contact(_), .closedGroup(_): return sendToSnodeDestination(destination, message: message, using: transaction)
@@ -37,10 +40,11 @@ public final class MessageSender : NSObject {
         }
     }
 
+    // MARK: One-on-One Chats & Closed Groups
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = Configuration.shared.storage
-        if message.sentTimestamp == nil { // Visible messages will already have the sent timestamp set
+        if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
         message.sender = storage.getUserPublicKey()
@@ -49,7 +53,7 @@ public final class MessageSender : NSObject {
         case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
         case .openGroup(_, _): preconditionFailure()
         }
-        // Set the failure handler
+        // Set the failure handler (for precondition failure handling)
         let _ = promise.catch(on: DispatchQueue.main) { error in
             storage.withAsync({ transaction in
                 Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, with: error, using: transaction)
@@ -130,26 +134,27 @@ public final class MessageSender : NSObject {
             }
         }
         let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: type(of: message).ttl, timestamp: timestamp, nonce: nonce)
-        SnodeAPI.sendMessage(snodeMessage).done(on: Threading.workQueue) { promises in
+        SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
             let promiseCount = promises.count
             var errorCount = 0
             promises.forEach {
-                let _ = $0.done(on: Threading.workQueue) { _ in
+                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
                     seal.fulfill(())
                 }
-                $0.catch(on: Threading.workQueue) { error in
+                $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                     errorCount += 1
                     guard errorCount == promiseCount else { return } // Only error out if all promises failed
                     seal.reject(error)
                 }
             }
-        }.catch(on: Threading.workQueue) { error in
+        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             SNLog("Couldn't send message due to error: \(error).")
             seal.reject(error)
         }
+        // Handle completion
         let _ = promise.done(on: DispatchQueue.main) {
             storage.withAsync({ transaction in
                 Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
@@ -157,14 +162,18 @@ public final class MessageSender : NSObject {
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
-            let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-            storage.withAsync({ transaction in
-                JobQueue.shared.add(notifyPNServerJob, using: transaction)
-            }, completion: { })
+            if message is VisibleMessage {
+                let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
+                storage.withAsync({ transaction in
+                    JobQueue.shared.add(notifyPNServerJob, using: transaction)
+                }, completion: { })
+            }
         }
+        // Return
         return promise
     }
 
+    // MARK: Open Groups
     internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = Configuration.shared.storage
@@ -174,12 +183,15 @@ public final class MessageSender : NSObject {
         case .closedGroup(_): preconditionFailure()
         case .openGroup(let channel, let server): message.recipient = "\(server).\(channel)"
         }
+        // Set the failure handler (for precondition failure handling)
         let _ = promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             storage.withAsync({ transaction in
                 Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
         }
+        // Validate the message
         guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
+        // Convert the message to an open group message
         let (channel, server) = { () -> (UInt64, String) in
             switch destination {
             case .openGroup(let channel, let server): return (channel, server)
@@ -188,17 +200,20 @@ public final class MessageSender : NSObject {
         }()
         guard let message = message as? VisibleMessage,
             let openGroupMessage = OpenGroupMessage.from(message, for: server) else { seal.reject(Error.invalidMessage); return promise }
+        // Send the result
         OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = openGroupMessage.serverID
             seal.fulfill(())
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             seal.reject(error)
         }
+        // Handle completion
         let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) {
             storage.withAsync({ transaction in
                 Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
         }
+        // Return
         return promise
     }
 }

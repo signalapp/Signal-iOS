@@ -2,13 +2,14 @@ import SessionUtilitiesKit
 
 @objc(SNJobQueue)
 public final class JobQueue : NSObject, JobDelegate {
+    private var hasResumedPendingJobs = false // Just for debugging
 
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         addWithoutExecuting(job, using: transaction)
-        transaction.addCompletionQueue(Threading.workQueue) {
+        transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             job.execute()
         }
     }
@@ -20,6 +21,12 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     @objc public func resumePendingJobs() {
+        if hasResumedPendingJobs {
+            #if DEBUG
+            preconditionFailure("resumePendingJobs() should only be called once.")
+            #endif
+        }
+        hasResumedPendingJobs = true
         let allJobTypes: [Job.Type] = [ AttachmentDownloadJob.self, AttachmentUploadJob.self, MessageReceiveJob.self, MessageSendJob.self, NotifyPNServerJob.self ]
         allJobTypes.forEach { type in
             let allPendingJobs = Configuration.shared.storage.getAllPendingJobs(of: type)

@@ -22,9 +22,9 @@ public final class OpenGroupAPIDelegate : SessionMessagingKit.OpenGroupAPIDelega
                 Storage.shared.setProfilePictureURL(to: info.profilePictureURL, forOpenGroupWithID: openGroupID, using: transaction)
                 if let profilePictureURL = info.profilePictureURL {
                     var sanitizedServerURL = server
+                    while sanitizedServerURL.hasSuffix("/") { sanitizedServerURL.removeLast() }
                     var sanitizedProfilePictureURL = profilePictureURL
-                    while sanitizedServerURL.hasSuffix("/") { sanitizedServerURL.removeLast(1) }
-                    while sanitizedProfilePictureURL.hasPrefix("/") { sanitizedProfilePictureURL.removeFirst(1) }
+                    while sanitizedProfilePictureURL.hasPrefix("/") { sanitizedProfilePictureURL.removeFirst() }
                     let url = "\(sanitizedServerURL)/\(sanitizedProfilePictureURL)"
                     FileServerAPI.downloadAttachment(from: url).map2 { data in
                         let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)

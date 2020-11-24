@@ -3238,7 +3238,10 @@ typedef enum : NSUInteger {
         TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [tsMessage saveWithTransaction:transaction];
-            [SNMessageSender send:message withAttachments:attachments inThread:thread usingTransaction:transaction];
+        } completion:^{
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [SNMessageSender send:message withAttachments:attachments inThread:thread usingTransaction:transaction];
+            }];
         }];
         [self messageWasSent:tsMessage];
     });
