@@ -32,9 +32,15 @@ class ReactionCountsView: UIStackView {
 
     @objc
     func configure(with reactionState: InteractionReactionState) {
+        // There is a bug with UIStackView where, on ocassion, hidden views
+        // will be rendered (while not effecting layout). In order to work
+        // around this, we also adjust the alpha of the views.
         pill1.isHidden = true
+        pill1.alpha = 0
         pill2.isHidden = true
+        pill2.alpha = 0
         pill3.isHidden = true
+        pill3.alpha = 0
 
         func configure(emojiCount: (emoji: String, count: Int), pillView: ReactionPillView) {
             pillView.configure(
@@ -43,6 +49,7 @@ class ReactionCountsView: UIStackView {
                 fromLocalUser: emojiCount.emoji == reactionState.localUserEmoji
             )
             pillView.isHidden = false
+            pillView.alpha = 1
         }
 
         // We display up to 3 reaction bubbles per message in order
@@ -82,6 +89,7 @@ class ReactionCountsView: UIStackView {
         }
 
         pill3.isHidden = false
+        pill3.alpha = 1
     }
 }
 
