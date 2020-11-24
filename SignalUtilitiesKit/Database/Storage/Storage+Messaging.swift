@@ -15,7 +15,7 @@ extension Storage {
         }
         return try! promise.wait()
     }
-    
+
     /// Returns the ID of the thread the message was stored under along with the ID of the `TSIncomingMessage` that was constructed.
     public func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, String)? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -30,6 +30,7 @@ extension Storage {
         guard let thread = threadOrNil else { return nil }
         let message = TSIncomingMessage.from(message, associatedWith: thread)
         message.save(with: transaction)
+        DispatchQueue.main.async { message.touch() } // FIXME: Hack for a thread updating issue
         return (thread.uniqueId!, message.uniqueId!)
     }
 
@@ -59,3 +60,4 @@ extension Storage {
         tsIncomingMessage.touch(with: transaction)
     }
 }
+
