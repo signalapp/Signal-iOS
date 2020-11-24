@@ -195,8 +195,6 @@ static NSTimeInterval launchStartedAt;
 
     [AppVersion sharedInstance];
 
-    [self startupLogging];
-
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
     //
@@ -216,10 +214,6 @@ static NSTimeInterval launchStartedAt;
         }];
 
     [SNConfiguration performMainSetup];
-
-    if (CurrentAppContext().isMainApp) {
-        [SNJobQueue resumePendingJobs];
-    }
 
     [LKAppearanceUtilities switchToSessionAppearance];
 
@@ -367,40 +361,6 @@ static NSTimeInterval launchStartedAt;
     }
 }
 
-- (void)startupLogging
-{
-    OWSLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
-
-    NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
-    if (localeIdentifier.length > 0) {
-        OWSLogInfo(@"Locale Identifier: %@", localeIdentifier);
-    }
-    NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
-    if (countryCode.length > 0) {
-        OWSLogInfo(@"Country Code: %@", countryCode);
-    }
-    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
-    if (languageCode.length > 0) {
-        OWSLogInfo(@"Language Code: %@", languageCode);
-    }
-
-    struct utsname systemInfo;
-    uname(&systemInfo);
-
-    OWSLogInfo(@"Device Model: %@ (%@)",
-        UIDevice.currentDevice.model,
-        [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
-
-    NSDictionary<NSString *, NSString *> *buildDetails =
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
-    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
-    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
-    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
-    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
-    OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
-    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
-}
-
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -435,6 +395,10 @@ static NSTimeInterval launchStartedAt;
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+
+                if (CurrentAppContext().isMainApp) {
+                    [SNJobQueue.shared resumePendingJobs];
+                }
             });
         }
     }); // end dispatchOnce for first time we become active
