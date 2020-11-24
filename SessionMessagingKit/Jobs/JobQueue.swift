@@ -6,8 +6,11 @@ public final class JobQueue : NSObject, JobDelegate {
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
         addWithoutExecuting(job, using: transaction)
-        job.execute()
+        transaction.addCompletionQueue(Threading.workQueue) {
+            job.execute()
+        }
     }
 
     @objc public func addWithoutExecuting(_ job: Job, using transaction: Any) {

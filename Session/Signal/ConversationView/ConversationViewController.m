@@ -3225,7 +3225,6 @@ typedef enum : NSUInteger {
             }];
             return;
         }
-
         for (SignalAttachment *attachment in attachments) {
             if ([attachment hasError]) {
                 OWSLogWarn(@"Invalid attachment: %@.", attachment ? [attachment errorName] : @"Missing data");
@@ -3233,21 +3232,15 @@ typedef enum : NSUInteger {
                 return;
             }
         }
-
-        __block TSOutgoingMessage *message;
-        
-        // TODO TODO TODO
-        
-//        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-//            message = [ThreadUtil enqueueMessageWithText:messageText
-//                                        mediaAttachments:attachments
-//                                                inThread:self.thread
-//                                        quotedReplyModel:self.inputToolbar.quotedReply
-//                                        linkPreviewDraft:nil
-//                                             transaction:transaction];
-//        }];
-
-        [self messageWasSent:message];
+        SNVisibleMessage *message = [SNVisibleMessage new];
+        message.sentTimestamp = [NSDate millisecondTimestamp];
+        TSThread *thread = self.thread;
+        TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [tsMessage saveWithTransaction:transaction];
+            [SNMessageSender send:message withAttachments:attachments inThread:thread usingTransaction:transaction];
+        }];
+        [self messageWasSent:tsMessage];
     });
 }
 
@@ -3817,7 +3810,7 @@ typedef enum : NSUInteger {
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [tsMessage saveWithTransaction:transaction];
-        [SNMessageSender send:message inThread:thread usingTransaction:transaction];
+        [SNMessageSender send:message withAttachments:[NSArray<SignalAttachment *> new] inThread:thread usingTransaction:transaction];
         [thread setDraft:@"" transaction:transaction];
     }];
     [self messageWasSent:tsMessage];

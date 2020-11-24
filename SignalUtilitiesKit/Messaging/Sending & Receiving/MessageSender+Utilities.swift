@@ -2,8 +2,17 @@ import PromiseKit
 
 public extension MessageSender {
 
-    @objc(send:inThread:usingTransaction:)
-    static func send(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(send:withAttachments:inThread:usingTransaction:)
+    static func send(_ message: Message, with attachments: [SignalAttachment] = [], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+        if let message = message as? VisibleMessage {
+            let streams = attachments.map {
+                return TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
+                    caption: $0.captionText, albumMessageId: nil
+                )
+            }
+            streams.forEach { $0.save(with: transaction) }
+            message.attachmentIDs = streams.map { $0.uniqueId! }
+        }
         message.threadID = thread.uniqueId!
         let destination = Message.Destination.from(thread)
         let job = MessageSendJob(message: message, destination: destination)
