@@ -282,8 +282,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             [job.attachmentPointer saveWithTransaction:transaction];
 
             if (job.message) {
-                job.message.hasUnfetchedAttachmentsFromPN = !CurrentAppContext().isMainApp;
-
                 [job.message saveWithTransaction:transaction];
                 [job.message touchWithTransaction:transaction];
             }

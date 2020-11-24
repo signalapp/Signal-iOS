@@ -3,7 +3,7 @@ import SessionUtilitiesKit
 public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
     public let attachmentID: String
-    private let threadID: String
+    public let threadID: String
     public var id: String?
     public var failureCount: UInt = 0
 

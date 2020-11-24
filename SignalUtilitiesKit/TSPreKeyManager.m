@@ -216,7 +216,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     if (!keyId) {
         // currentSignedPreKeyId should only be nil before we've completed registration.
         // We have this guard here for robustness, but we should never get here.
-        OWSFailDebug(@"Ignoring request to clear signed preKeys since no keyId was specified");
         return;
     }
 

@@ -40,8 +40,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 @property (nonatomic, readonly) BOOL shouldUseServerTime;
-// Push notifications
-@property (nonatomic) BOOL hasUnfetchedAttachmentsFromPN;
+@property (nonatomic, readonly) BOOL isOpenGroupMessage;
 
 - (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp;
 

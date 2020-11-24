@@ -23,6 +23,25 @@ extension Storage {
         }
         return result
     }
+
+    public func cancelAllPendingJobs(of type: Job.Type, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.removeAllObjects(inCollection: type.collection)
+    }
+
+    public func cancelPendingMessageSendJobs(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) {
+        var attachmentUploadJobKeys: [String] = []
+        transaction.enumerateRows(inCollection: AttachmentUploadJob.collection) { key, object, _, _ in
+            guard let job = object as? AttachmentUploadJob, job.threadID == threadID else { return }
+            attachmentUploadJobKeys.append(key)
+        }
+        var messageSendJobKeys: [String] = []
+        transaction.enumerateRows(inCollection: MessageSendJob.collection) { key, object, _, _ in
+            guard let job = object as? MessageSendJob, job.message.threadID == threadID else { return }
+            messageSendJobKeys.append(key)
+        }
+        transaction.removeObjects(forKeys: attachmentUploadJobKeys, inCollection: AttachmentUploadJob.collection)
+        transaction.removeObjects(forKeys: messageSendJobKeys, inCollection: MessageSendJob.collection)
+    }
     
     public func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob? {
         var result: [AttachmentUploadJob] = []

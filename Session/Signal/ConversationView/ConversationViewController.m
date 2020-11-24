@@ -3797,7 +3797,6 @@ typedef enum : NSUInteger {
 - (void)tryToSendTextMessage:(NSString *)text updateKeyboardState:(BOOL)updateKeyboardState
 {
     OWSAssertIsOnMainThread();
-
     __weak ConversationViewController *weakSelf = self;
     if ([self isBlockedConversation]) {
         [self showUnblockConversationUI:^(BOOL isBlocked) {
@@ -3807,38 +3806,26 @@ typedef enum : NSUInteger {
         }];
         return;
     }
-
     text = [text ows_stripped];
-
     if (text.length < 1) { return; }
-    
     SNVisibleMessage *message = [SNVisibleMessage new];
-    [message setSentTimestamp:[NSDate millisecondTimestamp]];
+    message.sentTimestamp = [NSDate millisecondTimestamp];
     message.text = text;
     message.quote = [SNQuote from:self.inputToolbar.quotedReply];
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SNMessageSender send:message inThread:self.thread usingTransaction:transaction];
-    }];
-    
-    TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
-    
-    [tsMessage save];
-
+    TSThread *thread = self.thread;
+    TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
-    
-    [self messageWasSent:tsMessage];
-
-    [self.inputToolbar clearTextMessageAnimated:YES];
-    
-    [self resetMentions];
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.inputToolbar toggleDefaultKeyboard];
-    });
-
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.thread setDraft:@"" transaction:transaction];
+        [tsMessage saveWithTransaction:transaction];
+        [SNMessageSender send:message inThread:thread usingTransaction:transaction];
+        [thread setDraft:@"" transaction:transaction];
     }];
+    [self messageWasSent:tsMessage];
+    [self.inputToolbar clearTextMessageAnimated:YES];
+    [self resetMentions];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[weakSelf inputToolbar] toggleDefaultKeyboard];
+    });
 }
 
 - (void)voiceMemoGestureDidStart
@@ -4562,7 +4549,10 @@ typedef enum : NSUInteger {
 - (void)handleMessageSendingFailedNotification:(NSNotification *)notification
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
-    [self hideProgressIndicatorViewForMessageWithTimestamp:timestamp];
+    self.progressIndicatorView.progressTintColor = LKColors.destructive;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
+        [self hideProgressIndicatorViewForMessageWithTimestamp:timestamp];
+    });
 }
 
 - (void)setProgressIfNeededTo:(float)progress forMessageWithTimestamp:(NSNumber *)timestamp
@@ -4600,6 +4590,7 @@ typedef enum : NSUInteger {
             self.progressIndicatorView.alpha = 0;
         } completion:^(BOOL finished) {
             [self.progressIndicatorView setProgress:0.0f];
+            self.progressIndicatorView.progressTintColor = LKColors.accent;
         }];
     });
 }

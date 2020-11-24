@@ -3,7 +3,7 @@ import SessionUtilitiesKit
 @objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var delegate: JobDelegate?
-    private let message: Message
+    public let message: Message
     private let destination: Message.Destination
     public var id: String?
     public var failureCount: UInt = 0

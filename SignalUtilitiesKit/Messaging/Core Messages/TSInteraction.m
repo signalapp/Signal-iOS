@@ -205,19 +205,18 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(other);
 
-    // Sort the messages by the sender's timestamp (Signal uses sortId)
-    uint64_t sortId1 = self.timestamp;
-    uint64_t sortId2 = other.timestamp;
+    uint64_t sortId1;
+    uint64_t sortId2;
 
-    // In open groups messages should be sorted by their server timestamp. `sortId` represents the order in which messages
+    // In open groups messages should be sorted by server timestamp. `sortId` represents the order in which messages
     // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
     // effectively the same as sorting by server timestamp.
-    if (self.thread.isGroupThread) {
-        TSGroupThread *thread = (TSGroupThread *)self.thread;
-        if (thread.isOpenGroup) {
-            sortId1 = self.sortId;
-            sortId2 = other.sortId;
-        }
+    if (self.isOpenGroupMessage) {
+        sortId1 = self.sortId;
+        sortId2 = other.sortId;
+    } else {
+        sortId1 = self.timestamp;
+        sortId2 = other.timestamp;
     }
 
     if (sortId1 > sortId2) {

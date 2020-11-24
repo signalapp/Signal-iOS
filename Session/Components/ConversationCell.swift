@@ -132,8 +132,7 @@ final class ConversationCell : UITableViewCell {
     // MARK: Updating
     private func update() {
         AssertIsOnMainThread()
-        let thread = threadViewModel.threadRecord
-        guard let threadID = thread.uniqueId else { return }
+        guard let thread = threadViewModel?.threadRecord, let threadID = thread.uniqueId else { return }
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID) // FIXME: This is a terrible place to do this
         let isBlocked: Bool
         if let thread = thread as? TSContactThread {

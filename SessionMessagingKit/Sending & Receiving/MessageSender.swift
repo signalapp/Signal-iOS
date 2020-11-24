@@ -149,9 +149,9 @@ public final class MessageSender : NSObject {
                 JobQueue.shared.add(notifyPNServerJob, using: transaction)
             }, completion: { })
         }
-        let _ = promise.catch(on: DispatchQueue.main) { _ in
+        let _ = promise.catch(on: DispatchQueue.main) { error in
             storage.withAsync({ transaction in
-                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, using: transaction)
+                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
@@ -184,9 +184,9 @@ public final class MessageSender : NSObject {
                 Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
         }
-        promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+        promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             storage.withAsync({ transaction in
-                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, using: transaction)
+                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
         }
         return promise.map { _ in }

@@ -32,8 +32,9 @@ public final class MessageSenderDelegate : NSObject, SessionMessagingKit.Message
         tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
 
-    public func handleFailedMessageSend(_ message: Message, using transaction: Any) {
-        // TODO: Implement
+    public func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        tsMessage.update(sendingError: error, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
     
     // MARK: Closed Groups
