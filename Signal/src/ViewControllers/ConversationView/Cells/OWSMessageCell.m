@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UIView *avatarViewSpacer;
 @property (nonatomic) MessageSelectionView *selectionView;
+@property (nonatomic) UIStackView *messageStackView;
 @property (nonatomic, nullable) UIView *sendFailureBadgeView;
 @property (nonatomic) ReactionCountsView *reactionCountsView;
 @property (nonatomic, nullable) NSLayoutConstraint *messageBottomConstraint;
@@ -181,13 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
     [messageView configureViews];
     [messageView loadContent];
 
-    // There is a bug with UIStackView where, on ocassion, hidden views
-    // will be rendered (while not effecting layout). In order to work
-    // around this, we also adjust the alpha of the views.
-
-    self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
-    self.selectionView.alpha = self.selectionView.hidden ? 0 : 1;
-
     self.selected = [self.delegate isViewItemSelected:self.viewItem];
 
     self.avatarView.hidden = ![self updateAvatarView];
@@ -235,24 +229,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.hasPreparedForDisplay = YES;
 
-    UIStackView *messageStackView = [UIStackView new];
-    messageStackView.axis = UILayoutConstraintAxisHorizontal;
-    messageStackView.spacing = ConversationStyle.messageStackSpacing;
-    [self.contentView addSubview:messageStackView];
+    self.messageStackView = [UIStackView new];
+    self.messageStackView.axis = UILayoutConstraintAxisHorizontal;
+    self.messageStackView.spacing = ConversationStyle.messageStackSpacing;
+    [self.contentView addSubview:self.messageStackView];
 
-    [messageStackView addGestureRecognizer:self.messageViewTapGestureRecognizer];
+    [self.messageStackView addGestureRecognizer:self.messageViewTapGestureRecognizer];
 
-    [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading];
-    [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing];
-    [messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    self.messageBottomConstraint = [messageStackView autoPinBottomToSuperviewMarginWithInset:0];
-
-    // Selection
-    [messageStackView addArrangedSubview:self.selectionView];
-    [self.selectionView autoPinHeightToSuperview];
+    [self.messageStackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading];
+    [self.messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing];
+    [self.messageStackView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    self.messageBottomConstraint = [self.messageStackView autoPinBottomToSuperviewMarginWithInset:0];
 
     if (self.isIncoming && self.viewItem.isGroupThread) {
-        [messageStackView addArrangedSubview:self.avatarViewSpacer];
+        [self.messageStackView addArrangedSubview:self.avatarViewSpacer];
         [self.avatarViewSpacer autoPinHeightToSuperview];
 
         [self.swipeableContentView addSubview:self.avatarView];
@@ -267,9 +257,9 @@ NS_ASSUME_NONNULL_BEGIN
         arrangedMessageViews = @[ [UIView hStretchingSpacer], self.messageView ];
     }
     UIStackView *messageSubStack = [[UIStackView alloc] initWithArrangedSubviews:arrangedMessageViews];
-    [messageStackView addArrangedSubview:messageSubStack];
+    [self.messageStackView addArrangedSubview:messageSubStack];
 
-    [messageStackView addSubview:self.reactionCountsView];
+    [self.messageStackView addSubview:self.reactionCountsView];
 
     if (self.isIncoming) {
         [self.reactionCountsView autoPinEdge:ALEdgeLeading
@@ -286,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Only outgoing messages ever show send failures, show setup accordingly.
         self.sendFailureBadgeView = [UIView new];
-        [messageStackView addArrangedSubview:self.sendFailureBadgeView];
+        [self.messageStackView addArrangedSubview:self.sendFailureBadgeView];
 
         UIImageView *sendFailureImageView = [UIImageView new];
         [sendFailureImageView setTemplateImage:self.sendFailureBadge tintColor:UIColor.ows_accentRedColor];
@@ -489,7 +479,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self resetSwipePositionAnimated:NO];
     self.swipeToReplyImageView.alpha = 0;
 
-    self.selectionView.alpha = 1.0;
     self.selected = NO;
 }
 
@@ -505,11 +494,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self ensureMediaLoadState];
-    if (isCellVisible) {
-        self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
-    } else {
-        self.selectionView.hidden = YES;
-    }
 }
 
 #pragma mark - Gesture recognizers

@@ -486,22 +486,32 @@ extension ConversationViewController {
 
     func hideSelectionViewsForVisibleCells() {
         let cells = collectionView.visibleCells.compactMap { $0 as? SelectableConversationCell }
-        cells.forEach { $0.selectionView.alpha = 1 }
         UIView.animate(withDuration: 0.15) {
-            for cell in cells {
-                cell.selectionView.alpha = 0
+            cells.forEach { cell in
                 cell.selectionView.isHidden = true
+                cell.messageStackView.layoutIfNeeded()
+            }
+        } completion: { _ in
+            cells.forEach { cell in
+                cell.messageStackView.removeArrangedSubview(cell.selectionView)
+                cell.selectionView.removeFromSuperview()
+                cell.messageStackView.layoutIfNeeded()
             }
         }
     }
 
     func showSelectionViewsForVisibleCells() {
         let cells = collectionView.visibleCells.compactMap { $0 as? SelectableConversationCell }
-        cells.forEach { $0.selectionView.alpha = 0 }
+        cells.forEach { cell in
+            cell.selectionView.isHidden = true
+            cell.messageStackView.insertArrangedSubview(cell.selectionView, at: 0)
+            cell.selectionView.autoPinHeightToSuperview()
+            cell.messageStackView.layoutIfNeeded()
+        }
         UIView.animate(withDuration: 0.15) {
-            for cell in cells {
+            cells.forEach { cell in
                 cell.selectionView.isHidden = false
-                cell.selectionView.alpha = 1
+                cell.messageStackView.layoutIfNeeded()
             }
         }
     }

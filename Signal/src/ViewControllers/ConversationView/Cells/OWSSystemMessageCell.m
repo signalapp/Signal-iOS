@@ -57,6 +57,7 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic, nullable) SystemMessageAction *action;
 @property (nonatomic) MessageSelectionView *selectionView;
+@property (nonatomic) UIStackView *messageStackView;
 @property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
 
 @end
@@ -123,19 +124,19 @@ typedef void (^SystemMessageActionBlock)(void);
     vStackView.spacing = self.vSpacing;
     vStackView.alignment = UIStackViewAlignmentCenter;
 
-    UIStackView *contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.selectionView, vStackView ]];
+    self.messageStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ vStackView ]];
 
-    contentStackView.axis = UILayoutConstraintAxisHorizontal;
-    contentStackView.spacing = ConversationStyle.messageStackSpacing;
-    contentStackView.layoutMarginsRelativeArrangement = YES;
-    self.contentStackView = contentStackView;
+    self.messageStackView.axis = UILayoutConstraintAxisHorizontal;
+    self.messageStackView.spacing = ConversationStyle.messageStackSpacing;
+    self.messageStackView.layoutMarginsRelativeArrangement = YES;
+    self.contentStackView = self.messageStackView;
 
     self.cellBackgroundView = [UIView new];
     self.cellBackgroundView.layer.cornerRadius = 5.f;
     [self.contentView addSubview:self.cellBackgroundView];
 
-    [self.contentView addSubview:contentStackView];
-    [contentStackView autoPinEdgesToSuperviewEdges];
+    [self.contentView addSubview:self.messageStackView];
+    [self.messageStackView autoPinEdgesToSuperviewEdges];
 }
 
 - (CGFloat)vSpacing
@@ -166,8 +167,6 @@ typedef void (^SystemMessageActionBlock)(void);
     TSInteraction *interaction = self.viewItem.interaction;
 
     self.action = [self actionForInteraction:interaction];
-
-    self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
 
     [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGSize titleSize = [self titleSize];
@@ -201,23 +200,6 @@ typedef void (^SystemMessageActionBlock)(void);
         [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
                                                   withInset:self.conversationStyle.fullWidthGutterTrailing * 0.5f],
     ];
-}
-
-- (void)setIsCellVisible:(BOOL)isCellVisible
-{
-    BOOL didChange = self.isCellVisible != isCellVisible;
-
-    [super setIsCellVisible:isCellVisible];
-
-    if (!didChange) {
-        return;
-    }
-
-    if (isCellVisible) {
-        self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
-    } else {
-        self.selectionView.hidden = YES;
-    }
 }
 
 - (void)setSelected:(BOOL)selected
@@ -856,7 +838,6 @@ typedef void (^SystemMessageActionBlock)(void);
     [super prepareForReuse];
 
     self.action = nil;
-    self.selectionView.alpha = 1.0;
     self.selected = NO;
 }
 

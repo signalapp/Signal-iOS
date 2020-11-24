@@ -116,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SelectableConversationCell <NSObject>
 
 @property (nonatomic, readonly) MessageSelectionView *selectionView;
+@property (nonatomic, readonly) UIStackView *messageStackView;
 
 @end
 
