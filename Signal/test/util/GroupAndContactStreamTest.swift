@@ -319,6 +319,11 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
+    func conversationColorName(for address: SignalServiceAddress,
+                               transaction: SDSAnyReadTransaction) -> ConversationColorName {
+      return ConversationColorName.indigo
+    }
+
     func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
         return signalAccount.recipientAddress.stringForDisplay
     }
