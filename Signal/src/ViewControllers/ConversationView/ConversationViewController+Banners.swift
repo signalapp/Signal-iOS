@@ -76,6 +76,9 @@ public extension ConversationViewController {
             groupThread.isGroupV1Thread else {
                 return nil
         }
+        guard groupThread.isLocalUserFullMember else {
+            return nil
+        }
 
         // migrationInfoForManualMigrationWithGroupThread uses
         // a transaction, so we try to avoid calling it.
@@ -142,6 +145,10 @@ fileprivate extension ConversationViewController {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
             return nil
         }
+        guard groupThread.isLocalUserFullMember else {
+            return nil
+        }
+
         var addableMembers = Set<SignalServiceAddress>()
         Self.databaseStorage.read { transaction in
             for address in groupModel.droppedMembers {
