@@ -25,7 +25,9 @@ class GroupCallViewController: UIViewController {
 
     private let scrollView = UIScrollView()
 
-    private var isCallMinimized = false
+    private var isCallMinimized = false {
+        didSet { speakerView.isCallMinimized = isCallMinimized }
+    }
 
     lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)

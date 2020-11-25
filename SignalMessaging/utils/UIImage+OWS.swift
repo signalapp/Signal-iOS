@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import CoreImage
 
 extension UIImage {
     @objc
@@ -68,5 +69,22 @@ extension UIImage {
         UIGraphicsEndImageContext()
 
         return newImage
+    }
+
+    public func makeGrayscale() -> UIImage {
+        guard let underlyingImage = ciImage ?? cgImage.map({ CIImage(cgImage: $0) }),
+              let filter = CIFilter(name: "CIPhotoEffectMono") else {
+            owsFailDebug("Failed to get underlying CIImage data")
+            return self
+        }
+
+        filter.setValue(underlyingImage, forKey: kCIInputImageKey)
+
+        if let outputImage = filter.outputImage {
+            return UIImage(ciImage: outputImage)
+        } else {
+            owsFailDebug("Failed to apply filter")
+            return self
+        }
     }
 }

@@ -236,8 +236,18 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 class GroupCallRemoteMemberView: GroupCallMemberView {
     private weak var videoView: GroupCallRemoteVideoView?
 
+    let errorView = GroupCallErrorView()
     let avatarView = AvatarImageView()
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
+
+    var isCallMinimized: Bool = false {
+        didSet {
+            // Currently only updated for the speaker view, since that's the only visible cell
+            // while minimized.
+            errorView.forceCompactAppearance = isCallMinimized
+            errorView.isUserInteractionEnabled = !isCallMinimized
+        }
+    }
 
     override var bounds: CGRect {
         didSet { updateDimensions() }
@@ -271,7 +281,9 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         super.init()
 
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
+        noVideoView.insertSubview(errorView, belowSubview: muteIndicatorImage)
         avatarView.autoCenterInSuperview()
+        errorView.autoPinEdgesToSuperviewEdges()
     }
 
     required init?(coder: NSCoder) {
@@ -284,7 +296,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
-                self.profileManager.profileAvatar(for: device.address, transaction: transaction),
+                self.contactsManager.image(for: device.address, transaction: transaction),
                 self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
             )
         }
@@ -315,6 +327,24 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         ).themeColor
 
         configureRemoteVideo(device: device)
+
+        // Hide these views. One will be unhidden below.
+        [errorView, avatarView, videoView].forEach { $0?.isHidden = true }
+
+        if !device.mediaKeysReceived {
+            // No media keys. Display error view
+            errorView.isHidden = false
+            backgroundAvatarView.image = profileImage?.makeGrayscale()
+            configureErrorView(for: device.address)
+
+        } else if let videoView = videoView, device.videoMuted == false, device.videoTrack != nil {
+            // We have video!
+            videoView.isHidden = false
+
+        } else {
+            // No video. Display avatar
+            avatarView.isHidden = false
+        }
     }
 
     private func updateDimensions() {
@@ -338,12 +368,38 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         newVideoView.frame = bounds
         videoView = newVideoView
 
-        guard let videoView = videoView else {
-            return owsFailDebug("Missing remote video view")
+        owsAssertDebug(videoView != nil, "Missing remote video view")
+    }
+
+    func configureErrorView(for address: SignalServiceAddress) {
+        let isBlocked = OWSBlockingManager.shared().isAddressBlocked(address)
+        let displayName: String
+
+        if address.isLocalAddress {
+            displayName = NSLocalizedString(
+                "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
+                comment: "Text describing the local user in the group call members sheet when connected from another device.")
+        } else {
+            displayName = self.contactsManager.displayName(for: address)
         }
 
-        avatarView.isHidden = !(device.videoMuted ?? true)
-        videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
+        let blockFormat = NSLocalizedString(
+            "GROUP_CALL_BLOCKED_USER_FORMAT",
+            comment: "String displayed in group call grid cell when a user is blocked. Embeds {user's name}")
+        let missingKeyFormat = NSLocalizedString(
+            "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT",
+            comment: "String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name}")
+
+        let labelFormat = isBlocked ? blockFormat : missingKeyFormat
+        let label = String(format: labelFormat, arguments: [displayName])
+        let image = isBlocked ? UIImage(named: "block-24") : UIImage(named: "error-solid-16")
+
+        errorView.iconImage = image
+        errorView.labelText = label
+        errorView.userTapAction = { _ in
+            // TODO
+            Logger.info("Present alert controller for \(displayName)")
+        }
     }
 }
 
