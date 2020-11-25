@@ -247,36 +247,39 @@ public class GroupMigrationActionSheet: UIView {
         builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY",
                                                comment: "Body text for the second section of the 'upgrade legacy group' alert view."))
 
-        databaseStorage.read { transaction in
-            let membersToDrop = (migrationInfo.membersWithoutUuids +
-                                    migrationInfo.membersWithoutCapabilities)
-            let membersToInvite = migrationInfo.membersWithoutProfileKeys
-            if !membersToInvite.isEmpty {
-                builder.addVerticalSpacer(height: 20)
-                if membersToInvite.count == 1 {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
-                                                           comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
-                } else {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
-                                                           comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
+        owsAssertDebug(isFullMemberOfGroup)
+        if isFullMemberOfGroup {
+            databaseStorage.read { transaction in
+                let membersToDrop = (migrationInfo.membersWithoutUuids +
+                                        migrationInfo.membersWithoutCapabilities)
+                let membersToInvite = migrationInfo.membersWithoutProfileKeys
+                if !membersToInvite.isEmpty {
+                    builder.addVerticalSpacer(height: 20)
+                    if membersToInvite.count == 1 {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
+                                                               comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
+                    } else {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
+                                                               comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
+                    }
+                    for address in membersToInvite {
+                        builder.addVerticalSpacer(height: 16)
+                        builder.addMemberRow(address: address, transaction: transaction)
+                    }
                 }
-                for address in membersToInvite {
-                    builder.addVerticalSpacer(height: 16)
-                    builder.addMemberRow(address: address, transaction: transaction)
-                }
-            }
-            if !membersToDrop.isEmpty {
-                builder.addVerticalSpacer(height: 20)
-                if membersToDrop.count == 1 {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1",
-                                                           comment: "Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view."))
-                } else {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N",
-                                                           comment: "Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view."))
-                }
-                for address in membersToDrop {
-                    builder.addVerticalSpacer(height: 16)
-                    builder.addMemberRow(address: address, transaction: transaction)
+                if !membersToDrop.isEmpty {
+                    builder.addVerticalSpacer(height: 20)
+                    if membersToDrop.count == 1 {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1",
+                                                               comment: "Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view."))
+                    } else {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N",
+                                                               comment: "Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view."))
+                    }
+                    for address in membersToDrop {
+                        builder.addVerticalSpacer(height: 16)
+                        builder.addMemberRow(address: address, transaction: transaction)
+                    }
                 }
             }
         }
@@ -297,6 +300,14 @@ public class GroupMigrationActionSheet: UIView {
                                 selector: #selector(dismissAlert))
 
         return builder.subviews
+    }
+
+    private var isFullMemberOfGroup: Bool {
+        groupThread.isLocalUserFullMember
+    }
+
+    private var isInvitedMemberOfGroup: Bool {
+        groupThread.isLocalUserInvitedMember
     }
 
     private func buildTooManyMembersContents() -> [UIView] {
@@ -362,35 +373,41 @@ public class GroupMigrationActionSheet: UIView {
         let invitedMembers = oldGroupModel.groupMembership.fullMembers.intersection(newGroupModel.groupMembership.invitedMembers)
         let droppedMembers = oldGroupModel.groupMembership.fullMembers.subtracting(newGroupModel.groupMembership.allMembersOfAnyKind)
 
-        databaseStorage.read { transaction in
-            if !invitedMembers.isEmpty {
-                builder.addVerticalSpacer(height: 20)
-                if invitedMembers.count == 1 {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
-                                                           comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
-                } else {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
-                                                           comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
+        if isFullMemberOfGroup {
+            databaseStorage.read { transaction in
+                if !invitedMembers.isEmpty {
+                    builder.addVerticalSpacer(height: 20)
+                    if invitedMembers.count == 1 {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
+                                                               comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
+                    } else {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
+                                                               comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
+                    }
+                    for address in invitedMembers {
+                        builder.addVerticalSpacer(height: 16)
+                        builder.addMemberRow(address: address, transaction: transaction)
+                    }
                 }
-                for address in invitedMembers {
-                    builder.addVerticalSpacer(height: 16)
-                    builder.addMemberRow(address: address, transaction: transaction)
+                if !droppedMembers.isEmpty {
+                    builder.addVerticalSpacer(height: 20)
+                    if droppedMembers.count == 1 {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
+                                                               comment: "Body text for the 'dropped member' section of the 'upgrade legacy group' alert view."))
+                    } else {
+                        builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
+                                                               comment: "Body text for the 'dropped members' section of the 'upgrade legacy group' alert view."))
+                    }
+                    for address in droppedMembers {
+                        builder.addVerticalSpacer(height: 16)
+                        builder.addMemberRow(address: address, transaction: transaction)
+                    }
                 }
             }
-            if !droppedMembers.isEmpty {
-                builder.addVerticalSpacer(height: 20)
-                if droppedMembers.count == 1 {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
-                                                           comment: "Body text for the 'dropped member' section of the 'upgrade legacy group' alert view."))
-                } else {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
-                                                           comment: "Body text for the 'dropped members' section of the 'upgrade legacy group' alert view."))
-                }
-                for address in droppedMembers {
-                    builder.addVerticalSpacer(height: 16)
-                    builder.addMemberRow(address: address, transaction: transaction)
-                }
-            }
+        } else if isInvitedMemberOfGroup {
+            builder.addVerticalSpacer(height: 20)
+            builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED",
+                                                   comment: "Indicates that the local user needs to accept an invitation to rejoin the group after a group migration."))
         }
 
         builder.addVerticalSpacer(height: 40)
@@ -401,6 +418,8 @@ public class GroupMigrationActionSheet: UIView {
     }
 
     private func buildReAddDroppedMembersContents(members: Set<SignalServiceAddress>) -> [UIView] {
+        owsAssertDebug(isFullMemberOfGroup)
+
         var builder = Builder()
 
         if members.count > 1 {
