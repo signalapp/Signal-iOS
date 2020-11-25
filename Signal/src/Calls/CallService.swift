@@ -695,7 +695,7 @@ extension CallService {
                     creatorUuid: creatorUuid,
                     transaction: writeTx)
 
-                // Only motify if the message we updated had no participants
+                // Only notify if the message we updated had no participants
                 if wasOldMessageEmpty {
                     self.postUserNotificationIfNecessary(message: currentMessage, transaction: writeTx)
                 }
