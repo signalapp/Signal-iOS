@@ -909,6 +909,21 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return result
     }
 
+    public static func existsGroupCallMessageForEraId(_ eraId: String, thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        let sql = """
+        SELECT EXISTS(
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
+            AND \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .eraId) = ?
+            LIMIT 1
+        )
+        """
+        let arguments: StatementArguments = [thread.uniqueId, eraId]
+        return try! Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql, arguments: arguments) ?? false
+    }
+
     public static func unendedCallsForGroupThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> [OWSGroupCallMessage] {
         let sql: String = """
         SELECT *

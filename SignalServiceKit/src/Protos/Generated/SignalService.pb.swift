@@ -1797,16 +1797,25 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _mentionUuid: String?
   }
 
-  /// Currently just a sentinel message indicating that a client should
-  /// fetch updated group state.
   struct GroupCallUpdate {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    var eraID: String {
+      get {return _eraID ?? String()}
+      set {_eraID = newValue}
+    }
+    /// Returns true if `eraID` has been explicitly set.
+    var hasEraID: Bool {return self._eraID != nil}
+    /// Clears the value of `eraID`. Subsequent reads from it will return its default value.
+    mutating func clearEraID() {self._eraID = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
+
+    fileprivate var _eraID: String?
   }
 
   init() {}
@@ -4991,18 +5000,28 @@ extension SignalServiceProtos_DataMessage.BodyRange: SwiftProtobuf.Message, Swif
 
 extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".GroupCallUpdate"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "eraId")
+  ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let _ = try decoder.nextFieldNumber() {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._eraID)
+      default: break
+      }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._eraID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.GroupCallUpdate, rhs: SignalServiceProtos_DataMessage.GroupCallUpdate) -> Bool {
+    if lhs._eraID != rhs._eraID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -7,6 +7,18 @@ import Foundation
 @objc(OWSJoinGroupCallPill)
 class JoinGroupCallPill: UIControl {
 
+    @objc
+    public var buttonText: String? {
+        get { return callLabel.text }
+        set {
+            callLabel.text = newValue
+
+            // If the localized string is too long, just hide the label. 70pts was picked out of
+            // thin air. We should tweak this as this text gets localized and only hide in extreme cases.
+            callLabel.isHidden = (callLabel.intrinsicContentSize.width > 70)
+        }
+    }
+
     private let callImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.setTemplateImageName("video-solid-24", tintColor: .ows_white)
@@ -16,13 +28,8 @@ class JoinGroupCallPill: UIControl {
 
     private let callLabel: UILabel = {
         let label = UILabel()
-        label.text = NSLocalizedString("JOIN_CALL_PILL_BUTTON", comment: "Button to join an active group call")
         label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         label.isUserInteractionEnabled = false
-
-        // If the localized string is too long, just hide the label. 70pts was picked out of
-        // thin air. We should tweak this as this text gets localized and only hide in extreme cases.
-        label.isHidden = (label.intrinsicContentSize.width > 70)
         return label
     }()
 

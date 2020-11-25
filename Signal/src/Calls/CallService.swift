@@ -602,7 +602,11 @@ extension CallService: CallObserver {
         }.done(on: .main) { proof in
             call.groupCall.updateMembershipProof(proof: proof)
         }.catch(on: .main) { error in
-            owsFailDebug("Failed to fetch group call credentials \(error)")
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Failed to fetch group call credentials \(error)")
+            } else {
+                owsFailDebug("Failed to fetch group call credentials \(error)")
+            }
         }
     }
 
@@ -626,7 +630,7 @@ extension CallService {
     }
 
     @objc
-    func peekCallAndUpdateThread(_ thread: TSGroupThread, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
+    func peekCallAndUpdateThread(_ thread: TSGroupThread, expectedEraId: String? = nil, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
         AssertIsOnMainThread()
 
         // If the currentCall is for the provided thread, we don't need to perform an explict
@@ -640,12 +644,25 @@ extension CallService {
             return
         }
 
+        if let expectedEraId = expectedEraId {
+            // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
+            // If it's the current call, we'll update with the PeekInfo once fetched
+            // Otherwise, it'll be marked as ended as soon as we complete the fetch
+            // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
+            self.insertPlaceholderGroupCallMessageIfNecessary(eraId: expectedEraId, timestamp: triggerEventTimestamp, thread: thread)
+        }
+
         firstly {
             fetchGroupMembershipProof(for: thread)
         }.then(on: .main) { proof in
             self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
         }.done(on: .main) { info in
-            self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
+            // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
+            // We may have a more appropriate timestamp waiting in the message processing queue.
+            Logger.info("Fetched group call PeekInfo for thread: \(thread) eraId: \(info.eraId ?? "(null)")")
+            if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
+                self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
+            }
         }.catch(on: .main) { error in
             Logger.error("Failed to fetch PeekInfo for \(thread): \(error)")
         }
@@ -671,10 +688,18 @@ extension CallService {
             owsAssertDebug(currentEraMessages.count <= 1)
 
             if let currentMessage = currentEraMessages.first {
+                let wasOldMessageEmpty = currentMessage.joinedMemberUuids?.count == 0 && !currentMessage.hasEnded
+
                 currentMessage.update(
                     withJoinedMemberUuids: info.joinedMembers,
-                    transaction: writeTx
-                )
+                    creatorUuid: creatorUuid,
+                    transaction: writeTx)
+
+                // Only notify if the message we updated had no participants
+                if wasOldMessageEmpty {
+                    self.postUserNotificationIfNecessary(message: currentMessage, transaction: writeTx)
+                }
+
             } else if !info.joinedMembers.isEmpty {
                 let newMessage = OWSGroupCallMessage(
                     eraId: currentEraId,
@@ -683,19 +708,34 @@ extension CallService {
                     thread: thread,
                     sentAtTimestamp: timestamp)
                 newMessage.anyInsert(transaction: writeTx)
-
-                // Post a notification when learning about a new group call if: we didn't create it and we're not currently in the call.
-                let isCurrentCall = (self.currentCall?.thread == thread)
-                let isLocalUserCreator = SignalServiceAddress(uuid: creatorUuid).isLocalAddress
-                if !isCurrentCall, !isLocalUserCreator {
-                    AppEnvironment.shared.notificationPresenter.notifyUser(
-                        for: newMessage,
-                        thread: thread,
-                        wantsSound: true,
-                        transaction: writeTx)
-                }
+                self.postUserNotificationIfNecessary(message: newMessage, transaction: writeTx)
             }
         }
+    }
+
+    fileprivate func insertPlaceholderGroupCallMessageIfNecessary(eraId: String, timestamp: UInt64, thread: TSGroupThread) {
+        databaseStorage.write { writeTx in
+            guard !GRDBInteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
+
+            Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
+            let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
+            message.anyInsert(transaction: writeTx)
+        }
+    }
+
+    fileprivate func postUserNotificationIfNecessary(message: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+        // The message can't be for the current call
+        guard self.currentCall?.thread.uniqueId != message.uniqueThreadId else { return }
+        // The creator of the call must be known, and it can't be the local user
+        guard let creator = message.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
+        // The message must have at least one participant
+        guard (message.joinedMemberUuids?.count ?? 0) > 0 else { return }
+
+        guard let thread = TSGroupThread.anyFetch(uniqueId: message.uniqueThreadId, transaction: transaction) else {
+            owsFailDebug("Unknown thread")
+            return
+        }
+        AppEnvironment.shared.notificationPresenter.notifyUser(for: message, thread: thread, wantsSound: true, transaction: transaction)
     }
 }
 
@@ -762,7 +802,11 @@ extension CallService: CallManagerDelegate {
         }.done { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
         }.catch { error in
-            owsFailDebug("Failed to send opaque message \(error)")
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Failed to send opaque message \(error)")
+            } else {
+                owsFailDebug("Failed to send opaque message \(error)")
+            }
             // TODO: Tell RingRTC something went wrong. API TBD
         }
     }
@@ -818,7 +862,11 @@ extension CallService: CallManagerDelegate {
                 body: response.responseData
             )
         }.catch(on: .main) { error in
-            owsFailDebug("Call manager http request failed \(error)")
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Call manager http request failed \(error)")
+            } else {
+                owsFailDebug("Call manager http request failed \(error)")
+            }
             self.callManager.httpRequestFailed(requestId: requestId)
         }
     }

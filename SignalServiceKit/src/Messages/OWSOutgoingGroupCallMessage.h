@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingGroupCallMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
-- (instancetype)initWithThread:(TSGroupThread *)thread;
+- (instancetype)initWithThread:(TSGroupThread *)thread eraId:(nullable NSString *)eraId;
 
 @end
 

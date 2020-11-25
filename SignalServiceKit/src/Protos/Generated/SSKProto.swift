@@ -5478,6 +5478,9 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable {
     @objc
     public func asBuilder() -> SSKProtoDataMessageGroupCallUpdateBuilder {
         let builder = SSKProtoDataMessageGroupCallUpdateBuilder()
+        if let _value = eraID {
+            builder.setEraID(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5491,6 +5494,17 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable {
 
         @objc
         fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setEraID(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.eraID = valueParam
+        }
+
+        public func setEraID(_ valueParam: String) {
+            proto.eraID = valueParam
+        }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
@@ -5508,6 +5522,18 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable {
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.GroupCallUpdate
+
+    @objc
+    public var eraID: String? {
+        guard hasEraID else {
+            return nil
+        }
+        return proto.eraID
+    }
+    @objc
+    public var hasEraID: Bool {
+        return proto.hasEraID
+    }
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty

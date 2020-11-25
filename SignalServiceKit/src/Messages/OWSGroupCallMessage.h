@@ -11,8 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSGroupCallMessage : TSInteraction <OWSReadTracking, OWSPreviewText>
 
+// Can be nil if we weren't able to peek the call.
+@property (nonatomic, readonly, nullable) SignalServiceAddress *creatorAddress;
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *joinedMemberAddresses;
-@property (nonatomic, readonly) SignalServiceAddress *creatorAddress;
 @property (nonatomic, readonly) BOOL hasEnded;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
@@ -34,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEraId:(NSString *)eraId
             joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
-                  creatorUuid:(NSUUID *)creatorUuid
+                  creatorUuid:(nullable NSUUID *)creatorUuid
                        thread:(TSGroupThread *)thread
               sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
@@ -66,6 +67,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithHasEnded:(BOOL)hasEnded transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithJoinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+                        creatorUuid:(NSUUID *)uuid
                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end

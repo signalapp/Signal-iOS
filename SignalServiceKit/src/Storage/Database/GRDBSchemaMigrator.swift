@@ -91,6 +91,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateAnimatedStickers
         case updateMarkedUnreadIndex
         case addGroupCallMessage2
+        case addGroupCallEraIdIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -882,6 +883,18 @@ public class GRDBSchemaMigrator: NSObject {
                     index: "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType",
                     on: "model_TSInteraction",
                     columns: ["uniqueThreadId", "hasEnded", "recordType"]
+                )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addGroupCallEraIdIndex.rawValue) { db in
+            do {
+                try db.create(
+                    index: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType",
+                    on: "model_TSInteraction",
+                    columns: ["uniqueThreadId", "eraId", "recordType"]
                 )
             } catch {
                 owsFail("Error: \(error)")

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
-@property (nonatomic, nullable) NSString *eraId;
+@property (nonatomic, nullable, readonly) NSString *eraId;
 @property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
 @property (nonatomic, nullable) NSString *creatorUuid;
 @property (nonatomic) BOOL hasEnded;
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEraId:(NSString *)eraId
             joinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
-                  creatorUuid:(NSUUID *)creatorUuid
+                  creatorUuid:(nullable NSUUID *)creatorUuid
                        thread:(TSGroupThread *)thread
               sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
@@ -37,9 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    self.eraId = eraId;
-    self.joinedMemberUuids = [joinedMemberUuids map:^(NSUUID *uuid) { return uuid.UUIDString; }];
-    self.creatorUuid = creatorUuid.UUIDString;
+    _eraId = eraId;
+    _joinedMemberUuids = [joinedMemberUuids map:^(NSUUID *uuid) { return uuid.UUIDString; }];
+    _creatorUuid = creatorUuid.UUIDString;
 
     return self;
 }
@@ -98,9 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
         map:^(NSString *uuidString) { return [[SignalServiceAddress alloc] initWithUuidString:uuidString]; }];
 }
 
-- (SignalServiceAddress *)creatorAddress
+- (nullable SignalServiceAddress *)creatorAddress
 {
-    return [[SignalServiceAddress alloc] initWithUuidString:self.creatorUuid];
+    if (self.creatorUuid) {
+        return [[SignalServiceAddress alloc] initWithUuidString:self.creatorUuid];
+    } else {
+        return nil;
+    }
 }
 
 - (OWSInteractionType)interactionType
@@ -154,31 +158,38 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.hasEnded) {
         return NSLocalizedString(
             @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
-    } else {
+    } else if (self.creatorAddress) {
         NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
+        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
             @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
         return [NSString stringWithFormat:formatString, creatorDisplayName];
+    } else {
+        return NSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
+            @"Text in conversation view for a group call that someone started. We don't know who");
     }
 }
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *moreThanThreeFormat = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-        @"Text explaining that there are more than three people in the group call. Embeds two {member name}s and "
-        @"memberCount-2");
+        @"Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
+        @"participant2, %3$@ participantCount-2 }}");
     NSString *threeFormat = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
-        @"Text explaining that there are three people in the group call. Embeds two {member name}s");
+        @"Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
+        @"participant2 }}");
     NSString *twoFormat = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-        @"Text explaining that there are two people in the group call. Embeds two {member name}s");
-    NSString *onlyCreatorFormat = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE",
+        @"Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 "
+        @"}}");
+    NSString *onlyCreatorFormat = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
         @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
     NSString *onlyYouFormat
-        = NSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE_FORMAT", @"Text explaining that you are in the group call.");
+        = NSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE", @"Text explaining that you are in the group call.");
     NSString *onlyOneFormat = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
         @"Text explaining that there is one person in the group call. Embeds {member name}");
     NSString *endedString = NSLocalizedString(
         @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+    NSString *someoneString = NSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
+        @"Text in conversation view for a group call that someone started. We don't know who");
 
 
     // Sort the addresses to prioritize the local user and originator, then the rest of the participants alphabetically
@@ -203,7 +214,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (sortedAddresses.count >= 4) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
         NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
-        return [NSString stringWithFormat:moreThanThreeFormat, firstName, secondName, (sortedAddresses.count - 2)];
+        NSString *remainingCount = [OWSFormat formatInt:(sortedAddresses.count - 2)];
+        return [NSString stringWithFormat:moreThanThreeFormat, firstName, secondName, remainingCount];
 
     } else if (sortedAddresses.count == 3) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
@@ -227,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [NSString stringWithFormat:onlyOneFormat, name];
 
     } else {
-        return endedString;
+        return someoneString;
     }
 }
 
@@ -241,11 +253,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateWithJoinedMemberUuids:(NSArray<NSUUID *> *)joinedMemberUuids
+                        creatorUuid:(NSUUID *)uuid
                         transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateGroupCallMessageWithTransaction:transaction
                                              block:^(OWSGroupCallMessage *message) {
                                                  message.hasEnded = joinedMemberUuids.count == 0;
+                                                 message.creatorUuid = uuid.UUIDString;
                                                  message.joinedMemberUuids = [joinedMemberUuids
                                                      map:^(NSUUID *uuid) { return uuid.UUIDString; }];
                                              }];

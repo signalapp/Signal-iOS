@@ -947,3 +947,11 @@ CREATE
     ,"recordType"
 )
 ;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"eraId"
+    ,"recordType"
+)
+;
