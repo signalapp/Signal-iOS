@@ -10,13 +10,13 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/OWSBackgroundTask.h>
+#import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSMessage.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/TSThread.h>
 
 @import CloudKit;
 

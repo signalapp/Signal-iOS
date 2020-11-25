@@ -9,9 +9,9 @@
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSContactThread.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/TSContactThread.h>
+#import <SessionMessagingKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

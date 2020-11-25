@@ -9,21 +9,21 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "UIUtil.h"
 #import <SessionUtilitiesKit/AppContext.h>
-#import <SignalUtilitiesKit/AppReadiness.h>
+#import <SessionMessagingKit/AppReadiness.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
-#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
+#import <SessionMessagingKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSThread.h>
 #import <SessionUtilitiesKit/TSYapDatabaseObject.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
-#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
+#import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 
 
 NS_ASSUME_NONNULL_BEGIN

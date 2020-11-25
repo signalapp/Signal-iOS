@@ -9,8 +9,8 @@
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
-#import <SignalUtilitiesKit/OWSIdentityManager.h>
-#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
+#import <SessionMessagingKit/OWSIdentityManager.h>
+#import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 
 @import CloudKit;
 

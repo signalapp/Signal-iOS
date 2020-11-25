@@ -7,13 +7,13 @@
 
 
 #import <SessionUtilitiesKit/AppContext.h>
-#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

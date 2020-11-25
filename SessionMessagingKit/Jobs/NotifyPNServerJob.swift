@@ -34,13 +34,13 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     // MARK: Running
     public func execute() {
-        let server = Configuration.shared.pnServerURL
+        let server = PushNotificationAPI.server
         let parameters = [ "data" : message.data.description, "send_to" : message.recipient ]
         let url = URL(string: "\(server)/notify")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: Configuration.shared.pnServerPublicKey).map { _ in }
+            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: PushNotificationAPI.serverPublicKey).map { _ in }
         }.done(on: DispatchQueue.global()) { // Intentionally capture self
             self.handleSuccess()
         }.catch(on: DispatchQueue.global()) { error in

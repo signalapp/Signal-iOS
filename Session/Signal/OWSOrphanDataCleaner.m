@@ -7,17 +7,17 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/OWSUserProfile.h>
-#import <SignalUtilitiesKit/AppReadiness.h>
+#import <SessionMessagingKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalUtilitiesKit/TSInteraction.h>
 #import <SignalUtilitiesKit/TSMessage.h>
 #import <SignalUtilitiesKit/TSQuotedMessage.h>
-#import <SignalUtilitiesKit/TSThread.h>
-#import <SignalUtilitiesKit/YapDatabaseTransaction+OWS.h>
+#import <SessionMessagingKit/TSThread.h>
+#import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

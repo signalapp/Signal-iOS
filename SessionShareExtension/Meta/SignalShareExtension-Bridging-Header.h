@@ -20,7 +20,7 @@
 #import <SignalUtilitiesKit/UIView+OWS.h>
 #import <SignalUtilitiesKit/VersionMigrations.h>
 #import <SessionUtilitiesKit/AppContext.h>
-#import <SignalUtilitiesKit/AppReadiness.h>
+#import <SessionMessagingKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/OWSMath.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSAccountManager.h>

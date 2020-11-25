@@ -8,7 +8,7 @@
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/OWSIdentityManager.h>
+#import <SessionMessagingKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

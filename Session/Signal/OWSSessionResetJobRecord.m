@@ -3,7 +3,7 @@
 //
 
 #import "OWSSessionResetJobRecord.h"
-#import <SignalUtilitiesKit/TSContactThread.h>
+#import <SessionMessagingKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,7 +4,6 @@ public extension Notification.Name {
     // State changes
     static let blockedContactsUpdated = Notification.Name("blockedContactsUpdated")
     static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
-    static let groupThreadUpdated = Notification.Name("groupThreadUpdated")
     static let threadDeleted = Notification.Name("threadDeleted")
     static let threadSessionRestoreDevicesChanged = Notification.Name("threadSessionRestoreDevicesChanged")
     // Onboarding
@@ -18,7 +17,6 @@ public extension Notification.Name {
     // State changes
     @objc static let blockedContactsUpdated = Notification.Name.blockedContactsUpdated.rawValue as NSString
     @objc static let contactOnlineStatusChanged = Notification.Name.contactOnlineStatusChanged.rawValue as NSString
-    @objc static let groupThreadUpdated = Notification.Name.groupThreadUpdated.rawValue as NSString
     @objc static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString
     @objc static let threadSessionRestoreDevicesChanged = Notification.Name.threadSessionRestoreDevicesChanged.rawValue as NSString
     // Onboarding

@@ -37,11 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.readReceiptManager;
 }
 
-+ (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
-
 #pragma mark -
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript

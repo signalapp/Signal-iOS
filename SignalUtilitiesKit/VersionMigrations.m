@@ -7,11 +7,11 @@
 #import "SignalKeyingStorage.h"
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppVersion.h>
-#import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
+#import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSThread.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSThread.h>
+#import <SessionMessagingKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 

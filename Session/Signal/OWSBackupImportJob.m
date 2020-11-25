@@ -9,11 +9,11 @@
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
-#import <SignalUtilitiesKit/OWSBackgroundTask.h>
+#import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SignalUtilitiesKit/TSMessage.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

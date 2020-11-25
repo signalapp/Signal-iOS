@@ -29,7 +29,7 @@ public final class SessionRestorationImplementation : NSObject, SessionRestorati
         Storage.read { transaction in
             thread = TSContactThread.getWithContactId(publicKey, transaction: transaction)
         }
-        return thread?.sessionRestorationStatus ?? .none
+        return .none
     }
 
     public func handleNewSessionAdopted(for publicKey: String, using transaction: Any) {
@@ -42,7 +42,6 @@ public final class SessionRestorationImplementation : NSObject, SessionRestorati
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetDone)
         infoMessage.save(with: transaction)
         // Update the session reset status
-        thread.sessionRestorationStatus = .none
         thread.save(with: transaction)
     }
 }

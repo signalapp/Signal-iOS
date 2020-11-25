@@ -3,8 +3,8 @@
 //
 
 #import "OWSDatabaseMigration.h"
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

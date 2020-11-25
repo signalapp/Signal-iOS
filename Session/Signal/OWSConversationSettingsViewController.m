@@ -23,12 +23,12 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
+#import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
 
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
-#import <SignalUtilitiesKit/TSOutgoingMessage.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSOutgoingMessage.h>
+#import <SessionMessagingKit/TSThread.h>
 
 @import ContactsUI;
 @import PromiseKit;

@@ -15,7 +15,7 @@
 #import <SignalUtilitiesKit/NSString+SSK.h>
 
 #import <SignalUtilitiesKit/TSInteraction.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

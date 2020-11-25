@@ -14,9 +14,9 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSContactThread.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSContactThread.h>
+#import <SessionMessagingKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SessionUIKit/SessionUIKit.h>
 

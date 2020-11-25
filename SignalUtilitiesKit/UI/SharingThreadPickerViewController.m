@@ -10,7 +10,7 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/TSThread.h>
 #import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

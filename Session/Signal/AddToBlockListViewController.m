@@ -4,8 +4,8 @@
 
 #import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
-#import <SignalUtilitiesKit/SSKEnvironment.h>
-#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
+#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN

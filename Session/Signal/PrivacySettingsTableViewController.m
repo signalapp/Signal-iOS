@@ -13,7 +13,7 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
-#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
+#import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

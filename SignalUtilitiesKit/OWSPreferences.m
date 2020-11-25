@@ -4,13 +4,13 @@
 
 #import "OWSPreferences.h"
 #import <SessionUtilitiesKit/AppContext.h>
-#import <SignalUtilitiesKit/NSNotificationCenter+OWS.h>
-#import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
+#import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
+#import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
 #import <SignalUtilitiesKit/OWSSyncManagerProtocol.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/TSStorageHeaders.h>
-#import <SignalUtilitiesKit/YapDatabaseConnection+OWS.h>
-#import <SignalUtilitiesKit/YapDatabaseTransaction+OWS.h>
+#import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
+#import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "SSKAsserts.h"
 

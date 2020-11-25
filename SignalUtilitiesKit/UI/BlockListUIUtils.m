@@ -4,10 +4,10 @@
 
 #import "BlockListUIUtils.h"
 #import "TSContactThread.h"
-#import <SignalUtilitiesKit/OWSBlockingManager.h>
+#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSGroupThread.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import "UIView+OWS.h"

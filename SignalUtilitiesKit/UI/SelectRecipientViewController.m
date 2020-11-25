@@ -12,7 +12,7 @@
 #import <SignalUtilitiesKit/UIView+OWS.h>
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/OWSTextField.h>
 
 NS_ASSUME_NONNULL_BEGIN

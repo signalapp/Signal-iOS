@@ -9,17 +9,16 @@
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionProtocolKit/SessionProtocolKit-Swift.h>
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
-#import <SignalUtilitiesKit/OWSBackgroundTask.h>
-#import <SignalUtilitiesKit/OWSBlockingManager.h>
-#import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
-#import <SignalUtilitiesKit/OWSIdentityManager.h>
-#import <SignalUtilitiesKit/OWSOutgoingReceiptManager.h>
-#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
+#import <SessionMessagingKit/OWSBackgroundTask.h>
+#import <SessionMessagingKit/OWSBlockingManager.h>
+#import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
+#import <SessionMessagingKit/OWSIdentityManager.h>
+#import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
+#import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SignalUtilitiesKit/OWSSounds.h>
-#import <SignalUtilitiesKit/OWSStorage.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionMessagingKit/OWSStorage.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -67,7 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
-        OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -90,8 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               readReceiptManager:readReceiptManager
                                                           outgoingReceiptManager:outgoingReceiptManager
                                                              reachabilityManager:reachabilityManager
-                                                                typingIndicators:typingIndicators
-                                                             attachmentDownloads:attachmentDownloads]];
+                                                                typingIndicators:typingIndicators]];
 
         appSpecificSingletonBlock();
 

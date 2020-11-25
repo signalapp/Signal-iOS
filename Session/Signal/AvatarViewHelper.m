@@ -10,8 +10,8 @@
 #import <SignalUtilitiesKit/UIUtil.h>
 
 #import <SignalUtilitiesKit/TSGroupModel.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

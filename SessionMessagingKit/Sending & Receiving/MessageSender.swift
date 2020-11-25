@@ -11,10 +11,14 @@ public final class MessageSender : NSObject {
         case protoConversionFailed
         case proofOfWorkCalculationFailed
         case noUserPublicKey
+        // Closed groups
+        case noThread
+        case noPrivateKey
+        case invalidClosedGroupUpdate
 
         internal var isRetryable: Bool {
             switch self {
-            case .invalidMessage, .protoConversionFailed, .proofOfWorkCalculationFailed: return false
+            case .invalidMessage, .protoConversionFailed, .proofOfWorkCalculationFailed, .invalidClosedGroupUpdate: return false
             default: return true
             }
         }
@@ -25,12 +29,18 @@ public final class MessageSender : NSObject {
             case .protoConversionFailed: return "Couldn't convert message to proto."
             case .proofOfWorkCalculationFailed: return "Proof of work calculation failed."
             case .noUserPublicKey: return "Couldn't find user key pair."
+            // Closed groups
+            case .noThread: return "Couldn't find a thread associated with the given group public key."
+            case .noPrivateKey: return "Couldn't find a private key associated with the given group public key."
+            case .invalidClosedGroupUpdate: return "Invalid group update."
             }
         }
     }
 
     // MARK: Initialization
     private override init() { }
+
+    public static let shared = MessageSender() // FIXME: Remove once requestSenderKey is static
 
     // MARK: Convenience
     public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
@@ -56,7 +66,7 @@ public final class MessageSender : NSObject {
         // Set the failure handler (for precondition failure handling)
         let _ = promise.catch(on: DispatchQueue.main) { error in
             storage.withAsync({ transaction in
-                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, with: error, using: transaction)
+                MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
@@ -157,7 +167,7 @@ public final class MessageSender : NSObject {
         // Handle completion
         let _ = promise.done(on: DispatchQueue.main) {
             storage.withAsync({ transaction in
-                Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
             if case .contact(_) = destination {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
@@ -186,7 +196,7 @@ public final class MessageSender : NSObject {
         // Set the failure handler (for precondition failure handling)
         let _ = promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             storage.withAsync({ transaction in
-                Configuration.shared.messageSenderDelegate.handleFailedMessageSend(message, with: error, using: transaction)
+                MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
         }
         // Validate the message
@@ -210,10 +220,23 @@ public final class MessageSender : NSObject {
         // Handle completion
         let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) {
             storage.withAsync({ transaction in
-                Configuration.shared.messageSenderDelegate.handleSuccessfulMessageSend(message, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
         }
         // Return
         return promise
+    }
+
+    // MARK: Result Handling
+    public static func handleSuccessfulMessageSend(_ message: Message, using transaction: Any) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
+        tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
+        tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
+    }
+
+    public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        tsMessage.update(sendingError: error, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
 }

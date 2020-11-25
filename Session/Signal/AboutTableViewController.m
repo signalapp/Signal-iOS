@@ -8,8 +8,8 @@
 #import <SignalUtilitiesKit/Environment.h>
 #import <SignalUtilitiesKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSDatabaseView.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/TSDatabaseView.h>
 
 @implementation AboutTableViewController
 
