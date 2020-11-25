@@ -1184,7 +1184,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Получение данных";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Подключает…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Подключение…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поместите этот QR-код внутри круга";
@@ -1526,13 +1526,13 @@
 "GROUP_CALL_ENDED_MESSAGE" = "Групповой звонок был завершён";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Для этого звонка было достигнуто максимальное количество участников — %ld. Попробуйте ещё раз позже.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Для этого звонка было достигнуто максимальное количество участников. Попробуйте ещё раз позже.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "Звонок заполнен";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Присоединиться к звонку";
@@ -1540,8 +1540,8 @@
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "В этом звонке · %ld человек(-а)";
 
-/* Text explaining that there are more than three people in the group call. Embeds two {member name}s and memberCount-2 */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ и ещё %ld человек(-а) в этом звонке";
+/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Здесь нет никого, кроме вас";
@@ -1574,28 +1574,31 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ в этом звонке";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Переподключает";
+"GROUP_CALL_RECONNECTING" = "Пересоединяемся";
+
+/* Text in conversation view for a group call that someone started. We don't know who */
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Начать звонок";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE" = "%@ начал(-а) групповой звонок";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ начал(-а) групповой звонок";
 
-/* Text explaining that there are three people in the group call. Embeds two {member name}s */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@ и ещё 1 человек в этом звонке";
+/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
 
-/* Text explaining that there are two people in the group call. Embeds two {member name}s */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ и %@ в этом звонке";
+/* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Вы были отключены от звонка. Проверьте ваше соединение и попробуйте ещё раз.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Вы";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "Вы в групповом звонке";
+"GROUP_CALL_YOU_ARE_HERE" = "Вы в групповом звонке";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Вы (на другом устройстве)";
@@ -2200,6 +2203,9 @@
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Старая группа";
 
+/* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Обновить группу";
 
@@ -2444,7 +2450,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Одновременное приглашение нескольких пользователей отправит групповое сообщение, и получатели смогут видеть друг друга.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Присоединиться";
+"JOIN_CALL_PILL_BUTTON" = "Войти";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Сообщения исчезают через %@.";
@@ -3822,6 +3828,9 @@
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Повторить";
+
+/* Button to return to current group call */
+"RETURN_CALL_PILL_BUTTON" = "Return";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Всё равно добавить в группу";
