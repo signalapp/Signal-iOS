@@ -609,7 +609,7 @@ extension GroupCallViewController: GroupCallMemberViewDelegate {
                 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }}")
             let displayName = contactsManager.displayName(for: address)
-            title = String(format: titleFormat, [displayName])
+            title = String(format: titleFormat, displayName)
 
         case let .noMediaKeys(address):
             message = NSLocalizedString(
@@ -620,7 +620,7 @@ extension GroupCallViewController: GroupCallMemberViewDelegate {
                 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT",
                 comment: "Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }}")
             let displayName = contactsManager.displayName(for: address)
-            title = String(format: titleFormat, [displayName])
+            title = String(format: titleFormat, displayName)
         }
 
         let actionSheet = ActionSheetController(title: title, message: message)
