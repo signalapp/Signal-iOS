@@ -42,7 +42,7 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/Environment.h>
+#import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
@@ -51,7 +51,7 @@
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
 #import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
@@ -62,9 +62,9 @@
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionMessagingKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSGroupModel.h>
-#import <SignalUtilitiesKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SessionMessagingKit/TSGroupModel.h>
+#import <SessionMessagingKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SessionMessagingKit/TSQuotedMessage.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -269,11 +269,6 @@ typedef enum : NSUInteger {
 - (id<OWSTypingIndicators>)typingIndicators
 {
     return SSKEnvironment.shared.typingIndicators;
-}
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
 }
 
 - (TSAccountManager *)tsAccountManager
@@ -1457,16 +1452,18 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAttachmentsForMessage:message
-            transaction:transaction
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
-            }
-            failure:^(NSError *error) {
-                OWSLogWarn(@"Failed to redownload message with error: %@", error);
-            }];
-    }];
+    // TODO TODO TODO
+    
+//    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//        [self.attachmentDownloads downloadAttachmentsForMessage:message
+//            transaction:transaction
+//            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+//                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
+//            }
+//            failure:^(NSError *error) {
+//                OWSLogWarn(@"Failed to redownload message with error: %@", error);
+//            }];
+//    }];
 }
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
@@ -1914,23 +1911,25 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSAssertDebug(attachmentStreams.count == 1);
-                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                    [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                    [message saveWithTransaction:postSuccessTransaction];
-                }];
-            }
-            failure:^(NSError *error) {
-                OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
-                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                    [message touchWithTransaction:postSuccessTransaction];
-                }];
-            }];
-    }];
+    // TODO TODO TODO
+    
+//    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+//            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+//                OWSAssertDebug(attachmentStreams.count == 1);
+//                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+//                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
+//                    [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+//                    [message saveWithTransaction:postSuccessTransaction];
+//                }];
+//            }
+//            failure:^(NSError *error) {
+//                OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
+//                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
+//                    [message touchWithTransaction:postSuccessTransaction];
+//                }];
+//            }];
+//    }];
 }
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply

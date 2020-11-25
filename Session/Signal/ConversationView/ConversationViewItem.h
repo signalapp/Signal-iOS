@@ -3,6 +3,7 @@
 //
 
 #import "ConversationViewLayout.h"
+#import <SessionMessagingKit/OWSAudioPlayer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

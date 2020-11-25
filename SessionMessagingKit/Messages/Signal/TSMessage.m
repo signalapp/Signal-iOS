@@ -14,7 +14,6 @@
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import "OWSPrimaryStorage+Loki.h"
 #import "TSContactThread.h"
 #import <SignalCoreKit/NSString+OWS.h>
 

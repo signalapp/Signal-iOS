@@ -7,12 +7,6 @@ import Foundation
 @objc
 public class MediaDownloadView: UIView {
 
-    // MARK: - Dependencies
-
-    private var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
-    }
-
     // MARK: -
 
     private let attachmentId: String
@@ -75,13 +69,13 @@ public class MediaDownloadView: UIView {
         shapeLayer1.frame = self.bounds
         shapeLayer2.frame = self.bounds
 
-        guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
-            Logger.warn("No progress for attachment.")
-            shapeLayer1.path = nil
-            shapeLayer2.path = nil
-            return
-        }
+        shapeLayer1.path = nil
+        shapeLayer2.path = nil
+        return
+        
+        // We can't display download progress yet
 
+        /*
         // Prevent the shape layer from animating changes.
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -115,5 +109,6 @@ public class MediaDownloadView: UIView {
         shapeLayer2.fillColor = fillColor2.cgColor
 
         CATransaction.commit()
+         */
     }
 }

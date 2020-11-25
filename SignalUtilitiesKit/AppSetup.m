@@ -15,7 +15,7 @@
 #import <SessionMessagingKit/OWSIdentityManager.h>
 #import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
-#import <SignalUtilitiesKit/OWSSounds.h>
+#import <SessionMessagingKit/OWSSounds.h>
 #import <SessionMessagingKit/OWSStorage.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

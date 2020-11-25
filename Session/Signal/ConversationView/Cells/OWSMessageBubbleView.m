@@ -14,7 +14,7 @@
 #import "OWSQuotedMessageView.h"
 #import "Session-Swift.h"
 #import "UIColor+OWS.h"
-#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,13 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSMessageBubbleView
-
-#pragma mark - Dependencies
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
 
 #pragma mark -
 
@@ -844,10 +837,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
     if (uniqueId.length < 1) {
         OWSFailDebug(@"Missing uniqueId.");
-        return;
-    }
-    if ([self.attachmentDownloads downloadProgressForAttachmentId:uniqueId] == nil) {
-        OWSFailDebug(@"Missing download progress.");
         return;
     }
 

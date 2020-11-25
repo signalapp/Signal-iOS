@@ -8,7 +8,7 @@
 
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/SSKEnvironment.h>

@@ -12,7 +12,6 @@
 #import "TSGroupThread.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
-#import "SSKAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,8 +45,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 + (instancetype)sharedManager
 {
-    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
-
     return SSKEnvironment.shared.blockingManager;
 }
 
@@ -59,11 +56,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         return self;
     }
 
-    OWSAssertDebug(primaryStorage);
-
     _dbConnection = primaryStorage.newDatabaseConnection;
-
-    OWSSingletonAssert();
 
     return self;
 }
@@ -92,7 +85,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         return [self isGroupIdBlocked:groupThread.groupModel.groupId];
     } else {
-        OWSFailDebug(@"%@ failure unexpected thread type", self.logTag);
         return NO;
     }
 }
@@ -101,10 +93,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)addBlockedPhoneNumber:(NSString *)phoneNumber
 {
-    OWSAssertDebug(phoneNumber.length > 0);
-
-    OWSLogInfo(@"addBlockedPhoneNumber: %@", phoneNumber);
-
     @synchronized(self)
     {
         [self ensureLazyInitialization];
@@ -122,10 +110,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)removeBlockedPhoneNumber:(NSString *)phoneNumber
 {
-    OWSAssertDebug(phoneNumber.length > 0);
-
-    OWSLogInfo(@"removeBlockedPhoneNumber: %@", phoneNumber);
-
     @synchronized(self)
     {
         [self ensureLazyInitialization];
@@ -143,10 +127,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage
 {
-    OWSAssertDebug(blockedPhoneNumbers != nil);
-
-    OWSLogInfo(@"setBlockedPhoneNumbers: %d", (int)blockedPhoneNumbers.count);
-
     @synchronized(self)
     {
         [self ensureLazyInitialization];
@@ -210,9 +190,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (void)addBlockedGroup:(TSGroupModel *)groupModel
 {
     NSData *groupId = groupModel.groupId;
-    OWSAssertDebug(groupId.length > 0);
-
-    OWSLogInfo(@"groupId: %@", groupId);
 
     @synchronized(self) {
         [self ensureLazyInitialization];
@@ -229,10 +206,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)removeBlockedGroupId:(NSData *)groupId
 {
-    OWSAssertDebug(groupId.length > 0);
-
-    OWSLogInfo(@"groupId: %@", groupId);
-
     @synchronized(self) {
         [self ensureLazyInitialization];
 
@@ -307,7 +280,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (void)ensureLazyInitialization
 {
     if (_blockedPhoneNumberSet) {
-        OWSAssertDebug(_blockedGroupMap);
 
         // already loaded
         return;
@@ -333,8 +305,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)syncBlockList
 {
-    OWSAssertDebug(_blockedPhoneNumberSet);
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:self.blockedGroupIds];
     });
@@ -343,8 +313,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (void)syncBlockListIfNecessary
 {
-    OWSAssertDebug(_blockedPhoneNumberSet);
-
     // If we haven't yet successfully synced the current "block list" changes,
     // try again to sync now.
     NSArray<NSString *> *syncedBlockedPhoneNumbers =
@@ -363,11 +331,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     if ([self.blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet] &&
         [localBlockedGroupIdSet isEqualToSet:syncedBlockedGroupIdSet]) {
-        OWSLogVerbose(@"Ignoring redundant block list sync");
         return;
     }
 
-    OWSLogInfo(@"retrying sync of block list");
     [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:localBlockedGroupIds];
 }
 
@@ -401,9 +367,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (void)saveSyncedBlockListWithPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers
                                    groupIds:(NSArray<NSData *> *)blockedGroupIds
 {
-    OWSAssertDebug(blockedPhoneNumbers);
-    OWSAssertDebug(blockedGroupIds);
-
     [self.dbConnection setObject:blockedPhoneNumbers
                           forKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
                     inCollection:kOWSBlockingManager_BlockListCollection];
@@ -417,8 +380,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         @synchronized(self)
         {

@@ -13,9 +13,9 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalUtilitiesKit/AppSetup.h>
-#import <SignalUtilitiesKit/Environment.h>
+#import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
-#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SessionMessagingKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/VersionMigrations.h>
 #import <SessionMessagingKit/AppReadiness.h>
@@ -23,7 +23,7 @@
 #import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
 #import <SignalUtilitiesKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalUtilitiesKit/OWSFailedMessagesJob.h>
-#import <SignalUtilitiesKit/OWSMath.h>
+#import <SessionUtilitiesKit/OWSMath.h>
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
@@ -776,7 +776,6 @@ static NSTimeInterval launchStartedAt;
 - (void)startOpenGroupPollersIfNeeded
 {
     [LKPublicChatManager.shared startPollersIfNeeded];
-    [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
 }
 
 - (void)stopOpenGroupPollers { [LKPublicChatManager.shared stopPollers]; }

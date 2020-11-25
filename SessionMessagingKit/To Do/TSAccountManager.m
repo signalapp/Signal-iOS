@@ -16,7 +16,6 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
-#import "SSKAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -66,8 +65,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     _dbConnection = [primaryStorage newDatabaseConnection];
     self.reachability = [Reachability reachabilityForInternetConnection];
 
-    OWSSingletonAssert();
-
     if (!CurrentAppContext().isMainApp) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModifiedExternally:)
@@ -94,16 +91,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 + (instancetype)sharedInstance
 {
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
     return SSKEnvironment.shared.tsAccountManager;
 }
 
 #pragma mark - Dependencies
 
 - (id<ProfileManagerProtocol>)profileManager {
-    OWSAssertDebug(SSKEnvironment.shared.profileManager);
-
     return SSKEnvironment.shared.profileManager;
 }
 
@@ -155,12 +148,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)didRegister
 {
-    OWSLogInfo(@"didRegister");
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
-
-    if (!phoneNumber) {
-        OWSFail(@"phoneNumber was unexpectedly nil");
-    }
 
     [self storeLocalNumber:phoneNumber];
 
@@ -257,7 +245,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     if (registrationID == 0) {
         registrationID = (uint32_t)arc4random_uniform(16380) + 1;
-        OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
 
         [transaction setObject:[NSNumber numberWithUnsignedInteger:registrationID]
                         forKey:TSAccountManager_LocalRegistrationIdKey
@@ -311,7 +298,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 {
     // TODO: Can we remove phoneNumberAwaitingVerification?
     NSString *number          = self.phoneNumberAwaitingVerification;
-    OWSAssertDebug(number);
 
     [self registerWithPhoneNumber:number
                      captchaToken:captchaToken
@@ -325,7 +311,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                failure:(void (^)(NSError *error))failureBlock
 {
     NSString *number          = self.phoneNumberAwaitingVerification;
-    OWSAssertDebug(number);
 
     [self registerWithPhoneNumber:number
                      captchaToken:captchaToken
@@ -375,10 +360,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
     // Any database write by the main app might reflect a deregistration,
     // so clear the cached "is registered" state.  This will significantly
     // erode the value of this cache in the SAE.
@@ -400,7 +381,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                                            defaultValue:NO]);
         }
 
-        OWSAssertDebug(self.cachedIsDeregistered);
         return self.cachedIsDeregistered.boolValue;
     }
 }
@@ -411,8 +391,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         if (self.cachedIsDeregistered && self.cachedIsDeregistered.boolValue == isDeregistered) {
             return;
         }
-
-        OWSLogWarn(@"isDeregistered: %d", isDeregistered);
 
         self.cachedIsDeregistered = @(isDeregistered);
     }
@@ -433,7 +411,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     @synchronized(self) {
         NSString *_Nullable localNumber = self.localNumber;
         if (!localNumber) {
-            OWSFailDebug(@"can't re-register without valid local number.");
             return NO;
         }
 
@@ -444,7 +421,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
 
-            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
+            // TODO TODO TODO
+//            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
 
             [transaction setObject:localNumber
                             forKey:TSAccountManager_ReregisteringPhoneNumberKey
@@ -459,11 +437,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSString *)reregisterationPhoneNumber
 {
-    OWSAssertDebug([self isReregistering]);
-
     NSString *_Nullable result = [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
                                                     inCollection:TSAccountManager_UserAccountCollection];
-    OWSAssertDebug(result);
     return result;
 }
 
@@ -483,8 +458,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)setHasPendingBackupRestoreDecision:(BOOL)value
 {
-    OWSLogInfo(@"%d", value);
-
     [self.dbConnection setBool:value
                         forKey:TSAccountManager_HasPendingRestoreDecisionKey
                   inCollection:TSAccountManager_UserAccountCollection];
@@ -509,9 +482,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 }
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber
-{
-    OWSAssertDebug(localNumber.length > 0);
-    
+{    
     [self storeLocalNumber:localNumber];
 }
 
@@ -557,8 +528,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 }
 
 - (void)reachabilityChanged {
-    OWSAssertIsOnMainThread();
-
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [[self updateAccountAttributesIfNecessary] retainUntilComplete];
     }];
@@ -568,8 +537,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)postRegistrationStateDidChangeNotification
 {
-    OWSAssertIsOnMainThread();
-
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
                                                              object:nil
                                                            userInfo:nil];

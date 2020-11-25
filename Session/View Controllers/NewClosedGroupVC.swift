@@ -170,7 +170,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             var promise: Promise<TSGroupThread>!
             Storage.writeSync { transaction in
-                promise = MessageSenderDelegate.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+                promise = MessageSender.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
             }
             let _ = promise.done(on: DispatchQueue.main) { thread in
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)

@@ -384,7 +384,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                     } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                        let _ = MessageSenderDelegate.leave(groupPublicKey, using: transaction).ensure {
+                        let _ = MessageSender.leave(groupPublicKey, using: transaction).ensure {
                             Storage.writeSync { transaction in
                                 thread.removeAllThreadInteractions(with: transaction)
                                 thread.remove(with: transaction)

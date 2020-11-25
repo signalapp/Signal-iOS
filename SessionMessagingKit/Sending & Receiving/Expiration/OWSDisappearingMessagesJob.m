@@ -17,7 +17,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SessionProtocolKit/SessionProtocolKit.h>
-#import "SSKAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -53,8 +52,6 @@ void AssertIsOnDisappearingMessagesQueue()
 
 + (instancetype)sharedJob
 {
-    OWSAssertDebug(SSKEnvironment.shared.disappearingMessagesJob);
-
     return SSKEnvironment.shared.disappearingMessagesJob;
 }
 
@@ -79,8 +76,6 @@ void AssertIsOnDisappearingMessagesQueue()
                                                                      repeats:YES];
         }
     }];
-
-    OWSSingletonAssert();
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -124,20 +119,15 @@ void AssertIsOnDisappearingMessagesQueue()
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
-                OWSFailDebug(@"Refusing to remove message which doesn't expire until: %lld", message.expiresAt);
                 return;
             }
 
-            OWSLogInfo(@"Removing message which expired at: %lld", message.expiresAt);
             [message removeWithTransaction:transaction];
             expirationCount++;
         }
                                                                transaction:transaction];
     }];
 
-    OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
-
-    OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
     return expirationCount;
 }
@@ -145,7 +135,6 @@ void AssertIsOnDisappearingMessagesQueue()
 // deletes any expired messages and schedules the next run.
 - (NSUInteger)runLoop
 {
-    OWSLogVerbose(@"in runLoop");
     AssertIsOnDisappearingMessagesQueue();
 
     NSUInteger deletedCount = [self deleteExpiredMessages];
@@ -157,7 +146,6 @@ void AssertIsOnDisappearingMessagesQueue()
     }];
 
     if (!nextExpirationTimestampNumber) {
-        OWSLogDebug(@"No more expiring messages.");
         return deletedCount;
     }
 
@@ -172,14 +160,11 @@ void AssertIsOnDisappearingMessagesQueue()
                  expirationStartedAt:(uint64_t)expirationStartedAt
                          transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    OWSAssertDebug(transaction);
-
     if (!message.isExpiringMessage) {
         return;
     }
 
     NSTimeInterval startedSecondsAgo = ([NSDate ows_millisecondTimeStamp] - expirationStartedAt) / 1000.0;
-    OWSLogDebug(@"Starting expiration for message read %f seconds ago", startedSecondsAgo);
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
@@ -202,9 +187,6 @@ void AssertIsOnDisappearingMessagesQueue()
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     NSString *_Nullable remoteContactName = nil;
@@ -228,9 +210,6 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
-        disappearingMessagesConfiguration.dictionaryValue);
-
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
 
     // MJK TODO - should be safe to remove this senderTimestamp
@@ -242,7 +221,6 @@ void AssertIsOnDisappearingMessagesQueue()
                                                           createdInExistingGroup:createdInExistingGroup];
     [infoMessage saveWithTransaction:transaction];
 
-    OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
 }
 
@@ -284,8 +262,6 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)scheduleRunByDate:(NSDate *)date
 {
-    OWSAssertDebug(date);
-
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!CurrentAppContext().isMainAppAndActive) {
             // Don't schedule run when inactive or not in main app.
@@ -297,18 +273,10 @@ void AssertIsOnDisappearingMessagesQueue()
         NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, date.timeIntervalSinceNow);
         NSDate *newTimerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
         if (self.nextDisappearanceDate && [self.nextDisappearanceDate isBeforeDate:newTimerScheduleDate]) {
-            OWSLogVerbose(@"Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
-                [self.dateFormatter stringFromDate:date],
-                (int)round(MAX(0, [date timeIntervalSinceDate:[NSDate new]])),
-                [self.dateFormatter stringFromDate:self.nextDisappearanceDate],
-                (int)round(MAX(0, [self.nextDisappearanceDate timeIntervalSinceDate:[NSDate new]])));
             return;
         }
 
         // Update Schedule
-        OWSLogVerbose(@"Scheduled run at %@ (%d sec.)",
-            [self.dateFormatter stringFromDate:newTimerScheduleDate],
-            (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
         [self resetNextDisappearanceTimer];
         self.nextDisappearanceDate = newTimerScheduleDate;
         self.nextDisappearanceTimer = [NSTimer weakScheduledTimerWithTimeInterval:delaySeconds
@@ -321,12 +289,8 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)disappearanceTimerDidFire
 {
-    OWSAssertIsOnMainThread();
-    OWSLogDebug(@"");
-
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
-        OWSFailDebug(@"Disappearing messages job timer fired while main app inactive.");
         return;
     }
 
@@ -339,16 +303,12 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)fallbackTimerDidFire
 {
-    OWSAssertIsOnMainThread();
-    OWSLogDebug(@"");
-
     BOOL recentlyScheduledDisappearanceTimer = NO;
     if (fabs(self.nextDisappearanceDate.timeIntervalSinceNow) < 1.0) {
         recentlyScheduledDisappearanceTimer = YES;
     }
 
     if (!CurrentAppContext().isMainAppAndActive) {
-        OWSLogInfo(@"Ignoring fallbacktimer for app which is not main and active.");
         return;
     }
 
@@ -359,16 +319,11 @@ void AssertIsOnDisappearingMessagesQueue()
         // So, if we're deleting something via this fallback timer, something may have gone wrong. The
         // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
         // is inevitable.
-        if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
-            OWSFailDebug(@"unexpectedly deleted disappearing messages via fallback timer.");
-        }
     });
 }
 
 - (void)resetNextDisappearanceTimer
 {
-    OWSAssertIsOnMainThread();
-
     [self.nextDisappearanceTimer invalidate];
     self.nextDisappearanceTimer = nil;
     self.nextDisappearanceDate = nil;
@@ -380,8 +335,6 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
-            OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
-
             // We don't know when it was actually read, so assume it was read as soon as it was received.
             uint64_t readTimeBestGuess = message.receivedAtTimestamp;
             [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
@@ -393,8 +346,6 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             [self runLoop];
@@ -404,8 +355,6 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
     [self resetNextDisappearanceTimer];
 }
 

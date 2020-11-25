@@ -60,6 +60,13 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                                         (NSArray<SNProtoAttachmentPointer *> *)attachmentProtos
                                                     albumMessage:(TSMessage *)message;
 
+// Non-nil for attachments which need "lazy backup restore."
+- (nullable OWSBackupFragment *)lazyRestoreFragment;
+
+// Marks attachment as needing "lazy backup restore."
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

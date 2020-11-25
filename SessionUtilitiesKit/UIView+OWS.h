@@ -3,7 +3,6 @@
 //
 
 #import <PureLayout/PureLayout.h>
-#import <SignalUtilitiesKit/OWSMath.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -127,14 +126,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 // Add red border to self, and all subviews recursively.
 - (void)addRedBorderRecursively;
-
-#ifdef DEBUG
-- (void)logFrame;
-- (void)logFrameWithLabel:(NSString *)label;
-- (void)logFrameLater;
-- (void)logFrameLaterWithLabel:(NSString *)label;
-- (void)logHierarchyUpwardLaterWithLabel:(NSString *)label;
-#endif
 
 @end
 

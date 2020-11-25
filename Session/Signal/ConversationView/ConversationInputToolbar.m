@@ -12,8 +12,8 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
+#import <SessionMessagingKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

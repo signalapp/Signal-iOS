@@ -4,8 +4,11 @@ FOUNDATION_EXPORT double SessionMessagingKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 
 #import <SessionMessagingKit/AppReadiness.h>
+#import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/NotificationsProtocol.h>
+#import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
+#import <SessionMessagingKit/OWSBackupFragment.h>
 #import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
@@ -15,12 +18,16 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSIncomingMessageFinder.h>
 #import <SessionMessagingKit/OWSMediaGalleryFinder.h>
 #import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
+#import <SessionMessagingKit/OWSPreferences.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/OWSQuotedReplyModel.h>
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SessionMessagingKit/OWSReadTracking.h>
 #import <SessionMessagingKit/OWSRecipientIdentity.h>
+#import <SessionMessagingKit/OWSSounds.h>
 #import <SessionMessagingKit/OWSStorage.h>
+#import <SessionMessagingKit/OWSStorage+Subclass.h>
+#import <SessionMessagingKit/OWSWindowManager.h>
 #import <SessionMessagingKit/ProfileManagerProtocol.h>
 #import <SessionMessagingKit/ProtoUtils.h>
 #import <SessionMessagingKit/SignalRecipient.h>

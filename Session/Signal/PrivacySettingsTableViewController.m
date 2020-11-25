@@ -6,12 +6,12 @@
 
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SessionMessagingKit/Environment.h>
+#import <SessionMessagingKit/OWSPreferences.h>
 
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

@@ -37,8 +37,6 @@ public class DeviceSleepManager: NSObject {
     private override init() {
         super.init()
 
-        SwiftSingletons.register(self)
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didEnterBackground),
                                                name: NSNotification.Name.OWSApplicationDidEnterBackground,
@@ -51,15 +49,11 @@ public class DeviceSleepManager: NSObject {
 
     @objc
     private func didEnterBackground() {
-        AssertIsOnMainThread()
-
         ensureSleepBlocking()
     }
 
     @objc
     public func addBlock(blockObject: NSObject) {
-        AssertIsOnMainThread()
-
         blocks.append(SleepBlock(blockObject: blockObject))
 
         ensureSleepBlocking()
@@ -67,8 +61,6 @@ public class DeviceSleepManager: NSObject {
 
     @objc
     public func removeBlock(blockObject: NSObject) {
-        AssertIsOnMainThread()
-
         blocks = blocks.filter {
             $0.blockObject != nil && $0.blockObject != blockObject
         }
@@ -77,8 +69,6 @@ public class DeviceSleepManager: NSObject {
     }
 
     private func ensureSleepBlocking() {
-        AssertIsOnMainThread()
-
         // Cull expired blocks.
         blocks = blocks.filter {
             $0.blockObject != nil

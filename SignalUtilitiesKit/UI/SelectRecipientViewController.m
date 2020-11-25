@@ -9,7 +9,7 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SessionMessagingKit/TSAccountManager.h>

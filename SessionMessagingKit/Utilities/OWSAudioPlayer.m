@@ -5,7 +5,8 @@
 #import "OWSAudioPlayer.h"
 #import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration
 {
-    // Do nothing;
+    // Do nothing
+}
+
+- (void)showInvalidAudioFileAlert
+{
+    // Do nothing
 }
 
 @end
@@ -57,13 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssertDebug(mediaUrl);
-    OWSAssertDebug(delegate);
-
     _mediaUrl = mediaUrl;
     _delegate = delegate;
 
-    NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", self.logTag, self.mediaUrl];
+    NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", @"OWSAudioPlayer", self.mediaUrl];
     _audioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:audioBehavior];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -103,19 +106,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
 
     // get current audio activity
-    OWSAssertIsOnMainThread();
     [self playWithAudioActivity:self.audioActivity];
 }
 
 - (void)playWithAudioActivity:(OWSAudioActivity *)audioActivity
 {
-    OWSAssertIsOnMainThread();
-
     BOOL success = [self.audioSession startAudioActivity:audioActivity];
-    OWSAssertDebug(success);
-
-    OWSAssertDebug(self.mediaUrl);
-    OWSAssertDebug([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
 
     [self.audioPlayerPoller invalidate];
 
@@ -125,14 +121,11 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
         if (error) {
-            OWSLogError(@"error: %@", error);
             [self stop];
 
             if ([error.domain isEqualToString:NSOSStatusErrorDomain]
                 && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-                [OWSAlerts
-                    showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
-                                                  @"Message for the alert indicating that an audio file is invalid.")];
+                [self.delegate showInvalidAudioFileAlert];
             }
 
             return;
@@ -162,8 +155,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pause
 {
-    OWSAssertIsOnMainThread();
-
     self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
@@ -175,8 +166,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop
 {
-    OWSAssertIsOnMainThread();
-
     self.delegate.audioPlaybackState = AudioPlaybackState_Stopped;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
@@ -193,8 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)togglePlayState
 {
-    OWSAssertIsOnMainThread();
-
     if (self.delegate.audioPlaybackState == AudioPlaybackState_Playing) {
         [self pause];
     } else {
@@ -206,18 +193,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)audioPlayerUpdated:(NSTimer *)timer
 {
-    OWSAssertIsOnMainThread();
-
-    OWSAssertDebug(self.audioPlayer);
-    OWSAssertDebug(self.audioPlayerPoller);
-
     [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime] duration:(CGFloat)[self.audioPlayer duration]];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
-    OWSAssertIsOnMainThread();
-
     [self stop];
 }
 

@@ -4,7 +4,6 @@
 
 #import "NSString+SSK.h"
 #import "AppContext.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)rtlSafeAppend:(NSString *)string
 {
-    OWSAssertDebug(string);
-
     if (CurrentAppContext().isRTL) {
         return [string stringByAppendingString:self];
     } else {

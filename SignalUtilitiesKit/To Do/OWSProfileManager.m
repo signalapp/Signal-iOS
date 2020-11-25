@@ -13,7 +13,7 @@
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>

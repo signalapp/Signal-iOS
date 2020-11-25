@@ -12,9 +12,9 @@
 #import "AnyPromise.h"
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 
-#import <SignalUtilitiesKit/TSInteraction.h>
+#import <SessionMessagingKit/TSInteraction.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
@@ -447,6 +447,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.audioProgressSeconds = progress;
 
     [self.lastAudioMessageView setProgress:progress / duration];
+}
+
+- (void)showInvalidAudioFileAlert
+{
+    OWSAssertIsOnMainThread();
+    
+    [OWSAlerts
+        showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
+                                      @"Message for the alert indicating that an audio file is invalid.")];
 }
 
 #pragma mark - Displayable Text

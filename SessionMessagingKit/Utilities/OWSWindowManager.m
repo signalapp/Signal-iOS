@@ -3,11 +3,8 @@
 //
 
 #import "OWSWindowManager.h"
-#import "UIColor+OWS.h"
-#import "UIFont+OWS.h"
-#import "UIView+OWS.h"
-#import "AppContext.h"
-#import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import "Environment.h"
+#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -156,8 +153,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 + (instancetype)sharedManager
 {
-    OWSAssertDebug(Environment.shared.windowManager);
-
     return Environment.shared.windowManager;
 }
 
@@ -169,20 +164,11 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         return self;
     }
 
-    OWSAssertIsOnMainThread();
-    OWSSingletonAssert();
-
     return self;
 }
 
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(rootWindow);
-    OWSAssertDebug(!self.rootWindow);
-    OWSAssertDebug(screenBlockingWindow);
-    OWSAssertDebug(!self.screenBlockingWindow);
-
     self.rootWindow = rootWindow;
     self.screenBlockingWindow = screenBlockingWindow;
 
@@ -235,18 +221,15 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(rootWindow);
-
     UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_CallView();
     window.opaque = YES;
     // TODO: What's the right color to use here?
-    window.backgroundColor = [UIColor ows_materialBlueColor];
+    window.backgroundColor = [UIColor blackColor];
 
     UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = [UIColor ows_materialBlueColor];
+    viewController.view.backgroundColor = [UIColor blackColor];
 
     // NOTE: Do not use OWSNavigationController for call window.
     // It adjusts the size of the navigation bar to reflect the
@@ -255,7 +238,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSWindowRootNavigationViewController *navigationController =
         [[OWSWindowRootNavigationViewController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
-    OWSAssertDebug(!self.callNavigationController);
     self.callNavigationController = navigationController;
 
     window.rootViewController = navigationController;
@@ -265,8 +247,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive
 {
-    OWSAssertIsOnMainThread();
-
     _isScreenBlockActive = isScreenBlockActive;
 
     [self ensureWindowState];
@@ -278,8 +258,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (BOOL)isAppWindow:(UIWindow *)window
 {
-    OWSAssertDebug(window);
-
     return (window == self.rootWindow || window == self.callViewWindow
         || window == self.menuActionsWindow || window == self.screenBlockingWindow);
 }
@@ -293,8 +271,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController
 {
-    OWSAssertDebug(self.menuActionsViewController == nil);
-
     self.menuActionsViewController = menuActionsViewController;
     self.menuActionsWindow.rootViewController = menuActionsViewController;
 
@@ -313,8 +289,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)setCallViewController:(nullable UIViewController *)callViewController
 {
-    OWSAssertIsOnMainThread();
-
     if (callViewController == _callViewController) {
         return;
     }
@@ -326,10 +300,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)startCall:(UIViewController *)callViewController
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(callViewController);
-    OWSAssertDebug(!self.callViewController);
-
     self.callViewController = callViewController;
 
     // Attach callViewController to window.
@@ -344,12 +314,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)endCall:(UIViewController *)callViewController
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(callViewController);
-    OWSAssertDebug(self.callViewController);
-
     if (self.callViewController != callViewController) {
-        OWSLogWarn(@"Ignoring end call request from obsolete call view controller.");
         return;
     }
 
@@ -364,10 +329,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)leaveCallView
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.callViewController);
-    OWSAssertDebug(self.shouldShowCallView);
-
     self.shouldShowCallView = NO;
 
     [self ensureWindowState];
@@ -375,10 +336,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)showCallView
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.callViewController);
-    OWSAssertDebug(!self.shouldShowCallView);
-
     self.shouldShowCallView = YES;
 
     [self ensureWindowState];
@@ -386,8 +343,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (BOOL)hasCall
 {
-    OWSAssertIsOnMainThread();
-
     return self.callViewController != nil;
 }
 
@@ -395,11 +350,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)ensureWindowState
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.rootWindow);
-    OWSAssertDebug(self.callViewWindow);
-    OWSAssertDebug(self.screenBlockingWindow);
-
     // To avoid bad frames, we never want to hide the blocking window, so we manipulate
     // its window level to "hide" it behind other windows.  The other windows have fixed
     // window level and are shown/hidden as necessary.
@@ -430,9 +380,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
             // Add "Message Actions" action sheet
 
             [self ensureMessageActionsWindowShown];
-
-            // Don't hide rootWindow so as not to dismiss keyboard.
-            OWSAssertDebug(!self.rootWindow.isHidden);
         } else {
             [self ensureMessageActionsWindowHidden];
         }
@@ -441,12 +388,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)ensureRootWindowShown
 {
-    OWSAssertIsOnMainThread();
-
-    if (self.rootWindow.hidden) {
-        OWSLogInfo(@"showing root window.");
-    }
-
     // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
     // on the vc on top of its navigation stack.
@@ -457,80 +398,38 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)ensureRootWindowHidden
 {
-    OWSAssertIsOnMainThread();
-
-    if (!self.rootWindow.hidden) {
-        OWSLogInfo(@"hiding root window.");
-    }
-
     self.rootWindow.hidden = YES;
 }
 
 - (void)ensureCallViewWindowShown
 {
-    OWSAssertIsOnMainThread();
-
-    if (self.callViewWindow.hidden) {
-        OWSLogInfo(@"showing call window.");
-    }
-
     [self.callViewWindow makeKeyAndVisible];
 }
 
 - (void)ensureCallViewWindowHidden
 {
-    OWSAssertIsOnMainThread();
-
-    if (!self.callViewWindow.hidden) {
-        OWSLogInfo(@"hiding call window.");
-    }
-
     self.callViewWindow.hidden = YES;
 }
 
 - (void)ensureMessageActionsWindowShown
 {
-    OWSAssertIsOnMainThread();
-
-    if (self.menuActionsWindow.hidden) {
-        OWSLogInfo(@"showing message actions window.");
-    }
-
     // Do not make key, we want the keyboard to stay popped.
     self.menuActionsWindow.hidden = NO;
 }
 
 - (void)ensureMessageActionsWindowHidden
 {
-    OWSAssertIsOnMainThread();
-
-    if (!self.menuActionsWindow.hidden) {
-        OWSLogInfo(@"hiding message actions window.");
-    }
-
     self.menuActionsWindow.hidden = YES;
 }
 
 - (void)ensureScreenBlockWindowShown
 {
-    OWSAssertIsOnMainThread();
-
-    if (self.screenBlockingWindow.windowLevel != UIWindowLevel_ScreenBlocking()) {
-        OWSLogInfo(@"showing block window.");
-    }
-
     self.screenBlockingWindow.windowLevel = UIWindowLevel_ScreenBlocking();
     [self.screenBlockingWindow makeKeyAndVisible];
 }
 
 - (void)ensureScreenBlockWindowHidden
 {
-    OWSAssertIsOnMainThread();
-
-    if (self.screenBlockingWindow.windowLevel != UIWindowLevel_Background) {
-        OWSLogInfo(@"hiding block window.");
-    }
-
     // Never hide the blocking window (that can lead to bad frames).
     // Instead, manipulate its window level to move it in front of
     // or behind the root window.
@@ -586,13 +485,11 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     NSString *encodedSelectorString1 = @"egVaAAZ2BHdydHZSBwYBBAEGcgZ6AQBVegVyc312dQ==";
     NSString *_Nullable selectorString1 = encodedSelectorString1.decodedForSelector;
     if (selectorString1 == nil) {
-        OWSFailDebug(@"selectorString1 was unexpectedly nil");
         return;
     }
     SEL selector1 = NSSelectorFromString(selectorString1);
 
     if (![self.rootWindow respondsToSelector:selector1]) {
-        OWSFailDebug(@"failure: doesn't respond to selector1");
         return;
     }
     IMP imp1 = [self.rootWindow methodForSelector:selector1];
@@ -600,8 +497,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     BOOL isDisabled = func1(self.rootWindow, selector1);
 
     if (isDisabled) {
-        OWSLogInfo(@"autorotation is disabled.");
-
         // The remainder of this method calls:
         //   [[UIScrollToDismissSupport supportForScreen:UIScreen.main] finishScrollViewTransition]
         // after verifying the methods/classes exist.
@@ -610,12 +505,10 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         NSString *encodedKlassString = @"ZlpkdAQBfX1lAVV6BX56BQVkBwICAQQG";
         NSString *_Nullable klassString = encodedKlassString.decodedForSelector;
         if (klassString == nil) {
-            OWSFailDebug(@"klassString was unexpectedly nil");
             return;
         }
         id klass = NSClassFromString(klassString);
         if (klass == nil) {
-            OWSFailDebug(@"klass was unexpectedly nil");
             return;
         }
 
@@ -623,12 +516,10 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         NSString *encodedSelector2String = @"BQcCAgEEBlcBBGR0BHZ2AEs=";
         NSString *_Nullable selector2String = encodedSelector2String.decodedForSelector;
         if (selector2String == nil) {
-            OWSFailDebug(@"selector2String was unexpectedly nil");
             return;
         }
         SEL selector2 = NSSelectorFromString(selector2String);
         if (![klass respondsToSelector:selector2]) {
-            OWSFailDebug(@"klass didn't respond to selector");
             return;
         }
         IMP imp2 = [klass methodForSelector:selector2];
@@ -639,19 +530,15 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         NSString *encodedSelector3String = @"d3oAegV5ZHQEAX19Z3p2CWUEcgAFegZ6AQA=";
         NSString *_Nullable selector3String = encodedSelector3String.decodedForSelector;
         if (selector3String == nil) {
-            OWSFailDebug(@"selector3String was unexpectedly nil");
             return;
         }
         SEL selector3 = NSSelectorFromString(selector3String);
         if (![dismissSupport respondsToSelector:selector3]) {
-            OWSFailDebug(@"dismissSupport didn't respond to selector");
             return;
         }
         IMP imp3 = [dismissSupport methodForSelector:selector3];
         void (*func3)(id, SEL) = (void *)imp3;
         func3(dismissSupport, selector3);
-
-        OWSLogInfo(@"finished scrollView transition");
     }
 }
 

@@ -4,7 +4,7 @@ import PromiseKit
 extension MessageSender : SharedSenderKeysDelegate {
 
     @objc(send:withAttachments:inThread:usingTransaction:)
-    static func send(_ message: Message, with attachments: [SignalAttachment] = [], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func send(_ message: Message, with attachments: [SignalAttachment] = [], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         if let message = message as? VisibleMessage {
             guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
                 #if DEBUG
@@ -29,11 +29,11 @@ extension MessageSender : SharedSenderKeysDelegate {
     }
 
     @objc(sendNonDurably:inThread:usingTransaction:)
-    static func objc_sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+    public static func objc_sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(sendNonDurably(message, in: thread, using: transaction))
     }
 
-    static func sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public static func sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         message.threadID = thread.uniqueId!
         let destination = Message.Destination.from(thread)
         return MessageSender.send(message, to: destination, using: transaction)

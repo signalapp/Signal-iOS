@@ -9,7 +9,7 @@
 
 #import <SignalUtilitiesKit/UIUtil.h>
 
-#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SessionMessagingKit/TSGroupModel.h>
 #import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

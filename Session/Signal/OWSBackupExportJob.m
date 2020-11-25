@@ -15,7 +15,7 @@
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
-#import <SignalUtilitiesKit/TSMessage.h>
+#import <SessionMessagingKit/TSMessage.h>
 #import <SessionMessagingKit/TSThread.h>
 
 @import CloudKit;

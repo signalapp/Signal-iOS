@@ -10,17 +10,12 @@ final class Configuration : NSObject {
     @objc static func performMainSetup() {
         SNMessagingKit.configure(
             storage: Storage.shared,
-            messageSenderDelegate: MessageSenderDelegate.shared,
-            messageReceiverDelegate: MessageReceiverDelegate.shared,
             signalStorage: OWSPrimaryStorage.shared(),
             identityKeyStore: OWSIdentityManager.shared(),
             sessionRestorationImplementation: SessionRestorationImplementation(),
-            certificateValidator: SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot()),
-            openGroupAPIDelegate: OpenGroupAPIDelegate.shared,
-            pnServerURL: PushNotificationAPI.server,
-            pnServerPublicKey: PushNotificationAPI.serverPublicKey
+            certificateValidator: SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot())
         )
-        SessionProtocolKit.configure(storage: Storage.shared, sharedSenderKeysDelegate: MessageSenderDelegate.shared)
+        SessionProtocolKit.configure(storage: Storage.shared, sharedSenderKeysDelegate: MessageSender.shared)
         SessionSnodeKit.configure(storage: Storage.shared)
         SessionUtilitiesKit.configure(owsPrimaryStorage: OWSPrimaryStorage.shared(), maxFileSize: UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier))
     }

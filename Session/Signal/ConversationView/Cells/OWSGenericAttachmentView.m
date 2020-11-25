@@ -11,7 +11,7 @@
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalCoreKit/NSString+OWS.h>
 

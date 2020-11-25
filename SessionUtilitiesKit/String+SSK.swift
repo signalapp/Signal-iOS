@@ -35,7 +35,6 @@ public extension String {
     func caesar(shift: UInt32) throws -> String {
         let shiftedScalars: [UnicodeScalar] = try unicodeScalars.map { c in
             guard let shiftedScalar = UnicodeScalar((c.value + shift) % 127) else {
-                owsFailDebug("invalidCharacterShift")
                 throw StringError.invalidCharacterShift
             }
             return shiftedScalar
@@ -45,12 +44,10 @@ public extension String {
 
     var encodedForSelector: String? {
         guard let shifted = try? self.caesar(shift: selectorOffset) else {
-            owsFailDebug("shifted was unexpectedly nil")
             return nil
         }
 
         guard let data = shifted.data(using: .utf8) else {
-            owsFailDebug("data was unexpectedly nil")
             return nil
         }
 
@@ -59,12 +56,10 @@ public extension String {
 
     var decodedForSelector: String? {
         guard let data = Data(base64Encoded: self) else {
-            owsFailDebug("data was unexpectedly nil")
             return nil
         }
 
         guard let shifted = String(data: data, encoding: .utf8) else {
-            owsFailDebug("shifted was unexpectedly nil")
             return nil
         }
 

@@ -8,13 +8,14 @@
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSMediaGalleryFinder.h"
+#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
+#import "OWSStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnectionPool.h>
-#import "SSKAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,15 +28,10 @@ NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnect
 
 void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
-    OWSCAssertDebug(storage);
-
     [[storage newDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (NSString *extensionName in storage.registeredExtensionNames) {
-            OWSLogVerbose(@"Verifying database extension: %@", extensionName);
             YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:extensionName];
             if (!viewTransaction) {
-                OWSCFailDebug(@"VerifyRegistrationsForPrimaryStorage missing database extension: %@", extensionName);
-
                 [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
             }
         }
@@ -60,8 +56,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (instancetype)sharedManager
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
     return SSKEnvironment.shared.primaryStorage;
 }
 
@@ -88,8 +82,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
                                                    object:nil];
-
-        OWSSingletonAssert();
     }
 
     return self;
@@ -97,9 +89,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)dealloc
 {
-    // Surface memory leaks by logging the deallocation of this class.
-    OWSLogVerbose(@"Dealloc: %@", self.class);
-
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -121,16 +110,11 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
     [self updateUIDatabaseConnectionToLatest];
 }
 
 - (void)updateUIDatabaseConnectionToLatest
 {
-    OWSAssertIsOnMainThread();
-
     // Notify observers we're about to update the database connection
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateNotification object:self.dbNotificationObject];
 
@@ -147,7 +131,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
-    OWSAssertIsOnMainThread();
     return _uiDatabaseConnection;
 }
 
@@ -171,17 +154,12 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     // seeing, this issue only seems to affect sync and not async registrations.  We've always
     // been opening write transactions before the async registrations complete without negative
     // consequences.
-    OWSAssertDebug(!self.areSyncRegistrationsComplete);
+    
     self.areSyncRegistrationsComplete = YES;
 }
 
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion
 {
-    OWSAssertDebug(completion);
-    OWSAssertDebug(self.database);
-
-    OWSLogVerbose(@"async registrations enqueuing.");
-
     // Asynchronously register other extensions.
     //
     // All sync registrations must be done before all async registrations,
@@ -207,9 +185,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [self.database
         flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                                   completionBlock:^{
-                                      OWSAssertDebug(!self.areAsyncRegistrationsComplete);
-                                      OWSLogVerbose(@"async registrations complete.");
-
                                       self.areAsyncRegistrationsComplete = YES;
 
                                       completion();
@@ -225,10 +200,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (void)protectFiles
 {
-    OWSLogInfo(@"Database file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
-    OWSLogInfo(@"\t SHM file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
-    OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
-
     // Protect the entire new database directory.
     [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
 }
@@ -242,9 +213,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
 
-    if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
-        OWSFail(@"Could not create new database directory");
-    }
+    [OWSFileSystem ensureDirectoryExists:databaseDirPath];
     return databaseDirPath;
 }
 
@@ -295,8 +264,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (nullable NSError *)migrateToSharedData
 {
-    OWSLogInfo(@"");
-
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.
     NSArray<NSString *> *paths = @[
@@ -308,11 +275,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
         self.sharedDataDatabaseFilePath_WAL,
     ];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *path in paths) {
-        if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(@"before migrateToSharedData: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
-        }
-    }
 
     // We protect the db files here, which is somewhat redundant with what will happen in
     // `moveAppFilePath:` which also ensures file protection.
@@ -361,19 +323,11 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
         return error;
     }
 
-    for (NSString *path in paths) {
-        if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(@"after migrateToSharedData: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
-        }
-    }
-
     return nil;
 }
 
 + (NSString *)databaseFilePath
 {
-    OWSLogVerbose(@"databasePath: %@", OWSPrimaryStorage.sharedDataDatabaseFilePath);
-
     return self.sharedDataDatabaseFilePath;
 }
 
@@ -431,8 +385,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)touchDbAsync
 {
-    OWSLogInfo(@"");
-
     // There appears to be a bug in YapDatabase that sometimes delays modifications
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes

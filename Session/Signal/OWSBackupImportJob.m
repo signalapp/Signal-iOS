@@ -12,7 +12,7 @@
 #import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/TSAttachment.h>
-#import <SignalUtilitiesKit/TSMessage.h>
+#import <SessionMessagingKit/TSMessage.h>
 #import <SessionMessagingKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN

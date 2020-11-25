@@ -19,7 +19,7 @@
 #import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionMessagingKit/TSGroupThread.h>
-#import <SignalUtilitiesKit/TSGroupModel.h>
+#import <SessionMessagingKit/TSGroupModel.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>

@@ -9,10 +9,10 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/TSErrorMessage.h>
-#import <SignalUtilitiesKit/TSInfoMessage.h>
+#import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SessionMessagingKit/Environment.h>
+#import <SessionMessagingKit/TSErrorMessage.h>
+#import <SessionMessagingKit/TSInfoMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

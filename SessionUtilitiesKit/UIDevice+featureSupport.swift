@@ -6,6 +6,7 @@ import Foundation
 
 @objc
 public extension UIDevice {
+    
     var supportsCallKit: Bool {
         return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0))
     }
@@ -36,7 +37,6 @@ public extension UIDevice {
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
-            owsFailDebug("unknown device format")
             return false
         }
     }

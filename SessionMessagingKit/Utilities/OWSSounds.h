@@ -2,8 +2,9 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalUtilitiesKit/OWSAudioPlayer.h>
 #import <AudioToolbox/AudioServices.h>
+#import <Foundation/Foundation.h>
+#import "OWSAudioPlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -253,7 +253,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         }
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.writeSync { [weak self] transaction in
-                MessageSenderDelegate.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
+                MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
                     guard let self = self else { return }
                     self.dismiss(animated: true, completion: nil) // Dismiss the loader
                     popToConversationVC(self)

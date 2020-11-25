@@ -3,7 +3,7 @@
 //
 
 #import "OWSMessageTextView.h"
-#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

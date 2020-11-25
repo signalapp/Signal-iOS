@@ -15,14 +15,14 @@
 #import "UIView+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalUtilitiesKit/Environment.h>
+#import <SessionMessagingKit/Environment.h>
 
 #import <SignalUtilitiesKit/OWSProfileManager.h>
-#import <SignalUtilitiesKit/OWSSounds.h>
+#import <SessionMessagingKit/OWSSounds.h>
 #import <SignalUtilitiesKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
 
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
@@ -950,7 +950,7 @@ static CGRect oldframe;
     if (gThread.usesSharedSenderKeys) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [[SNMessageSenderDelegate leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
+            [[SNMessageSender leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
         }];
     }
 

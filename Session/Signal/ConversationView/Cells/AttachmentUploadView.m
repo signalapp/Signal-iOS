@@ -6,7 +6,7 @@
 #import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/OWSUploadOperation.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>

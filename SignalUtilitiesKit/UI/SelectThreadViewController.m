@@ -12,7 +12,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSContactThread.h>

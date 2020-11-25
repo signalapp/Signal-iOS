@@ -8,7 +8,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionUIKit/SessionUIKit.h>

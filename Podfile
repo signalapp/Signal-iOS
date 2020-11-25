@@ -72,6 +72,7 @@ target 'SessionMessagingKit' do
   pod 'HKDFKit', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SAMKeychain', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
@@ -104,6 +105,7 @@ target 'SessionUtilitiesKit' do
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'SAMKeychain', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release', :inhibit_warnings => true

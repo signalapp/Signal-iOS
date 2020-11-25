@@ -410,6 +410,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     public func setAudioPlaybackState(_ value: AudioPlaybackState) {
         playbackState = value
     }
+    
+    public func showInvalidAudioFileAlert() {
+        OWSAlerts.showErrorAlert(message: NSLocalizedString("INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE", comment: "Message for the alert indicating that an audio file is invalid."))
+    }
 
     private func ensureButtonState() {
         if playbackState == .playing {

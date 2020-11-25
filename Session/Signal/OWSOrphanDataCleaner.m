@@ -13,9 +13,9 @@
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
-#import <SignalUtilitiesKit/TSInteraction.h>
-#import <SignalUtilitiesKit/TSMessage.h>
-#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SessionMessagingKit/TSInteraction.h>
+#import <SessionMessagingKit/TSMessage.h>
+#import <SessionMessagingKit/TSQuotedMessage.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>

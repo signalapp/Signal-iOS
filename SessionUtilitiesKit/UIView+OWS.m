@@ -123,16 +123,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)autoPinWidthToWidthOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:view];
     [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:view];
 }
 
 - (void)autoPinHeightToHeightOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:view];
     [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:view];
 }
@@ -155,9 +151,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     // Clamp to ensure view has reasonable aspect ratio.
     CGFloat clampedRatio = CGFloatClamp(ratio, 0.05f, 95.0f);
-    if (clampedRatio != ratio) {
-        OWSFailDebug(@"Invalid aspect ratio: %f for view: %@", ratio, self);
-    }
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
     NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:self
@@ -271,8 +264,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)centerOnSuperview
 {
-    OWSAssertDebug(self.superview);
-
     CGFloat x = (CGFloat)round((self.superview.width - self.width) * 0.5f);
     CGFloat y = (CGFloat)round((self.superview.height - self.height) * 0.5f);
     self.frame = CGRectMake(x, y, self.width, self.height);
@@ -342,15 +333,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingEdgeOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     return [self autoPinLeadingToTrailingEdgeOfView:view offset:0];
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToTrailingEdgeOfView:(UIView *)view offset:(CGFloat)offset
 {
-    OWSAssertDebug(view);
-
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:offset];
@@ -360,15 +347,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinTrailingToLeadingEdgeOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     return [self autoPinTrailingToLeadingEdgeOfView:view offset:0];
 }
 
 - (NSLayoutConstraint *)autoPinTrailingToLeadingEdgeOfView:(UIView *)view offset:(CGFloat)offset
 {
-    OWSAssertDebug(view);
-
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-offset];
@@ -378,15 +361,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinLeadingToEdgeOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     return [self autoPinLeadingToEdgeOfView:view offset:0];
 }
 
 - (NSLayoutConstraint *)autoPinLeadingToEdgeOfView:(UIView *)view offset:(CGFloat)offset
 {
-    OWSAssertDebug(view);
-
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:offset];
@@ -396,15 +375,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     return [self autoPinTrailingToEdgeOfView:view offset:0];
 }
 
 - (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view offset:(CGFloat)margin
 {
-    OWSAssertDebug(view);
-
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
@@ -427,8 +402,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view
 {
-    OWSAssertDebug(view);
-
     return @[
         [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:view],
         [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:view],
@@ -487,54 +460,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
-- (void)logFrame
-{
-    [self logFrameWithLabel:@""];
-}
-
-- (void)logFrameWithLabel:(NSString *)label
-{
-    OWSLogVerbose(@"%@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
-        label,
-        NSStringFromCGRect(self.frame),
-        self.hidden,
-        self.layer.opacity,
-        NSStringFromUIEdgeInsets(self.layoutMargins));
-}
-
-- (void)logFrameLater
-{
-    [self logFrameLaterWithLabel:@""];
-}
-
-- (void)logFrameLaterWithLabel:(NSString *)label
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self logFrameWithLabel:label];
-    });
-}
-
-- (void)logHierarchyUpwardLaterWithLabel:(NSString *)label
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        OWSLogVerbose(@"%@ ----", label);
-    });
-
-    UIResponder *responder = self;
-    while (responder) {
-        if ([responder isKindOfClass:[UIView class]]) {
-            UIView *view = (UIView *)responder;
-            [view logFrameLaterWithLabel:@"\t"];
-        }
-        responder = responder.nextResponder;
-    }
-}
-
 - (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(visitor);
-
     visitor(self);
 
     for (UIView *subview in self.subviews) {

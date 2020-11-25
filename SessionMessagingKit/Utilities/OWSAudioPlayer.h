@@ -2,6 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, AudioPlaybackState) {
@@ -14,8 +17,8 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 - (AudioPlaybackState)audioPlaybackState;
 - (void)setAudioPlaybackState:(AudioPlaybackState)state;
-
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration;
+- (void)showInvalidAudioFileAlert;
 
 @end
 

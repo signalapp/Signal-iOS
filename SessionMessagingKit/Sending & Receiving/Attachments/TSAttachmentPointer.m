@@ -176,6 +176,31 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark - Backups
+
+- (nullable OWSBackupFragment *)lazyRestoreFragment
+{
+    if (!self.lazyRestoreFragmentId) {
+        return nil;
+    }
+    OWSBackupFragment *_Nullable backupFragment =
+        [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+    return backupFragment;
+}
+
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (!lazyRestoreFragment.uniqueId) {
+        // If metadata hasn't been saved yet, save now.
+        [lazyRestoreFragment saveWithTransaction:transaction];
+    }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSAttachmentPointer *attachment) {
+                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+                             }];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
