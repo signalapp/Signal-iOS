@@ -3,7 +3,6 @@
 //
 
 #import "ConversationViewLayout.h"
-#import "OWSAudioPlayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -23,6 +23,7 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSStorage.h>
 #import <SessionMessagingKit/ProfileManagerProtocol.h>
 #import <SessionMessagingKit/ProtoUtils.h>
+#import <SessionMessagingKit/SignalRecipient.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/SSKJobRecord.h>
 #import <SessionMessagingKit/TSAccountManager.h>

@@ -3,7 +3,6 @@
 //
 
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
-#import "NSString+SSK.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import <SignalCoreKit/NSString+OWS.h>
 

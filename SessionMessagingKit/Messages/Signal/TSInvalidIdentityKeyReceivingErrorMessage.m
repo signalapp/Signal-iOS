@@ -4,7 +4,6 @@
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"

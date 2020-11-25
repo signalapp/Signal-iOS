@@ -48,7 +48,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SharingThreadPickerViewController.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SignalKeyingStorage.h>
-#import <SignalUtilitiesKit/SignalRecipient.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/SSKMessageSenderJobRecord.h>
 #import <SignalUtilitiesKit/Theme.h>
