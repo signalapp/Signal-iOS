@@ -864,7 +864,7 @@ static CGRect oldframe;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
             OWSDisappearingConfigurationUpdateInfoMessage *infoMessage = [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                          initWithTimestamp:[NSDate ows_millisecondTimeStamp]

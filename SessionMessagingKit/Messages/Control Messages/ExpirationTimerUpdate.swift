@@ -58,6 +58,6 @@ public final class ExpirationTimerUpdate : ControlMessage {
     
     // MARK: Convenience
     @objc public func setDuration(_ duration: UInt32) {
-        
+        self.duration = duration
     }
 }

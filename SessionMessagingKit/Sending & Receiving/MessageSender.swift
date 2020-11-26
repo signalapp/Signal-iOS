@@ -235,17 +235,4 @@ public final class MessageSender : NSObject {
         // Return
         return promise
     }
-
-    // MARK: Result Handling
-    public static func handleSuccessfulMessageSend(_ message: Message, using transaction: Any) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
-        tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
-        tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
-    }
-
-    public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.update(sendingError: error, transaction: transaction as! YapDatabaseReadWriteTransaction)
-    }
 }
