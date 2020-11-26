@@ -11,7 +11,7 @@
             outgoingMessageWithTimestamp: visibleMessage.sentTimestamp!,
             in: thread,
             messageBody: visibleMessage.text,
-            attachmentIds: NSMutableArray(array: visibleMessage.attachmentIDs),
+            attachmentIds: NSMutableArray(),
             expiresInSeconds: expiration,
             expireStartedAt: 0,
             isVoiceMessage: false,

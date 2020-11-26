@@ -47,6 +47,10 @@ public final class VisibleMessage : Message {
     }
 
     public override func toProto() -> SNProtoContent? {
+        preconditionFailure("Use toProto(using:) instead.")
+    }
+    
+    public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         let proto = SNProtoContent.builder()
         let dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder
         if let profile = profile, let profileProto = profile.toProto() {
@@ -55,13 +59,13 @@ public final class VisibleMessage : Message {
             dataMessage = SNProtoDataMessage.builder()
         }
         if let text = text { dataMessage.setBody(text) }
-        let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0) }
+        let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
         if !attachments.allSatisfy({ $0.isUploaded }) {
             #if DEBUG
             preconditionFailure("Sending a message before all associated attachments have been uploaded.")
             #endif
         }
-        let attachmentProtos = attachments.compactMap { TSAttachmentStream.buildProto(forAttachmentId: $0.uniqueId!) }
+        let attachmentProtos = attachments.compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
         if let quote = quote, let quoteProto = quote.toProto() { dataMessage.setQuote(quoteProto) }
         if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto() { dataMessage.setPreview([ linkPreviewProto ]) }

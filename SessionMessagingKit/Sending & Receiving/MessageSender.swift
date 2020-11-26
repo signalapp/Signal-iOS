@@ -84,7 +84,13 @@ public final class MessageSender : NSObject {
             }
         }
         // Convert it to protobuf
-        guard let proto = message.toProto() else { seal.reject(Error.protoConversionFailed); return promise }
+        let protoOrNil: SNProtoContent?
+        if let message = message as? VisibleMessage {
+            protoOrNil = message.toProto(using: transaction as! YapDatabaseReadWriteTransaction) // Needed because of how TSAttachmentStream works
+        } else {
+            protoOrNil = message.toProto()
+        }
+        guard let proto = protoOrNil else { seal.reject(Error.protoConversionFailed); return promise }
         // Serialize the protobuf
         let plaintext: Data
         do {

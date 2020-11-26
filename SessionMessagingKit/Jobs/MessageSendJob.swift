@@ -1,5 +1,7 @@
 import SessionUtilitiesKit
 
+// TODO: Cancel when a message is deleted
+
 @objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let message: Message
