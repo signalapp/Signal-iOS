@@ -1,7 +1,5 @@
 import SessionUtilitiesKit
 
-// TODO: Check that retrying works
-
 @objc(SNJobQueue)
 public final class JobQueue : NSObject, JobDelegate {
     private var hasResumedPendingJobs = false // Just for debugging

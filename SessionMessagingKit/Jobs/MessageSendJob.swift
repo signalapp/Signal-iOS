@@ -61,11 +61,9 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Running
     public func execute() {
-        if Double.random(in: 0..<1) > 0.01 {
-            return handleFailure(error: MessageSender.Error.noThread)
-        }
         let storage = Configuration.shared.storage
         if let message = message as? VisibleMessage {
+            guard TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) != nil else { return } // The message has been deleted
             let attachments = message.attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0) }
             let attachmentsToUpload = attachments.filter { !$0.isUploaded }
             attachmentsToUpload.forEach { attachment in
@@ -104,6 +102,10 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     }
 
     private func handleFailure(error: Error) {
+        SNLog("Failed to send \(type(of: message)).")
+        if let message = message as? VisibleMessage {
+            guard TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) != nil else { return } // The message has been deleted
+        }
         delegate?.handleJobFailed(self, with: error)
     }
 }
