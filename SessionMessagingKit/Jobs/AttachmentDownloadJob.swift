@@ -21,7 +21,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
 
     // MARK: Settings
     public class var collection: String { return "AttachmentDownloadJobCollection" }
-    public static let maxFailureCount: UInt = 20
+    public static let maxFailureCount: UInt = 100
 
     // MARK: Initialization
     public init(attachmentID: String, tsIncomingMessageID: String) {

@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     return value;
 }
 
-    - (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection : (NSString *)collection
+- (nullable NSDictionary *)dictionaryForKey : (NSString *)key inCollection : (NSString *)collection
 {
     return [self objectForKey:key inCollection:collection ofExpectedType:[NSDictionary class]];
 }

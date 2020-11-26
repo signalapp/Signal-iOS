@@ -12,7 +12,7 @@ public extension TSIncomingMessage {
             in: thread,
             authorId: sender,
             sourceDeviceId: 1,
-            messageBody: visibleMessage.text!,
+            messageBody: visibleMessage.text,
             attachmentIds: visibleMessage.attachmentIDs,
             expiresInSeconds: expiration,
             quotedMessage: TSQuotedMessage.from(visibleMessage.quote),

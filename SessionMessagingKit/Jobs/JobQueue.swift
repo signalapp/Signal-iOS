@@ -1,5 +1,7 @@
 import SessionUtilitiesKit
 
+// TODO: Check that retrying works
+
 @objc(SNJobQueue)
 public final class JobQueue : NSObject, JobDelegate {
     private var hasResumedPendingJobs = false // Just for debugging
@@ -9,7 +11,7 @@ public final class JobQueue : NSObject, JobDelegate {
     @objc public func add(_ job: Job, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         addWithoutExecuting(job, using: transaction)
-        transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
+        transaction.addCompletionQueue(Threading.jobQueue) {
             job.execute()
         }
     }
@@ -56,7 +58,7 @@ public final class JobQueue : NSObject, JobDelegate {
                 })
             } else {
                 let retryInterval = self.getRetryInterval(for: job)
-                Timer.weakScheduledTimer(withTimeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
+                Timer.scheduledTimer(timeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
             }
         })
     }
@@ -73,10 +75,6 @@ public final class JobQueue : NSObject, JobDelegate {
                 // Do nothing
             })
         })
-    }
-    
-    public func postpone(_ job: Job) {
-        Timer.weakScheduledTimer(withTimeInterval: 3, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
     }
 
     private func getRetryInterval(for job: Job) -> TimeInterval {

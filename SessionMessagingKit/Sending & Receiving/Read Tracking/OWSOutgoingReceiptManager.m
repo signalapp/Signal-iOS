@@ -133,6 +133,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 }
 
 - (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
+    if (receiptType == OWSReceiptType_Delivery) { return @[]; } // Don't send delivery receipts
+
     NSString *collection = [self collectionForReceiptType:receiptType];
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *queuedReceiptMap = [NSMutableDictionary new];

@@ -1059,8 +1059,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return [result copy];
 }
 
-- (uint)ttl { return 2 * 24 * 60 * 60 * 1000; }
-
 @end
 
 NS_ASSUME_NONNULL_END

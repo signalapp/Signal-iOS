@@ -84,7 +84,11 @@ internal enum MessageReceiver {
             message.receivedTimestamp = NSDate.millisecondTimestamp()
             message.groupPublicKey = groupPublicKey
             message.openGroupServerMessageID = messageServerID
-            guard message.isValid else { throw Error.invalidMessage }
+            var isValid = message.isValid
+            if message is VisibleMessage && !isValid && proto.dataMessage?.attachments.isEmpty == false {
+                isValid = true
+            }
+            guard isValid else { throw Error.invalidMessage }
             return (message, proto)
         } else {
             throw Error.unknownMessage

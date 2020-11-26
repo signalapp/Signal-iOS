@@ -56,4 +56,16 @@ extension Storage {
         #endif
         return result.first
     }
+
+    public func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob? {
+        var result: MessageSendJob?
+        Storage.read { transaction in
+            result = transaction.object(forKey: messageSendJobID, inCollection: MessageSendJob.collection) as? MessageSendJob
+        }
+        return result
+    }
+
+    public func resumeMessageSendJobIfNeeded(_ messageSendJobID: String) {
+        getMessageSendJob(for: messageSendJobID)?.execute()
+    }
 }

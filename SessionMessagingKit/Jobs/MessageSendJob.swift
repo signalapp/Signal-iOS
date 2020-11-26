@@ -1,6 +1,6 @@
 import SessionUtilitiesKit
 
-// TODO: Cancel when a message is deleted
+// TODO: Cancel when a message/conversation is deleted
 
 @objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
@@ -71,13 +71,13 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 if storage.getAttachmentUploadJob(for: attachment.uniqueId!) != nil {
                     // Wait for it to finish
                 } else {
-                    let job = AttachmentUploadJob(attachmentID: attachment.uniqueId!, threadID: message.threadID!)
+                    let job = AttachmentUploadJob(attachmentID: attachment.uniqueId!, threadID: message.threadID!, message: message, messageSendJobID: id!)
                     storage.withAsync({ transaction in
                         JobQueue.shared.add(job, using: transaction)
                     }, completion: { })
                 }
             }
-            if !attachmentsToUpload.isEmpty { delegate?.postpone(self); return } // Wait for all attachments to upload before continuing
+            if !attachmentsToUpload.isEmpty { return } // Wait for all attachments to upload before continuing
         }
         // FIXME: This doesn't yet handle the attachment side of link previews, quotes, etc.
         storage.withAsync({ transaction in // Intentionally capture self
