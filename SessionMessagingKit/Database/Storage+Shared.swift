@@ -14,7 +14,7 @@ extension Storage {
         Storage.write(with: { work($0) }, completion: completion)
     }
 
-    public func getUserPublicKey() -> String? {
+    @objc public func getUserPublicKey() -> String? {
         return OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey
     }
 

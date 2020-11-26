@@ -28,7 +28,23 @@ extension Storage {
         transaction.removeAllObjects(inCollection: type.collection)
     }
 
-    public func cancelPendingMessageSendJobs(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(cancelPendingMessageSendJobIfNeededForMessage:using:)
+    public func cancelPendingMessageSendJobIfNeeded(for tsMessageTimestamp: UInt64, using transaction: YapDatabaseReadWriteTransaction) {
+        var attachmentUploadJobKeys: [String] = []
+        transaction.enumerateRows(inCollection: AttachmentUploadJob.collection) { key, object, _, _ in
+            guard let job = object as? AttachmentUploadJob, job.message.sentTimestamp == tsMessageTimestamp else { return }
+            attachmentUploadJobKeys.append(key)
+        }
+        var messageSendJobKeys: [String] = []
+        transaction.enumerateRows(inCollection: MessageSendJob.collection) { key, object, _, _ in
+            guard let job = object as? MessageSendJob, job.message.sentTimestamp == tsMessageTimestamp else { return }
+            messageSendJobKeys.append(key)
+        }
+        transaction.removeObjects(forKeys: attachmentUploadJobKeys, inCollection: AttachmentUploadJob.collection)
+        transaction.removeObjects(forKeys: messageSendJobKeys, inCollection: MessageSendJob.collection)
+    }
+
+    @objc public func cancelPendingMessageSendJobs(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) {
         var attachmentUploadJobKeys: [String] = []
         transaction.enumerateRows(inCollection: AttachmentUploadJob.collection) { key, object, _, _ in
             guard let job = object as? AttachmentUploadJob, job.threadID == threadID else { return }
@@ -67,5 +83,13 @@ extension Storage {
 
     public func resumeMessageSendJobIfNeeded(_ messageSendJobID: String) {
         getMessageSendJob(for: messageSendJobID)?.execute()
+    }
+
+    public func isJobCanceled(_ job: Job) -> Bool {
+        var result = true
+        Storage.read { transaction in
+            result = !transaction.hasObject(forKey: job.id!, inCollection: type(of: job).collection)
+        }
+        return result
     }
 }

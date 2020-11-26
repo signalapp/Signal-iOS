@@ -65,6 +65,7 @@
 #import <SessionMessagingKit/TSGroupModel.h>
 #import <SessionMessagingKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SessionMessagingKit/TSQuotedMessage.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -1477,7 +1478,7 @@ typedef enum : NSUInteger {
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
                                                                 handler:^(UIAlertAction *action) {
-                                                                    [message remove];
+                                                                    [self remove:message];
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
     
@@ -1495,6 +1496,14 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
     [self presentAlert:actionSheet];
+}
+
+- (void)remove:(TSOutgoingMessage *)message
+{
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message removeWithTransaction:transaction];
+        [LKStorage.shared cancelPendingMessageSendJobIfNeededForMessage:message.timestamp using:transaction];
+    }];
 }
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message

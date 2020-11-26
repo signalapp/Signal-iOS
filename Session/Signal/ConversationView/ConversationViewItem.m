@@ -1084,26 +1084,37 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteAction
 {
-    [self.interaction remove];
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.interaction removeWithTransaction:transaction];
+        if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+            [LKStorage.shared cancelPendingMessageSendJobIfNeededForMessage:self.interaction.timestamp using:transaction];
+        }
+    }];
     
     if (self.isGroupThread) {
-        // Skip if the thread is an RSS feed
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
         
         // Only allow deletion on incoming and outgoing messages
         OWSInteractionType interationType = self.interaction.interactionType;
         if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
         
-        // Make sure it's a public chat message
+        // Make sure it's an open group message
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isOpenGroupMessage) return;
-        
-        SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
-        if (publicChat == nil) return;
+
+        // Get the open group
+        SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
+        if (openGroup == nil) return;
+
+        // If it's an incoming message the user must have moderator status
+        if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+            NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+            if (![SNOpenGroupAPI isUserModerator:userPublicKey forChannel:openGroup.channel onServer:openGroup.server]) { return; }
+        }
         
         // Delete the message
-        BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
+        BOOL wasSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
+        [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:openGroup.channel onServer:openGroup.server isSentByUser:wasSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];

@@ -1,7 +1,5 @@
 import SessionUtilitiesKit
 
-// TODO: Cancel when a message/conversation is deleted
-
 @objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let message: Message
@@ -63,6 +61,9 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Running
     public func execute() {
+        if Double.random(in: 0..<1) > 0.01 {
+            return handleFailure(error: MessageSender.Error.noThread)
+        }
         let storage = Configuration.shared.storage
         if let message = message as? VisibleMessage {
             let attachments = message.attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0) }

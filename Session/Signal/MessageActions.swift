@@ -13,23 +13,21 @@ protocol MessageActionsDelegate: class {
 }
 
 struct MessageActionBuilder {
+    
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "ic_reply"),
                           title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                           subtitle: nil,
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsReplyToItem(conversationViewItem)
-
-        })
+                          block: { [weak delegate] _ in delegate?.messageActionsReplyToItem(conversationViewItem) }
+        )
     }
 
     static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                           subtitle: nil,
-                          block: { (_) in
-                            conversationViewItem.copyTextAction()
-        })
+                          block: { _ in conversationViewItem.copyTextAction() }
+        )
     }
     
     static func copyPublicKey(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
@@ -44,9 +42,8 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_info"),
                           title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                           subtitle: nil,
-                          block: { [weak delegate] (_) in
-                            delegate?.messageActionsShowDetailsForItem(conversationViewItem)
-        })
+                          block: { [weak delegate] _ in delegate?.messageActionsShowDetailsForItem(conversationViewItem) }
+        )
     }
     
     static func report(_ conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
@@ -61,27 +58,24 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
                           title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                           subtitle: nil,
-                          block: { (_) in
-                            conversationViewItem.deleteAction()
-        })
+                          block: { _ in conversationViewItem.deleteAction() }
+        )
     }
 
     static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
-                          block: { (_) in
-                            conversationViewItem.copyMediaAction()
-        })
+                          block: { _ in conversationViewItem.copyMediaAction() }
+        )
     }
 
     static func saveMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "ic_download"),
                           title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
-                          block: { (_) in
-                            conversationViewItem.saveMediaAction()
-        })
+                          block: { _ in conversationViewItem.saveMediaAction() }
+        )
     }
 }
 

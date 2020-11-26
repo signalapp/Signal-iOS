@@ -34,6 +34,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob?
     func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob?
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String)
+    func isJobCanceled(_ job: Job) -> Bool
 
     // MARK: - Authorization
 

@@ -51,6 +51,7 @@ public final class JobQueue : NSObject, JobDelegate {
     public func handleJobFailed(_ job: Job, with error: Error) {
         job.failureCount += 1
         let storage = Configuration.shared.storage
+        guard !storage.isJobCanceled(job) else { return SNLog("\(type(of: job)) canceled.") }
         storage.withAsync({ transaction in
             storage.persist(job, using: transaction)
         }, completion: { // Intentionally capture self
@@ -62,7 +63,7 @@ public final class JobQueue : NSObject, JobDelegate {
                 })
             } else {
                 let retryInterval = self.getRetryInterval(for: job)
-                SNLog("Job failed; scheduling retry.")
+                SNLog("\(type(of: job)) failed; scheduling retry (failure count is \(job.failureCount)).")
                 Timer.scheduledTimer(timeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
             }
         })
@@ -96,8 +97,8 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     @objc private func retry(_ timer: Timer) {
-        SNLog("Retrying job.")
         guard let job = timer.userInfo as? Job else { return }
+        SNLog("Retrying \(type(of: job)).")
         job.execute()
     }
 }

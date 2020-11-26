@@ -365,27 +365,28 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         guard let thread = self.thread(at: indexPath.row) else { return [] }
-        let publicChat = Storage.shared.getOpenGroup(for: thread.uniqueId!)
+        let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-                Storage.writeSync { transaction in
-                    if let publicChat = publicChat {
+                Storage.write { transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
+                    if let openGroup = openGroup {
                         var messageIDs: Set<String> = []
                         thread.enumerateInteractions(with: transaction) { interaction, _ in
                             messageIDs.insert(interaction.uniqueId!)
                         }
                         OWSPrimaryStorage.shared().updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, in: transaction)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastMessageServerIDCollection)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastDeletionServerIDCollection)
-                        let _ = OpenGroupAPI.leave(publicChat.channel, on: publicChat.server)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastMessageServerIDCollection)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastDeletionServerIDCollection)
+                        let _ = OpenGroupAPI.leave(openGroup.channel, on: openGroup.server)
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
                     } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                         let _ = MessageSender.leave(groupPublicKey, using: transaction).ensure {
-                            Storage.writeSync { transaction in
+                            Storage.write { transaction in
                                 thread.removeAllThreadInteractions(with: transaction)
                                 thread.remove(with: transaction)
                             }
