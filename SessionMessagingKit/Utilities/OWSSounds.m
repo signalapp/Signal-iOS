@@ -37,7 +37,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     _soundURL = url;
 
     SystemSoundID newSoundID;
-    OSStatus status = AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &newSoundID);
     _soundID = newSoundID;
 
     return self;
@@ -45,7 +44,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 - (void)dealloc
 {
-    OSStatus status = AudioServicesDisposeSystemSoundID(_soundID);
+    
 }
 
 @end

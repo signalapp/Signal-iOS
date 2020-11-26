@@ -2822,6 +2822,8 @@
 				C33FDBEC255A581B00E217F9 /* OWSRecipientIdentity.m */,
 				C32C5C92256DD12D003C73A2 /* OWSUDManager.swift */,
 				C33FDBB9255A581600E217F9 /* ProfileManagerProtocol.h */,
+				C33FDAEC255A580500E217F9 /* SignalRecipient.h */,
+				C33FDBB7255A581600E217F9 /* SignalRecipient.m */,
 				C33FDB94255A581300E217F9 /* TSAccountManager.h */,
 				C33FDB88255A581200E217F9 /* TSAccountManager.m */,
 			);
@@ -3338,8 +3340,6 @@
 				C3BBE0B42554F0E10050F1E3 /* ProofOfWork.swift */,
 				C33FDB91255A581200E217F9 /* ProtoUtils.h */,
 				C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */,
-				C33FDAEC255A580500E217F9 /* SignalRecipient.h */,
-				C33FDBB7255A581600E217F9 /* SignalRecipient.m */,
 				C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */,
 				C33FDB31255A580A00E217F9 /* SSKEnvironment.h */,
 				C33FDAF4255A580600E217F9 /* SSKEnvironment.m */,

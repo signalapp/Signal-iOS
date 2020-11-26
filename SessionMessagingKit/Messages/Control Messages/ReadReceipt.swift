@@ -2,9 +2,11 @@ import SessionUtilitiesKit
 
 @objc(SNReadReceipt)
 public final class ReadReceipt : ControlMessage {
-    public var timestamps: [UInt64]?
+    @objc public var timestamps: [UInt64]?
 
     // MARK: Initialization
+    public override init() { super.init() }
+    
     internal init(timestamps: [UInt64]) {
         super.init()
         self.timestamps = timestamps

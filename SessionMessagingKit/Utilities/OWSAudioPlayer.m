@@ -111,8 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)playWithAudioActivity:(OWSAudioActivity *)audioActivity
 {
-    BOOL success = [self.audioSession startAudioActivity:audioActivity];
-
     [self.audioPlayerPoller invalidate];
 
     self.delegate.audioPlaybackState = AudioPlaybackState_Playing;

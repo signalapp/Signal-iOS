@@ -126,8 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSThread *thread = [message threadWithTransaction:transaction];
-
     uint64_t timestamp = message.timestamp;
 
     NSString *_Nullable authorId = ^{

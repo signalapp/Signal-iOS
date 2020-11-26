@@ -234,46 +234,20 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)messageWasReadLocally:(TSIncomingMessage *)message
 {
-    // TODO TODO TODO
-    
-    /*
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self)
         {
-            NSString *threadUniqueId = message.uniqueThreadId;
-            OWSAssertDebug(threadUniqueId.length > 0);
-
             NSString *messageAuthorId = message.authorId;
-            OWSAssertDebug(messageAuthorId.length > 0);
 
-            OWSLinkedDeviceReadReceipt *newReadReceipt =
-                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderId:messageAuthorId
-                                                  messageIdTimestamp:message.timestamp
-                                                       readTimestamp:[NSDate ows_millisecondTimeStamp]];
-
-            OWSLinkedDeviceReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
-            if (oldReadReceipt && oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp) {
-                // If there's an existing "linked device" read receipt for the same thread with
-                // a newer timestamp, discard this "linked device" read receipt.
-                OWSLogVerbose(@"Ignoring redundant read receipt for linked devices.");
-            } else {
-                OWSLogVerbose(@"Enqueuing read receipt for linked devices.");
-                self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
-            }
-
-            if (![LKSessionMetaProtocol shouldSendReceiptInThread:message.thread]) {
-                return;
-            }
+            if (!message.thread.isGroupThread) { return; } // Don't send read receipts in group threads
             
             if ([self areReadReceiptsEnabled]) {
-                OWSLogVerbose(@"Enqueuing read receipt for sender.");
                 [self.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId timestamp:message.timestamp];
             }
 
             [self scheduleProcessing];
         }
     });
-     */
 }
 
 #pragma mark - Read Receipts From Recipient

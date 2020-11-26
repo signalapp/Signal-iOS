@@ -103,7 +103,6 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         }
 
         NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
-        [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Delivery]];
         [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Read]];
 
         if (sendPromises.count < 1) {
@@ -149,8 +148,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
 
     for (NSString *recipientId in queuedReceiptMap) {
-        NSSet<NSNumber *> *timestamps = queuedReceiptMap[recipientId];
-        if (timestamps.count < 1) {
+        NSSet<NSNumber *> *timestampsAsSet = queuedReceiptMap[recipientId];
+        if (timestampsAsSet.count < 1) {
             continue;
         }
 
@@ -160,51 +159,19 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             continue;
         }
 
-        // TODO TODO TODO
-        
-        /*
-        OWSReceiptsForSenderMessage *message;
-        NSString *receiptName;
-        switch (receiptType) {
-            case OWSReceiptType_Delivery:
-                message =
-                    [OWSReceiptsForSenderMessage deliveryReceiptsForSenderMessageWithThread:thread
-                                                                          messageTimestamps:timestamps.allObjects];
-                receiptName = @"Delivery";
-                break;
-            case OWSReceiptType_Read:
-                message = [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
-                                                                            messageTimestamps:timestamps.allObjects];
-                receiptName = @"Read";
-                break;
+        SNReadReceipt *readReceipt = [SNReadReceipt new];
+        NSMutableArray<NSNumber *> *timestamps = [NSMutableArray new];
+        for (NSNumber *timestamp in timestampsAsSet) {
+            [timestamps addObject:timestamp];
         }
-
-        AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.messageSender sendMessage:message
-                success:^{
-                    OWSLogInfo(
-                        @"Successfully sent %lu %@ receipts to sender.", (unsigned long)timestamps.count, receiptName);
-
-                    // DURABLE CLEANUP - we could replace the custom durability logic in this class
-                    // with a durable JobQueue.
-                    [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
-
-                    // The value doesn't matter, we just need any non-NSError value.
-                    resolve(@(1));
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
-
-                    if (error.domain == OWSSignalServiceKitErrorDomain
-                        && error.code == OWSErrorCodeNoSuchSignalRecipient) {
-                        [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
-                    }
-
-                    resolve(error);
-                }];
+        readReceipt.timestamps = timestamps;
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            AnyPromise *promise = [SNMessageSender sendNonDurably:readReceipt inThread:thread usingTransaction:transaction]
+            .thenOn(self.serialQueue, ^(id object) {
+                [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestampsAsSet receiptType:@"Read"];
+            });
+            [sendPromises addObject:promise];
         }];
-        [sendPromises addObject:sendPromise];
-         */
     }
 
     return [sendPromises copy];

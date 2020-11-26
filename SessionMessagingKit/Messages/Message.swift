@@ -3,7 +3,7 @@
 @objc(SNMessage)
 public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var id: String?
-    public var threadID: String?
+    @objc public var threadID: String?
     public var sentTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
     public var recipient: String?

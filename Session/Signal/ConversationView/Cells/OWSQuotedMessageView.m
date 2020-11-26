@@ -543,12 +543,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
     NSString *_Nullable localNumber = [TSAccountManager localNumber];
     NSString *quotedAuthorText;
     if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
-
-        if (self.isOutgoing) {
-            quotedAuthorText = NSLocalizedString(@"You", @"");
-        } else {
-            quotedAuthorText = NSLocalizedString(@"You", @"");
-        }
+        quotedAuthorText = NSLocalizedString(@"You", @"");
     } else {
         __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId] ?: self.quotedMessage.authorId;
         

@@ -272,11 +272,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
             let typingIndicator = TypingIndicator()
             typingIndicator.kind = action
-            typingIndicator.threadID = thread.uniqueId!
-            let destination = Message.Destination.from(thread)
-            let job = MessageSendJob(message: typingIndicator, destination: destination)
             Storage.write { transaction in
-                SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+                MessageSender.send(typingIndicator, in: thread, using: transaction)
             }
         }
     }

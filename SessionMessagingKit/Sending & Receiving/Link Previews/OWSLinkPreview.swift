@@ -224,7 +224,7 @@ public class OWSLinkPreview: MTLModel {
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
         do {
             try imageData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
-        } catch let error as NSError {
+        } catch {
             return nil
         }
         

@@ -141,7 +141,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate millisecondTimestamp] - (NSTimeInterval)readTimestamp) / 1000;
     _read = YES;
     [self saveWithTransaction:transaction];
     
