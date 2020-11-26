@@ -5,6 +5,8 @@ public final class ExpirationTimerUpdate : ControlMessage {
     public var duration: UInt32?
 
     // MARK: Initialization
+    public override init() { super.init() }
+    
     internal init(duration: UInt32) {
         super.init()
         self.duration = duration
@@ -52,5 +54,10 @@ public final class ExpirationTimerUpdate : ControlMessage {
             SNLog("Couldn't construct expiration timer update proto from: \(self).")
             return nil
         }
+    }
+    
+    // MARK: Convenience
+    @objc public func setDuration(_ duration: UInt32) {
+        
     }
 }

@@ -866,9 +866,7 @@ static CGRect oldframe;
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
-            // MJK TODO - should be safe to remove this senderTimestamp
-            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-                [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage = [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                          initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                     thread:self.thread
                              configuration:self.disappearingMessagesConfiguration
@@ -876,15 +874,9 @@ static CGRect oldframe;
                     createdInExistingGroup:NO];
             [infoMessage saveWithTransaction:transaction];
 
-            // TODO TODO TODO
-            
-            /*
-            OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
-                initWithConfiguration:self.disappearingMessagesConfiguration
-                               thread:self.thread];
-
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
-             */
+            SNExpirationTimerUpdate *expirationTimerUpdate = [SNExpirationTimerUpdate new];
+            expirationTimerUpdate.duration = self.disappearingMessagesConfiguration.durationSeconds;
+            [SNMessageSender send:expirationTimerUpdate withAttachments:@[] inThread:self.thread usingTransaction:transaction];
         }];
     }
 }
