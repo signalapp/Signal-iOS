@@ -434,18 +434,21 @@ class NotificationActionHandler {
         }
 
         return markAsRead(thread: thread).then { () -> Promise<Void> in
-            // TODO TODO TODO
-            
-//            let sendPromise = ThreadUtil.sendMessageNonDurably(text: replyText,
-//                                                               thread: thread,
-//                                                               quotedReplyModel: nil,
-//                                                               messageSender: self.messageSender)
-
-//            return sendPromise.recover { error in
-//                Logger.warn("Failed to send reply message from notification with error: \(error)")
-//                self.notificationPresenter.notifyForFailedSend(inThread: thread)
-//            }
-            return Promise<Void>.value(())
+            let message = VisibleMessage()
+            message.sentTimestamp = NSDate.millisecondTimestamp()
+            message.text = replyText
+            let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
+            Storage.write { transaction in
+                tsMessage.save(with: transaction)
+            }
+            var promise: Promise<Void>!
+            Storage.writeSync { transaction in
+                promise = MessageSender.sendNonDurably(message, in: thread, using: transaction)
+            }
+            promise.catch { [weak self] error in
+                self?.notificationPresenter.notifyForFailedSend(inThread: thread)
+            }
+            return promise
         }
     }
 

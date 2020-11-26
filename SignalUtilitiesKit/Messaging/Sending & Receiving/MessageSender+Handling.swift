@@ -3,34 +3,54 @@ import PromiseKit
 
 extension MessageSender : SharedSenderKeysDelegate {
 
-    @objc(send:withAttachments:inThread:usingTransaction:)
-    public static func send(_ message: Message, with attachments: [SignalAttachment] = [], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        if let message = message as? VisibleMessage {
-            guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
-                #if DEBUG
-                preconditionFailure()
-                #endif
-                return
-            }
-            var streams: [TSAttachmentStream] = []
-            attachments.forEach {
-                let stream = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
-                    caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
-                streams.append(stream)
-                stream.write($0.dataSource)
-                stream.save(with: transaction)
-            }
-            message.attachmentIDs = streams.map { $0.uniqueId! }
+    // MARK: - Sending Convenience
+    
+    private static func prep(_ attachments: [SignalAttachment], for message: Message, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let message = message as? VisibleMessage else { return }
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
+            #if DEBUG
+            preconditionFailure()
+            #endif
+            return
         }
+        var streams: [TSAttachmentStream] = []
+        attachments.forEach {
+            let stream = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
+                caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
+            streams.append(stream)
+            stream.write($0.dataSource)
+            stream.save(with: transaction)
+        }
+        message.attachmentIDs = streams.map { $0.uniqueId! }
+    }
+    
+    @objc(send:withAttachments:inThread:usingTransaction:)
+    public static func send(_ message: Message, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+        prep(attachments, for: message, using: transaction)
+        send(message, in: thread, using: transaction)
+    }
+    
+    @objc(send:inThread:usingTransaction:)
+    public static func send(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         message.threadID = thread.uniqueId!
         let destination = Message.Destination.from(thread)
         let job = MessageSendJob(message: message, destination: destination)
         JobQueue.shared.add(job, using: transaction)
     }
 
+    @objc(sendNonDurably:withAttachments:inThread:usingTransaction:)
+    public static func objc_sendNonDurably(_ message: Message, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        return AnyPromise.from(sendNonDurably(message, with: attachments, in: thread, using: transaction))
+    }
+    
     @objc(sendNonDurably:inThread:usingTransaction:)
     public static func objc_sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(sendNonDurably(message, in: thread, using: transaction))
+    }
+    
+    public static func sendNonDurably(_ message: Message, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+        prep(attachments, for: message, using: transaction)
+        return sendNonDurably(message, in: thread, using: transaction)
     }
 
     public static func sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
@@ -39,6 +59,10 @@ extension MessageSender : SharedSenderKeysDelegate {
         return MessageSender.send(message, to: destination, using: transaction)
     }
 
+    
+    
+    // MARK: - Closed Groups
+    
     public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
         var members = members

@@ -7,10 +7,11 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <PromiseKit/PromiseKit.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SessionMessagingKit/TSThread.h>
+#import <SessionMessagingKit/SessionMessagingKit.h>
 #import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -215,35 +216,26 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
      didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
                messageText:(NSString *_Nullable)messageText
 {
-    [self
-        tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
-            OWSAssertIsOnMainThread();
+    [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+        SNVisibleMessage *message = [SNVisibleMessage new];
+        message.sentTimestamp = [NSDate millisecondTimestamp];
+        message.text = messageText;
+        TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [tsMessage saveWithTransaction:transaction];
+        }];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [SNMessageSender sendNonDurably:message withAttachments:attachments inThread:self.thread usingTransaction:transaction]
+            .then(^(id object) {
+                sendCompletion(nil, tsMessage);
+            }).catch(^(NSError *error) {
+                sendCompletion(error, tsMessage);
+            });
+        }];
 
-            __block TSOutgoingMessage *outgoingMessage = nil;
-            // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
-            // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
-            // SAE runs as long as it needs.
-            // TODO ALBUMS - send album via SAE
-
-            [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                
-                // TODO TODO TODO
-                
-//                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-//                                                           mediaAttachments:attachments
-//                                                                   inThread:self.thread
-//                                                           quotedReplyModel:nil
-//                                                                transaction:transaction
-//                                                              messageSender:self.messageSender
-//                                                                 completion:^(NSError *_Nullable error) {
-//                                                                     sendCompletion(error, outgoingMessage);
-//                                                                 }];
-            }];
-
-            // This is necessary to show progress.
-            self.outgoingMessage = outgoingMessage;
-        }
-               fromViewController:attachmentApproval];
+        // This is necessary to show progress
+        self.outgoingMessage = tsMessage;
+    } fromViewController:attachmentApproval];
 }
 
 - (void)attachmentApprovalDidCancel:(AttachmentApprovalViewController *)attachmentApproval
@@ -262,36 +254,26 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)messageApproval:(MessageApprovalViewController *)approvalViewController
       didApproveMessage:(NSString *)messageText
 {
-    OWSAssertDebug(messageText.length > 0);
-
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
-        OWSAssertIsOnMainThread();
-
-        __block TSOutgoingMessage *outgoingMessage = nil;
-        // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
-        // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
-        // SAE runs as long as it needs.
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            
-            // TODO TODO TODO
-//
-//            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-//                                                               inThread:self.thread
-//                                                       quotedReplyModel:nil
-//                                                            transaction:transaction
-//                                                          messageSender:self.messageSender
-//                                                             completion:^(NSError *_Nullable error) {
-//                                                                 if (error) {
-//                                                                     sendCompletion(error, outgoingMessage);
-//                                                                 } else {
-//                                                                     sendCompletion(nil, outgoingMessage);
-//                                                                 }
-//                                                             }];
-            // This is necessary to show progress.
-            self.outgoingMessage = outgoingMessage;
+        SNVisibleMessage *message = [SNVisibleMessage new];
+        message.sentTimestamp = [NSDate millisecondTimestamp];
+        message.text = messageText;
+        TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [tsMessage saveWithTransaction:transaction];
         }];
-    }
-                 fromViewController:approvalViewController];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [SNMessageSender sendNonDurably:message inThread:self.thread usingTransaction:transaction]
+            .then(^(id object) {
+                sendCompletion(nil, tsMessage);
+            }).catch(^(NSError *error) {
+                sendCompletion(error, tsMessage);
+            });
+        }];
+        
+        // This is necessary to show progress
+        self.outgoingMessage = tsMessage;
+    } fromViewController:approvalViewController];
 }
 
 - (void)messageApprovalDidCancel:(MessageApprovalViewController *)approvalViewController

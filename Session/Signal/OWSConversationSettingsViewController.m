@@ -876,7 +876,7 @@ static CGRect oldframe;
 
             SNExpirationTimerUpdate *expirationTimerUpdate = [SNExpirationTimerUpdate new];
             expirationTimerUpdate.duration = self.disappearingMessagesConfiguration.durationSeconds;
-            [SNMessageSender send:expirationTimerUpdate withAttachments:@[] inThread:self.thread usingTransaction:transaction];
+            [SNMessageSender send:expirationTimerUpdate inThread:self.thread usingTransaction:transaction];
         }];
     }
 }

@@ -231,9 +231,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     // via params and instead have to create our own sneaky transaction here.
     [groupThread leaveGroupWithSneakyTransaction];
 
-    // TODO TODO TODO
-    
-//    [ThreadUtil enqueueLeaveGroupMessageInThread:groupThread];
+    // TODO: If we ever start using this again we should make sure to send a group leave message here
 
     NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
 

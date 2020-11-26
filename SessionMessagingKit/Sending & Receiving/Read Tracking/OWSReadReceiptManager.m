@@ -176,45 +176,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)process
 {
-    // TODO TODO TODO
     
-    /*
-    @synchronized(self)
-    {
-        OWSLogVerbose(@"Processing read receipts.");
-
-        NSArray<OWSLinkedDeviceReadReceipt *> *readReceiptsForLinkedDevices =
-            [self.toLinkedDevicesReadReceiptMap allValues];
-        [self.toLinkedDevicesReadReceiptMap removeAllObjects];
-        if (readReceiptsForLinkedDevices.count > 0) {
-            OWSReadReceiptsForLinkedDevicesMessage *message =
-                [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
-
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [self.messageSenderJobQueue addMessage:message transaction:transaction];
-            }];
-        }
-
-        BOOL didWork = readReceiptsForLinkedDevices.count > 0;
-
-        if (didWork) {
-            // Wait N seconds before processing read receipts again.
-            // This allows time for a batch to accumulate.
-            //
-            // We want a value high enough to allow us to effectively de-duplicate,
-            // read receipts without being so high that we risk not sending read
-            // receipts due to app exit.
-            const CGFloat kProcessingFrequencySeconds = 3.f;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                ^{
-                    [self process];
-                });
-        } else {
-            self.isProcessing = NO;
-        }
-    }
-     */
 }
 
 #pragma mark - Mark as Read Locally

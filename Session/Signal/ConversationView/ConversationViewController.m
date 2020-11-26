@@ -1480,8 +1480,6 @@ typedef enum : NSUInteger {
                                                                     [message remove];
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
-
-    // TODO TODO TODO
     
 //    UIAlertAction *resendMessageAction = [UIAlertAction
 //                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
@@ -2992,68 +2990,7 @@ typedef enum : NSUInteger {
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
 {
-    __block TSGroupThread *groupThread;
-    __block TSOutgoingMessage *message;
-
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
-
-        NSString *updateGroupInfo =
-            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel];
-
-        groupThread.groupModel = newGroupModel;
-        [groupThread saveWithTransaction:transaction];
-
-        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
-        message = [TSOutgoingMessage outgoingMessageInThread:groupThread
-                                            groupMetaMessage:TSGroupMetaMessageUpdate
-                                            expiresInSeconds:expiresInSeconds];
-        [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
-    }];
-
-    [groupThread fireAvatarChangedNotification];
-
-    if (newGroupModel.groupImage) {
-        NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
-        // which causes this code to be called. Once we're more aggressive about durable sending retry,
-        // we could get rid of this "retryable tappable error message".
-        
-        // TODO TODO TODO
-        
-//        [self.messageSender sendTemporaryAttachment:dataSource
-//            contentType:OWSMimeTypeImagePng
-//            inMessage:message
-//            success:^{
-//                OWSLogDebug(@"Successfully sent group update with avatar");
-//                if (successCompletion) {
-//                    successCompletion();
-//                }
-//            }
-//            failure:^(NSError *error) {
-//                OWSLogError(@"Failed to send group avatar update with error: %@", error);
-//            }];
-    } else {
-        // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
-        // which causes this code to be called. Once we're more aggressive about durable sending retry,
-        // we could get rid of this "retryable tappable error message".
-        
-        // TODO TODO TODO
-        
-//        [self.messageSender sendMessage:message
-//            success:^{
-//                OWSLogDebug(@"Successfully sent group update");
-//                if (successCompletion) {
-//                    successCompletion();
-//                }
-//            }
-//            failure:^(NSError *error) {
-//                OWSLogError(@"Failed to send group update with error: %@", error);
-//            }];
-    }
-
-    self.thread = groupThread;
+    
 }
 
 - (void)popKeyBoard
@@ -3814,7 +3751,7 @@ typedef enum : NSUInteger {
         [tsMessage saveWithTransaction:transaction];
     }];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SNMessageSender send:message withAttachments:[NSArray<SignalAttachment *> new] inThread:thread usingTransaction:transaction];
+        [SNMessageSender send:message inThread:thread usingTransaction:transaction];
         [thread setDraft:@"" transaction:transaction];
     }];
     [self messageWasSent:tsMessage];

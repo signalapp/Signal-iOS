@@ -168,7 +168,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             AnyPromise *promise = [SNMessageSender sendNonDurably:readReceipt inThread:thread usingTransaction:transaction]
             .thenOn(self.serialQueue, ^(id object) {
-                [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestampsAsSet receiptType:@"Read"];
+                [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestampsAsSet receiptType:OWSReceiptType_Read];
             });
             [sendPromises addObject:promise];
         }];
