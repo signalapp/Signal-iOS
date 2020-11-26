@@ -27,6 +27,7 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSSounds.h>
 #import <SessionMessagingKit/OWSStorage.h>
 #import <SessionMessagingKit/OWSStorage+Subclass.h>
+#import <SessionMessagingKit/OWSUserProfile.h>
 #import <SessionMessagingKit/OWSWindowManager.h>
 #import <SessionMessagingKit/ProfileManagerProtocol.h>
 #import <SessionMessagingKit/ProtoUtils.h>

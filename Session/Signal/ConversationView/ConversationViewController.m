@@ -46,7 +46,7 @@
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
-#import <SignalUtilitiesKit/OWSUserProfile.h>
+#import <SessionMessagingKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>

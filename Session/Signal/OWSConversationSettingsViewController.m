@@ -19,7 +19,7 @@
 
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSSounds.h>
-#import <SignalUtilitiesKit/OWSUserProfile.h>
+#import <SessionMessagingKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>

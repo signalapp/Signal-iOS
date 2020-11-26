@@ -146,12 +146,14 @@ extension MessageReceiver {
         let attachmentIDs = storage.persist(attachments, using: transaction)
         message.attachmentIDs = attachmentIDs
         // Update profile if needed
-        if let profile = message.profile {
+        if let newProfile = message.profile {
             let profileManager = SSKEnvironment.shared.profileManager
-            if let displayName = profile.displayName {
+            let oldProfile = OWSUserProfile.fetch(uniqueId: message.sender!, transaction: transaction)
+            if let displayName = newProfile.displayName, displayName != oldProfile?.profileName {
                 profileManager.updateProfileForContact(withID: message.sender!, displayName: displayName, with: transaction)
             }
-            if let profileKey = profile.profileKey, let profilePictureURL = profile.profilePictureURL, profileKey.count == kAES256_KeyByteLength {
+            if let profileKey = newProfile.profileKey, let profilePictureURL = newProfile.profilePictureURL, profileKey.count == kAES256_KeyByteLength,
+                profileKey != oldProfile?.profileKey?.keyData {
                 profileManager.setProfileKeyData(profileKey, forRecipientId: message.sender!, avatarURL: profilePictureURL)
             }
         }

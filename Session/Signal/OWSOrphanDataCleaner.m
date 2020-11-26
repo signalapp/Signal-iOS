@@ -6,7 +6,7 @@
 #import "DateUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
-#import <SignalUtilitiesKit/OWSUserProfile.h>
+#import <SessionMessagingKit/OWSUserProfile.h>
 #import <SessionMessagingKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>

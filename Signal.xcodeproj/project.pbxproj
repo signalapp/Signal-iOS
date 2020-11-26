@@ -242,6 +242,9 @@
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
 		B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357C223A1BD1200AAF6CD /* SeedVC.swift */; };
 		B8544E3323D50E4900299F14 /* AppearanceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */; };
+		B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */; };
+		B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */; };
+		B8566C7D256F62030045A0B9 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */; };
@@ -612,9 +615,7 @@
 		C38EF2B3255B6D9C007E1867 /* UIViewController+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2B1255B6D9C007E1867 /* UIViewController+Utilities.swift */; };
 		C38EF2B4255B6D9C007E1867 /* UIView+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2B2255B6D9C007E1867 /* UIView+Utilities.swift */; };
 		C38EF2D4255B6DAF007E1867 /* OWSProfileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2CF255B6DAE007E1867 /* OWSProfileManager.m */; };
-		C38EF2D6255B6DAF007E1867 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */; };
 		C38EF2D7255B6DAF007E1867 /* OWSProfileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D2255B6DAF007E1867 /* OWSProfileManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF2D8255B6DAF007E1867 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF30C255B6DBF007E1867 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E2255B6DB9007E1867 /* OWSScreenLock.swift */; };
 		C38EF30D255B6DBF007E1867 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */; };
 		C38EF30E255B6DBF007E1867 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */; };
@@ -1348,6 +1349,7 @@
 		B85357C223A1BD1200AAF6CD /* SeedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedVC.swift; sourceTree = "<group>"; };
 		B8544E3023D16CA500299F14 /* DeviceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUtilities.swift; sourceTree = "<group>"; };
+		B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Conversion.swift"; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
@@ -1725,9 +1727,9 @@
 		C38EF2BE255B6DA6007E1867 /* TSUnreadIndicatorInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TSUnreadIndicatorInteraction.h; path = "SessionMessagingKit/Sending & Receiving/Read Tracking/TSUnreadIndicatorInteraction.h"; sourceTree = SOURCE_ROOT; };
 		C38EF2C1255B6DA6007E1867 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TSUnreadIndicatorInteraction.m; path = "SessionMessagingKit/Sending & Receiving/Read Tracking/TSUnreadIndicatorInteraction.m"; sourceTree = SOURCE_ROOT; };
 		C38EF2CF255B6DAE007E1867 /* OWSProfileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSProfileManager.m; path = "SignalUtilitiesKit/To Do/OWSProfileManager.m"; sourceTree = SOURCE_ROOT; };
-		C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSUserProfile.m; path = "SignalUtilitiesKit/To Do/OWSUserProfile.m"; sourceTree = SOURCE_ROOT; };
+		C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSUserProfile.m; path = "SessionMessagingKit/To Do/OWSUserProfile.m"; sourceTree = SOURCE_ROOT; };
 		C38EF2D2255B6DAF007E1867 /* OWSProfileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSProfileManager.h; path = "SignalUtilitiesKit/To Do/OWSProfileManager.h"; sourceTree = SOURCE_ROOT; };
-		C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSUserProfile.h; path = "SignalUtilitiesKit/To Do/OWSUserProfile.h"; sourceTree = SOURCE_ROOT; };
+		C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSUserProfile.h; path = "SessionMessagingKit/To Do/OWSUserProfile.h"; sourceTree = SOURCE_ROOT; };
 		C38EF2E2255B6DB9007E1867 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSScreenLock.swift; path = SignalUtilitiesKit/OWSScreenLock.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSUnreadIndicator.m; path = SignalUtilitiesKit/OWSUnreadIndicator.m; sourceTree = SOURCE_ROOT; };
 		C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FullTextSearcher.swift; path = SignalUtilitiesKit/FullTextSearcher.swift; sourceTree = SOURCE_ROOT; };
@@ -2820,6 +2822,8 @@
 				C33FDAFF255A580600E217F9 /* DisplayNameUtilities.swift */,
 				C33FDAA0255A57FF00E217F9 /* OWSRecipientIdentity.h */,
 				C33FDBEC255A581B00E217F9 /* OWSRecipientIdentity.m */,
+				C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */,
+				C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */,
 				C32C5C92256DD12D003C73A2 /* OWSUDManager.swift */,
 				C33FDBB9255A581600E217F9 /* ProfileManagerProtocol.h */,
 				C33FDAEC255A580500E217F9 /* SignalRecipient.h */,
@@ -2858,6 +2862,7 @@
 			isa = PBXGroup;
 			children = (
 				C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */,
+				B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */,
 			);
 			path = "Link Previews";
 			sourceTree = "<group>";
@@ -3205,8 +3210,6 @@
 				C38EF3EB255B6DF6007E1867 /* ContactTableViewCell.m */,
 				C38EF2D2255B6DAF007E1867 /* OWSProfileManager.h */,
 				C38EF2CF255B6DAE007E1867 /* OWSProfileManager.m */,
-				C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */,
-				C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */,
 				C33FDBBB255A581600E217F9 /* OWSPrimaryStorage+Loki.h */,
 				C33FDB58255A580E00E217F9 /* OWSPrimaryStorage+Loki.m */,
 			);
@@ -3907,7 +3910,6 @@
 				C33FDD5B255A582000E217F9 /* OWSOperation.h in Headers */,
 				C38EF291255B6D86007E1867 /* SignalKeyingStorage.h in Headers */,
 				C33FDC89255A582000E217F9 /* OWSAttachmentDownloads.h in Headers */,
-				C38EF2D8255B6DAF007E1867 /* OWSUserProfile.h in Headers */,
 				C38EF313255B6DBF007E1867 /* OWSUnreadIndicator.h in Headers */,
 				C33FDD7C255A582000E217F9 /* SSKAsserts.h in Headers */,
 				C33FDDA9255A582000E217F9 /* TSStorageKeys.h in Headers */,
@@ -4051,6 +4053,7 @@
 				B8856D3D256F11B2001CE70E /* Environment.h in Headers */,
 				C32C5E7E256DE023003C73A2 /* YapDatabaseTransaction+OWS.h in Headers */,
 				C32C5CAD256DD1DF003C73A2 /* TSAccountManager.h in Headers */,
+				B8566C7D256F62030045A0B9 /* OWSUserProfile.h in Headers */,
 				C3A3A0F5256E194C004D228D /* OWSRecipientIdentity.h in Headers */,
 				C32C5AB4256DBE8F003C73A2 /* TSOutgoingMessage.h in Headers */,
 				C32C5EA0256DE0D6003C73A2 /* OWSPrimaryStorage.h in Headers */,
@@ -5014,7 +5017,6 @@
 				C33FDD14255A582000E217F9 /* OWSUDManager.swift in Sources */,
 				C33FDDAE255A582000E217F9 /* DisplayNameUtilities2.swift in Sources */,
 				C38EF35C255B6DCC007E1867 /* SelectThreadViewController.m in Sources */,
-				C38EF2D6255B6DAF007E1867 /* OWSUserProfile.m in Sources */,
 				C38EF30E255B6DBF007E1867 /* FullTextSearcher.swift in Sources */,
 				C33FDDD9255A582000E217F9 /* LokiSessionRestorationImplementation.swift in Sources */,
 				C38EF3FA255B6DF7007E1867 /* DirectionalPanGestureRecognizer.swift in Sources */,
@@ -5196,6 +5198,7 @@
 				C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */,
 				C3A721382558BDFA0043A11F /* OpenGroupMessage.swift in Sources */,
 				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
+				B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */,
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
@@ -5217,6 +5220,7 @@
 				C32C5A88256DBCF9003C73A2 /* MessageReceiver+Handling.swift in Sources */,
 				C32C5C1B256DC9E0003C73A2 /* GeneralUtilities.swift in Sources */,
 				C32C5A02256DB658003C73A2 /* MessageSender+Handling.swift in Sources */,
+				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
 				C32C5D2E256DD4EA003C73A2 /* TSUnreadIndicatorInteraction.m in Sources */,
 				C32C599E256DB02B003C73A2 /* TypingIndicators.swift in Sources */,
 				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,

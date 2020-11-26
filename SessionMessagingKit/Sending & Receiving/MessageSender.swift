@@ -74,6 +74,15 @@ public final class MessageSender : NSObject {
         }
         // Validate the message
         guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
+        // Attach the user's profile if needed
+        if let message = message as? VisibleMessage {
+            let displayName = storage.getUserDisplayName()!
+            if let profileKey = storage.getUserProfileKey(), let profilePictureURL = storage.getUserProfilePictureURL() {
+                message.profile = VisibleMessage.Profile(displayName: displayName, profileKey: profileKey, profilePictureURL: profilePictureURL)
+            } else {
+                message.profile = VisibleMessage.Profile(displayName: displayName)
+            }
+        }
         // Convert it to protobuf
         guard let proto = message.toProto() else { seal.reject(Error.protoConversionFailed); return promise }
         // Serialize the protobuf

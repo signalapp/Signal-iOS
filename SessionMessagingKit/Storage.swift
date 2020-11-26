@@ -12,6 +12,8 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserPublicKey() -> String?
     func getUserKeyPair() -> ECKeyPair?
     func getUserDisplayName() -> String?
+    func getUserProfileKey() -> Data?
+    func getUserProfilePictureURL() -> String?
 
     // MARK: - Signal Protocol
 

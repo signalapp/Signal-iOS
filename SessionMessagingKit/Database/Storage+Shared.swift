@@ -25,4 +25,12 @@ extension Storage {
     public func getUserDisplayName() -> String? {
         return SSKEnvironment.shared.profileManager.localProfileName()
     }
+    
+    public func getUserProfileKey() -> Data? {
+        return SSKEnvironment.shared.profileManager.localProfileKey().keyData
+    }
+    
+    public func getUserProfilePictureURL() -> String? {
+        return SSKEnvironment.shared.profileManager.profilePictureURL()
+    }
 }

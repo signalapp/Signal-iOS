@@ -11,13 +11,13 @@
             outgoingMessageWithTimestamp: visibleMessage.sentTimestamp!,
             in: thread,
             messageBody: visibleMessage.text,
-            attachmentIds: NSMutableArray(),
+            attachmentIds: NSMutableArray(array: visibleMessage.attachmentIDs),
             expiresInSeconds: expiration,
             expireStartedAt: 0,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
             quotedMessage: TSQuotedMessage.from(visibleMessage.quote),
-            linkPreview: nil
+            linkPreview: OWSLinkPreview.from(visibleMessage.linkPreview)
         )
     }
 }

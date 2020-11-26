@@ -44,8 +44,6 @@ extern NSString *const kOWSBlockingManager_BlockListCollection;
 - (BOOL)isGroupIdBlocked:(NSData *)groupId;
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
-- (void)syncBlockList;
-
 @end
 
 NS_ASSUME_NONNULL_END
