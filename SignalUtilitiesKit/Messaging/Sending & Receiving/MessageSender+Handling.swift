@@ -23,6 +23,7 @@ extension MessageSender : SharedSenderKeysDelegate {
         }
         message.attachmentIDs = streams.map { $0.uniqueId! }
         tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
+        tsMessage.save(with: transaction)
     }
     
     @objc(send:withAttachments:inThread:usingTransaction:)
