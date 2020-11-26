@@ -344,6 +344,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         if !device.mediaKeysReceived {
             // No media keys. Display error view
             errorView.isHidden = false
+
+            noVideoView.backgroundColor = .ows_black
             backgroundAvatarView.image = profileImage?.makeGrayscale()
             configureErrorView(for: device.address)
 

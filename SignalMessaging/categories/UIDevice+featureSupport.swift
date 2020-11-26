@@ -30,11 +30,17 @@ public extension UIDevice {
         case 1920, 2208:
             // iPhone 6+/6S+/7+/8+//
             return false
+        case 2340:
+            // iPhone 12 Mini
+            return true
         case 2436:
             // iPhone X, iPhone XS
             return true
         case 2688:
             // iPhone X Max
+            return true
+        case 2778:
+            // iPhone 12 Pro Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
@@ -70,6 +76,9 @@ public extension UIDevice {
             return false
         case 2688:
             // iPhone X Max
+            return true
+        case 2778:
+            // iPhone 12 Pro Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.

@@ -27,6 +27,7 @@ class GroupCallErrorView: UIView {
     var labelText: String? {
         didSet {
             label.text = labelText
+            configure()
         }
     }
 
@@ -61,7 +62,7 @@ class GroupCallErrorView: UIView {
             comment: "A button to receive more info about not seeing a participant in group call grid")
 
         let button = UIButton()
-        button.backgroundColor = UIColor.darkGray
+        button.backgroundColor = .ows_gray75
         button.layer.cornerRadius = 16
         button.titleLabel?.textAlignment = .center
         button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
@@ -95,10 +96,14 @@ class GroupCallErrorView: UIView {
         stackView.setCustomSpacing(16, after: label)
 
         addSubview(stackView)
+        insetsLayoutMarginsFromSafeArea = false
         stackView.autoPinWidthToSuperviewMargins()
         stackView.autoVCenterInSuperview()
         stackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
         stackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+
+        iconView.setCompressionResistanceHigh()
+        button.setCompressionResistanceHigh()
 
         iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))
 
@@ -122,6 +127,15 @@ class GroupCallErrorView: UIView {
         label.isHidden = isCompact
         button.isHidden = isCompact
         miniButton.isHidden = !isCompact
+
+        layoutIfNeeded()
+
+        // The error text is easily truncated in small cells with large dynamic type.
+        // If the label gets truncated, just hide it.
+        if !label.isHidden {
+            let labelDesiredHeight = label.sizeThatFits(CGSize(width: label.bounds.width, height: .greatestFiniteMagnitude)).height
+            label.isHidden = (labelDesiredHeight > label.bounds.height)
+        }
     }
 
     @objc
