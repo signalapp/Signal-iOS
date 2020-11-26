@@ -201,7 +201,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         {
             NSString *messageAuthorId = message.authorId;
 
-            if (!message.thread.isGroupThread) { return; } // Don't send read receipts in group threads
+            if (message.thread.isGroupThread) { return; } // Don't send read receipts in group threads
             
             if ([self areReadReceiptsEnabled]) {
                 [self.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId timestamp:message.timestamp];
