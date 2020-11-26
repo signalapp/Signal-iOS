@@ -16,6 +16,7 @@ public class DotNetAPI : NSObject {
     // MARK: Error
     public enum Error : LocalizedError {
         case generic
+        case invalidURL
         case parsingFailed
         case signingFailed
         case encryptionFailed
@@ -29,6 +30,7 @@ public class DotNetAPI : NSObject {
         public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
+            case .invalidURL: return "Invalid URL."
             case .parsingFailed: return "Invalid file server response."
             case .signingFailed: return "Couldn't sign message."
             case .encryptionFailed: return "Couldn't encrypt file."
@@ -105,14 +107,15 @@ public class DotNetAPI : NSObject {
         return AnyPromise.from(downloadAttachment(from: url))
     }
 
-    public static func downloadAttachment(from url: String) -> Promise<Data> {
-        var host = "https://\(URL(string: url)!.host!)"
+    public static func downloadAttachment(from urlAsString: String) -> Promise<Data> {
+        guard let url = URL(string: urlAsString) else { return Promise(error: Error.invalidURL) }
+        var host = "https://\(url.host!)"
         let sanitizedURL: String
         if FileServerAPI.fileStorageBucketURL.contains(host) {
-            sanitizedURL = url.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
+            sanitizedURL = urlAsString.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
             host = FileServerAPI.server
         } else {
-            sanitizedURL = url.replacingOccurrences(of: host, with: "\(host)/loki/v1")
+            sanitizedURL = urlAsString.replacingOccurrences(of: host, with: "\(host)/loki/v1")
         }
         let request: NSMutableURLRequest
         do {

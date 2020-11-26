@@ -17,7 +17,7 @@ public extension VisibleMessage {
 
         public var isValid: Bool {
             // key and digest can be nil for open group attachments
-            fileName != nil && contentType != nil && kind != nil && size != nil && sizeInBytes != nil && url != nil
+            contentType != nil && kind != nil && size != nil && sizeInBytes != nil && url != nil
         }
 
         public enum Kind : String {

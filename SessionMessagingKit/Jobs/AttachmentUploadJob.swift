@@ -57,7 +57,6 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
 
     // MARK: Running
     public func execute() {
-        SNLog("Attachment upload failure count: \(failureCount).")
         guard let stream = TSAttachmentStream.fetch(uniqueId: attachmentID) else {
             return handleFailure(error: Error.noAttachment)
         }

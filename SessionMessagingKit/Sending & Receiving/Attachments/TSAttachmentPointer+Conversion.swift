@@ -7,7 +7,7 @@ extension TSAttachmentPointer {
         case .generic: kind = .default
         case .voiceMessage: kind = .voiceMessage
         }
-        return TSAttachmentPointer(
+        let result = TSAttachmentPointer(
             serverId: 0,
             key: attachment.key,
             digest: attachment.digest,
@@ -18,5 +18,7 @@ extension TSAttachmentPointer {
             albumMessageId: nil,
             attachmentType: kind,
             mediaSize: attachment.size!)
+        result.downloadURL = attachment.url!
+        return result
     }
 }
