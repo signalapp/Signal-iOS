@@ -32,7 +32,11 @@ public final class JobQueue : NSObject, JobDelegate {
         let allJobTypes: [Job.Type] = [ AttachmentDownloadJob.self, AttachmentUploadJob.self, MessageReceiveJob.self, MessageSendJob.self, NotifyPNServerJob.self ]
         allJobTypes.forEach { type in
             let allPendingJobs = Configuration.shared.storage.getAllPendingJobs(of: type)
-            allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { $0.execute() } // Retry the oldest jobs first
+            allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { job in // Retry the oldest jobs first
+                SNLog("Resuming pending job of type: \(type).")
+                job.delegate = self
+                job.execute()
+            }
         }
     }
 
@@ -58,6 +62,7 @@ public final class JobQueue : NSObject, JobDelegate {
                 })
             } else {
                 let retryInterval = self.getRetryInterval(for: job)
+                SNLog("Job failed; scheduling retry.")
                 Timer.scheduledTimer(timeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
             }
         })
@@ -90,8 +95,9 @@ public final class JobQueue : NSObject, JobDelegate {
         return 0.1 * min(maxBackoff, pow(backoffFactor, Double(job.failureCount)))
     }
 
-    @objc private func retry(_ job: Any) {
-        guard let job = job as? Job else { return }
+    @objc private func retry(_ timer: Timer) {
+        SNLog("Retrying job.")
+        guard let job = timer.userInfo as? Job else { return }
         job.execute()
     }
 }

@@ -57,6 +57,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
 
     // MARK: Running
     public func execute() {
+        SNLog("Attachment upload failure count: \(failureCount).")
         guard let stream = TSAttachmentStream.fetch(uniqueId: attachmentID) else {
             return handleFailure(error: Error.noAttachment)
         }
@@ -78,16 +79,19 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     }
 
     private func handleSuccess() {
+        SNLog("Attachment uploaded successfully.")
         delegate?.handleJobSucceeded(self)
         Configuration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
     }
     
     private func handlePermanentFailure(error: Swift.Error) {
+        SNLog("Attachment upload failed permanently due to error: \(error).")
         delegate?.handleJobFailedPermanently(self, with: error)
         failAssociatedMessageSendJob(with: error)
     }
 
     private func handleFailure(error: Swift.Error) {
+        SNLog("Attachment upload failed due to error: \(error).")
         delegate?.handleJobFailed(self, with: error)
         if failureCount + 1 == AttachmentUploadJob.maxFailureCount {
             failAssociatedMessageSendJob(with: error)
