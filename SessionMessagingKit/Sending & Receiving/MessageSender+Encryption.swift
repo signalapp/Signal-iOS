@@ -7,7 +7,7 @@ internal extension MessageSender {
         let storage = Configuration.shared.signalStorage
         let cipher = try SMKSecretSessionCipher(sessionResetImplementation: Configuration.shared.sessionRestorationImplementation,
             sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: Configuration.shared.identityKeyStore)
-        let certificate = Configuration.shared.storage.getSenderCertificate(for: publicKey)
+        let certificate = SMKSenderCertificate(senderDeviceId: 1, senderRecipientId: Configuration.shared.storage.getUserPublicKey()!)
         return try cipher.throwswrapped_encryptMessage(recipientPublicKey: publicKey, deviceID: 1, paddedPlaintext: (plaintext as NSData).paddedMessageBody(),
             senderCertificate: certificate, protocolContext: transaction, useFallbackSessionCipher: true)
     }

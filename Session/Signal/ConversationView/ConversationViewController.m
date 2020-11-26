@@ -3812,6 +3812,8 @@ typedef enum : NSUInteger {
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [tsMessage saveWithTransaction:transaction];
+    }];
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [SNMessageSender send:message withAttachments:[NSArray<SignalAttachment *> new] inThread:thread usingTransaction:transaction];
         [thread setDraft:@"" transaction:transaction];
     }];

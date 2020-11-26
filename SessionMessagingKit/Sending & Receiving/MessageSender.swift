@@ -68,7 +68,7 @@ public final class MessageSender : NSObject {
             storage.withAsync({ transaction in
                 MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
-            if case .contact(_) = destination {
+            if case .contact(_) = destination, message is VisibleMessage {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
             }
         }
@@ -86,7 +86,7 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Encrypt the serialized protobuf
-        if case .contact(_) = destination {
+        if case .contact(_) = destination, message is VisibleMessage {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .encryptingMessage, object: NSNumber(value: message.sentTimestamp!))
             }
@@ -125,7 +125,7 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Calculate proof of work
-        if case .contact(_) = destination {
+        if case .contact(_) = destination, message is VisibleMessage {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .calculatingMessagePoW, object: NSNumber(value: message.sentTimestamp!))
             }
@@ -138,7 +138,7 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Send the result
-        if case .contact(_) = destination {
+        if case .contact(_) = destination, message is VisibleMessage {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .messageSending, object: NSNumber(value: message.sentTimestamp!))
             }
@@ -169,7 +169,7 @@ public final class MessageSender : NSObject {
             storage.withAsync({ transaction in
                 MessageSender.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
-            if case .contact(_) = destination {
+            if case .contact(_) = destination, message is VisibleMessage {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
             if message is VisibleMessage {
