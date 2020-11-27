@@ -1101,16 +1101,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             } else if (!image) {
                 OWSLogError(@"avatar image for %@ could not be loaded.", userProfile.recipientId);
             } else {
-                [self updateProfileAvatarCache:image filename:fileName];
-            }
-
-            // If we're updating the profile that corresponds to our local number,
-            // update the local profile as well.
-            if ([self.tsAccountManager.localNumber isEqualToString:userProfile.recipientId]) {
-                OWSUserProfile *localUserProfile = self.localUserProfile;
-                OWSAssertDebug(localUserProfile);
-
-                [localUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
+                [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
                 [self updateProfileAvatarCache:image filename:fileName];
             }
 
