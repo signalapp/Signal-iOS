@@ -143,7 +143,7 @@ extension MessageReceiver {
             guard let attachment = VisibleMessage.Attachment.fromProto(proto) else { return nil }
             return attachment.isValid ? attachment : nil
         }
-        let attachmentIDs = storage.persist(attachments, using: transaction)
+        var attachmentIDs = storage.persist(attachments, using: transaction)
         message.attachmentIDs = attachmentIDs
         // Update profile if needed
         if let newProfile = message.profile {
@@ -163,20 +163,21 @@ extension MessageReceiver {
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             tsQuotedMessage = TSQuotedMessage(for: proto.dataMessage!, thread: thread, transaction: transaction)
+            if let id = tsQuotedMessage?.thumbnailAttachmentStreamId() ?? tsQuotedMessage?.thumbnailAttachmentPointerId() {
+                attachmentIDs.append(id)
+            }
         }
         // Persist the message
         guard let tsIncomingMessageID = storage.persist(message, withQuotedMessage: tsQuotedMessage, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Start attachment downloads if needed
         storage.withAsync({ transaction in
-            DispatchQueue.main.async {
-                attachmentIDs.forEach { attachmentID in
-                    let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
-                    if CurrentAppContext().isMainAppAndActive { // This has to be called from the main thread
-                        JobQueue.shared.add(downloadJob, using: transaction)
-                    } else {
-                        JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
-                    }
+            attachmentIDs.forEach { attachmentID in
+                let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
+                if CurrentAppContext().isMainAppAndActive { // This has to be called from the main thread
+                    JobQueue.shared.add(downloadJob, using: transaction)
+                } else {
+                    JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
                 }
             }
         }, completion: { })
