@@ -59,6 +59,10 @@ public final class VisibleMessage : Message {
             dataMessage = SNProtoDataMessage.builder()
         }
         if let text = text { dataMessage.setBody(text) }
+        var attachmentIDs = self.attachmentIDs
+        if let quotedAttachmentID = quote?.attachmentID, let index = attachmentIDs.firstIndex(of: quotedAttachmentID) {
+            attachmentIDs.remove(at: index)
+        }
         let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
         if !attachments.allSatisfy({ $0.isUploaded }) {
             #if DEBUG
@@ -67,7 +71,7 @@ public final class VisibleMessage : Message {
         }
         let attachmentProtos = attachments.compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
-        if let quote = quote, let quoteProto = quote.toProto() { dataMessage.setQuote(quoteProto) }
+        if let quote = quote, let quoteProto = quote.toProto(using: transaction) { dataMessage.setQuote(quoteProto) }
         if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto() { dataMessage.setPreview([ linkPreviewProto ]) }
         // TODO: Contact
         do {

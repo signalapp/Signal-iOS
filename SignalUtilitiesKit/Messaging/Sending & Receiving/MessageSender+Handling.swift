@@ -20,9 +20,16 @@ extension MessageSender : SharedSenderKeysDelegate {
             streams.append(stream)
             stream.write($0.dataSource)
             stream.save(with: transaction)
+            tsMessage.attachmentIds.add(stream.uniqueId!)
+        }
+        if let quotedMessageThumbnails = tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction) {
+            streams += quotedMessageThumbnails
+        }
+        if let linkPreviewAttachmentID = tsMessage.linkPreview?.imageAttachmentId,
+            let stream = TSAttachment.fetch(uniqueId: linkPreviewAttachmentID, transaction: transaction) as? TSAttachmentStream {
+            streams.append(stream)
         }
         message.attachmentIDs = streams.map { $0.uniqueId! }
-        tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
         tsMessage.save(with: transaction)
     }
     
@@ -34,6 +41,7 @@ extension MessageSender : SharedSenderKeysDelegate {
     
     @objc(send:inThread:usingTransaction:)
     public static func send(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+        if message is VisibleMessage { prep([], for: message, using: transaction) } // To handle quotes & link previews
         message.threadID = thread.uniqueId!
         let destination = Message.Destination.from(thread)
         let job = MessageSendJob(message: message, destination: destination)

@@ -8,6 +8,7 @@ extension VisibleMessage.Quote {
         result.timestamp = quote.timestamp
         result.publicKey = quote.authorId
         result.text = quote.body
+        result.attachmentID = quote.attachmentStream?.uniqueId
         return result
     }
 }
