@@ -46,6 +46,8 @@ extension Storage {
     /// Also touches the associated message.
     public func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        // Workaround for some YapDatabase funkiness where pointer at this point can actually be a TSAttachmentStream
+        guard pointer.responds(to: #selector(setter: TSAttachmentPointer.state)) else { return }
         pointer.state = state
         pointer.save(with: transaction)
         guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else { return }

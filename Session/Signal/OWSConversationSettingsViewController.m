@@ -875,7 +875,8 @@ static CGRect oldframe;
             [infoMessage saveWithTransaction:transaction];
 
             SNExpirationTimerUpdate *expirationTimerUpdate = [SNExpirationTimerUpdate new];
-            expirationTimerUpdate.duration = self.disappearingMessagesConfiguration.durationSeconds;
+            BOOL isEnabled = self.disappearingMessagesConfiguration.enabled;
+            expirationTimerUpdate.duration = isEnabled ? self.disappearingMessagesConfiguration.durationSeconds : 0;
             [SNMessageSender send:expirationTimerUpdate inThread:self.thread usingTransaction:transaction];
         }];
     }
