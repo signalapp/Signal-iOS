@@ -20,16 +20,14 @@ extension MessageSender : SharedSenderKeysDelegate {
             streams.append(stream)
             stream.write($0.dataSource)
             stream.save(with: transaction)
-            tsMessage.attachmentIds.add(stream.uniqueId!)
         }
-        if let quotedMessageThumbnails = tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction) {
-            streams += quotedMessageThumbnails
-        }
+        tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
         if let linkPreviewAttachmentID = tsMessage.linkPreview?.imageAttachmentId,
             let stream = TSAttachment.fetch(uniqueId: linkPreviewAttachmentID, transaction: transaction) as? TSAttachmentStream {
             streams.append(stream)
         }
         message.attachmentIDs = streams.map { $0.uniqueId! }
+        tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
         tsMessage.save(with: transaction)
     }
     

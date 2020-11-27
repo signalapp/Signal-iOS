@@ -78,7 +78,6 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
             }
             if !attachmentsToUpload.isEmpty { return } // Wait for all attachments to upload before continuing
         }
-        // FIXME: This doesn't yet handle the attachment side of link previews, quotes, etc.
         storage.withAsync({ transaction in // Intentionally capture self
             MessageSender.send(self.message, to: self.destination, using: transaction).done(on: DispatchQueue.global(qos: .userInitiated)) {
                 self.handleSuccess()

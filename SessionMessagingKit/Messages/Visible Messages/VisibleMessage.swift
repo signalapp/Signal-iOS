@@ -25,12 +25,20 @@ public final class VisibleMessage : Message {
         super.init(coder: coder)
         if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
         if let attachmentIDs = coder.decodeObject(forKey: "attachments") as! [String]? { self.attachmentIDs = attachmentIDs }
+        if let quote = coder.decodeObject(forKey: "quote") as! Quote? { self.quote = quote }
+        if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! LinkPreview? { self.linkPreview = linkPreview }
+        // TODO: Contact
+        if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
         coder.encode(text, forKey: "body")
         coder.encode(attachmentIDs, forKey: "attachments")
+        coder.encode(quote, forKey: "quote")
+        coder.encode(linkPreview, forKey: "linkPreview")
+        // TODO: Contact
+        coder.encode(profile, forKey: "profile")
     }
 
     // MARK: Proto Conversion

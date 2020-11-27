@@ -3,6 +3,7 @@ import SessionUtilitiesKit
 internal enum MessageReceiver {
 
     internal enum Error : LocalizedError {
+        case duplicateMessage
         case invalidMessage
         case unknownMessage
         case unknownEnvelopeType
@@ -18,13 +19,14 @@ internal enum MessageReceiver {
 
         internal var isRetryable: Bool {
             switch self {
-            case .invalidMessage, .unknownMessage, .unknownEnvelopeType, .noData, .senderBlocked, .selfSend: return false
+            case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType, .noData, .senderBlocked, .selfSend: return false
             default: return true
             }
         }
 
         internal var errorDescription: String? {
             switch self {
+            case .duplicateMessage: return "Duplicate message."
             case .invalidMessage: return "Invalid message."
             case .unknownMessage: return "Unknown message type."
             case .unknownEnvelopeType: return "Unknown envelope type."
@@ -45,6 +47,9 @@ internal enum MessageReceiver {
         let userPublicKey = Configuration.shared.storage.getUserPublicKey()
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
+        let storage = Configuration.shared.storage
+        guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) else { throw Error.duplicateMessage }
+        storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
         // Decrypt the contents
         let plaintext: Data
         let sender: String

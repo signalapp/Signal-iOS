@@ -160,14 +160,23 @@ extension MessageReceiver {
         // Persist the message
         guard let (threadID, tsIncomingMessageID) = storage.persist(message, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
+        // Handle quoted attachment if needed
+        if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
+            let tsQuote = TSQuotedMessage(for: proto.dataMessage!, thread: thread, transaction: transaction)
+            if let thumbnailID = tsQuote?.thumbnailAttachmentStreamId() ?? tsQuote?.thumbnailAttachmentPointerId() {
+                message.quote?.attachmentID = thumbnailID
+            }
+        }
         // Start attachment downloads if needed
         storage.withAsync({ transaction in
-            attachmentIDs.forEach { attachmentID in
-                let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
-                if CurrentAppContext().isMainAppAndActive {
-                    JobQueue.shared.add(downloadJob, using: transaction)
-                } else {
-                    JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
+            DispatchQueue.main.async {
+                attachmentIDs.forEach { attachmentID in
+                    let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
+                    if CurrentAppContext().isMainAppAndActive { // This has to be called from the main thread
+                        JobQueue.shared.add(downloadJob, using: transaction)
+                    } else {
+                        JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
+                    }
                 }
             }
         }, completion: { })

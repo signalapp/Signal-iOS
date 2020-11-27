@@ -61,5 +61,26 @@ extension Storage {
         guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else { return }
         tsIncomingMessage.touch(with: transaction)
     }
+
+    private static let receivedMessageTimestampsCollection = "ReceivedMessageTimestampsCollection"
+
+    public func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64] {
+        var result: [UInt64] = []
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        transaction.enumerateRows(inCollection: Storage.receivedMessageTimestampsCollection) { _, object, _, _ in
+            guard let timestamp = object as? UInt64 else { return }
+            result.append(timestamp)
+        }
+        return result
+    }
+
+    public func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any) {
+        var receivedMessageTimestamps = getReceivedMessageTimestamps(using: transaction)
+        // TODO: Do we need to sort the timestamps here?
+        if receivedMessageTimestamps.count > 1000 { receivedMessageTimestamps.remove(at: 0) } // Limit the size of the collection to 1000
+        receivedMessageTimestamps.append(timestamp)
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        transaction.setObject(receivedMessageTimestamps, forKey: "receivedMessageTimestamps", inCollection: Storage.receivedMessageTimestampsCollection)
+    }
 }
 

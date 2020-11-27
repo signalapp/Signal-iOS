@@ -46,12 +46,12 @@ public extension VisibleMessage {
         }
 
         public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoDataMessageQuote? {
-            guard let timestamp = timestamp, let publicKey = publicKey, let text = text else {
+            guard let timestamp = timestamp, let publicKey = publicKey else {
                 SNLog("Couldn't construct quote proto from: \(self).")
                 return nil
             }
             let quoteProto = SNProtoDataMessageQuote.builder(id: timestamp, author: publicKey)
-            quoteProto.setText(text)
+            if let text = text { quoteProto.setText(text) }
             addAttachmentsIfNeeded(to: quoteProto, using: transaction)
             do {
                 return try quoteProto.build()
