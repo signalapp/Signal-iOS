@@ -3760,7 +3760,7 @@ typedef enum : NSUInteger {
         [tsMessage saveWithTransaction:transaction];
     }];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SNMessageSender send:message inThread:thread usingTransaction:transaction];
+        [SNMessageSender send:message withAttachments:@[] inThread:thread usingTransaction:transaction];
         [thread setDraft:@"" transaction:transaction];
     }];
     [self messageWasSent:tsMessage];

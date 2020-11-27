@@ -5,8 +5,7 @@ extension MessageSender : SharedSenderKeysDelegate {
 
     // MARK: - Sending Convenience
     
-    private static func prep(_ attachments: [SignalAttachment], for message: Message, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let message = message as? VisibleMessage else { return }
+    private static func prep(_ attachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
             #if DEBUG
             preconditionFailure()
@@ -32,14 +31,13 @@ extension MessageSender : SharedSenderKeysDelegate {
     }
     
     @objc(send:withAttachments:inThread:usingTransaction:)
-    public static func send(_ message: Message, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func send(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         prep(attachments, for: message, using: transaction)
         send(message, in: thread, using: transaction)
     }
     
     @objc(send:inThread:usingTransaction:)
     public static func send(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        if message is VisibleMessage { prep([], for: message, using: transaction) } // To handle quotes & link previews
         message.threadID = thread.uniqueId!
         let destination = Message.Destination.from(thread)
         let job = MessageSendJob(message: message, destination: destination)
@@ -47,7 +45,7 @@ extension MessageSender : SharedSenderKeysDelegate {
     }
 
     @objc(sendNonDurably:withAttachments:inThread:usingTransaction:)
-    public static func objc_sendNonDurably(_ message: Message, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+    public static func objc_sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(sendNonDurably(message, with: attachments, in: thread, using: transaction))
     }
     
@@ -56,7 +54,7 @@ extension MessageSender : SharedSenderKeysDelegate {
         return AnyPromise.from(sendNonDurably(message, in: thread, using: transaction))
     }
     
-    public static func sendNonDurably(_ message: Message, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public static func sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         prep(attachments, for: message, using: transaction)
         return sendNonDurably(message, in: thread, using: transaction)
     }

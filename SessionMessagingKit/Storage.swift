@@ -73,8 +73,10 @@ public protocol SessionMessagingKitStorageProtocol {
 
     func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64]
     func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any)
-    /// Returns the ID of the thread the message was stored under along with the ID of the `TSIncomingMessage` that was constructed.
-    func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, String)?
+    /// Returns the ID of the thread.
+    func getOrCreateThread(for publicKey: String, groupPublicKey: String?, using transaction: Any) -> String?
+    /// Returns the ID of the `TSIncomingMessage` that was constructed.
+    func persist(_ message: VisibleMessage, withQuotedMessage quotedMessage: TSQuotedMessage?, groupPublicKey: String?, using transaction: Any) -> String?
     /// Returns the IDs of the saved attachments.
     func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String]
     /// Also touches the associated message.

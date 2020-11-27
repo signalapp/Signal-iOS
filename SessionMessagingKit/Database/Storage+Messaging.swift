@@ -16,8 +16,8 @@ extension Storage {
         return try! promise.wait()
     }
 
-    /// Returns the ID of the thread the message was stored under along with the ID of the `TSIncomingMessage` that was constructed.
-    public func persist(_ message: VisibleMessage, groupPublicKey: String?, using transaction: Any) -> (String, String)? {
+    /// Returns the ID of the thread.
+    public func getOrCreateThread(for publicKey: String, groupPublicKey: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
@@ -25,13 +25,20 @@ extension Storage {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getOrCreateThread(withContactId: message.sender!, transaction: transaction)
+            threadOrNil = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         }
-        guard let thread = threadOrNil else { return nil }
-        let message = TSIncomingMessage.from(message, associatedWith: thread)
+        return threadOrNil?.uniqueId
+    }
+
+    /// Returns the ID of the `TSIncomingMessage` that was constructed.
+    public func persist(_ message: VisibleMessage, withQuotedMessage quotedMessage: TSQuotedMessage?, groupPublicKey: String?, using transaction: Any) -> String? {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let threadID = getOrCreateThread(for: message.sender!, groupPublicKey: groupPublicKey, using: transaction),
+            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
+        let message = TSIncomingMessage.from(message, withQuotedMessage: quotedMessage, associatedWith: thread)
         message.save(with: transaction)
         DispatchQueue.main.async { message.touch() } // FIXME: Hack for a thread updating issue
-        return (thread.uniqueId!, message.uniqueId!)
+        return message.uniqueId!
     }
 
     /// Returns the IDs of the saved attachments.

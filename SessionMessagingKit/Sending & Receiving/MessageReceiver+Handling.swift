@@ -157,16 +157,16 @@ extension MessageReceiver {
                 profileManager.setProfileKeyData(profileKey, forRecipientId: message.sender!, avatarURL: profilePictureURL)
             }
         }
-        // Persist the message
-        guard let (threadID, tsIncomingMessageID) = storage.persist(message, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
-        message.threadID = threadID
-        // Handle quoted attachment if needed
+        // Get or create thread
+        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+        // Parse quote if needed
+        var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
-            let tsQuote = TSQuotedMessage(for: proto.dataMessage!, thread: thread, transaction: transaction)
-            if let thumbnailID = tsQuote?.thumbnailAttachmentStreamId() ?? tsQuote?.thumbnailAttachmentPointerId() {
-                message.quote?.attachmentID = thumbnailID
-            }
+            tsQuotedMessage = TSQuotedMessage(for: proto.dataMessage!, thread: thread, transaction: transaction)
         }
+        // Persist the message
+        guard let tsIncomingMessageID = storage.persist(message, withQuotedMessage: tsQuotedMessage, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+        message.threadID = threadID
         // Start attachment downloads if needed
         storage.withAsync({ transaction in
             DispatchQueue.main.async {

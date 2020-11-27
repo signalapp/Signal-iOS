@@ -263,7 +263,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [tsMessage saveWithTransaction:transaction];
         }];
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [SNMessageSender sendNonDurably:message inThread:self.thread usingTransaction:transaction]
+            [SNMessageSender sendNonDurably:message withAttachments:@[] inThread:self.thread usingTransaction:transaction]
             .then(^(id object) {
                 sendCompletion(nil, tsMessage);
             }).catch(^(NSError *error) {

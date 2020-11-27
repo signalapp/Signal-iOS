@@ -13,7 +13,7 @@ public extension VisibleMessage {
 
         public override init() { super.init() }
         
-        internal init(timestamp: UInt64, publicKey: String, text: String, attachmentID: String?) {
+        internal init(timestamp: UInt64, publicKey: String, text: String?, attachmentID: String?) {
             self.timestamp = timestamp
             self.publicKey = publicKey
             self.text = text
@@ -37,8 +37,8 @@ public extension VisibleMessage {
         public static func fromProto(_ proto: SNProtoDataMessageQuote) -> Quote? {
             let timestamp = proto.id
             let publicKey = proto.author
-            guard let text = proto.text else { return nil }
-            return Quote(timestamp: timestamp, publicKey: publicKey, text: text, attachmentID: nil) // TODO: attachmentID
+            let text = proto.text
+            return Quote(timestamp: timestamp, publicKey: publicKey, text: text, attachmentID: nil)
         }
 
         public func toProto() -> SNProtoDataMessageQuote? {

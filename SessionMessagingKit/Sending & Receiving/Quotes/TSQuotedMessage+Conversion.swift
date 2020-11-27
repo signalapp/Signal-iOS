@@ -1,6 +1,7 @@
 
 extension TSQuotedMessage {
 
+    /// To be used for outgoing messages only.
     @objc(from:)
     public static func from(_ quote: VisibleMessage.Quote?) -> TSQuotedMessage? {
         guard let quote = quote else { return nil }

@@ -1,7 +1,7 @@
 
 public extension TSIncomingMessage {
 
-    static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread) -> TSIncomingMessage {
+    static func from(_ visibleMessage: VisibleMessage, withQuotedMessage quotedMessage: TSQuotedMessage?, associatedWith thread: TSThread) -> TSIncomingMessage {
         let sender = visibleMessage.sender!
         var expiration: UInt32 = 0
         Storage.read { transaction in
@@ -15,7 +15,7 @@ public extension TSIncomingMessage {
             messageBody: visibleMessage.text,
             attachmentIds: visibleMessage.attachmentIDs,
             expiresInSeconds: expiration,
-            quotedMessage: TSQuotedMessage.from(visibleMessage.quote),
+            quotedMessage: quotedMessage,
             linkPreview: OWSLinkPreview.from(visibleMessage.linkPreview),
             serverTimestamp: nil,
             wasReceivedByUD: true
