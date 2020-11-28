@@ -167,8 +167,17 @@ extension MessageReceiver {
                 attachmentIDs.append(id)
             }
         }
+        // Parse link preview if needed
+        var owsLinkPreview: OWSLinkPreview?
+        if message.linkPreview != nil && proto.dataMessage?.preview.isEmpty == false {
+            owsLinkPreview = try? OWSLinkPreview.buildValidatedLinkPreview(dataMessage: proto.dataMessage!, body: message.text, transaction: transaction)
+            if let id = owsLinkPreview?.imageAttachmentId {
+                attachmentIDs.append(id)
+            }
+        }
         // Persist the message
-        guard let tsIncomingMessageID = storage.persist(message, withQuotedMessage: tsQuotedMessage, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+        guard let tsIncomingMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
+            groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Start attachment downloads if needed
         storage.withAsync({ transaction in

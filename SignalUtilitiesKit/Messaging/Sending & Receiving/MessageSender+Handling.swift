@@ -21,12 +21,15 @@ extension MessageSender : SharedSenderKeysDelegate {
             stream.save(with: transaction)
         }
         tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
-        if let linkPreviewAttachmentID = tsMessage.linkPreview?.imageAttachmentId,
-            let stream = TSAttachment.fetch(uniqueId: linkPreviewAttachmentID, transaction: transaction) as? TSAttachmentStream {
+        var linkPreviewAttachmentID: String?
+        if let id = tsMessage.linkPreview?.imageAttachmentId,
+            let stream = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
+            linkPreviewAttachmentID = id
             streams.append(stream)
         }
         message.attachmentIDs = streams.map { $0.uniqueId! }
         tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
+        if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
         tsMessage.save(with: transaction)
     }
     

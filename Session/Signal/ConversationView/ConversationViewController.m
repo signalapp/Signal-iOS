@@ -3753,22 +3753,29 @@ typedef enum : NSUInteger {
     message.sentTimestamp = [NSDate millisecondTimestamp];
     message.text = text;
     message.quote = [SNQuote from:self.inputToolbar.quotedReply];
-    TSThread *thread = self.thread;
-    TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
-    [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
+    OWSLinkPreviewDraft *linkPreviewDraft = self.inputToolbar.linkPreviewDraft;
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [tsMessage saveWithTransaction:transaction];
+        message.linkPreview = [SNLinkPreview from:linkPreviewDraft using:transaction];
+    } completion:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            TSThread *thread = self.thread;
+            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
+            [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [tsMessage saveWithTransaction:transaction];
+            }];
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [SNMessageSender send:message withAttachments:@[] inThread:thread usingTransaction:transaction];
+                [thread setDraft:@"" transaction:transaction];
+            }];
+            [self messageWasSent:tsMessage];
+            [self.inputToolbar clearTextMessageAnimated:YES];
+            [self resetMentions];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[weakSelf inputToolbar] toggleDefaultKeyboard];
+            });
+        });
     }];
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SNMessageSender send:message withAttachments:@[] inThread:thread usingTransaction:transaction];
-        [thread setDraft:@"" transaction:transaction];
-    }];
-    [self messageWasSent:tsMessage];
-    [self.inputToolbar clearTextMessageAnimated:YES];
-    [self resetMentions];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[weakSelf inputToolbar] toggleDefaultKeyboard];
-    });
 }
 
 - (void)voiceMemoGestureDidStart

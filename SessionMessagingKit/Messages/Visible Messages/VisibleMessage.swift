@@ -60,17 +60,27 @@ public final class VisibleMessage : Message {
     
     public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         let proto = SNProtoContent.builder()
+        var attachmentIDs = self.attachmentIDs
         let dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder
+        // Profile
         if let profile = profile, let profileProto = profile.toProto() {
             dataMessage = profileProto.asBuilder()
         } else {
             dataMessage = SNProtoDataMessage.builder()
         }
+        // Text
         if let text = text { dataMessage.setBody(text) }
-        var attachmentIDs = self.attachmentIDs
+        // Quote
         if let quotedAttachmentID = quote?.attachmentID, let index = attachmentIDs.firstIndex(of: quotedAttachmentID) {
             attachmentIDs.remove(at: index)
         }
+        if let quote = quote, let quoteProto = quote.toProto(using: transaction) { dataMessage.setQuote(quoteProto) }
+        // Link preview
+        if let linkPreviewAttachmentID = linkPreview?.attachmentID, let index = attachmentIDs.firstIndex(of: linkPreviewAttachmentID) {
+            attachmentIDs.remove(at: index)
+        }
+        if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto(using: transaction) { dataMessage.setPreview([ linkPreviewProto ]) }
+        // Attachments
         let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
         if !attachments.allSatisfy({ $0.isUploaded }) {
             #if DEBUG
@@ -79,9 +89,8 @@ public final class VisibleMessage : Message {
         }
         let attachmentProtos = attachments.compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
-        if let quote = quote, let quoteProto = quote.toProto(using: transaction) { dataMessage.setQuote(quoteProto) }
-        if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto() { dataMessage.setPreview([ linkPreviewProto ]) }
         // TODO: Contact
+        // Build
         do {
             proto.setDataMessage(try dataMessage.build())
             return try proto.build()

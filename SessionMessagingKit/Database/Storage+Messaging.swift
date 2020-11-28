@@ -31,11 +31,11 @@ extension Storage {
     }
 
     /// Returns the ID of the `TSIncomingMessage` that was constructed.
-    public func persist(_ message: VisibleMessage, withQuotedMessage quotedMessage: TSQuotedMessage?, groupPublicKey: String?, using transaction: Any) -> String? {
+    public func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let threadID = getOrCreateThread(for: message.sender!, groupPublicKey: groupPublicKey, using: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
-        let message = TSIncomingMessage.from(message, withQuotedMessage: quotedMessage, associatedWith: thread)
+        let message = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         message.save(with: transaction)
         DispatchQueue.main.async { message.touch() } // FIXME: Hack for a thread updating issue
         return message.uniqueId!
