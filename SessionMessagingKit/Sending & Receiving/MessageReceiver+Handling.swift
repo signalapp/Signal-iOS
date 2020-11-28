@@ -143,8 +143,9 @@ extension MessageReceiver {
             guard let attachment = VisibleMessage.Attachment.fromProto(proto) else { return nil }
             return attachment.isValid ? attachment : nil
         }
-        var attachmentIDs = storage.persist(attachments, using: transaction)
+        let attachmentIDs = storage.persist(attachments, using: transaction)
         message.attachmentIDs = attachmentIDs
+        var attachmentsToDownload = attachmentIDs
         // Update profile if needed
         if let newProfile = message.profile {
             let profileManager = SSKEnvironment.shared.profileManager
@@ -164,7 +165,7 @@ extension MessageReceiver {
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             tsQuotedMessage = TSQuotedMessage(for: proto.dataMessage!, thread: thread, transaction: transaction)
             if let id = tsQuotedMessage?.thumbnailAttachmentStreamId() ?? tsQuotedMessage?.thumbnailAttachmentPointerId() {
-                attachmentIDs.append(id)
+                attachmentsToDownload.append(id)
             }
         }
         // Parse link preview if needed
@@ -172,7 +173,7 @@ extension MessageReceiver {
         if message.linkPreview != nil && proto.dataMessage?.preview.isEmpty == false {
             owsLinkPreview = try? OWSLinkPreview.buildValidatedLinkPreview(dataMessage: proto.dataMessage!, body: message.text, transaction: transaction)
             if let id = owsLinkPreview?.imageAttachmentId {
-                attachmentIDs.append(id)
+                attachmentsToDownload.append(id)
             }
         }
         // Persist the message
@@ -181,7 +182,7 @@ extension MessageReceiver {
         message.threadID = threadID
         // Start attachment downloads if needed
         storage.withAsync({ transaction in
-            attachmentIDs.forEach { attachmentID in
+            attachmentsToDownload.forEach { attachmentID in
                 let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
                 if CurrentAppContext().isMainAppAndActive { // This has to be called from the main thread
                     JobQueue.shared.add(downloadJob, using: transaction)

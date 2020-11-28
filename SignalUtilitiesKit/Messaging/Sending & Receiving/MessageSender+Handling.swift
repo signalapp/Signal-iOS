@@ -12,6 +12,8 @@ extension MessageSender : SharedSenderKeysDelegate {
             #endif
             return
         }
+        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
+        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
         var streams: [TSAttachmentStream] = []
         attachments.forEach {
             let stream = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
