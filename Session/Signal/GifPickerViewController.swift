@@ -388,7 +388,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 owsFailDebug("couldn't load asset.")
                 return
             }
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .medium)
 
             strongSelf.dismiss(animated: true) {
                 // Delegate presents view controllers, so it's important that *this* controller be dismissed before that occurs.
