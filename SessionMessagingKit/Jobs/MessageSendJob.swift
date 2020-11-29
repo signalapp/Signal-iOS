@@ -31,11 +31,11 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
             guard rawDestination.removeSuffix(")") else { return nil }
             let publicKey = rawDestination
             destination = .contact(publicKey: publicKey)
-        } else if rawDestination.removePrefix("closedGroup") {
+        } else if rawDestination.removePrefix("closedGroup(") {
             guard rawDestination.removeSuffix(")") else { return nil }
             let groupPublicKey = rawDestination
             destination = .closedGroup(groupPublicKey: groupPublicKey)
-        } else if rawDestination.removePrefix("openGroup") {
+        } else if rawDestination.removePrefix("openGroup(") {
             guard rawDestination.removeSuffix(")") else { return nil }
             let components = rawDestination.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             guard components.count == 2, let channel = UInt64(components[0]) else { return nil }
