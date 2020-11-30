@@ -216,11 +216,12 @@ public final class MessageSender : NSObject {
             }, completion: { })
         }
         // Validate the message
-        if !(message is VisibleMessage) {
+        guard let message = message as? VisibleMessage else {
             #if DEBUG
             preconditionFailure()
             #endif
-            seal.reject(Error.invalidMessage); return promise
+            seal.reject(Error.invalidMessage)
+            return promise
         }
         guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
         // Convert the message to an open group message
@@ -230,8 +231,7 @@ public final class MessageSender : NSObject {
             default: preconditionFailure()
             }
         }()
-        guard let message = message as? VisibleMessage,
-            let openGroupMessage = OpenGroupMessage.from(message, for: server, using: transaction as! YapDatabaseReadWriteTransaction) else { seal.reject(Error.invalidMessage); return promise }
+        guard let openGroupMessage = OpenGroupMessage.from(message, for: server, using: transaction as! YapDatabaseReadWriteTransaction) else { seal.reject(Error.invalidMessage); return promise }
         // Send the result
         OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = openGroupMessage.serverID
