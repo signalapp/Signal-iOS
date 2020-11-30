@@ -199,7 +199,7 @@ CHECKOUT OPTIONS:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
-    :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
+    :commit: 5806f6b6e0b34124ee09283a9eca9ce7e6eaf14e
     :git: https://github.com/loki-project/session-ios-yap-database.git
   YYImage:
     :commit: d91910e6f313a255febbf69795198e74259bd51c
