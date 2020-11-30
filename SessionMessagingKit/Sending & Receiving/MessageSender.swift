@@ -43,7 +43,7 @@ public final class MessageSender : NSObject {
     public static let shared = MessageSender() // FIXME: Remove once requestSenderKey is static
 
     // MARK: Preparation
-    private static func prep(_ attachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func prep(_ attachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
             #if DEBUG
             preconditionFailure()

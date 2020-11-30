@@ -41,6 +41,10 @@ extension Storage {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let message = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         message.save(with: transaction)
+        message.attachments(with: transaction).forEach { attachment in
+            attachment.albumMessageId = message.uniqueId!
+            attachment.save(with: transaction)
+        }
         DispatchQueue.main.async { message.touch() } // FIXME: Hack for a thread updating issue
         return message.uniqueId!
     }
