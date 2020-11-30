@@ -34,7 +34,7 @@ public final class OpenGroupMessage : NSObject {
     public struct Quote {
         public let quotedMessageTimestamp: UInt64
         public let quoteePublicKey: String
-        public let quotedMessageBody: String
+        public let quotedMessageBody: String?
         public let quotedMessageServerID: UInt64?
     }
     
@@ -96,7 +96,7 @@ public final class OpenGroupMessage : NSObject {
             quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64,
             signatureData: Data?, signatureVersion: UInt64, serverTimestamp: UInt64) {
         let quote: Quote?
-        if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey, let quotedMessageBody = quotedMessageBody {
+        if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
             quote = Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
         } else {
@@ -137,7 +137,8 @@ public final class OpenGroupMessage : NSObject {
     internal func toJSON() -> JSON {
         var value: JSON = [ "timestamp" : timestamp ]
         if let quote = quote {
-            value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey, "text" : quote.quotedMessageBody ]
+            value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey ]
+            if let quotedMessageBody = quote.quotedMessageBody { value["text"] = quotedMessageBody }
         }
         if let signature = signature {
             value["sig"] = signature.data.toHexString()
@@ -183,7 +184,10 @@ public final class OpenGroupMessage : NSObject {
     private func getValidationData(for signatureVersion: UInt64) -> Data? {
         var string = "\(body.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))\(timestamp)"
         if let quote = quote {
-            string += "\(quote.quotedMessageTimestamp)\(quote.quoteePublicKey)\(quote.quotedMessageBody.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))"
+            string += "\(quote.quotedMessageTimestamp)\(quote.quoteePublicKey)"
+            if let quotedMessageBody = quote.quotedMessageBody {
+                string += "\(quotedMessageBody.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))"
+            }
             if let quotedMessageServerID = quote.quotedMessageServerID {
                 string += "\(quotedMessageServerID)"
             }

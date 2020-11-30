@@ -119,7 +119,7 @@ public final class OpenGroupPoller : NSObject {
                 dataMessage.setGroup(try! groupContext.build())
                 if let quote = message.quote {
                     let signalQuote = SNProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
-                    signalQuote.setText(quote.quotedMessageBody)
+                    if let quotedMessageBody = quote.quotedMessageBody { signalQuote.setText(quotedMessageBody) }
                     dataMessage.setQuote(try! signalQuote.build())
                 }
                 let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body

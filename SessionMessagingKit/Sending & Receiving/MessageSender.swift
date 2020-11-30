@@ -231,7 +231,7 @@ public final class MessageSender : NSObject {
             }
         }()
         guard let message = message as? VisibleMessage,
-            let openGroupMessage = OpenGroupMessage.from(message, for: server) else { seal.reject(Error.invalidMessage); return promise }
+            let openGroupMessage = OpenGroupMessage.from(message, for: server, using: transaction as! YapDatabaseReadWriteTransaction) else { seal.reject(Error.invalidMessage); return promise }
         // Send the result
         OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = openGroupMessage.serverID
