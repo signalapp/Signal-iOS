@@ -16,15 +16,21 @@ public class DotNetAPI : NSObject {
     // MARK: Error
     public enum Error : LocalizedError {
         case generic
+        case invalidURL
         case parsingFailed
         case signingFailed
         case encryptionFailed
         case decryptionFailed
         case maxFileSizeExceeded
 
+        internal var isRetryable: Bool {
+            return false
+        }
+        
         public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
+            case .invalidURL: return "Invalid URL."
             case .parsingFailed: return "Invalid file server response."
             case .signingFailed: return "Couldn't sign message."
             case .encryptionFailed: return "Couldn't encrypt file."
@@ -101,14 +107,15 @@ public class DotNetAPI : NSObject {
         return AnyPromise.from(downloadAttachment(from: url))
     }
 
-    public static func downloadAttachment(from url: String) -> Promise<Data> {
-        var host = "https://\(URL(string: url)!.host!)"
+    public static func downloadAttachment(from urlAsString: String) -> Promise<Data> {
+        guard let url = URL(string: urlAsString) else { return Promise(error: Error.invalidURL) }
+        var host = "https://\(url.host!)"
         let sanitizedURL: String
         if FileServerAPI.fileStorageBucketURL.contains(host) {
-            sanitizedURL = url.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
+            sanitizedURL = urlAsString.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
             host = FileServerAPI.server
         } else {
-            sanitizedURL = url.replacingOccurrences(of: host, with: "\(host)/loki/v1")
+            sanitizedURL = urlAsString.replacingOccurrences(of: host, with: "\(host)/loki/v1")
         }
         let request: NSMutableURLRequest
         do {
@@ -133,11 +140,11 @@ public class DotNetAPI : NSObject {
     }
 
     @objc(uploadAttachment:withID:toServer:)
-    public static func objc_uploadAttachment(_ attachment: AttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
+    public static func objc_uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
         return AnyPromise.from(uploadAttachment(attachment, with: attachmentID, to: server))
     }
 
-    public static func uploadAttachment(_ attachment: AttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
+    public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
         let isEncryptionRequired = (server == FileServerAPI.server)
         return Promise<Void>() { seal in
             func proceed(with token: String) {

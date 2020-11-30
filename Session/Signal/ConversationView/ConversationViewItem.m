@@ -4,18 +4,18 @@
 
 #import <CoreServices/CoreServices.h>
 #import "ConversationViewItem.h"
-#import "OWSContactOffersCell.h"
+
 #import "OWSMessageCell.h"
 #import "OWSMessageHeaderView.h"
 #import "OWSSystemMessageCell.h"
 #import "Session-Swift.h"
 #import "AnyPromise.h"
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
-#import <SignalUtilitiesKit/NSData+Image.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/OWSContact.h>
-#import <SignalUtilitiesKit/TSInteraction.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionUtilitiesKit/NSData+Image.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
+
+#import <SessionMessagingKit/TSInteraction.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,8 +31,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_GenericAttachment";
         case OWSMessageCellType_Unknown:
             return @"OWSMessageCellType_Unknown";
-        case OWSMessageCellType_ContactShare:
-            return @"OWSMessageCellType_ContactShare";
         case OWSMessageCellType_MediaMessage:
             return @"OWSMessageCellType_MediaMessage";
         case OWSMessageCellType_OversizeTextDownloading:
@@ -119,7 +117,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
 @synthesize isGroupThread = _isGroupThread;
-@synthesize isRSSFeed = _isRSSFeed;
 @synthesize isLastInCluster = _isLastInCluster;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
@@ -127,7 +124,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                          isRSSFeed:(BOOL)isRSSFeed
                         transaction:(YapDatabaseReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle
 {
@@ -143,10 +139,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _isGroupThread = isGroupThread;
-    _isRSSFeed = isRSSFeed;
     _conversationStyle = conversationStyle;
-
-    [self updateAuthorConversationColorNameWithTransaction:transaction];
 
     [self ensureViewState:transaction];
 
@@ -173,35 +166,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
 
-    [self updateAuthorConversationColorNameWithTransaction:transaction];
-
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
-}
-
-- (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    switch (self.interaction.interactionType) {
-        case OWSInteractionType_TypingIndicator: {
-            OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForRecipientId:typingIndicator.recipientId
-                                                         transaction:transaction];
-            break;
-        }
-        case OWSInteractionType_IncomingMessage: {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
-            break;
-        }
-        default:
-            _authorConversationColorName = nil;
-            break;
-    }
 }
 
 - (OWSPrimaryStorage *)primaryStorage
@@ -385,9 +352,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             case OWSInteractionType_Call:
                 measurementCell = [OWSSystemMessageCell new];
                 break;
-            case OWSInteractionType_Offer:
-                measurementCell = [OWSContactOffersCell new];
-                break;
             case OWSInteractionType_TypingIndicator:
                 measurementCell = [OWSTypingIndicatorCell new];
                 break;
@@ -445,10 +409,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_Call:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
-        case OWSInteractionType_Offer:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-
         case OWSInteractionType_TypingIndicator:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
@@ -487,6 +447,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.audioProgressSeconds = progress;
 
     [self.lastAudioMessageView setProgress:progress / duration];
+}
+
+- (void)showInvalidAudioFileAlert
+{
+    OWSAssertIsOnMainThread();
+    
+    [OWSAlerts
+        showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
+                                      @"Message for the alert indicating that an audio file is invalid.")];
 }
 
 #pragma mark - Displayable Text
@@ -609,12 +578,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
-    if (message.contactShare) {
-        self.contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare transaction:transaction];
-        self.messageCellType = OWSMessageCellType_ContactShare;
-        return;
-    }
 
     // Check for quoted replies _before_ media album handling,
     // since that logic may exit early.
@@ -804,39 +767,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSInteractionType_Info: {
             TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
-            if ([infoMessage isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
-                OWSVerificationStateChangeMessage *verificationMessage
-                    = (OWSVerificationStateChangeMessage *)infoMessage;
-                BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
-                NSString *displayName =
-                    [Environment.shared.contactsManager displayNameForPhoneIdentifier:verificationMessage.recipientId];
-                NSString *titleFormat = (isVerified
-                        ? (verificationMessage.isLocalChange
-                                  ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
-                                        @"Format for info message indicating that the verification state was verified "
-                                        @"on "
-                                        @"this device. Embeds {{user's name or phone number}}.")
-                                  : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
-                                        @"Format for info message indicating that the verification state was verified "
-                                        @"on "
-                                        @"another device. Embeds {{user's name or phone number}}."))
-                        : (verificationMessage.isLocalChange
-                                  ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
-                                        @"Format for info message indicating that the verification state was "
-                                        @"unverified on "
-                                        @"this device. Embeds {{user's name or phone number}}.")
-                                  : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
-                                        @"Format for info message indicating that the verification state was "
-                                        @"unverified on "
-                                        @"another device. Embeds {{user's name or phone number}}.")));
-                return [NSString stringWithFormat:titleFormat, displayName];
-            } else {
-                return [infoMessage previewTextWithTransaction:transaction];
-            }
-        }
-        case OWSInteractionType_Call: {
-            TSCall *call = (TSCall *)self.interaction;
-            return [call previewTextWithTransaction:transaction];
+            return [infoMessage previewTextWithTransaction:transaction];
         }
         default:
             OWSFailDebug(@"not a system message.");
@@ -921,11 +852,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"No text to copy");
             break;
         }
-        case OWSMessageCellType_ContactShare: {
-            // TODO: Implement copy contact.
-            OWSFailDebug(@"Not implemented yet");
-            break;
-        }
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             return;
@@ -942,10 +868,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare: {
-            OWSFailDebug(@"No media to copy");
-            break;
-        }
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment: {
             [self copyAttachmentToPasteboard:self.attachmentStream];
@@ -996,9 +918,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-            OWSFailDebug(@"No media to share.");
-            break;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
             [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
@@ -1035,8 +954,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
             return NO;
         case OWSMessageCellType_GenericAttachment:
@@ -1064,8 +981,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
             return NO;
         case OWSMessageCellType_GenericAttachment:
@@ -1104,9 +1019,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-            OWSFailDebug(@"Cannot save text data.");
-            break;
         case OWSMessageCellType_Audio:
             OWSFailDebug(@"Cannot save media data.");
             break;
@@ -1172,30 +1084,37 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteAction
 {
-    [self.interaction remove];
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.interaction removeWithTransaction:transaction];
+        if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+            [LKStorage.shared cancelPendingMessageSendJobIfNeededForMessage:self.interaction.timestamp using:transaction];
+        }
+    }];
     
     if (self.isGroupThread) {
-        // Skip if the thread is an RSS feed
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
-        if (groupThread.isRSSFeed) return;
         
         // Only allow deletion on incoming and outgoing messages
         OWSInteractionType interationType = self.interaction.interactionType;
         if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
         
-        // Make sure it's a public chat message
+        // Make sure it's an open group message
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isOpenGroupMessage) return;
-        
-        __block SNOpenGroup *publicChat;
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
-        }];
-        if (publicChat == nil) return;
+
+        // Get the open group
+        SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
+        if (openGroup == nil) return;
+
+        // If it's an incoming message the user must have moderator status
+        if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+            NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+            if (![SNOpenGroupAPI isUserModerator:userPublicKey forChannel:openGroup.channel onServer:openGroup.server]) { return; }
+        }
         
         // Delete the message
-        BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
+        BOOL wasSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
+        [[SNOpenGroupAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:openGroup.channel onServer:openGroup.server isSentByUser:wasSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];
@@ -1217,8 +1136,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
             return self.attachmentStream != nil;
@@ -1252,7 +1169,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Ensure the thread is a public chat and not an RSS feed
     TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
-    if (groupThread.isRSSFeed) return false;
     
     // Only allow deletion on incoming and outgoing messages
     OWSInteractionType interationType = self.interaction.interactionType;
@@ -1263,18 +1179,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!message.isOpenGroupMessage) return true;
     
     // Ensure we have the details needed to contact the server
-    __block SNOpenGroup *publicChat;
-    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
-    }];
+    SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
     if (publicChat == nil) return true;
     
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
         return [SNOpenGroupAPI isUserModerator:self.userHexEncodedPublicKey forChannel:publicChat.channel onServer:publicChat.server];
     } else {
-        // Only allow deletion on outgoing messages if the user was the sender (i.e. it was not sent from another linked device)
-        return [self.interaction.actualSenderHexEncodedPublicKey isEqual:self.userHexEncodedPublicKey];
+        return YES;
     }
 }
 

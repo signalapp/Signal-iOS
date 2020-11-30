@@ -27,18 +27,6 @@ class UserNotificationConfig {
 
     class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction {
         switch action {
-//        case .answerCall:
-//            return UNNotificationAction(identifier: action.identifier,
-//                                        title: CallStrings.answerCallButtonTitle,
-//                                        options: [.foreground])
-//        case .callBack:
-//            return UNNotificationAction(identifier: action.identifier,
-//                                        title: CallStrings.callBackButtonTitle,
-//                                        options: [.foreground])
-//        case .declineCall:
-//            return UNNotificationAction(identifier: action.identifier,
-//                                        title: CallStrings.declineCallButtonTitle,
-//                                        options: [])
         case .markAsRead:
             return UNNotificationAction(identifier: action.identifier,
                                         title: MessageStrings.markAsReadNotificationAction,
@@ -125,7 +113,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         let trigger: UNNotificationTrigger?
         let checkForCancel = category == .incomingMessage
-        if checkForCancel && hasReceivedSyncMessageRecently {
+        if checkForCancel {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else {
@@ -255,12 +243,6 @@ public class UserNotificationActionHandler: NSObject {
         }
 
         switch action {
-//        case .answerCall:
-//            return try actionHandler.answerCall(userInfo: userInfo)
-//        case .callBack:
-//            return try actionHandler.callBack(userInfo: userInfo)
-//        case .declineCall:
-//            return try actionHandler.declineCall(userInfo: userInfo)
         case .markAsRead:
             return try actionHandler.markAsRead(userInfo: userInfo)
         case .reply:

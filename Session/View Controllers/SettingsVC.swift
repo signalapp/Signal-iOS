@@ -4,14 +4,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     private var displayNameToBeUploaded: String?
     private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
     
-    private lazy var userHexEncodedPublicKey: String = {
-        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
-            return masterHexEncodedPublicKey
-        } else {
-            return getUserHexEncodedPublicKey()
-        }
-    }()
-    
     // MARK: Components
     private lazy var profilePictureView: ProfilePictureView = {
         let result = ProfilePictureView()
@@ -71,10 +63,10 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         // Set up profile picture view
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
         profilePictureView.addGestureRecognizer(profilePictureTapGestureRecognizer)
-        profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
+        profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         // Set up display name label
-        displayNameLabel.text = OWSProfileManager.shared().profileNameForRecipient(withID: userHexEncodedPublicKey)
+        displayNameLabel.text = OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
         // Set up display name container
         let displayNameContainer = UIView()
         displayNameContainer.addSubview(displayNameLabel)
@@ -99,7 +91,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         publicKeyLabel.numberOfLines = 0
         publicKeyLabel.textAlignment = .center
         publicKeyLabel.lineBreakMode = .byCharWrapping
-        publicKeyLabel.text = userHexEncodedPublicKey
+        publicKeyLabel.text = getUserHexEncodedPublicKey()
         // Set up share button
         let shareButton = Button(style: .regular, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
@@ -178,23 +170,19 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             button.set(.height, to: Values.settingButtonHeight)
             return button
         }
-        var result = [
+        return [
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
             getSeparator(),
-            getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation))
+            getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation)),
+            getSeparator(),
+            getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
+            getSeparator(),
+            getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)),
+            getSeparator()
         ]
-        let isMasterDevice = UserDefaults.standard.isMasterDevice
-        if isMasterDevice {
-            result.append(getSeparator())
-            result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)))
-        }
-        result.append(getSeparator())
-        result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))
-        result.append(getSeparator())
-        return result
     }
     
     // MARK: General
@@ -283,8 +271,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
-        let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileNameForRecipient(withID: userHexEncodedPublicKey)
-        let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: userHexEncodedPublicKey)
+        let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
+        let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: getUserHexEncodedPublicKey())
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
             OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: profilePicture, success: {
                 DispatchQueue.main.async {
@@ -372,7 +360,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func copyPublicKey() {
-        UIPasteboard.general.string = userHexEncodedPublicKey
+        UIPasteboard.general.string = getUserHexEncodedPublicKey()
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.copyButton.setTitle("Copied", for: UIControl.State.normal)
@@ -381,7 +369,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func sharePublicKey() {
-        let shareVC = UIActivityViewController(activityItems: [ userHexEncodedPublicKey ], applicationActivities: nil)
+        let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
@@ -394,14 +382,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let notificationSettingsVC = NotificationSettingsViewController()
         navigationController!.pushViewController(notificationSettingsVC, animated: true)
     }
-    
-    @objc private func showLinkedDevices() {
-        let deviceLinksVC = DeviceLinksVC()
-        navigationController!.pushViewController(deviceLinksVC, animated: true)
-    }
 
     @objc private func sendInvitation() {
-        let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(userHexEncodedPublicKey)!"
+        let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey())!"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
         navigationController!.present(shareVC, animated: true, completion: nil)
     }

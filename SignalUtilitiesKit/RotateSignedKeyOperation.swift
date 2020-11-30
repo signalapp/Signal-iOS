@@ -11,14 +11,6 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         return TSAccountManager.sharedInstance()
     }
 
-    private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
-    }
-
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     public override func run() {
         Logger.debug("")
 
@@ -27,53 +19,20 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
         
-        // Loki: Doing this on the global queue to match Signal
         DispatchQueue.global().async {
-            SessionManagementProtocol.rotateSignedPreKey()
-            self.reportSuccess()
-        }
-
-        /* Loki: Original code
-         * ================
-        let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
-
-        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-        firstly {
-            return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
-        }.done(on: DispatchQueue.global()) {
-            Logger.info("Successfully uploaded signed PreKey")
+            let storage = OWSPrimaryStorage.shared()
+            let signedPreKeyRecord = storage.generateRandomSignedRecord()
             signedPreKeyRecord.markAsAcceptedByService()
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-            self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-
+            storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
-
-            Logger.debug("done")
+            SNLog("Signed pre key rotated successfully.")
             self.reportSuccess()
-        }.catch { error in
-            self.reportError(error)
-        }.retainUntilComplete()
-         * ================
-         */
+        }
     }
 
     override public func didFail(error: Error) {
-        switch error {
-        case let networkManagerError as NetworkManagerError:
-            guard !networkManagerError.isNetworkError else {
-                Logger.debug("don't report SPK rotation failure w/ network error")
-                return
-            }
-
-            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
-                Logger.debug("don't report SPK rotation failure w/ non application error")
-                return
-            }
-
-            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
-        default:
-            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
-        }
+        Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
     }
 }

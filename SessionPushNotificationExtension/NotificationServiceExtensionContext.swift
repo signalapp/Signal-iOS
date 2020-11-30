@@ -17,7 +17,7 @@ final class NotificationServiceExtensionContext : NSObject, AppContext {
 
     lazy var buildTime: Date = {
         guard let buildTimestamp = Bundle.main.object(forInfoDictionaryKey: "BuildTimestamp") as? TimeInterval, buildTimestamp > 0 else {
-            print("[Loki] No build timestamp; assuming app never expires.")
+            SNLog("No build timestamp; assuming app never expires.")
             return .distantFuture
         }
         return .init(timeIntervalSince1970: buildTimestamp)

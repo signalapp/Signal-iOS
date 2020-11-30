@@ -6,12 +6,12 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/PhoneNumber.h>
-#import <SignalUtilitiesKit/TSGroupModel.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
-#import <SignalUtilitiesKit/TSThread.h>
+
+#import <SessionMessagingKit/TSGroupModel.h>
+#import <SessionMessagingKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,14 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          message:nil
                                                                   preferredStyle:UIAlertControllerStyleActionSheet];
     [actionSheet addAction:[OWSAlerts cancelAction]];
-
-//    UIAlertAction *takePictureAction = [UIAlertAction
-//        actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
-//                  style:UIAlertActionStyleDefault
-//                handler:^(UIAlertAction *_Nonnull action) {
-//                    [self takePicture];
-//                }];
-//    [actionSheet addAction:takePictureAction];
 
     UIAlertAction *choosePictureAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")

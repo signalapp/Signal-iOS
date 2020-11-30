@@ -34,7 +34,7 @@ final class OptionView : UIView {
         // Set up shadow
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        layer.shadowOpacity = isLightMode ? 0.4 : 1
+        layer.shadowOpacity = isLightMode ? 0.16 : 1
         layer.shadowRadius = isLightMode ? 4 : 6
         // Set up title label
         let titleLabel = UILabel()

@@ -19,10 +19,6 @@ public class AccountManager: NSObject {
         return OWSProfileManager.shared()
     }
 
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
     private var preferences: OWSPreferences {
         return Environment.shared.preferences
     }
@@ -118,29 +114,5 @@ public class AccountManager: NSObject {
     func enableManualMessageFetching() -> Promise<Void> {
         let anyPromise = tsAccountManager.setIsManualMessageFetchEnabled(true)
         return Promise(anyPromise).asVoid()
-    }
-
-    // MARK: Turn Server
-
-    func getTurnServerInfo() -> Promise<TurnServerInfo> {
-        return Promise { resolver in
-            self.networkManager.makeRequest(OWSRequestFactory.turnServerInfoRequest(),
-                                            success: { (_: URLSessionDataTask, responseObject: Any?) in
-                                                guard responseObject != nil else {
-                                                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                                                }
-
-                                                if let responseDictionary = responseObject as? [String: AnyObject] {
-                                                    if let turnServerInfo = TurnServerInfo(attributes: responseDictionary) {
-                                                        return resolver.fulfill(turnServerInfo)
-                                                    }
-                                                    Logger.error("unexpected server response:\(responseDictionary)")
-                                                }
-                                                return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-            },
-                                            failure: { (_: URLSessionDataTask, error: Error) in
-                                                    return resolver.reject(error)
-            })
-        }
     }
 }

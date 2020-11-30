@@ -3,17 +3,24 @@
 @objc(SNMessage)
 public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var id: String?
-    public var threadID: String?
+    @objc public var threadID: String?
     public var sentTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
     public var recipient: String?
+    public var sender: String?
+    public var groupPublicKey: String?
+    public var openGroupServerMessageID: UInt64?
 
     public class var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
 
     public override init() { }
 
     // MARK: Validation
-    public var isValid: Bool { true }
+    public var isValid: Bool {
+        if let sentTimestamp = sentTimestamp { guard sentTimestamp > 0 else { return false } }
+        if let receivedTimestamp = receivedTimestamp { guard receivedTimestamp > 0 else { return false } }
+        return sender != nil && recipient != nil
+    }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {
@@ -39,5 +46,10 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
 
     public func toProto() -> SNProtoContent? {
         preconditionFailure("toProto() is abstract and must be overridden.")
+    }
+    
+    // MARK: General
+    @objc public func setSentTimestamp(_ sentTimestamp: UInt64) {
+        self.sentTimestamp = sentTimestamp
     }
 }

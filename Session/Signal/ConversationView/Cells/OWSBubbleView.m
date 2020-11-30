@@ -4,7 +4,7 @@
 
 #import "OWSBubbleView.h"
 #import "MainAppContext.h"
-#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
 #import "Session-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN

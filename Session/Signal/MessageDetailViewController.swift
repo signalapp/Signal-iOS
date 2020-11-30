@@ -18,7 +18,7 @@ protocol MessageDetailViewDelegate: AnyObject {
 }
 
 @objc
-class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate, ContactShareViewHelperDelegate {
+class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate {
 
     @objc
     weak var delegate: MessageDetailViewDelegate?
@@ -52,16 +52,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     var conversationStyle: ConversationStyle
 
-    private var contactShareViewHelper: ContactShareViewHelper!
-
     // MARK: Dependencies
 
     var preferences: OWSPreferences {
         return Environment.shared.preferences
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
     }
 
     // MARK: Initializers
@@ -86,8 +80,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
-        contactShareViewHelper.delegate = self
 
         do {
             try updateMessageToLatest()
@@ -554,8 +546,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     private func string(for messageReceiptStatus: MessageReceiptStatus) -> String {
         switch messageReceiptStatus {
-        case .calculatingPoW:
-            return NSLocalizedString("Calculating proof of work", comment: "")
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")
@@ -612,27 +602,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         mediaGallery.addDataSourceDelegate(self)
         mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
-    }
-
-    func didTapContactShare(_ viewItem: ConversationViewItem) {
-        guard let contactShare = viewItem.contactShare else {
-            owsFailDebug("missing contact.")
-            return
-        }
-        let contactViewController = ContactViewController(contactShare: contactShare)
-        self.navigationController?.pushViewController(contactViewController, animated: true)
-    }
-
-    func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.sendMessage(contactShare: contactShare, fromViewController: self)
-    }
-
-    func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.showInviteContact(contactShare: contactShare, fromViewController: self)
-    }
-
-    func didTapShowAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
     }
 
     var audioAttachmentPlayer: OWSAudioPlayer?

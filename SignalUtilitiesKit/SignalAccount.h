@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalUtilitiesKit/TSYapDatabaseObject.h>
+#import <SessionUtilitiesKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 // For contacts with more than one signal account,
 // this is a label for the account.
 @property (nonatomic) NSString *multipleAccountLabelText;
-
-- (nullable NSString *)contactFullName;
 
 - (instancetype)init NS_UNAVAILABLE;
 

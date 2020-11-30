@@ -209,7 +209,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         guard !name.isEmpty else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
         }
-        guard name.count < ClosedGroupsProtocol.maxNameSize else {
+        guard name.count < 64 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
         isEditingGroupName = false
@@ -253,7 +253,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         }
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.writeSync { [weak self] transaction in
-                ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
+                MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
                     guard let self = self else { return }
                     self.dismiss(animated: true, completion: nil) // Dismiss the loader
                     popToConversationVC(self)

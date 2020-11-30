@@ -96,8 +96,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         // Set up seed reminder view if needed
         let userDefaults = UserDefaults.standard
         let hasViewedSeed = userDefaults[.hasViewedSeed]
-        let isMasterDevice = userDefaults.isMasterDevice
-        if !hasViewedSeed && isMasterDevice {
+        if !hasViewedSeed {
             view.addSubview(seedReminderView)
             seedReminderView.pin(.leading, to: .leading, of: view)
             seedReminderView.pin(.top, to: .top, of: view)
@@ -108,7 +107,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        if !hasViewedSeed && isMasterDevice {
+        if !hasViewedSeed {
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
         } else {
             tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
@@ -283,13 +282,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.size = profilePictureSize
-        let userHexEncodedPublicKey: String
-        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
-            userHexEncodedPublicKey = masterHexEncodedPublicKey
-        } else {
-            userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        }
-        profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
+        profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)
@@ -372,30 +365,28 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         guard let thread = self.thread(at: indexPath.row) else { return [] }
-        var publicChat: OpenGroup?
-        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            publicChat = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)
-        }
+        let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-                Storage.writeSync { transaction in
-                    if let publicChat = publicChat {
+                Storage.write { transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
+                    if let openGroup = openGroup {
                         var messageIDs: Set<String> = []
                         thread.enumerateInteractions(with: transaction) { interaction, _ in
                             messageIDs.insert(interaction.uniqueId!)
                         }
                         OWSPrimaryStorage.shared().updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, in: transaction)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastMessageServerIDCollection)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastDeletionServerIDCollection)
-                        let _ = OpenGroupAPI.leave(publicChat.channel, on: publicChat.server)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastMessageServerIDCollection)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastDeletionServerIDCollection)
+                        let _ = OpenGroupAPI.leave(openGroup.channel, on: openGroup.server)
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
                     } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                        let _ = ClosedGroupsProtocol.leave(groupPublicKey, using: transaction).ensure {
-                            Storage.writeSync { transaction in
+                        let _ = MessageSender.leave(groupPublicKey, using: transaction).ensure {
+                            Storage.write { transaction in
                                 thread.removeAllThreadInteractions(with: transaction)
                                 thread.remove(with: transaction)
                             }
@@ -413,10 +404,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         }
         delete.backgroundColor = Colors.destructive
         if thread is TSContactThread {
-            var publicKey: String!
-            Storage.read { transaction in
-                publicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: thread.contactIdentifier()!, in: transaction) ?? thread.contactIdentifier()!
-            }
+            let publicKey = thread.contactIdentifier()!
             let blockingManager = SSKEnvironment.shared.blockingManager
             let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
             let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in

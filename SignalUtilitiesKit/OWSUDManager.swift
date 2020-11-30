@@ -21,14 +21,6 @@ public enum OWSUDCertificateExpirationPolicy: Int {
     case permissive
 }
 
-@objc
-public enum UnidentifiedAccessMode: Int {
-    case unknown
-    case enabled
-    case disabled
-    case unrestricted
-}
-
 private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> String {
     switch mode {
     case .unknown:
@@ -40,69 +32,6 @@ private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> S
     case .unrestricted:
         return "unrestricted"
     }
-}
-
-@objc
-public class OWSUDAccess: NSObject {
-    @objc
-    public let udAccessKey: SMKUDAccessKey
-
-    @objc
-    public let udAccessMode: UnidentifiedAccessMode
-
-    @objc
-    public let isRandomKey: Bool
-
-    @objc
-    public required init(udAccessKey: SMKUDAccessKey,
-                         udAccessMode: UnidentifiedAccessMode,
-                         isRandomKey: Bool) {
-        self.udAccessKey = udAccessKey
-        self.udAccessMode = udAccessMode
-        self.isRandomKey = isRandomKey
-    }
-}
-
-@objc public protocol OWSUDManager: class {
-
-    @objc func setup()
-
-    @objc func trustRoot() -> ECPublicKey
-
-    @objc func isUDVerboseLoggingEnabled() -> Bool
-
-    // MARK: - Recipient State
-
-    @objc
-    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
-
-    @objc
-    func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier) -> UnidentifiedAccessMode
-
-    @objc
-    func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey?
-
-    @objc
-    func udAccess(forRecipientId recipientId: RecipientIdentifier,
-                  requireSyncAccess: Bool) -> OWSUDAccess?
-
-    // MARK: Sender Certificate
-
-    // We use completion handlers instead of a promise so that message sending
-    // logic can access the strongly typed certificate data.
-    @objc
-    func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
-                                 failure:@escaping (Error) -> Void)
-
-    // MARK: Unrestricted Access
-
-    @objc
-    func shouldAllowUnrestrictedAccessLocal() -> Bool
-    @objc
-    func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
-    
-    @objc
-    func getSenderCertificate() -> SMKSenderCertificate?
 }
 
 // MARK: -
@@ -203,7 +132,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return SMKUDAccessKey(randomKeyData: ())
     }
 
-    private func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier,
+    private func unidentifiedAccessMode(forRecipientId recipientId: String,
                                         isLocalNumber: Bool,
                                         transaction: YapDatabaseReadTransaction) -> UnidentifiedAccessMode {
         let defaultValue: UnidentifiedAccessMode =  isLocalNumber ? .enabled : .unknown
@@ -218,7 +147,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
+    public func unidentifiedAccessMode(forRecipientId recipientId: String) -> UnidentifiedAccessMode {
         var isLocalNumber = false
         if let localNumber = tsAccountManager.localNumber() {
             isLocalNumber = recipientId == localNumber
@@ -255,7 +184,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     @objc
-    public func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+    public func udAccessKey(forRecipientId recipientId: String) -> SMKUDAccessKey? {
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil
@@ -271,7 +200,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key for sending to a given recipient.
     @objc
-    public func udAccess(forRecipientId recipientId: RecipientIdentifier,
+    public func udAccess(forRecipientId recipientId: String,
                          requireSyncAccess: Bool) -> OWSUDAccess? {
         if requireSyncAccess {
             guard let localNumber = tsAccountManager.localNumber() else {
@@ -427,7 +356,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return Promise<(certificateData: Data, certificate: SMKSenderCertificate)> { seal in
             // Loki: Generate a sender certificate locally
             let sender = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender)
+            let certificate = SMKSenderCertificate(senderDeviceId: 1, senderRecipientId: sender)
             let certificateAsData = try certificate.serialized()
             guard isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate.")
@@ -440,28 +369,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public func getSenderCertificate() -> SMKSenderCertificate? {
         do {
             let sender = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender)
+            let certificate = SMKSenderCertificate(senderDeviceId: 1, senderRecipientId: sender)
             guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
             return certificate
         } catch {
-            print("[Loki] Couldn't get UD sender certificate due to error: \(error).")
+            SNLog("Couldn't get UD sender certificate due to error: \(error).")
             return nil
-        }
-    }
-
-    private func requestSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
-        return firstly {
-            SignalServiceRestClient().requestUDSenderCertificate()
-        }.map { certificateData -> (certificateData: Data, certificate: SMKSenderCertificate) in
-            let certificate = try SMKSenderCertificate.parse(data: certificateData)
-
-            guard self.isValidCertificate(certificate) else {
-                throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
-            }
-
-            return (certificateData: certificateData, certificate: certificate)
         }
     }
 

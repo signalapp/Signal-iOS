@@ -3,8 +3,6 @@
 //
 
 #import "OWSContactsOutputStream.h"
-#import "Contact.h"
-#import "ContactsManagerProtocol.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSBlockingManager.h"
@@ -30,13 +28,13 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssertDebug(signalAccount);
     OWSAssertDebug(contactsManager);
 
-    SSKProtoContactDetailsBuilder *contactBuilder =
-        [SSKProtoContactDetails builderWithNumber:signalAccount.recipientId];
+    SNProtoContactDetailsBuilder *contactBuilder =
+        [SNProtoContactDetails builderWithNumber:signalAccount.recipientId];
     [contactBuilder setName:[LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:signalAccount.recipientId] ?: signalAccount.recipientId];
     [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {
-        SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithRecipientId(recipientIdentity.recipientId,
+        SNProtoVerified *_Nullable verified = BuildVerifiedProtoWithRecipientId(recipientIdentity.recipientId,
             [recipientIdentity.identityKey prependKeyType],
             recipientIdentity.verificationState,
             0);
@@ -46,27 +44,6 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         }
         contactBuilder.verified = verified;
     }
-
-    /*
-    UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
-    NSData *_Nullable avatarPng;
-    if (rawAvatar) {
-        avatarPng = UIImagePNGRepresentation(rawAvatar);
-        if (avatarPng) {
-            SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
-            [avatarBuilder setContentType:OWSMimeTypeImagePng];
-            [avatarBuilder setLength:(uint32_t)avatarPng.length];
-
-            NSError *error;
-            SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
-            if (error || !avatar) {
-                OWSLogError(@"could not build protobuf: %@", error);
-                return;
-            }
-            [contactBuilder setAvatar:avatar];
-        }
-    }
-     */
 
     if (profileKeyData) {
         OWSAssertDebug(profileKeyData.length == kAES256_KeyByteLength);
@@ -96,12 +73,6 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     uint32_t contactDataLength = (uint32_t)contactData.length;
     [self writeUInt32:contactDataLength];
     [self writeData:contactData];
-
-    /*
-    if (avatarPng) {
-        [self writeData:avatarPng];
-    }
-     */
 }
 
 @end

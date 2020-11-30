@@ -6,9 +6,6 @@ public struct Configuration {
     public let identityKeyStore: IdentityKeyStore
     public let sessionRestorationImplementation: SessionRestorationProtocol
     public let certificateValidator: SMKCertificateValidator
-    public let openGroupAPIDelegate: OpenGroupAPIDelegate
-    public let pnServerURL: String
-    public let pnServerPublicKey: String
 
     internal static var shared: Configuration!
 }
@@ -20,20 +17,14 @@ public enum SNMessagingKit { // Just to make the external API nice
         signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore,
         identityKeyStore: IdentityKeyStore,
         sessionRestorationImplementation: SessionRestorationProtocol,
-        certificateValidator: SMKCertificateValidator,
-        openGroupAPIDelegate: OpenGroupAPIDelegate,
-        pnServerURL: String,
-        pnServerPublicKey: String
+        certificateValidator: SMKCertificateValidator
     ) {
         Configuration.shared = Configuration(
             storage: storage,
             signalStorage: signalStorage,
             identityKeyStore: identityKeyStore,
             sessionRestorationImplementation: sessionRestorationImplementation,
-            certificateValidator: certificateValidator,
-            openGroupAPIDelegate: openGroupAPIDelegate,
-            pnServerURL: pnServerURL,
-            pnServerPublicKey: pnServerPublicKey
+            certificateValidator: certificateValidator
         )
     }
 }

@@ -65,9 +65,9 @@ final class VoiceMessageView : UIView {
         setUpViewHierarchy()
         if voiceMessage.isDownloaded {
             guard let url = (voiceMessage as? TSAttachmentStream)?.originalMediaURL else {
-                return print("[Loki] Couldn't get URL for voice message.")
+                return SNLog("Couldn't get URL for voice message.")
             }
-            if let cachedVolumeSamples = Storage.getVolumeSamples(for: voiceMessage.uniqueId!), cachedVolumeSamples.count == targetSampleCount {
+            if let cachedVolumeSamples = Storage.shared.getVolumeSamples(for: voiceMessage.uniqueId!), cachedVolumeSamples.count == targetSampleCount {
                 self.hideLoader()
                 self.volumeSamples = cachedVolumeSamples
             } else {
@@ -78,10 +78,10 @@ final class VoiceMessageView : UIView {
                     self.isForcedAnimation = true
                     self.volumeSamples = volumeSamples
                     Storage.write { transaction in
-                        Storage.setVolumeSamples(for: voiceMessageID, to: volumeSamples, using: transaction)
+                        Storage.shared.setVolumeSamples(for: voiceMessageID, to: volumeSamples, using: transaction)
                     }
                 }.catch(on: DispatchQueue.main) { error in
-                    print("[Loki] Couldn't sample audio file due to error: \(error).")
+                    SNLog("Couldn't sample audio file due to error: \(error).")
                 }
             }
         } else {

@@ -5,11 +5,11 @@
 #import "AboutTableViewController.h"
 #import "Session-Swift.h"
 #import "UIView+OWS.h"
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SessionMessagingKit/Environment.h>
+#import <SessionMessagingKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSDatabaseView.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/TSDatabaseView.h>
 
 @implementation AboutTableViewController
 

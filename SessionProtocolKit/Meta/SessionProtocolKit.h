@@ -7,6 +7,7 @@ FOUNDATION_EXPORT const unsigned char SessionProtocolKitVersionString[];
 #import <SessionProtocolKit/AxolotlExceptions.h>
 #import <SessionProtocolKit/ClosedGroupCiphertextMessage.h>
 #import <SessionProtocolKit/FallbackMessage.h>
+#import <SessionProtocolKit/IdentityKeyStore.h>
 #import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <SessionProtocolKit/NSData+messagePadding.h>
 #import <SessionProtocolKit/PreKeyBundle.h>

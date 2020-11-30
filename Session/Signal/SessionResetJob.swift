@@ -7,7 +7,7 @@ import PromiseKit
 import SignalUtilitiesKit
 
 @objc(OWSSessionResetJobQueue)
-public class SessionResetJobQueue: NSObject, JobQueue {
+public class SessionResetJobQueue: NSObject, SignalUtilitiesKit.JobQueue {
 
     @objc(addContactThread:transaction:)
     public func add(contactThread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {
@@ -97,10 +97,6 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         return SSKEnvironment.shared.primaryStorage
     }
 
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
     // MARK: 
 
     var firstAttempt = true
@@ -108,19 +104,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
-        /* Loki: Original code
-         * We don't want to delete the session. Ref: SignalServiceKit/Loki/Docs/SessionReset.md
-         * ================
-        if firstAttempt {
-            Storage.writeSync { transaction in
-                Logger.info("deleting sessions for recipient: \(self.recipientId)")
-                self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
-            }
-            firstAttempt = false
-        }
-         * ================
-         */
-
+        /*
         let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
 
         firstly {
@@ -147,7 +131,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                     message.save(with: transaction)
                     
                     // Loki: We have initiated a session reset
-                    print("[Loki] Session reset initiated.")
+                    SNLog("Session reset initiated.")
                     self.contactThread.sessionResetStatus = .initiated
                     self.contactThread.save(with: transaction)
                 }
@@ -157,6 +141,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             Logger.error("sending error: \(error.localizedDescription)")
             self.reportError(error)
         }.retainUntilComplete()
+         */
     }
 
     override public func didSucceed() {

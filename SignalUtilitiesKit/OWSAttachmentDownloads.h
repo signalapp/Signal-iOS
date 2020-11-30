@@ -10,7 +10,7 @@ extern NSString *const kAttachmentDownloadProgressNotification;
 extern NSString *const kAttachmentDownloadProgressKey;
 extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
-@class SSKProtoAttachmentPointer;
+@class SNProtoAttachmentPointer;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;

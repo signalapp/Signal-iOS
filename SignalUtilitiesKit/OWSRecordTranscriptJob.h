@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSIncomingSentMessageTranscript;
-@class SSKProtoSyncMessageSentUpdate;
+@class SNProtoSyncMessageSentUpdate;
 @class TSAttachmentStream;
 @class YapDatabaseReadWriteTransaction;
 

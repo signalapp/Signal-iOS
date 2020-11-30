@@ -82,7 +82,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
-            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
             SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
             },
             migrationCompletion: { [weak self] in
@@ -206,8 +205,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
 
                 // We don't need to use the TSSocketManager in the SAE.
-
-                Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // We don't need to fetch messages in the SAE.
 
@@ -793,22 +790,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             if let data = value as? Data {
                 let customFileName = "Contact.vcf"
-                var isConvertibleToContactShare = false
-
-                // Although we don't support contacts _yet_, when we do we'll want to make
-                // sure they are shared with a reasonable filename.
-                if ShareViewController.itemMatchesSpecificUtiType(itemProvider: itemProvider,
-                                                                  utiType: kUTTypeVCard as String) {
-
-                    if Contact(vCardData: data) != nil {
-                        isConvertibleToContactShare = true
-                    } else {
-                        Logger.error("could not parse vcard.")
-                        let writeError = ShareViewControllerError.assertionError(description: "Could not parse vcard data.")
-                        resolver.reject(writeError)
-                        return
-                    }
-                }
 
                 let customFileExtension = MIMETypeUtil.fileExtension(forUTIType: srcUtiType)
                 guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: customFileExtension) else {
@@ -821,7 +802,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                             itemUrl: fileUrl,
                                             utiType: srcUtiType,
                                             customFileName: customFileName,
-                                            isConvertibleToContactShare: isConvertibleToContactShare))
+                                            isConvertibleToContactShare: false))
             } else if let string = value as? String {
                 Logger.debug("string provider: \(string)")
                 guard let data = string.filterStringForDisplay().data(using: String.Encoding.utf8) else {
@@ -954,7 +935,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return promise
         }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .original)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
         if loadedItem.isConvertibleToContactShare {
             Logger.info("isConvertibleToContactShare")
             attachment.isConvertibleToContactShare = true

@@ -9,6 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 #ifndef TextSecureKit_Constants_h
 #define TextSecureKit_Constants_h
 
+extern const NSUInteger kOversizeTextMessageSizeThreshold;
+
 typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSUnknownMessageType = 0,
     TSEncryptedWhisperMessageType = 1,
@@ -17,7 +19,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSUnencryptedWhisperMessageType = 4,
     TSUnidentifiedSenderMessageType = 6,
     TSClosedGroupCiphertextMessageType = 7,
-    TSFallbackMessageType = 101 // Loki: Encrypted using the fallback session cipher. Contains a pre key bundle if it's a session request.
+    TSFallbackMessageType = 101
 };
 
 #pragma mark Server Address

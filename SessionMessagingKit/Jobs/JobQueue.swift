@@ -2,13 +2,40 @@ import SessionUtilitiesKit
 
 @objc(SNJobQueue)
 public final class JobQueue : NSObject, JobDelegate {
+    private var hasResumedPendingJobs = false // Just for debugging
 
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        addWithoutExecuting(job, using: transaction)
+        transaction.addCompletionQueue(Threading.jobQueue) {
+            job.execute()
+        }
+    }
+
+    @objc public func addWithoutExecuting(_ job: Job, using transaction: Any) {
+        job.id = String(NSDate.millisecondTimestamp())
         Configuration.shared.storage.persist(job, using: transaction)
         job.delegate = self
-        job.execute()
+    }
+
+    @objc public func resumePendingJobs() {
+        if hasResumedPendingJobs {
+            #if DEBUG
+            preconditionFailure("resumePendingJobs() should only be called once.")
+            #endif
+        }
+        hasResumedPendingJobs = true
+        let allJobTypes: [Job.Type] = [ AttachmentDownloadJob.self, AttachmentUploadJob.self, MessageReceiveJob.self, MessageSendJob.self, NotifyPNServerJob.self ]
+        allJobTypes.forEach { type in
+            let allPendingJobs = Configuration.shared.storage.getAllPendingJobs(of: type)
+            allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { job in // Retry the oldest jobs first
+                SNLog("Resuming pending job of type: \(type).")
+                job.delegate = self
+                job.execute()
+            }
+        }
     }
 
     public func handleJobSucceeded(_ job: Job) {
@@ -22,6 +49,7 @@ public final class JobQueue : NSObject, JobDelegate {
     public func handleJobFailed(_ job: Job, with error: Error) {
         job.failureCount += 1
         let storage = Configuration.shared.storage
+        guard !storage.isJobCanceled(job) else { return SNLog("\(type(of: job)) canceled.") }
         storage.withAsync({ transaction in
             storage.persist(job, using: transaction)
         }, completion: { // Intentionally capture self
@@ -33,8 +61,23 @@ public final class JobQueue : NSObject, JobDelegate {
                 })
             } else {
                 let retryInterval = self.getRetryInterval(for: job)
-                Timer.weakScheduledTimer(withTimeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
+                SNLog("\(type(of: job)) failed; scheduling retry (failure count is \(job.failureCount)).")
+                Timer.scheduledTimer(timeInterval: retryInterval, target: self, selector: #selector(self.retry(_:)), userInfo: job, repeats: false)
             }
+        })
+    }
+
+    public func handleJobFailedPermanently(_ job: Job, with error: Error) {
+        job.failureCount += 1
+        let storage = Configuration.shared.storage
+        storage.withAsync({ transaction in
+            storage.persist(job, using: transaction)
+        }, completion: { // Intentionally capture self
+            storage.withAsync({ transaction in
+                storage.markJobAsFailed(job, using: transaction)
+            }, completion: {
+                // Do nothing
+            })
         })
     }
 
@@ -51,8 +94,9 @@ public final class JobQueue : NSObject, JobDelegate {
         return 0.1 * min(maxBackoff, pow(backoffFactor, Double(job.failureCount)))
     }
 
-    @objc private func retry(_ job: Any) {
-        guard let job = job as? Job else { return }
+    @objc private func retry(_ timer: Timer) {
+        guard let job = timer.userInfo as? Job else { return }
+        SNLog("Retrying \(type(of: job)).")
         job.execute()
     }
 }

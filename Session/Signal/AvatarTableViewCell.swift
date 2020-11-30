@@ -9,7 +9,7 @@ public class AvatarTableViewCell: UITableViewCell {
 
     private let columns: UIStackView
     private let textRows: UIStackView
-    private let avatarView: AvatarImageView
+//    private let avatarView: AvatarImageView
 
     private let _textLabel: UILabel
     override public var textLabel: UILabel? {
@@ -27,8 +27,8 @@ public class AvatarTableViewCell: UITableViewCell {
 
     @objc
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.avatarView =  AvatarImageView()
-        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(kStandardAvatarSize), height: CGFloat(kStandardAvatarSize)))
+//        self.avatarView =  AvatarImageView()
+//        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(kStandardAvatarSize), height: CGFloat(kStandardAvatarSize)))
 
         self._textLabel = UILabel()
         self._detailTextLabel = UILabel()
@@ -36,7 +36,7 @@ public class AvatarTableViewCell: UITableViewCell {
         self.textRows = UIStackView(arrangedSubviews: [_textLabel, _detailTextLabel])
         textRows.axis = .vertical
 
-        self.columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        self.columns = UIStackView(arrangedSubviews: [ textRows ])
         columns.axis = .horizontal
         columns.spacing = CGFloat(kContactCellAvatarTextMargin)
 
@@ -54,7 +54,7 @@ public class AvatarTableViewCell: UITableViewCell {
 
     @objc
     public func configure(image: UIImage?, text: String?, detailText: String?) {
-        self.avatarView.image = image
+//        self.avatarView.image = image
         self.textLabel?.text = text
         self.detailTextLabel?.text = detailText
 
@@ -65,7 +65,7 @@ public class AvatarTableViewCell: UITableViewCell {
     public override func prepareForReuse() {
         super.prepareForReuse()
 
-        self.avatarView.image = nil
+//        self.avatarView.image = nil
         self.textLabel?.text = nil
         self.detailTextLabel?.text = nil
     }

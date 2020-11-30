@@ -6,13 +6,12 @@
 #import "AppDelegate.h"
 #import "ConversationViewController.h"
 #import "Session-Swift.h"
-#import "SignalsNavigationController.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSContactThread.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SessionMessagingKit/Environment.h>
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/TSContactThread.h>
+#import <SessionMessagingKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -178,8 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showHomeView
 {
     HomeVC *homeView = [HomeVC new];
-    SignalsNavigationController *navigationController =
-        [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:homeView];
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navigationController;
     OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeVC class]]);

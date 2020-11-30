@@ -51,52 +51,23 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
     }
 }
 
-@objc
-public class ContactSearchResult: NSObject, Comparable {
-    public let signalAccount: SignalAccount
-    public let contactsManager: ContactsManagerProtocol
-
-    public var recipientId: String {
-        return signalAccount.recipientId
-    }
-
-    init(signalAccount: SignalAccount, contactsManager: ContactsManagerProtocol) {
-        self.signalAccount = signalAccount
-        self.contactsManager = contactsManager
-    }
-
-    // MARK: Comparable
-
-    public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.contactsManager.compare(signalAccount: lhs.signalAccount, with: rhs.signalAccount) == .orderedAscending
-    }
-
-    // MARK: Equatable
-
-    public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.recipientId == rhs.recipientId
-    }
-}
-
 public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
     public let conversations: [ConversationSearchResult<ConversationSortKey>]
-    public let contacts: [ContactSearchResult]
     public let messages: [ConversationSearchResult<MessageSortKey>]
 
-    public init(searchText: String, conversations: [ConversationSearchResult<ConversationSortKey>], contacts: [ContactSearchResult], messages: [ConversationSearchResult<MessageSortKey>]) {
+    public init(searchText: String, conversations: [ConversationSearchResult<ConversationSortKey>], messages: [ConversationSearchResult<MessageSortKey>]) {
         self.searchText = searchText
         self.conversations = conversations
-        self.contacts = contacts
         self.messages = messages
     }
 
     public class var empty: HomeScreenSearchResultSet {
-        return HomeScreenSearchResultSet(searchText: "", conversations: [], contacts: [], messages: [])
+        return HomeScreenSearchResultSet(searchText: "", conversations: [], messages: [])
     }
 
     public var isEmpty: Bool {
-        return conversations.isEmpty && contacts.isEmpty && messages.isEmpty
+        return conversations.isEmpty && messages.isEmpty
     }
 }
 
@@ -138,26 +109,17 @@ public class ComposeScreenSearchResultSet: NSObject {
         return groups.compactMap { $0.thread.threadRecord as? TSGroupThread }
     }
 
-    @objc
-    public let signalContacts: [ContactSearchResult]
-
-    @objc
-    public var signalAccounts: [SignalAccount] {
-        return signalContacts.map { $0.signalAccount }
-    }
-
-    public init(searchText: String, groups: [GroupSearchResult], signalContacts: [ContactSearchResult]) {
+    public init(searchText: String, groups: [GroupSearchResult]) {
         self.searchText = searchText
         self.groups = groups
-        self.signalContacts = signalContacts
     }
 
     @objc
-    public static let empty = ComposeScreenSearchResultSet(searchText: "", groups: [], signalContacts: [])
+    public static let empty = ComposeScreenSearchResultSet(searchText: "", groups: [])
 
     @objc
     public var isEmpty: Bool {
-        return groups.isEmpty && signalContacts.isEmpty
+        return groups.isEmpty
     }
 }
 
@@ -233,18 +195,13 @@ public class FullTextSearcher: NSObject {
 
     @objc
     public func searchForComposeScreen(searchText: String,
-                                       transaction: YapDatabaseReadTransaction,
-                                       contactsManager: ContactsManagerProtocol) -> ComposeScreenSearchResultSet {
+                                       transaction: YapDatabaseReadTransaction) -> ComposeScreenSearchResultSet {
 
-        var signalContacts: [ContactSearchResult] = []
         var groups: [GroupSearchResult] = []
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
 
             switch match {
-            case let signalAccount as SignalAccount:
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
-                signalContacts.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
                                                   lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
@@ -262,22 +219,17 @@ public class FullTextSearcher: NSObject {
             }
         }
 
-        // Order contact results by display name.
-        signalContacts.sort()
-
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
         groups.sort(by: >)
 
-        return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
+        return ComposeScreenSearchResultSet(searchText: searchText, groups: groups)
     }
 
     public func searchForHomeScreen(searchText: String,
-                                    transaction: YapDatabaseReadTransaction,
-                                    contactsManager: ContactsManagerProtocol) -> HomeScreenSearchResultSet {
+                                    transaction: YapDatabaseReadTransaction) -> HomeScreenSearchResultSet {
 
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
-        var contacts: [ContactSearchResult] = []
         var messages: [ConversationSearchResult<MessageSortKey>] = []
 
         var existingConversationRecipientIds: Set<String> = Set()
@@ -308,25 +260,17 @@ public class FullTextSearcher: NSObject {
                                                             snippet: snippet)
 
                 messages.append(searchResult)
-            } else if let signalAccount = match as? SignalAccount {
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
-                contacts.append(searchResult)
             } else {
                 owsFailDebug("unhandled item: \(match)")
             }
         }
 
-        // Only show contacts which were not included in an existing 1:1 conversation.
-        var otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
-
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
         conversations.sort(by: >)
         messages.sort(by: >)
-        // Order "other" contact results by display name.
-        otherContacts.sort()
 
-        return HomeScreenSearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
+        return HomeScreenSearchResultSet(searchText: searchText, conversations: conversations, messages: messages)
     }
 
     public func searchWithinConversation(thread: TSThread,
@@ -438,14 +382,9 @@ public class FullTextSearcher: NSObject {
         return result
     }
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     private func indexingString(recipientId: String) -> String {
-        let contactName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let profileName = contactsManager.profileName(forRecipientId: recipientId)
+        let profileName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true)
 
-        return "\(recipientId) \(contactName) \(profileName ?? "")"
+        return "\(recipientId) \(profileName ?? "")"
     }
 }

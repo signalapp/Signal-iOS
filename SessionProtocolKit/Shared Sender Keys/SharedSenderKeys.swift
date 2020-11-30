@@ -27,7 +27,7 @@ public enum SharedSenderKeys {
     }
 
     // MARK: Private/Internal API
-    internal static func generateRatchet(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) -> ClosedGroupRatchet {
+    public static func generateRatchet(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) -> ClosedGroupRatchet {
         let rootChainKey = Data.getSecureRandomData(ofSize: 32)!.toHexString()
         let ratchet = ClosedGroupRatchet(chainKey: rootChainKey, keyIndex: 0, messageKeys: [])
         Configuration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, in: .current, using: transaction)

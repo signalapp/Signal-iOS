@@ -5,18 +5,15 @@
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Session-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/NSTimer+OWS.h>
-#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
+#import <SessionMessagingKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1092,10 +1089,7 @@ const CGFloat kMaxTextViewHeight = 120;
 
 - (void)showMentionCandidateSelectionViewFor:(NSArray<LKMention *> *)mentionCandidates in:(TSThread *)thread
 {
-    __block SNOpenGroup *publicChat;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
-    }];
+    SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:thread.uniqueId];
     if (publicChat != nil) {
         self.mentionCandidateSelectionView.publicChatServer = publicChat.server;
         [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];
