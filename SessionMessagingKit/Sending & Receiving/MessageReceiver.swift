@@ -45,7 +45,7 @@ internal enum MessageReceiver {
 
     internal static func parse(_ data: Data, openGroupMessageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
         let userPublicKey = Configuration.shared.storage.getUserPublicKey()
-        let isOpenGroupMessage = (openGroupMessageServerID != 0)
+        let isOpenGroupMessage = (openGroupMessageServerID != nil)
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
         let storage = Configuration.shared.storage
