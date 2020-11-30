@@ -6,7 +6,6 @@ public final class OpenGroupPoller : NSObject {
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var pollForModeratorsTimer: Timer? = nil
-    private var pollForDisplayNamesTimer: Timer? = nil
     private var hasStarted = false
     private var isPolling = false
     
@@ -14,8 +13,7 @@ public final class OpenGroupPoller : NSObject {
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 60
     private let pollForModeratorsInterval: TimeInterval = 10 * 60
-    private let pollForDisplayNamesInterval: TimeInterval = 60
-    
+
     // MARK: Lifecycle
     @objc(initForOpenGroup:)
     public init(for openGroup: OpenGroup) {
@@ -30,12 +28,10 @@ public final class OpenGroupPoller : NSObject {
             strongSelf.pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForNewMessagesInterval, repeats: true) { _ in self?.pollForNewMessages() }
             strongSelf.pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForDeletedMessagesInterval, repeats: true) { _ in self?.pollForDeletedMessages() }
             strongSelf.pollForModeratorsTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForModeratorsInterval, repeats: true) { _ in self?.pollForModerators() }
-            strongSelf.pollForDisplayNamesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForDisplayNamesInterval, repeats: true) { _ in self?.pollForDisplayNames() }
             // Perform initial updates
             strongSelf.pollForNewMessages()
             strongSelf.pollForDeletedMessages()
             strongSelf.pollForModerators()
-            strongSelf.pollForDisplayNames()
             strongSelf.hasStarted = true
         }
     }
@@ -44,7 +40,6 @@ public final class OpenGroupPoller : NSObject {
         pollForNewMessagesTimer?.invalidate()
         pollForDeletedMessagesTimer?.invalidate()
         pollForModeratorsTimer?.invalidate()
-        pollForDisplayNamesTimer?.invalidate()
         hasStarted = false
     }
     
@@ -70,71 +65,77 @@ public final class OpenGroupPoller : NSObject {
                     let cutoffIndex = senderPublicKey.index(endIndex, offsetBy: -8)
                     return "\(rawDisplayName) (...\(senderPublicKey[cutoffIndex..<endIndex]))"
                 }
-                let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: openGroup.channel, on: openGroup.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
+                let senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: openGroup.channel, on: openGroup.server)
+                    ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
                 let id = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
-                let groupContext = SNProtoGroupContext.builder(id: id, type: .deliver)
-                groupContext.setName(openGroup.displayName)
-                let dataMessage = SNProtoDataMessage.builder()
+                // Main message
+                let dataMessageProto = SNProtoDataMessage.builder()
+                let body = (message.body == message.timestamp.description) ? "" : message.body // The back-end doesn't accept messages without a body so we use this as a workaround
+                dataMessageProto.setBody(body)
+                dataMessageProto.setTimestamp(message.timestamp)
+                // Attachments
                 let attachments: [SNProtoAttachmentPointer] = message.attachments.compactMap { attachment in
                     guard attachment.kind == .attachment else { return nil }
-                    let result = SNProtoAttachmentPointer.builder(id: attachment.serverID)
-                    result.setContentType(attachment.contentType)
-                    result.setSize(UInt32(attachment.size))
-                    result.setFileName(attachment.fileName)
-                    result.setFlags(UInt32(attachment.flags))
-                    result.setWidth(UInt32(attachment.width))
-                    result.setHeight(UInt32(attachment.height))
-                    if let caption = attachment.caption {
-                        result.setCaption(caption)
-                    }
-                    result.setUrl(attachment.url)
-                    return try! result.build()
+                    let attachmentProto = SNProtoAttachmentPointer.builder(id: attachment.serverID)
+                    attachmentProto.setContentType(attachment.contentType)
+                    attachmentProto.setSize(UInt32(attachment.size))
+                    attachmentProto.setFileName(attachment.fileName)
+                    attachmentProto.setFlags(UInt32(attachment.flags))
+                    attachmentProto.setWidth(UInt32(attachment.width))
+                    attachmentProto.setHeight(UInt32(attachment.height))
+                    if let caption = attachment.caption { attachmentProto.setCaption(caption) }
+                    attachmentProto.setUrl(attachment.url)
+                    return try! attachmentProto.build()
                 }
-                dataMessage.setAttachments(attachments)
+                dataMessageProto.setAttachments(attachments)
+                // Link preview
                 if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
-                    let signalLinkPreview = SNProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
-                    signalLinkPreview.setTitle(linkPreview.linkPreviewTitle!)
-                    let attachment = SNProtoAttachmentPointer.builder(id: linkPreview.serverID)
-                    attachment.setContentType(linkPreview.contentType)
-                    attachment.setSize(UInt32(linkPreview.size))
-                    attachment.setFileName(linkPreview.fileName)
-                    attachment.setFlags(UInt32(linkPreview.flags))
-                    attachment.setWidth(UInt32(linkPreview.width))
-                    attachment.setHeight(UInt32(linkPreview.height))
-                    if let caption = linkPreview.caption {
-                        attachment.setCaption(caption)
-                    }
-                    attachment.setUrl(linkPreview.url)
-                    signalLinkPreview.setImage(try! attachment.build())
-                    dataMessage.setPreview([ try! signalLinkPreview.build() ])
+                    let linkPreviewProto = SNProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)
+                    linkPreviewProto.setTitle(linkPreview.linkPreviewTitle!)
+                    let attachmentProto = SNProtoAttachmentPointer.builder(id: linkPreview.serverID)
+                    attachmentProto.setContentType(linkPreview.contentType)
+                    attachmentProto.setSize(UInt32(linkPreview.size))
+                    attachmentProto.setFileName(linkPreview.fileName)
+                    attachmentProto.setFlags(UInt32(linkPreview.flags))
+                    attachmentProto.setWidth(UInt32(linkPreview.width))
+                    attachmentProto.setHeight(UInt32(linkPreview.height))
+                    if let caption = linkPreview.caption { attachmentProto.setCaption(caption) }
+                    attachmentProto.setUrl(linkPreview.url)
+                    linkPreviewProto.setImage(try! attachmentProto.build())
+                    dataMessageProto.setPreview([ try! linkPreviewProto.build() ])
                 }
-                let profile = SNProtoDataMessageLokiProfile.builder()
-                profile.setDisplayName(message.displayName)
-                if let profilePicture = message.profilePicture {
-                    profile.setProfilePicture(profilePicture.url)
-                    dataMessage.setProfileKey(profilePicture.profileKey)
-                }
-                dataMessage.setProfile(try! profile.build())
-                dataMessage.setTimestamp(message.timestamp)
-                dataMessage.setGroup(try! groupContext.build())
+                // Quote
                 if let quote = message.quote {
-                    let signalQuote = SNProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
-                    if let quotedMessageBody = quote.quotedMessageBody { signalQuote.setText(quotedMessageBody) }
-                    dataMessage.setQuote(try! signalQuote.build())
+                    let quoteProto = SNProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
+                    if let quotedMessageBody = quote.quotedMessageBody { quoteProto.setText(quotedMessageBody) }
+                    dataMessageProto.setQuote(try! quoteProto.build())
                 }
-                let body = (message.body == message.timestamp.description) ? "" : message.body // Workaround for the fact that the back-end doesn't accept messages without a body
-                dataMessage.setBody(body)
+                // Profile
+                let profileProto = SNProtoDataMessageLokiProfile.builder()
+                profileProto.setDisplayName(message.displayName)
+                if let profilePicture = message.profilePicture {
+                    profileProto.setProfilePicture(profilePicture.url)
+                    dataMessageProto.setProfileKey(profilePicture.profileKey)
+                }
+                dataMessageProto.setProfile(try! profileProto.build())
+                // Open group info
                 if let messageServerID = message.serverID {
-                    let openGroupInfo = SNProtoPublicChatInfo.builder()
-                    openGroupInfo.setServerID(messageServerID)
-                    dataMessage.setPublicChatInfo(try! openGroupInfo.build())
+                    let openGroupProto = SNProtoPublicChatInfo.builder()
+                    openGroupProto.setServerID(messageServerID)
+                    dataMessageProto.setPublicChatInfo(try! openGroupProto.build())
                 }
+                // Signal group context
+                let groupProto = SNProtoGroupContext.builder(id: id, type: .deliver)
+                groupProto.setName(openGroup.displayName)
+                dataMessageProto.setGroup(try! groupProto.build())
+                // Content
                 let content = SNProtoContent.builder()
-                if !wasSentByCurrentUser {
-                    content.setDataMessage(try! dataMessage.build())
-                } else {
+                if !wasSentByCurrentUser { // Incoming message
+                    content.setDataMessage(try! dataMessageProto.build())
+                } else { // Outgoing message
+                    // FIXME: This needs to be updated as we removed sync message handling
                     let syncMessageSentBuilder = SNProtoSyncMessageSent.builder()
-                    syncMessageSentBuilder.setMessage(try! dataMessage.build())
+                    syncMessageSentBuilder.setMessage(try! dataMessageProto.build())
                     syncMessageSentBuilder.setDestination(userPublicKey)
                     syncMessageSentBuilder.setTimestamp(message.timestamp)
                     let syncMessageSent = try! syncMessageSentBuilder.build()
@@ -142,18 +143,17 @@ public final class OpenGroupPoller : NSObject {
                     syncMessageBuilder.setSent(syncMessageSent)
                     content.setSyncMessage(try! syncMessageBuilder.build())
                 }
+                // Envelope
                 let envelope = SNProtoEnvelope.builder(type: .unidentifiedSender, timestamp: message.timestamp)
                 envelope.setSource(senderPublicKey)
                 envelope.setSourceDevice(1)
                 envelope.setContent(try! content.build().serializedData())
                 envelope.setServerTimestamp(message.serverTimestamp)
                 Storage.write { transaction in
-                    transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: openGroup.id)
+                    Storage.shared.setOpenGroupDisplayName(to: senderDisplayName, for: senderPublicKey, inOpenGroupWithID: openGroup.id, using: transaction)
                     let messageServerID = message.serverID
                     let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: messageServerID, openGroupID: openGroup.id)
-                    Storage.write { transaction in
-                        SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
-                    }
+                    SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                 }
             }
         }
@@ -173,9 +173,5 @@ public final class OpenGroupPoller : NSObject {
     
     private func pollForModerators() {
         let _ = OpenGroupAPI.getModerators(for: openGroup.channel, on: openGroup.server)
-    }
-    
-    private func pollForDisplayNames() {
-        let _ = OpenGroupAPI.getDisplayNames(for: openGroup.channel, on: openGroup.server)
     }
 }
