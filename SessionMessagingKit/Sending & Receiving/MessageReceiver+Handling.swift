@@ -202,9 +202,7 @@ extension MessageReceiver {
         cancelTypingIndicatorsIfNeeded(for: message.sender!)
         // Notify the user if needed
         guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction), let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
-        Storage.read { transaction in
-            SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
-        }
+        SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
     }
 
     private static func handleClosedGroupUpdate(_ message: ClosedGroupUpdate, using transaction: Any) {

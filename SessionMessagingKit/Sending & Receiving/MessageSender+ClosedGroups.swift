@@ -1,103 +1,7 @@
-import SessionProtocolKit
 import PromiseKit
 
 extension MessageSender : SharedSenderKeysDelegate {
 
-    // MARK: - Sending Convenience
-    
-    private static func prep(_ attachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
-            #if DEBUG
-            preconditionFailure()
-            #endif
-            return
-        }
-        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
-        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
-        var streams: [TSAttachmentStream] = []
-        attachments.forEach {
-            let stream = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
-                caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
-            streams.append(stream)
-            stream.write($0.dataSource)
-            stream.save(with: transaction)
-        }
-        tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
-        var linkPreviewAttachmentID: String?
-        if let id = tsMessage.linkPreview?.imageAttachmentId,
-            let stream = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
-            linkPreviewAttachmentID = id
-            streams.append(stream)
-        }
-        message.attachmentIDs = streams.map { $0.uniqueId! }
-        tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
-        if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
-        tsMessage.save(with: transaction)
-    }
-    
-    @objc(send:withAttachments:inThread:usingTransaction:)
-    public static func send(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        prep(attachments, for: message, using: transaction)
-        send(message, in: thread, using: transaction)
-    }
-    
-    @objc(send:inThread:usingTransaction:)
-    public static func send(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        message.threadID = thread.uniqueId!
-        let destination = Message.Destination.from(thread)
-        let job = MessageSendJob(message: message, destination: destination)
-        JobQueue.shared.add(job, using: transaction)
-    }
-
-    @objc(sendNonDurably:withAttachments:inThread:usingTransaction:)
-    public static func objc_sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
-        return AnyPromise.from(sendNonDurably(message, with: attachments, in: thread, using: transaction))
-    }
-    
-    @objc(sendNonDurably:inThread:usingTransaction:)
-    public static func objc_sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
-        return AnyPromise.from(sendNonDurably(message, in: thread, using: transaction))
-    }
-    
-    public static func sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        prep(attachments, for: message, using: transaction)
-        return sendNonDurably(message, in: thread, using: transaction)
-    }
-
-    public static func sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        message.threadID = thread.uniqueId!
-        let destination = Message.Destination.from(thread)
-        return MessageSender.send(message, to: destination, using: transaction)
-    }
-    
-    
-    
-    // MARK: - Success & Failure Handling
-    
-    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
-        tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
-        var recipients = [ message.recipient! ]
-        if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
-            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction as! YapDatabaseReadTransaction), thread.usesSharedSenderKeys {
-            recipients = thread.groupModel.groupMemberIds
-        }
-        recipients.forEach { recipient in
-            tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
-        }
-        OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction as! YapDatabaseReadWriteTransaction)
-    }
-
-    public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.update(sendingError: error, transaction: transaction as! YapDatabaseReadWriteTransaction)
-    }
-
-    
-    
-    // MARK: - Closed Groups
-    
     public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
         var members = members
@@ -289,7 +193,7 @@ extension MessageSender : SharedSenderKeysDelegate {
         newMembers.remove(userPublicKey)
         return update(groupPublicKey, with: newMembers, name: group.groupName!, transaction: transaction)
     }
-    
+
     public func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) { // FIXME: This should be static
         SNLog("Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")
         let transaction = transaction as! YapDatabaseReadWriteTransaction

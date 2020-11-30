@@ -317,7 +317,7 @@
 		C32C59C5256DB41F003C73A2 /* TSGroupModel.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB0A255A580700E217F9 /* TSGroupModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C59C6256DB41F003C73A2 /* TSGroupThread.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA79255A57FB00E217F9 /* TSGroupThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C59C7256DB41F003C73A2 /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBB8255A581600E217F9 /* TSThread.m */; };
-		C32C5A02256DB658003C73A2 /* MessageSender+Handling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F1EF256621180092EF10 /* MessageSender+Handling.swift */; };
+		C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */; };
 		C32C5A13256DB7A5003C73A2 /* PushNotificationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */; };
 		C32C5A24256DB7DB003C73A2 /* LKUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB6B255A580F00E217F9 /* LKUserDefaults.swift */; };
 		C32C5A2D256DB849003C73A2 /* LKGroupUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */; };
@@ -579,6 +579,7 @@
 		C37F54BA255BB2D8002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
+		C38D5E8D2575011E00B6A65C /* MessageSender+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38D5E8C2575011E00B6A65C /* MessageSender+ClosedGroups.swift */; };
 		C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		C38EF216255B6D3B007E1867 /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF212255B6D3A007E1867 /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1388,7 +1389,7 @@
 		B8D8F18825661BA50092EF10 /* Storage+OpenGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OpenGroups.swift"; sourceTree = "<group>"; };
 		B8D8F19225661BF80092EF10 /* Storage+Messaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Messaging.swift"; sourceTree = "<group>"; };
 		B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OnionRequests.swift"; sourceTree = "<group>"; };
-		B8D8F1EF256621180092EF10 /* MessageSender+Handling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Handling.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Handling.swift"; sourceTree = "<group>"; };
+		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -1684,6 +1685,7 @@
 		C379DCFD25673DBC0002D4EB /* TSAttachmentPointer+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentPointer+Conversion.swift"; sourceTree = "<group>"; };
 		C37F53E8255BA9BB002AEA92 /* Environment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		C37F5402255BA9ED002AEA92 /* Environment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
+		C38D5E8C2575011E00B6A65C /* MessageSender+ClosedGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageSender+ClosedGroups.swift"; sourceTree = "<group>"; };
 		C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SNProtoEnvelope+Conversion.swift"; sourceTree = "<group>"; };
 		C38EF212255B6D3A007E1867 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = SignalUtilitiesKit/UI/Theme.h; sourceTree = SOURCE_ROOT; };
 		C38EF214255B6D3A007E1867 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = SignalUtilitiesKit/UI/Theme.m; sourceTree = SOURCE_ROOT; };
@@ -2671,8 +2673,9 @@
 				C32C5995256DAF85003C73A2 /* Typing Indicators */,
 				C3471FA32555439E00297E91 /* Notification+MessageSender.swift */,
 				C300A5F12554B09800555489 /* MessageSender.swift */,
+				C38D5E8C2575011E00B6A65C /* MessageSender+ClosedGroups.swift */,
+				B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */,
 				C3471ECA2555356A00297E91 /* MessageSender+Encryption.swift */,
-				B8D8F1EF256621180092EF10 /* MessageSender+Handling.swift */,
 				C300A5FB2554B0A000555489 /* MessageReceiver.swift */,
 				C3471F4B25553AB000297E91 /* MessageReceiver+Decryption.swift */,
 				C32C5A87256DBCF9003C73A2 /* MessageReceiver+Handling.swift */,
@@ -5223,7 +5226,7 @@
 				C32C5AAB256DBE8F003C73A2 /* TSIncomingMessage+Conversion.swift in Sources */,
 				C32C5A88256DBCF9003C73A2 /* MessageReceiver+Handling.swift in Sources */,
 				C32C5C1B256DC9E0003C73A2 /* GeneralUtilities.swift in Sources */,
-				C32C5A02256DB658003C73A2 /* MessageSender+Handling.swift in Sources */,
+				C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */,
 				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
 				C32C5D2E256DD4EA003C73A2 /* TSUnreadIndicatorInteraction.m in Sources */,
 				C32C599E256DB02B003C73A2 /* TypingIndicators.swift in Sources */,
@@ -5239,6 +5242,7 @@
 				C3A3A0EC256E1949004D228D /* OWSRecipientIdentity.m in Sources */,
 				C32C5AB2256DBE8F003C73A2 /* TSMessage.m in Sources */,
 				C3A3A0FE256E1A3C004D228D /* TSDatabaseSecondaryIndexes.m in Sources */,
+				C38D5E8D2575011E00B6A65C /* MessageSender+ClosedGroups.swift in Sources */,
 				C32C5B1C256DC19D003C73A2 /* TSQuotedMessage.m in Sources */,
 				C352A349255781F400338F3E /* AttachmentDownloadJob.swift in Sources */,
 				C352A30925574D8500338F3E /* Message+Destination.swift in Sources */,

@@ -42,6 +42,37 @@ public final class MessageSender : NSObject {
 
     public static let shared = MessageSender() // FIXME: Remove once requestSenderKey is static
 
+    // MARK: Preparation
+    private static func prep(_ attachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
+            #if DEBUG
+            preconditionFailure()
+            #endif
+            return
+        }
+        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
+        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
+        var streams: [TSAttachmentStream] = []
+        attachments.forEach {
+            let stream = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
+                caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
+            streams.append(stream)
+            stream.write($0.dataSource)
+            stream.save(with: transaction)
+        }
+        tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
+        var linkPreviewAttachmentID: String?
+        if let id = tsMessage.linkPreview?.imageAttachmentId,
+            let stream = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
+            linkPreviewAttachmentID = id
+            streams.append(stream)
+        }
+        message.attachmentIDs = streams.map { $0.uniqueId! }
+        tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
+        if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
+        tsMessage.save(with: transaction)
+    }
+
     // MARK: Convenience
     public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         switch destination {
@@ -257,5 +288,26 @@ public final class MessageSender : NSObject {
         }
         // Return
         return promise
+    }
+
+    // MARK: Success & Failure Handling
+    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
+        tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
+        var recipients = [ message.recipient! ]
+        if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
+            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction as! YapDatabaseReadTransaction), thread.usesSharedSenderKeys {
+            recipients = thread.groupModel.groupMemberIds
+        }
+        recipients.forEach { recipient in
+            tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
+        }
+        OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction as! YapDatabaseReadWriteTransaction)
+    }
+
+    public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        tsMessage.update(sendingError: error, transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
 }
