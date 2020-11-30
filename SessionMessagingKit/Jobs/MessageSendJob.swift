@@ -53,7 +53,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
         switch destination {
         case .contact(let publicKey): coder.encode("contact(\(publicKey))", forKey: "destination")
         case .closedGroup(let groupPublicKey): coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
-        case .openGroup(let channel, let server): coder.encode("openGroup(\(channel), \(server))")
+        case .openGroup(let channel, let server): coder.encode("openGroup(\(channel), \(server))", forKey: "destination")
         }
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")

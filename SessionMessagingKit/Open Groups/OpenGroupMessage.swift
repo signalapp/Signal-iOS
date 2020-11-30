@@ -137,8 +137,9 @@ public final class OpenGroupMessage : NSObject {
     internal func toJSON() -> JSON {
         var value: JSON = [ "timestamp" : timestamp ]
         if let quote = quote {
-            value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey ]
-            if let quotedMessageBody = quote.quotedMessageBody { value["text"] = quotedMessageBody }
+            var quoteAsJSON: JSON = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey ]
+            if let quotedMessageBody = quote.quotedMessageBody { quoteAsJSON["text"] = quotedMessageBody }
+            value["quote"] = quoteAsJSON
         }
         if let signature = signature {
             value["sig"] = signature.data.toHexString()
