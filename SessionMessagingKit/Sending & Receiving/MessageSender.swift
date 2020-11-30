@@ -79,7 +79,7 @@ public final class MessageSender : NSObject {
         // Stop here if this is a self-send
         guard !isSelfSend else {
             storage.withAsync({ transaction in
-                MessageSender.handleSuccessfulMessageSend(message, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
             }, completion: { })
             seal.fulfill(())
             return promise
@@ -192,7 +192,7 @@ public final class MessageSender : NSObject {
         // Handle completion
         let _ = promise.done(on: DispatchQueue.main) {
             storage.withAsync({ transaction in
-                MessageSender.handleSuccessfulMessageSend(message, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, to: destination,X using: transaction)
             }, completion: { })
             if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
@@ -252,7 +252,7 @@ public final class MessageSender : NSObject {
         // Handle completion
         let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) {
             storage.withAsync({ transaction in
-                MessageSender.handleSuccessfulMessageSend(message, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
             }, completion: { })
         }
         // Return

@@ -74,11 +74,18 @@ extension MessageSender : SharedSenderKeysDelegate {
     
     // MARK: - Success & Failure Handling
     
-    public static func handleSuccessfulMessageSend(_ message: Message, using transaction: Any) {
+    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
         tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
-        tsMessage.update(withSentRecipient: message.recipient!, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
+        var recipients = [ message.recipient! ]
+        if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
+            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction as! YapDatabaseReadTransaction), thread.usesSharedSenderKeys {
+            recipients = thread.groupModel.groupMemberIds
+        }
+        recipients.forEach { recipient in
+            tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
+        }
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction as! YapDatabaseReadWriteTransaction)
     }
 
