@@ -7,13 +7,13 @@ extension MessageReceiver {
         return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
     }
 
-    internal static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
+    internal static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupUpdate: handleClosedGroupUpdate(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
-        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, using: transaction)
+        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, using: transaction)
         default: fatalError()
         }
     }
@@ -135,7 +135,7 @@ extension MessageReceiver {
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
 
-    private static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, using transaction: Any) throws {
+    private static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws {
         let storage = Configuration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Parse & persist attachments
@@ -159,7 +159,7 @@ extension MessageReceiver {
             }
         }
         // Get or create thread
-        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         // Parse quote if needed
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
@@ -178,7 +178,7 @@ extension MessageReceiver {
         }
         // Persist the message
         guard let tsIncomingMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
-            groupPublicKey: message.groupPublicKey, using: transaction) else { throw Error.noThread }
+            groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Start attachment downloads if needed
         storage.withAsync({ transaction in

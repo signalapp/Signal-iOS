@@ -203,6 +203,7 @@ public final class MessageSender : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         let storage = Configuration.shared.storage
         message.sentTimestamp = NSDate.millisecondTimestamp()
+        message.sender = storage.getUserPublicKey()
         switch destination {
         case .contact(_): preconditionFailure()
         case .closedGroup(_): preconditionFailure()
@@ -215,6 +216,12 @@ public final class MessageSender : NSObject {
             }, completion: { })
         }
         // Validate the message
+        if !(message is VisibleMessage) {
+            #if DEBUG
+            preconditionFailure()
+            #endif
+            seal.reject(Error.invalidMessage); return promise
+        }
         guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
         // Convert the message to an open group message
         let (channel, server) = { () -> (UInt64, String) in

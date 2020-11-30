@@ -2,7 +2,8 @@ import SessionUtilitiesKit
 
 public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let data: Data
-    public let messageServerID: UInt64?
+    public let openGroupMessageServerID: UInt64?
+    public let openGroupID: String?
     public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
@@ -12,9 +13,14 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     public static let maxFailureCount: UInt = 10
 
     // MARK: Initialization
-    public init(data: Data, messageServerID: UInt64? = nil) {
+    public init(data: Data, openGroupMessageServerID: UInt64? = nil, openGroupID: String? = nil) {
         self.data = data
-        self.messageServerID = messageServerID
+        self.openGroupMessageServerID = openGroupMessageServerID
+        self.openGroupID = openGroupID
+        #if DEBUG
+        if openGroupMessageServerID != nil { assert(openGroupID != nil) }
+        if openGroupID != nil { assert(openGroupMessageServerID != nil) }
+        #endif
     }
 
     // MARK: Coding
@@ -22,14 +28,16 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
         guard let data = coder.decodeObject(forKey: "data") as! Data?,
             let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.data = data
-        self.messageServerID = coder.decodeObject(forKey: "messageServerUD") as! UInt64?
+        self.openGroupMessageServerID = coder.decodeObject(forKey: "openGroupMessageServerID") as! UInt64?
+        self.openGroupID = coder.decodeObject(forKey: "openGroupID") as! String?
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(data, forKey: "data")
-        coder.encode(messageServerID, forKey: "messageServerID")
+        coder.encode(openGroupMessageServerID, forKey: "openGroupMessageServerID")
+        coder.encode(openGroupID, forKey: "openGroupID")
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }
@@ -38,11 +46,11 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     public func execute() {
         Configuration.shared.storage.withAsync({ transaction in // Intentionally capture self
             do {
-                let (message, proto) = try MessageReceiver.parse(self.data, messageServerID: self.messageServerID, using: transaction)
-                try MessageReceiver.handle(message, associatedWithProto: proto, using: transaction)
+                let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, using: transaction)
+                try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: self.openGroupID, using: transaction)
                 self.handleSuccess()
             } catch {
-                SNLog("Couldn't parse message due to error: \(error).")
+                SNLog("Couldn't receive message due to error: \(error).")
                 if let error = error as? MessageReceiver.Error, !error.isRetryable {
                     self.handlePermanentFailure(error: error)
                 } else {

@@ -45,6 +45,7 @@ public protocol SessionMessagingKitStorageProtocol {
     // MARK: - Open Groups
     
     func getOpenGroup(for threadID: String) -> OpenGroup?
+    func getThreadID(for openGroupID: String) -> String?
     
     // MARK: - Open Group Public Keys
 
@@ -74,9 +75,9 @@ public protocol SessionMessagingKitStorageProtocol {
     func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64]
     func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any)
     /// Returns the ID of the thread.
-    func getOrCreateThread(for publicKey: String, groupPublicKey: String?, using transaction: Any) -> String?
+    func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String?
     /// Returns the ID of the `TSIncomingMessage` that was constructed.
-    func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, using transaction: Any) -> String?
+    func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String?
     /// Returns the IDs of the saved attachments.
     func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String]
     /// Also touches the associated message.

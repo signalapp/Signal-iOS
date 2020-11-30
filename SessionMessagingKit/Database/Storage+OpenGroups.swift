@@ -24,6 +24,18 @@ extension Storage {
         }
         return result
     }
+    
+    public func getThreadID(for openGroupID: String) -> String? {
+        var result: String?
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: Storage.openGroupCollection, using: { threadID, object, stop in
+                guard let openGroup = object as? OpenGroup, "\(openGroup.server).\(openGroup.channel)" == openGroupID else { return }
+                result = threadID
+                stop.pointee = true
+            })
+        }
+        return result
+    }
 
     @objc(setOpenGroup:forThreadWithID:using:)
     public func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) {

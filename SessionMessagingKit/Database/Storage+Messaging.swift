@@ -17,10 +17,14 @@ extension Storage {
     }
 
     /// Returns the ID of the thread.
-    public func getOrCreateThread(for publicKey: String, groupPublicKey: String?, using transaction: Any) -> String? {
+    public func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var threadOrNil: TSThread?
-        if let groupPublicKey = groupPublicKey {
+        if let openGroupID = openGroupID {
+            if let threadID = Storage.shared.getThreadID(for: openGroupID), let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) {
+                threadOrNil = thread
+            }
+        } else if let groupPublicKey = groupPublicKey {
             guard Storage.shared.isClosedGroup(groupPublicKey) else { return nil }
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
@@ -31,9 +35,9 @@ extension Storage {
     }
 
     /// Returns the ID of the `TSIncomingMessage` that was constructed.
-    public func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, using transaction: Any) -> String? {
+    public func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        guard let threadID = getOrCreateThread(for: message.sender!, groupPublicKey: groupPublicKey, using: transaction),
+        guard let threadID = getOrCreateThread(for: message.sender!, groupPublicKey: groupPublicKey, openGroupID: openGroupID, using: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let message = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         message.save(with: transaction)

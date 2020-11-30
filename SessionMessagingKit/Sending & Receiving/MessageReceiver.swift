@@ -43,8 +43,9 @@ internal enum MessageReceiver {
         }
     }
 
-    internal static func parse(_ data: Data, messageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
+    internal static func parse(_ data: Data, openGroupMessageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
         let userPublicKey = Configuration.shared.storage.getUserPublicKey()
+        let isOpenGroupMessage = (openGroupMessageServerID != 0)
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
         let storage = Configuration.shared.storage
@@ -54,12 +55,16 @@ internal enum MessageReceiver {
         let plaintext: Data
         let sender: String
         var groupPublicKey: String? = nil
-        switch envelope.type {
-        case .unidentifiedSender: (plaintext, sender) = try decryptWithSignalProtocol(envelope: envelope, using: transaction)
-        case .closedGroupCiphertext:
-            (plaintext, sender) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
-            groupPublicKey = envelope.source
-        default: throw Error.unknownEnvelopeType
+        if isOpenGroupMessage {
+            (plaintext, sender) = (envelope.content!, envelope.source!)
+        } else {
+            switch envelope.type {
+            case .unidentifiedSender: (plaintext, sender) = try decryptWithSignalProtocol(envelope: envelope, using: transaction)
+            case .closedGroupCiphertext:
+                (plaintext, sender) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
+                groupPublicKey = envelope.source
+            default: throw Error.unknownEnvelopeType
+            }
         }
         // Don't process the envelope any further if the sender is blocked
         guard !isBlocked(sender) else { throw Error.senderBlocked }
@@ -83,12 +88,15 @@ internal enum MessageReceiver {
             return nil
         }()
         if let message = message {
+            if isOpenGroupMessage {
+                guard message is VisibleMessage else { throw Error.invalidMessage }
+            }
             message.sender = sender
             message.recipient = userPublicKey
             message.sentTimestamp = envelope.timestamp
             message.receivedTimestamp = NSDate.millisecondTimestamp()
             message.groupPublicKey = groupPublicKey
-            message.openGroupServerMessageID = messageServerID
+            message.openGroupServerMessageID = openGroupMessageServerID
             var isValid = message.isValid
             if message is VisibleMessage && !isValid && proto.dataMessage?.attachments.isEmpty == false {
                 isValid = true

@@ -16,7 +16,7 @@ extension Storage {
     public func getAllPendingJobs(of type: Job.Type) -> [Job] {
         var result: [Job] = []
         Storage.read { transaction in
-            transaction.enumerateRows(inCollection: type.collection) { _, object, _, _ in
+            transaction.enumerateRows(inCollection: type.collection) { key, object, _, x in
                 guard let job = object as? Job else { return }
                 result.append(job)
             }

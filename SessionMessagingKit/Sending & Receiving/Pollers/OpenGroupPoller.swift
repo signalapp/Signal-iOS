@@ -142,7 +142,7 @@ public final class OpenGroupPoller : NSObject {
                     syncMessageBuilder.setSent(syncMessageSent)
                     content.setSyncMessage(try! syncMessageBuilder.build())
                 }
-                let envelope = SNProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
+                let envelope = SNProtoEnvelope.builder(type: .unidentifiedSender, timestamp: message.timestamp)
                 envelope.setSource(senderPublicKey)
                 envelope.setSourceDevice(1)
                 envelope.setContent(try! content.build().serializedData())
@@ -150,7 +150,7 @@ public final class OpenGroupPoller : NSObject {
                 Storage.write { transaction in
                     transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: openGroup.id)
                     let messageServerID = message.serverID
-                    let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), messageServerID: messageServerID)
+                    let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: messageServerID, openGroupID: openGroup.id)
                     Storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
