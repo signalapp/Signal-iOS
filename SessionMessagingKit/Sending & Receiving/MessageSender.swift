@@ -57,23 +57,33 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        message.sender = storage.getUserPublicKey()
+        let userPublicKey = storage.getUserPublicKey()
+        message.sender = userPublicKey
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey
         case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
         case .openGroup(_, _): preconditionFailure()
         }
+        let isSelfSend = (message.recipient == userPublicKey)
         // Set the failure handler (for precondition failure handling)
         let _ = promise.catch(on: DispatchQueue.main) { error in
             storage.withAsync({ transaction in
                 MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             }, completion: { })
-            if case .contact(_) = destination, message is VisibleMessage {
+            if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
             }
         }
         // Validate the message
         guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
+        // Stop here if this is a self-send
+        guard !isSelfSend else {
+            storage.withAsync({ transaction in
+                MessageSender.handleSuccessfulMessageSend(message, using: transaction)
+            }, completion: { })
+            seal.fulfill(())
+            return promise
+        }
         // Attach the user's profile if needed
         if let message = message as? VisibleMessage {
             let displayName = storage.getUserDisplayName()!
@@ -101,7 +111,7 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Encrypt the serialized protobuf
-        if case .contact(_) = destination, message is VisibleMessage {
+        if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .encryptingMessage, object: NSNumber(value: message.sentTimestamp!))
             }
@@ -140,7 +150,7 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Calculate proof of work
-        if case .contact(_) = destination, message is VisibleMessage {
+        if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .calculatingMessagePoW, object: NSNumber(value: message.sentTimestamp!))
             }
@@ -153,7 +163,7 @@ public final class MessageSender : NSObject {
             return promise
         }
         // Send the result
-        if case .contact(_) = destination, message is VisibleMessage {
+        if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .messageSending, object: NSNumber(value: message.sentTimestamp!))
             }
@@ -184,7 +194,7 @@ public final class MessageSender : NSObject {
             storage.withAsync({ transaction in
                 MessageSender.handleSuccessfulMessageSend(message, using: transaction)
             }, completion: { })
-            if case .contact(_) = destination, message is VisibleMessage {
+            if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
             }
             if message is VisibleMessage {
