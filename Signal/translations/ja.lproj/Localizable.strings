@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 発信者の安全番号が変更されたことによる不在着信";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "通話に戻る";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "応答なし";
@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "管理者だけがこのオプションを変更できます。";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "グループ通話が終了しました。";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "この通話の参加上限 %ld 人になっています。後で接続してください。";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "この通話の上限参加人数になっています。後で接続してください。";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "満席です";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "通話に参加";
@@ -1547,7 +1547,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "誰も参加していません";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "誰もいません";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, %ld などが参加しました。";
@@ -1580,22 +1580,22 @@
 "GROUP_CALL_START_BUTTON" = "通話を開始する";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE" = "%@がグループ通話を開始しました";
 
 /* Text explaining that there are three people in the group call. Embeds two {member name}s */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@、%@、ほか一人が通話中です";
 
 /* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@と%@が参加中";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "通話が切断されました。ネット接続を確認して再接続してください。";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "あなた";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "グループ通話中です。";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "あなた（別端末）";
@@ -2156,16 +2156,16 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "すべてのメッセージ履歴とメディアは、新グループに引き継がれます。";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "古いバージョンのSignalを使っているメンバーが１人いるため、グループが作成できません。その人にSignalを更新してもらうか、その人を除外すると、新しいバージョンのグループを作成できます。";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "古いバージョンのSignalを使っているメンバーが%@人いるため、グループが作成できません。その人にSignalを更新してもらうか、その人を除外すると、新しいバージョンのグループを作成できます。";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "古いバージョンのSignalを使っているメンバーが１人いるため、グループが作成できません。その人にSignalを更新してもらうか、その人を除外すると、新しいバージョンのグループを作成できます。%@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "古いバージョンのSignalを使っているメンバーが%1$@人いるため、グループが作成できません。その人にSignalを更新してもらうか、その人を除外すると、新しいバージョンのグループを作成できます。%2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "古いバージョンのSignalを使用しているメンバーが1人いるため、レガシーグループが作成されます。当該メンバーのSignalをアップデートするか対象から外せば、新しいバージョンのグループを作成できます。";
@@ -2891,7 +2891,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "新グループが作成できませんでした。インターネット接続を確認し再度試してください。";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "新しいグループをサポートしていません";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "グループ名は必須です。";
@@ -4529,7 +4529,7 @@
 "SOUNDS_NONE" = "なし";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "設定済みのグループは数週間で、新機能が追加されます。";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "新グループ";

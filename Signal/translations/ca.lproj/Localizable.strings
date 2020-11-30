@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Trucada perduda perquè el número de seguretat del remitent ha canviat.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "Torna a la trucada";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Sense resposta";
@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Només els administradors poden canviar aquesta opció.";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "La trucada ha acabat";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "S'ha assolit el nombre màxim de %ld participants per a aquesta trucada. Torneu-ho a provar més tard.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "S'ha assolit el nombre màxim de participants per a aquesta trucada. Torneu-ho a provar més tard.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "La trucada és plena";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Afegeix-me a la trucada";
@@ -1547,7 +1547,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Aquí no hi ha ningú més.";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Encara no hi ha ningú en aquesta trucada.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ i %ld més s'han afegit a la trucada.";
@@ -1580,22 +1580,22 @@
 "GROUP_CALL_START_BUTTON" = "Inicia una trucada";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE" = "%@ ha iniciat una trucada de grup.";
 
 /* Text explaining that there are three people in the group call. Embeds two {member name}s */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@ i 1 més són en aquesta trucada.";
 
 /* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ i %@ són en aquesta trucada.";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Se us ha desconnectat de la trucada. Comproveu la connexió i torneu-ho a provar.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Vós";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "Sou a la trucada de grup.";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vós (en un altre dispositiu)";
@@ -2156,16 +2156,16 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Es conservaran tot l'historial i tot el contingut d'abans de l'actualització.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Aquest grup no es pot crear perquè 1 membre usa una versió antiga del Signal. Podeu crear-hi un grup d'estil nou després que actualitzi el Signal o suprimir-lo abans de crear el grup.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Aquest grup no es pot crear perquè %@ membres usen una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o suprimir-los abans de crear el grup.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Aquest grup no es pot crear perquè 1 membre usa una versió antiga del Signal. Podeu crear-hi un grup d'estil nou després que actualitzi el Signal o suprimir-lo abans de crear el grup. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Aquest grup no es pot crear perquè %1$@ membres usen una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o suprimir-los abans de crear el grup. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es crearà un Grup Antic perquè 1 membre usa una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o expulsar-los abans de crear el grup.";
@@ -2891,7 +2891,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "No s'ha pogut crear el grup nou. Comproveu la connexió a Internet i torneu-ho a provar.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "No admet els grups nous";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Cal un nom de grup.";
@@ -4529,7 +4529,7 @@
 "SOUNDS_NONE" = "Cap";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Els grups existents rebran automàticament aquestes funcions d'aquí a unes setmanes.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Grup nou";
@@ -4766,7 +4766,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Voleu desenllaçar «%@»?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "El dispositiu ja no està enllaçat. Torneu a enllaçar el Signal amb el telèfon per continuar enviant missatges.";
+"UNLINKED_WARNING" = "El dispositiu ja no està enllaçat. Torneu a enllaçar el Signal amb el telèfon per a continuar enviant missatges.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha pogut desenllaçar el dispositiu.";
@@ -4781,7 +4781,7 @@
 "UNPINNED_SECTION_TITLE" = "Converses";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "No llegit";
+"UNREAD_ACTION" = "Per llegir";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "No s'ha pogut cancel·lar el registre.";
@@ -4802,13 +4802,13 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "No s'ha pogut actualitzar el grup. Comproveu la connexió a Internet i torneu-ho a provar.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu el PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu un PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Apreneu més coses sobre els PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Més informació sobre els PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Els PIN mantenen encriptada la informació desada amb el Signal de manera que no hi pugui accedir ningú més. El perfil, la configuració i els contactes es restauraran quan el reinstal·leu. No necessitareu el PIN per obrir l'aplicació.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Els PIN mantenen xifrada la informació desada amb el Signal de manera que no hi pugui accedir ningú més. El perfil, la configuració i els contactes es restauraran quan el reinstal·leu. No necessitareu el PIN per a obrir l'aplicació.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "S'introdueixen els PIN";
@@ -4823,7 +4823,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Actualitzeu l'iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Els noms d’usuari al Signal són opcionals. Si trieu crear un nom d’usuari, altres usuaris de Signal us podran trobar per aquest nom d’usuari i contactar-vos sense saber el vostre número de telèfon.";
+"USERNAME_DESCRIPTION" = "Els noms d’usuari al Signal són opcionals. Si trieu crear un nom d’usuari, altres usuaris de Signal us podran trobar per aquest nom d’usuari i contactar sense saber el vostre número de telèfon.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Nom d'usuari";
@@ -4832,16 +4832,16 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Els noms d'usuari només poden contenir a-z, 0-9 i _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Hi ha hagut un error en cercar el nom d'usuari. Si us plau, torneu-ho a provar més tard.";
+"USERNAME_LOOKUP_ERROR" = "Hi ha hagut un error en cercar el nom d'usuari. Torneu-ho a provar més tard.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ no és un usuari de Signal. Assegureu-vos que hàgiu escrit el nom d'usuari complet.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ no és un usuari del Signal. Assegureu-vos que heu escrit el nom d'usuari complet.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "No s'ha trobat l'usuari.";
+"USERNAME_NOT_FOUND_TITLE" = "No s'ha trobat l'usuari";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Escriviu un nom d'usuari.";
+"USERNAME_PLACEHOLDER" = "Escriviu un nom d'usuari";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -4859,13 +4859,13 @@
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ està agafat.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Ha fallat actualitzar el nom d'usuari.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "No s'ha pogut actualitzar el nom d'usuari.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "El nom del dispositiu no pot estar en blanc.";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "El nom del dispositiu no pot estar buit";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "El nom del dispositiu és massa llarg.";
+"VALIDATION_ERROR_TOO_LONG" = "El nom del dispositiu és massa llarg";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Heu marcat %@ com a no verificat.";
@@ -4895,10 +4895,10 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ja heu vist aquest missatge.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Toqueu aquí per fer desaparèixer aquest missatge un cop vist.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Toqueu aquí per fer desaparèixer el missatge una vegada vist.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Els fitxers multimèdia d'una sola visualització se suprimeixen automàticament un cop enviats.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Els fitxers multimèdia d'una sola visualització se suprimeixen automàticament una vegada enviats.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Llisqueu per a cancel·lar";
@@ -4907,7 +4907,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Missatge de veu";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Mantingueu un toc per gravar un missatge de veu.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Toc llarg per a enregistrar un missatge de veu.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Missatge de veu";

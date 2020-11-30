@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Collwyd galwad oherwydd bod rhif diogelwch y galwr wedi newid.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "Dychwelwch I'r Alwad";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Dim Ateb";
@@ -1235,7 +1235,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ni ellir ychwanegu'r defnyddiwr hwn i'r grŵp nes iddynt ddiweddaru Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Cyrhaeddwyd uchafswm nifer aelodau grŵp o %@.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Llun annilys.";
@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Dim ond gweinyddwyr gall newid y dewis hwn.";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "Gorffennodd y galwad grŵp";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Mae'r uchafswm nifer o %ld cyfranogwr wedi'i gyrraedd ar gyfer yr alwad hon. Rhowch gynnig arall arni nes ymlaen.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Mae'r uchafswm nifer o gyfranogwyr wedi'i gyrraedd ar gyfer yr alwad hon. Rhowch gynnig arall arni nes ymlaen.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "Galwad yn Llawn";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Ymuno â'r Alwad";
@@ -1547,13 +1547,13 @@
 "GROUP_CALL_NO_ONE_HERE" = "Does neb arall yma";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Does Neb yn yr alwad hon eto.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "Ymunodd %@, %@, a %ld arall yr alwad";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "Gadawodd %@, %@, a %ld arall yr alwad";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "Ymunodd %@ â'r alwad";
@@ -1580,7 +1580,7 @@
 "GROUP_CALL_START_BUTTON" = "Cychwyn Galwad";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE" = "Dechreuodd%@ alwad grŵp";
 
 /* Text explaining that there are three people in the group call. Embeds two {member name}s */
 "GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
@@ -1589,13 +1589,13 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "Mae %@ a %@, ar yr alwad hon";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Fe'ch datgysylltwyd o'r alwad. Gwiriwch eich cysylltiad a rhoi cynnig arall arni.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Chi";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "Rydych chi yn y galwad grŵp";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Chi (ar ddyfais arall)";
@@ -2081,25 +2081,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Enw'r grŵp nawr yw “%@”.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "Uwchraddiwyd y grŵp hwn i Grŵp Newydd.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Ni ellid ychwanegu aelod at y Grŵp. Newydd ac maent wedi cael eu tynnu o'r grŵp.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Methwyd eich ychwanegu i'r Grŵp Newydd a rydych wedi eich tynnu o'r grŵp.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "Ni ellid ychwanegu %@ aelod at y Grŵp. Newydd ac maent wedi cael eu tynnu o'r grŵp.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Methwyd ychwanegu aelod i'r Grŵp Newydd a maent wedi eu gwahodd i ymuno.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Ni ellir eich ychwanegu i'r Grŵp Newydd a rydych wedi eich gwahodd i ymuno";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "Methwyd ychwanegu %@ aelod i'r Grŵp Newydd a maent wedi eu gwahodd i ymuno.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Rydych wedi gadael y grŵp.";
@@ -2141,31 +2141,31 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Hen Grŵp o'i gymharu â Grŵp Newydd";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uwchraddiwch y grŵp hwn i agor nodweddion newydd fel @mentions a gweinyddwyr. Bydd aelodau nad ydyn nhw wedi rhannu eu henw na'u llun yn y grŵp hwn yn cael gwahoddiad i ymuno. %@";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Methu Uwchraddio i Grŵp Newydd";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Ni ellir uwchraddio'r grŵp hwn i Grŵp Newydd oherwydd ei fod â gormod o aelodau. Uchafswm maint y grŵp yw %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Pan fydd holl aelodau presennol y grŵp yn defnyddio fersiwn o Signal sy'n gallu ymuno â Grŵp Newydd, bydd y grŵp hwn yn cael ei uwchraddio.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Bydd holl hanes negeseuon a chyfryngau o cyn uwchraddio yn cael eu cadw.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Ni ellir creu y grŵp hwn oherwydd bod 1 aelod yn defnyddio hen fersiwn o Signal. Gallwch greu Grŵp Arddull Newydd gyda nhw ar ôl iddyn nhw ddiweddaru Signal, neu eu tynnu cyn creu'r grŵp.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Ni ellir creu y grŵp hwn oherwydd bod %@ aelod yn defnyddio hen fersiwn o Signal. Gallwch greu Grŵp Arddull Newydd gyda nhw ar ôl iddyn nhw ddiweddaru Signal, neu eu tynnu cyn creu'r grŵp.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Ni ellir creu y grŵp hwn oherwydd bod 1 aelod yn defnyddio hen fersiwn o Signal. Gallwch greu Grŵp Arddull Newydd gyda nhw ar ôl iddyn nhw ddiweddaru Signal, neu eu tynnu cyn creu'r grŵp. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Ni ellir creu y grŵp hwn oherwydd bod %1$@ aelod yn defnyddio hen fersiwn o Signal. Gallwch greu Grŵp Arddull Newydd gyda nhw ar ôl iddyn nhw ddiweddaru Signal, neu eu tynnu cyn creu'r grŵp. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Bydd Hen Grŵp yn cael ei greu oherwydd bod 1 aelod yn defnyddio hen fersiwn o Signal. Gallwch greu Grŵp Arddull Newydd gyda nhw ar ôl iddyn nhw ddiweddaru Signal, neu eu tynnu cyn creu'r grŵp.";
@@ -2183,19 +2183,19 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Mae hwn yn Hen Grwp. Dim ond ar gyfer Grwpiau Newydd y mae nodweddion fel gweinyddwr grŵp ar gael. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Nid yw'r Hen Grŵp hwn eto yn barod i'w uwchraddio i Grŵp Newydd %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ni ellir uwchraddio'r Hen Grŵp hwn i Grŵp Newydd oherwydd ei fod yn rhy fawr. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Hen Grŵp yw hwn. I ddefnyddio nodweddion newydd fel @mentions a gweinyddwyr, %@.";
 
 /* Title for the the 'dropped group member' banner. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Ni ellid ychwanegu 1 aelod at y Grŵp. Newydd. Hoffech chi ychwanegu nhw nawr?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "Ni ellid ychwanegu %@ aelod at y Grŵp. Newydd. Hoffech chi ychwanegu nhw nawr?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Hen Grŵp";
@@ -2231,31 +2231,31 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Ychwanegu Aelodau";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Methwyd ychwanegu'r aelod hwn yn awtomatig i'r Grŵp Newydd pan gafodd ei uwchraddio:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Methwyd ychwanegu'r aelodau hyn yn awtomatig i'r Grŵp Newydd pan gafodd ei uwchraddio:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Mae holl hanes negeseuon a chyfryngau o cyn uwchraddio wedi'u cadw.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Mae'r aleod hwn wedi ei dynnu o'r grŵp a ni fydd yn gallu ailymuno nes iddo uwchraddio.";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Mae'r aleodau rhain wedi eu tynnu o'r grŵp a ni fyddant yn gallu ailymuno nes iddynt uwchraddio.";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Bydd angen i'r aelod hwn dderbyn gwahoddiad i ymuno â'r grŵp hwn eto, a ni fydd yn derbyn negeseuon grŵp nes ei fod wedi derbyn:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Bydd angen i'r aelodau hyn dderbyn gwahoddiad i ymuno â'r grŵp hwn eto, a ni fyddant yn derbyn negeseuon grŵp nes eu bod yn derbyn:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ni all yr aelod hwn ymuno â Grwpiau Newydd, a chaiff ei dynnu o'r grŵp.";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ni all yr aelodau rhain ymuno â'r Grŵp Newydd, a byddant yn cael eu tynnu'r grŵp hwn.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ni all yr aelodau rhain ymuno â'r Grŵp Newydd, a chânt eu tynnu o'r grŵp.";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Uwchraddio i Grŵp Newydd";
@@ -2267,7 +2267,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Ni ellir uwchraddio y grŵp hwn i Grŵp Newydd ar y funud.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Methwyd uwchraddio y grŵp hwn i Grŵp Newydd oherwydd nad ydych wedi cysylltu i'r Rhyngrwyd. Rhowch gynnig arall arni nes ymlaen.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Methwyd Cwblhau Uwchraddio";
@@ -2288,13 +2288,13 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Dewiswch gweinyddwr newydd";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Mae grwpiau Signal yn gweithio orau gydag %@ aelod neu lai. Bydd ychwanegu mwy o aelodau yn achosi oedi wrth anfon a derbyn negeseuon.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Mae'r terfyn aelodaeth a argymhellir wedi'i gyrraedd";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Ychwanegu aelod beth bynnag?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Gweld Cais";
@@ -2891,7 +2891,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Methwyd creu grŵp newydd. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ni chefnogir Grwpiau Newydd";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Mae enw'r grŵp yn angenrheidiol.";
@@ -4529,7 +4529,7 @@
 "SOUNDS_NONE" = "Dim";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Bydd grwpiau presennol yn derbyn y nodweddion rhain yn awtomatig yn yr wythnosau sydd i ddod.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Grŵp Newydd";

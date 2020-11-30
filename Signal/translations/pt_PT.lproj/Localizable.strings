@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Chamada perdida porque o número de segurança do contacto mudou.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "Regressar à chamada";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Sem resposta";
@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Apenas os administradores podem alterar esta opção.";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "A chamada de grupo terminou";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Foi atingido o número máximo de %ld participantes para esta chamada. Tente novamente mais tarde.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Foi atingido o número máximo de participantes para esta chamada. Tente novamente mais tarde.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "A chamada encontra-se cheia";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Entrar na chamada";
@@ -1547,7 +1547,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Não está mais ninguém aqui";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Ainda não se encontra ninguém nesta chamada.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, e outras %ld pessoas juntaram-se à chamada.";
@@ -1580,22 +1580,22 @@
 "GROUP_CALL_START_BUTTON" = "Iniciar chamada";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE" = "%@ iniciou uma chamada de grupo";
 
 /* Text explaining that there are three people in the group call. Embeds two {member name}s */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%@, %@. e outra pessoa estão nesta chamada";
 
 /* Text explaining that there are two people in the group call. Embeds two {member name}s */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ e %@ estão nesta chamada";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Você foi desligado da chamada. Verifique a sua ligação e tente novamente.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Você";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE_FORMAT" = "Você está na chamada de grupo";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Você (noutro dispositivo)";
@@ -2096,7 +2096,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Não foi possível adicionar um membro ao 'Novo grupo' e foi convidado a entrar";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Não foi possível adicioná-lo ao 'Novo grupo' e foi convida a entrar";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Não foi possível adicioná-lo ao 'Novo grupo' e foi convidado a entrar";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "Não foi possível adicionar %@ membros ao 'Novo grupo' e foi convidado a entrar.";
@@ -2156,16 +2156,16 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Todo o histórico de mensagens e média será mantido para antes do upgrade. ";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Este grupo não pode ser criado porque um membro está a utilizar uma versão antiga do Signal. Você pode criar um 'Novo estilo de grupo' com ele depois dele atualizar o Signal ou removê-lo antes de criar o grupo.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Este grupo não pode ser criado porque %@ membros estão a utilizar uma versão antiga do Signal. Você pode criar um 'Novo estilo de grupo' com eles depois deles atualizarem o Signal ou removê-los antes de criar o grupo.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Este grupo não pode ser criado porque um membro está a utilizar uma versão antiga do Signal. Você pode criar um 'Novo estilo de grupo' com ele depois dele atualizar o Signal ou removê-lo antes de criar o grupo. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Este grupo não pode ser criado porque %1$@ membros estão a utilizar uma versão antiga do Signal. Você pode criar um 'Novo estilo de grupo' com eles depois deles atualizarem o Signal ou removê-los antes de criar o grupo. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Será criado um 'Grupo legado' porque 1 membro está a utilizar uma versão antiga do Signal. Você pode criar um 'Novo tipo de grupo' com ele depois de ele atualizar o Signal, ou removê-lo antes de criar o grupo.";
@@ -2891,7 +2891,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Não foi possível criar um novo grupo. Verifique a sua ligação à internet e tente novamente.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Não suporta 'Novos grupos'";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "É necessário um nome de grupo.";
@@ -4529,7 +4529,7 @@
 "SOUNDS_NONE" = "Nenhum";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Os grupos existentes irão automaticamente obter esses recursos nas próximas semanas.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Novo grupo";

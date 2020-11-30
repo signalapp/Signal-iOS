@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "El Signal necessita usar l'Apple Music per reproduir fitxers adjunts.";
-NSCameraUsageDescription = "El Signal usa la càmera per fer fotografies i per a trucades de vídeo.";
-NSContactsUsageDescription = "El Signal usa els contactes per trobar usuaris que coneixeu. No emmagatzemem els vostres contactes al servidor.";
-NSFaceIDUsageDescription = "El bloqueig de pantalla del Signal usa la identificació de cara.";
-NSLocationWhenInUseUsageDescription = "El Signal necessita accés a la ubicació per compartir la ubicació actual.";
-NSMicrophoneUsageDescription = "El Signal necessita accés al micròfon per fer i rebre trucades de telèfon i gravar missatges de veu.";
+NSAppleMusicUsageDescription = "El Signal necessita usar l'Apple Music per a reproduir fitxers adjunts.";
+NSCameraUsageDescription = "El Signal usa la càmera per a fer fotografies i per a trucades de vídeo.";
+NSContactsUsageDescription = "El Signal usa els contactes per a trobar usuaris que coneixeu. No emmagatzemem els vostres contactes al servidor.";
+NSFaceIDUsageDescription = "El bloqueig de pantalla del Signal usa el Face ID.";
+NSLocationWhenInUseUsageDescription = "El Signal necessita accés a la ubicació per a compartir l'actual.";
+NSMicrophoneUsageDescription = "El Signal necessita accés al micròfon per a fer i rebre trucades i enregistrar missatges de veu.";
 NSPhotoLibraryAddUsageDescription = "El Signal desarà les fotografies a la biblioteca.";
 NSPhotoLibraryUsageDescription = "El Signal us permetrà triar quines fotografies de la biblioteca voleu enviar.";
-NSLocalNetworkUsageDescription = "El Signal usa la xarxa local per permetre-us transferir directament el vostre compte a un telèfon nou. No s’usarà tret que decidiu explícitament iniciar una transferència a un dispositiu nou.";
+NSLocalNetworkUsageDescription = "El Signal usa la xarxa local perquè pugueu transferir directament el vostre compte a un telèfon nou. No s’usarà tret que decidiu explícitament iniciar una transferència a un dispositiu nou.";
