@@ -1,5 +1,4 @@
-New features for Signal private groups are now available, including group admins, @ mentions, group links and more! Available in new groups you create, and coming soon to your existing groups. 
+* Adds reaction support for new emoji introduced in iOS 14.2
+* Fixes a crash for users of older versions of iOS 11
 
-- @mentions let you mention someone in the group. They’ll be to jump directly to that mention the next time they open the chat, and you can also set your notifications to only notify you when you’re mentioned.  
-- Admins are able to remove members from a group, manage who can add people to the group or modify the group’s info, and make other members admins as well.
-- Group links let you invite people to join a group simply by sharing a link with them. You can also require admin approval if someone requests to join your group via a link.
+This is the last version of Signal with support for iOS versions older than iOS 11.2. Please update your iOS version to continue using Signal.
