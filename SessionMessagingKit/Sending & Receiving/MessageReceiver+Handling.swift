@@ -157,6 +157,13 @@ extension MessageReceiver {
                 profileKey != oldProfile?.profileKey?.keyData {
                 profileManager.setProfileKeyData(profileKey, forRecipientId: message.sender!, avatarURL: profilePictureURL)
             }
+            if let rawDisplayName = newProfile.displayName, let openGroupID = openGroupID {
+                let publicKey = message.sender!
+                let endIndex = publicKey.endIndex
+                let cutoffIndex = publicKey.index(endIndex, offsetBy: -8)
+                let displayName = "\(rawDisplayName) (...\(publicKey[cutoffIndex..<endIndex]))"
+                Storage.shared.setOpenGroupDisplayName(to: displayName, for: message.sender!, inOpenGroupWithID: openGroupID, using: transaction)
+            }
         }
         // Get or create thread
         guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }

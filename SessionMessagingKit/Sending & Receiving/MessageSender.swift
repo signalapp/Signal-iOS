@@ -192,7 +192,7 @@ public final class MessageSender : NSObject {
         // Handle completion
         let _ = promise.done(on: DispatchQueue.main) {
             storage.withAsync({ transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination,X using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
             }, completion: { })
             if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
                 NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))

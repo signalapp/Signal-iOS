@@ -262,7 +262,7 @@ public final class OpenGroupAPI : DotNetAPI {
                             let endIndex = hexEncodedPublicKey.endIndex
                             let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
                             let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                            storage.setOpenGroupDisplayName(to: displayName, for: hexEncodedPublicKey, on: channel, server: server, using: transaction)
+                            storage.setOpenGroupDisplayName(to: displayName, for: hexEncodedPublicKey, inOpenGroupWithID: "\(server).\(channel)", using: transaction)
                         }
                     }
                 }

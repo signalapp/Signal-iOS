@@ -67,7 +67,7 @@ public protocol SessionMessagingKitStorageProtocol {
 
     func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any)
     func getIDForMessage(withServerID serverID: UInt64) -> UInt64?
-    func setOpenGroupDisplayName(to displayName: String, for publicKey: String, on channel: UInt64, server: String, using transaction: Any)
+    func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any)
     func setLastProfilePictureUploadDate(_ date: Date) // Stored in user defaults so no transaction is needed
 
     // MARK: - Message Handling

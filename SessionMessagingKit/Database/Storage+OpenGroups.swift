@@ -198,8 +198,8 @@ extension Storage {
         return result
     }
     
-    public func setOpenGroupDisplayName(to displayName: String, for publicKey: String, on channel: UInt64, server: String, using transaction: Any) {
-        let collection = "\(server).\(channel)" // FIXME: This should be a proper collection
+    public func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any) {
+        let collection = openGroupID
         (transaction as! YapDatabaseReadWriteTransaction).setObject(displayName, forKey: publicKey, inCollection: collection)
     }
     
