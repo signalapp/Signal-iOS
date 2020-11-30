@@ -1,12 +1,6 @@
-<!-- You can remove this first section if you have contributed before -->
-### First time contributor checklist
-<!-- replace the empty checkboxes [ ] below with checked ones [x] accordingly -->
-- [ ] I have read the [README](https://github.com/WhisperSystems/Signal-iOS/blob/master/README.md) and [CONTRIBUTING](https://github.com/WhisperSystems/Signal-iOS/blob/master/CONTRIBUTING.md) documents
-- [ ] I have signed the [Contributor Licence Agreement](https://whispersystems.org/cla/)
 
 ### Contributor checklist
 <!-- replace the empty checkboxes [ ] below with checked ones [x] accordingly -->
-- [ ] I'm following the [code, UI and style conventions](https://github.com/WhisperSystems/Signal-iOS/blob/master/CONTRIBUTING.md#code-conventions)
 - [ ] My commits are rebased on the latest master branch
 - [ ] My commits are in nice logical chunks
 - [ ] My contribution is fully baked and is ready to be merged as is
