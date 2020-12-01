@@ -214,7 +214,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 - (NSArray<SignalServiceAddress *> *)nonLocalGroupMembers
 {
-    return [self.groupMembers filter:^(SignalServiceAddress *groupMemberId) {
+    return [self.groupMembers filter:^BOOL(SignalServiceAddress *groupMemberId) {
         return !groupMemberId.isLocalAddress;
     }];
 }
