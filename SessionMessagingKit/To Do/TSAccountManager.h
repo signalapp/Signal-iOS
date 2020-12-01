@@ -148,7 +148,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // Re-registration is the process of re-registering _with the same phone number_.
 
 // Returns YES on success.
-- (BOOL)resetForReregistration;
 - (nullable NSString *)reregisterationPhoneNumber;
 - (BOOL)isReregistering;
 

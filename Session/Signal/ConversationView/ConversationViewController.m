@@ -1451,20 +1451,7 @@ typedef enum : NSUInteger {
 
 - (void)handleFailedDownloadTapForMessage:(TSMessage *)message
 {
-    OWSAssert(message);
-
-    // TODO TODO TODO
-    
-//    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-//        [self.attachmentDownloads downloadAttachmentsForMessage:message
-//            transaction:transaction
-//            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-//                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
-//            }
-//            failure:^(NSError *error) {
-//                OWSLogWarn(@"Failed to redownload message with error: %@", error);
-//            }];
-//    }];
+    // Do nothing
 }
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
@@ -1481,7 +1468,9 @@ typedef enum : NSUInteger {
                                                                     [self remove:message];
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
-    
+
+    // TODO TODO TODO
+
 //    UIAlertAction *resendMessageAction = [UIAlertAction
 //                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
 //        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
@@ -1908,35 +1897,7 @@ typedef enum : NSUInteger {
                                  quotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(viewItem);
-    OWSAssertDebug(attachmentPointer);
-
-    TSMessage *message = (TSMessage *)viewItem.interaction;
-    if (![message isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"message had unexpected class: %@", message.class);
-        return;
-    }
-
-    // TODO TODO TODO
-    
-//    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-//        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-//            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-//                OWSAssertDebug(attachmentStreams.count == 1);
-//                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-//                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-//                    [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-//                    [message saveWithTransaction:postSuccessTransaction];
-//                }];
-//            }
-//            failure:^(NSError *error) {
-//                OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
-//                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-//                    [message touchWithTransaction:postSuccessTransaction];
-//                }];
-//            }];
-//    }];
+    // Do nothing
 }
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply

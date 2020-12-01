@@ -404,37 +404,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     [self postRegistrationStateDidChangeNotification];
 }
 
-#pragma mark - Re-registration
-
-- (BOOL)resetForReregistration
-{
-    @synchronized(self) {
-        NSString *_Nullable localNumber = self.localNumber;
-        if (!localNumber) {
-            return NO;
-        }
-
-        _isRegistered = NO;
-        _cachedLocalNumber = nil;
-        _phoneNumberAwaitingVerification = nil;
-        _cachedIsDeregistered = nil;
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
-
-            // TODO TODO TODO
-//            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
-
-            [transaction setObject:localNumber
-                            forKey:TSAccountManager_ReregisteringPhoneNumberKey
-                      inCollection:TSAccountManager_UserAccountCollection];
-        }];
-
-        [self postRegistrationStateDidChangeNotification];
-
-        return YES;
-    }
-}
-
 - (nullable NSString *)reregisterationPhoneNumber
 {
     NSString *_Nullable result = [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
