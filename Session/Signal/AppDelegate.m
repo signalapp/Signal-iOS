@@ -166,6 +166,10 @@ static NSTimeInterval launchStartedAt;
 
     [LKAppModeManager configureWithDelegate:self];
 
+    // OWSLinkPreview is now in SessionMessagingKit, so to still be able to deserialize link previews we
+    // need to tell NSKeyedUnarchiver about the change.
+    [NSKeyedUnarchiver setClass:OWSLinkPreview.class forClassName:@"SessionServiceKit.OWSLinkPreview"];
+
     BOOL isLoggingEnabled;
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
