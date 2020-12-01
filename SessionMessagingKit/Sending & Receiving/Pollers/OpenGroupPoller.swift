@@ -48,7 +48,8 @@ public final class OpenGroupPoller : NSObject {
     public func objc_pollForNewMessages() -> AnyPromise {
         AnyPromise.from(pollForNewMessages())
     }
-    
+
+    @discardableResult
     public func pollForNewMessages() -> Promise<Void> {
         guard !self.isPolling else { return Promise.value(()) }
         self.isPolling = true

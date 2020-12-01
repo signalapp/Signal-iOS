@@ -299,7 +299,7 @@ public class ProxiedContentAssetRequest: NSObject {
             try assetData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
             let asset = ProxiedContentAsset(assetDescription: assetDescription, filePath: filePath)
             return asset
-        } catch let error as NSError {
+        } catch {
             return nil
         }
     }
@@ -366,7 +366,7 @@ public class ProxiedContentAsset: NSObject {
             do {
                 let fileManager = FileManager.default
                 try fileManager.removeItem(atPath: filePathCopy)
-            } catch let error as NSError {
+            } catch {
 
             }
         }
@@ -801,7 +801,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
-        if let error = error {
+        if error != nil {
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
@@ -848,7 +848,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
             // Don't back up ProxiedContent downloads.
             OWSFileSystem.protectFileOrFolder(atPath: dirPath)
-        } catch let error as NSError {
+        } catch {
             downloadFolderPath = tempDirPath
         }
     }

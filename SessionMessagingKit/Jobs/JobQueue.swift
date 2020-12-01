@@ -97,6 +97,7 @@ public final class JobQueue : NSObject, JobDelegate {
     @objc private func retry(_ timer: Timer) {
         guard let job = timer.userInfo as? Job else { return }
         SNLog("Retrying \(type(of: job)).")
+        job.delegate = self
         job.execute()
     }
 }

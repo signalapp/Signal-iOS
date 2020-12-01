@@ -1073,7 +1073,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
           };
 
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
-    BOOL canLoadMoreItems = self.messageMapping.canLoadMore;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 

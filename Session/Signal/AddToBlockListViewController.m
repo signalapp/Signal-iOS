@@ -63,7 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(signalAccount);
 
-    ContactsViewHelper *helper = self.contactsViewHelper;
     return ![SSKEnvironment.shared.blockingManager isRecipientIdBlocked:signalAccount.recipientId];
 }
 

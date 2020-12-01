@@ -82,7 +82,9 @@ extension Storage {
     }
 
     public func resumeMessageSendJobIfNeeded(_ messageSendJobID: String) {
-        getMessageSendJob(for: messageSendJobID)?.execute()
+        guard let job = getMessageSendJob(for: messageSendJobID) else { return }
+        job.delegate = JobQueue.shared
+        job.execute()
     }
 
     public func isJobCanceled(_ job: Job) -> Bool {
