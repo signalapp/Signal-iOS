@@ -52,12 +52,15 @@ class GroupCallErrorView: UIView {
 
         let button = UIButton()
         button.backgroundColor = .ows_gray75
+
+        button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
         button.layer.cornerRadius = 12
+        button.clipsToBounds = true
+
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
-        button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
-        button.clipsToBounds = true
         button.setTitle(buttonLabel, for: .normal)
+
         button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
@@ -66,7 +69,7 @@ class GroupCallErrorView: UIView {
         let button = UIButton()
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
-        button.setTemplateImageName("error-solid-16", tintColor: .ows_white)
+
         button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
