@@ -64,6 +64,13 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
+            } else if let error = error as? DotNetAPI.Error, case .parsingFailed = error {
+                // No need to retry if the response is invalid. Most likely this means we (incorrectly)
+                // got a "Cannot GET ..." error from the file server.
+                storage.withAsync({ transaction in
+                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+                }, completion: { })
+                self.handlePermanentFailure(error: error)
             } else {
                 self.handleFailure(error: error)
             }
