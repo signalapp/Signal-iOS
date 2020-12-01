@@ -43,31 +43,34 @@ public final class MessageSender : NSObject {
     public static let shared = MessageSender() // FIXME: Remove once requestSenderKey is static
 
     // MARK: Preparation
-    public static func prep(_ attachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func prep(_ signalAttachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
             #if DEBUG
             preconditionFailure()
-            #endif
+            #else
             return
+            #endif
         }
-        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
-        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
-        var streams: [TSAttachmentStream] = []
-        attachments.forEach {
-            let stream = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
+        var attachments: [TSAttachmentStream] = []
+        signalAttachments.forEach {
+            let attachment = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
                 caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
-            streams.append(stream)
-            stream.write($0.dataSource)
-            stream.save(with: transaction)
+            attachments.append(attachment)
+            attachment.write($0.dataSource)
+            attachment.save(with: transaction)
         }
+        // The line below locally generates a thumbnail for the quoted attachment. It just needs to happen at some point during the
+        // message sending process.
         tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
         var linkPreviewAttachmentID: String?
         if let id = tsMessage.linkPreview?.imageAttachmentId,
-            let stream = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
+            let attachment = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
             linkPreviewAttachmentID = id
-            streams.append(stream)
+            attachments.append(attachment)
         }
-        message.attachmentIDs = streams.map { $0.uniqueId! }
+        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
+        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
+        message.attachmentIDs = attachments.map { $0.uniqueId! }
         tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
         if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
         tsMessage.save(with: transaction)
@@ -260,9 +263,10 @@ public final class MessageSender : NSObject {
         guard let message = message as? VisibleMessage else {
             #if DEBUG
             preconditionFailure()
-            #endif
+            #else
             seal.reject(Error.invalidMessage)
             return promise
+            #endif
         }
         guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
         // Convert the message to an open group message

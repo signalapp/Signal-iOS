@@ -75,7 +75,7 @@ public final class OpenGroupPoller : NSObject {
                 dataMessageProto.setBody(body)
                 dataMessageProto.setTimestamp(message.timestamp)
                 // Attachments
-                let attachments: [SNProtoAttachmentPointer] = message.attachments.compactMap { attachment in
+                let attachmentProtos: [SNProtoAttachmentPointer] = message.attachments.compactMap { attachment in
                     guard attachment.kind == .attachment else { return nil }
                     let attachmentProto = SNProtoAttachmentPointer.builder(id: attachment.serverID)
                     attachmentProto.setContentType(attachment.contentType)
@@ -88,7 +88,7 @@ public final class OpenGroupPoller : NSObject {
                     attachmentProto.setUrl(attachment.url)
                     return try! attachmentProto.build()
                 }
-                dataMessageProto.setAttachments(attachments)
+                dataMessageProto.setAttachments(attachmentProtos)
                 // Link preview
                 if let linkPreview = message.attachments.first(where: { $0.kind == .linkPreview }) {
                     let linkPreviewProto = SNProtoDataMessagePreview.builder(url: linkPreview.linkPreviewURL!)

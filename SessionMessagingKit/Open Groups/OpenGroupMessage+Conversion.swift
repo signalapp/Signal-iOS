@@ -11,7 +11,11 @@ internal extension OpenGroupMessage {
         let quote: OpenGroupMessage.Quote? = {
             if let quote = message.quote {
                 guard quote.isValid else { return nil }
-                let quotedMessageServerID = TSIncomingMessage.find(withAuthorId: quote.publicKey!, timestamp: quote.timestamp!, transaction: transaction)?.openGroupServerMessageID
+                var quotedMessageServerID: UInt64?
+                TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: quote.timestamp!, with: { _, key, _ in
+                    guard let message = TSInteraction.fetch(uniqueId: key, transaction: transaction) as? TSMessage else { return }
+                    quotedMessageServerID = message.openGroupServerMessageID
+                }, using: transaction)
                 let quotedMessageBody = quote.text ?? String(quote.timestamp!) // The back-end doesn't accept messages without a body so we use this as a workaround
                 if let quotedAttachmentID = quote.attachmentID, let index = attachmentIDs.firstIndex(of: quotedAttachmentID) {
                     attachmentIDs.remove(at: index)
@@ -62,7 +66,7 @@ internal extension OpenGroupMessage {
             return OpenGroupMessage.Attachment(
                 kind: .attachment,
                 server: server,
-                serverID: 0,
+                serverID: attachment.serverId,
                 contentType: attachment.contentType,
                 size: UInt(attachment.byteCount),
                 fileName: fileName,
