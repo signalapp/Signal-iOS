@@ -11,16 +11,12 @@ internal extension OpenGroupMessage {
         let quote: OpenGroupMessage.Quote? = {
             if let quote = message.quote {
                 guard quote.isValid else { return nil }
-                var quotedMessageServerID: UInt64?
-                TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: quote.timestamp!, with: { _, key, _ in
-                    guard let message = TSInteraction.fetch(uniqueId: key, transaction: transaction) as? TSMessage else { return }
-                    quotedMessageServerID = message.openGroupServerMessageID
-                }, using: transaction)
                 let quotedMessageBody = quote.text ?? String(quote.timestamp!) // The back-end doesn't accept messages without a body so we use this as a workaround
                 if let quotedAttachmentID = quote.attachmentID, let index = attachmentIDs.firstIndex(of: quotedAttachmentID) {
                     attachmentIDs.remove(at: index)
                 }
-                return OpenGroupMessage.Quote(quotedMessageTimestamp: quote.timestamp!, quoteePublicKey: quote.publicKey!, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
+                // FIXME: For some reason the server always returns a 500 if quotedMessageServerID is set...
+                return OpenGroupMessage.Quote(quotedMessageTimestamp: quote.timestamp!, quoteePublicKey: quote.publicKey!, quotedMessageBody: quotedMessageBody, quotedMessageServerID: nil)
             } else {
                 return nil
             }
