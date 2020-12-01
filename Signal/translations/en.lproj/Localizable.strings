@@ -1603,6 +1603,9 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
+/* Text explaining that you started a group call. */
+"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
 

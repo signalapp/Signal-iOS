@@ -158,6 +158,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.hasEnded) {
         return NSLocalizedString(
             @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
+    } else if (self.creatorAddress.isLocalAddress) {
+        return NSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
     } else if (self.creatorAddress) {
         NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
         NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
@@ -182,7 +184,9 @@ NS_ASSUME_NONNULL_BEGIN
         @"}}");
     NSString *onlyCreatorFormat = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
         @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
-    NSString *onlyYouFormat
+    NSString *youCreatedString
+        = NSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
+    NSString *onlyYouString
         = NSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE", @"Text explaining that you are in the group call.");
     NSString *onlyOneFormat = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
         @"Text explaining that there is one person in the group call. Embeds {member name}");
@@ -228,11 +232,15 @@ NS_ASSUME_NONNULL_BEGIN
         return [NSString stringWithFormat:twoFormat, firstName, secondName];
 
     } else if (sortedAddresses.count == 1 && [sortedAddresses[0] isEqualToAddress:self.creatorAddress]) {
-        NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-        return [NSString stringWithFormat:onlyCreatorFormat, name];
+        if (sortedAddresses[0].isLocalAddress) {
+            return youCreatedString;
+        } else {
+            NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
+            return [NSString stringWithFormat:onlyCreatorFormat, name];
+        }
 
     } else if (sortedAddresses.count == 1 && sortedAddresses[0].isLocalAddress) {
-        return onlyYouFormat;
+        return onlyYouString;
 
     } else if (sortedAddresses.count == 1) {
         NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
