@@ -6,8 +6,6 @@ import Foundation
 
 class GroupCallErrorView: UIView {
 
-    // MARK: - Interface
-
     var forceCompactAppearance: Bool = false {
         didSet { configure() }
     }
@@ -33,23 +31,14 @@ class GroupCallErrorView: UIView {
 
     var userTapAction: ((GroupCallErrorView) -> Void)?
 
-    func resetConfiguration() {
-        iconImage = nil
-        labelText = nil
-        userTapAction = nil
-    }
-
     // MARK: - Views
 
-    private let iconView: UIImageView = {
-        let view = UIImageView()
-        view.setTemplateImageName("error-solid-16", tintColor: .ows_white)
-        return view
-    }()
+    private let iconView: UIImageView = UIImageView()
 
     private let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.ows_dynamicTypeSubheadline
+        label.adjustsFontForContentSizeCategory = true
         label.textAlignment = .center
         label.textColor = .ows_white
         label.numberOfLines = 0
@@ -63,8 +52,9 @@ class GroupCallErrorView: UIView {
 
         let button = UIButton()
         button.backgroundColor = .ows_gray75
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = 12
         button.titleLabel?.textAlignment = .center
+        button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
         button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
         button.clipsToBounds = true
         button.setTitle(buttonLabel, for: .normal)
@@ -95,21 +85,24 @@ class GroupCallErrorView: UIView {
         stackView.setCustomSpacing(12, after: iconView)
         stackView.setCustomSpacing(16, after: label)
 
-        addSubview(stackView)
         insetsLayoutMarginsFromSafeArea = false
+
+        addSubview(miniButton)
+        addSubview(stackView)
+
         stackView.autoPinWidthToSuperviewMargins()
         stackView.autoVCenterInSuperview()
         stackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
         stackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+        miniButton.autoCenterInSuperview()
 
         iconView.setCompressionResistanceHigh()
         button.setCompressionResistanceHigh()
 
         iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))
-
-        addSubview(miniButton)
+        button.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
         miniButton.autoSetDimensions(to: CGSize(width: 24, height: 24))
-        miniButton.autoCenterInSuperview()
+
         configure()
     }
 
@@ -133,7 +126,8 @@ class GroupCallErrorView: UIView {
         // The error text is easily truncated in small cells with large dynamic type.
         // If the label gets truncated, just hide it.
         if !label.isHidden {
-            let labelDesiredHeight = label.sizeThatFits(CGSize(width: label.bounds.width, height: .greatestFiniteMagnitude)).height
+            let widthBox = CGSize(width: label.bounds.width, height: .greatestFiniteMagnitude)
+            let labelDesiredHeight = label.sizeThatFits(widthBox).height
             label.isHidden = (labelDesiredHeight > label.bounds.height)
         }
     }

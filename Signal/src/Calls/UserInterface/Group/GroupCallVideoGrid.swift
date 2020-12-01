@@ -160,8 +160,13 @@ extension Sequence where Element: RemoteDeviceState {
     /// The first person to join the call is the first item in the list.
     var sortedByAddedTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.addedTime == rhs.addedTime { return lhs.demuxId < rhs.demuxId }
-            return lhs.addedTime < rhs.addedTime
+            if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
+                return lhs.mediaKeysReceived
+            } else if lhs.addedTime != rhs.addedTime {
+                return lhs.addedTime > rhs.addedTime
+            } else {
+                return lhs.demuxId < rhs.demuxId
+            }
         }
     }
 
