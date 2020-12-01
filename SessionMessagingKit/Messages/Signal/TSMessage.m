@@ -79,7 +79,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     [self updateExpiresAt];
     _quotedMessage = quotedMessage;
     _linkPreview = linkPreview;
-    _openGroupServerMessageID = -1;
+    _openGroupServerMessageID = 0;
 
     return self;
 }
