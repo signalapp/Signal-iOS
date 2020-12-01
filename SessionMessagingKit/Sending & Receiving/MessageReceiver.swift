@@ -1,8 +1,8 @@
 import SessionUtilitiesKit
 
-internal enum MessageReceiver {
+public enum MessageReceiver {
 
-    internal enum Error : LocalizedError {
+    public enum Error : LocalizedError {
         case duplicateMessage
         case invalidMessage
         case unknownMessage
@@ -17,14 +17,14 @@ internal enum MessageReceiver {
         case noGroupPrivateKey
         case sharedSecretGenerationFailed
 
-        internal var isRetryable: Bool {
+        public var isRetryable: Bool {
             switch self {
             case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType, .noData, .senderBlocked, .selfSend: return false
             default: return true
             }
         }
 
-        internal var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .duplicateMessage: return "Duplicate message."
             case .invalidMessage: return "Invalid message."
@@ -43,7 +43,7 @@ internal enum MessageReceiver {
         }
     }
 
-    internal static func parse(_ data: Data, openGroupMessageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
+    public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
         let userPublicKey = Configuration.shared.storage.getUserPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
         // Parse the envelope

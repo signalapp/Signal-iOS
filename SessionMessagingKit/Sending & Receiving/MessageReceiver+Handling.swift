@@ -7,7 +7,7 @@ extension MessageReceiver {
         return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
     }
 
-    internal static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws {
+    public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
@@ -135,7 +135,8 @@ extension MessageReceiver {
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
 
-    private static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws {
+    @discardableResult
+    public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws -> String {
         let storage = Configuration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Parse & persist attachments
@@ -188,21 +189,23 @@ extension MessageReceiver {
             groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Start attachment downloads if needed
-        storage.withAsync({ transaction in
-            attachmentsToDownload.forEach { attachmentID in
-                let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
-                if CurrentAppContext().isMainAppAndActive { // This has to be called from the main thread
-                    JobQueue.shared.add(downloadJob, using: transaction)
-                } else {
-                    JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
-                }
+        attachmentsToDownload.forEach { attachmentID in
+            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
+            if CurrentAppContext().isMainAppAndActive {
+                JobQueue.shared.add(downloadJob, using: transaction)
+            } else {
+                JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
             }
-        }, completion: { })
-        // Cancel any typing indicators
-        cancelTypingIndicatorsIfNeeded(for: message.sender!)
+        }
+        // Cancel any typing indicators if needed
+        if CurrentAppContext().isMainAppAndActive {
+            cancelTypingIndicatorsIfNeeded(for: message.sender!)
+        }
         // Notify the user if needed
-        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction), let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+        guard CurrentAppContext().isMainAppAndActive, let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
+            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsIncomingMessageID }
         SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
+        return tsIncomingMessageID
     }
 
     private static func handleClosedGroupUpdate(_ message: ClosedGroupUpdate, using transaction: Any) {
