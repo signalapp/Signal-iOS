@@ -4,6 +4,7 @@ internal extension OpenGroupMessage {
     static func from(_ message: VisibleMessage, for server: String, using transaction: YapDatabaseReadWriteTransaction) -> OpenGroupMessage? {
         let storage = Configuration.shared.storage
         guard let userPublicKey = storage.getUserPublicKey() else { return nil }
+        var attachmentIDs = message.attachmentIDs
         // Validation
         guard message.isValid else { return nil } // Should be valid at this point
         // Quote
@@ -11,7 +12,11 @@ internal extension OpenGroupMessage {
             if let quote = message.quote {
                 guard quote.isValid else { return nil }
                 let quotedMessageServerID = TSIncomingMessage.find(withAuthorId: quote.publicKey!, timestamp: quote.timestamp!, transaction: transaction)?.openGroupServerMessageID
-                return OpenGroupMessage.Quote(quotedMessageTimestamp: quote.timestamp!, quoteePublicKey: quote.publicKey!, quotedMessageBody: quote.text, quotedMessageServerID: quotedMessageServerID)
+                let quotedMessageBody = quote.text ?? String(quote.timestamp!) // The back-end doesn't accept messages without a body so we use this as a workaround
+                if let quotedAttachmentID = quote.attachmentID, let index = attachmentIDs.firstIndex(of: quotedAttachmentID) {
+                    attachmentIDs.remove(at: index)
+                }
+                return OpenGroupMessage.Quote(quotedMessageTimestamp: quote.timestamp!, quoteePublicKey: quote.publicKey!, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
             } else {
                 return nil
             }
@@ -25,13 +30,16 @@ internal extension OpenGroupMessage {
         if let linkPreview = message.linkPreview {
             guard linkPreview.isValid, let attachmentID = linkPreview.attachmentID,
                 let attachment = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction) else { return nil }
+            if let index = attachmentIDs.firstIndex(of: attachmentID) {
+                attachmentIDs.remove(at: index)
+            }
             let fileName = attachment.sourceFilename ?? UUID().uuidString
             let width = attachment.shouldHaveImageSize() ? attachment.imageSize().width : 0
             let height = attachment.shouldHaveImageSize() ? attachment.imageSize().height : 0
             let openGroupLinkPreview = OpenGroupMessage.Attachment(
                 kind: .linkPreview,
                 server: server,
-                serverID: 0,
+                serverID: attachment.serverId,
                 contentType: attachment.contentType,
                 size: UInt(attachment.byteCount),
                 fileName: fileName,
@@ -46,7 +54,7 @@ internal extension OpenGroupMessage {
             result.attachments.append(openGroupLinkPreview)
         }
         // Attachments
-        let attachments: [OpenGroupMessage.Attachment] = message.attachmentIDs.compactMap { attachmentID in
+        let attachments: [OpenGroupMessage.Attachment] = attachmentIDs.compactMap { attachmentID in
             guard let attachment = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction) else { return nil } // Should never occur
             let fileName = attachment.sourceFilename ?? UUID().uuidString
             let width = attachment.shouldHaveImageSize() ? attachment.imageSize().width : 0

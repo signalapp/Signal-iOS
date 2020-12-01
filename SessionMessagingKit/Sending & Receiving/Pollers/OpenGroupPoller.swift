@@ -108,7 +108,7 @@ public final class OpenGroupPoller : NSObject {
                 // Quote
                 if let quote = message.quote {
                     let quoteProto = SNProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
-                    if let quotedMessageBody = quote.quotedMessageBody { quoteProto.setText(quotedMessageBody) }
+                    if quote.quotedMessageBody != String(quote.quotedMessageTimestamp) { quoteProto.setText(quote.quotedMessageBody) }
                     dataMessageProto.setQuote(try! quoteProto.build())
                 }
                 // Profile

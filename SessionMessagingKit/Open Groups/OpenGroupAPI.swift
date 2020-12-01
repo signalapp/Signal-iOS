@@ -86,8 +86,8 @@ public final class OpenGroupAPI : DotNetAPI {
                             }
                         }
                         let quote: OpenGroupMessage.Quote?
-                        if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String {
-                            let quotedMessageBody = quoteAsJSON["text"] as? String
+                        if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String,
+                           let quotedMessageBody = quoteAsJSON["text"] as? String {
                             let quotedMessageServerID = message["reply_to"] as? UInt64
                             quote = OpenGroupMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteePublicKey, quotedMessageBody: quotedMessageBody,
                                 quotedMessageServerID: quotedMessageServerID)
