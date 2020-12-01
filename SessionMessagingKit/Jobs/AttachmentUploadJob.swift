@@ -81,6 +81,14 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         SNLog("Attachment uploaded successfully.")
         delegate?.handleJobSucceeded(self)
         Configuration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
+        Storage.shared.withAsync({ transaction in
+            var interaction: TSInteraction?
+            let transaction = transaction as! YapDatabaseReadWriteTransaction
+            TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: self.message.sentTimestamp!, with: { _, key, _ in
+                interaction = TSInteraction.fetch(uniqueId: key, transaction: transaction)
+            }, using: transaction)
+            interaction?.touch(with: transaction) // To refresh the associated message cell and hide the loader
+        }, completion: { })
     }
     
     private func handlePermanentFailure(error: Swift.Error) {
