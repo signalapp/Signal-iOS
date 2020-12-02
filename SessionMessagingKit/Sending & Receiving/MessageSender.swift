@@ -114,8 +114,9 @@ public final class MessageSender : NSObject {
         guard !isSelfSend else {
             storage.withAsync({ transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-            }, completion: { })
-            seal.fulfill(())
+            }, completion: {
+                seal.fulfill(())
+            })
             return promise
         }
         // Attach the user's profile if needed
@@ -211,7 +212,18 @@ public final class MessageSender : NSObject {
                 let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
-                    seal.fulfill(())
+                    if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
+                        NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
+                    }
+                    storage.withAsync({ transaction in
+                        MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
+                        if message is VisibleMessage {
+                            let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
+                            JobQueue.shared.add(notifyPNServerJob, using: transaction)
+                        }
+                    }, completion: {
+                        seal.fulfill(())
+                    })
                 }
                 $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                     errorCount += 1
@@ -222,21 +234,6 @@ public final class MessageSender : NSObject {
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             SNLog("Couldn't send message due to error: \(error).")
             seal.reject(error)
-        }
-        // Handle completion
-        let _ = promise.done(on: DispatchQueue.main) {
-            storage.withAsync({ transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-            }, completion: { })
-            if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-                NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
-            }
-            if message is VisibleMessage {
-                let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-                storage.withAsync({ transaction in
-                    JobQueue.shared.add(notifyPNServerJob, using: transaction)
-                }, completion: { })
-            }
         }
         // Return
         return promise
@@ -282,15 +279,13 @@ public final class MessageSender : NSObject {
         // Send the result
         OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = openGroupMessage.serverID
-            seal.fulfill(())
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            seal.reject(error)
-        }
-        // Handle completion
-        let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) {
             storage.withAsync({ transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-            }, completion: { })
+            }, completion: {
+                seal.fulfill(())
+            })
+        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+            seal.reject(error)
         }
         // Return
         return promise

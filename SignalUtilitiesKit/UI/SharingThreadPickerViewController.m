@@ -26,7 +26,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
-@property (nonatomic, readonly) UIProgressView *progressView;
 @property (atomic, nullable) TSOutgoingMessage *outgoingMessage;
 
 @end
@@ -66,7 +65,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     [super loadView];
 
-    _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
 }
 
@@ -286,8 +284,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)tryToSendMessageWithBlock:(SendMessageBlock)sendMessageBlock
                fromViewController:(UIViewController *)fromViewController
 {
-    // Reset progress in case we're retrying
-    self.progressView.progress = 0;
 
     NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
     UIAlertController *progressAlert = [UIAlertController alertControllerWithTitle:progressTitle
@@ -300,14 +296,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                      [self.shareViewDelegate shareViewWasCancelled];
                                                                  }];
     [progressAlert addAction:progressCancelAction];
-
-
-    // We add a progress subview to an AlertController, which is a total hack.
-    // ...but it looks good, and given how short a progress view is and how
-    // little the alert controller changes, I'm not super worried about it.
-    [progressAlert.view addSubview:self.progressView];
-    [self.progressView autoPinWidthToSuperviewWithMargin:24];
-    [self.progressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:progressAlert.view withOffset:4];
 
     SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
 
@@ -476,7 +464,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSLogDebug(@"upload progress.");
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.progressView);
 
     if (!self.outgoingMessage) {
         OWSLogDebug(@"Ignoring upload progress until there is an outgoing message.");
@@ -496,7 +483,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     if ([attachmentRecordId isEqual:attachmentID]) {
         if (!isnan(progress)) {
-            [self.progressView setProgress:progress animated:YES];
+            // This is where we'd set progress if we could
         } else {
             OWSFailDebug(@"Invalid attachment progress.");
         }

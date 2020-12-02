@@ -139,6 +139,10 @@ extension MessageReceiver {
     public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws -> String {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        var isMainAppAndActive = false
+        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
+            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+        }
         // Parse & persist attachments
         let attachments: [VisibleMessage.Attachment] = proto.dataMessage!.attachments.compactMap { proto in
             guard let attachment = VisibleMessage.Attachment.fromProto(proto) else { return nil }
@@ -191,18 +195,18 @@ extension MessageReceiver {
         // Start attachment downloads if needed
         attachmentsToDownload.forEach { attachmentID in
             let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
-            if CurrentAppContext().isMainAppAndActive {
+            if isMainAppAndActive {
                 JobQueue.shared.add(downloadJob, using: transaction)
             } else {
                 JobQueue.shared.addWithoutExecuting(downloadJob, using: transaction)
             }
         }
         // Cancel any typing indicators if needed
-        if CurrentAppContext().isMainAppAndActive {
+        if isMainAppAndActive {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
         // Notify the user if needed
-        guard CurrentAppContext().isMainAppAndActive, let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
+        guard isMainAppAndActive, let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsIncomingMessageID }
         SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsIncomingMessageID

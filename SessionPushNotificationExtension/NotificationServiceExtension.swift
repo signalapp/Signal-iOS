@@ -18,11 +18,11 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         self.notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent
 
         // Abort if the main app is running
-        var isMainAppActive = false
+        var isMainAppAndActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
         }
-        guard !isMainAppActive else { return self.handleFailure(for: notificationContent!) }
+        guard !isMainAppAndActive else { return self.handleFailure(for: notificationContent!) }
 
         // Perform main setup
         DispatchQueue.main.sync { self.setUpIfNecessary() { } }
