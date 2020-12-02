@@ -154,7 +154,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2processProtosInGroupUpdates = true
 
     @objc
-    public static let groupsV2showSplash = build.includes(.qa)
+    public static let groupsV2showSplash = build.includes(.beta)
 
     @objc
     public static var groupsV2Migrations: Bool = build.includes(.beta)
@@ -287,7 +287,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2onlyCreateV1Groups = TestableFlag(false)
 
     @objc
-    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.qa))
+    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.beta))
 
     @objc
     public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(false)
