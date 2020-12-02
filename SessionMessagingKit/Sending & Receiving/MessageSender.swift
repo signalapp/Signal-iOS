@@ -88,10 +88,12 @@ public final class MessageSender : NSObject {
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let userPublicKey = storage.getUserPublicKey()
+        // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        let userPublicKey = storage.getUserPublicKey()
         message.sender = userPublicKey
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey
@@ -99,17 +101,18 @@ public final class MessageSender : NSObject {
         case .openGroup(_, _): preconditionFailure()
         }
         let isSelfSend = (message.recipient == userPublicKey)
-        // Set the failure handler (for precondition failure handling)
-        let _ = promise.catch(on: DispatchQueue.main) { error in
-            storage.withAsync({ transaction in
-                MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
-            }, completion: { })
+        // Set the failure handler (need it here already for precondition failure handling)
+        func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
+            MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
             }
+            transaction.addCompletionQueue(DispatchQueue.main) {
+                seal.reject(error)
+            }
         }
         // Validate the message
-        guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
+        guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Stop here if this is a self-send
         guard !isSelfSend else {
             storage.withAsync({ transaction in
@@ -131,18 +134,18 @@ public final class MessageSender : NSObject {
         // Convert it to protobuf
         let protoOrNil: SNProtoContent?
         if let message = message as? VisibleMessage {
-            protoOrNil = message.toProto(using: transaction as! YapDatabaseReadWriteTransaction) // Needed because of how TSAttachmentStream works
+            protoOrNil = message.toProto(using: transaction) // Needed because of how TSAttachmentStream works
         } else {
             protoOrNil = message.toProto()
         }
-        guard let proto = protoOrNil else { seal.reject(Error.protoConversionFailed); return promise }
+        guard let proto = protoOrNil else { handleFailure(with: Error.protoConversionFailed, using: transaction); return promise }
         // Serialize the protobuf
         let plaintext: Data
         do {
             plaintext = try proto.serializedData()
         } catch {
             SNLog("Couldn't serialize proto due to error: \(error).")
-            seal.reject(error)
+            handleFailure(with: error, using: transaction)
             return promise
         }
         // Encrypt the serialized protobuf
@@ -160,7 +163,7 @@ public final class MessageSender : NSObject {
             }
         } catch {
             SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
-            seal.reject(error)
+            handleFailure(with: error, using: transaction)
             return promise
         }
         // Wrap the result
@@ -181,7 +184,7 @@ public final class MessageSender : NSObject {
                 senderPublicKey: senderPublicKey, base64EncodedContent: ciphertext.base64EncodedString())
         } catch {
             SNLog("Couldn't wrap message due to error: \(error).")
-            seal.reject(error)
+            handleFailure(with: error, using: transaction)
             return promise
         }
         // Calculate proof of work
@@ -194,7 +197,7 @@ public final class MessageSender : NSObject {
         let base64EncodedData = wrappedMessage.base64EncodedString()
         guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: type(of: message).ttl, publicKey: recipient, data: base64EncodedData) else {
             SNLog("Proof of work calculation failed.")
-            seal.reject(Error.proofOfWorkCalculationFailed)
+            handleFailure(with: Error.proofOfWorkCalculationFailed, using: transaction)
             return promise
         }
         // Send the result
@@ -228,12 +231,16 @@ public final class MessageSender : NSObject {
                 $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                     errorCount += 1
                     guard errorCount == promiseCount else { return } // Only error out if all promises failed
-                    seal.reject(error)
+                    storage.withAsync({ transaction in
+                        handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+                    }, completion: { })
                 }
             }
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             SNLog("Couldn't send message due to error: \(error).")
-            seal.reject(error)
+            storage.withAsync({ transaction in
+                handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+            }, completion: { })
         }
         // Return
         return promise
@@ -243,6 +250,8 @@ public final class MessageSender : NSObject {
     internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
@@ -252,22 +261,23 @@ public final class MessageSender : NSObject {
         case .closedGroup(_): preconditionFailure()
         case .openGroup(let channel, let server): message.recipient = "\(server).\(channel)"
         }
-        // Set the failure handler (for precondition failure handling)
-        let _ = promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            storage.withAsync({ transaction in
-                MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
-            }, completion: { })
+        // Set the failure handler (need it here already for precondition failure handling)
+        func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
+            MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
+            transaction.addCompletionQueue(DispatchQueue.main) {
+                seal.reject(error)
+            }
         }
         // Validate the message
         guard let message = message as? VisibleMessage else {
             #if DEBUG
             preconditionFailure()
             #else
-            seal.reject(Error.invalidMessage)
+            handleFailure(with: Error.invalidMessage, using: transaction)
             return promise
             #endif
         }
-        guard message.isValid else { seal.reject(Error.invalidMessage); return promise }
+        guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Convert the message to an open group message
         let (channel, server) = { () -> (UInt64, String) in
             switch destination {
@@ -275,7 +285,7 @@ public final class MessageSender : NSObject {
             default: preconditionFailure()
             }
         }()
-        guard let openGroupMessage = OpenGroupMessage.from(message, for: server, using: transaction as! YapDatabaseReadWriteTransaction) else { seal.reject(Error.invalidMessage); return promise }
+        guard let openGroupMessage = OpenGroupMessage.from(message, for: server, using: transaction) else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Send the result
         OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = openGroupMessage.serverID
@@ -285,7 +295,9 @@ public final class MessageSender : NSObject {
                 seal.fulfill(())
             })
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            seal.reject(error)
+            storage.withAsync({ transaction in
+                handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+            }, completion: { })
         }
         // Return
         return promise
