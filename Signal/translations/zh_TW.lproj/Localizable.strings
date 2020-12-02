@@ -26,10 +26,10 @@
 "ACCESSIBILITY_LABEL_STICKER" = "貼圖";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal 電話";
+"ACTION_AUDIO_CALL" = "Signal 語音通話";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "邀請來使用 Signal";
+"ACTION_INVITE" = "邀請至 Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "傳送訊息";
@@ -38,25 +38,25 @@
 "ACTION_SHARE_CONTACT" = "分享連絡人資訊";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "影像電話";
+"ACTION_VIDEO_CALL" = "視訊通話";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "新增成員";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "加入成員";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "新增成員";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "加入成員";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "要新增成員到\"%2$@\"嗎？";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "要新增成員到 \"%2$@\" 嗎？";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "新增%1$@成員到\"%2$@\"嗎？";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "新增%1$@成員到 \"%2$@\" 嗎？";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "新增新的成員";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "加入新成員";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "新增新成員";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "加入新成員";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "新增成員";
@@ -83,7 +83,7 @@
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@已經是%@的成員";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "最近的";
+"ADD_TO_GROUP_RECENTS_TITLE" = "最近使用";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@已被加入到%@";
@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "更新到最新版本的 Signal並再試一次";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "轉移你的 Signal 帳號到新的 iOS 裝置。請確定你的新裝置在附近並已打開。";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "轉移您的 Signal 帳號到新的 iOS 裝置。請確定您的新裝置在附近並已打開。";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "轉移帳號";
@@ -1541,7 +1541,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "在此通話中·%ld個人";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, 及 %3$@ 其他人正在此通話中";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "沒有人在這裡";
@@ -1577,7 +1577,7 @@
 "GROUP_CALL_RECONNECTING" = "重新連接中";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "有人發起了群組通話";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "開始通話";
@@ -1586,10 +1586,10 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ 發起了群組通話";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, 還有另外1人在通話中";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ 及 %2$@ 正在通話中";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "你已中斷通話。 檢查你的網路連結，然後重試。";
@@ -2204,7 +2204,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "舊版群組";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "你將需要接受邀請才能再次加入該群組，並且在你接受之前，你將不會收到群組訊息。";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "升級群組";
@@ -3830,7 +3830,7 @@
 "RETRY_BUTTON_TEXT" = "重試";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "返回";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "依然加入群組";
@@ -4775,7 +4775,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "取消和「%@」的連結？";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "裝置在被連結。請將手機重新連結 Signal 以繼續傳送訊息。";
+"UNLINKED_WARNING" = "本裝置的 Signal 連結失效，請重新與您的手機連結";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal無法取消裝置連結";

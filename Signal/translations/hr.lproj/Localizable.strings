@@ -1541,7 +1541,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "U ovom pozivu · %ld osoba";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ i još %3$@ osoba su na ovom pozivu";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Nitko drugi nije ovdje";
@@ -1577,7 +1577,7 @@
 "GROUP_CALL_RECONNECTING" = "Ponovno povezivanje";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Netko je započeo grupni poziv";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Započni poziv";
@@ -1586,10 +1586,10 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ je započeo/la grupni poziv";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ i još 1 osoba su na ovom pozivu";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ i %2$@ su na ovom pozivu";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Vaš poziv je prekinut. Provjerite internetsku vezu i pokušajte ponovo.";
@@ -2102,7 +2102,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Ne možete biti dodani u Novu grupu, ali ste pozvani da se pridružite";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ članova nije moguće dodati u Novu grupu, ali su pozvani da se pridruži.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ članova nije moguće dodati u Novu grupu, ali su pozvani da se pridruže.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Napustili ste grupu.";
@@ -2204,7 +2204,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Naslijeđena grupa";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Morati će te prihvatiti pozivnicu da se ponovno pridruži ovoj grupi i nećete primati poruke grupe dok ne prihvatite:";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Nadogradi grupu";
@@ -3830,7 +3830,7 @@
 "RETRY_BUTTON_TEXT" = "Pokušaj ponovno";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Povratak";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Svejedno dodaj u grupu";

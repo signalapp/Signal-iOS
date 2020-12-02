@@ -2204,7 +2204,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "گروه موروثی";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "شما به پذیرفتن یک دعوت برای پیوستن دوباره به این گروه نیاز خواهید داشت و پیام‌های گروه را تا زمانی که نپذیرید دریافت نخواهید کرد.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";

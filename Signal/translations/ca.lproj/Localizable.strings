@@ -1541,7 +1541,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "En aquesta trucada: %ld persones";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ i %3$@ més són a la trucada";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Aquí no hi ha ningú més.";
@@ -1577,7 +1577,7 @@
 "GROUP_CALL_RECONNECTING" = "Es torna a connectar...";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Algú ha iniciat una trucada de grup";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Inicia una trucada";
@@ -1586,10 +1586,10 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ ha iniciat una trucada de grup.";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ i 1 més són a la trucada";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ i %2$@ són a la trucada";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Se us ha desconnectat de la trucada. Comproveu la connexió i torneu-ho a provar.";
@@ -2204,7 +2204,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grup Antic";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Haureu d'acceptar una invitació per a unir-vos al grup de nou, i no rebreu missatges del grup fins que ho feu.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Actualitza el grup";
@@ -3830,7 +3830,7 @@
 "RETRY_BUTTON_TEXT" = "Torna a provar";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Torna";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Afegeix-lo al grup tanmateix";
@@ -4775,7 +4775,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Voleu desenllaçar «%@»?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "El dispositiu ja no està enllaçat. Torneu a enllaçar el Signal amb el telèfon per continuar enviant missatges.";
+"UNLINKED_WARNING" = "El dispositiu ja no està enllaçat. Torneu a enllaçar el Signal amb el telèfon per a continuar enviant missatges.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha pogut desenllaçar el dispositiu.";
@@ -4790,7 +4790,7 @@
 "UNPINNED_SECTION_TITLE" = "Converses";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "No llegit";
+"UNREAD_ACTION" = "Per llegir";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "No s'ha pogut cancel·lar el registre.";
@@ -4811,13 +4811,13 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "No s'ha pogut actualitzar el grup. Comproveu la connexió a Internet i torneu-ho a provar.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu el PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu un PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Apreneu més coses sobre els PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Més informació sobre els PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Els PIN mantenen encriptada la informació desada amb el Signal de manera que no hi pugui accedir ningú més. El perfil, la configuració i els contactes es restauraran quan el reinstal·leu. No necessitareu el PIN per obrir l'aplicació.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Els PIN mantenen xifrada la informació desada amb el Signal de manera que no hi pugui accedir ningú més. El perfil, la configuració i els contactes es restauraran quan el reinstal·leu. No necessitareu el PIN per a obrir l'aplicació.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "S'introdueixen els PIN";
@@ -4832,7 +4832,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Actualitzeu l'iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Els noms d’usuari al Signal són opcionals. Si trieu crear un nom d’usuari, altres usuaris de Signal us podran trobar per aquest nom d’usuari i contactar-vos sense saber el vostre número de telèfon.";
+"USERNAME_DESCRIPTION" = "Els noms d’usuari al Signal són opcionals. Si trieu crear un nom d’usuari, altres usuaris de Signal us podran trobar per aquest nom d’usuari i contactar sense saber el vostre número de telèfon.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Nom d'usuari";
@@ -4841,16 +4841,16 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Els noms d'usuari només poden contenir a-z, 0-9 i _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Hi ha hagut un error en cercar el nom d'usuari. Si us plau, torneu-ho a provar més tard.";
+"USERNAME_LOOKUP_ERROR" = "Hi ha hagut un error en cercar el nom d'usuari. Torneu-ho a provar més tard.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ no és un usuari de Signal. Assegureu-vos que hàgiu escrit el nom d'usuari complet.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ no és un usuari del Signal. Assegureu-vos que heu escrit el nom d'usuari complet.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "No s'ha trobat l'usuari.";
+"USERNAME_NOT_FOUND_TITLE" = "No s'ha trobat l'usuari";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Escriviu un nom d'usuari.";
+"USERNAME_PLACEHOLDER" = "Escriviu un nom d'usuari";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -4868,13 +4868,13 @@
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ està agafat.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Ha fallat actualitzar el nom d'usuari.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "No s'ha pogut actualitzar el nom d'usuari.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "El nom del dispositiu no pot estar en blanc.";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "El nom del dispositiu no pot estar buit";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "El nom del dispositiu és massa llarg.";
+"VALIDATION_ERROR_TOO_LONG" = "El nom del dispositiu és massa llarg";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Heu marcat %@ com a no verificat.";
@@ -4904,10 +4904,10 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ja heu vist aquest missatge.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Toqueu aquí per fer desaparèixer aquest missatge un cop vist.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Toqueu aquí per fer desaparèixer el missatge una vegada vist.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Els fitxers multimèdia d'una sola visualització se suprimeixen automàticament un cop enviats.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Els fitxers multimèdia d'una sola visualització se suprimeixen automàticament una vegada enviats.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Llisqueu per a cancel·lar";
@@ -4916,7 +4916,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Missatge de veu";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Mantingueu un toc per gravar un missatge de veu.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Toc llarg per a enregistrar un missatge de veu.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Missatge de veu";

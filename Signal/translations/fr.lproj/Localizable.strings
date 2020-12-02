@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Vous avez manqué un appel, car le numéro de sécurité de l’appelant a changé.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Retourner à l'appel";
+"CALL_RETURN_BUTTON" = "Revenir à l’appel";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Pas de réponse";
@@ -539,7 +539,7 @@
 "CALLBACK_BUTTON_TITLE" = "Rappeler";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Votre appareil photo est éteint";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Votre vidéo est désactivée";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilisateur de Signal";
@@ -1409,13 +1409,13 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utilisateur non inscrit : %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Votre version de Signal est expirée. Touchez pour mettre Signal à jour vers la version la plus récente.";
+"EXPIRATION_ERROR" = "Votre version de Signal est expirée. Touchez pour passer à la version la plus récente.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Votre version de Signal expirera dans %d jours. Touchez pour mettre Signal à jour vers la version la plus récente.";
+"EXPIRATION_WARNING_SOON" = "Votre version de Signal expirera dans %d jours. Touchez pour passer à la version la plus récente.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Votre version de Signal expirera aujourd’hui. Touchez pour mettre Signal à jour vers la version la plus récente.";
+"EXPIRATION_WARNING_TODAY" = "Votre version de Signal expirera aujourd’hui. Touchez pour passer à la version la plus récente.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop d’échecs avec ce contact. Veuillez réessayer plus tard.";
@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Seuls les administrateurs peuvent changer cette option.";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "L'appel de groupe a pris fin";
+"GROUP_CALL_ENDED_MESSAGE" = "L’appel de groupe a pris fin";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Le nombre maximum de %ld participants a été atteint pour cet appel. Essayez de nouveau plus tard.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Le nombre maximal de %ld participants a été atteint pour cet appel. Veuillez réessayer plus tard.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Le nombre maximum de participants a été atteint pour cet appel. Essayez de nouveau plus tard.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Le nombre maximal de participants a été atteint pour cet appel. Veuillez réessayer plus tard.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "L'appel est complet";
+"GROUP_CALL_IS_FULL" = "L’appel est complet";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Me joindre à l’appel";
@@ -1541,13 +1541,13 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dans cet appel · %ld personnes";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ et %3$@ autres personnes font partie de cet appel";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Il n’y a personne d’autre ici";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Personne n'est encore présent dans cet appel.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Il n’y a encore personne dans cet appel.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ et %ld autres se sont joints à l’appel";
@@ -1577,7 +1577,7 @@
 "GROUP_CALL_RECONNECTING" = "Reconnexion";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Quelqu’un a lancé un appel de groupe";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Démarrer un appel";
@@ -1586,19 +1586,19 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ a lancé un appel de groupe";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ et une autre personne font partie de cet appel";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ et %2$@ font partie de cet appel";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Vous avez été déconnecté de l'appel. Vérifiez votre connexion et réessayez.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Vous avez été déconnecté de l’appel. Veuillez vérifier votre connexion et réessayer.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Vous";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "Vous êtes dans l'appel de groupe";
+"GROUP_CALL_YOU_ARE_HERE" = "Vous faites partie de l’appel de groupe";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vous (sur un autre appareil)";
@@ -1688,22 +1688,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ a réinitialisé le lien de groupe.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "L’approbation d’un administrateur a été désactivée pour le lien de groupe.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "L’approbation d’un administrateur a été désactivée pour le lien du groupe.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Vous avez désactivé l’approbation d’un administrateur pour le lien de groupe.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Vous avez désactivé l’approbation d’un administrateur pour le lien du groupe.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a désactivé l’approbation d’un administrateur pour le lien de groupe.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a désactivé l’approbation d’un administrateur pour le lien du groupe.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "L’approbation d’un administrateur a été activée pour le lien de groupe.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "L’approbation d’un administrateur a été activée pour le lien du groupe.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Vous avez activé l’approbation d’un administrateur pour le lien de groupe.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Vous avez activé l’approbation d’un administrateur pour le lien du groupe.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé l’approbation d’un administrateur pour le lien de groupe.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé l’approbation d’un administrateur pour le lien du groupe.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ ne peut pas être ajouté automatiquement par vous à ce groupe. Une invitation a été envoyée et l’utilisateur ne verra aucun message du groupe tant que l’invitation n’aura pas été acceptée.";
@@ -1745,7 +1745,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Veuillez réessayer.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ce lien de groupe n’est pas valide. Assurez-vous que l’intégralité du lien soit intacte et correcte avant de tenter de vous joindre.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ce lien du groupe n’est pas valide. Assurez-vous que l’intégralité du lien soit intacte et correcte avant de tenter de vous joindre.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Lien invalide";
@@ -2102,7 +2102,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Vous n’avez pas pu être ajouté au nouveau groupe et avez été invité à vous y joindre";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à s’y joindre";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à s’y joindre.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
@@ -2132,10 +2132,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Que sont les groupes hérités ?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Les groupes hérités ne peuvent pour le moment pas être transformer en nouveaux groupes, mais vous pouvez créer un nouveau groupe avec les mêmes membres s’ils utilisent la version la plus récente de Signal.\n\nSignal proposera à l’avenir un moyen de transformer les groupes hérités.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Les groupes hérités ne peuvent pour le moment pas être convertis en nouveaux groupes, mais vous pouvez créer un nouveau groupe avec les mêmes membres s’ils utilisent la version la plus récente de Signal.\n\nSignal proposera dans le futur un moyen de convertir les groupes hérités.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puis-je transformer un groupe hérité en nouveau groupe ?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puis-je convertir un groupe hérité en nouveau groupe ?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pour créer un nouveau groupe, tous les membres devraient mettre Signal à jour vers la version la plus récente.";
@@ -2159,22 +2159,22 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tout l’historique des messages et tous les médias d’avant la conversion seront conservés.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Ce groupe ne peut pas être créé car 1 membre utilise une ancienne version de Signal. Vous pourrez créer un groupe de type nouveau avec lui une fois qu’il aura mis Signal à jour, ou retirez-le avant de créer le groupe.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Ce groupe ne peut pas être créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec ce membre une fois que ce membre aura mis Signal à jour, ou supprimez ce membre avant de créer le groupe.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Ce groupe ne peut pas être créé car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un groupe de type nouveau avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Ce groupe ne peut pas être créé, car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Ce groupe ne peut pas être créé car 1 membre utilise une ancienne version de Signal. Vous pourrez créer un groupe de type nouveau avec lui une fois qu’il aura mis Signal à jour, ou retirez-le avant de créer le groupe. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Ce groupe ne peut pas être créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec ce membre une fois que ce membre aura mis Signal à jour, ou supprimez ce membre avant de créer le groupe. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Ce groupe ne peut pas être créé car %1$@ membres utilisent une ancienne version de Signal. Vous pourrez créer un groupe de type nouveau avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Ce groupe ne peut pas être créé, car %1$@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Un groupe hérité sera créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un groupe de type nouveau avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Un groupe hérité sera créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Un groupe hérité sera créé, car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un groupe de type nouveau avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Un groupe hérité sera créé, car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Un membre ne prend pas en charge les nouveaux groupes, ce sera donc un groupe hérité. %@";
@@ -2192,7 +2192,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ce groupe hérité ne peut pas être converti en nouveau groupe, car il est trop grand. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ceci est un groupe hérité. Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ce groupe est un groupe hérité. Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, %@";
 
 /* Title for the the 'dropped group member' banner. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Un membre n’a pas pu être rajouté au nouveau groupe. Voulez-vous l’ajouter maintenant ?";
@@ -2204,13 +2204,13 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Groupe hérité";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Vous devrez accepter une invitation afin de vous joindre à ce groupe de nouveau et vous ne recevrez aucun message du groupe avant d’en avoir accepté une :";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Convertir le groupe";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, convertissez ce groupe";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, convertissez ce groupe.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Que sont les nouveaux groupes ?";
@@ -2219,7 +2219,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Tout l’historique des messages et tous les médias d’avant la conversion ont été conservés.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Les nouveaux groupes offrent des fonctions telles que les @mentions et les administrateurs de groupe et offriront davantage de fonctions dans le futur.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Les nouveaux groupes offrent des fonctions telles que les @mentions et les administrateurs de groupes et en offriront d’autres dans le futur.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Nouveaux groupes";
@@ -2237,10 +2237,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Ajouter des membres";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Ce membre n’a pas pu être ajouté automatiquement au nouveau groupe quand il a été converti :";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Ce membre n’a pas pu être ajouté automatiquement au nouveau groupe lors de sa conversion :";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ces membres n’ont pas pu être ajoutés automatiquement au nouveau groupe quand il a été converti :";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ces membres n’ont pas pu être ajoutés automatiquement au nouveau groupe lors de sa conversion :";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Tout l’historique des messages et tous les médias d’avant la conversion ont été conservés.";
@@ -2252,16 +2252,16 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Ces membres ont été supprimés du groupe et ne pourront pas s’y joindre de nouveau avant d’avoir effectué une mise à niveau :";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Ce membre devra accepter une invitation afin de se joindre à ce groupe de nouveau et ne recevra pas les messages du groupe avant d’avoir accepté l’invitation :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Ce membre devra accepter une invitation afin de se joindre à ce groupe de nouveau et ne recevra aucun message du groupe avant d’en avoir accepté une :";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Ces membres devront accepter une invitation afin de se joindre à ce groupe de nouveau et ne recevront pas les messages du groupe avant d’avoir accepté l’invitation :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Ces membres devront accepter une invitation afin de se joindre à ce groupe de nouveau et ne recevront aucun message du groupe avant d’en avoir accepté une :";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ce membre ne peut pas se joindre aux « nouveaux groupes » et sera supprimé du groupe :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ce membre ne peut pas se joindre aux nouveaux groupes et sera supprimé du groupe :";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ces membres ne peuvent pas se joindre aux « nouveaux groupes » et seront supprimés du groupe :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ces membres ne peuvent pas se joindre aux nouveaux groupes et seront supprimés du groupe :";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Convertir en nouveau groupe";
@@ -2897,7 +2897,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Impossible de créer le nouveau groupe. Vérifiez votre connexion à Internet et réessayez.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ne supporte pas les groupes de type nouveau";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ne prend pas en charge les nouveaux groupes";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Un nom de groupe est requis.";
@@ -3830,7 +3830,7 @@
 "RETRY_BUTTON_TEXT" = "Réessayer";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Revenir";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Ajouter quand même au groupe";
@@ -4538,7 +4538,7 @@
 "SOUNDS_NONE" = "Aucun";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Les groupes existants obtiendront automatiquement ces fonctionnalités dans les semaines à venir.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Ces fonctions seront proposées pour les groupes existants au cours des prochaines semaines.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nouveau groupe";

@@ -1541,7 +1541,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Nesta chamada · %ld pessoas";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ e %3$@ outros estão nesta chamada";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Ninguém mais está aqui";
@@ -1577,7 +1577,7 @@
 "GROUP_CALL_RECONNECTING" = "Reconectando";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Alguém começou uma chamada em grupo";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Começar a Chamada";
@@ -1586,10 +1586,10 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ começou uma chamada em grupo";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ e 1 outro estão nesta chamada";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ e %2$@ estão nesta chamada";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Você foi desconectado da chamada. Verifique sua conexão à internet e tente novamente.";
@@ -2204,7 +2204,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grupo Legado";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Você precisará aceitar um convite para entrar novamente neste grupo e não receberá mensagens do grupo até que você aceite.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Atualizar o Grupo";
@@ -3830,7 +3830,7 @@
 "RETRY_BUTTON_TEXT" = "Tentar Novamente";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Retornar";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Adicionar ao grupo assim mesmo";
