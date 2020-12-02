@@ -107,9 +107,7 @@ public final class MessageSender : NSObject {
             if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
                 NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
             }
-            transaction.addCompletionQueue(DispatchQueue.main) {
-                seal.reject(error)
-            }
+            seal.reject(error)
         }
         // Validate the message
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
@@ -117,9 +115,8 @@ public final class MessageSender : NSObject {
         guard !isSelfSend else {
             storage.withAsync({ transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-            }, completion: {
                 seal.fulfill(())
-            })
+            }, completion: { })
             return promise
         }
         // Attach the user's profile if needed
@@ -224,9 +221,8 @@ public final class MessageSender : NSObject {
                             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
                             JobQueue.shared.add(notifyPNServerJob, using: transaction)
                         }
-                    }, completion: {
                         seal.fulfill(())
-                    })
+                    }, completion: { })
                 }
                 $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                     errorCount += 1
@@ -264,9 +260,7 @@ public final class MessageSender : NSObject {
         // Set the failure handler (need it here already for precondition failure handling)
         func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
             MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
-            transaction.addCompletionQueue(DispatchQueue.main) {
-                seal.reject(error)
-            }
+            seal.reject(error)
         }
         // Validate the message
         guard let message = message as? VisibleMessage else {
@@ -291,9 +285,8 @@ public final class MessageSender : NSObject {
             message.openGroupServerMessageID = openGroupMessage.serverID
             storage.withAsync({ transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-            }, completion: {
                 seal.fulfill(())
-            })
+            }, completion: { })
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             storage.withAsync({ transaction in
                 handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
