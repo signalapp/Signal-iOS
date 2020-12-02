@@ -96,6 +96,7 @@ PODS:
     - CocoaLumberjack
     - Curve25519Kit
     - HKDFKit
+    - SignalClient
     - SignalCoreKit
     - SwiftProtobuf
   - SignalMetadataKit/Tests (1.0.0):
@@ -103,6 +104,7 @@ PODS:
     - CocoaLumberjack
     - Curve25519Kit
     - HKDFKit
+    - SignalClient
     - SignalCoreKit
     - SwiftProtobuf
   - SignalRingRTC (2.9.0):
@@ -374,7 +376,7 @@ CHECKOUT OPTIONS:
     :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 50fbd4fd21b9181d9f810447dedcec87409526ca
+    :commit: 276a3cc8739a41821e39029128edd8ba538c030d
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -413,7 +415,7 @@ SPEC CHECKSUMS:
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalClient: f4d285cb4084ff7d28d3e454910456e250f54af0
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
-  SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
+  SignalMetadataKit: a40217605426975468175eb9328a170e2162be94
   SignalRingRTC: d59de0ae05da586f043f83e5a6f7e5bc0c60a482
   SignalServiceKit: af084384e66b5b2ea468261a15eb01552677d600
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
