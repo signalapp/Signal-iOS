@@ -2252,10 +2252,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Dessa medlemmar togs bort från gruppen och kommer inte att kunna gå med i gruppen förrän de uppgraderar:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Denna medlem måste acceptera en inbjudan att gå med i denna grupp igen och kommer inte att få gruppmeddelanden förrän de accepterar:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Denna medlem måste acceptera en inbjudan för att gå med i denna grupp igen och kommer inte att få gruppmeddelanden förrän de accepterar:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Dessa medlemmar måste acceptera en inbjudan att gå med i gruppen igen och kommer inte att få gruppmeddelanden förrän de accepterar:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Dessa medlemmar måste acceptera en inbjudan för att gå med i gruppen igen och kommer inte att få gruppmeddelanden förrän de accepterar:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Denna medlem kan inte gå med i Nya grupper och kommer att tas bort från gruppen:";
