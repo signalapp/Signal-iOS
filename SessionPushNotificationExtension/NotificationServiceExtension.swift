@@ -84,8 +84,6 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         // This should be the first thing we do.
         SetCurrentAppContext(NotificationServiceExtensionContext())
 
-        SignalUtilitiesKit.Configuration.performMainSetup()
-
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {
             DebugLogger.shared().enableFileLogging()
@@ -152,6 +150,8 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
 
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard OWSStorage.isStorageReady() && areVersionMigrationsComplete else { return }
+
+        SignalUtilitiesKit.Configuration.performMainSetup()
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
