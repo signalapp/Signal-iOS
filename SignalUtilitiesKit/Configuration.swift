@@ -5,9 +5,9 @@ import SessionSnodeKit
 extension OWSPrimaryStorage : OWSPrimaryStorageProtocol { }
 
 @objc(SNConfiguration)
-final class Configuration : NSObject {
+public final class Configuration : NSObject {
 
-    @objc static func performMainSetup() {
+    @objc public static func performMainSetup() {
         SNMessagingKit.configure(
             storage: Storage.shared,
             signalStorage: OWSPrimaryStorage.shared(),

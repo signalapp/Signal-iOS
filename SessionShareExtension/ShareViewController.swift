@@ -43,6 +43,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let appContext = ShareAppExtensionContext(rootViewController: self)
         SetCurrentAppContext(appContext)
 
+        SignalUtilitiesKit.Configuration.performMainSetup()
+
         AppModeManager.configure(delegate: self)
 
         DebugLogger.shared().enableTTYLogging()

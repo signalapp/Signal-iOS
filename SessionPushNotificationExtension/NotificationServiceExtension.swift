@@ -84,6 +84,8 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         // This should be the first thing we do.
         SetCurrentAppContext(NotificationServiceExtensionContext())
 
+        SignalUtilitiesKit.Configuration.performMainSetup()
+
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {
             DebugLogger.shared().enableFileLogging()

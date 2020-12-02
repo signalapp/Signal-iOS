@@ -575,13 +575,10 @@
 		C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
-		C37F54B9255BB2D4002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
-		C37F54BA255BB2D8002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C38D5E8D2575011E00B6A65C /* MessageSender+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38D5E8C2575011E00B6A65C /* MessageSender+ClosedGroups.swift */; };
 		C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
-		C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		C38EF216255B6D3B007E1867 /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF212255B6D3A007E1867 /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF218255B6D3B007E1867 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF214255B6D3A007E1867 /* Theme.m */; };
 		C38EF228255B6D5D007E1867 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF223255B6D5D007E1867 /* AttachmentSharing.m */; };
@@ -884,6 +881,10 @@
 		C3CA3AC8255CDB2900F4C6D4 /* spanish.txt in Resources */ = {isa = PBXBuildFile; fileRef = C3CA3AC7255CDB2900F4C6D4 /* spanish.txt */; };
 		C3CA3B2F255CF84E00F4C6D4 /* NullMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CA3B2E255CF84E00F4C6D4 /* NullMessage.swift */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
+		C3D90A1125773888002C9DF5 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
+		C3D90A5C25773A25002C9DF5 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
+		C3D90A7A25773A93002C9DF5 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5EB255C970D007BE2A3 /* Configuration.swift */; };
+		C3D90A8325774A68002C9DF5 /* OWSPrimaryStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D9E41E25676C870040E4F3 /* OWSPrimaryStorageProtocol.swift */; };
 		C3D9E35525675EE10040E4F3 /* MIMETypeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB41255A580C00E217F9 /* MIMETypeUtil.m */; };
 		C3D9E35E25675F640040E4F3 /* OWSFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA8E255A57FD00E217F9 /* OWSFileSystem.m */; };
 		C3D9E379256760340040E4F3 /* MIMETypeUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAFC255A580600E217F9 /* MIMETypeUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -916,7 +917,6 @@
 		C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		C3ECBF7B257056B700EA7FCE /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECBF7A257056B700EA7FCE /* Threading.swift */; };
 		C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */; };
-		C3F0A5EC255C970D007BE2A3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5EB255C970D007BE2A3 /* Configuration.swift */; };
 		D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
 		D2179CFE16BB0B480006F3AB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
 		D221A08E169C9E5E00537ABF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
@@ -990,6 +990,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = C3C2A8612553B41A00C340D1;
 			remoteInfo = SessionProtocolKit;
+		};
+		C3D90A5425773A1A002C9DF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C331FF1A2558F9D300070591;
+			remoteInfo = SessionUIKit;
+		};
+		C3D90A5825773A1A002C9DF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C33FD9AA255A548A00E217F9;
+			remoteInfo = SignalUtilitiesKit;
+		};
+		C3D90A7025773A44002C9DF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C33FD9AA255A548A00E217F9;
+			remoteInfo = SignalUtilitiesKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2060,8 +2081,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C37F54B9255BB2D4002AEA92 /* SessionProtocolKit.framework in Frameworks */,
-				C38EF00E255B61DC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
+				C3D90A5C25773A25002C9DF5 /* SessionUtilitiesKit.framework in Frameworks */,
 				C3402FE52559036600EA6424 /* SessionUIKit.framework in Frameworks */,
 				3681EBBAC430992520DBD9AC /* Pods_SessionShareExtension.framework in Frameworks */,
 			);
@@ -2071,7 +2091,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C37F54BA255BB2D8002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */,
 				8E10697B10CBC965F052A4CB /* Pods_SessionPushNotificationExtension.framework in Frameworks */,
 			);
@@ -2952,6 +2971,7 @@
 			children = (
 				C33FD9B7255A54A300E217F9 /* Meta */,
 				C3851CE3256250FA0061EEB0 /* To Do */,
+				C3F0A5EB255C970D007BE2A3 /* Configuration.swift */,
 				C3CA3B11255CF17200F4C6D4 /* Utilities */,
 				C3851CD225624B060061EEB0 /* UI */,
 				C38BBA0D255E321C0041B9A3 /* Messaging */,
@@ -3880,7 +3900,6 @@
 			isa = PBXGroup;
 			children = (
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
-				C3F0A5EB255C970D007BE2A3 /* Configuration.swift */,
 				B8CCF63B239757C10091D419 /* Components */,
 				C32C5D49256DD522003C73A2 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
@@ -4135,6 +4154,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				C3D90A5525773A1A002C9DF5 /* PBXTargetDependency */,
+				C3D90A5925773A1A002C9DF5 /* PBXTargetDependency */,
 			);
 			name = SessionShareExtension;
 			productName = SignalShareExtension;
@@ -4153,6 +4174,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C3D90A7125773A44002C9DF5 /* PBXTargetDependency */,
 			);
 			name = SessionPushNotificationExtension;
 			productName = LokiPushNotificationService;
@@ -4457,6 +4479,7 @@
 				347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 				347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */,
+				C3D90A1125773888002C9DF5 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4717,10 +4740,10 @@
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
-				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -4743,10 +4766,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4875,6 +4898,7 @@
 				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
 				34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
+				C3D90A8325774A68002C9DF5 /* OWSPrimaryStorageProtocol.swift in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4963,6 +4987,7 @@
 				C33FDC71255A582000E217F9 /* OWSFailedMessagesJob.m in Sources */,
 				C33FDD32255A582000E217F9 /* OWSOperation.m in Sources */,
 				C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */,
+				C3D90A7A25773A93002C9DF5 /* Configuration.swift in Sources */,
 				C33FDD8D255A582000E217F9 /* OWSSignalAddress.swift in Sources */,
 				C33FDCB1255A582000E217F9 /* OWSPrimaryStorage+SignedPreKeyStore.m in Sources */,
 				C33FDC64255A582000E217F9 /* NSObject+Casting.m in Sources */,
@@ -5479,7 +5504,6 @@
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				C396DAEF2518408B00FF6DC5 /* ParsingState.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
-				C3F0A5EC255C970D007BE2A3 /* Configuration.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */,
@@ -5567,6 +5591,21 @@
 			target = C3C2A8612553B41A00C340D1 /* SessionProtocolKit */;
 			targetProxy = C3C2A8672553B41A00C340D1 /* PBXContainerItemProxy */;
 		};
+		C3D90A5525773A1A002C9DF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C331FF1A2558F9D300070591 /* SessionUIKit */;
+			targetProxy = C3D90A5425773A1A002C9DF5 /* PBXContainerItemProxy */;
+		};
+		C3D90A5925773A1A002C9DF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C33FD9AA255A548A00E217F9 /* SignalUtilitiesKit */;
+			targetProxy = C3D90A5825773A1A002C9DF5 /* PBXContainerItemProxy */;
+		};
+		C3D90A7125773A44002C9DF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C33FD9AA255A548A00E217F9 /* SignalUtilitiesKit */;
+			targetProxy = C3D90A7025773A44002C9DF5 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -5606,6 +5645,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -5623,7 +5663,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 139;
+				CURRENT_PROJECT_VERSION = 143;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5644,9 +5684,9 @@
 				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.6.4;
+				MARKETING_VERSION = 1.6.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.share-extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -5662,6 +5702,7 @@
 			baseConfigurationReference = B27A64C349BBE85670300948 /* Pods-SessionShareExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -5692,7 +5733,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 139;
+				CURRENT_PROJECT_VERSION = 143;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5718,9 +5759,9 @@
 				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.6.4;
+				MARKETING_VERSION = 1.6.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.share-extension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -5736,6 +5777,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F121FB43E2A1C1CF7F2AFC23 /* Pods-SessionPushNotificationExtension.debug.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -5753,7 +5795,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 139;
+				CURRENT_PROJECT_VERSION = 143;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5772,7 +5814,7 @@
 				INFOPLIST_FILE = SessionPushNotificationExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.6.4;
+				MARKETING_VERSION = 1.6.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.push-notification-service";
@@ -5790,6 +5832,7 @@
 			baseConfigurationReference = 6AD66810558DCCC8D6FD14C6 /* Pods-SessionPushNotificationExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -5823,7 +5866,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 139;
+				CURRENT_PROJECT_VERSION = 143;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5847,7 +5890,7 @@
 				INFOPLIST_FILE = SessionPushNotificationExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.6.4;
+				MARKETING_VERSION = 1.6.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.push-notification-service";
@@ -5903,10 +5946,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SessionUIKit";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -5977,9 +6021,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -6037,10 +6082,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SignalUtilitiesKit";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -6119,9 +6165,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -6171,10 +6218,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SessionSnodeKit";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -6245,9 +6293,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -6306,10 +6355,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SessionUtilitiesKit";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -6389,9 +6439,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -6441,10 +6492,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.SessionMessagingKit";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -6515,9 +6567,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -6571,7 +6624,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -6645,7 +6698,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
