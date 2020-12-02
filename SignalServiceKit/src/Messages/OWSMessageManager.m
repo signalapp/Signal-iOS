@@ -980,7 +980,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!receiptMessage.hasType) {
-        OWSFail(@"Missing type.");
+        OWSFailDebug(@"Missing type for receipt message, ignoring.");
         return;
     }
 
