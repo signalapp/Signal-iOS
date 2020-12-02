@@ -44,11 +44,11 @@ public enum MessageReceiver {
     }
 
     public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, using transaction: Any) throws -> (Message, SNProtoContent) {
-        let userPublicKey = Configuration.shared.storage.getUserPublicKey()
+        let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) else { throw Error.duplicateMessage }
         storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
         // Decrypt the contents

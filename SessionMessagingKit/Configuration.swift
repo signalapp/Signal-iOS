@@ -1,14 +1,14 @@
 import SessionProtocolKit
 
-@objc(SNMessagingKitConfiguration)
-public final class Configuration : NSObject {
+@objc
+public final class SNMessagingKitConfiguration : NSObject {
     public let storage: SessionMessagingKitStorageProtocol
     @objc public let signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore
     public let identityKeyStore: IdentityKeyStore
     public let sessionRestorationImplementation: SessionRestorationProtocol
     public let certificateValidator: SMKCertificateValidator
 
-    @objc public static var shared: Configuration!
+    @objc public static var shared: SNMessagingKitConfiguration!
 
     fileprivate init(
         storage: SessionMessagingKitStorageProtocol,
@@ -34,7 +34,7 @@ public enum SNMessagingKit { // Just to make the external API nice
         sessionRestorationImplementation: SessionRestorationProtocol,
         certificateValidator: SMKCertificateValidator
     ) {
-        Configuration.shared = Configuration(
+        SNMessagingKitConfiguration.shared = SNMessagingKitConfiguration(
             storage: storage,
             signalStorage: signalStorage,
             identityKeyStore: identityKeyStore,

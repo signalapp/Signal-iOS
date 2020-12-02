@@ -5,12 +5,12 @@ import SessionUtilitiesKit
 internal extension MessageReceiver {
 
     static func decryptWithSignalProtocol(envelope: SNProtoEnvelope, using transaction: Any) throws -> (plaintext: Data, senderPublicKey: String) {
-        let storage = Configuration.shared.signalStorage
-        let certificateValidator = Configuration.shared.certificateValidator
+        let storage = SNMessagingKitConfiguration.shared.signalStorage
+        let certificateValidator = SNMessagingKitConfiguration.shared.certificateValidator
         guard let data = envelope.content else { throw Error.noData }
-        guard let userPublicKey = Configuration.shared.storage.getUserPublicKey() else { throw Error.noUserPublicKey }
-        let cipher = try SMKSecretSessionCipher(sessionResetImplementation: Configuration.shared.sessionRestorationImplementation,
-            sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: Configuration.shared.identityKeyStore)
+        guard let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey() else { throw Error.noUserPublicKey }
+        let cipher = try SMKSecretSessionCipher(sessionResetImplementation: SNMessagingKitConfiguration.shared.sessionRestorationImplementation,
+            sessionStore: storage, preKeyStore: storage, signedPreKeyStore: storage, identityStore: SNMessagingKitConfiguration.shared.identityKeyStore)
         let result = try cipher.throwswrapped_decryptMessage(certificateValidator: certificateValidator, cipherTextData: data,
             timestamp: envelope.timestamp, localRecipientId: userPublicKey, localDeviceId: 1, protocolContext: transaction)
         return (result.paddedPayload, result.senderRecipientId)
@@ -18,13 +18,13 @@ internal extension MessageReceiver {
 
     static func decryptWithSharedSenderKeys(envelope: SNProtoEnvelope, using transaction: Any) throws -> (plaintext: Data, senderPublicKey: String) {
         // 1. ) Check preconditions
-        guard let groupPublicKey = envelope.source, Configuration.shared.storage.isClosedGroup(groupPublicKey) else {
+        guard let groupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(groupPublicKey) else {
             throw Error.invalidGroupPublicKey
         }
         guard let data = envelope.content else {
             throw Error.noData
         }
-        guard let hexEncodedGroupPrivateKey = Configuration.shared.storage.getClosedGroupPrivateKey(for: groupPublicKey) else {
+        guard let hexEncodedGroupPrivateKey = SNMessagingKitConfiguration.shared.storage.getClosedGroupPrivateKey(for: groupPublicKey) else {
             throw Error.noGroupPrivateKey
         }
         let groupPrivateKey = Data(hex: hexEncodedGroupPrivateKey)
@@ -42,7 +42,7 @@ internal extension MessageReceiver {
         // 4. ) Parse the closed group ciphertext message
         let closedGroupCiphertextMessage = ClosedGroupCiphertextMessage(_throws_with: closedGroupCiphertextMessageAsData)
         let senderPublicKey = closedGroupCiphertextMessage.senderPublicKey.toHexString()
-        guard senderPublicKey != Configuration.shared.storage.getUserPublicKey() else { throw Error.selfSend }
+        guard senderPublicKey != SNMessagingKitConfiguration.shared.storage.getUserPublicKey() else { throw Error.selfSend }
         // 5. ) Use the info inside the closed group ciphertext message to decrypt the actual message content
         let plaintext = try SharedSenderKeys.decrypt(closedGroupCiphertextMessage.ivAndCiphertext, for: groupPublicKey,
             senderPublicKey: senderPublicKey, keyIndex: UInt(closedGroupCiphertextMessage.keyIndex), using: transaction)

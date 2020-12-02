@@ -117,7 +117,7 @@ public final class OpenGroupMessage : NSObject {
             SNLog("Failed to sign open group message.")
             return nil
         }
-        let userKeyPair = Configuration.shared.storage.getUserKeyPair()!
+        let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair()!
         guard let signatureData = try? Ed25519.sign(data, with: userKeyPair) else {
             SNLog("Failed to sign open group message.")
             return nil

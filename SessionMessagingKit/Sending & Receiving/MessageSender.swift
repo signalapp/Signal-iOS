@@ -87,7 +87,7 @@ public final class MessageSender : NSObject {
     // MARK: One-on-One Chats & Closed Groups
     internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
@@ -245,7 +245,7 @@ public final class MessageSender : NSObject {
     // MARK: Open Groups
     internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }

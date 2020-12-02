@@ -49,7 +49,7 @@ public final class FileServerAPI : DotNetAPI {
                 SNLog("Couldn't parse profile picture from: \(json).")
                 throw Error.parsingFailed
             }
-            Configuration.shared.storage.setLastProfilePictureUploadDate(Date())
+            SNMessagingKitConfiguration.shared.storage.setLastProfilePictureUploadDate(Date())
             return downloadURL
         }
     }

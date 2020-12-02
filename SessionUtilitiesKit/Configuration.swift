@@ -1,10 +1,10 @@
 
-@objc(SNUtilitiesKitConfiguration)
-public final class Configuration : NSObject {
+@objc
+public final class SNUtilitiesKitConfiguration : NSObject {
     @objc public let owsPrimaryStorage: OWSPrimaryStorageProtocol
     public let maxFileSize: UInt
 
-    @objc public static var shared: Configuration!
+    @objc public static var shared: SNUtilitiesKitConfiguration!
 
     fileprivate init(owsPrimaryStorage: OWSPrimaryStorageProtocol, maxFileSize: UInt) {
         self.owsPrimaryStorage = owsPrimaryStorage
@@ -12,9 +12,9 @@ public final class Configuration : NSObject {
     }
 }
 
-public enum SessionUtilitiesKit { // Just to make the external API nice
+public enum SNUtilitiesKit { // Just to make the external API nice
 
     public static func configure(owsPrimaryStorage: OWSPrimaryStorageProtocol, maxFileSize: UInt) {
-        Configuration.shared = Configuration(owsPrimaryStorage: owsPrimaryStorage, maxFileSize: maxFileSize)
+        SNUtilitiesKitConfiguration.shared = SNUtilitiesKitConfiguration(owsPrimaryStorage: owsPrimaryStorage, maxFileSize: maxFileSize)
     }
 }

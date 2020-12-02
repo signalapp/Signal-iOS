@@ -111,15 +111,15 @@ public enum OWSMediaError: Error {
      * https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
     @objc
-    public static var kMaxFileSizeAnimatedImage: UInt { Configuration.shared.maxFileSize }
+    public static var kMaxFileSizeAnimatedImage: UInt { SNUtilitiesKitConfiguration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeImage: UInt { Configuration.shared.maxFileSize }
+    public static var kMaxFileSizeImage: UInt { SNUtilitiesKitConfiguration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeVideo: UInt { Configuration.shared.maxFileSize }
+    public static var kMaxFileSizeVideo: UInt { SNUtilitiesKitConfiguration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeAudio: UInt { Configuration.shared.maxFileSize }
+    public static var kMaxFileSizeAudio: UInt { SNUtilitiesKitConfiguration.shared.maxFileSize }
     @objc
-    public static var kMaxFileSizeGeneric: UInt { Configuration.shared.maxFileSize }
+    public static var kMaxFileSizeGeneric: UInt { SNUtilitiesKitConfiguration.shared.maxFileSize }
 
     @objc
     public static let kMaxVideoDimensions: CGFloat = 3 * 1024

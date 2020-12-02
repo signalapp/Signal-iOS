@@ -61,7 +61,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Running
     public func execute() {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         if let message = message as? VisibleMessage {
             guard TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) != nil else { return } // The message has been deleted
             let attachments = message.attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0) }

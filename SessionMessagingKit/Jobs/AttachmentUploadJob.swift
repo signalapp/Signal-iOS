@@ -61,7 +61,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
             return handleFailure(error: Error.noAttachment)
         }
         guard !stream.isUploaded else { return handleSuccess() } // Should never occur
-        let openGroup = Configuration.shared.storage.getOpenGroup(for: threadID)
+        let openGroup = SNMessagingKitConfiguration.shared.storage.getOpenGroup(for: threadID)
         let server = openGroup?.server ?? FileServerAPI.server
         // FIXME: A lot of what's currently happening in FileServerAPI should really be happening here
         FileServerAPI.uploadAttachment(stream, with: attachmentID, to: server).done(on: DispatchQueue.global(qos: .userInitiated)) { // Intentionally capture self
@@ -80,7 +80,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     private func handleSuccess() {
         SNLog("Attachment uploaded successfully.")
         delegate?.handleJobSucceeded(self)
-        Configuration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
+        SNMessagingKitConfiguration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
         Storage.shared.withAsync({ transaction in
             var interaction: TSInteraction?
             let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -106,7 +106,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     }
 
     private func failAssociatedMessageSendJob(with error: Swift.Error) {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         let messageSendJob = storage.getMessageSendJob(for: messageSendJobID)
         storage.withAsync({ transaction in // Intentionally capture self
             MessageSender.handleFailedMessageSend(self.message, with: error, using: transaction)

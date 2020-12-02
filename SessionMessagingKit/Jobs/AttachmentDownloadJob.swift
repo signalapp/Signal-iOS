@@ -52,7 +52,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         guard let pointer = TSAttachmentPointer.fetch(uniqueId: attachmentID) else {
             return handleFailure(error: Error.noAttachment)
         }
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         storage.withAsync({ transaction in
             storage.setAttachmentState(to: .downloading, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
         }, completion: { })

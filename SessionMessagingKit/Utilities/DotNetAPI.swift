@@ -46,7 +46,7 @@ public class DotNetAPI : NSObject {
     // MARK: Private API
     private static func requestNewAuthToken(for server: String) -> Promise<String> {
         SNLog("Requesting auth token for server: \(server).")
-        guard let userKeyPair = Configuration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
+        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
         let queryParameters = "pubKey=\(userKeyPair.publicKey.toHexString())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
@@ -77,7 +77,7 @@ public class DotNetAPI : NSObject {
     private static func submitAuthToken(_ token: String, for server: String) -> Promise<String> {
         SNLog("Submitting auth token for server: \(server).")
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
-        guard let userPublicKey = Configuration.shared.storage.getUserPublicKey() else { return Promise(error: Error.generic) }
+        guard let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey() else { return Promise(error: Error.generic) }
         let parameters = [ "pubKey" : userPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise.value(FileServerAPI.publicKey)
@@ -89,7 +89,7 @@ public class DotNetAPI : NSObject {
 
     // MARK: Public API
     public static func getAuthToken(for server: String) -> Promise<String> {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         if let token = storage.getAuthToken(for: server) {
             return Promise.value(token)
         } else {

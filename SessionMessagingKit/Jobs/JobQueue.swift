@@ -16,7 +16,7 @@ public final class JobQueue : NSObject, JobDelegate {
 
     @objc public func addWithoutExecuting(_ job: Job, using transaction: Any) {
         job.id = String(NSDate.millisecondTimestamp())
-        Configuration.shared.storage.persist(job, using: transaction)
+        SNMessagingKitConfiguration.shared.storage.persist(job, using: transaction)
         job.delegate = self
     }
 
@@ -29,7 +29,7 @@ public final class JobQueue : NSObject, JobDelegate {
         hasResumedPendingJobs = true
         let allJobTypes: [Job.Type] = [ AttachmentDownloadJob.self, AttachmentUploadJob.self, MessageReceiveJob.self, MessageSendJob.self, NotifyPNServerJob.self ]
         allJobTypes.forEach { type in
-            let allPendingJobs = Configuration.shared.storage.getAllPendingJobs(of: type)
+            let allPendingJobs = SNMessagingKitConfiguration.shared.storage.getAllPendingJobs(of: type)
             allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { job in // Retry the oldest jobs first
                 SNLog("Resuming pending job of type: \(type).")
                 job.delegate = self
@@ -39,8 +39,8 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobSucceeded(_ job: Job) {
-        Configuration.shared.storage.withAsync({ transaction in
-            Configuration.shared.storage.markJobAsSucceeded(job, using: transaction)
+        SNMessagingKitConfiguration.shared.storage.withAsync({ transaction in
+            SNMessagingKitConfiguration.shared.storage.markJobAsSucceeded(job, using: transaction)
         }, completion: {
             // Do nothing
         })
@@ -48,7 +48,7 @@ public final class JobQueue : NSObject, JobDelegate {
 
     public func handleJobFailed(_ job: Job, with error: Error) {
         job.failureCount += 1
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         guard !storage.isJobCanceled(job) else { return SNLog("\(type(of: job)) canceled.") }
         storage.withAsync({ transaction in
             storage.persist(job, using: transaction)
@@ -69,7 +69,7 @@ public final class JobQueue : NSObject, JobDelegate {
 
     public func handleJobFailedPermanently(_ job: Job, with error: Error) {
         job.failureCount += 1
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         storage.withAsync({ transaction in
             storage.persist(job, using: transaction)
         }, completion: { // Intentionally capture self

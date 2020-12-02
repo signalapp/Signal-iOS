@@ -20,15 +20,15 @@ public final class OpenGroupAPI : DotNetAPI {
 
     // MARK: Open Group Public Key Validation
     public static func getOpenGroupServerPublicKey(for server: String) -> Promise<String> {
-        if let publicKey = Configuration.shared.storage.getOpenGroupPublicKey(for: server) {
+        if let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: server) {
             return Promise.value(publicKey)
         } else {
             return FileServerAPI.getPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { publicKey -> Promise<String> in
                 let url = URL(string: server)!
                 let request = TSRequest(url: url)
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: publicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { _ -> String in
-                    Configuration.shared.storage.with { transaction in
-                        Configuration.shared.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
+                    SNMessagingKitConfiguration.shared.storage.with { transaction in
+                        SNMessagingKitConfiguration.shared.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
                     }
                     return publicKey
                 }
@@ -43,7 +43,7 @@ public final class OpenGroupAPI : DotNetAPI {
     }
 
     public static func getMessages(for channel: UInt64, on server: String) -> Promise<[OpenGroupMessage]> {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         var queryParameters = "include_annotations=1"
         if let lastMessageServerID = storage.getLastMessageServerID(for: channel, on: server) {
             queryParameters += "&since_id=\(lastMessageServerID)"
@@ -141,7 +141,7 @@ public final class OpenGroupAPI : DotNetAPI {
 
     public static func sendMessage(_ message: OpenGroupMessage, to channel: UInt64, on server: String) -> Promise<OpenGroupMessage> {
         SNLog("Sending message to open group channel with ID: \(channel) on server: \(server).")
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         guard let userKeyPair = storage.getUserKeyPair() else { return Promise(error: Error.generic) }
         guard let userDisplayName = storage.getUserDisplayName() else { return Promise(error: Error.generic) }
         let (promise, seal) = Promise<OpenGroupMessage>.pending()
@@ -181,7 +181,7 @@ public final class OpenGroupAPI : DotNetAPI {
     // MARK: Deletion
     public static func getDeletedMessageServerIDs(for channel: UInt64, on server: String) -> Promise<[UInt64]> {
         SNLog("Getting deleted messages for open group channel with ID: \(channel) on server: \(server).")
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         let queryParameters: String
         if let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server) {
             queryParameters = "since_id=\(lastDeletionServerID)"
@@ -255,7 +255,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         SNLog("Couldn't parse display names for users: \(publicKeys) from: \(json).")
                         throw Error.parsingFailed
                     }
-                    let storage = Configuration.shared.storage
+                    let storage = SNMessagingKitConfiguration.shared.storage
                     storage.with { transaction in
                         data.forEach { data in
                             guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
@@ -345,7 +345,7 @@ public final class OpenGroupAPI : DotNetAPI {
                             SNLog("Couldn't parse info for open group channel with ID: \(channel) on server: \(server) from: \(json).")
                             throw Error.parsingFailed
                         }
-                        let storage = Configuration.shared.storage
+                        let storage = SNMessagingKitConfiguration.shared.storage
                         storage.with { transaction in
                             storage.setUserCount(to: memberCount, forOpenGroupWithID: "\(server).\(channel)", using: transaction)
                         }
@@ -473,7 +473,7 @@ internal extension Promise {
         return recover(on: DispatchQueue.global(qos: .userInitiated)) { error -> Promise<T> in
             if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 SNLog("Auth token for: \(server) expired; dropping it.")
-                let storage = Configuration.shared.storage
+                let storage = SNMessagingKitConfiguration.shared.storage
                 storage.with { transaction in
                     storage.removeAuthToken(for: server, using: transaction)
                 }

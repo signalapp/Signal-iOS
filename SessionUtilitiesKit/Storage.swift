@@ -10,7 +10,7 @@ import YapDatabase
 public final class Storage : NSObject {
     public static let serialQueue = DispatchQueue(label: "Storage.serialQueue", qos: .userInitiated)
 
-    private static var owsStorage: OWSPrimaryStorageProtocol { Configuration.shared.owsPrimaryStorage }
+    private static var owsStorage: OWSPrimaryStorageProtocol { SNUtilitiesKitConfiguration.shared.owsPrimaryStorage }
     
     @objc public static let shared = Storage()
 

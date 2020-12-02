@@ -44,7 +44,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     // MARK: Running
     public func execute() {
-        Configuration.shared.storage.withAsync({ transaction in // Intentionally capture self
+        SNMessagingKitConfiguration.shared.storage.withAsync({ transaction in // Intentionally capture self
             do {
                 let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, using: transaction)
                 try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: self.openGroupID, using: transaction)

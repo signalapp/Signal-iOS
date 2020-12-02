@@ -1,13 +1,13 @@
 
-public struct Configuration {
+public struct SNSnodeKitConfiguration {
     public let storage: SessionSnodeKitStorageProtocol
 
-    internal static var shared: Configuration!
+    internal static var shared: SNSnodeKitConfiguration!
 }
 
-public enum SessionSnodeKit { // Just to make the external API nice
+public enum SNSnodeKit { // Just to make the external API nice
 
     public static func configure(storage: SessionSnodeKitStorageProtocol) {
-        Configuration.shared = Configuration(storage: storage)
+        SNSnodeKitConfiguration.shared = SNSnodeKitConfiguration(storage: storage)
     }
 }

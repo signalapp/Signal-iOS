@@ -15,8 +15,8 @@ public final class Configuration : NSObject {
             sessionRestorationImplementation: SessionRestorationImplementation(),
             certificateValidator: SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot())
         )
-        SessionProtocolKit.configure(storage: Storage.shared, sharedSenderKeysDelegate: MessageSender.shared)
-        SessionSnodeKit.configure(storage: Storage.shared)
-        SessionUtilitiesKit.configure(owsPrimaryStorage: OWSPrimaryStorage.shared(), maxFileSize: UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier))
+        SNProtocolKit.configure(storage: Storage.shared, sharedSenderKeysDelegate: MessageSender.shared)
+        SNSnodeKit.configure(storage: Storage.shared)
+        SNUtilitiesKit.configure(owsPrimaryStorage: OWSPrimaryStorage.shared(), maxFileSize: UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier))
     }
 }

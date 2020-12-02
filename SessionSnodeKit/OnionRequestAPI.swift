@@ -137,9 +137,9 @@ public enum OnionRequestAPI {
                 }
             }.map2 { paths in
                 OnionRequestAPI.paths = paths + reusablePaths
-                Configuration.shared.storage.with { transaction in
+                SNSnodeKitConfiguration.shared.storage.with { transaction in
                     SNLog("Persisting onion request paths to database.")
-                    Configuration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
+                    SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
                 }
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: .pathsBuilt, object: nil)
@@ -154,7 +154,7 @@ public enum OnionRequestAPI {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
         if paths.isEmpty {
-            paths = Configuration.shared.storage.getOnionRequestPaths()
+            paths = SNSnodeKitConfiguration.shared.storage.getOnionRequestPaths()
             OnionRequestAPI.paths = paths
             if !paths.isEmpty {
                 guardSnodes.formUnion([ paths[0][0] ])
@@ -217,9 +217,9 @@ public enum OnionRequestAPI {
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
         paths = newPaths
-        Configuration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.with { transaction in
             SNLog("Persisting onion request paths to database.")
-            Configuration.shared.storage.setOnionRequestPaths(to: newPaths, using: transaction)
+            SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: newPaths, using: transaction)
         }
     }
 
@@ -229,13 +229,13 @@ public enum OnionRequestAPI {
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
-        Configuration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.with { transaction in
             if !paths.isEmpty {
                 SNLog("Persisting onion request paths to database.")
-                Configuration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
+                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
             } else {
                 SNLog("Clearing onion request paths.")
-                Configuration.shared.storage.setOnionRequestPaths(to: [], using: transaction)
+                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: [], using: transaction)
             }
         }
     }

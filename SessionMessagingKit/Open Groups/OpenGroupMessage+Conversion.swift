@@ -2,7 +2,7 @@
 internal extension OpenGroupMessage {
 
     static func from(_ message: VisibleMessage, for server: String, using transaction: YapDatabaseReadWriteTransaction) -> OpenGroupMessage? {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         guard let userPublicKey = storage.getUserPublicKey() else { return nil }
         var attachmentIDs = message.attachmentIDs
         // Validation

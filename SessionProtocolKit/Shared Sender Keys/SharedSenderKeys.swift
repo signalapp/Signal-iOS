@@ -30,7 +30,7 @@ public enum SharedSenderKeys {
     public static func generateRatchet(for groupPublicKey: String, senderPublicKey: String, using transaction: Any) -> ClosedGroupRatchet {
         let rootChainKey = Data.getSecureRandomData(ofSize: 32)!.toHexString()
         let ratchet = ClosedGroupRatchet(chainKey: rootChainKey, keyIndex: 0, messageKeys: [])
-        Configuration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, in: .current, using: transaction)
+        SNProtocolKitConfiguration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, in: .current, using: transaction)
         return ratchet
     }
 
@@ -47,14 +47,14 @@ public enum SharedSenderKeys {
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
-        guard let ratchet = Configuration.shared.storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: .current) else {
+        guard let ratchet = SNProtocolKitConfiguration.shared.storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: .current) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
             SNLog("\(error.errorDescription!)")
             throw error
         }
         do {
             let result = try step(ratchet)
-            Configuration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: .current, using: transaction)
+            SNProtocolKitConfiguration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: .current, using: transaction)
             return result
         } catch {
             SNLog("Couldn't step ratchet due to error: \(error).")
@@ -68,7 +68,7 @@ public enum SharedSenderKeys {
         assert(!Thread.isMainThread)
         #endif
         let collection: ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
-        guard let ratchet = Configuration.shared.storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: collection) else {
+        guard let ratchet = SNProtocolKitConfiguration.shared.storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: collection) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
             SNLog("\(error.errorDescription!)")
             throw error
@@ -94,7 +94,7 @@ public enum SharedSenderKeys {
                 }
             }
             let collection: ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
-            Configuration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: collection, using: transaction)
+            SNProtocolKitConfiguration.shared.storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: collection, using: transaction)
             return result
         }
     }
@@ -106,7 +106,7 @@ public enum SharedSenderKeys {
             ratchet = try stepRatchetOnce(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
         } catch {
             if case RatchetingError.loadingFailed(_, _) = error {
-                Configuration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+                SNProtocolKitConfiguration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
             }
             throw error
         }
@@ -127,7 +127,7 @@ public enum SharedSenderKeys {
                 return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
             } else {
                 if case RatchetingError.loadingFailed(_, _) = error {
-                    Configuration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+                    SNProtocolKitConfiguration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
                 }
                 throw error
             }
@@ -157,7 +157,7 @@ public enum SharedSenderKeys {
         if !isRetry {
             return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
         } else {
-            Configuration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+            SNProtocolKitConfiguration.shared.sharedSenderKeysDelegate.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
             throw error ?? RatchetingError.generic
         }
     }

@@ -137,7 +137,7 @@ extension MessageReceiver {
 
     @discardableResult
     public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws -> String {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Parse & persist attachments
         let attachments: [VisibleMessage.Attachment] = proto.dataMessage!.attachments.compactMap { proto in
