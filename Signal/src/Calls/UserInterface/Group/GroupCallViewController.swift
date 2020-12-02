@@ -21,6 +21,9 @@ class GroupCallViewController: UIViewController {
     private let localMemberView = GroupCallLocalMemberView()
     private let speakerView = GroupCallRemoteMemberView(mode: .speaker)
 
+    private var shouldShowToastView = false
+    private let toastView = GroupCallSpeakerToastView()
+
     private var speakerPage = UIView()
 
     private let scrollView = UIScrollView()
@@ -32,10 +35,15 @@ class GroupCallViewController: UIViewController {
     lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
     lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
+    lazy var toastViewVConstraint = toastView.autoAlignAxis(.horizontal, toSameAxisOf: videoOverflow)
 
     var shouldRemoteVideoControlsBeHidden = false {
         didSet { updateCallUI() }
     }
+
+    private static let keyValueStore: SDSKeyValueStore = SDSKeyValueStore(
+        collection: String(describing: GroupCallViewController.self)
+    )
 
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
@@ -52,6 +60,16 @@ class GroupCallViewController: UIViewController {
         videoOverflow.memberViewDelegate = self
         speakerView.delegate = self
         localMemberView.delegate = self
+
+        SDSDatabaseStorage.shared.asyncRead { readTx in
+            let didUserSwipeToSpeakerView = Self.keyValueStore.getBool(
+                "didUserSwipeToSpeakerView",
+                defaultValue: false,
+                transaction: readTx)
+            self.shouldShowToastView = !didUserSwipeToSpeakerView
+        } completion: {
+            self.updateSpeakerViewToast()
+        }
     }
 
     @discardableResult
@@ -131,6 +149,11 @@ class GroupCallViewController: UIViewController {
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
+
+        view.addSubview(toastView)
+        toastView.autoHCenterInSuperview()
+        toastView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+        toastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
@@ -283,6 +306,33 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    func updateSpeakerViewToast() {
+        let isSpeakerViewAvailable = groupCall.remoteDeviceStates.count >= 2 && groupCall.localDeviceState.joinState == .joined
+        guard isSpeakerViewAvailable, shouldShowToastView else {
+            toastView.isHidden = true
+            return
+        }
+
+        toastView.alpha = 1.0 - (scrollView.contentOffset.y / view.height)
+        toastViewVConstraint.constant = hasOverflowMembers ? -videoOverflow.height - 4 : 0
+
+        if scrollView.contentOffset.y >= view.height {
+            toastView.isHidden = true
+            shouldShowToastView = false
+            SDSDatabaseStorage.shared.asyncWrite { writeTx in
+                Self.keyValueStore.setBool(true, key: "didUserSwipeToSpeakerView", transaction: writeTx)
+            }
+
+        } else if toastView.isHidden {
+            toastView.alpha = 0
+            toastView.isHidden = false
+            UIView.animate(withDuration: 0.2, delay: 3.0, options: []) {
+                self.toastView.alpha = 1
+            }
+
+        }
+    }
+
     func updateCallUI(size: CGSize? = nil) {
         let localDevice = groupCall.localDeviceState
 
@@ -328,6 +378,7 @@ class GroupCallViewController: UIViewController {
         }
 
         scheduleControlTimeoutIfNecessary()
+        updateSpeakerViewToast()
     }
 
     func dismissCall() {
@@ -591,6 +642,7 @@ extension GroupCallViewController: UIScrollViewDelegate {
             videoOverflow.reloadData()
             updateCallUI()
         }
+        updateSpeakerViewToast()
     }
 }
 
