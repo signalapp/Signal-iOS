@@ -11,7 +11,7 @@ public final class MentionsManager : NSObject {
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
     // MARK: Settings
-    private static var userIDScanLimit: UInt = 4096
+    private static var userIDScanLimit: UInt = 512
 
     // MARK: Initialization
     private override init() { }

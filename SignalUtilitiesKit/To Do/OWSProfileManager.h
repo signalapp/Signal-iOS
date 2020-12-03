@@ -41,6 +41,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable NSData *)localProfileAvatarData;
 - (nullable NSString *)profilePictureURL;
 
+- (OWSUserProfile *)getLocalUserProfileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
 // successfully updated.

@@ -44,8 +44,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
                         return self.handleFailure(for: notificationContent)
                     }
-                    let snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay
-                    let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : tsIncomingMessage.thread(with: transaction).uniqueId!, NotificationServiceExtension.isFromRemoteKey : true ]
+                    let threadID = tsIncomingMessage.thread(with: transaction).uniqueId!
+                    let snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
+                        ?? "You've got a new message"
+                    let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : threadID, NotificationServiceExtension.isFromRemoteKey : true ]
                     let senderPublicKey = message.sender!
                     let senderDisplayName = OWSProfileManager.shared().profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
                     notificationContent.userInfo = userInfo
@@ -54,13 +56,13 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     switch notificationsPreference {
                     case .namePreview:
                         notificationContent.title = senderDisplayName
-                        notificationContent.body = snippet!
+                        notificationContent.body = snippet
                     case .nameNoPreview:
                         notificationContent.title = senderDisplayName
-                        notificationContent.body = "New Message"
+                        notificationContent.body = "You've got a new message"
                     case .noNameNoPreview:
                         notificationContent.title = "Session"
-                        notificationContent.body = "New Message"
+                        notificationContent.body = "You've got a new message"
                     default: break
                     }
                     self.handleSuccess(for: notificationContent)
@@ -121,7 +123,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         notificationContent.userInfo = userInfo
         notificationContent.badge = 1
         notificationContent.title = "Session"
-        notificationContent.body = "New Message"
+        notificationContent.body = "You've got a new message"
         handleSuccess(for: notificationContent)
     }
     
@@ -166,10 +168,38 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
 
     private func handleFailure(for content: UNMutableNotificationContent) {
-        content.body = "New Message"
+        content.body = "You've got a new message"
         content.title = "Session"
         let userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
         content.userInfo = userInfo
         contentHandler!(content)
+    }
+}
+
+private extension String {
+    
+    func replacingMentions(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) -> String {
+        guard let userPublicKey = Storage.shared.getUserPublicKey() else { return self }
+        MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
+        var result = self
+        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
+        let knownPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? []
+        var mentions: [(range: NSRange, publicKey: String)] = []
+        var m0 = regex.firstMatch(in: result, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: result.utf16.count))
+        while let m1 = m0 {
+            let publicKey = String((result as NSString).substring(with: m1.range).dropFirst()) // Drop the @
+            var matchEnd = m1.range.location + m1.range.length
+            if knownPublicKeys.contains(publicKey) {
+                let displayName = (publicKey == userPublicKey) ? OWSProfileManager.shared().getLocalUserProfile(with: transaction).profileName
+                    : OWSUserProfile.fetch(uniqueId: publicKey, transaction: transaction)?.profileName
+                if let displayName = displayName {
+                    result = (result as NSString).replacingCharacters(in: m1.range, with: "@\(displayName)")
+                    mentions.append((range: NSRange(location: m1.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @
+                    matchEnd = m1.range.location + displayName.utf16.count
+                }
+            }
+            m0 = regex.firstMatch(in: result, options: .withoutAnchoringBounds, range: NSRange(location: matchEnd, length: result.utf16.count - matchEnd))
+        }
+        return result
     }
 }
