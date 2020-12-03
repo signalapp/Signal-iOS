@@ -650,7 +650,6 @@ static NSTimeInterval launchStartedAt;
     OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier.");
     [self.pushRegistrationManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
-    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
     [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }
