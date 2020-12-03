@@ -272,6 +272,10 @@ public final class MessageSender : NSObject {
             #endif
         }
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
+        // The back-end doesn't accept messages without a body so we use this as a workaround
+        if message.text?.isEmpty != false {
+            message.text = String(message.sentTimestamp!)
+        }
         // Convert the message to an open group message
         let (channel, server) = { () -> (UInt64, String) in
             switch destination {
