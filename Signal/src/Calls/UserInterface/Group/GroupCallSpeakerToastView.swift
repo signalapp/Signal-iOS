@@ -26,6 +26,7 @@ class GroupCallSpeakerToastView: UIView {
         super.init(frame: frame)
         layer.cornerRadius = 8
         clipsToBounds = true
+        isUserInteractionEnabled = false
 
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         addSubview(blurView)
