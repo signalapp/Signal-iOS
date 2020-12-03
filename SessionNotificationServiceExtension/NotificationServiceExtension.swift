@@ -45,9 +45,9 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         return self.handleFailure(for: notificationContent)
                     }
                     let snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay
-                    let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : tsIncomingMessage.thread.uniqueId!, NotificationServiceExtension.isFromRemoteKey : true ]
+                    let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : tsIncomingMessage.thread(with: transaction).uniqueId!, NotificationServiceExtension.isFromRemoteKey : true ]
                     let senderPublicKey = message.sender!
-                    let senderDisplayName = OWSProfileManager.shared().profileNameForRecipient(withID: senderPublicKey, avoidWriteTransaction: true) ?? senderPublicKey
+                    let senderDisplayName = OWSProfileManager.shared().profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
                     notificationContent.userInfo = userInfo
                     notificationContent.badge = 1
                     let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()
