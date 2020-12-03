@@ -4,7 +4,7 @@ import SignalUtilitiesKit
 
 // TODO: Group notifications
 
-final class NotificationServiceExtension : UNNotificationServiceExtension {
+public final class NotificationServiceExtension : UNNotificationServiceExtension {
     private var didPerformSetup = false
     private var areVersionMigrationsComplete = false
     private var contentHandler: ((UNNotificationContent) -> Void)?
@@ -13,7 +13,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     private static let isFromRemoteKey = "remote"
     private static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
 
-    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+    override public func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         self.notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent
 
@@ -71,7 +71,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         }
     }
 
-    func setUpIfNecessary(completion: @escaping () -> Void) {
+    private func setUpIfNecessary(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         // The NSE will often re-use the same process, so if we're
@@ -113,7 +113,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         NotificationCenter.default.addObserver(self, selector: #selector(storageIsReady), name: .StorageIsReady, object: nil)
     }
     
-    override func serviceExtensionTimeWillExpire() {
+    override public func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         let userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
@@ -126,7 +126,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     }
     
     @objc
-    func versionMigrationsDidComplete() {
+    private func versionMigrationsDidComplete() {
         AssertIsOnMainThread()
 
         areVersionMigrationsComplete = true
@@ -135,14 +135,14 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     }
 
     @objc
-    func storageIsReady() {
+    private func storageIsReady() {
         AssertIsOnMainThread()
 
         checkIsAppReady()
     }
 
     @objc
-    func checkIsAppReady() {
+    private func checkIsAppReady() {
         AssertIsOnMainThread()
 
         // Only mark the app as ready once.
@@ -157,15 +157,15 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         AppReadiness.setAppIsReady()
     }
     
-    func completeSilenty() {
+    private  func completeSilenty() {
         contentHandler!(.init())
     }
 
-    func handleSuccess(for content: UNMutableNotificationContent) {
+    private func handleSuccess(for content: UNMutableNotificationContent) {
         contentHandler!(content)
     }
 
-    func handleFailure(for content: UNMutableNotificationContent) {
+    private func handleFailure(for content: UNMutableNotificationContent) {
         content.body = "New Message"
         content.title = "Session"
         let userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]

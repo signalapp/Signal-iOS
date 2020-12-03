@@ -182,7 +182,6 @@
 		4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */; };
 		4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
-		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
 		4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC613352227A00400E21A3A /* ConversationSearch.swift */; };
 		4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB78C82178EBAB00F315D2 /* OWSSessionResetJobRecord.m */; };
@@ -193,7 +192,7 @@
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		7BC01A3E241F40AB00BC7C55 /* NotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */; };
-		7BC01A42241F40AB00BC7C55 /* SessionPushNotificationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7BC01A42241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
 		7BDCFC0B2421EB7600641C39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		8E10697B10CBC965F052A4CB /* Pods_SessionPushNotificationExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9E02BC2732E07195B5AFA75 /* Pods_SessionPushNotificationExtension.framework */; };
@@ -1021,7 +1020,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				7BC01A42241F40AB00BC7C55 /* SessionPushNotificationExtension.appex in Embed App Extensions */,
+				7BC01A42241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex in Embed App Extensions */,
 				453518721FC635DD00210559 /* SessionShareExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -1281,7 +1280,6 @@
 		4CA46F4B219CCC630038ABDE /* CaptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionView.swift; sourceTree = "<group>"; };
 		4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureViewController.swift; sourceTree = "<group>"; };
 		4CB5F26820F7D060004D1B42 /* MessageActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActions.swift; sourceTree = "<group>"; };
-		4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateNag.swift; sourceTree = "<group>"; };
 		4CC613352227A00400E21A3A /* ConversationSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearch.swift; sourceTree = "<group>"; };
 		4CEB78C72178EBAB00F315D2 /* OWSSessionResetJobRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSSessionResetJobRecord.h; sourceTree = "<group>"; };
@@ -1300,10 +1298,10 @@
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionPushNotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtension.swift; sourceTree = "<group>"; };
 		7BC01A3F241F40AB00BC7C55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7BDCFC0424206E7300641C39 /* SessionPushNotificationExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SessionPushNotificationExtension.entitlements; sourceTree = "<group>"; };
+		7BDCFC0424206E7300641C39 /* SessionNotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SessionNotificationServiceExtension.entitlements; sourceTree = "<group>"; };
 		7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtensionContext.swift; sourceTree = "<group>"; };
 		7DD180F770F8518B4E8796F2 /* Pods-SessionUtilitiesKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUtilitiesKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionUtilitiesKit/Pods-SessionUtilitiesKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
@@ -2160,7 +2158,6 @@
 				C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */,
 				C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */,
-				4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
@@ -2478,14 +2475,14 @@
 			path = Signal;
 			sourceTree = "<group>";
 		};
-		7BC01A3C241F40AB00BC7C55 /* SessionPushNotificationExtension */ = {
+		7BC01A3C241F40AB00BC7C55 /* SessionNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
 				C31C219B255BC92200EC2D66 /* Meta */,
 				7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */,
 				7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */,
 			);
-			path = SessionPushNotificationExtension;
+			path = SessionNotificationServiceExtension;
 			sourceTree = "<group>";
 		};
 		9404664EC513585B05DF1350 /* Pods */ = {
@@ -2706,7 +2703,7 @@
 			isa = PBXGroup;
 			children = (
 				7BC01A3F241F40AB00BC7C55 /* Info.plist */,
-				7BDCFC0424206E7300641C39 /* SessionPushNotificationExtension.entitlements */,
+				7BDCFC0424206E7300641C39 /* SessionNotificationServiceExtension.entitlements */,
 			);
 			path = Meta;
 			sourceTree = "<group>";
@@ -3814,7 +3811,7 @@
 			children = (
 				D221A093169C9E5E00537ABF /* Session */,
 				453518691FC635DD00210559 /* SessionShareExtension */,
-				7BC01A3C241F40AB00BC7C55 /* SessionPushNotificationExtension */,
+				7BC01A3C241F40AB00BC7C55 /* SessionNotificationServiceExtension */,
 				C33FD9AC255A548A00E217F9 /* SignalUtilitiesKit */,
 				C331FF1C2558F9D300070591 /* SessionUIKit */,
 				C3C2A6F125539DE700C340D1 /* SessionMessagingKit */,
@@ -3832,7 +3829,7 @@
 			children = (
 				D221A089169C9E5E00537ABF /* Session.app */,
 				453518681FC635DD00210559 /* SessionShareExtension.appex */,
-				7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */,
+				7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */,
 				C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */,
 				C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */,
 				C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */,
@@ -3850,7 +3847,6 @@
 				B847570023D568EB00759540 /* SignalServiceKit.framework */,
 				3496955F21A2FC8100DCFE74 /* CloudKit.framework */,
 				4C9CA25C217E676900607C63 /* ZXingObjC.framework */,
-				4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */,
 				455A16DB1F1FEA0000F86704 /* Metal.framework */,
 				455A16DC1F1FEA0000F86704 /* MetalKit.framework */,
 				45847E861E4283C30080EAB3 /* Intents.framework */,
@@ -4162,9 +4158,9 @@
 			productReference = 453518681FC635DD00210559 /* SessionShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		7BC01A3A241F40AB00BC7C55 /* SessionPushNotificationExtension */ = {
+		7BC01A3A241F40AB00BC7C55 /* SessionNotificationServiceExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "SessionPushNotificationExtension" */;
+			buildConfigurationList = 7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "SessionNotificationServiceExtension" */;
 			buildPhases = (
 				4B4609DACEC6E462A2394D2F /* [CP] Check Pods Manifest.lock */,
 				7BC01A37241F40AB00BC7C55 /* Sources */,
@@ -4176,9 +4172,9 @@
 			dependencies = (
 				C3D90A7125773A44002C9DF5 /* PBXTargetDependency */,
 			);
-			name = SessionPushNotificationExtension;
+			name = SessionNotificationServiceExtension;
 			productName = LokiPushNotificationService;
-			productReference = 7BC01A3B241F40AB00BC7C55 /* SessionPushNotificationExtension.appex */;
+			productReference = 7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		C331FF1A2558F9D300070591 /* SessionUIKit */ = {
@@ -4457,7 +4453,7 @@
 			targets = (
 				D221A088169C9E5E00537ABF /* Session */,
 				453518671FC635DD00210559 /* SessionShareExtension */,
-				7BC01A3A241F40AB00BC7C55 /* SessionPushNotificationExtension */,
+				7BC01A3A241F40AB00BC7C55 /* SessionNotificationServiceExtension */,
 				C33FD9AA255A548A00E217F9 /* SignalUtilitiesKit */,
 				C331FF1A2558F9D300070591 /* SessionUIKit */,
 				C3C2A6EF25539DE700C340D1 /* SessionMessagingKit */,
@@ -5558,7 +5554,7 @@
 		};
 		7BC01A41241F40AB00BC7C55 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 7BC01A3A241F40AB00BC7C55 /* SessionPushNotificationExtension */;
+			target = 7BC01A3A241F40AB00BC7C55 /* SessionNotificationServiceExtension */;
 			targetProxy = 7BC01A40241F40AB00BC7C55 /* PBXContainerItemProxy */;
 		};
 		C331FF212558F9D300070591 /* PBXTargetDependency */ = {
@@ -5790,7 +5786,7 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = SessionPushNotificationExtension/Meta/SessionPushNotificationExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SessionNotificationServiceExtension/Meta/SessionNotificationServiceExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5811,13 +5807,13 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = SessionPushNotificationExtension/Meta/Info.plist;
+				INFOPLIST_FILE = SessionNotificationServiceExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.6.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.push-notification-service";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -5861,7 +5857,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = SessionPushNotificationExtension/Meta/SessionPushNotificationExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SessionNotificationServiceExtension/Meta/SessionNotificationServiceExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5887,13 +5883,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SessionPushNotificationExtension/Meta/Info.plist;
+				INFOPLIST_FILE = SessionNotificationServiceExtension/Meta/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.6.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.push-notification-service";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -7006,7 +7002,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "App Store Release";
 		};
-		7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "SessionPushNotificationExtension" */ = {
+		7BC01A45241F40AB00BC7C55 /* Build configuration list for PBXNativeTarget "SessionNotificationServiceExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7BC01A43241F40AB00BC7C55 /* Debug */,
