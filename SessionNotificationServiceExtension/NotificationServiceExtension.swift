@@ -45,11 +45,15 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         return self.handleFailure(for: notificationContent)
                     }
                     let threadID = tsIncomingMessage.thread(with: transaction).uniqueId!
+                    let senderPublicKey = message.sender!
+                    var senderDisplayName = OWSProfileManager.shared().profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
                     let snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
                         ?? "You've got a new message"
+                    if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
+                        group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
+                        senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
+                    }
                     let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : threadID, NotificationServiceExtension.isFromRemoteKey : true ]
-                    let senderPublicKey = message.sender!
-                    let senderDisplayName = OWSProfileManager.shared().profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
                     notificationContent.userInfo = userInfo
                     notificationContent.badge = 1
                     let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()
@@ -191,7 +195,7 @@ private extension String {
             var matchEnd = m1.range.location + m1.range.length
             if knownPublicKeys.contains(publicKey) {
                 let displayName = (publicKey == userPublicKey) ? OWSProfileManager.shared().getLocalUserProfile(with: transaction).profileName
-                    : OWSUserProfile.fetch(uniqueId: publicKey, transaction: transaction)?.profileName
+                    : (OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, transaction: transaction) ?? publicKey)
                 if let displayName = displayName {
                     result = (result as NSString).replacingCharacters(in: m1.range, with: "@\(displayName)")
                     mentions.append((range: NSRange(location: m1.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @

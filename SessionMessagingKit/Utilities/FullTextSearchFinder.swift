@@ -177,8 +177,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true) ?? recipientId
-
+        let displayName = OWSUserProfile.fetch(uniqueId: recipientId, transaction: transaction)?.profileName ?? recipientId
         return "\(recipientId) \(displayName)"
     }
 
