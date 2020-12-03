@@ -37,23 +37,33 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
             Storage.write { transaction in // Intentionally capture self
                 do {
                     let (message, proto) = try MessageReceiver.parse(envelopeAsData, openGroupMessageServerID: nil, using: transaction)
-                    guard let visibleMessage = message as? VisibleMessage else {
-                        return self.handleFailure(for: notificationContent)
-                    }
-                    let tsIncomingMessageID = try MessageReceiver.handleVisibleMessage(visibleMessage, associatedWithProto: proto, openGroupID: nil, using: transaction)
-                    guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
-                        return self.handleFailure(for: notificationContent)
-                    }
-                    let threadID = tsIncomingMessage.thread(with: transaction).uniqueId!
                     let senderPublicKey = message.sender!
                     var senderDisplayName = OWSProfileManager.shared().profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
-                    let snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
-                        ?? "You've got a new message"
-                    if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
-                        group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
-                        senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
+                    let snippet: String
+                    var userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
+                    switch message {
+                    case let visibleMessage as VisibleMessage:
+                        let tsIncomingMessageID = try MessageReceiver.handleVisibleMessage(visibleMessage, associatedWithProto: proto, openGroupID: nil, using: transaction)
+                        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
+                            return self.handleFailure(for: notificationContent)
+                        }
+                        let threadID = tsIncomingMessage.thread(with: transaction).uniqueId!
+                        userInfo[NotificationServiceExtension.threadIdKey] = threadID
+                        snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
+                            ?? "You've got a new message"
+                        if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
+                            group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
+                            senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
+                        }
+                    case let closedGroupUpdate as ClosedGroupUpdate:
+                        // TODO: We could consider actually handling the update here. Not sure if there's enough time though, seeing as though
+                        // in some cases we need to send messages (e.g. our sender key) to a number of other users.
+                        switch closedGroupUpdate.kind {
+                        case .new(_, let name, _, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
+                        default: return self.handleFailure(for: notificationContent)
+                        }
+                    default: return self.handleFailure(for: notificationContent)
                     }
-                    let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : threadID, NotificationServiceExtension.isFromRemoteKey : true ]
                     notificationContent.userInfo = userInfo
                     notificationContent.badge = 1
                     let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()

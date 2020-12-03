@@ -217,7 +217,11 @@ public final class MessageSender : NSObject {
                     }
                     storage.withAsync({ transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-                        if message is VisibleMessage {
+                        var shouldNotify = (message is VisibleMessage)
+                        if let closedGroupUpdate = message as? ClosedGroupUpdate, case .new = closedGroupUpdate.kind {
+                            shouldNotify = true
+                        }
+                        if shouldNotify {
                             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
                             JobQueue.shared.add(notifyPNServerJob, using: transaction)
                         }
