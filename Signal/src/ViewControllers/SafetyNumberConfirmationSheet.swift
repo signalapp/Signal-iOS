@@ -101,7 +101,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
         stackView.axis = .vertical
         stackView.spacing = 1
-        stackView.addBackgroundView(withBackgroundColor: Theme.actionSheetHairlineColor)
+        stackView.addBackgroundView(withBackgroundColor: Theme.ActionSheet.default.hairlineColor)
 
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewSafeArea()
