@@ -627,7 +627,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return firstly {
             requestSenderCertificate(uuidOnly: uuidOnly)
         }.map { (certificate: SenderCertificate) in
-            self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: Data(try! certificate.serialize()))
+            self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: Data(certificate.serialize()))
             return certificate
         }
     }
@@ -649,7 +649,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {
-        let sender = try! certificate.sender()
+        let sender = certificate.sender
         guard sender.deviceId == tsAccountManager.storedDeviceId() else {
             Logger.warn("Sender certificate has incorrect device ID")
             return false

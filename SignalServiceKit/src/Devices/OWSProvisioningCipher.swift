@@ -27,7 +27,7 @@ public class OWSProvisioningCipher: NSObject {
         // FIXME: Are these try!s appropriate? We don't really have a guarantee that 'theirPublicKey' is valid.
         self.init(
             theirPublicKey: try! ECPublicKey(keyData: theirPublicKey).key,
-            ourKeyPair: try! IdentityKeyPair.generate(),
+            ourKeyPair: IdentityKeyPair.generate(),
             initializationVector: Cryptography.generateRandomBytes(UInt(kCCBlockSizeAES128)))
     }
 
@@ -48,14 +48,14 @@ public class OWSProvisioningCipher: NSObject {
     }
 
     @objc
-    public var ourPublicKey: Data { Data(try! self.ourKeyPair.publicKey.keyBytes()) }
+    public var ourPublicKey: Data { Data(self.ourKeyPair.publicKey.keyBytes) }
 
     // FIXME: propagate errors from here instead of just returning nil.
     // This means auditing all of the places we throw OR deciding it's okay to throw arbitrary errors.
     @objc
     public func encrypt(_ data: Data) -> Data? {
         do {
-            let sharedSecret = try self.ourKeyPair.privateKey.keyAgreement(with: self.theirPublicKey)
+            let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: self.theirPublicKey)
 
             let infoData = ProvisioningCipher.messageInfo
             let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {

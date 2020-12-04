@@ -239,6 +239,12 @@ extension MessageSender {
 
 // MARK: -
 
+fileprivate extension ProtocolAddress {
+    convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
+        try self.init(name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!, deviceId: deviceId)
+    }
+}
+
 @objc
 public extension MessageSender {
 
@@ -355,9 +361,7 @@ public extension MessageSender {
 
         do {
             var protocolContextAsPtr: SPKProtocolWriteContext = transaction
-            let protocolAddress = try ProtocolAddress(
-                name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!,
-                deviceId: deviceId.uint32Value)
+            let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: deviceId.uint32Value)
             try processPreKeyBundle(bundle,
                                     for: protocolAddress,
                                     sessionStore: sessionStore,
@@ -1178,9 +1182,7 @@ extension MessageSender {
         let messageType: TSWhisperMessageType
 
         var protocolContextAsPtr = transaction
-        let protocolAddress = try! ProtocolAddress(
-            name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!,
-            deviceId: UInt32(bitPattern: deviceId))
+        let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
         if let udSendingAccess = messageSend.udSendingAccess {
             let secretCipher = try SMKSecretSessionCipher(sessionStore: Self.sessionStore,
@@ -1203,7 +1205,7 @@ extension MessageSender {
                                            identityStore: Self.identityManager,
                                            context: &protocolContextAsPtr)
 
-            switch try result.messageType() {
+            switch result.messageType {
             case .whisper:
                 messageType = .encryptedWhisperMessageType
             case .preKey:
@@ -1212,7 +1214,7 @@ extension MessageSender {
                 messageType = .unknownMessageType
             }
 
-            serializedMessage = Data(try result.serialize())
+            serializedMessage = Data(result.serialize())
         }
 
         // We had better have a session after encrypting for this recipient!

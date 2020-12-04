@@ -119,8 +119,8 @@ extension SessionState {
 
         var result = SessionRecordProtos_SessionStructure.Chain()
 
-        result.senderRatchetKey = Data(try! ratchetKeyPair.identityKeyPair.publicKey.serialize())
-        result.senderRatchetKeyPrivate = Data(try! ratchetKeyPair.identityKeyPair.privateKey.serialize())
+        result.senderRatchetKey = Data(ratchetKeyPair.identityKeyPair.publicKey.serialize())
+        result.senderRatchetKeyPrivate = Data(ratchetKeyPair.identityKeyPair.privateKey.serialize())
         result.chainKey = senderChainKey().buildProto()
 
         return result

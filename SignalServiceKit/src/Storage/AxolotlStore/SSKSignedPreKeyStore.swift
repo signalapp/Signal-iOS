@@ -25,12 +25,12 @@ extension SSKSignedPreKeyStore: SignalClient.SignedPreKeyStore {
     public func storeSignedPreKey(_ record: SignalClient.SignedPreKeyRecord,
                                   id: UInt32,
                                   context: UnsafeMutableRawPointer?) throws {
-        let keyPair = IdentityKeyPair(publicKey: try record.publicKey(), privateKey: try record.privateKey())
+        let keyPair = IdentityKeyPair(publicKey: record.publicKey, privateKey: record.privateKey)
         let axolotlRecord = AxolotlKit.SignedPreKeyRecord(
             id: Int32(bitPattern: id),
             keyPair: ECKeyPair(keyPair),
-            signature: Data(try record.signature()),
-            generatedAt: Date(millisecondsSince1970: try record.timestamp()))
+            signature: Data(record.signature),
+            generatedAt: Date(millisecondsSince1970: record.timestamp))
         self.storeSignedPreKey(Int32(bitPattern: id),
                                signedPreKeyRecord: axolotlRecord,
                                transaction: context!.load(as: SDSAnyWriteTransaction.self))

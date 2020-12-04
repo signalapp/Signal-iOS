@@ -21,7 +21,7 @@ extension SSKPreKeyStore: SignalClient.PreKeyStore {
     }
 
     public func storePreKey(_ record: SignalClient.PreKeyRecord, id: UInt32, context: UnsafeMutableRawPointer?) throws {
-        let keyPair = IdentityKeyPair(publicKey: try record.publicKey(), privateKey: try record.privateKey())
+        let keyPair = IdentityKeyPair(publicKey: record.publicKey, privateKey: record.privateKey)
         self.storePreKey(Int32(bitPattern: id),
                          preKeyRecord: AxolotlKit.PreKeyRecord(id: Int32(bitPattern: id),
                                                                keyPair: ECKeyPair(keyPair),
@@ -32,6 +32,5 @@ extension SSKPreKeyStore: SignalClient.PreKeyStore {
     public func removePreKey(id: UInt32, context: UnsafeMutableRawPointer?) throws {
         self.removePreKey(Int32(bitPattern: id), protocolContext: context!.load(as: SDSAnyWriteTransaction.self))
     }
-
 
 }

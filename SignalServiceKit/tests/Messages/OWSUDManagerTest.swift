@@ -48,8 +48,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         udManager.certificateValidator = MockCertificateValidator()
-        udManager.setSenderCertificate(uuidOnly: true, certificateData: Data(try! uuidOnlySenderCert.serialize()))
-        udManager.setSenderCertificate(uuidOnly: false, certificateData: Data(try! defaultSenderCert.serialize()))
+        udManager.setSenderCertificate(uuidOnly: true, certificateData: Data(uuidOnlySenderCert.serialize()))
+        udManager.setSenderCertificate(uuidOnly: false, certificateData: Data(defaultSenderCert.serialize()))
     }
 
     override func tearDown() {
@@ -252,8 +252,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                 let sendingAccess = self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificates: senderCertificates)!
                 XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
                 XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-                XCTAssertEqual(try! sendingAccess.senderCertificate.serialize(),
-                               try! self.defaultSenderCert.serialize())
+                XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                               self.defaultSenderCert.serialize())
             }
         }.done {
             completed.fulfill()

@@ -274,8 +274,8 @@ public class RemoteAttestationKeys: NSObject {
             let serverEphemeralPublicKey = try! PublicKey((serverEphemeralPublic as NSData).prependKeyType() as Data)
             let serverStaticPublicKey = try! PublicKey((serverStaticPublic as NSData).prependKeyType() as Data)
 
-            let ephemeralToEphemeral = try clientPrivateKey.keyAgreement(with: serverEphemeralPublicKey)
-            let ephemeralToStatic = try clientPrivateKey.keyAgreement(with: serverStaticPublicKey)
+            let ephemeralToEphemeral = clientPrivateKey.keyAgreement(with: serverEphemeralPublicKey)
+            let ephemeralToStatic = clientPrivateKey.keyAgreement(with: serverStaticPublicKey)
 
             let masterSecret = ephemeralToEphemeral + ephemeralToStatic
             let publicKeys = clientEphemeralKeyPair.publicKey + serverEphemeralPublic + serverStaticPublic

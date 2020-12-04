@@ -16,8 +16,8 @@ extension TSMessageDirection {
 }
 
 extension SignalClient.IdentityKey {
-    fileprivate func serializeAsData() throws -> Data {
-        return Data(try publicKey.keyBytes())
+    fileprivate func serializeAsData() -> Data {
+        return Data(publicKey.keyBytes)
     }
 }
 
@@ -28,7 +28,7 @@ extension OWSIdentityManager: SignalClient.IdentityKeyStore {
             return keyPair.identityKeyPair
         }
 
-        let newKeyPair = try! IdentityKeyPair.generate()
+        let newKeyPair = IdentityKeyPair.generate()
         self.storeIdentityKeyPair(ECKeyPair(newKeyPair), transaction: transaction)
         return newKeyPair
     }
@@ -40,7 +40,7 @@ extension OWSIdentityManager: SignalClient.IdentityKeyStore {
     public func saveIdentity(_ identity: SignalClient.IdentityKey,
                              for address: ProtocolAddress,
                              context: UnsafeMutableRawPointer?) throws -> Bool {
-        self.saveRemoteIdentity(try identity.serializeAsData(),
+        self.saveRemoteIdentity(identity.serializeAsData(),
                                 address: SignalServiceAddress(from: address),
                                 transaction: context!.load(as: SDSAnyWriteTransaction.self))
     }
@@ -49,7 +49,7 @@ extension OWSIdentityManager: SignalClient.IdentityKeyStore {
                                   for address: ProtocolAddress,
                                   direction: Direction,
                                   context: UnsafeMutableRawPointer?) throws -> Bool {
-        self.isTrustedIdentityKey(try identity.serializeAsData(),
+        self.isTrustedIdentityKey(identity.serializeAsData(),
                                   address: SignalServiceAddress(from: address),
                                   direction: TSMessageDirection(direction),
                                   transaction: context!.load(as: SDSAnyReadTransaction.self))
