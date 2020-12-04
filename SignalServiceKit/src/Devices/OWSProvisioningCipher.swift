@@ -5,15 +5,6 @@
 import CommonCrypto
 import SignalClient
 
-// FIXME: Sink this down to Curve25519Kit.
-fileprivate extension IdentityKeyPair {
-    init(_ keyPair: ECKeyPair) {
-        let publicKey = try! PublicKey(keyPair.ecPublicKey().serialized)
-        let privateKey = try! PrivateKey(keyPair.privateKey)
-        self.init(publicKey: publicKey, privateKey: privateKey)
-    }
-}
-
 public class OWSProvisioningCipher: NSObject {
     // Local errors for logging purposes only.
     // FIXME: If we start propagating errors out of encrypt(_:), we'll want to revisit this.
@@ -35,7 +26,7 @@ public class OWSProvisioningCipher: NSObject {
     public convenience init(theirPublicKey: Data) {
         // FIXME: Are these try!s appropriate? We don't really have a guarantee that 'theirPublicKey' is valid.
         self.init(
-            theirPublicKey: try! PublicKey(ECPublicKey(keyData: theirPublicKey).serialized),
+            theirPublicKey: try! ECPublicKey(keyData: theirPublicKey).key,
             ourKeyPair: try! IdentityKeyPair.generate(),
             initializationVector: Cryptography.generateRandomBytes(UInt(kCCBlockSizeAES128)))
     }
@@ -44,8 +35,8 @@ public class OWSProvisioningCipher: NSObject {
     @objc
     private convenience init(theirPublicKey: Data, ourKeyPair: ECKeyPair, initializationVector: Data) {
         self.init(
-            theirPublicKey: try! PublicKey(ECPublicKey(keyData: theirPublicKey).serialized),
-            ourKeyPair: IdentityKeyPair(ourKeyPair),
+            theirPublicKey: try! ECPublicKey(keyData: theirPublicKey).key,
+            ourKeyPair: ourKeyPair.identityKeyPair,
             initializationVector: initializationVector)
     }
     #endif
@@ -57,7 +48,7 @@ public class OWSProvisioningCipher: NSObject {
     }
 
     @objc
-    public var ourPublicKey: Data { Data(try! self.ourKeyPair.publicKey.serialize()) }
+    public var ourPublicKey: Data { Data(try! self.ourKeyPair.publicKey.keyBytes()) }
 
     // FIXME: propagate errors from here instead of just returning nil.
     // This means auditing all of the places we throw OR deciding it's okay to throw arbitrary errors.
@@ -119,7 +110,7 @@ public class OWSProvisioningCipher: NSObject {
                             ivBytes.baseAddress,
                             dataBytes.baseAddress, dataBytes.count,
                             ciphertextBytes.baseAddress, ciphertextBytes.count,
-                            &bytesEncrypted);
+                            &bytesEncrypted)
                         return status
                     }
                 }
