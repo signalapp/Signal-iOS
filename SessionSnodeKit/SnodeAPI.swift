@@ -77,33 +77,35 @@ public final class SnodeAPI : NSObject {
             ]
             SNLog("Populating snode pool using: \(target).")
             let (promise, seal) = Promise<Snode>.pending()
-            attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                HTTP.execute(.post, url, parameters: parameters, useSSLURLSession: true).map2 { json -> Snode in
-                    guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.randomSnodePoolUpdatingFailed }
-                    snodePool = Set(rawSnodes.compactMap { rawSnode in
-                        guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
-                            let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                            SNLog("Failed to parse target from: \(rawSnode).")
-                            return nil
+            Threading.workQueue.async {
+                attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                    HTTP.execute(.post, url, parameters: parameters, useSSLURLSession: true).map2 { json -> Snode in
+                        guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.randomSnodePoolUpdatingFailed }
+                        snodePool = Set(rawSnodes.compactMap { rawSnode in
+                            guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
+                                let ed25519PublicKey = rawSnode["pubkey_ed25519"] as? String, let x25519PublicKey = rawSnode["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                                SNLog("Failed to parse target from: \(rawSnode).")
+                                return nil
+                            }
+                            return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                        })
+                        // randomElement() uses the system's default random generator, which is cryptographically secure
+                        if !snodePool.isEmpty {
+                            return snodePool.randomElement()!
+                        } else {
+                            throw Error.randomSnodePoolUpdatingFailed
                         }
-                        return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
-                    })
-                    // randomElement() uses the system's default random generator, which is cryptographically secure
-                    if !snodePool.isEmpty {
-                        return snodePool.randomElement()!
-                    } else {
-                        throw Error.randomSnodePoolUpdatingFailed
                     }
+                }.done2 { snode in
+                    seal.fulfill(snode)
+                    SNSnodeKitConfiguration.shared.storage.with { transaction in
+                        SNLog("Persisting snode pool to database.")
+                        SNSnodeKitConfiguration.shared.storage.setSnodePool(to: SnodeAPI.snodePool, using: transaction)
+                    }
+                }.catch2 { error in
+                    SNLog("Failed to contact seed node at: \(target).")
+                    seal.reject(error)
                 }
-            }.done2 { snode in
-                seal.fulfill(snode)
-                SNSnodeKitConfiguration.shared.storage.with { transaction in
-                    SNLog("Persisting snode pool to database.")
-                    SNSnodeKitConfiguration.shared.storage.setSnodePool(to: SnodeAPI.snodePool, using: transaction)
-                }
-            }.catch2 { error in
-                SNLog("Failed to contact seed node at: \(target).")
-                seal.reject(error)
             }
             return promise
         } else {
@@ -115,6 +117,9 @@ public final class SnodeAPI : NSObject {
     }
 
     internal static func dropSnodeFromSnodePool(_ snode: Snode) {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         var snodePool = SnodeAPI.snodePool
         snodePool.remove(snode)
         SnodeAPI.snodePool = snodePool
@@ -132,6 +137,9 @@ public final class SnodeAPI : NSObject {
     }
     
     public static func dropSnodeFromSwarmIfNeeded(_ snode: Snode, publicKey: String) {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         let swarm = SnodeAPI.swarmCache[publicKey]
         if var swarm = swarm, let index = swarm.firstIndex(of: snode) {
             swarm.remove(at: index)
@@ -282,6 +290,9 @@ public final class SnodeAPI : NSObject {
     /// - Note: Should only be invoked from `Threading.workQueue` to avoid race conditions.
     @discardableResult
     internal static func handleError(withStatusCode statusCode: UInt, json: JSON?, forSnode snode: Snode, associatedWith publicKey: String? = nil) -> Error? {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         func handleBadSnode() {
             let oldFailureCount = SnodeAPI.snodeFailureCount[snode] ?? 0
             let newFailureCount = oldFailureCount + 1

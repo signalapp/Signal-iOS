@@ -4,8 +4,11 @@ import SessionUtilitiesKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var pathFailureCount: [Path:UInt] = [:]
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var snodeFailureCount: [Snode:UInt] = [:]
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var guardSnodes: Set<Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
@@ -196,10 +199,16 @@ public enum OnionRequestAPI {
     }
 
     private static func dropGuardSnode(_ snode: Snode) {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         guardSnodes = guardSnodes.filter { $0 != snode }
     }
 
     private static func drop(_ snode: Snode) throws {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         // We repair the path here because we can do it sync. In the case where we drop a whole
         // path we leave the re-building up to getPath(excluding:) because re-building the path
         // in that case is async.
@@ -224,6 +233,9 @@ public enum OnionRequestAPI {
     }
 
     private static func drop(_ path: Path) {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         OnionRequestAPI.pathFailureCount[path] = 0
         var paths = OnionRequestAPI.paths
         guard let pathIndex = paths.firstIndex(of: path) else { return }
@@ -392,7 +404,7 @@ public enum OnionRequestAPI {
                 seal.reject(error)
             }
         }
-        promise.catch2 { error in // Must be invoked on LokiAPI.workQueue
+        promise.catch2 { error in // Must be invoked on Threading.workQueue
             guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
             let path = paths.first { $0.contains(guardSnode) }
             func handleUnspecificError() {
