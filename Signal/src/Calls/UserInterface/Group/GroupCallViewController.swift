@@ -35,15 +35,12 @@ class GroupCallViewController: UIViewController {
     lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
     lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
-    lazy var toastViewVConstraint = toastView.autoAlignAxis(.horizontal, toSameAxisOf: videoOverflow)
 
     var shouldRemoteVideoControlsBeHidden = false {
         didSet { updateCallUI() }
     }
 
-    private static let keyValueStore: SDSKeyValueStore = SDSKeyValueStore(
-        collection: String(describing: GroupCallViewController.self)
-    )
+    private static let keyValueStore = SDSKeyValueStore(collection: "GroupCallViewController")
 
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
@@ -150,13 +147,14 @@ class GroupCallViewController: UIViewController {
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
 
-        view.addSubview(toastView)
+        scrollView.addSubview(videoGrid)
+        scrollView.addSubview(speakerPage)
+
+        scrollView.addSubview(toastView)
+        toastView.autoPinEdge(.bottom, to: .bottom, of: videoGrid, withOffset: -22)
         toastView.autoHCenterInSuperview()
         toastView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         toastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-
-        scrollView.addSubview(videoGrid)
-        scrollView.addSubview(speakerPage)
 
         view.addGestureRecognizer(tapGesture)
 
@@ -314,7 +312,6 @@ class GroupCallViewController: UIViewController {
         }
 
         toastView.alpha = 1.0 - (scrollView.contentOffset.y / view.height)
-        toastViewVConstraint.constant = hasOverflowMembers ? -videoOverflow.height - 4 : 0
 
         if scrollView.contentOffset.y >= view.height {
             toastView.isHidden = true
@@ -368,6 +365,7 @@ class GroupCallViewController: UIViewController {
 
                 self.updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
                 self.updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+                self.view.layoutIfNeeded()
             }) { _ in
                 self.callControls.isHidden = hideRemoteControls
                 self.callHeader.isHidden = hideRemoteControls
