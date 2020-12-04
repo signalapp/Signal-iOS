@@ -83,8 +83,8 @@ extension Storage {
         var result: [UInt64] = []
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         transaction.enumerateRows(inCollection: Storage.receivedMessageTimestampsCollection) { _, object, _, _ in
-            guard let timestamp = object as? UInt64 else { return }
-            result.append(timestamp)
+            guard let timestamps = object as? [UInt64] else { return }
+            result = timestamps
         }
         return result
     }
