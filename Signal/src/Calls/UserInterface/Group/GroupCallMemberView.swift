@@ -338,7 +338,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         configureRemoteVideo(device: device)
 
-        // Hide these views. One will be unhidden below.
+        // Hide these views. They'll be unhidden below.
         [errorView, avatarView, videoView].forEach { $0?.isHidden = true }
 
         if !device.mediaKeysReceived {
@@ -346,9 +346,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             errorView.isHidden = false
             configureErrorView(for: device.address)
 
-        } else if let videoView = videoView, device.videoMuted == false, device.videoTrack != nil {
-            // We have video!
-            videoView.isHidden = false
+        } else if let videoView = videoView, device.videoTrack != nil {
+            // We have a video track! If we don't know the mute state, show both.
+            // Otherwise, show one or the other.
+            videoView.isHidden = (device.videoMuted == true)
+            avatarView.isHidden = (device.videoMuted == false)
 
         } else {
             // No video. Display avatar
@@ -401,7 +403,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         let labelFormat = isBlocked ? blockFormat : missingKeyFormat
         let label = String(format: labelFormat, arguments: [displayName])
-        let image = isBlocked ? UIImage(named: "block-24") : UIImage(named: "error-solid-16")
+        let image = isBlocked ? UIImage(named: "block-24") : UIImage(named: "error-solid-24")
 
         errorView.iconImage = image
         errorView.labelText = label

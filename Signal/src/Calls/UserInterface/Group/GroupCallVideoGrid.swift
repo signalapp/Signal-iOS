@@ -163,7 +163,7 @@ extension Sequence where Element: RemoteDeviceState {
             if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
                 return lhs.mediaKeysReceived
             } else if lhs.addedTime != rhs.addedTime {
-                return lhs.addedTime > rhs.addedTime
+                return lhs.addedTime < rhs.addedTime
             } else {
                 return lhs.demuxId < rhs.demuxId
             }
