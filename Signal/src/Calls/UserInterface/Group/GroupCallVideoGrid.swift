@@ -6,6 +6,7 @@ import Foundation
 import SignalRingRTC
 
 class GroupCallVideoGrid: UICollectionView {
+    weak var memberViewDelegate: GroupCallMemberViewDelegate?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
     init(call: SignalCall) {
@@ -65,8 +66,8 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             return cell
         }
 
+        cell.setMemberViewDelegate(memberViewDelegate)
         cell.configure(call: call, device: remoteDevice)
-
         return cell
     }
 }
@@ -149,22 +150,36 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     func configureRemoteVideo(device: RemoteDeviceState) {
         memberView.configureRemoteVideo(device: device)
     }
+
+    func setMemberViewDelegate(_ delegate: GroupCallMemberViewDelegate?) {
+        memberView.delegate = delegate
+    }
 }
 
 extension Sequence where Element: RemoteDeviceState {
     /// The first person to join the call is the first item in the list.
     var sortedByAddedTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.addedTime == rhs.addedTime { return lhs.demuxId < rhs.demuxId }
-            return lhs.addedTime < rhs.addedTime
+            if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
+                return lhs.mediaKeysReceived
+            } else if lhs.addedTime != rhs.addedTime {
+                return lhs.addedTime < rhs.addedTime
+            } else {
+                return lhs.demuxId < rhs.demuxId
+            }
         }
     }
 
     /// The most recent speaker is the first item in the list.
     var sortedBySpeakerTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.speakerTime == rhs.speakerTime { return lhs.demuxId < rhs.demuxId }
-            return lhs.speakerTime > rhs.speakerTime
+            if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
+                return lhs.mediaKeysReceived
+            } else if lhs.speakerTime != rhs.speakerTime {
+                return lhs.speakerTime > rhs.speakerTime
+            } else {
+                return lhs.demuxId < rhs.demuxId
+            }
         }
     }
 }

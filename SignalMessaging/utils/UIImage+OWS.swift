@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import CoreImage
 
 extension UIImage {
     @objc

@@ -11,6 +11,7 @@ protocol GroupCallVideoOverflowDelegate: class {
 }
 
 class GroupCallVideoOverflow: UICollectionView {
+    weak var memberViewDelegate: GroupCallMemberViewDelegate?
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
     let call: SignalCall
 
@@ -128,8 +129,8 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
             return cell
         }
 
+        cell.setMemberViewDelegate(memberViewDelegate)
         cell.configure(call: call, device: remoteDevice)
-
         return cell
     }
 }
@@ -185,5 +186,9 @@ class GroupCallVideoOverflowCell: UICollectionViewCell {
 
     func configureRemoteVideo(device: RemoteDeviceState) {
         memberView.configureRemoteVideo(device: device)
+    }
+
+    func setMemberViewDelegate(_ delegate: GroupCallMemberViewDelegate?) {
+        memberView.delegate = delegate
     }
 }

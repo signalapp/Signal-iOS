@@ -804,10 +804,12 @@ extension CallService: CallManagerDelegate {
         }.done { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
         }.catch { error in
+            // Did the recipients safety number change?
+            // Is the user blocked?
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
             } else {
-                owsFailDebug("Failed to send opaque message \(error)")
+                Logger.error("Failed to send opaque message \(error)")
             }
             // TODO: Tell RingRTC something went wrong. API TBD
         }

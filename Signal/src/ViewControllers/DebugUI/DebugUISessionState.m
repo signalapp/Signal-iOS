@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
     return AppEnvironment.shared.sessionResetJobQueue;
 }
 
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
 #pragma mark -
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter
@@ -96,10 +101,15 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     }
 
-    [items addObjectsFromArray:@[ [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
-                                                  actionBlock:^{
-                                                      [self clearSessionAndIdentityStore];
-                                                  }] ]];
+    if (threadParameter) {
+        [items addObject:[OWSTableItem itemWithTitle:@"Update verification state"
+                                         actionBlock:^{ [self updateIdentityVerificationForThread:threadParameter]; }]];
+    }
+
+    [items addObjectsFromArray:@[
+        [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
+                        actionBlock:^{ [self clearSessionAndIdentityStore]; }],
+    ]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -110,6 +120,65 @@ NS_ASSUME_NONNULL_BEGIN
         [self.sessionStore resetSessionStore:transaction];
         [[OWSIdentityManager shared] clearIdentityState:transaction];
     });
+}
+
+- (void)updateIdentityVerificationForThread:(TSThread *)thread
+{
+    if (thread.recipientAddresses.count == 0) {
+        OWSFailDebug(@"No recipients for thread %@", thread);
+        return;
+    }
+
+    if (thread.recipientAddresses.count > 1) {
+        ActionSheetController *recipientSelection = [[ActionSheetController alloc] initWithTitle:@"Select a recipient"
+                                                                                         message:nil];
+        [recipientSelection addAction:OWSActionSheets.cancelAction];
+
+        __weak typeof(self) wSelf = self;
+        for (SignalServiceAddress *address in thread.recipientAddresses) {
+            NSString *name = [self.contactsManager displayNameForAddress:address];
+            [recipientSelection
+                addAction:[[ActionSheetAction alloc] initWithTitle:name
+                                                             style:ActionSheetActionStyleDefault
+                                                           handler:^(ActionSheetAction *action) {
+                                                               [wSelf updateIdentityVerificationForAddress:address];
+                                                           }]];
+        }
+
+        [OWSActionSheets showActionSheet:recipientSelection];
+
+    } else {
+        [self updateIdentityVerificationForAddress:thread.recipientAddresses.firstObject];
+    }
+}
+
+- (void)updateIdentityVerificationForAddress:(SignalServiceAddress *)address
+{
+    OWSRecipientIdentity *identity = [OWSIdentityManager.shared recipientIdentityForAddress:address];
+    NSString *name = [self.contactsManager displayNameForAddress:address];
+    NSString *message = [NSString stringWithFormat:@"%@ is currently marked as %@",
+                                  name,
+                                  OWSVerificationStateToString(identity.verificationState)];
+
+    ActionSheetController *stateSelection = [[ActionSheetController alloc] initWithTitle:@"Select a verification state"
+                                                                                 message:message];
+    [stateSelection addAction:OWSActionSheets.cancelAction];
+
+    for (NSNumber *stateNum in
+        @[ @(OWSVerificationStateVerified), @(OWSVerificationStateDefault), @(OWSVerificationStateNoLongerVerified) ]) {
+        OWSVerificationState state = [stateNum unsignedIntegerValue];
+        [stateSelection addAction:[[ActionSheetAction alloc] initWithTitle:OWSVerificationStateToString(state)
+                                                                     style:ActionSheetActionStyleDefault
+                                                                   handler:^(ActionSheetAction *action) {
+                                                                       [OWSIdentityManager.shared
+                                                                            setVerificationState:state
+                                                                                     identityKey:identity.identityKey
+                                                                                         address:address
+                                                                           isUserInitiatedChange:NO];
+                                                                   }]];
+    }
+
+    [OWSActionSheets showActionSheet:stateSelection];
 }
 
 @end
