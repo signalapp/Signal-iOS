@@ -33,6 +33,9 @@ open class ActionSheetController: OWSViewController {
         case trailing
     }
 
+    /// Adds a header view to the top of the action sheet stack
+    /// Note: It's the caller's responsibility to ensure the header view matches the style of the action sheet
+    /// See: theme.backgroundColor, theme.headerTitleColor, etc.
     @objc
     public var customHeader: UIView? {
         didSet {
@@ -48,7 +51,7 @@ open class ActionSheetController: OWSViewController {
     // Currently the theme must be set during initialization to take effect
     // There's probably a future use case where we want to recolor everything
     // as the theme changes. But for now we have initializers.
-    private let theme: Theme.ActionSheet
+    public let theme: Theme.ActionSheet
 
     fileprivate static let minimumRowHeight: CGFloat = 60
 
@@ -175,18 +178,24 @@ open class ActionSheetController: OWSViewController {
         backdropView.autoPinEdge(.top, to: .top, of: contentView)
         scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: backdropView.bottomAnchor).isActive = true
 
+        // Stack views don't support corner masking pre-iOS 14
+        // Instead we add our stack view to a wrapper view with masksToBounds: true
+        let stackViewContainer = UIView()
+        contentView.addSubview(stackViewContainer)
+        stackViewContainer.autoPinEdgesToSuperviewSafeArea()
+
+        stackViewContainer.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
         stackView.axis = .vertical
-        contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewSafeArea()
 
         // We can't mask the content view because the backdrop intentionally extends outside of the content
-        // view's bounds. But all of the sublayers are pinned at same top edge. We can just apply corner
+        // view's bounds. But its two subviews are pinned at same top edge. We can just apply corner
         // radii to each layer individually to get a similar effect.
         let cornerRadius: CGFloat = 16
-        contentView.layer.sublayers?.forEach { layer in
-            layer.cornerRadius = cornerRadius
-            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-            layer.masksToBounds = true
+        [backdropView, stackViewContainer].forEach { subview in
+            subview.layer.cornerRadius = cornerRadius
+            subview.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            subview.layer.masksToBounds = true
         }
 
         // Support tapping the backdrop to cancel the action sheet.
@@ -199,8 +208,9 @@ open class ActionSheetController: OWSViewController {
 
         // Always scroll to the bottom initially, so it's clear to the
         // user that there's more to scroll to if it goes offscreen.
+        // We only want to do this once after the first layout resulting in a nonzero frame
         guard !hasCompletedFirstLayout else { return }
-        hasCompletedFirstLayout = true
+        hasCompletedFirstLayout = (view.frame != .zero)
 
         // Ensure the scrollView's layout has completed
         // as we're about to use its bounds to calculate
