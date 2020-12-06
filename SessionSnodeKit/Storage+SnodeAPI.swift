@@ -5,6 +5,7 @@ extension Storage {
     // MARK: - Snode Pool
     
     private static let snodePoolCollection = "LokiSnodePoolCollection"
+    private static let lastSnodePoolRefreshDateCollection = "LokiLastSnodePoolRefreshDateCollection"
 
     public func getSnodePool() -> Set<Snode> {
         var result: Set<Snode> = []
@@ -26,6 +27,18 @@ extension Storage {
 
     public func clearSnodePool(in transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).removeAllObjects(inCollection: Storage.snodePoolCollection)
+    }
+    
+    public func getLastSnodePoolRefreshDate() -> Date? {
+        var result: Date?
+        Storage.read { transaction in
+            result = transaction.object(forKey: "lastSnodePoolRefreshDate", inCollection: Storage.lastSnodePoolRefreshDateCollection) as? Date
+        }
+        return result
+    }
+    
+    public func setLastSnodePoolRefreshDate(to date: Date, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(date, forKey: "lastSnodePoolRefreshDate", inCollection: Storage.lastSnodePoolRefreshDateCollection)
     }
 
 

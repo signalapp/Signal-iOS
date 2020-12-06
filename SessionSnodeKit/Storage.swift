@@ -9,6 +9,8 @@ public protocol SessionSnodeKitStorageProtocol {
     func setOnionRequestPaths(to paths: [OnionRequestAPI.Path], using transaction: Any)
     func getSnodePool() -> Set<Snode>
     func setSnodePool(to snodePool: Set<Snode>, using transaction: Any)
+    func getLastSnodePoolRefreshDate() -> Date?
+    func setLastSnodePoolRefreshDate(to date: Date, using transaction: Any)
     func getSwarm(for publicKey: String) -> Set<Snode>
     func setSwarm(to swarm: Set<Snode>, for publicKey: String, using transaction: Any)
     func getLastMessageHash(for snode: Snode, associatedWith publicKey: String) -> String?

@@ -63,7 +63,13 @@ public final class SnodeAPI : NSObject {
         if snodePool.count < minimumSnodePoolCount {
             snodePool = SNSnodeKitConfiguration.shared.storage.getSnodePool()
         }
-        if snodePool.count < minimumSnodePoolCount {
+        let now = Date()
+        let isSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 24 * 60 * 60 } ?? true
+        let isRefreshNeeded = (snodePool.count < minimumSnodePoolCount) || isSnodePoolExpired
+        if isRefreshNeeded {
+            Storage.write { transaction in
+                Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
+            }
             let target = seedNodePool.randomElement()!
             let url = "\(target)/json_rpc"
             let parameters: JSON = [
