@@ -90,6 +90,10 @@ public final class MessageSender : NSObject {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let userPublicKey = storage.getUserPublicKey()
+        var isMainAppAndActive = false
+        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
+            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+        }
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
@@ -223,9 +227,18 @@ public final class MessageSender : NSObject {
                         }
                         if shouldNotify {
                             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-                            JobQueue.shared.add(notifyPNServerJob, using: transaction)
+                            if isMainAppAndActive {
+                                JobQueue.shared.add(notifyPNServerJob, using: transaction)
+                                seal.fulfill(())
+                            } else {
+                                notifyPNServerJob.execute().done(on: DispatchQueue.global(qos: .userInitiated)) {
+                                    seal.fulfill(())
+                                }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                                    seal.fulfill(()) // Always fulfill because the notify PN server job isn't critical.
+                                }
+                            }
+                            
                         }
-                        seal.fulfill(())
                     }, completion: { })
                 }
                 $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in

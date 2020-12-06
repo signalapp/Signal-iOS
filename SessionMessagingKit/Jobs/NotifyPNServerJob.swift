@@ -34,18 +34,25 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     // MARK: Running
     public func execute() {
+        let _: Promise<Void> = execute()
+    }
+    
+    public func execute() -> Promise<Void> {
         let server = PushNotificationAPI.server
         let parameters = [ "data" : message.data.description, "send_to" : message.recipient ]
         let url = URL(string: "\(server)/notify")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
+        let promise = attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: PushNotificationAPI.serverPublicKey).map { _ in }
-        }.done(on: DispatchQueue.global()) { // Intentionally capture self
+        }
+        let _ = promise.done(on: DispatchQueue.global()) { // Intentionally capture self
             self.handleSuccess()
-        }.catch(on: DispatchQueue.global()) { error in
+        }
+        promise.catch(on: DispatchQueue.global()) { error in
             self.handleFailure(error: error)
         }
+        return promise
     }
 
     private func handleSuccess() {
