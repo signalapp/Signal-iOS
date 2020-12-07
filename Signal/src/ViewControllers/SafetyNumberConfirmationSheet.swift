@@ -103,7 +103,6 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
         view.addSubview(backgroundView)
         view.addSubview(contentView)
-        contentView.autoPinEdge(toSuperviewEdge: .bottom)
         backgroundView.autoPinEdges(toEdgesOf: contentView)
 
         contentView.autoHCenterInSuperview()
@@ -207,25 +206,69 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
     // MARK: - Resize / Interactive Dismiss
 
+    var bottomConstraint: NSLayoutConstraint?
     var heightConstraint: NSLayoutConstraint?
     let maxWidth: CGFloat = 414
-    lazy var baseContentViewHeight: CGFloat = {
-        view.layoutIfNeeded()
-        return contentView.height
+
+    lazy var baseStackViewHeight: CGFloat = {
+        tableView.isHidden = true
+        stackView.layoutIfNeeded()
+
+        let baseStackViewHeight = stackView.height
+
+        tableView.isHidden = false
+        stackView.layoutIfNeeded()
+
+        return baseStackViewHeight
     }()
 
     lazy var cellHeight = tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.height ?? 72
 
-    lazy var minimizedHeight: CGFloat = {
+    var minimizedHeight: CGFloat {
         // We want to show, at most, 3.5 rows when minimized. When we have
         // less than 4 rows, we will match our size to the number of rows.
-        return min(maximizedHeight, baseContentViewHeight + min(CGFloat(items.count), 3.5) * cellHeight)
-    }()
+        let compactTableViewHeight = min(CGFloat(items.count), 3.5) * cellHeight
+        let preferredMinimizedHeight = baseStackViewHeight + compactTableViewHeight + view.safeAreaInsets.bottom
+
+        return min(maximizedHeight, preferredMinimizedHeight)
+    }
+
     var maximizedHeight: CGFloat {
-        return min(
-            CurrentAppContext().frame.height - topLayoutGuide.length - 16,
-            baseContentViewHeight + CGFloat(items.count) * cellHeight
-        )
+        let tableViewHeight = CGFloat(items.count) * cellHeight
+        let preferredMaximizedHeight = baseStackViewHeight + tableViewHeight + view.safeAreaInsets.bottom
+        let maxPermittedHeight = CurrentAppContext().frame.height - view.safeAreaInsets.top - 16
+
+        return min(preferredMaximizedHeight, maxPermittedHeight)
+    }
+
+    var desiredVisibleContentHeight: CGFloat = 0 {
+        didSet {
+            updateConstraints(withDesiredContentHeight: desiredVisibleContentHeight)
+        }
+    }
+
+    func updateConstraints(withDesiredContentHeight height: CGFloat) {
+        // To prevent views from getting compressed, if the desired appearance height is less than
+        // the minimized height, we translate the content off the bottom edge
+        let newHeightConstant = max(minimizedHeight, desiredVisibleContentHeight)
+        let newBottomOffset = max((minimizedHeight - desiredVisibleContentHeight), 0)
+
+        if let heightConstraint = heightConstraint {
+            heightConstraint.constant = newHeightConstant
+        } else {
+            heightConstraint = contentView.autoSetDimension(.height, toSize: newHeightConstant)
+        }
+
+        if let bottomConstraint = bottomConstraint {
+            bottomConstraint.constant = newBottomOffset
+        } else {
+            bottomConstraint = contentView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -newBottomOffset)
+        }
+    }
+
+    var visibleContentHeight: CGFloat {
+        let contentRect = contentView.convert(contentView.bounds, to: view)
+        return view.bounds.intersection(contentRect).height
     }
 
     let maxAnimationDuration: TimeInterval = 0.2
@@ -233,7 +276,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     var startingTranslation: CGFloat?
 
     func setupInteractiveSizing() {
-        heightConstraint = contentView.autoSetDimension(.height, toSize: minimizedHeight)
+        desiredVisibleContentHeight = minimizedHeight
 
         // Create a pan gesture to handle when the user interacts with the
         // view outside of the reactor table views.
@@ -285,7 +328,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
             }
 
             // Update our height to reflect the new position
-            heightConstraint?.constant = newHeight
+            desiredVisibleContentHeight = newHeight
             view.layoutIfNeeded()
         case .ended, .cancelled, .failed:
             guard let startingHeight = startingHeight else { break }
@@ -294,7 +337,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
             let growThreshold = (maximizedHeight - startingHeight) * 0.5
             let velocityThreshold: CGFloat = 500
 
-            let currentHeight = contentView.height
+            let currentHeight = visibleContentHeight
             let currentVelocity = sender.velocity(in: view).y
 
             enum CompletionState { case growing, dismissing, cancelling }
@@ -320,7 +363,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
                 finalHeight = startingHeight
             }
 
-            let remainingDistance = finalHeight - currentHeight
+            let remainingDistance = finalHeight - visibleContentHeight
 
             // Calculate the time to complete the animation if we want to preserve
             // the user's velocity. If this time is too slow (e.g. the user was scrolling
@@ -328,14 +371,12 @@ class SafetyNumberConfirmationSheet: UIViewController {
             let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
 
             UIView.animate(withDuration: min(remainingTime, maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
-                self.heightConstraint?.constant = finalHeight
+                self.desiredVisibleContentHeight = finalHeight
                 self.view.layoutIfNeeded()
                 self.backdropView.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
-                self.heightConstraint?.constant = finalHeight
-                self.view.layoutIfNeeded()
-
-                if completionState == .dismissing { self.dismiss(animated: true, completion: nil) }
+                self.desiredVisibleContentHeight = finalHeight
+                if completionState == .dismissing { self.dismiss(animated: false, completion: nil) }
             }
 
             resetInteractiveTransition()
@@ -345,13 +386,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
             backdropView.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
-            heightConstraint?.constant = startingHeight
+            desiredVisibleContentHeight = startingHeight
         }
     }
 
     func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
         let tryingToDismiss = tableView.contentOffset.y <= 0
-        let tryingToMaximize = contentView.height < maximizedHeight && tableView.height < tableView.contentSize.height
+        let tryingToMaximize = visibleContentHeight < maximizedHeight && tableView.height < tableView.contentSize.height
 
         // If we're at the top of the scrollView, or the view is not
         // currently maximized, we want to do an interactive transition.
@@ -362,7 +403,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         }
 
         if startingHeight == nil {
-            startingHeight = contentView.height
+            startingHeight = visibleContentHeight
         }
 
         return true
@@ -372,6 +413,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
         startingTranslation = nil
         startingHeight = nil
         tableView.showsVerticalScrollIndicator = true
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        // The minimized height is dependent on safe the current safe area insets
+        // If they every change, reset the content height to the new minimized height
+        super.viewSafeAreaInsetsDidChange()
+        desiredVisibleContentHeight = minimizedHeight
     }
 }
 
