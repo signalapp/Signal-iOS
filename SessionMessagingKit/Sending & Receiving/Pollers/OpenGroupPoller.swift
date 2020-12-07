@@ -9,6 +9,14 @@ public final class OpenGroupPoller : NSObject {
     private var hasStarted = false
     private var isPolling = false
     
+    private var isMainAppAndActive: Bool {
+        var isMainAppAndActive = false
+        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
+            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+        }
+        return isMainAppAndActive
+    }
+    
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 60
@@ -22,7 +30,8 @@ public final class OpenGroupPoller : NSObject {
     }
     
     @objc public func startIfNeeded() {
-        if hasStarted { return }
+        guard !hasStarted else { return }
+        guard isMainAppAndActive else { stop(); return }
         DispatchQueue.main.async { [weak self] in // Timers don't do well on background queues
             guard let strongSelf = self else { return }
             strongSelf.pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForNewMessagesInterval, repeats: true) { _ in self?.pollForNewMessages() }
@@ -51,6 +60,7 @@ public final class OpenGroupPoller : NSObject {
 
     @discardableResult
     public func pollForNewMessages() -> Promise<Void> {
+        guard isMainAppAndActive else { stop(); return Promise.value(()) }
         return pollForNewMessages(isBackgroundPoll: false)
     }
     
