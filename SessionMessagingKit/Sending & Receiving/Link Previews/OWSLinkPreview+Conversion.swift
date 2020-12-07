@@ -1,7 +1,7 @@
 
 extension OWSLinkPreview {
     
-    public static func from(_ linkPreview: VisibleMessage.LinkPreview?) -> OWSLinkPreview? {
+    @objc public static func from(_ linkPreview: VisibleMessage.LinkPreview?) -> OWSLinkPreview? {
         guard let linkPreview = linkPreview else { return nil }
         return OWSLinkPreview(urlString: linkPreview.url!, title: linkPreview.title, imageAttachmentId: linkPreview.attachmentID)
     }

@@ -3715,13 +3715,14 @@ typedef enum : NSUInteger {
     message.text = text;
     message.quote = [SNQuote from:self.inputToolbar.quotedReply];
     OWSLinkPreviewDraft *linkPreviewDraft = self.inputToolbar.linkPreviewDraft;
+    TSThread *thread = self.thread;
+    TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
+    [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         message.linkPreview = [SNLinkPreview from:linkPreviewDraft using:transaction];
     } completion:^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            TSThread *thread = self.thread;
-            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
-            [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
+            tsMessage.linkPreview = [OWSLinkPreview from:message.linkPreview];
             [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [tsMessage saveWithTransaction:transaction];
             }];
