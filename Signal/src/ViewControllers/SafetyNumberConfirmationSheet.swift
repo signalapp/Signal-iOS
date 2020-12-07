@@ -274,6 +274,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     let maxAnimationDuration: TimeInterval = 0.2
     var startingHeight: CGFloat?
     var startingTranslation: CGFloat?
+    var pinnedContentOffset: CGPoint?
 
     func setupInteractiveSizing() {
         desiredVisibleContentHeight = minimizedHeight
@@ -303,12 +304,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
         case .began, .changed:
             guard beginInteractiveTransitionIfNecessary(sender),
                 let startingHeight = startingHeight,
-                let startingTranslation = startingTranslation else {
+                let startingTranslation = startingTranslation,
+                let pinnedContentOffset = pinnedContentOffset else {
                     return resetInteractiveTransition()
             }
 
             // We're in an interactive transition, so don't let the scrollView scroll.
-            tableView.contentOffset.y = 0
+            tableView.contentOffset = pinnedContentOffset
             tableView.showsVerticalScrollIndicator = false
 
             // We may have panned some distance if we were scrolling before we started
@@ -396,7 +398,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
-        let tryingToDismiss = tableView.contentOffset.y <= 0
+        let tryingToDismiss = tableView.contentOffset.y <= 0 || tableView.panGestureRecognizer != sender
         let tryingToMaximize = visibleContentHeight < maximizedHeight && tableView.height < tableView.contentSize.height
 
         // If we're at the top of the scrollView, or the view is not
@@ -411,12 +413,20 @@ class SafetyNumberConfirmationSheet: UIViewController {
             startingHeight = visibleContentHeight
         }
 
+        if pinnedContentOffset == nil {
+            pinnedContentOffset = tableView.contentOffset.y < 0 ? .zero : tableView.contentOffset
+        }
+
         return true
     }
 
     func resetInteractiveTransition() {
         startingTranslation = nil
         startingHeight = nil
+        if let pinnedContentOffset = pinnedContentOffset {
+            tableView.contentOffset = pinnedContentOffset
+        }
+        pinnedContentOffset = nil
         tableView.showsVerticalScrollIndicator = true
     }
 
