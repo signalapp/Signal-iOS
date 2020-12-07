@@ -1511,7 +1511,7 @@ typedef enum : NSUInteger {
     }
 
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        return SSKFeatureFlags.groupCalling && self.thread.isGroupV2Thread;
+        return RemoteConfig.groupCalling && self.thread.isGroupV2Thread;
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;

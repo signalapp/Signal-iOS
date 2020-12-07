@@ -198,9 +198,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let supportAnimatedStickers_AnimatedWebp = true
 
-    @objc
-    public static let groupCalling = build.includes(.beta)
-
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -365,6 +362,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let forceProfilesForAll = build.includes(.beta)
+
+    @objc
+    public static let forceGroupCalling = build.includes(.beta)
 
     @objc
     public static let disableMessageProcessing = TestableFlag(false)

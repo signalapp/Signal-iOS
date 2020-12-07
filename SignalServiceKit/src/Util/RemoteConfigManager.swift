@@ -135,6 +135,11 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var groupCalling: Bool {
+        return DebugFlags.forceGroupCalling || isEnabled(.groupCalling)
+    }
+
+    @objc
     public static var researchMegaphone: Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else { return false }
         return remoteConfig.researchMegaphone
@@ -315,6 +320,7 @@ private struct Flags {
         case groupsV2autoMigrations
         case groupsV2manualMigrations
         case groupsV2blockingMigrations
+        case groupCalling
     }
 
     // Values defined in this array remain set once they are
