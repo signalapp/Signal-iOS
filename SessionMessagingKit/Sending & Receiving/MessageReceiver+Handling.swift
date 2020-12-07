@@ -7,13 +7,13 @@ extension MessageReceiver {
         return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
     }
 
-    public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws {
+    public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupUpdate: handleClosedGroupUpdate(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
-        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, using: transaction)
+        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
     }
@@ -136,7 +136,7 @@ extension MessageReceiver {
     }
 
     @discardableResult
-    public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, using transaction: Any) throws -> String {
+    public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws -> String {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var isMainAppAndActive = false
@@ -206,7 +206,7 @@ extension MessageReceiver {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
         // Notify the user if needed
-        guard isMainAppAndActive, let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
+        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsIncomingMessageID }
         SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsIncomingMessageID

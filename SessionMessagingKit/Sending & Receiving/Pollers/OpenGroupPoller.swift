@@ -51,11 +51,18 @@ public final class OpenGroupPoller : NSObject {
 
     @discardableResult
     public func pollForNewMessages() -> Promise<Void> {
+        return pollForNewMessages(isBackgroundPoll: false)
+    }
+    
+    @discardableResult
+    public func pollForNewMessages(isBackgroundPoll: Bool) -> Promise<Void> {
         guard !self.isPolling else { return Promise.value(()) }
         self.isPolling = true
         let openGroup = self.openGroup
         let userPublicKey = getUserHexEncodedPublicKey()
-        return OpenGroupAPI.getMessages(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { messages in
+        let (promise, seal) = Promise<Void>.pending()
+        promise.retainUntilComplete()
+        OpenGroupAPI.getMessages(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { messages in
             self.isPolling = false
             // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
             messages.sorted { $0.serverTimestamp < $1.serverTimestamp }.forEach { message in
@@ -153,11 +160,23 @@ public final class OpenGroupPoller : NSObject {
                 Storage.write { transaction in
                     Storage.shared.setOpenGroupDisplayName(to: senderDisplayName, for: senderPublicKey, inOpenGroupWithID: openGroup.id, using: transaction)
                     let messageServerID = message.serverID
-                    let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: messageServerID, openGroupID: openGroup.id)
-                    SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+                    let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: messageServerID, openGroupID: openGroup.id, isBackgroundPoll: isBackgroundPoll)
+                    if isBackgroundPoll {
+                        job.execute().done(on: DispatchQueue.global(qos: .userInitiated)) {
+                            seal.fulfill(())
+                        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                            seal.fulfill(()) // The promise is just used to keep track of when we're done
+                        }
+                    } else {
+                        SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
+                        seal.fulfill(())
+                    }
                 }
             }
+        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+            seal.fulfill(()) // The promise is just used to keep track of when we're done
         }
+        return promise
     }
     
     private func pollForDeletedMessages() {

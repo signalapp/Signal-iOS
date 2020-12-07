@@ -43,7 +43,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     var userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
                     switch message {
                     case let visibleMessage as VisibleMessage:
-                        let tsIncomingMessageID = try MessageReceiver.handleVisibleMessage(visibleMessage, associatedWithProto: proto, openGroupID: nil, using: transaction)
+                        let tsIncomingMessageID = try MessageReceiver.handleVisibleMessage(visibleMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: false, using: transaction)
                         guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
                             return self.handleFailure(for: notificationContent)
                         }
