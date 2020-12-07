@@ -3145,6 +3145,7 @@ typedef enum : NSUInteger {
             }
         }
         SNVisibleMessage *message = [SNVisibleMessage new];
+        message.text = messageText;
         message.sentTimestamp = [NSDate millisecondTimestamp];
         TSThread *thread = self.thread;
         TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
