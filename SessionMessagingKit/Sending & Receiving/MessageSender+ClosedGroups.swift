@@ -89,7 +89,7 @@ extension MessageSender : SharedSenderKeysDelegate {
             }
             when(resolved: promises).done2 { _ in seal.fulfill(()) }.catch2 { seal.reject($0) }
             let _ = promise.done {
-                Storage.writeSync { transaction in
+                SNMessagingKitConfiguration.shared.storage.writeSync { transaction in
                     let allOldRatchets = Storage.shared.getAllClosedGroupRatchets(for: groupPublicKey)
                     for (senderPublicKey, oldRatchet) in allOldRatchets {
                         let collection = ClosedGroupRatchetCollectionType.old
@@ -106,6 +106,7 @@ extension MessageSender : SharedSenderKeysDelegate {
                     } else {
                         // Send closed group update messages to any new members using established channels
                         for member in newMembers {
+                            let transaction = transaction as! YapDatabaseReadWriteTransaction
                             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                             thread.save(with: transaction)
                             let closedGroupUpdateKind = ClosedGroupUpdate.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
@@ -118,6 +119,7 @@ extension MessageSender : SharedSenderKeysDelegate {
                         let userRatchet = SharedSenderKeys.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
                         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
                         for member in members {
+                            let transaction = transaction as! YapDatabaseReadWriteTransaction
                             guard member != userPublicKey else { continue }
                             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                             thread.save(with: transaction)

@@ -34,7 +34,7 @@ public final class SessionRequest : ControlMessage {
     public override class func fromProto(_ proto: SNProtoContent) -> SessionRequest? {
         guard proto.nullMessage != nil, let preKeyBundleProto = proto.prekeyBundleMessage else { return nil }
         var registrationID: UInt32 = 0
-        SNMessagingKitConfiguration.shared.storage.with { transaction in
+        SNMessagingKitConfiguration.shared.storage.writeSync { transaction in
             registrationID = SNMessagingKitConfiguration.shared.storage.getOrGenerateRegistrationID(using: transaction)
         }
         guard let preKeyBundle = PreKeyBundle(

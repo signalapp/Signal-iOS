@@ -39,7 +39,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobSucceeded(_ job: Job) {
-        SNMessagingKitConfiguration.shared.storage.withAsync({ transaction in
+        SNMessagingKitConfiguration.shared.storage.write(with: { transaction in
             SNMessagingKitConfiguration.shared.storage.markJobAsSucceeded(job, using: transaction)
         }, completion: {
             // Do nothing
@@ -50,11 +50,11 @@ public final class JobQueue : NSObject, JobDelegate {
         job.failureCount += 1
         let storage = SNMessagingKitConfiguration.shared.storage
         guard !storage.isJobCanceled(job) else { return SNLog("\(type(of: job)) canceled.") }
-        storage.withAsync({ transaction in
+        storage.write(with: { transaction in
             storage.persist(job, using: transaction)
         }, completion: { // Intentionally capture self
             if job.failureCount == type(of: job).maxFailureCount {
-                storage.withAsync({ transaction in
+                storage.write(with: { transaction in
                     storage.markJobAsFailed(job, using: transaction)
                 }, completion: {
                     // Do nothing
@@ -70,10 +70,10 @@ public final class JobQueue : NSObject, JobDelegate {
     public func handleJobFailedPermanently(_ job: Job, with error: Error) {
         job.failureCount += 1
         let storage = SNMessagingKitConfiguration.shared.storage
-        storage.withAsync({ transaction in
+        storage.write(with: { transaction in
             storage.persist(job, using: transaction)
         }, completion: { // Intentionally capture self
-            storage.withAsync({ transaction in
+            storage.write(with: { transaction in
                 storage.markJobAsFailed(job, using: transaction)
             }, completion: {
                 // Do nothing

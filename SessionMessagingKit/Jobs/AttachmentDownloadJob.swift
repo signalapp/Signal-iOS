@@ -53,21 +53,21 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             return handleFailure(error: Error.noAttachment)
         }
         let storage = SNMessagingKitConfiguration.shared.storage
-        storage.withAsync({ transaction in
+        storage.write(with: { transaction in
             storage.setAttachmentState(to: .downloading, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
         }, completion: { })
         let temporaryFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth() + UUID().uuidString)
         let handleFailure: (Swift.Error) -> Void = { error in // Intentionally capture self
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
             if let error = error as? Error, case .noAttachment = error {
-                storage.withAsync({ transaction in
+                storage.write(with: { transaction in
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
             } else if let error = error as? DotNetAPI.Error, case .parsingFailed = error {
                 // No need to retry if the response is invalid. Most likely this means we (incorrectly)
                 // got a "Cannot GET ..." error from the file server.
-                storage.withAsync({ transaction in
+                storage.write(with: { transaction in
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
@@ -98,7 +98,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                 return handleFailure(error)
             }
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-            storage.withAsync({ transaction in
+            storage.write(with: { transaction in
                 storage.persist(stream, associatedWith: self.tsIncomingMessageID, using: transaction)
             }, completion: { })
         }.catch(on: DispatchQueue.global()) { error in

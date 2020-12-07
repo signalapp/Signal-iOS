@@ -27,7 +27,7 @@ public final class OpenGroupAPI : DotNetAPI {
                 let url = URL(string: server)!
                 let request = TSRequest(url: url)
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: publicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { _ -> String in
-                    SNMessagingKitConfiguration.shared.storage.with { transaction in
+                    SNMessagingKitConfiguration.shared.storage.writeSync { transaction in
                         SNMessagingKitConfiguration.shared.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
                     }
                     return publicKey
@@ -81,7 +81,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         }
                         let lastMessageServerID = storage.getLastMessageServerID(for: channel, on: server)
                         if serverID > (lastMessageServerID ?? 0) {
-                            storage.with { transaction in
+                            storage.writeSync { transaction in
                                 storage.setLastMessageServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
@@ -205,7 +205,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         }
                         let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server)
                         if serverID > (lastDeletionServerID ?? 0) {
-                            storage.with { transaction in
+                            storage.writeSync { transaction in
                                 storage.setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
@@ -256,7 +256,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         throw Error.parsingFailed
                     }
                     let storage = SNMessagingKitConfiguration.shared.storage
-                    storage.with { transaction in
+                    storage.writeSync { transaction in
                         data.forEach { data in
                             guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
                             let endIndex = hexEncodedPublicKey.endIndex
@@ -346,7 +346,7 @@ public final class OpenGroupAPI : DotNetAPI {
                             throw Error.parsingFailed
                         }
                         let storage = SNMessagingKitConfiguration.shared.storage
-                        storage.with { transaction in
+                        storage.writeSync { transaction in
                             storage.setUserCount(to: memberCount, forOpenGroupWithID: "\(server).\(channel)", using: transaction)
                         }
                         let openGroupInfo = OpenGroupInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
@@ -360,7 +360,8 @@ public final class OpenGroupAPI : DotNetAPI {
 
     public static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: OpenGroupInfo) {
         let openGroupID = "\(server).\(channel)"
-        Storage.write { transaction in
+        SNMessagingKitConfiguration.shared.storage.write { transaction in
+            let transaction = transaction as! YapDatabaseReadWriteTransaction
             // Update user count
             Storage.shared.setUserCount(to: info.memberCount, forOpenGroupWithID: openGroupID, using: transaction)
             let thread = TSGroupThread.getOrCreateThread(withGroupId: openGroupID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
@@ -474,7 +475,7 @@ internal extension Promise {
             if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 SNLog("Auth token for: \(server) expired; dropping it.")
                 let storage = SNMessagingKitConfiguration.shared.storage
-                storage.with { transaction in
+                storage.writeSync { transaction in
                     storage.removeAuthToken(for: server, using: transaction)
                 }
             }

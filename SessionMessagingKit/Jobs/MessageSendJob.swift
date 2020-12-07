@@ -71,14 +71,14 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                     // Wait for it to finish
                 } else {
                     let job = AttachmentUploadJob(attachmentID: attachment.uniqueId!, threadID: message.threadID!, message: message, messageSendJobID: id!)
-                    storage.withAsync({ transaction in
+                    storage.write(with: { transaction in
                         JobQueue.shared.add(job, using: transaction)
                     }, completion: { })
                 }
             }
             if !attachmentsToUpload.isEmpty { return } // Wait for all attachments to upload before continuing
         }
-        storage.withAsync({ transaction in // Intentionally capture self
+        storage.write(with: { transaction in // Intentionally capture self
             MessageSender.send(self.message, to: self.destination, using: transaction).done(on: DispatchQueue.global(qos: .userInitiated)) {
                 self.handleSuccess()
             }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in

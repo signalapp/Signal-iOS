@@ -140,7 +140,7 @@ public enum OnionRequestAPI {
                 }
             }.map2 { paths in
                 OnionRequestAPI.paths = paths + reusablePaths
-                SNSnodeKitConfiguration.shared.storage.with { transaction in
+                SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                     SNLog("Persisting onion request paths to database.")
                     SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
                 }
@@ -226,7 +226,7 @@ public enum OnionRequestAPI {
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
         paths = newPaths
-        SNSnodeKitConfiguration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
             SNLog("Persisting onion request paths to database.")
             SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: newPaths, using: transaction)
         }
@@ -241,7 +241,7 @@ public enum OnionRequestAPI {
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
-        SNSnodeKitConfiguration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
             if !paths.isEmpty {
                 SNLog("Persisting onion request paths to database.")
                 SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)

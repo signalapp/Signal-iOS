@@ -272,8 +272,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
             let typingIndicator = TypingIndicator()
             typingIndicator.kind = action
-            Storage.write { transaction in
-                MessageSender.send(typingIndicator, in: thread, using: transaction)
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
+                MessageSender.send(typingIndicator, in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }
         }
     }

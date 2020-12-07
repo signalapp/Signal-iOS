@@ -55,7 +55,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     
     public func execute() -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        SNMessagingKitConfiguration.shared.storage.withAsync({ transaction in // Intentionally capture self
+        SNMessagingKitConfiguration.shared.storage.write(with: { transaction in // Intentionally capture self
             do {
                 let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, using: transaction)
                 try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: self.openGroupID, isBackgroundPoll: self.isBackgroundPoll, using: transaction)

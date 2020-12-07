@@ -81,7 +81,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         SNLog("Attachment uploaded successfully.")
         delegate?.handleJobSucceeded(self)
         SNMessagingKitConfiguration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
-        Storage.shared.withAsync({ transaction in
+        Storage.shared.write(with: { transaction in
             var interaction: TSInteraction?
             let transaction = transaction as! YapDatabaseReadWriteTransaction
             TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: self.message.sentTimestamp!, with: { _, key, _ in
@@ -108,7 +108,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     private func failAssociatedMessageSendJob(with error: Swift.Error) {
         let storage = SNMessagingKitConfiguration.shared.storage
         let messageSendJob = storage.getMessageSendJob(for: messageSendJobID)
-        storage.withAsync({ transaction in // Intentionally capture self
+        storage.write(with: { transaction in // Intentionally capture self
             MessageSender.handleFailedMessageSend(self.message, with: error, using: transaction)
             if let messageSendJob = messageSendJob {
                 storage.markJobAsFailed(messageSendJob, using: transaction)

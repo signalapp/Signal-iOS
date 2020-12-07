@@ -1,11 +1,15 @@
 import SessionProtocolKit
+import PromiseKit
 
 public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Shared
 
-    func with(_ work: @escaping (Any) -> Void)
-    func withAsync(_ work: @escaping (Any) -> Void, completion: @escaping () -> Void)
+    @discardableResult
+    func write(with block: @escaping (Any) -> Void) -> Promise<Void>
+    @discardableResult
+    func write(with block: @escaping (Any) -> Void, completion: @escaping () -> Void) -> Promise<Void>
+    func writeSync(with block: @escaping (Any) -> Void)
 
     // MARK: - General
 

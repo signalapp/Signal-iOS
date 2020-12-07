@@ -94,7 +94,7 @@ public class DotNetAPI : NSObject {
             return Promise.value(token)
         } else {
             return requestNewAuthToken(for: server).then(on: DispatchQueue.global(qos: .userInitiated)) { submitAuthToken($0, for: server) }.map(on: DispatchQueue.global(qos: .userInitiated)) { token in
-                storage.with { transaction in
+                storage.writeSync { transaction in
                     storage.setAuthToken(for: server, to: token, using: transaction)
                 }
                 return token

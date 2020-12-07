@@ -167,7 +167,7 @@ public final class OpenGroupPoller : NSObject {
                 envelope.setSourceDevice(1)
                 envelope.setContent(try! content.build().serializedData())
                 envelope.setServerTimestamp(message.serverTimestamp)
-                Storage.write { transaction in
+                SNMessagingKitConfiguration.shared.storage.write { transaction in
                     Storage.shared.setOpenGroupDisplayName(to: senderDisplayName, for: senderPublicKey, inOpenGroupWithID: openGroup.id, using: transaction)
                     let messageServerID = message.serverID
                     let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: messageServerID, openGroupID: openGroup.id, isBackgroundPoll: isBackgroundPoll)
@@ -193,9 +193,9 @@ public final class OpenGroupPoller : NSObject {
         let openGroup = self.openGroup
         let _ = OpenGroupAPI.getDeletedMessageServerIDs(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
             let deletedMessageIDs = deletedMessageServerIDs.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0)) }
-            Storage.writeSync { transaction in
+            SNMessagingKitConfiguration.shared.storage.writeSync { transaction in
                 deletedMessageIDs.forEach { messageID in
-                    TSMessage.fetch(uniqueId: String(messageID))?.remove(with: transaction)
+                    TSMessage.fetch(uniqueId: String(messageID))?.remove(with: transaction as! YapDatabaseReadWriteTransaction)
                 }
             }
         }

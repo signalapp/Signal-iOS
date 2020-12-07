@@ -1,17 +1,19 @@
-
-// TODO: Since we now have YapDatabase as a dependency in all modules we can work with YapDatabaseTransactions directly
-// rather than passing transactions around as Any everywhere.
+import PromiseKit
 
 extension Storage {
 
-    // TODO: This is essentially a duplicate of Storage.writeSync
-    public func with(_ work: @escaping (Any) -> Void) {
-        Storage.writeSync { work($0) }
+    @discardableResult
+    public func write(with block: @escaping (Any) -> Void) -> Promise<Void> {
+        Storage.write(with: { block($0) })
     }
-
-    // TODO: This is essentially a duplicate of Storage.write
-    public func withAsync(_ work: @escaping (Any) -> Void, completion: @escaping () -> Void) {
-        Storage.write(with: { work($0) }, completion: completion)
+    
+    @discardableResult
+    public func write(with block: @escaping (Any) -> Void, completion: @escaping () -> Void) -> Promise<Void> {
+        Storage.write(with: { block($0) }, completion: completion)
+    }
+    
+    public func writeSync(with block: @escaping (Any) -> Void) {
+        Storage.writeSync { block($0) }
     }
 
     @objc public func getUserPublicKey() -> String? {

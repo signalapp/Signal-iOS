@@ -133,7 +133,7 @@ public final class MessageSender : NSObject {
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Stop here if this is a self-send
         guard !isSelfSend else {
-            storage.withAsync({ transaction in
+            storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
             }, completion: { })
@@ -237,7 +237,7 @@ public final class MessageSender : NSObject {
                             NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
                         }
                     }
-                    storage.withAsync({ transaction in
+                    storage.write(with: { transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                         var shouldNotify = (message is VisibleMessage)
                         if let closedGroupUpdate = message as? ClosedGroupUpdate, case .new = closedGroupUpdate.kind {
@@ -262,14 +262,14 @@ public final class MessageSender : NSObject {
                 $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
                     errorCount += 1
                     guard errorCount == promiseCount else { return } // Only error out if all promises failed
-                    storage.withAsync({ transaction in
+                    storage.write(with: { transaction in
                         handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
                     }, completion: { })
                 }
             }
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
             SNLog("Couldn't send message due to error: \(error).")
-            storage.withAsync({ transaction in
+            storage.write(with: { transaction in
                 handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
             }, completion: { })
         }
@@ -322,12 +322,12 @@ public final class MessageSender : NSObject {
         // Send the result
         OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = openGroupMessage.serverID
-            storage.withAsync({ transaction in
+            storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
             }, completion: { })
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            storage.withAsync({ transaction in
+            storage.write(with: { transaction in
                 handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
             }, completion: { })
         }

@@ -98,7 +98,7 @@ public final class Poller : NSObject {
                 do {
                     let data = try envelope.serializedData()
                     let job = MessageReceiveJob(data: data, isBackgroundPoll: false)
-                    Storage.write { transaction in
+                    SNMessagingKitConfiguration.shared.storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
                 } catch {

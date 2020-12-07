@@ -1,8 +1,11 @@
 import SessionUtilitiesKit
+import PromiseKit
 
 public protocol SessionSnodeKitStorageProtocol {
 
-    func with(_ work: @escaping (Any) -> Void)
+    @discardableResult
+    func write(with block: @escaping (Any) -> Void) -> Promise<Void>
+    func writeSync(with block: @escaping (Any) -> Void)
 
     func getUserPublicKey() -> String?
     func getOnionRequestPaths() -> [OnionRequestAPI.Path]

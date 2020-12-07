@@ -67,7 +67,7 @@ public final class SnodeAPI : NSObject {
         let isSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 24 * 60 * 60 } ?? true
         let isRefreshNeeded = (snodePool.count < minimumSnodePoolCount) || isSnodePoolExpired
         if isRefreshNeeded {
-            Storage.write { transaction in
+            SNSnodeKitConfiguration.shared.storage.write { transaction in
                 Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
             }
             let target = seedNodePool.randomElement()!
@@ -104,7 +104,7 @@ public final class SnodeAPI : NSObject {
                     }
                 }.done2 { snode in
                     seal.fulfill(snode)
-                    SNSnodeKitConfiguration.shared.storage.with { transaction in
+                    SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                         SNLog("Persisting snode pool to database.")
                         SNSnodeKitConfiguration.shared.storage.setSnodePool(to: SnodeAPI.snodePool, using: transaction)
                     }
@@ -129,7 +129,7 @@ public final class SnodeAPI : NSObject {
         var snodePool = SnodeAPI.snodePool
         snodePool.remove(snode)
         SnodeAPI.snodePool = snodePool
-        SNSnodeKitConfiguration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
             SNSnodeKitConfiguration.shared.storage.setSnodePool(to: snodePool, using: transaction)
         }
     }
@@ -137,7 +137,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Public API
     @objc public static func clearSnodePool() {
         snodePool.removeAll()
-        SNSnodeKitConfiguration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
             SNSnodeKitConfiguration.shared.storage.setSnodePool(to: [], using: transaction)
         }
     }
@@ -150,7 +150,7 @@ public final class SnodeAPI : NSObject {
         if var swarm = swarm, let index = swarm.firstIndex(of: snode) {
             swarm.remove(at: index)
             SnodeAPI.swarmCache[publicKey] = swarm
-            SNSnodeKitConfiguration.shared.storage.with { transaction in
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setSwarm(to: swarm, for: publicKey, using: transaction)
             }
         }
@@ -177,7 +177,7 @@ public final class SnodeAPI : NSObject {
             }.map2 { rawSnodes in
                 let swarm = parseSnodes(from: rawSnodes)
                 swarmCache[publicKey] = swarm
-                SNSnodeKitConfiguration.shared.storage.with { transaction in
+                SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                     SNSnodeKitConfiguration.shared.storage.setSwarm(to: swarm, for: publicKey, using: transaction)
                 }
                 return swarm
@@ -187,7 +187,7 @@ public final class SnodeAPI : NSObject {
 
     public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
-        storage.with { transaction in
+        storage.writeSync { transaction in
             storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
         }
         let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
@@ -201,7 +201,7 @@ public final class SnodeAPI : NSObject {
         Threading.workQueue.async {
             attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                 getTargetSnodes(for: publicKey).mapValues2 { targetSnode in
-                    storage.with { transaction in
+                    storage.writeSync { transaction in
                         storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey, using: transaction)
                     }
                     let lastHash = storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
@@ -267,7 +267,7 @@ public final class SnodeAPI : NSObject {
     
     private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
         if let lastMessage = rawMessages.last, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
-            SNSnodeKitConfiguration.shared.storage.with { transaction in
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey,
                     to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
@@ -285,7 +285,7 @@ public final class SnodeAPI : NSObject {
             }
             let isDuplicate = receivedMessages.contains(hash)
             receivedMessages.insert(hash)
-            SNSnodeKitConfiguration.shared.storage.with { transaction in
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: receivedMessages, for: publicKey, using: transaction)
             }
             return !isDuplicate
