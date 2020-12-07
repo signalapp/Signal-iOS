@@ -340,7 +340,7 @@ extension Theme {
         public var hairlineColor: UIColor {
             switch self {
             case .default: return isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
-            case .translucentDark: return .ows_gray65
+            case .translucentDark: return .ows_whiteAlpha20
             }
         }
 

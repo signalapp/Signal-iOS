@@ -19,9 +19,10 @@ class SafetyNumberConfirmationSheet: UIViewController {
         let verificationState: OWSVerificationState?
     }
     var items = [Item]()
-    let confirmationText: String
-    let cancelText: String
+    let confirmAction: ActionSheetAction
+    let cancelAction: ActionSheetAction
     let completionHandler: (Bool) -> Void
+    var allowsDismissal: Bool = true
 
     public let theme: Theme.ActionSheet
 
@@ -33,12 +34,12 @@ class SafetyNumberConfirmationSheet: UIViewController {
     init(addressesToConfirm addresses: [SignalServiceAddress],
          confirmationText: String,
          cancelText: String = CommonStrings.cancelButton,
-         theme: Theme.ActionSheet = .default,
+         theme: Theme.ActionSheet = .translucentDark,
          completionHandler: @escaping (Bool) -> Void) {
 
         assert(!addresses.isEmpty)
-        self.confirmationText = confirmationText
-        self.cancelText = cancelText
+        self.confirmAction = ActionSheetAction(title: confirmationText, style: .default)
+        self.cancelAction = ActionSheetAction(title: cancelText, style: .cancel)
         self.completionHandler = completionHandler
         self.theme = theme
         super.init(nibName: nil, bundle: nil)
@@ -171,16 +172,14 @@ class SafetyNumberConfirmationSheet: UIViewController {
         tableView.setContentHuggingHigh()
         tableView.setCompressionResistanceLow()
 
-        let sendAction = ActionSheetAction(title: confirmationText)
-        sendAction.button.applyActionSheetTheme(theme)
-        stackView.addArrangedSubview(sendAction.button)
+        confirmAction.button.applyActionSheetTheme(theme)
+        stackView.addArrangedSubview(confirmAction.button)
         stackView.addHairline(with: theme.hairlineColor)
-        sendAction.button.releaseAction = { [weak self] in
+        confirmAction.button.releaseAction = { [weak self] in
             self?.completionHandler(true)
             self?.dismiss(animated: true)
         }
 
-        let cancelAction = ActionSheetAction(title: cancelText)
         cancelAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(cancelAction.button)
         cancelAction.button.releaseAction = { [weak self] in
@@ -201,6 +200,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+        guard allowsDismissal else { return }
         dismiss(animated: true)
     }
 
@@ -344,10 +344,14 @@ class SafetyNumberConfirmationSheet: UIViewController {
             let completionState: CompletionState
 
             if abs(currentVelocity) >= velocityThreshold {
-                completionState = currentVelocity < 0 ? .growing : .dismissing
+                if currentVelocity < 0 {
+                    completionState = .growing
+                } else {
+                    completionState = allowsDismissal ? .dismissing : .cancelling
+                }
             } else if currentHeight - startingHeight >= growThreshold {
                 completionState = .growing
-            } else if currentHeight <= dismissThreshold {
+            } else if currentHeight <= dismissThreshold, allowsDismissal {
                 completionState = .dismissing
             } else {
                 completionState = .cancelling
@@ -375,6 +379,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
                 self.view.layoutIfNeeded()
                 self.backdropView.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
+                owsAssertDebug(completionState != .dismissing || self.allowsDismissal)
                 self.desiredVisibleContentHeight = finalHeight
                 if completionState == .dismissing { self.dismiss(animated: false, completion: nil) }
             }
@@ -443,7 +448,9 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
             return cell
         }
 
-        contactCell.configure(item: item, theme: theme, viewController: self)
+        UIView.performWithoutAnimation {
+            contactCell.configure(item: item, theme: theme, viewController: self)
+        }
 
         return contactCell
     }
