@@ -73,7 +73,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         self.groupInviteLinkInfo = groupInviteLinkInfo
         self.groupV2ContextInfo = groupV2ContextInfo
 
-        super.init()
+        super.init(theme: .default)
 
         isCancelable = true
 

@@ -673,7 +673,7 @@ extension GroupCallViewController: GroupCallMemberViewDelegate {
             title = String(format: titleFormat, displayName)
         }
 
-        let actionSheet = ActionSheetController(title: title, message: message)
+        let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
         presentActionSheet(actionSheet)
     }

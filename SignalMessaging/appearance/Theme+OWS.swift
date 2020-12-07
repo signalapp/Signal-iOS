@@ -324,3 +324,75 @@ public extension Theme {
         }
     }
 }
+
+extension Theme {
+
+    // Bridging the old name to new name for our ObjC friends
+    @objc
+    public static var actionSheetBackgroundColor: UIColor {
+        return ActionSheet.default.backgroundColor
+    }
+
+    public enum ActionSheet {
+        case `default`
+        case translucentDark
+
+        public var hairlineColor: UIColor {
+            switch self {
+            case .default: return isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
+            case .translucentDark: return .ows_gray65
+            }
+        }
+
+        public var headerTitleColor: UIColor {
+            switch self {
+            case .default: return Theme.primaryTextColor
+            case .translucentDark: return Theme.darkThemePrimaryColor
+            }
+        }
+
+        public var headerMessageColor: UIColor {
+            switch self {
+            case .default: return Theme.primaryTextColor
+            case .translucentDark: return Theme.darkThemeSecondaryTextAndIconColor
+            }
+        }
+
+        public var buttonTextColor: UIColor {
+            switch self {
+            case .default: return Theme.primaryTextColor
+            case .translucentDark: return Theme.darkThemePrimaryColor
+            }
+        }
+
+        public var destructiveButtonTextColor: UIColor {
+            return .ows_accentRed
+        }
+
+        public var buttonHighlightColor: UIColor {
+            switch self {
+            case .default: return Theme.cellSelectedColor
+            case .translucentDark: return .ows_whiteAlpha20
+            }
+        }
+
+        public var backgroundColor: UIColor {
+            switch self {
+            case .default: return isDarkThemeEnabled ? .ows_gray75 : .ows_white
+            case .translucentDark: return .clear
+            }
+        }
+
+        public func createBackdropView() -> UIView {
+            switch self {
+            case .default:
+                let backdrop = UIView()
+                backdrop.backgroundColor = backgroundColor
+                return backdrop
+            case .translucentDark:
+                let backdrop = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+                return backdrop
+            }
+        }
+    }
+}
