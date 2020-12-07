@@ -20,4 +20,9 @@ enum KeyPairUtilities {
         dbConnection.setObject(ed25519KeyPair.publicKey.toHexString(), forKey: LKED25519PublicKey, inCollection: collection)
         dbConnection.setObject(x25519KeyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: collection)
     }
+    
+    static func hasV2KeyPair() -> Bool {
+        let dbConnection = OWSIdentityManager.shared().dbConnection
+        return (dbConnection.object(forKey: LKED25519SecretKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection) != nil)
+    }
 }
