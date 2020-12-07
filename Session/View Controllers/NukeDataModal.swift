@@ -57,7 +57,7 @@ final class NukeDataModal : Modal {
             proceed()
         } else {
             presentingViewController?.dismiss(animated: true, completion: nil)
-            let message = "We've upgraded the way Session IDs are generated, so your Session ID will be different if you choose to restore your account."
+            let message = "We’ve upgraded the way Session IDs are generated, so you will be unable to restore your current Session ID."
             let alert = UIAlertController(title: "Are You Sure?", message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in proceed() })
             alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
