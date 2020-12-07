@@ -9,6 +9,11 @@ extension OWSLinkPreview {
 
 extension VisibleMessage.LinkPreview {
 
+    public static func from(_ linkPreview: OWSLinkPreview?) -> VisibleMessage.LinkPreview? {
+        guard let linkPreview = linkPreview else { return nil }
+        return VisibleMessage.LinkPreview(title: linkPreview.title, url: linkPreview.urlString!, attachmentID: linkPreview.imageAttachmentId)
+    }
+    
     @objc(from:using:)
     public static func from(_ linkPreview: OWSLinkPreviewDraft?, using transaction: YapDatabaseReadWriteTransaction) -> VisibleMessage.LinkPreview? {
         guard let linkPreview = linkPreview else { return nil }

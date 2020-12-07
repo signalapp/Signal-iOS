@@ -56,5 +56,16 @@ public extension VisibleMessage {
                 return nil
             }
         }
+        
+        // MARK: Description
+        public override var description: String {
+            """
+            LinkPreview(
+                title: \(title ?? "null")
+                url: \(url ?? "null")
+                attachmentID: \(attachmentID ?? "null")
+            )
+            """
+        }
     }
 }

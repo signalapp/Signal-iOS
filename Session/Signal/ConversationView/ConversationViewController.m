@@ -1454,9 +1454,9 @@ typedef enum : NSUInteger {
     // Do nothing
 }
 
-- (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
+- (void)handleUnsentMessageTap:(TSOutgoingMessage *)tsMessage
 {
-    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:message.mostRecentFailureText
+    UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:tsMessage.mostRecentFailureText
                                                                          message:nil
                                                                   preferredStyle:UIAlertControllerStyleActionSheet];
 
@@ -1465,23 +1465,29 @@ typedef enum : NSUInteger {
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
                                                                 handler:^(UIAlertAction *action) {
-                                                                    [self remove:message];
+                                                                    [self remove:tsMessage];
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
 
-    // TODO TODO TODO
+    UIAlertAction *resendMessageAction = [UIAlertAction
+                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
+                          style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction *action) {
+                            SNVisibleMessage *message = [SNVisibleMessage from:tsMessage];
+                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                NSMutableArray<TSAttachmentStream *> *attachments = @[].mutableCopy;
+                                for (NSString *attachmentID in tsMessage.attachmentIds) {
+                                    TSAttachmentStream *stream = [TSAttachmentStream fetchObjectWithUniqueID:attachmentID transaction:transaction];
+                                    if (![stream isKindOfClass:TSAttachmentStream.class]) { continue; }
+                                    [attachments addObject:stream];
+                                }
+                                [SNMessageSender prep:attachments forMessage:message usingTransaction: transaction];
+                                [SNMessageSender send:message inThread:self.thread usingTransaction:transaction];
+                            }];
+                        }];
 
-//    UIAlertAction *resendMessageAction = [UIAlertAction
-//                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-//        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
-//                          style:UIAlertActionStyleDefault
-//                        handler:^(UIAlertAction *action) {
-//                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-//                                [self.messageSenderJobQueue addMessage:message transaction:transaction];
-//                            }];
-//                        }];
-
-//    [actionSheet addAction:resendMessageAction];
+    [actionSheet addAction:resendMessageAction];
 
     [self dismissKeyBoard];
     [self presentAlert:actionSheet];

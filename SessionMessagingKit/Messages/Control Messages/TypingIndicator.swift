@@ -7,7 +7,7 @@ public final class TypingIndicator : ControlMessage {
     public override class var ttl: UInt64 { 30 * 1000 }
 
     // MARK: Kind
-    public enum Kind : Int {
+    public enum Kind : Int, CustomStringConvertible {
         case started, stopped
 
         static func fromProto(_ proto: SNProtoTypingMessage.SNProtoTypingMessageAction) -> Kind {
@@ -21,6 +21,13 @@ public final class TypingIndicator : ControlMessage {
             switch self {
             case .started: return .started
             case .stopped: return .stopped
+            }
+        }
+        
+        public var description: String {
+            switch self {
+            case .started: return "started"
+            case .stopped: return "stopped"
             }
         }
     }
@@ -71,5 +78,14 @@ public final class TypingIndicator : ControlMessage {
             SNLog("Couldn't construct typing indicator proto from: \(self).")
             return nil
         }
+    }
+    
+    // MARK: Description
+    public override var description: String {
+        """
+        TypingIndicator(
+            kind: \(kind?.description ?? "null")
+        )
+        """
     }
 }

@@ -414,10 +414,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     });
 }
 
-- (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController
+- (void)resendMessage:(TSOutgoingMessage *)tsMessage fromViewController:(UIViewController *)fromViewController
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(message);
+    OWSAssertDebug(tsMessage);
     OWSAssertDebug(fromViewController);
 
     NSString *progressTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", @"Alert title");
@@ -434,29 +434,26 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     [fromViewController
         presentAlert:progressAlert
-          completion:^{
-        
-              // TODO TODO TODO
-        
-//              [self.messageSender sendMessage:message
-//                  success:^{
-//                      OWSLogInfo(@"Resending attachment succeeded.");
-//                      dispatch_async(dispatch_get_main_queue(), ^{
-//                          [self.shareViewDelegate shareViewWasCompleted];
-//                      });
-//                  }
-//                  failure:^(NSError *error) {
-//                      dispatch_async(dispatch_get_main_queue(), ^{
-//                          [fromViewController
-//                              dismissViewControllerAnimated:YES
-//                                                 completion:^{
-//                                                     OWSLogInfo(@"Sending attachment failed with error: %@", error);
-//                                                     [self showSendFailureAlertWithError:error
-//                                                                                 message:message
-//                                                                      fromViewController:fromViewController];
-//                                                 }];
-//                      });
-//                  }];
+            completion:^{
+                SNVisibleMessage *message = [SNVisibleMessage from:tsMessage];
+                [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    NSMutableArray<TSAttachmentStream *> *attachments = @[].mutableCopy;
+                    for (NSString *attachmentID in tsMessage.attachmentIds) {
+                        TSAttachmentStream *stream = [TSAttachmentStream fetchObjectWithUniqueID:attachmentID transaction:transaction];
+                        if (![stream isKindOfClass:TSAttachmentStream.class]) { continue; }
+                        [attachments addObject:stream];
+                    }
+                    [SNMessageSender prep:attachments forMessage:message usingTransaction: transaction];
+                    [SNMessageSender sendNonDurably:message withAttachmentIDs:tsMessage.attachmentIds inThread:self.thread usingTransaction:transaction]
+                    .thenOn(dispatch_get_main_queue(), ^() {
+                        [self.shareViewDelegate shareViewWasCompleted];
+                    })
+                    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
+                        [fromViewController dismissViewControllerAnimated:YES completion:^{
+                            [self showSendFailureAlertWithError:error message:tsMessage fromViewController:fromViewController];
+                        }];
+                    });
+                }];
           }];
 }
 

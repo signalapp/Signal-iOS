@@ -99,4 +99,18 @@ public final class VisibleMessage : Message {
             return nil
         }
     }
+    
+    // MARK: Description
+    public override var description: String {
+        """
+        VisibleMessage(
+            text: \(text ?? "null")
+            attachmentIDs: \(attachmentIDs)
+            quote: \(quote?.description ?? "null")
+            linkPreview: \(linkPreview?.description ?? "null")
+            contact: \(contact?.description ?? "null")
+            profile: \(profile?.description ?? "null")
+        )
+        """
+    }
 }

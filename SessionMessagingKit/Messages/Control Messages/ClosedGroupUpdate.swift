@@ -6,11 +6,20 @@ public final class ClosedGroupUpdate : ControlMessage {
     public var kind: Kind?
 
     // MARK: Kind
-    public enum Kind {
+    public enum Kind : CustomStringConvertible {
         case new(groupPublicKey: Data, name: String, groupPrivateKey: Data, senderKeys: [ClosedGroupSenderKey], members: [Data], admins: [Data])
         case info(groupPublicKey: Data, name: String, senderKeys: [ClosedGroupSenderKey], members: [Data], admins: [Data])
         case senderKeyRequest(groupPublicKey: Data)
         case senderKey(groupPublicKey: Data, senderKey: ClosedGroupSenderKey)
+        
+        public var description: String {
+            switch self {
+            case .new: return "new"
+            case .info: return "info"
+            case .senderKeyRequest: return "senderKeyRequest"
+            case .senderKey: return "senderKey"
+            }
+        }
     }
 
     // MARK: Initialization
@@ -153,6 +162,15 @@ public final class ClosedGroupUpdate : ControlMessage {
             SNLog("Couldn't construct closed group update proto from: \(self).")
             return nil
         }
+    }
+    
+    // MARK: Description
+    public override var description: String {
+        """
+        ClosedGroupUpdate(
+            kind: \(kind?.description ?? "null")
+        )
+        """
     }
 }
 

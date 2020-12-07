@@ -59,6 +59,19 @@ public final class MessageSender : NSObject {
             attachment.write($0.dataSource)
             attachment.save(with: transaction)
         }
+        prep(attachments, for: message, using: transaction)
+    }
+    
+    @objc(prep:forMessage:usingTransaction:)
+    public static func prep(_ attachmentStreams: [TSAttachmentStream], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
+            #if DEBUG
+            preconditionFailure()
+            #else
+            return
+            #endif
+        }
+        var attachments = attachmentStreams
         // The line below locally generates a thumbnail for the quoted attachment. It just needs to happen at some point during the
         // message sending process.
         tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
@@ -71,6 +84,7 @@ public final class MessageSender : NSObject {
         // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
         // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
         message.attachmentIDs = attachments.map { $0.uniqueId! }
+        tsMessage.attachmentIds.removeAllObjects()
         tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
         if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
         tsMessage.save(with: transaction)
@@ -109,7 +123,9 @@ public final class MessageSender : NSObject {
         func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
             MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-                NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .messageSendingFailed, object: NSNumber(value: message.sentTimestamp!))
+                }
             }
             seal.reject(error)
         }
@@ -217,7 +233,9 @@ public final class MessageSender : NSObject {
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
                     if case .contact(_) = destination, message is VisibleMessage, !isSelfSend {
-                        NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: .messageSent, object: NSNumber(value: message.sentTimestamp!))
+                        }
                     }
                     storage.withAsync({ transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)

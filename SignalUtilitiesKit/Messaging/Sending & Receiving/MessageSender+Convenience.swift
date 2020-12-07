@@ -22,6 +22,11 @@ extension MessageSender {
         return AnyPromise.from(sendNonDurably(message, with: attachments, in: thread, using: transaction))
     }
     
+    @objc(sendNonDurably:withAttachmentIDs:inThread:usingTransaction:)
+    public static func objc_sendNonDurably(_ message: VisibleMessage, with attachmentIDs: [String], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        return AnyPromise.from(sendNonDurably(message, with: attachmentIDs, in: thread, using: transaction))
+    }
+    
     @objc(sendNonDurably:inThread:usingTransaction:)
     public static func objc_sendNonDurably(_ message: Message, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(sendNonDurably(message, in: thread, using: transaction))
@@ -29,7 +34,11 @@ extension MessageSender {
     
     public static func sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         prep(attachments, for: message, using: transaction)
-        let attachments = message.attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
+        return sendNonDurably(message, with: message.attachmentIDs, in: thread, using: transaction)
+    }
+    
+    public static func sendNonDurably(_ message: VisibleMessage, with attachmentIDs: [String], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+        let attachments = attachmentIDs.compactMap { TSAttachmentStream.fetch(uniqueId: $0, transaction: transaction) }
         let attachmentsToUpload = attachments.filter { !$0.isUploaded }
         let attachmentUploadPromises: [Promise<Void>] = attachmentsToUpload.map { stream in
             let openGroup = SNMessagingKitConfiguration.shared.storage.getOpenGroup(for: thread.uniqueId!)

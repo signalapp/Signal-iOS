@@ -54,4 +54,13 @@ public final class ReadReceipt : ControlMessage {
             return nil
         }
     }
+    
+    // MARK: Description
+    public override var description: String {
+        """
+        ReadReceipt(
+            timestamps: \(timestamps?.description ?? "null")
+        )
+        """
+    }
 }

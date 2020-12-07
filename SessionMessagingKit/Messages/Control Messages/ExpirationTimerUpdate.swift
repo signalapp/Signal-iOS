@@ -56,6 +56,15 @@ public final class ExpirationTimerUpdate : ControlMessage {
         }
     }
     
+    // MARK: Description
+    public override var description: String {
+        """
+        ExpirationTimerUpdate(
+            duration: \(duration?.description ?? "null")
+        )
+        """
+    }
+    
     // MARK: Convenience
     @objc public func setDuration(_ duration: UInt32) {
         self.duration = duration

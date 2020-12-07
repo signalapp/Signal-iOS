@@ -66,8 +66,9 @@ public extension VisibleMessage {
             guard let stream = TSAttachmentStream.fetch(uniqueId: attachmentID, transaction: transaction), stream.isUploaded else {
                 #if DEBUG
                 preconditionFailure("Sending a message before all associated attachments have been uploaded.")
-                #endif
+                #else
                 return
+                #endif
             }
             let quotedAttachmentProto = SNProtoDataMessageQuoteQuotedAttachment.builder()
             quotedAttachmentProto.setContentType(stream.contentType)
@@ -81,6 +82,18 @@ public extension VisibleMessage {
             } catch {
                 SNLog("Couldn't construct quoted attachment proto from: \(self).")
             }
+        }
+        
+        // MARK: Description
+        public override var description: String {
+            """
+            Quote(
+                timestamp: \(timestamp?.description ?? "null")
+                publicKey: \(publicKey ?? "null")
+                text: \(text ?? "null")
+                attachmentID: \(attachmentID ?? "null")
+            )
+            """
         }
     }
 }

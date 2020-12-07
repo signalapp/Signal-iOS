@@ -57,5 +57,16 @@ public extension VisibleMessage {
                 return nil
             }
         }
+        
+        // MARK: Description
+        public override var description: String {
+            """
+            Profile(
+                displayName: \(displayName ?? "null")
+                profileKey: \(profileKey?.description ?? "null")
+                profilePictureURL: \(profilePictureURL ?? "null")
+            )
+            """
+        }
     }
 }
