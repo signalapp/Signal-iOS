@@ -56,7 +56,8 @@ public final class FileServerAPI : DotNetAPI {
     
     // MARK: Open Group Server Public Key
     public static func getPublicKey(for openGroupServer: String) -> Promise<String> {
-        let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(URL(string: openGroupServer)!.host!)")!
+        guard let host = URL(string: openGroupServer)?.host,
+            let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(host)") else { return Promise(error: DotNetAPI.Error.invalidURL) }
         let request = TSRequest(url: url)
         let token = "loki" // Tokenless request; use a dummy token
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
