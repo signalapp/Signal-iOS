@@ -10,6 +10,7 @@
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
+		328EF3DC25782A6A00D5C31D /* GroupCallSpeakerToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EF3DB25782A6A00D5C31D /* GroupCallSpeakerToastView.swift */; };
 		32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */; };
 		32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */; };
 		32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */; };
@@ -926,6 +927,7 @@
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewsMegaphone.swift; sourceTree = "<group>"; };
+		328EF3DB25782A6A00D5C31D /* GroupCallSpeakerToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSpeakerToastView.swift; sourceTree = "<group>"; };
 		32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMoodPickerView.swift; sourceTree = "<group>"; };
 		32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupCallPill.swift; sourceTree = "<group>"; };
 		32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallUpdateMessageHandler.swift; sourceTree = "<group>"; };
@@ -3314,6 +3316,7 @@
 				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
 				88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */,
 				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
+				328EF3DB25782A6A00D5C31D /* GroupCallSpeakerToastView.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -5103,6 +5106,7 @@
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				88D1BCBE24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */,
 				32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */,
+				328EF3DC25782A6A00D5C31D /* GroupCallSpeakerToastView.swift in Sources */,
 				88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
