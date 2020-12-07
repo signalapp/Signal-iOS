@@ -12,6 +12,8 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 @interface ContactCellView : UIStackView
 
+@property (assign, nonatomic) BOOL forceDarkAppearance;
+
 @property (nonatomic, nullable) NSString *accessoryMessage;
 
 @property (nonatomic, nullable) NSAttributedString *customName;

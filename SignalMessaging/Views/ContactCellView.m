@@ -117,9 +117,15 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
 
-    self.nameLabel.textColor = Theme.primaryTextColor;
-    self.subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
+    self.nameLabel.textColor = self.forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor;
+    self.subtitleLabel.textColor = self.forceDarkAppearance ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
+
+    if (self.nameLabel.attributedText.string.length > 0) {
+        NSString *nameLabelText = self.nameLabel.attributedText.string;
+        NSDictionary *updatedAttributes = @{ NSForegroundColorAttributeName : self.nameLabel.textColor };
+        self.nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameLabelText attributes:updatedAttributes];
+    }
 }
 
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address
@@ -178,7 +184,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
         NSAttributedString *attributedText =
             [[NSAttributedString alloc] initWithString:threadName
                                             attributes:@{
-                                                NSForegroundColorAttributeName : Theme.primaryTextColor,
+                                                NSForegroundColorAttributeName : self.nameLabel.textColor,
                                             }];
         self.nameLabel.attributedText = attributedText;
     }
@@ -231,6 +237,13 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     return self.useSmallAvatars ? kSmallAvatarSize : kStandardAvatarSize;
 }
 
+- (void)setForceDarkAppearance:(BOOL)forceDarkAppearance {
+    if (_forceDarkAppearance != forceDarkAppearance) {
+        _forceDarkAppearance = forceDarkAppearance;
+        [self configureFontsAndColors];
+    }
+}
+
 - (void)updateNameLabels
 {
     BOOL hasCustomName = self.customName.length > 0;
@@ -250,6 +263,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+    self.forceDarkAppearance = NO;
     self.thread = nil;
     self.accessoryMessage = nil;
     self.nameLabel.text = nil;

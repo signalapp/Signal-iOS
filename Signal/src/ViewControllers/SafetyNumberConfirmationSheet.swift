@@ -20,13 +20,27 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
     var items = [Item]()
     let confirmationText: String
+    let cancelText: String
     let completionHandler: (Bool) -> Void
 
-    @objc
-    init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
+    public let theme: Theme.ActionSheet
+
+    @objc @available(swift, obsoleted: 1.0)
+    convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
+        self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler:completionHandler)
+    }
+
+    init(addressesToConfirm addresses: [SignalServiceAddress],
+         confirmationText: String,
+         cancelText: String = CommonStrings.cancelButton,
+         theme: Theme.ActionSheet = .default,
+         completionHandler: @escaping (Bool) -> Void) {
+
         assert(!addresses.isEmpty)
         self.confirmationText = confirmationText
+        self.cancelText = cancelText
         self.completionHandler = completionHandler
+        self.theme = theme
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -85,13 +99,15 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
     override public func loadView() {
         view = UIView()
-        view.backgroundColor = .clear
+        let backgroundView = theme.createBackgroundView()
 
+        view.addSubview(backgroundView)
         view.addSubview(contentView)
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
+        backgroundView.autoPinEdges(toEdgesOf: contentView)
+
         contentView.autoHCenterInSuperview()
         contentView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        contentView.backgroundColor = Theme.actionSheetBackgroundColor
 
         // Prefer to be full width, but don't exceed the maximum width
         contentView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
@@ -99,10 +115,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
             contentView.autoPinWidthToSuperview()
         }
 
-        stackView.axis = .vertical
-        stackView.spacing = 1
-        stackView.addBackgroundView(withBackgroundColor: Theme.ActionSheet.default.hairlineColor)
+        [backgroundView, contentView].forEach { subview in
+            subview.layer.cornerRadius = 16
+            subview.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            subview.layer.masksToBounds = true
+        }
 
+        stackView.axis = .vertical
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewSafeArea()
 
@@ -118,7 +137,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold
-        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.textColor = theme.headerTitleColor
         titleLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
                                             comment: "Title for the 'safety number confirmation' view")
 
@@ -127,7 +146,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.font = .ows_dynamicTypeBody2
-        messageLabel.textColor = Theme.secondaryTextAndIconColor
+        messageLabel.textColor = theme.headerMessageColor
         messageLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
                                               comment: "Message for the 'safety number confirmation' view")
 
@@ -135,31 +154,35 @@ class SafetyNumberConfirmationSheet: UIViewController {
             titleLabel,
             messageLabel
         ])
-        headerStack.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         headerStack.axis = .vertical
         headerStack.spacing = 2
         headerStack.isLayoutMarginsRelativeArrangement = true
         headerStack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         stackView.addArrangedSubview(headerStack)
+        stackView.addHairline(with: theme.hairlineColor)
 
         stackView.addArrangedSubview(tableView)
+        stackView.addHairline(with: theme.hairlineColor)
         tableView.alwaysBounceVertical = false
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = Theme.actionSheetBackgroundColor
+        tableView.backgroundColor = .clear
         tableView.register(SafetyNumberCell.self, forCellReuseIdentifier: SafetyNumberCell.reuseIdentifier())
         tableView.setContentHuggingHigh()
         tableView.setCompressionResistanceLow()
 
         let sendAction = ActionSheetAction(title: confirmationText)
+        sendAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(sendAction.button)
+        stackView.addHairline(with: theme.hairlineColor)
         sendAction.button.releaseAction = { [weak self] in
             self?.completionHandler(true)
             self?.dismiss(animated: true)
         }
 
-        let cancelAction = OWSActionSheets.cancelAction
+        let cancelAction = ActionSheetAction(title: cancelText)
+        cancelAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(cancelAction.button)
         cancelAction.button.releaseAction = { [weak self] in
             self?.completionHandler(false)
@@ -176,25 +199,6 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
         // Setup handle for interactive dismissal / resizing
         setupInteractiveSizing()
-    }
-
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        // Ensure the scrollView's layout has completed
-        // as we're about to use its bounds to calculate
-        // the masking view and contentOffset.
-        contentView.layoutIfNeeded()
-
-        let cornerRadius: CGFloat = 16
-        let path = UIBezierPath(
-            roundedRect: contentView.bounds,
-            byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(square: cornerRadius)
-        )
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = path.cgPath
-        contentView.layer.mask = shapeLayer
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
@@ -324,14 +328,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
             let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
 
             UIView.animate(withDuration: min(remainingTime, maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
-                if remainingDistance < 0 {
-                    self.contentView.frame.origin.y -= remainingDistance
-                    self.handle.frame.origin.y -= remainingDistance
-                } else {
-                    self.heightConstraint?.constant = finalHeight
-                    self.view.layoutIfNeeded()
-                }
-
+                self.heightConstraint?.constant = finalHeight
+                self.view.layoutIfNeeded()
                 self.backdropView.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
                 self.heightConstraint?.constant = finalHeight
@@ -397,7 +395,7 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
             return cell
         }
 
-        contactCell.configure(item: item, viewController: self)
+        contactCell.configure(item: item, theme: theme, viewController: self)
 
         return contactCell
     }
@@ -411,23 +409,24 @@ private class SafetyNumberCell: ContactTableViewCell {
 
         selectionStyle = .none
 
-        button.setBackgroundColors(upColor: Theme.conversationButtonBackgroundColor)
         button.setTitle(
             title: NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
                                      comment: "View safety number action for the 'safety number confirmation' view"),
             font: UIFont.ows_dynamicTypeBody2.ows_semibold,
-            titleColor: Theme.conversationButtonTextColor
+            titleColor: Theme.ActionSheet.default.safetyNumberChangeButtonTextColor
         )
         button.useDefaultCornerRadius()
         button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
     }
 
-    func configure(item: SafetyNumberConfirmationSheet.Item, viewController: UIViewController) {
+    func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {
         configure(withRecipientAddress: item.address)
 
         ows_setAccessoryView(button)
-
-        backgroundColor = Theme.actionSheetBackgroundColor
+        backgroundColor = .clear
+        button.setBackgroundColors(upColor: theme.safetyNumberChangeButtonBackgroundColor)
+        button.setTitleColor(theme.safetyNumberChangeButtonTextColor)
+        forceDarkAppearance = (theme == .translucentDark)
 
         if let verificationState = item.verificationState, verificationState == .noLongerVerified {
             let previouslyVerified = NSMutableAttributedString()

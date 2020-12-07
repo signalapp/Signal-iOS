@@ -150,8 +150,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @interface UIStackView (OWS)
 
-- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
+- (void)addHairlineWithColor:(UIColor *)color;
+- (void)insertHairlineWithColor:(UIColor *)color atIndex:(NSInteger)index;
 
+- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor cornerRadius:(CGFloat)cornerRadius;
 
 - (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;

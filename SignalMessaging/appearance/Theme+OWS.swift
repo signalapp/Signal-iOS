@@ -365,6 +365,20 @@ extension Theme {
             }
         }
 
+        public var safetyNumberChangeButtonBackgroundColor: UIColor {
+            switch self {
+            case .default: return Theme.conversationButtonBackgroundColor
+            case .translucentDark: return .ows_gray75
+            }
+        }
+
+        public var safetyNumberChangeButtonTextColor: UIColor {
+            switch self {
+            case .default: return Theme.conversationButtonTextColor
+            case .translucentDark: return .ows_accentBlueDark
+            }
+        }
+
         public var destructiveButtonTextColor: UIColor {
             return .ows_accentRed
         }
@@ -383,15 +397,15 @@ extension Theme {
             }
         }
 
-        public func createBackdropView() -> UIView {
+        public func createBackgroundView() -> UIView {
             switch self {
             case .default:
-                let backdrop = UIView()
-                backdrop.backgroundColor = backgroundColor
-                return backdrop
+                let background = UIView()
+                background.backgroundColor = backgroundColor
+                return background
             case .translucentDark:
-                let backdrop = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-                return backdrop
+                let background = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+                return background
             }
         }
     }
