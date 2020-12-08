@@ -345,7 +345,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         configureRemoteVideo(device: device)
         let isRemoteDeviceBlocked = OWSBlockingManager.shared().isAddressBlocked(device.address)
         let errorDeferralInterval: TimeInterval = 5.0
-        let connectionDuration = -(call.remoteConnectionDateByDemuxId[device.demuxId] ?? .distantPast).timeIntervalSinceNow
+        let addedDate = Date(millisecondsSince1970: device.addedTime)
+        let connectionDuration = -addedDate.timeIntervalSinceNow
 
         // Hide these views. They'll be unhidden below.
         [errorView, avatarView, videoView, spinner].forEach { $0?.isHidden = true }

@@ -98,12 +98,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
         didSet { AssertIsOnMainThread() }
     }
 
-    // Should only be used on the main thread
-    // TODO: Is there a way to make this generic enough to apply to individual calls?
-    public var remoteConnectionDateByDemuxId = [UInt32: Date]() {
-        didSet { AssertIsOnMainThread() }
-    }
-
     @objc
     public let thread: TSThread
 
@@ -266,15 +260,6 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
-        let oldDemuxSet = Set(remoteConnectionDateByDemuxId.keys)
-        let newDemuxSet = Set(groupCall.remoteDeviceStates.keys)
-        oldDemuxSet.subtracting(newDemuxSet).forEach { disconnectedDemuxId in
-            remoteConnectionDateByDemuxId[disconnectedDemuxId] = nil
-        }
-        newDemuxSet.subtracting(oldDemuxSet).forEach { connectedDemuxId in
-            remoteConnectionDateByDemuxId[connectedDemuxId] = Date()
-        }
-
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
