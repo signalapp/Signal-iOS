@@ -365,7 +365,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 guard let self = self else { return }
                 guard call.isGroupCall, let groupCall = call.groupCall else { return }
                 guard let updatedState = groupCall.remoteDeviceStates.values
-                        .first(where:{ $0.demuxId == configuredDemuxId }) else { return }
+                        .first(where: { $0.demuxId == configuredDemuxId }) else { return }
                 self.configure(call: call, device: updatedState)
             })
 

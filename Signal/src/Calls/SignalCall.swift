@@ -100,7 +100,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     // Should only be used on the main thread
     // TODO: Is there a way to make this generic enough to apply to individual calls?
-    public var remoteConnectionDateByDemuxId = Dictionary<UInt32, Date>() {
+    public var remoteConnectionDateByDemuxId = [UInt32: Date]() {
         didSet { AssertIsOnMainThread() }
     }
 
