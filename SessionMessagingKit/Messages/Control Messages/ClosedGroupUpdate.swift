@@ -126,7 +126,7 @@ public final class ClosedGroupUpdate : ControlMessage {
         return ClosedGroupUpdate(kind: kind)
     }
 
-    public override func toProto() -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         guard let kind = kind else {
             SNLog("Couldn't construct closed group update proto from: \(self).")
             return nil
@@ -156,6 +156,8 @@ public final class ClosedGroupUpdate : ControlMessage {
             let contentProto = SNProtoContent.builder()
             let dataMessageProto = SNProtoDataMessage.builder()
             dataMessageProto.setClosedGroupUpdate(try closedGroupUpdate.build())
+            // Group context
+            try setGroupContextIfNeeded(on: dataMessageProto, using: transaction)
             contentProto.setDataMessage(try dataMessageProto.build())
             return try contentProto.build()
         } catch {

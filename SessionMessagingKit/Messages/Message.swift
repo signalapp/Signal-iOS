@@ -44,8 +44,15 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         preconditionFailure("fromProto(_:) is abstract and must be overridden.")
     }
 
-    public func toProto() -> SNProtoContent? {
-        preconditionFailure("toProto() is abstract and must be overridden.")
+    public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+        preconditionFailure("toProto(using:) is abstract and must be overridden.")
+    }
+
+    public func setGroupContextIfNeeded(on dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder, using transaction: YapDatabaseReadTransaction) throws {
+        guard let thread = TSThread.fetch(uniqueId: threadID!, transaction: transaction) as? TSGroupThread, thread.usesSharedSenderKeys else { return }
+        // Android needs a group context or it'll interpret the message as a one-to-one message
+        let groupProto = SNProtoGroupContext.builder(id: thread.groupModel.groupId, type: .deliver)
+        dataMessage.setGroup(try groupProto.build())
     }
     
     // MARK: General

@@ -54,11 +54,7 @@ public final class VisibleMessage : Message {
         return result
     }
 
-    public override func toProto() -> SNProtoContent? {
-        preconditionFailure("Use toProto(using:) instead.")
-    }
-    
-    public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         let proto = SNProtoContent.builder()
         var attachmentIDs = self.attachmentIDs
         let dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder
@@ -90,6 +86,13 @@ public final class VisibleMessage : Message {
         let attachmentProtos = attachments.compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
         // TODO: Contact
+        // Group context
+        do {
+            try setGroupContextIfNeeded(on: dataMessage, using: transaction)
+        } catch {
+            SNLog("Couldn't construct visible message proto from: \(self).")
+            return nil
+        }
         // Build
         do {
             proto.setDataMessage(try dataMessage.build())

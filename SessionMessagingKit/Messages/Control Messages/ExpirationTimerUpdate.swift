@@ -38,7 +38,7 @@ public final class ExpirationTimerUpdate : ControlMessage {
         return ExpirationTimerUpdate(duration: duration)
     }
 
-    public override func toProto() -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         guard let duration = duration else {
             SNLog("Couldn't construct expiration timer update proto from: \(self).")
             return nil
@@ -46,6 +46,13 @@ public final class ExpirationTimerUpdate : ControlMessage {
         let dataMessageProto = SNProtoDataMessage.builder()
         dataMessageProto.setFlags(UInt32(SNProtoDataMessage.SNProtoDataMessageFlags.expirationTimerUpdate.rawValue))
         dataMessageProto.setExpireTimer(duration)
+        // Group context
+        do {
+            try setGroupContextIfNeeded(on: dataMessageProto, using: transaction)
+        } catch {
+            SNLog("Couldn't construct expiration timer update proto from: \(self).")
+            return nil
+        }
         let contentProto = SNProtoContent.builder()
         do {
             contentProto.setDataMessage(try dataMessageProto.build())

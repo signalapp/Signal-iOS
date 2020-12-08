@@ -64,7 +64,7 @@ public final class TypingIndicator : ControlMessage {
         return TypingIndicator(kind: kind)
     }
 
-    public override func toProto() -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         guard let timestamp = sentTimestamp, let kind = kind else {
             SNLog("Couldn't construct typing indicator proto from: \(self).")
             return nil

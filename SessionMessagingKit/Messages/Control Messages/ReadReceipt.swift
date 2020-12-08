@@ -38,7 +38,7 @@ public final class ReadReceipt : ControlMessage {
         return ReadReceipt(timestamps: timestamps)
     }
 
-    public override func toProto() -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         guard let timestamps = timestamps else {
             SNLog("Couldn't construct read receipt proto from: \(self).")
             return nil

@@ -22,7 +22,7 @@ public final class NullMessage : ControlMessage {
         return NullMessage()
     }
 
-    public override func toProto() -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         let nullMessageProto = SNProtoNullMessage.builder()
         let paddingSize = UInt.random(in: 0..<512) // random(in:) uses the system's default random generator, which is cryptographically secure
         let padding = Data.getSecureRandomData(ofSize: paddingSize)!

@@ -50,7 +50,7 @@ public final class SessionRequest : ControlMessage {
         return SessionRequest(preKeyBundle: preKeyBundle)
     }
 
-    public override func toProto() -> SNProtoContent? {
+    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
         guard let preKeyBundle = preKeyBundle else {
             SNLog("Couldn't construct session request proto from: \(self).")
             return nil
