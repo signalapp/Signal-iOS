@@ -118,13 +118,15 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
 
     self.nameLabel.textColor = self.forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor;
-    self.subtitleLabel.textColor = self.forceDarkAppearance ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor;
+    self.subtitleLabel.textColor
+        = self.forceDarkAppearance ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 
     if (self.nameLabel.attributedText.string.length > 0) {
         NSString *nameLabelText = self.nameLabel.attributedText.string;
         NSDictionary *updatedAttributes = @{ NSForegroundColorAttributeName : self.nameLabel.textColor };
-        self.nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameLabelText attributes:updatedAttributes];
+        self.nameLabel.attributedText = [[NSAttributedString alloc] initWithString:nameLabelText
+                                                                        attributes:updatedAttributes];
     }
 }
 
@@ -237,7 +239,8 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     return self.useSmallAvatars ? kSmallAvatarSize : kStandardAvatarSize;
 }
 
-- (void)setForceDarkAppearance:(BOOL)forceDarkAppearance {
+- (void)setForceDarkAppearance:(BOOL)forceDarkAppearance
+{
     if (_forceDarkAppearance != forceDarkAppearance) {
         _forceDarkAppearance = forceDarkAppearance;
         [self configureFontsAndColors];

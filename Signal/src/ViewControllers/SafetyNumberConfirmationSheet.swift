@@ -28,7 +28,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
     @objc @available(swift, obsoleted: 1.0)
     convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
-        self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler:completionHandler)
+        self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler: completionHandler)
     }
 
     init(addressesToConfirm addresses: [SignalServiceAddress],
