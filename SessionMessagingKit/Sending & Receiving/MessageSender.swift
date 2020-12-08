@@ -249,7 +249,8 @@ public final class MessageSender : NSObject {
                                     seal.fulfill(()) // Always fulfill because the notify PN server job isn't critical.
                                 }
                             }
-                            
+                        } else {
+                            seal.fulfill(())
                         }
                     }, completion: { })
                 }
