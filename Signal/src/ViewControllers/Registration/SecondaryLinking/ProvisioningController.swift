@@ -56,7 +56,7 @@ public class ProvisioningController: NSObject {
         let vc = SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
         navController.setViewControllers([vc], animated: false)
 
-        provisioningController.awaitProvisioning(from: vc)
+        provisioningController.awaitProvisioning(from: vc, navigationController: navController)
         navController.isNavigationBarHidden = true
         CurrentAppContext().mainWindow?.rootViewController = navController
     }
@@ -72,14 +72,11 @@ public class ProvisioningController: NSObject {
         let qrCodeViewController = SecondaryLinkingQRCodeViewController(provisioningController: self)
         navigationController.pushViewController(qrCodeViewController, animated: true)
 
-        awaitProvisioning(from: qrCodeViewController)
+        awaitProvisioning(from: qrCodeViewController, navigationController: navigationController)
     }
 
-    func awaitProvisioning(from viewController: SecondaryLinkingQRCodeViewController) {
-        guard let navigationController = viewController.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
+    func awaitProvisioning(from viewController: SecondaryLinkingQRCodeViewController,
+                           navigationController: UINavigationController) {
 
         awaitProvisionMessage.done { [weak self, weak navigationController] message in
             guard let self = self else { throw PMKError.cancelled }
