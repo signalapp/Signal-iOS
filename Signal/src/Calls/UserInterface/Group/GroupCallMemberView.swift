@@ -345,7 +345,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         configureRemoteVideo(device: device)
         let isRemoteDeviceBlocked = OWSBlockingManager.shared().isAddressBlocked(device.address)
         let errorDeferralInterval: TimeInterval = 5.0
-        let connectionDuration = -(call.connectedDate?.timeIntervalSinceNow ?? 0)
+        let connectionDuration = -(call.remoteConnectionDateByDemuxId[device.demuxId] ?? .distantPast).timeIntervalSinceNow
 
         // Hide these views. They'll be unhidden below.
         [errorView, avatarView, videoView, spinner].forEach { $0?.isHidden = true }
@@ -356,7 +356,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             spinner.isHidden = false
             if !spinner.isAnimating { spinner.startAnimating() }
 
-            let configuredAddress = device.address
+            let configuredDemuxId = device.demuxId
             let scheduledInterval = errorDeferralInterval - connectionDuration
             deferredReconfigTimer = Timer.scheduledTimer(
                 withTimeInterval: scheduledInterval,
@@ -365,7 +365,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 guard let self = self else { return }
                 guard call.isGroupCall, let groupCall = call.groupCall else { return }
                 guard let updatedState = groupCall.remoteDeviceStates.values
-                        .first(where:{ $0.address == configuredAddress }) else { return }
+                        .first(where:{ $0.demuxId == configuredDemuxId }) else { return }
                 self.configure(call: call, device: updatedState)
             })
 
