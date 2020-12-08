@@ -637,18 +637,6 @@ const CGFloat kIconViewLength = 24;
     // Block Conversation section.
 
     if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
-        [mainSection addItem:[OWSTableItem
-                                 itemWithCustomCellBlock:^{
-                                     return [weakSelf
-                                          disclosureCellWithName:@"Reset Secure Session"
-                                                        iconName:@"system_message_security"
-                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                     OWSConversationSettingsViewController, @"reset_secure_ession")];
-                                 }
-                                 actionBlock:^{
-                                     [weakSelf resetSecureSession];
-                                 }]];
-
         mainSection.footerTitle = NSLocalizedString(
             @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
 
@@ -1186,11 +1174,6 @@ static CGRect oldframe;
 - (void)tappedConversationSearch
 {
     [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
-}
-
-- (void)resetSecureSession
-{
-    
 }
 
 #pragma mark - Notifications
