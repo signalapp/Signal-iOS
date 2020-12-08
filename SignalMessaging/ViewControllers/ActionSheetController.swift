@@ -94,20 +94,16 @@ open class ActionSheetController: OWSViewController {
         }
         action.button.applyActionSheetTheme(theme)
 
-        let hairline = UIView()
-        hairline.backgroundColor = theme.hairlineColor
-        hairline.autoSetDimension(.height, toSize: 1)
-
         // If we've already added a cancel action, any non-cancel actions should come before it
         // This matches how UIAlertController handles cancel actions.
         if action.style != .cancel,
             let firstCancelAction = firstCancelAction,
             let index = stackView.arrangedSubviews.firstIndex(of: firstCancelAction.button) {
             // The hairline we're inserting is the divider between the new button and the cancel button
-            stackView.insertArrangedSubview(hairline, at: index)
+            stackView.insertHairline(with: theme.hairlineColor, at: index)
             stackView.insertArrangedSubview(action.button, at: index)
         } else {
-            stackView.addArrangedSubview(hairline)
+            stackView.addHairline(with: theme.hairlineColor)
             stackView.addArrangedSubview(action.button)
         }
         action.button.contentAlignment = contentAlignment
@@ -172,11 +168,11 @@ open class ActionSheetController: OWSViewController {
         //
         // This means that the backdrop view will extend outside of the bounds of the content view as the user
         // scrolls the content out of the safe area
-        let backdropView = theme.createBackdropView()
-        contentView.addSubview(backdropView)
-        backdropView.autoPinWidthToSuperview()
-        backdropView.autoPinEdge(.top, to: .top, of: contentView)
-        scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: backdropView.bottomAnchor).isActive = true
+        let backgroundView = theme.createBackgroundView()
+        contentView.addSubview(backgroundView)
+        backgroundView.autoPinWidthToSuperview()
+        backgroundView.autoPinEdge(.top, to: .top, of: contentView)
+        scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor).isActive = true
 
         // Stack views don't support corner masking pre-iOS 14
         // Instead we add our stack view to a wrapper view with masksToBounds: true
@@ -192,7 +188,7 @@ open class ActionSheetController: OWSViewController {
         // view's bounds. But its two subviews are pinned at same top edge. We can just apply corner
         // radii to each layer individually to get a similar effect.
         let cornerRadius: CGFloat = 16
-        [backdropView, stackViewContainer].forEach { subview in
+        [backgroundView, stackViewContainer].forEach { subview in
             subview.layer.cornerRadius = cornerRadius
             subview.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             subview.layer.masksToBounds = true
@@ -465,7 +461,7 @@ public class ActionSheetAction: NSObject {
             fatalError("init(coder:) has not been implemented")
         }
 
-        func applyActionSheetTheme(_ theme: Theme.ActionSheet) {
+        public func applyActionSheetTheme(_ theme: Theme.ActionSheet) {
             // Recolor everything based on the requested theme
             setBackgroundImage(UIImage(color: theme.buttonHighlightColor), for: .highlighted)
 

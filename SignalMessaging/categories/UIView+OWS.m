@@ -566,6 +566,20 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 @implementation UIStackView (OWS)
 
+- (void)addHairlineWithColor:(UIColor *)color
+{
+    [self insertHairlineWithColor:color atIndex:self.arrangedSubviews.count];
+}
+
+- (void)insertHairlineWithColor:(UIColor *)color atIndex:(NSInteger)index
+{
+    UIView *hairlineView = [[UIView alloc] init];
+    hairlineView.backgroundColor = color;
+    [hairlineView autoSetDimension:ALDimensionHeight toSize:1];
+
+    [self insertArrangedSubview:hairlineView atIndex:index];
+}
+
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor
 {
     return [self addBackgroundViewWithBackgroundColor:backgroundColor cornerRadius:0.f];

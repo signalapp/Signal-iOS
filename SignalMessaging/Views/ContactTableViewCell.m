@@ -129,6 +129,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.useSmallAvatars = YES;
 }
 
+- (BOOL)forceDarkAppearance
+{
+    return self.cellView.forceDarkAppearance;
+}
+
+- (void)setForceDarkAppearance:(BOOL)forceDarkAppearance
+{
+    self.cellView.forceDarkAppearance = forceDarkAppearance;
+}
+
 - (void)prepareForReuse
 {
     [super prepareForReuse];

@@ -19,14 +19,29 @@ class SafetyNumberConfirmationSheet: UIViewController {
         let verificationState: OWSVerificationState?
     }
     var items = [Item]()
-    let confirmationText: String
+    let confirmAction: ActionSheetAction
+    let cancelAction: ActionSheetAction
     let completionHandler: (Bool) -> Void
+    var allowsDismissal: Bool = true
 
-    @objc
-    init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
+    public let theme: Theme.ActionSheet
+
+    @objc @available(swift, obsoleted: 1.0)
+    convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
+        self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler: completionHandler)
+    }
+
+    init(addressesToConfirm addresses: [SignalServiceAddress],
+         confirmationText: String,
+         cancelText: String = CommonStrings.cancelButton,
+         theme: Theme.ActionSheet = .translucentDark,
+         completionHandler: @escaping (Bool) -> Void) {
+
         assert(!addresses.isEmpty)
-        self.confirmationText = confirmationText
+        self.confirmAction = ActionSheetAction(title: confirmationText, style: .default)
+        self.cancelAction = ActionSheetAction(title: cancelText, style: .cancel)
         self.completionHandler = completionHandler
+        self.theme = theme
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -85,13 +100,14 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
     override public func loadView() {
         view = UIView()
-        view.backgroundColor = .clear
+        let backgroundView = theme.createBackgroundView()
 
+        view.addSubview(backgroundView)
         view.addSubview(contentView)
-        contentView.autoPinEdge(toSuperviewEdge: .bottom)
+        backgroundView.autoPinEdges(toEdgesOf: contentView)
+
         contentView.autoHCenterInSuperview()
         contentView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        contentView.backgroundColor = Theme.actionSheetBackgroundColor
 
         // Prefer to be full width, but don't exceed the maximum width
         contentView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
@@ -99,10 +115,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
             contentView.autoPinWidthToSuperview()
         }
 
-        stackView.axis = .vertical
-        stackView.spacing = 1
-        stackView.addBackgroundView(withBackgroundColor: Theme.ActionSheet.default.hairlineColor)
+        [backgroundView, contentView].forEach { subview in
+            subview.layer.cornerRadius = 16
+            subview.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            subview.layer.masksToBounds = true
+        }
 
+        stackView.axis = .vertical
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewSafeArea()
 
@@ -118,7 +137,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold
-        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.textColor = theme.headerTitleColor
         titleLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
                                             comment: "Title for the 'safety number confirmation' view")
 
@@ -127,7 +146,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.font = .ows_dynamicTypeBody2
-        messageLabel.textColor = Theme.secondaryTextAndIconColor
+        messageLabel.textColor = theme.headerMessageColor
         messageLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
                                               comment: "Message for the 'safety number confirmation' view")
 
@@ -135,31 +154,33 @@ class SafetyNumberConfirmationSheet: UIViewController {
             titleLabel,
             messageLabel
         ])
-        headerStack.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         headerStack.axis = .vertical
         headerStack.spacing = 2
         headerStack.isLayoutMarginsRelativeArrangement = true
         headerStack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         stackView.addArrangedSubview(headerStack)
+        stackView.addHairline(with: theme.hairlineColor)
 
         stackView.addArrangedSubview(tableView)
+        stackView.addHairline(with: theme.hairlineColor)
         tableView.alwaysBounceVertical = false
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = Theme.actionSheetBackgroundColor
+        tableView.backgroundColor = .clear
         tableView.register(SafetyNumberCell.self, forCellReuseIdentifier: SafetyNumberCell.reuseIdentifier())
         tableView.setContentHuggingHigh()
         tableView.setCompressionResistanceLow()
 
-        let sendAction = ActionSheetAction(title: confirmationText)
-        stackView.addArrangedSubview(sendAction.button)
-        sendAction.button.releaseAction = { [weak self] in
+        confirmAction.button.applyActionSheetTheme(theme)
+        stackView.addArrangedSubview(confirmAction.button)
+        stackView.addHairline(with: theme.hairlineColor)
+        confirmAction.button.releaseAction = { [weak self] in
             self?.completionHandler(true)
             self?.dismiss(animated: true)
         }
 
-        let cancelAction = OWSActionSheets.cancelAction
+        cancelAction.button.applyActionSheetTheme(theme)
         stackView.addArrangedSubview(cancelAction.button)
         cancelAction.button.releaseAction = { [weak self] in
             self?.completionHandler(false)
@@ -178,58 +199,85 @@ class SafetyNumberConfirmationSheet: UIViewController {
         setupInteractiveSizing()
     }
 
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        // Ensure the scrollView's layout has completed
-        // as we're about to use its bounds to calculate
-        // the masking view and contentOffset.
-        contentView.layoutIfNeeded()
-
-        let cornerRadius: CGFloat = 16
-        let path = UIBezierPath(
-            roundedRect: contentView.bounds,
-            byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(square: cornerRadius)
-        )
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = path.cgPath
-        contentView.layer.mask = shapeLayer
-    }
-
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+        guard allowsDismissal else { return }
         dismiss(animated: true)
     }
 
     // MARK: - Resize / Interactive Dismiss
 
+    var bottomConstraint: NSLayoutConstraint?
     var heightConstraint: NSLayoutConstraint?
     let maxWidth: CGFloat = 414
-    lazy var baseContentViewHeight: CGFloat = {
-        view.layoutIfNeeded()
-        return contentView.height
+
+    lazy var baseStackViewHeight: CGFloat = {
+        tableView.isHidden = true
+        stackView.layoutIfNeeded()
+
+        let baseStackViewHeight = stackView.height
+
+        tableView.isHidden = false
+        stackView.layoutIfNeeded()
+
+        return baseStackViewHeight
     }()
 
     lazy var cellHeight = tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.height ?? 72
 
-    lazy var minimizedHeight: CGFloat = {
+    var minimizedHeight: CGFloat {
         // We want to show, at most, 3.5 rows when minimized. When we have
         // less than 4 rows, we will match our size to the number of rows.
-        return min(maximizedHeight, baseContentViewHeight + min(CGFloat(items.count), 3.5) * cellHeight)
-    }()
+        let compactTableViewHeight = min(CGFloat(items.count), 3.5) * cellHeight
+        let preferredMinimizedHeight = baseStackViewHeight + compactTableViewHeight + view.safeAreaInsets.bottom
+
+        return min(maximizedHeight, preferredMinimizedHeight)
+    }
+
     var maximizedHeight: CGFloat {
-        return min(
-            CurrentAppContext().frame.height - topLayoutGuide.length - 16,
-            baseContentViewHeight + CGFloat(items.count) * cellHeight
-        )
+        let tableViewHeight = CGFloat(items.count) * cellHeight
+        let preferredMaximizedHeight = baseStackViewHeight + tableViewHeight + view.safeAreaInsets.bottom
+        let maxPermittedHeight = CurrentAppContext().frame.height - view.safeAreaInsets.top - 16
+
+        return min(preferredMaximizedHeight, maxPermittedHeight)
+    }
+
+    var desiredVisibleContentHeight: CGFloat = 0 {
+        didSet {
+            updateConstraints(withDesiredContentHeight: desiredVisibleContentHeight)
+        }
+    }
+
+    func updateConstraints(withDesiredContentHeight height: CGFloat) {
+        // To prevent views from getting compressed, if the desired appearance height is less than
+        // the minimized height, we translate the content off the bottom edge
+        let newHeightConstant = max(minimizedHeight, desiredVisibleContentHeight)
+        let newBottomOffset = max((minimizedHeight - desiredVisibleContentHeight), 0)
+
+        if let heightConstraint = heightConstraint {
+            heightConstraint.constant = newHeightConstant
+        } else {
+            heightConstraint = contentView.autoSetDimension(.height, toSize: newHeightConstant)
+        }
+
+        if let bottomConstraint = bottomConstraint {
+            bottomConstraint.constant = newBottomOffset
+        } else {
+            bottomConstraint = contentView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -newBottomOffset)
+        }
+    }
+
+    var visibleContentHeight: CGFloat {
+        let contentRect = contentView.convert(contentView.bounds, to: view)
+        return view.bounds.intersection(contentRect).height
     }
 
     let maxAnimationDuration: TimeInterval = 0.2
     var startingHeight: CGFloat?
     var startingTranslation: CGFloat?
+    var pinnedContentOffset: CGPoint?
 
     func setupInteractiveSizing() {
-        heightConstraint = contentView.autoSetDimension(.height, toSize: minimizedHeight)
+        desiredVisibleContentHeight = minimizedHeight
 
         // Create a pan gesture to handle when the user interacts with the
         // view outside of the reactor table views.
@@ -256,12 +304,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
         case .began, .changed:
             guard beginInteractiveTransitionIfNecessary(sender),
                 let startingHeight = startingHeight,
-                let startingTranslation = startingTranslation else {
+                let startingTranslation = startingTranslation,
+                let pinnedContentOffset = pinnedContentOffset else {
                     return resetInteractiveTransition()
             }
 
             // We're in an interactive transition, so don't let the scrollView scroll.
-            tableView.contentOffset.y = 0
+            tableView.contentOffset = pinnedContentOffset
             tableView.showsVerticalScrollIndicator = false
 
             // We may have panned some distance if we were scrolling before we started
@@ -281,7 +330,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
             }
 
             // Update our height to reflect the new position
-            heightConstraint?.constant = newHeight
+            desiredVisibleContentHeight = newHeight
             view.layoutIfNeeded()
         case .ended, .cancelled, .failed:
             guard let startingHeight = startingHeight else { break }
@@ -290,17 +339,21 @@ class SafetyNumberConfirmationSheet: UIViewController {
             let growThreshold = (maximizedHeight - startingHeight) * 0.5
             let velocityThreshold: CGFloat = 500
 
-            let currentHeight = contentView.height
+            let currentHeight = visibleContentHeight
             let currentVelocity = sender.velocity(in: view).y
 
             enum CompletionState { case growing, dismissing, cancelling }
             let completionState: CompletionState
 
             if abs(currentVelocity) >= velocityThreshold {
-                completionState = currentVelocity < 0 ? .growing : .dismissing
+                if currentVelocity < 0 {
+                    completionState = .growing
+                } else {
+                    completionState = allowsDismissal ? .dismissing : .cancelling
+                }
             } else if currentHeight - startingHeight >= growThreshold {
                 completionState = .growing
-            } else if currentHeight <= dismissThreshold {
+            } else if currentHeight <= dismissThreshold, allowsDismissal {
                 completionState = .dismissing
             } else {
                 completionState = .cancelling
@@ -316,7 +369,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
                 finalHeight = startingHeight
             }
 
-            let remainingDistance = finalHeight - currentHeight
+            let remainingDistance = finalHeight - visibleContentHeight
 
             // Calculate the time to complete the animation if we want to preserve
             // the user's velocity. If this time is too slow (e.g. the user was scrolling
@@ -324,20 +377,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
             let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
 
             UIView.animate(withDuration: min(remainingTime, maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
-                if remainingDistance < 0 {
-                    self.contentView.frame.origin.y -= remainingDistance
-                    self.handle.frame.origin.y -= remainingDistance
-                } else {
-                    self.heightConstraint?.constant = finalHeight
-                    self.view.layoutIfNeeded()
-                }
-
+                self.desiredVisibleContentHeight = finalHeight
+                self.view.layoutIfNeeded()
                 self.backdropView.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
-                self.heightConstraint?.constant = finalHeight
-                self.view.layoutIfNeeded()
-
-                if completionState == .dismissing { self.dismiss(animated: true, completion: nil) }
+                owsAssertDebug(completionState != .dismissing || self.allowsDismissal)
+                self.desiredVisibleContentHeight = finalHeight
+                if completionState == .dismissing { self.dismiss(animated: false, completion: nil) }
             }
 
             resetInteractiveTransition()
@@ -347,13 +393,13 @@ class SafetyNumberConfirmationSheet: UIViewController {
             backdropView.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
-            heightConstraint?.constant = startingHeight
+            desiredVisibleContentHeight = startingHeight
         }
     }
 
     func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
-        let tryingToDismiss = tableView.contentOffset.y <= 0
-        let tryingToMaximize = contentView.height < maximizedHeight && tableView.height < tableView.contentSize.height
+        let tryingToDismiss = tableView.contentOffset.y <= 0 || tableView.panGestureRecognizer != sender
+        let tryingToMaximize = visibleContentHeight < maximizedHeight && tableView.height < tableView.contentSize.height
 
         // If we're at the top of the scrollView, or the view is not
         // currently maximized, we want to do an interactive transition.
@@ -364,7 +410,11 @@ class SafetyNumberConfirmationSheet: UIViewController {
         }
 
         if startingHeight == nil {
-            startingHeight = contentView.height
+            startingHeight = visibleContentHeight
+        }
+
+        if pinnedContentOffset == nil {
+            pinnedContentOffset = tableView.contentOffset.y < 0 ? .zero : tableView.contentOffset
         }
 
         return true
@@ -373,7 +423,18 @@ class SafetyNumberConfirmationSheet: UIViewController {
     func resetInteractiveTransition() {
         startingTranslation = nil
         startingHeight = nil
+        if let pinnedContentOffset = pinnedContentOffset {
+            tableView.contentOffset = pinnedContentOffset
+        }
+        pinnedContentOffset = nil
         tableView.showsVerticalScrollIndicator = true
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        // The minimized height is dependent on safe the current safe area insets
+        // If they every change, reset the content height to the new minimized height
+        super.viewSafeAreaInsetsDidChange()
+        desiredVisibleContentHeight = minimizedHeight
     }
 }
 
@@ -397,7 +458,9 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
             return cell
         }
 
-        contactCell.configure(item: item, viewController: self)
+        UIView.performWithoutAnimation {
+            contactCell.configure(item: item, theme: theme, viewController: self)
+        }
 
         return contactCell
     }
@@ -411,23 +474,24 @@ private class SafetyNumberCell: ContactTableViewCell {
 
         selectionStyle = .none
 
-        button.setBackgroundColors(upColor: Theme.conversationButtonBackgroundColor)
         button.setTitle(
             title: NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
                                      comment: "View safety number action for the 'safety number confirmation' view"),
             font: UIFont.ows_dynamicTypeBody2.ows_semibold,
-            titleColor: Theme.conversationButtonTextColor
+            titleColor: Theme.ActionSheet.default.safetyNumberChangeButtonTextColor
         )
         button.useDefaultCornerRadius()
         button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
     }
 
-    func configure(item: SafetyNumberConfirmationSheet.Item, viewController: UIViewController) {
+    func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {
         configure(withRecipientAddress: item.address)
 
         ows_setAccessoryView(button)
-
-        backgroundColor = Theme.actionSheetBackgroundColor
+        backgroundColor = .clear
+        button.setBackgroundColors(upColor: theme.safetyNumberChangeButtonBackgroundColor)
+        button.setTitleColor(theme.safetyNumberChangeButtonTextColor)
+        forceDarkAppearance = (theme == .translucentDark)
 
         if let verificationState = item.verificationState, verificationState == .noLongerVerified {
             let previouslyVerified = NSMutableAttributedString()

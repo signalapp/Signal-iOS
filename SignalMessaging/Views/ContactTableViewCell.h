@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactTableViewCell : UITableViewCell
 
+@property (assign, nonatomic) BOOL forceDarkAppearance;
+
 + (NSString *)reuseIdentifier;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
