@@ -39,6 +39,7 @@ class GroupCallViewController: UIViewController {
     var shouldRemoteVideoControlsBeHidden = false {
         didSet { updateCallUI() }
     }
+    var hasUnresolvedSafetyNumberMismatch = false
 
     private static let keyValueStore = SDSKeyValueStore(collection: "GroupCallViewController")
 
@@ -196,6 +197,12 @@ class GroupCallViewController: UIViewController {
             self.view.transform = .identity
         }) { _ in
             splitViewSnapshot.removeFromSuperview()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        if hasUnresolvedSafetyNumberMismatch {
+            resolveSafetyNumberMismatch()
         }
     }
 
@@ -492,7 +499,96 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             self.updateCallUI()
             splitViewSnapshot.removeFromSuperview()
             pipSnapshot.removeFromSuperview()
+
+            if self.hasUnresolvedSafetyNumberMismatch {
+                self.resolveSafetyNumberMismatch()
+            }
         }
+    }
+
+    func resolveSafetyNumberMismatch() {
+        if !isCallMinimized, CurrentAppContext().isAppForegroundAndActive() {
+            presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
+                guard let self = self else { return }
+                if success {
+                    self.groupCall.resendMediaKeys()
+                    self.hasUnresolvedSafetyNumberMismatch = false
+                } else {
+                    self.dismissCall()
+                }
+            }
+        } else {
+            AppEnvironment.shared.notificationPresenter.notifyForGroupCallSafetyNumberChange(inThread: call.thread)
+        }
+    }
+
+    func presentSafetyNumberChangeSheetIfNecessary(completion: @escaping (Bool) -> Void) {
+        let localDeviceHasNotJoined = groupCall.localDeviceState.joinState == .notJoined
+        let currentParticipantAddresses = groupCall.remoteDeviceStates.map { $0.value.address }
+
+        // If we haven't joined the call yet, we want to alert for all members of the group
+        // If we are in the call, we only care about safety numbers for the active call participants
+        let addressesToAlert = call.thread.recipientAddresses.filter { memberAddress in
+            let isUntrusted = OWSIdentityManager.shared().untrustedIdentityForSending(to: memberAddress) != nil
+            let isMemberInCall = currentParticipantAddresses.contains(memberAddress)
+
+            // We want to alert for safety number changes of all members if we haven't joined yet
+            // If we're already in the call, we only care about active call participants
+            return isUntrusted && (isMemberInCall || localDeviceHasNotJoined)
+        }
+
+        // There are no unverified addresses that we're currently concerned about. No need to show a sheet
+        guard addressesToAlert.count > 0 else { completion(true); return }
+
+        let startCallString = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+        let joinCallString = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
+        let continueCallString = NSLocalizedString("GROUP_CALL_CONTINUE_BUTTON", comment: "Button to continue an ongoing group call")
+        let leaveCallString = NSLocalizedString("GROUP_CALL_LEAVE_BUTTON", comment: "Button to leave a group call")
+        let cancelString = CommonStrings.cancelButton
+
+        let approveText: String
+        let denyText: String
+        if localDeviceHasNotJoined {
+            let deviceCount = call.groupCall.peekInfo?.deviceCount ?? 0
+            approveText = deviceCount > 0 ? joinCallString : startCallString
+            denyText = cancelString
+        } else {
+            approveText = continueCallString
+            denyText = leaveCallString
+        }
+
+        let sheet = SafetyNumberConfirmationSheet(
+            addressesToConfirm: addressesToAlert,
+            confirmationText: approveText,
+            cancelText: denyText,
+            theme: .translucentDark) { didApprove in
+
+            if didApprove {
+                SDSDatabaseStorage.shared.asyncWrite { writeTx in
+                    let identityManager = OWSIdentityManager.shared()
+                    for address in addressesToAlert {
+                        guard let identityKey = identityManager.identityKey(for: address, transaction: writeTx) else { return }
+                        let currentState = identityManager.verificationState(for: address, transaction: writeTx)
+                        let newState = (currentState == .noLongerVerified) ? .default : currentState
+
+                        identityManager.setVerificationState(newState,
+                            identityKey: identityKey,
+                            address: address,
+                            isUserInitiatedChange: true,
+                            transaction: writeTx)
+                    }
+                } completion: {
+                    completion(true)
+                }
+
+            } else {
+                completion(false)
+            }
+        }
+        sheet.allowsDismissal = false
+        sheet.confirmAction.button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        sheet.cancelAction.button.titleLabel?.font = UIFont.ows_dynamicTypeBody
+        present(sheet, animated: true, completion: nil)
     }
 }
 
@@ -560,6 +656,16 @@ extension GroupCallViewController: CallObserver {
         ))
         presentActionSheet(actionSheet)
     }
+
+    func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {
+        AssertIsOnMainThread()
+        guard call == self.call else { return owsFailDebug("Unexpected call \(call)") }
+
+        if !hasUnresolvedSafetyNumberMismatch {
+            hasUnresolvedSafetyNumberMismatch = true
+            resolveSafetyNumberMismatch()
+        }
+    }
 }
 
 extension GroupCallViewController: CallControlsDelegate {
@@ -603,7 +709,14 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressJoin(sender: UIButton) {
-        callService.joinGroupCallIfNecessary(call)
+        presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
+            guard let self = self else { return }
+            if success {
+                self.callService.joinGroupCallIfNecessary(self.call)
+            } else {
+                self.dismissCall()
+            }
+        }
     }
 }
 

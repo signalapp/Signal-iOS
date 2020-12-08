@@ -786,6 +786,15 @@ extension CallService: CallManagerDelegate {
         AssertIsOnMainThread()
         Logger.info("shouldSendCallMessage")
 
+        // It's unlikely that this would ever have more than one call. But technically
+        // we don't know which call this message is on behalf of. So we assume it's every
+        // call with a participant with recipientUuid
+        let relevantCalls = calls.filter { (call: SignalCall) -> Bool in
+            call.participantAddresses
+                .compactMap { $0.uuid }
+                .contains(recipientUuid)
+        }
+
         databaseStorage.write(.promise) { transaction in
             TSContactThread.getOrCreateThread(
                 withContactAddress: SignalServiceAddress(uuid: recipientUuid),
@@ -804,10 +813,10 @@ extension CallService: CallManagerDelegate {
         }.done { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
         }.catch { error in
-            // Did the recipients safety number change?
-            // Is the user blocked?
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
+            } else if error.isUntrustedIdentityError {
+                relevantCalls.forEach { $0.publishSendFailureUntrustedParticipantIdentity() }
             } else {
                 Logger.error("Failed to send opaque message \(error)")
             }
@@ -1065,5 +1074,12 @@ extension CallService: CallManagerDelegate {
             onAddRemoteVideoTrack: call,
             track: track
         )
+    }
+}
+
+private extension Error {
+    var isUntrustedIdentityError: Bool {
+        let nsError = self as NSError
+        return nsError.domain == OWSSignalServiceKitErrorDomain && nsError.code == OWSErrorCode.untrustedIdentity.rawValue
     }
 }

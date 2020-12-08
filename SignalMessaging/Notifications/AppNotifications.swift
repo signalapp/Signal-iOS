@@ -36,7 +36,7 @@ public enum AppNotificationCategory: CaseIterable {
     case grdbMigration
 }
 
-public enum AppNotificationAction: CaseIterable {
+public enum AppNotificationAction: String, CaseIterable {
     case answerCall
     case callBack
     case declineCall
@@ -44,6 +44,7 @@ public enum AppNotificationAction: CaseIterable {
     case reply
     case showThread
     case reactWithThumbsUp
+    case showCallLobby
 }
 
 public struct AppNotificationUserInfoKey {
@@ -53,6 +54,7 @@ public struct AppNotificationUserInfoKey {
     public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
+    public static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
 }
 
 extension AppNotificationCategory {
@@ -139,6 +141,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.showThread"
         case .reactWithThumbsUp:
             return "Signal.AppNotifications.Action.reactWithThumbsUp"
+        case .showCallLobby:
+            return "Signal.AppNotifications.Action.showCallLobby"
         }
     }
 }
@@ -617,6 +621,33 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
+    public func notifyForGroupCallSafetyNumberChange(inThread thread: TSThread) {
+        let notificationTitle: String?
+        switch previewType {
+        case .noNameNoPreview:
+            notificationTitle = nil
+        case .nameNoPreview, .namePreview:
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+        }
+
+        let notificationBody = NotificationStrings.groupCallSafetyNumberChangeBody
+        let threadId = thread.uniqueId
+        let userInfo: [String: Any] = [
+            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
+        ]
+
+        DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
+            self.adaptee.notify(category: .infoOrErrorMessage,
+                                title: notificationTitle,
+                                body: notificationBody,
+                                threadIdentifier: nil, // show ungrouped
+                                userInfo: userInfo,
+                                sound: sound)
+        }
+    }
+
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch errorMessage.errorType {
         case .noSession,
@@ -660,10 +691,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationBody = previewableInteraction.previewText(transaction: transaction)
         }
 
+        let isGroupCallMessage = previewableInteraction is OWSGroupCallMessage
+        let preferredDefaultAction: AppNotificationAction = isGroupCallMessage ? .showCallLobby : .showThread
+
         let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.messageId: previewableInteraction.uniqueId
+            AppNotificationUserInfoKey.messageId: previewableInteraction.uniqueId,
+            AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
         ]
 
         transaction.addAsyncCompletion {

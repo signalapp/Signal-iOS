@@ -113,23 +113,27 @@ class NotificationActionHandler {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: .main) { notificationMessage in
-            let thread = notificationMessage.thread
-            let currentCall = AppEnvironment.shared.callService.currentCall
-            let isGroupCallMessage = notificationMessage.interaction is OWSGroupCallMessage
+            self.showThread(notificationMessage: notificationMessage)
+        }
+    }
 
-            if isGroupCallMessage, currentCall?.thread.uniqueId == thread.uniqueId {
-                OWSWindowManager.shared.returnToCallView()
-            } else if let thread = thread as? TSGroupThread, isGroupCallMessage, currentCall == nil {
-                GroupCallViewController.presentLobby(thread: thread)
-            } else {
-                // If this happens when the the app is not, visible we skip the animation so the thread
-                // can be visible to the user immediately upon opening the app, rather than having to watch
-                // it animate in from the homescreen.
-                self.signalApp.presentConversationAndScrollToFirstUnreadMessage(
-                    forThreadId: thread.uniqueId,
-                    animated: UIApplication.shared.applicationState == .active
-                )
-            }
+    private func showThread(notificationMessage: NotificationMessage) {
+        let thread = notificationMessage.thread
+        let currentCall = AppEnvironment.shared.callService.currentCall
+        let isGroupCallMessage = notificationMessage.interaction is OWSGroupCallMessage
+
+        if isGroupCallMessage, currentCall?.thread.uniqueId == thread.uniqueId {
+            OWSWindowManager.shared.returnToCallView()
+        } else if let thread = thread as? TSGroupThread, isGroupCallMessage, currentCall == nil {
+            GroupCallViewController.presentLobby(thread: thread)
+        } else {
+            // If this happens when the the app is not, visible we skip the animation so the thread
+            // can be visible to the user immediately upon opening the app, rather than having to watch
+            // it animate in from the homescreen.
+            self.signalApp.presentConversationAndScrollToFirstUnreadMessage(
+                forThreadId: thread.uniqueId,
+                animated: UIApplication.shared.applicationState == .active
+            )
         }
     }
 
@@ -153,6 +157,25 @@ class NotificationActionHandler {
                 throw error
             }.then(on: .global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)
+            }
+        }
+    }
+
+    func showCallLobby(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+        return firstly { () -> Promise<NotificationMessage> in
+            self.notificationMessage(forUserInfo: userInfo)
+        }.done(on: .main) { notificationMessage in
+            let thread = notificationMessage.thread
+            let currentCall = AppEnvironment.shared.callService.currentCall
+
+            if currentCall?.thread.uniqueId == thread.uniqueId {
+                OWSWindowManager.shared.returnToCallView()
+            } else if let thread = thread as? TSGroupThread, currentCall == nil {
+                GroupCallViewController.presentLobby(thread: thread)
+            } else {
+                // If currentCall is non-nil, we can't join a call anyway, fallback to showing the thread.
+                // Individual calls don't have a lobby, just show the thread.
+                return self.showThread(notificationMessage: notificationMessage)
             }
         }
     }
