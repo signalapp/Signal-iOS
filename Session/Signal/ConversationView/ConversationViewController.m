@@ -561,7 +561,9 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if (self.userLeftGroup) {
+    if ([self.thread isKindOfClass:TSGroupThread.class] && !((TSGroupThread *)self.thread).usesSharedSenderKeys) {
+        self.inputToolbar.hidden = YES;
+    } else if (self.userLeftGroup) {
         self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
         [self dismissKeyBoard];
     } else {
@@ -1191,6 +1193,13 @@ typedef enum : NSUInteger {
 
     [self updateInputBarLayout];
     [self ensureScrollDownButton];
+
+    if ([self.thread isKindOfClass:TSGroupThread.class] && !((TSGroupThread *)self.thread).usesSharedSenderKeys) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Session"
+            message:@"Legacy closed groups are no longer supported. Please create a new group to continue." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
