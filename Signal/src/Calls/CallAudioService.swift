@@ -107,6 +107,8 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private let routePicker = AVRoutePickerView()
+
+    @discardableResult
     public func presentRoutePicker() -> Bool {
         guard let routeButton = routePicker.subviews.first(where: { $0 is UIButton }) as? UIButton else {
             owsFailDebug("Failed to find subview to present route picker, falling back to old system")

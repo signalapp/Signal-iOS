@@ -31,21 +31,24 @@ public class UserNotificationActionHandler: NSObject {
 
         let userInfo = response.notification.request.content.userInfo
 
+        let action: AppNotificationAction
+
         switch response.actionIdentifier {
         case UNNotificationDefaultActionIdentifier:
             Logger.debug("default action")
-            return try actionHandler.showThread(userInfo: userInfo)
+            let defaultActionString = userInfo[AppNotificationUserInfoKey.defaultAction] as? String
+            let defaultAction = defaultActionString.flatMap { AppNotificationAction(rawValue: $0) }
+            action = defaultAction ?? .showThread
         case UNNotificationDismissActionIdentifier:
             // TODO - mark as read?
             Logger.debug("dismissed notification")
             return Promise.value(())
         default:
-            // proceed
-            break
-        }
-
-        guard let action = UserNotificationConfig.action(identifier: response.actionIdentifier) else {
-            throw OWSAssertionError("unable to find action for actionIdentifier: \(response.actionIdentifier)")
+            if let responseAction = UserNotificationConfig.action(identifier: response.actionIdentifier) {
+                action = responseAction
+            } else {
+                throw OWSAssertionError("unable to find action for actionIdentifier: \(response.actionIdentifier)")
+            }
         }
 
         switch action {
@@ -67,6 +70,8 @@ public class UserNotificationActionHandler: NSObject {
             return try actionHandler.showThread(userInfo: userInfo)
         case .reactWithThumbsUp:
             return try actionHandler.reactWithThumbsUp(userInfo: userInfo)
+        case .showCallLobby:
+            return try actionHandler.showCallLobby(userInfo: userInfo)
         }
     }
 }

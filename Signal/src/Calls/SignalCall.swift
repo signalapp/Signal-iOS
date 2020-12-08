@@ -19,6 +19,10 @@ public protocol CallObserver: class {
     func groupCallRequestMembershipProof(_ call: SignalCall)
     func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
+
+    /// Invoked if a call message failed to send because of a safety number change
+    /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
+    func callMessageSendFailedUntrustedIdentity(_ call: SignalCall)
 }
 
 public extension CallObserver {
@@ -34,6 +38,8 @@ public extension CallObserver {
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+
+    func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {}
 }
 
 @objc
@@ -102,6 +108,15 @@ public class SignalCall: NSObject, CallManagerCallReference {
         case externalError(underlyingError: Error)
         case timeout(description: String)
         case messageSendFailure(underlyingError: Error)
+    }
+
+    var participantAddresses: [SignalServiceAddress] {
+        switch mode {
+        case .group(let call):
+            return call.remoteDeviceStates.values.map { $0.address }
+        case .individual(let call):
+            return [call.remoteAddress]
+        }
     }
 
     init(groupCall: GroupCall, groupThread: TSGroupThread) {
@@ -213,6 +228,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
         AssertIsOnMainThread()
 
         observers = []
+    }
+
+    public func publishSendFailureUntrustedParticipantIdentity() {
+        observers.elements.forEach { $0.callMessageSendFailedUntrustedIdentity(self) }
     }
 
     // MARK: -

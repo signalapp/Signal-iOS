@@ -14,7 +14,7 @@ public class UserNotificationConfig {
     }
 
     class func notificationActions(for category: AppNotificationCategory) -> [UNNotificationAction] {
-        return category.actions.map { notificationAction($0) }
+        return category.actions.compactMap { notificationAction($0) }
     }
 
     class func notificationCategory(_ category: AppNotificationCategory) -> UNNotificationCategory {
@@ -24,7 +24,7 @@ public class UserNotificationConfig {
                                       options: [])
     }
 
-    class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction {
+    class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction? {
         switch action {
         case .answerCall:
             return UNNotificationAction(identifier: action.identifier,
@@ -56,11 +56,16 @@ public class UserNotificationConfig {
             return UNNotificationAction(identifier: action.identifier,
                                         title: MessageStrings.reactWithThumbsUpNotificationAction,
                                         options: [])
+
+        case .showCallLobby:
+            // Currently, .showCallLobby is only used as a default action.
+            owsFailDebug("Show call lobby not supported as a UNNotificationAction")
+            return nil
         }
     }
 
     public class func action(identifier: String) -> AppNotificationAction? {
-        return AppNotificationAction.allCases.first { notificationAction($0).identifier == identifier }
+        return AppNotificationAction.allCases.first { notificationAction($0)?.identifier == identifier }
     }
 
 }

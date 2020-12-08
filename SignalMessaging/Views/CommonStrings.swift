@@ -172,6 +172,10 @@ public class NotificationStrings: NSObject {
     static public let failedToSendBody = NSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
 
     @objc
+    static public let groupCallSafetyNumberChangeBody = NSLocalizedString("GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY",
+                                                                          comment: "notification body when a group call participant joins with an untrusted safety number")
+
+    @objc
     static public let incomingReactionFormat = NSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT",
                                                                  comment: "notification body. Embeds {{reaction emoji}}")
 
