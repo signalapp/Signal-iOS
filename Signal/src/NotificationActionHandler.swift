@@ -118,23 +118,13 @@ class NotificationActionHandler {
     }
 
     private func showThread(notificationMessage: NotificationMessage) {
-        let thread = notificationMessage.thread
-        let currentCall = AppEnvironment.shared.callService.currentCall
-        let isGroupCallMessage = notificationMessage.interaction is OWSGroupCallMessage
-
-        if isGroupCallMessage, currentCall?.thread.uniqueId == thread.uniqueId {
-            OWSWindowManager.shared.returnToCallView()
-        } else if let thread = thread as? TSGroupThread, isGroupCallMessage, currentCall == nil {
-            GroupCallViewController.presentLobby(thread: thread)
-        } else {
-            // If this happens when the the app is not, visible we skip the animation so the thread
-            // can be visible to the user immediately upon opening the app, rather than having to watch
-            // it animate in from the homescreen.
-            self.signalApp.presentConversationAndScrollToFirstUnreadMessage(
-                forThreadId: thread.uniqueId,
-                animated: UIApplication.shared.applicationState == .active
-            )
-        }
+        // If this happens when the the app is not, visible we skip the animation so the thread
+        // can be visible to the user immediately upon opening the app, rather than having to watch
+        // it animate in from the homescreen.
+        signalApp.presentConversationAndScrollToFirstUnreadMessage(
+            forThreadId: notificationMessage.thread.uniqueId,
+            animated: UIApplication.shared.applicationState == .active
+        )
     }
 
     func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {

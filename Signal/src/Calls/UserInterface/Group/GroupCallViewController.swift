@@ -538,7 +538,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         }
 
         // There are no unverified addresses that we're currently concerned about. No need to show a sheet
-        guard addressesToAlert.count > 0 else { completion(true); return }
+        guard addressesToAlert.count > 0 else { return completion(true) }
 
         let startCallString = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallString = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
@@ -585,7 +585,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 completion(false)
             }
         }
-        sheet.allowsDismissal = false
+        sheet.allowsDismissal = localDeviceHasNotJoined
         sheet.confirmAction.button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
         sheet.cancelAction.button.titleLabel?.font = UIFont.ows_dynamicTypeBody
         present(sheet, animated: true, completion: nil)
@@ -713,8 +713,6 @@ extension GroupCallViewController: CallControlsDelegate {
             guard let self = self else { return }
             if success {
                 self.callService.joinGroupCallIfNecessary(self.call)
-            } else {
-                self.dismissCall()
             }
         }
     }
