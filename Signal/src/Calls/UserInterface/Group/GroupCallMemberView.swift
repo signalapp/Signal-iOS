@@ -246,8 +246,10 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 class GroupCallRemoteMemberView: GroupCallMemberView {
     private weak var videoView: GroupCallRemoteVideoView?
 
+    var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
     let avatarView = AvatarImageView()
+    let spinner = UIActivityIndicatorView(style: .whiteLarge)
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
     var isCallMinimized: Bool = false {
@@ -292,8 +294,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
         noVideoView.insertSubview(errorView, belowSubview: muteIndicatorImage)
+        noVideoView.insertSubview(spinner, belowSubview: muteIndicatorImage)
+
         avatarView.autoCenterInSuperview()
         errorView.autoPinEdgesToSuperviewEdges()
+        spinner.autoCenterInSuperview()
     }
 
     required init?(coder: NSCoder) {
@@ -303,6 +308,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     private var hasBeenConfigured = false
     func configure(call: SignalCall, device: RemoteDeviceState) {
         hasBeenConfigured = true
+        deferredReconfigTimer?.invalidate()
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
@@ -337,14 +343,36 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         ).themeColor
 
         configureRemoteVideo(device: device)
+        let isRemoteDeviceBlocked = OWSBlockingManager.shared().isAddressBlocked(device.address)
+        let errorDeferralInterval: TimeInterval = 5.0
+        let connectionDuration = -(call.connectedDate?.timeIntervalSinceNow ?? 0)
 
         // Hide these views. They'll be unhidden below.
-        [errorView, avatarView, videoView].forEach { $0?.isHidden = true }
+        [errorView, avatarView, videoView, spinner].forEach { $0?.isHidden = true }
 
-        if !device.mediaKeysReceived {
+        if !device.mediaKeysReceived, !isRemoteDeviceBlocked, connectionDuration < errorDeferralInterval {
+            // No media keys, but that's expected since we just joined the call.
+            // Schedule a timer to re-check and show a spinner in the meantime
+            spinner.isHidden = false
+            if !spinner.isAnimating { spinner.startAnimating() }
+
+            let configuredAddress = device.address
+            let scheduledInterval = errorDeferralInterval - connectionDuration
+            deferredReconfigTimer = Timer.scheduledTimer(
+                withTimeInterval: scheduledInterval,
+                repeats: false,
+                block: { [weak self] _ in
+                guard let self = self else { return }
+                guard call.isGroupCall, let groupCall = call.groupCall else { return }
+                guard let updatedState = groupCall.remoteDeviceStates.values
+                        .first(where:{ $0.address == configuredAddress }) else { return }
+                self.configure(call: call, device: updatedState)
+            })
+
+        } else if !device.mediaKeysReceived {
             // No media keys. Display error view
             errorView.isHidden = false
-            configureErrorView(for: device.address)
+            configureErrorView(for: device.address, isBlocked: isRemoteDeviceBlocked)
 
         } else if let videoView = videoView, device.videoTrack != nil {
             // We have a video track! If we don't know the mute state, show both.
@@ -382,10 +410,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         owsAssertDebug(videoView != nil, "Missing remote video view")
     }
 
-    func configureErrorView(for address: SignalServiceAddress) {
-        let isBlocked = OWSBlockingManager.shared().isAddressBlocked(address)
+    func configureErrorView(for address: SignalServiceAddress, isBlocked: Bool) {
         let displayName: String
-
         if address.isLocalAddress {
             displayName = NSLocalizedString(
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",

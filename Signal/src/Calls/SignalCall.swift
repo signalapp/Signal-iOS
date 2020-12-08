@@ -236,6 +236,8 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     // MARK: -
 
+    // TODO: Keep track of timestamps that we first learn of a participant
+
     // This method should only be called when the call state is "connected".
     public func connectionDuration() -> TimeInterval {
         guard let connectedDate = connectedDate else {
