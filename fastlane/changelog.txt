@@ -1,5 +1,1 @@
-New features for Signal private groups are now available, including group admins, @ mentions, group links and more! Available in new groups you create, and coming soon to your existing groups. 
-
-- @mentions let you mention someone in the group. They’ll be to jump directly to that mention the next time they open the chat, and you can also set your notifications to only notify you when you’re mentioned.  
-- Admins are able to remove members from a group, manage who can add people to the group or modify the group’s info, and make other members admins as well.
-- Group links let you invite people to join a group simply by sharing a link with them. You can also require admin approval if someone requests to join your group via a link.
+Your Legacy Signal Groups will be automatically upgraded to New Groups so they can get in on the new features we recently released, like admins, @mentions, group links, and more. Upgrades don’t happen all at once or instantly, and some groups may not upgrade for a while.
