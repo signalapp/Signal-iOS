@@ -370,8 +370,16 @@ public class CVText {
 
         textStorage.addLayoutManager(layoutManager)
 
-        layoutManager.glyphRange(for: textContainer)
         let size = layoutManager.usedRect(for: textContainer).size
+
+        // For some reason, in production builds, the textStorage
+        // seems to get optimized out in many circumstances. This
+        // results in `usedRect` measuring an empty string and a
+        // size of 0,0.
+        // TODO: Figure out a better way to fix this. For now,
+        // by just using the textStorage later it ensures that it
+        // is properly measured.
+        _ = textStorage
 
         return size.ceil
     }
@@ -492,8 +500,16 @@ public class CVText {
 
         textStorage.addLayoutManager(layoutManager)
 
-        layoutManager.glyphRange(for: textContainer)
         let size = layoutManager.usedRect(for: textContainer).size
+
+        // For some reason, in production builds, the textStorage
+        // seems to get optimized out in many circumstances. This
+        // results in `usedRect` measuring an empty string and a
+        // size of 0,0.
+        // TODO: Figure out a better way to fix this. For now,
+        // by just using the textStorage later it ensures that it
+        // is properly measured.
+        _ = textStorage
 
         return size.ceil
     }
