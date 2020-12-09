@@ -387,6 +387,18 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         }
     }
 
+    func clearConfiguration() {
+        deferredReconfigTimer?.invalidate()
+
+        cleanupVideoViews()
+
+        noVideoView.backgroundColor = .ows_black
+        backgroundAvatarView.image = nil
+        avatarView.image = nil
+
+        [errorView, spinner, muteIndicatorImage].forEach { $0.isHidden = true }
+    }
+
     private func updateDimensions() {
         guard hasBeenConfigured else { return }
         videoView?.frame = bounds

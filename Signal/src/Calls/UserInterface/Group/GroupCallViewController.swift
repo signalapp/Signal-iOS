@@ -350,6 +350,8 @@ class GroupCallViewController: UIViewController {
                 call: call,
                 device: speakerState
             )
+        } else {
+            speakerView.clearConfiguration()
         }
 
         // Setting the speakerphone before we join the call will fail,
