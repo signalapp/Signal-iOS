@@ -157,7 +157,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2showSplash = build.includes(.beta)
 
     @objc
-    public static var groupsV2Migrations: Bool = build.includes(.beta)
+    public static var groupsV2Migrations = true
 
     @objc
     public static let groupsV2MigrationSetCapability = groupsV2Migrations
