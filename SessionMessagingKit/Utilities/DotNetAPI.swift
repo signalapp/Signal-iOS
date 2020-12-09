@@ -158,7 +158,7 @@ public class DotNetAPI : NSObject {
                 if isEncryptionRequired {
                     var encryptionKey = NSData()
                     var digest = NSData()
-                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, shouldPad: true, outKey: &encryptionKey, outDigest: &digest) else {
+                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, shouldPad: false, outKey: &encryptionKey, outDigest: &digest) else {
                         SNLog("Couldn't encrypt attachment.")
                         return seal.reject(Error.encryptionFailed)
                     }
