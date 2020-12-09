@@ -5,11 +5,10 @@
 import SignalClient
 
 extension SSKSessionStore: SignalClient.SessionStore {
-    public func loadSession(for address: ProtocolAddress,
-                            context: UnsafeMutableRawPointer?) throws -> SignalClient.SessionRecord? {
+    public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SignalClient.SessionRecord? {
         let record = loadSession(for: SignalServiceAddress(from: address),
                                  deviceId: Int32(bitPattern: address.deviceId),
-                                 transaction: context!.load(as: SDSAnyWriteTransaction.self))
+                                 transaction: context.asTransaction)
         guard record.sessionState()?.rootKey != nil else {
             return nil
         }
@@ -18,10 +17,10 @@ extension SSKSessionStore: SignalClient.SessionStore {
 
     public func storeSession(_ record: SignalClient.SessionRecord,
                              for address: ProtocolAddress,
-                             context: UnsafeMutableRawPointer?) throws {
+                             context: StoreContext) throws {
         storeSession(try AxolotlKit.SessionRecord(serializedProto: Data(record.serialize())),
                      for: SignalServiceAddress(from: address),
                      deviceId: Int32(bitPattern: address.deviceId),
-                     transaction: context!.load(as: SDSAnyWriteTransaction.self))
+                     transaction: context.asTransaction)
     }
 }

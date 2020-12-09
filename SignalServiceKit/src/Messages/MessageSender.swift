@@ -360,13 +360,12 @@ public extension MessageSender {
         }
 
         do {
-            var protocolContextAsPtr: SPKProtocolWriteContext = transaction
             let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: deviceId.uint32Value)
             try processPreKeyBundle(bundle,
                                     for: protocolAddress,
                                     sessionStore: sessionStore,
                                     identityStore: identityManager,
-                                    context: &protocolContextAsPtr)
+                                    context: transaction)
         } catch SignalError.untrustedIdentity(_) {
             handleUntrustedIdentityKeyError(accountId: accountId,
                                             recipientAddress: recipientAddress,
@@ -1181,7 +1180,6 @@ extension MessageSender {
         let serializedMessage: Data
         let messageType: TSWhisperMessageType
 
-        var protocolContextAsPtr = transaction
         let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
         if let udSendingAccess = messageSend.udSendingAccess {
@@ -1203,7 +1201,7 @@ extension MessageSender {
                                            for: protocolAddress,
                                            sessionStore: Self.sessionStore,
                                            identityStore: Self.identityManager,
-                                           context: &protocolContextAsPtr)
+                                           context: transaction)
 
             switch result.messageType {
             case .whisper:
@@ -1218,7 +1216,7 @@ extension MessageSender {
         }
 
         // We had better have a session after encrypting for this recipient!
-        let session = try Self.sessionStore.loadSession(for: protocolAddress, context: &protocolContextAsPtr)!
+        let session = try Self.sessionStore.loadSession(for: protocolAddress, context: transaction)!
 
         let messageParams = OWSMessageServiceParams(
             type: messageType,

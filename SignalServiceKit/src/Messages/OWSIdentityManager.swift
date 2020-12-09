@@ -22,8 +22,8 @@ extension SignalClient.IdentityKey {
 }
 
 extension OWSIdentityManager: SignalClient.IdentityKeyStore {
-    public func identityKeyPair(context: UnsafeMutableRawPointer?) throws -> IdentityKeyPair {
-        let transaction = context!.load(as: SDSAnyWriteTransaction.self)
+    public func identityKeyPair(context: StoreContext) throws -> IdentityKeyPair {
+        let transaction = context.asTransaction
         if let keyPair = self.identityKeyPair(with: transaction) {
             return keyPair.identityKeyPair
         }
@@ -33,31 +33,31 @@ extension OWSIdentityManager: SignalClient.IdentityKeyStore {
         return newKeyPair
     }
 
-    public func localRegistrationId(context: UnsafeMutableRawPointer?) throws -> UInt32 {
-        return UInt32(bitPattern: self.localRegistrationId(with: context!.load(as: SDSAnyWriteTransaction.self)))
+    public func localRegistrationId(context: StoreContext) throws -> UInt32 {
+        return UInt32(bitPattern: self.localRegistrationId(with: context.asTransaction))
     }
 
     public func saveIdentity(_ identity: SignalClient.IdentityKey,
                              for address: ProtocolAddress,
-                             context: UnsafeMutableRawPointer?) throws -> Bool {
+                             context: StoreContext) throws -> Bool {
         self.saveRemoteIdentity(identity.serializeAsData(),
                                 address: SignalServiceAddress(from: address),
-                                transaction: context!.load(as: SDSAnyWriteTransaction.self))
+                                transaction: context.asTransaction)
     }
 
     public func isTrustedIdentity(_ identity: SignalClient.IdentityKey,
                                   for address: ProtocolAddress,
                                   direction: Direction,
-                                  context: UnsafeMutableRawPointer?) throws -> Bool {
+                                  context: StoreContext) throws -> Bool {
         self.isTrustedIdentityKey(identity.serializeAsData(),
                                   address: SignalServiceAddress(from: address),
                                   direction: TSMessageDirection(direction),
-                                  transaction: context!.load(as: SDSAnyReadTransaction.self))
+                                  transaction: context.asTransaction)
     }
 
-    public func identity(for address: ProtocolAddress, context: UnsafeMutableRawPointer?) throws -> SignalClient.IdentityKey? {
+    public func identity(for address: ProtocolAddress, context: StoreContext) throws -> SignalClient.IdentityKey? {
         guard let data = self.identityKey(for: SignalServiceAddress(from: address),
-                                          transaction: context!.load(as: SDSAnyReadTransaction.self)) else {
+                                          transaction: context.asTransaction) else {
             return nil
         }
         return try SignalClient.IdentityKey(publicKey: ECPublicKey(keyData: data).key)
