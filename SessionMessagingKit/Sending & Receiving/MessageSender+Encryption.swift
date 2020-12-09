@@ -18,7 +18,7 @@ internal extension MessageSender {
             SNLog("Couldn't find user key pair.")
             throw Error.noUserPublicKey
         }
-        let (ivAndCiphertext, keyIndex) = try SharedSenderKeys.encrypt(plaintext, for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+        let (ivAndCiphertext, keyIndex) = try SharedSenderKeys.encrypt((plaintext as NSData).paddedMessageBody(), for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
         let encryptedMessage = ClosedGroupCiphertextMessage(_throws_withIVAndCiphertext: ivAndCiphertext, senderPublicKey: Data(hex: userPublicKey), keyIndex: UInt32(keyIndex))
         // 2. ) Encrypt the result for the group's public key to hide the sender public key and key index
         let intermediate = try AESGCM.encrypt(encryptedMessage.serialized, for: groupPublicKey.removing05PrefixIfNeeded())
