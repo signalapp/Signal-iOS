@@ -517,6 +517,9 @@ public final class CallService: NSObject {
     }
 
     private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
+        // Make sure we're working with the latest group state.
+        databaseStorage.read { thread.anyReload(transaction: $0) }
+
         guard let groupModel = thread.groupModel as? TSGroupModelV2,
               let groupV2Params = try? groupModel.groupV2Params() else {
             owsFailDebug("Unexpected group thread.")
