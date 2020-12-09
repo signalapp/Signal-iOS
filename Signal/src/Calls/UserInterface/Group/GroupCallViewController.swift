@@ -487,6 +487,8 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
         splitViewSnapshot.autoPinEdgesToSuperviewEdges()
 
+        let originalContentOffset = scrollView.contentOffset
+
         view.frame = pipFrame
         view.addSubview(pipSnapshot)
         pipSnapshot.autoPinEdgesToSuperviewEdges()
@@ -496,9 +498,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         UIView.animate(withDuration: 0.2, animations: {
             pipSnapshot.alpha = 0
             self.view.frame = window.frame
+            self.updateCallUI()
+            self.scrollView.contentOffset = originalContentOffset
             self.view.layoutIfNeeded()
         }) { _ in
-            self.updateCallUI()
             splitViewSnapshot.removeFromSuperview()
             pipSnapshot.removeFromSuperview()
 
