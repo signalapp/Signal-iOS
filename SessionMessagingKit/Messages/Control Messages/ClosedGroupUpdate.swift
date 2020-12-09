@@ -158,6 +158,11 @@ public final class ClosedGroupUpdate : ControlMessage {
             dataMessageProto.setClosedGroupUpdate(try closedGroupUpdate.build())
             // Group context
             try setGroupContextIfNeeded(on: dataMessageProto, using: transaction)
+            // Expiration timer
+            // TODO: We * want * expiration timer updates to be explicit. But currently Android will disable the expiration timer for a conversation
+            // if it receives a message without the current expiration timer value attached to it...
+            let expiration = OWSDisappearingMessagesConfiguration.fetch(uniqueId: threadID!, transaction: transaction)?.durationSeconds ?? 0
+            dataMessageProto.setExpireTimer(expiration)
             contentProto.setDataMessage(try dataMessageProto.build())
             return try contentProto.build()
         } catch {
