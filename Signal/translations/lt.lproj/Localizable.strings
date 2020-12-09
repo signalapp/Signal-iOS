@@ -614,7 +614,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie iš jūsų adresatų yra Signal naudotojai, iOS nustatymų programėlėje galite įjungti prieigą prie adresatų.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tai atstatys programą, ištrinant jūsų žinutes ir išregistruojant jus iš serverio. Užbaigus šį procesą, programa bus užverta.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tai atstatys programėlę, ištrinant jūsų žinutes ir išregistruojant jus iš serverio. Užbaigus šį procesą, programėlė bus užverta.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Ar tikrai norite ištrinti savo paskyrą?";
@@ -1522,8 +1522,23 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Šią parinktį gali keisti tik administratoriai.";
 
+/* Message body for alert explaining that a group call participant is blocked */
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+
+/* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+
+/* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+
+/* Button to continue an ongoing group call */
+"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "Grupės skambutis baigtas";
+
+/* A button to receive more info about not seeing a participant in group call grid */
+"GROUP_CALL_ERROR_DETAILS" = "Daugiau informacijos";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
 "GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Šiame skambutyje yra pasiektas didžiausias %ld dalyvių skaičius. Vėliau bandykite dar kartą.";
@@ -1537,11 +1552,23 @@
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Prisijungti prie skambučio";
 
+/* Button to leave a group call */
+"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Šiame skambutyje · %ld žmonės(-ių)";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ ir dar %3$@ žmonės(-ių) yra šiame skambutyje";
+
+/* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+
+/* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Taip gali būti dėl to, kad šis naudotojas nepatvirtino jūsų saugumo numerio pasikeitimo, atsirado problemų su naudotojo įrenginiu arba jis jus užblokavo.";
+
+/* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Čia daugiau nieko nėra";
@@ -1576,11 +1603,20 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Jungiamasi iš naujo";
 
+/* notification body when a group call participant joins with an untrusted safety number */
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Prie šio skambučio prisijungė kažkas su pasikeitusiu saugumo numeriu.";
+
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Kažkas pradėjo grupės skambutį";
 
+/* Toast view text informing user about swiping to speaker view */
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Perbraukite aukštyn, norėdami keisti rodinius";
+
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Pradėti skambutį";
+
+/* Text explaining that you started a group call. */
+"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ pradėjo grupės skambutį";
@@ -2990,7 +3026,7 @@
 "NOTIFICATIONS_NONE" = "Jokio vardo ar turinio";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Groti, kol programa atverta";
+"NOTIFICATIONS_SECTION_INAPP" = "Groti, kol programėlė atverta";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Garsai";
@@ -4280,7 +4316,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Išvalyti pokalbių istoriją";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Autorių teisės Signal pokalbių programa \n Licencijuota pagal GPLv3";
+"SETTINGS_COPYRIGHT" = "Autorių teisės Signal pokalbių programėlė \n Licencijuota pagal GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Ištrinti paskyrą";

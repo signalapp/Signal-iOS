@@ -1522,8 +1522,23 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "רק מנהלנים יכולים לשנות אפשרות זו.";
 
+/* Message body for alert explaining that a group call participant is blocked */
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+
+/* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+
+/* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+
+/* Button to continue an ongoing group call */
+"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "השיחה הקבוצתית הסתיימה";
+
+/* A button to receive more info about not seeing a participant in group call grid */
+"GROUP_CALL_ERROR_DETAILS" = "עוד מידע";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
 "GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "המספר המרבי של %ld משתתפים הושג עבור שיחה זו. נסה שוב מאוחר יותר.";
@@ -1537,11 +1552,23 @@
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "הצטרף לשיחה";
 
+/* Button to leave a group call */
+"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "בשיחה זו · %ld אנשים";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ ועוד %3$@ אחרים בשיחה זו";
+
+/* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+
+/* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "ייתכן שזה מאחר שהם לא וידאו את שינוי מספר הביטחון שלך, או שיש בעיה עם המכשיר שלהם, או שהם חסמו אותך.";
+
+/* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "אף אחד אחר לא כאן";
@@ -1576,11 +1603,20 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "מתחבר מחדש";
 
+/* notification body when a group call participant joins with an untrusted safety number */
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "מישהו הצטרף אל שיחה זו עם מספר ביטחון שהשתנה.";
+
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "מישהו התחיל שיחה קבוצתית";
 
+/* Toast view text informing user about swiping to speaker view */
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "התחל שיחה";
+
+/* Text explaining that you started a group call. */
+"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ התחיל/ה שיחה קבוצתית";
@@ -2096,13 +2132,13 @@
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ חברי קבוצה לא יכלו להתווסף אל הקבוצה החדשה והם הוסרו מהקבוצה.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "חבר קבוצה לא היה יכול להתווסף אל הקבוצה החדשה והוא הוזמן להצטרף אליה";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "חבר קבוצה לא היה יכול להתווסף אל הקבוצה החדשה והוא הוזמן להצטרף";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "לא יכולת להתווסף אל הקבוצה החדשה והוזמנת להצטרף אליה";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "לא יכולת להתווסף אל הקבוצה החדשה והוזמנת להצטרף.";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ חברי קבוצה לא יכלו להתווסף אל הקבוצה החדשה והם הוזמנו להצטרף אליה.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ חברי קבוצה לא יכלו להתווסף אל הקבוצה החדשה והם הוזמנו להצטרף.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "עזבת את הקבוצה.";
@@ -2249,7 +2285,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "חבר קבוצה זה הוסר מהקבוצה והוא לא יוכל להצטרף מחדש אל הקבוצה עד שהוא ישדרג:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "חברי קבוצה זה הוסרו מהקבוצה והם לא יוכלו להצטרף מחדש אל הקבוצה עד שהם ישדרגו:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "חברי קבוצה אלו הוסרו מהקבוצה והם לא יוכלו להצטרף מחדש אל הקבוצה עד שהם ישדרגו:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "חבר קבוצה זה יצטרך לאשר הזמנה כדי להצטרף אל קבוצה זו שוב, והוא לא יקבל הודעות קבוצה עד שהוא יאשר:";
