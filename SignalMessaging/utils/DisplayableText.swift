@@ -52,7 +52,7 @@ import Foundation
     @objc public let jumbomojiCount: UInt
 
     @objc
-    static let kMaxJumbomojiCount: UInt = 5
+    public static let kMaxJumbomojiCount: UInt = 5
 
     // This value is a bit arbitrary since we don't need to be 100% correct about 
     // rendering "Jumbomoji".  It allows us to place an upper bound on worst-case
@@ -168,7 +168,7 @@ import Foundation
 
         let rawText = fullAttributedText.string
 
-        for match in linkDetector.matches(in: rawText, options: [], range: NSRange(location: 0, length: rawText.utf16.count)) {
+        for match in linkDetector.matches(in: rawText, options: [], range: rawText.entireRange) {
             guard let matchURL: URL = match.url else {
                 continue
             }
@@ -195,7 +195,7 @@ import Foundation
         let numberOfNewLines = newLineRegex.numberOfMatches(
             in: string,
             options: [],
-            range: NSRange(location: 0, length: string.utf16.count)
+            range: string.entireRange
         )
         return string.utf16.count + numberOfNewLines * newLineScalar
     }
@@ -253,7 +253,7 @@ import Foundation
                 .mention,
                 at: snippetLength,
                 longestEffectiveRange: &mentionRange,
-                in: NSRange(location: 0, length: fullAttributedText.length)
+                in: fullAttributedText.entireRange
             )
 
             // There's a mention overlapping our normal truncate point, we want to truncate sooner

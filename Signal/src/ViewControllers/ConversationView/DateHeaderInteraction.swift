@@ -31,6 +31,8 @@ public class DateHeaderInteraction: TSInteraction {
 
     @objc
     public init(thread: TSThread, timestamp: UInt64) {
+        // Include timestamp in uniqueId to ensure invariant that
+        // interactions don't move in the chat history ordering.
         super.init(uniqueId: "DateHeader_\(timestamp)",
                    timestamp: timestamp,
                    thread: thread)

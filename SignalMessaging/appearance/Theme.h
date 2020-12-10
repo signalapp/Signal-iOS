@@ -29,6 +29,10 @@ extern NSString *const ThemeDidChangeNotification;
 + (void)setCurrentTheme:(ThemeMode)mode;
 + (void)systemThemeChanged;
 
+#if TESTABLE_BUILD
++ (void)setIsDarkThemeEnabledForTests:(BOOL)value;
+#endif
+
 #pragma mark - Global App Colors
 
 @property (class, readonly, nonatomic) UIColor *backgroundColor;

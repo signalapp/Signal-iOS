@@ -150,7 +150,15 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                     if address.isLocalAddress {
                         // Use a custom avatar to avoid using the "note to self" icon.
-                        let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kSmallAvatarSize).buildDefaultImage()
+                        let customAvatar: UIImage?
+                        if let localProfileAvatarImage = OWSProfileManager.shared().localProfileAvatarImage() {
+                            customAvatar = localProfileAvatarImage
+                        } else {
+                            customAvatar = Self.databaseStorage.uiRead { transaction in
+                                OWSContactAvatarBuilder(forLocalUserWithDiameter: kSmallAvatarSize,
+                                                        transaction: transaction).buildDefaultImage()
+                            }
+                        }
                         cell.setCustomAvatar(customAvatar)
                         cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                              comment: "Label indicating the local user."))
@@ -159,7 +167,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         cell.selectionStyle = .default
                     }
 
-                    cell.configure(withRecipientAddress: address)
+                    cell.configureWithSneakyTransaction(recipientAddress: address)
                     return cell
                     }) { [weak self] in
                                                 self?.showMemberActionSheet(for: address)
@@ -251,7 +259,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     let cell = ContactTableViewCell()
                     cell.selectionStyle = canRevokeInvites ? .default : .none
 
-                    cell.configure(withRecipientAddress: address)
+                    cell.configureWithSneakyTransaction(recipientAddress: address)
                     return cell
                     }) { [weak self] in
                                                 self?.inviteFromLocalUserWasTapped(address,
@@ -306,7 +314,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     }
                     cell.setCustomName(customName)
 
-                    cell.configure(withRecipientAddress: inviterAddress)
+                    cell.configureWithSneakyTransaction(recipientAddress: inviterAddress)
 
                     return cell
                     }) { [weak self] in

@@ -14,6 +14,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/BlockListUIUtils.h>
+#import <SignalMessaging/CVItemViewModelBridge.h>
 #import <SignalMessaging/ContactCellView.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
@@ -38,6 +39,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSConversationColor.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSGroupAvatarBuilder.h>
+#import <SignalMessaging/OWSMessageTextView.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalMessaging/OWSPreferences.h>

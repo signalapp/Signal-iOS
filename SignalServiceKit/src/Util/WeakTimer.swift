@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 /**
@@ -25,6 +25,11 @@ public final class WeakTimer {
                                           repeats: repeats)
     }
 
+    deinit {
+        timer?.invalidate()
+    }
+
+    @objc
     public class func scheduledTimer(timeInterval: TimeInterval, target: AnyObject, userInfo: Any?, repeats: Bool, action: @escaping (Timer) -> Void) -> Timer {
         return WeakTimer(timeInterval: timeInterval,
                          target: target,

@@ -580,14 +580,14 @@ class ThreadMapping: NSObject {
 
         // Once the moves are complete, the new ordering should be correct.
         guard newPinnedThreadIds == naivePinnedThreadIdOrdering else {
-            Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds)")
-            Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering)")
+            Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering.joined(separator: "\n"))")
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
         guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
-            Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds)")
-            Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering)")
+            Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering.joined(separator: "\n"))")
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 

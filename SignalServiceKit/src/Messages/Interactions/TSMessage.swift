@@ -6,6 +6,36 @@ import Foundation
 
 public extension TSMessage {
 
+    // MARK: - Attachments
+
+    func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        return Self.onlyAttachmentPointers(attachments: attachments, withState: .failed)
+    }
+
+    func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
+        return Self.onlyAttachmentPointers(attachments: attachments, withState: .failed)
+    }
+
+    func bodyAttachmentsPendingMessageRequest(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
+        return Self.onlyAttachmentPointers(attachments: attachments, withState: .pendingMessageRequest)
+    }
+
+    private static func onlyAttachmentPointers(attachments: [TSAttachment],
+                                               withState state: TSAttachmentPointerState) -> [TSAttachmentPointer] {
+        return attachments.compactMap { attachment -> TSAttachmentPointer? in
+            guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+                return nil
+            }
+            guard attachmentPointer.state == state else {
+                return nil
+            }
+            return attachmentPointer
+        }
+    }
+
     // MARK: - Reactions
 
     var reactionFinder: ReactionFinder {

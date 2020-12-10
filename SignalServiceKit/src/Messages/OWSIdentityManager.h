@@ -56,6 +56,8 @@ extern const NSUInteger kStoredIdentityKeyLength;
        isUserInitiatedChange:(BOOL)isUserInitiatedChange;
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address;
+- (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address
+                                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * @param   address of the recipient

@@ -44,6 +44,8 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
 
 @property (nonatomic) OWSDirectionalRectCorner sharpCorners;
 
+@property (nonatomic) BOOL ensureSubviewsFillBounds;
+
 - (UIBezierPath *)maskPath;
 
 #pragma mark - Coordination

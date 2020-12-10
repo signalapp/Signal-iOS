@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-public class OWSLayerView: UIView {
+open class OWSLayerView: UIView {
     @objc
     public var shouldAnimate = true
 

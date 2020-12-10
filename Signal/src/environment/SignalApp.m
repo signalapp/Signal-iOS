@@ -227,7 +227,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         if (self.conversationSplitViewController.visibleThread) {
             if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
                 [self.conversationSplitViewController.selectedConversationViewController
-                    scrollToDefaultPositionAnimated:isAnimated];
+                    scrollToInitialPositionAnimated:isAnimated];
                 return;
             }
         }

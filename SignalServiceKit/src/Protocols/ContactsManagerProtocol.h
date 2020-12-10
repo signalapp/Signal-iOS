@@ -58,9 +58,11 @@ typedef NSString *ConversationColorName NS_STRING_ENUM;
 
 - (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContact(phoneNumber:));
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(isSystemContact(address:));
-
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber transaction:(SDSAnyReadTransaction *)transaction;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
+- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount

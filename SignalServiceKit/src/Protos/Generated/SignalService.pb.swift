@@ -1680,7 +1680,6 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `emoji`. Subsequent reads from it will return its default value.
     mutating func clearEmoji() {self._emoji = nil}
 
-    /// @required
     var remove: Bool {
       get {return _remove ?? false}
       set {_remove = newValue}

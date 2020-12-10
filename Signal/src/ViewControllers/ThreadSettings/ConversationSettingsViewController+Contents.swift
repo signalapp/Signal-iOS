@@ -60,7 +60,7 @@ extension ConversationSettingsViewController {
         // TODO: We can remove this item once message requests are mandatory.
         addProfileSharingItems(to: mainSection)
 
-        if shouldShowColorPicker {
+        if DebugFlags.shouldShowColorPicker {
             addColorPickerItems(to: mainSection)
         }
 
@@ -720,7 +720,7 @@ extension ConversationSettingsViewController {
                     cell.selectionStyle = .default
                 }
 
-                cell.configure(withRecipientAddress: memberAddress)
+                cell.configureWithSneakyTransaction(recipientAddress: memberAddress)
 
                 if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())

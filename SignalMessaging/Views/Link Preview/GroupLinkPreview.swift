@@ -23,10 +23,10 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
     }
 
     @objc
-    required init(linkType: LinkPreviewLinkType,
-                  linkPreview: OWSLinkPreview,
-                  groupInviteLinkViewModel: GroupInviteLinkViewModel,
-                  conversationStyle: ConversationStyle) {
+    public required init(linkType: LinkPreviewLinkType,
+                         linkPreview: OWSLinkPreview,
+                         groupInviteLinkViewModel: GroupInviteLinkViewModel,
+                         conversationStyle: ConversationStyle) {
         self.linkPreview = linkPreview
         self.linkType = linkType
         self.groupInviteLinkViewModel = groupInviteLinkViewModel
@@ -98,7 +98,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
 
     public func previewDescription() -> String? {
         guard let groupInviteLinkPreview = groupInviteLinkPreview else {
-            owsFailDebug("Missing groupInviteLinkPreview.")
+            Logger.warn("Missing groupInviteLinkPreview.")
             return nil
         }
         let groupIndicator = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",

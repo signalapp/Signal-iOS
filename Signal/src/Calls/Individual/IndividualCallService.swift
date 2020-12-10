@@ -1378,7 +1378,7 @@ extension RPRecentCallType: CustomStringConvertible {
         case .outgoingMissed:
             return ".outgoingMissed"
         default:
-            owsFailDebug("unexpected RPRecentCallType: \(self)")
+            owsFailDebug("unexpected RPRecentCallType: \(self.rawValue)")
             return "RPRecentCallTypeUnknown"
         }
     }

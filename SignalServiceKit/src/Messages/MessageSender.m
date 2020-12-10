@@ -591,6 +591,13 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(!NSThread.isMainThread);
 
+    if (SSKDebugFlags.messageSendsFail) {
+        NSError *error = OWSErrorMakeGenericError(@"Simulated message send failure.");
+        error.isRetryable = NO;
+        failure(error);
+        return;
+    }
+
     [MessageSender prepareForSendOf:message
                             success:^(MessageSendInfo *sendInfo) {
                                 [self sendMessageToService:message sendInfo:sendInfo success:success failure:failure];

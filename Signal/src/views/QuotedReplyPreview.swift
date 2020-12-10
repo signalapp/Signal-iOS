@@ -88,11 +88,13 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
 
     // MARK: - OWSQuotedMessageViewDelegate
 
-    @objc public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
+    @objc
+    public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // Do nothing.
     }
 
-    @objc public func didCancelQuotedReply() {
+    @objc
+    public func didCancelQuotedReply() {
         self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }
 }

@@ -293,6 +293,8 @@ public extension Bool {
     }
 }
 
+// MARK: -
+
 @objc
 public class BenchSteps: NSObject {
     private var title: String?
@@ -300,20 +302,49 @@ public class BenchSteps: NSObject {
     private let startTime: TimeInterval
     private var lastTime: TimeInterval
 
+    private struct Step {
+        let stepName: String
+        let fromStartInterval: TimeInterval
+        let fromLastInterval: TimeInterval
+
+        func log() {
+            Logger.debug("[Bench] \(stepName), duration: \(format(fromLastInterval)) (\(format(fromStartInterval)))")
+        }
+
+        func format(_ interval: TimeInterval) -> String {
+            return String(format: "%0.2fms", interval * 1000)
+        }
+    }
+    private var steps = [Step]()
+
     @objc
-    public override init() {
+    public required init(title: String? = nil) {
+        self.title = title
+
         startTime = CACurrentMediaTime()
         lastTime = startTime
     }
 
     @objc
     public func step(_ name: String) {
+        let stepName: String
+        if let title = title {
+            stepName = "\(title).\(name)"
+        } else {
+            stepName = name
+        }
+
         let now = CACurrentMediaTime()
-        Logger.debug("[Bench] \(name), duration: \(format(now - lastTime)) (\(format(now - startTime)))")
+        let step = Step(stepName: stepName, fromStartInterval: now - startTime, fromLastInterval: now - lastTime)
+        step.log()
+        steps.append(step)
         lastTime = now
     }
 
-    private func format(_ interval: TimeInterval) -> String {
-        return String(format: "%0.2fms", interval * 1000)
+    @objc
+    public func logAll() {
+        for step in steps {
+            step.log()
+        }
     }
 }

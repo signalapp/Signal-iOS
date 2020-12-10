@@ -344,7 +344,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let itemCount = floor(containerWidth / minItemWidth)
         let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
 
-        let availableWidth = containerWidth - interSpaceWidth
+        let availableWidth = max(0, containerWidth - interSpaceWidth)
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(square: itemWidth)

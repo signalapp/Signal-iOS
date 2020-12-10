@@ -365,7 +365,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                 }
             }.catch { error in
                 Logger.warn("Error: \(error)")
-                Logger.flush()
+
                 modalActivityIndicator.dismiss {
                     AssertIsOnMainThread()
 

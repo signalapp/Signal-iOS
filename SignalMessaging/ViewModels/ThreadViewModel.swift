@@ -32,8 +32,6 @@ public class ThreadViewModel: NSObject {
     @objc public let lastMessageText: String?
     @objc public let lastMessageForInbox: TSInteraction?
 
-    @objc public let lastVisibleInteraction: TSInteraction?
-
     @objc
     public init(thread: TSThread, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
@@ -77,7 +75,6 @@ public class ThreadViewModel: NSObject {
             self.draftText = nil
         }
 
-        self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
         self.groupCallInProgress = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction)
             .filter { $0.joinedMemberAddresses.count > 0 }
             .count > 0

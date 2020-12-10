@@ -71,18 +71,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationInputToolbar : UIView
 
-- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle NS_DESIGNATED_INITIALIZER;
+@property (nonatomic) BOOL isMeasuringKeyboardHeight;
+
+- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
+                             messageDraft:(nullable MessageBody *)messageDraft
+                     inputToolbarDelegate:(id<ConversationInputToolbarDelegate>)inputToolbarDelegate
+                    inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate
+                          mentionDelegate:(id<MentionTextViewDelegate>)mentionDelegate NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-
-@property (nonatomic, weak) id<ConversationInputToolbarDelegate> inputToolbarDelegate;
 
 - (void)beginEditingMessage;
 - (void)endEditingMessage;
 - (BOOL)isInputViewFirstResponder;
-
-- (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value;
-- (void)setMentionDelegate:(id<MentionTextViewDelegate>)value;
 
 - (nullable MessageBody *)messageBody;
 - (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated;
@@ -119,6 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
 
 @property (nonatomic, nullable, readonly) OWSLinkPreviewDraft *linkPreviewDraft;
+
+- (void)updateConversationStyle:(ConversationStyle *)conversationStyle NS_SWIFT_NAME(update(conversationStyle:));
 
 @end
 

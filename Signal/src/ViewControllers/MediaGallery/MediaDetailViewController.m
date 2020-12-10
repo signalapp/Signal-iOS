@@ -5,8 +5,6 @@
 #import "MediaDetailViewController.h"
 #import "AttachmentSharing.h"
 #import "ConversationViewController.h"
-#import "ConversationViewItem.h"
-#import "OWSMessageCell.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
@@ -33,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *replacingView;
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
-@property (nonatomic, nullable) id<ConversationViewItem> viewItem;
 @property (nonatomic, nullable) UIImage *image;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
@@ -59,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
-                              viewItem:(nullable id<ConversationViewItem>)viewItem
 {
     self = [super init];
     if (!self) {
@@ -67,7 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _galleryItemBox = galleryItemBox;
-    _viewItem = viewItem;
 
     // We cache the image data in case the attachment stream is deleted.
     __weak MediaDetailViewController *weakSelf = self;

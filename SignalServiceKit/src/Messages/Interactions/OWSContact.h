@@ -153,10 +153,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 #pragma mark - Phone Numbers and Recipient IDs
 
-- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
-    NS_SWIFT_NAME(systemContactsWithSignalAccountPhoneNumbers(_:));
-- (NSArray<NSString *> *)systemContactPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
-    NS_SWIFT_NAME(systemContactPhoneNumbers(_:));
+- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers;
+- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbersWithTransaction:
+    (SDSAnyReadTransaction *)transaction;
+- (NSArray<NSString *> *)systemContactPhoneNumbers;
 - (NSArray<NSString *> *)e164PhoneNumbers NS_SWIFT_NAME(e164PhoneNumbers());
 
 @end

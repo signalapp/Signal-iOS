@@ -4,8 +4,7 @@
 
 import Foundation
 
-@objc(OWSConversationMediaView)
-public class ConversationMediaView: UIView {
+public class CVMediaView: UIView {
 
     private enum MediaError {
         case missing
@@ -16,7 +15,6 @@ public class ConversationMediaView: UIView {
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>
-    @objc
     public let attachment: TSAttachment
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
@@ -81,7 +79,6 @@ public class ConversationMediaView: UIView {
 
     // MARK: - Initializers
 
-    @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
@@ -554,7 +551,7 @@ public class ConversationMediaView: UIView {
         Logger.verbose("media cache miss")
 
         let threadSafeLoadState = self.threadSafeLoadState
-        ConversationMediaView.loadQueue.async {
+        CVMediaView.loadQueue.async {
             guard threadSafeLoadState.get() == .loading else {
                 Logger.verbose("Skipping obsolete load.")
                 return
@@ -592,7 +589,6 @@ public class ConversationMediaView: UIView {
     //   "skip rate" of obsolete loads.
     private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
 
-    @objc
     public func loadMedia() {
         AssertIsOnMainThread()
 
@@ -609,7 +605,6 @@ public class ConversationMediaView: UIView {
         }
     }
 
-    @objc
     public func unloadMedia() {
         AssertIsOnMainThread()
 

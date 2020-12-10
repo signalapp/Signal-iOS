@@ -110,12 +110,8 @@ extension CallUIAdaptee {
             let showNames = preferences.notificationPreviewType() != .noNameNoPreview
             let useSystemCallLog = preferences.isSystemCallLogEnabled()
 
-            return CallKitCallUIAdaptee(
-                contactsManager: contactsManager,
-                notificationPresenter: notificationPresenter,
-                showNamesOnCallScreen: showNames,
-                useSystemCallLog: useSystemCallLog
-            )
+            return CallKitCallUIAdaptee(showNamesOnCallScreen: showNames,
+                                        useSystemCallLog: useSystemCallLog)
         }
     }()
 

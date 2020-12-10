@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter;
-
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
@@ -33,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
     NS_SWIFT_NAME(init(nonSignalNameComponents:colorSeed:diameter:));
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter;
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

@@ -146,7 +146,9 @@ public class ConversationHeaderView: UIStackView {
 
     @objc
     public func updateAvatar() {
-        self.avatarView.updateImage()
+        databaseStorage.uiRead { transaction in
+            self.avatarView.updateImage(transaction: transaction)
+        }
     }
 
     // MARK: Delegate Methods

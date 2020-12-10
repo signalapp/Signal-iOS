@@ -192,7 +192,7 @@ extension RecipientPickerViewController {
                         }
                     }
 
-                    cell.configure(withRecipientAddress: address)
+                    cell.configureWithSneakyTransaction(recipientAddress: address)
 
                     self.delegate?.recipientPicker(self, willRenderRecipient: recipient)
 

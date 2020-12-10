@@ -81,6 +81,14 @@ public extension UIResponder {
     static var userNotificationActionHandler: UserNotificationActionHandler {
         AppEnvironment.shared.userNotificationActionHandler
     }
+
+    var audioPlayer: CVAudioPlayer {
+        return AppEnvironment.shared.audioPlayer
+    }
+
+    static var audioPlayer: CVAudioPlayer {
+        return AppEnvironment.shared.audioPlayer
+    }
 }
 
 // MARK: -

@@ -435,13 +435,20 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     return _contentType.filterFilename;
 }
 
-#pragma mark - Update With...
+#pragma mark -
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 
     [self.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
+}
+
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [SDSDatabaseStorage.shared updateIdMappingWithAttachment:self transaction:transaction];
+
+    [super anyWillRemoveWithTransaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

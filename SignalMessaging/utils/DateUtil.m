@@ -264,7 +264,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)formatDateShort:(NSDate *)date
 {
-    OWSAssertIsOnMainThread();
     OWSAssertDebug(date);
 
     NSDate *now = [NSDate date];

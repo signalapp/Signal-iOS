@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSNotificationName const kNSNotificationName_BlockListDidChange = @"kNSNotificationName_BlockListDidChange";
+NSNotificationName const kNSNotificationNameBlockListDidChange = @"kNSNotificationNameBlockListDidChange";
 NSNotificationName const OWSBlockingManagerBlockedSyncDidComplete = @"OWSBlockingManagerBlockedSyncDidComplete";
 
 // These keys are used to persist the current local "block list" state.
@@ -668,7 +668,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             [self saveSyncedBlockListWithPhoneNumbers:blockedPhoneNumbers uuids:blockedUUIDs groupIds:blockedGroupIds];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_BlockListDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationNameBlockListDidChange
                                                                  object:nil
                                                                userInfo:nil];
     });

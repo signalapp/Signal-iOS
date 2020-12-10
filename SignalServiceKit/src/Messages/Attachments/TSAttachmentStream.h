@@ -121,6 +121,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly, nullable) NSString *originalFilePath;
 @property (nonatomic, readonly, nullable) NSURL *originalMediaURL;
 
+@property (nonatomic, readonly, nullable) NSString *audioWaveformPath;
+
 - (NSArray<NSString *> *)allSecondaryFilePaths;
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
@@ -147,7 +149,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (BOOL)shouldHaveImageSize;
 - (CGSize)imageSize;
 
-- (CGFloat)audioDurationSeconds;
+- (NSTimeInterval)audioDurationSeconds;
 - (nullable AudioWaveform *)audioWaveform;
 
 + (nullable NSError *)migrateToSharedData;

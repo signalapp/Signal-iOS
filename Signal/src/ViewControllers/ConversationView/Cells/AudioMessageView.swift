@@ -6,13 +6,13 @@ import Foundation
 import Lottie
 
 class AudioMessageView: UIStackView {
-    private let attachment: TSAttachment
-    private var attachmentStream: TSAttachmentStream? {
-        guard let attachmentStream = attachment as? TSAttachmentStream else { return nil }
-        return attachmentStream
-    }
+
+    private let audioAttachment: AudioAttachment
+    private var attachment: TSAttachment { audioAttachment.attachment }
+    private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
+    private var durationSeconds: TimeInterval { audioAttachment.durationSeconds }
+
     private let isIncoming: Bool
-    private weak var viewItem: ConversationViewItem?
     private let conversationStyle: ConversationStyle
 
     private let playPauseAnimation = AnimationView(name: "playPauseButton")
@@ -20,27 +20,21 @@ class AudioMessageView: UIStackView {
     private let progressSlider = UISlider()
     private let waveformProgress = AudioWaveformProgressView()
 
-    private var durationSeconds: CGFloat {
-        guard let durationSeconds = viewItem?.audioDurationSeconds else {
-            owsFailDebug("unexpectedly missing duration seconds")
-            return 0
-        }
-        return durationSeconds
+    private var audioPlaybackState: AudioPlaybackState {
+        audioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
     }
 
-    private var elapsedSeconds: CGFloat {
-        guard let elapsedSeconds = viewItem?.audioProgressSeconds else {
-            owsFailDebug("unexpectedly missing elapsed seconds")
+    private var elapsedSeconds: TimeInterval {
+        guard let attachmentStream = self.attachmentStream else {
             return 0
         }
-        return elapsedSeconds
+        return audioPlayer.playbackProgress(forAttachmentStream: attachmentStream)
     }
 
     @objc
-    init(attachment: TSAttachment, isIncoming: Bool, viewItem: ConversationViewItem, conversationStyle: ConversationStyle) {
-        self.attachment = attachment
+    init(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle) {
+        self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
-        self.viewItem = viewItem
         self.conversationStyle = conversationStyle
 
         super.init(frame: .zero)
@@ -114,6 +108,8 @@ class AudioMessageView: UIStackView {
         waveformContainer.autoAlignAxis(.horizontal, toSameAxisOf: playPauseAnimation)
 
         updateContents(animated: false)
+
+        audioPlayer.addListener(self)
     }
 
     required init(coder: NSCoder) {
@@ -135,18 +131,26 @@ class AudioMessageView: UIStackView {
         return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width
     }
 
-    @objc func scrubToLocation(_ point: CGPoint) -> TimeInterval {
+    @objc
+    func progressForLocation(_ point: CGPoint) -> CGFloat {
         let sliderContainer = convert(waveformProgress.frame, from: waveformProgress.superview)
-        var newRatio = CGFloatClamp01(CGFloatInverseLerp(point.x, sliderContainer.minX, sliderContainer.maxX))
+        var newRatio = CGFloatInverseLerp(point.x, sliderContainer.minX, sliderContainer.maxX).clamp01()
 
         // When in RTL mode, the slider moves in the opposite direction so inverse the ratio.
         if CurrentAppContext().isRTL {
             newRatio = 1 - newRatio
         }
 
+        return newRatio.clamp01()
+    }
+
+    @objc
+    func scrubToLocation(_ point: CGPoint) -> TimeInterval {
+        let newRatio = progressForLocation(point)
+
         visibleProgressRatio = newRatio
 
-        return TimeInterval(newRatio * durationSeconds)
+        return TimeInterval(newRatio) * durationSeconds
     }
 
     // MARK: - Contents
@@ -165,40 +169,44 @@ class AudioMessageView: UIStackView {
         isIncoming ? Theme.secondaryTextAndIconColor.withAlphaComponent(0.3) : UIColor.ows_white.withAlphaComponent(0.6)
     private lazy var thumbColor: UIColor = isIncoming ? Theme.secondaryTextAndIconColor : .ows_white
 
+    // If set, the playback should reflect
+    // this progress, not the actual progress.
+    // During pan gestures, this gives a preview
+    // of playback scrubbing.
+    private var overrideProgress: CGFloat?
+
     @objc
     static var bubbleHeight: CGFloat {
         return labelFont.lineHeight + waveformHeight + vSpacing + (vMargin * 2)
     }
 
-    @objc
-    func updateContents() {
-        updateContents(animated: true)
-    }
-
     func updateContents(animated: Bool) {
         updatePlaybackState(animated: animated)
         updateAudioProgress()
-        showDownloadProgressIfNecessary()
+//        showDownloadProgressIfNecessary()
     }
 
     private var audioProgressRatio: CGFloat {
+        if let overrideProgress = self.overrideProgress {
+            return overrideProgress.clamp01()
+        }
         guard durationSeconds > 0 else { return 0 }
-        return elapsedSeconds / durationSeconds
+        return CGFloat(elapsedSeconds / durationSeconds)
     }
 
     private var visibleProgressRatio: CGFloat {
         get {
-            return waveformProgress.value
+            waveformProgress.value
         }
         set {
             waveformProgress.value = newValue
             progressSlider.value = Float(newValue)
-            updateElapsedTime(durationSeconds * newValue)
+            updateElapsedTime(durationSeconds * TimeInterval(newValue))
         }
     }
 
     private func updatePlaybackState(animated: Bool = true) {
-        let isPlaying = viewItem?.audioPlaybackState == .playing
+        let isPlaying = audioPlaybackState == .playing
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
 
         if animated {
@@ -208,7 +216,7 @@ class AudioMessageView: UIStackView {
         }
     }
 
-    private func updateElapsedTime(_ elapsedSeconds: CGFloat) {
+    private func updateElapsedTime(_ elapsedSeconds: TimeInterval) {
         let timeRemaining = Int(durationSeconds - elapsedSeconds)
         playbackTimeLabel.text = OWSFormat.formatDurationSeconds(timeRemaining)
     }
@@ -228,33 +236,53 @@ class AudioMessageView: UIStackView {
         }
     }
 
-    private func showDownloadProgressIfNecessary() {
-        guard let attachmentPointer = viewItem?.attachmentPointer else { return }
-
-        // We don't need to handle the "tap to retry" state here,
-        // only download progress.
-        guard .failed != attachmentPointer.state else { return }
-
-        // TODO: Show "restoring" indicator and possibly progress.
-        guard .restoring != attachmentPointer.pointerType else { return }
-
-        guard attachmentPointer.uniqueId.count > 1 else {
-            return owsFailDebug("missing unique id")
-        }
-
-        // Add the download view to the play pause animation. This view
-        // will get recreated once the download completes so we don't
-        // have to worry about resetting anything.
-        let downloadView = MediaDownloadView(attachmentId: attachmentPointer.uniqueId, radius: iconSize * 0.5)
-        playPauseAnimation.animation = nil
-        playPauseAnimation.addSubview(downloadView)
-        downloadView.autoSetDimensions(to: CGSize(square: iconSize))
-        downloadView.autoCenterInSuperview()
+    public func setOverrideProgress(_ value: CGFloat, animated: Bool) {
+        overrideProgress = value
+        updateContents(animated: animated)
     }
+
+    public func clearOverrideProgress(animated: Bool) {
+        overrideProgress = nil
+        updateContents(animated: animated)
+    }
+
+//    private func showDownloadProgressIfNecessary() {
+//        guard let attachmentPointer = attachment as? TSAttachmentPointer else { return }
+//
+//        // We don't need to handle the "tap to retry" state here,
+//        // only download progress.
+//        guard .failed != attachmentPointer.state else { return }
+//
+//        // TODO: Show "restoring" indicator and possibly progress.
+//        guard .restoring != attachmentPointer.pointerType else { return }
+//
+//        guard attachmentPointer.uniqueId.count > 1 else {
+//            return owsFailDebug("missing unique id")
+//        }
+//
+//        // Add the download view to the play pause animation. This view
+//        // will get recreated once the download completes so we don't
+//        // have to worry about resetting anything.
+//        let downloadView = MediaDownloadView(attachmentId: attachmentPointer.uniqueId, radius: iconSize * 0.5)
+//        playPauseAnimation.animation = nil
+//        playPauseAnimation.addSubview(downloadView)
+//        downloadView.autoSetDimensions(to: CGSize(square: iconSize))
+//        downloadView.autoCenterInSuperview()
+//    }
 
     private func trackImage(color: UIColor) -> UIImage? {
         return UIImage(named: "audio_message_track")?
             .asTintedImage(color: color)?
             .resizableImage(withCapInsets: UIEdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 2))
+    }
+}
+
+// MARK: -
+
+extension AudioMessageView: CVAudioPlayerListener {
+    func audioPlayerStateDidChange() {
+        AssertIsOnMainThread()
+
+        updateContents(animated: true)
     }
 }

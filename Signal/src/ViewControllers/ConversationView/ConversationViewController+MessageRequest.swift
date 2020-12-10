@@ -30,12 +30,12 @@ extension ConversationViewController: MessageRequestDelegate {
             actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
                                                        comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
-                                                    comment: "Action sheet message to confirm blocking a group via a message request.")
+                                                   comment: "Action sheet message to confirm blocking a group via a message request.")
         } else {
             actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
-                                                        comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
+                                                       comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
-                                                    comment: "Action sheet message to confirm blocking a conversation via a message request.")
+                                                   comment: "Action sheet message to confirm blocking a conversation via a message request.")
         }
 
         let threadName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
@@ -44,13 +44,13 @@ extension ConversationViewController: MessageRequestDelegate {
 
         let blockAction = ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
                                                                      comment: "Action sheet action to confirm blocking a thread via a message request.")) { [weak self] _ in
-                                                                        self?.blockThread()
+            self?.blockThread()
         }
         actionSheet.addAction(blockAction)
 
         let blockAndDeleteAction = ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
                                                                               comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")) { [weak self] _ in
-                                                                                self?.blockThreadAndDelete()
+            self?.blockThreadAndDelete()
         }
         actionSheet.addAction(blockAndDeleteAction)
 
@@ -87,21 +87,21 @@ extension ConversationViewController: MessageRequestDelegate {
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUPS_INVITE_BLOCK_GROUP",
                                                                          comment: "Label for 'block group' button in group invite view."),
                                                 style: .default) { [weak self] _ in
-                                                    self?.blockThread()
+            self?.blockThread()
         })
         let blockInviterTitle = String(format: NSLocalizedString("GROUPS_INVITE_BLOCK_INVITER_FORMAT",
                                                                  comment: "Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}."),
                                        addedByName)
         actionSheet.addAction(ActionSheetAction(title: blockInviterTitle,
                                                 style: .default) { [weak self] _ in
-                                                    self?.blockUserAndDelete(addedByAddress)
+            self?.blockUserAndDelete(addedByAddress)
         })
         let blockGroupAndInviterTitle = String(format: NSLocalizedString("GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT",
                                                                          comment: "Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}."),
                                                addedByName)
         actionSheet.addAction(ActionSheetAction(title: blockGroupAndInviterTitle,
                                                 style: .default) { [weak self] _ in
-                                                    self?.blockUserAndGroupAndDelete(addedByAddress)
+            self?.blockUserAndGroupAndDelete(addedByAddress)
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -168,9 +168,9 @@ extension ConversationViewController: MessageRequestDelegate {
             actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
                                                  comment: "Action sheet title to confirm deleting a group via a message request.")
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
-                                                    comment: "Action sheet message to confirm deleting a group via a message request.")
+                                                   comment: "Action sheet message to confirm deleting a group via a message request.")
             actionSheetAction = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
-                                                   comment: "Action sheet action to confirm deleting a group via a message request.")
+                                                  comment: "Action sheet action to confirm deleting a group via a message request.")
         } else { // either 1:1 thread, or a group of which I'm not a member
             actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
                                                  comment: "Action sheet title to confirm deleting a conversation via a message request.")
@@ -183,9 +183,9 @@ extension ConversationViewController: MessageRequestDelegate {
         OWSActionSheets.showConfirmationAlert(title: actionSheetTitle,
                                               message: actionSheetMessage,
                                               proceedTitle: actionSheetAction) { _ in
-                                                self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                                                                       responseType: .delete)
-                                                self.leaveAndSoftDeleteThread()
+            self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
+                                                                   responseType: .delete)
+            self.leaveAndSoftDeleteThread()
         }
     }
 
@@ -200,9 +200,9 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         guard let groupThread = thread as? TSGroupThread,
-            groupThread.isLocalUserFullOrInvitedMember else {
-                // If we don't need to leave the group, finish up immediately.
-                return completion()
+              groupThread.isLocalUserFullOrInvitedMember else {
+            // If we don't need to leave the group, finish up immediately.
+            return completion()
         }
 
         // Leave the group if we're a member.

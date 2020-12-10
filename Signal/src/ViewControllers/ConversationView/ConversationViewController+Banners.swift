@@ -41,7 +41,7 @@ public extension ConversationViewController {
 
     // MARK: - Pending Join Requests Banner
 
-    func createPendingJoinRequestBanner(viewState: CVCViewState,
+    func createPendingJoinRequestBanner(viewState: CVViewState,
                                         count pendingMemberRequestCount: UInt,
                                         viewMemberRequestsBlock: @escaping () -> Void) -> UIView {
         owsAssertDebug(pendingMemberRequestCount > 0)
@@ -73,8 +73,8 @@ public extension ConversationViewController {
             return nil
         }
         guard let groupThread = thread as? TSGroupThread,
-            groupThread.isGroupV1Thread else {
-                return nil
+              groupThread.isGroupV1Thread else {
+            return nil
         }
         guard groupThread.isLocalUserFullMember else {
             return nil
@@ -85,7 +85,7 @@ public extension ConversationViewController {
         return GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread)
     }
 
-    func createMigrateGroupBanner(viewState: CVCViewState,
+    func createMigrateGroupBanner(viewState: CVViewState,
                                   migrationInfo: GroupsV2MigrationInfo) -> UIView {
 
         let title = NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER",
@@ -120,7 +120,7 @@ public extension ConversationViewController {
 
     // MARK: - Dropped Group Members Banner
 
-    func createDroppedGroupMembersBannerIfNecessary(viewState: CVCViewState) -> UIView? {
+    func createDroppedGroupMembersBannerIfNecessary(viewState: CVViewState) -> UIView? {
         guard let droppedMembersInfo = buildDroppedMembersInfo() else {
             return nil
         }
@@ -169,7 +169,7 @@ fileprivate extension ConversationViewController {
         return droppedMembersInfo
     }
 
-    func createDroppedGroupMembersBanner(viewState: CVCViewState,
+    func createDroppedGroupMembersBanner(viewState: CVViewState,
                                          droppedMembersInfo: DroppedMembersInfo) -> UIView {
 
         let title: String

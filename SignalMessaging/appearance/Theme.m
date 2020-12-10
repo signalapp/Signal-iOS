@@ -20,6 +20,10 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 @property (nonatomic) NSNumber *isDarkThemeEnabledNumber;
 @property (nonatomic) NSNumber *cachedCurrentThemeNumber;
 
+#if TESTABLE_BUILD
+@property (nonatomic, nullable) NSNumber *isDarkThemeEnabledForTests;
+#endif
+
 @end
 
 @implementation Theme
@@ -40,7 +44,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 #pragma mark -
 
-+ (instancetype)shared
++ (Theme *)shared
 {
     static dispatch_once_t onceToken;
     static Theme *instance;
@@ -95,7 +99,13 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (BOOL)isDarkThemeEnabled
 {
-    OWSAssertIsOnMainThread();
+    //    OWSAssertIsOnMainThread();
+
+#if TESTABLE_BUILD
+    if (self.isDarkThemeEnabledForTests != nil) {
+        return self.isDarkThemeEnabledForTests.boolValue;
+    }
+#endif
 
     if (!AppReadiness.isAppReady) {
         // Don't cache this value until it reflects the data store.
@@ -127,6 +137,13 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
     return self.isDarkThemeEnabledNumber.boolValue;
 }
+
+#if TESTABLE_BUILD
++ (void)setIsDarkThemeEnabledForTests:(BOOL)value
+{
+    self.shared.isDarkThemeEnabledForTests = @(value);
+}
+#endif
 
 + (ThemeMode)getOrFetchCurrentTheme
 {

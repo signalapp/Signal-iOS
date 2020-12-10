@@ -293,6 +293,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
+    public var sortKey: String {
+        guard let serviceIdentifier = serviceIdentifier else {
+            owsFailDebug("Invalid address.")
+            return "Invalid"
+        }
+        return serviceIdentifier
+    }
+
+    @objc
     override public var description: String {
         return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(uuid?.uuidString ?? "nil")>"
     }

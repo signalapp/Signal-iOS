@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,16 +15,20 @@ public protocol ContactShareViewHelperDelegate: class {
 @objc
 public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
+    // MARK: - Dependencies
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    // MARK: - 
+
     @objc
     weak var delegate: ContactShareViewHelperDelegate?
 
-    let contactsManager: OWSContactsManager
-
     @objc
-    public required init(contactsManager: OWSContactsManager) {
+    public required override init() {
         AssertIsOnMainThread()
-
-        self.contactsManager = contactsManager
 
         super.init()
     }
@@ -55,7 +59,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     private func presentThreadAndPeform(action: ConversationViewAction, contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
-        let phoneNumbers = contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+        let phoneNumbers = contactShare.systemContactsWithSignalAccountPhoneNumbers()
         guard phoneNumbers.count > 0 else {
             owsFailDebug("missing Signal recipient id.")
             return

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSGroupModel;
 @class TSThread;
 
-extern NSNotificationName const kNSNotificationName_BlockListDidChange;
+extern NSNotificationName const kNSNotificationNameBlockListDidChange;
 extern NSNotificationName const OWSBlockingManagerBlockedSyncDidComplete;
 
 typedef NS_CLOSED_ENUM(NSUInteger, BlockMode) {

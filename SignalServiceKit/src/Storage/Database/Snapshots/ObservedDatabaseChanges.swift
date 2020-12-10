@@ -13,7 +13,7 @@ public protocol UIDatabaseChanges: AnyObject {
     var interactionUniqueIds: Set<UniqueId> { get }
     var attachmentUniqueIds: Set<UniqueId> { get }
 
-    // NOTE: This only includes uniqueIds for _deleted_ attachments.
+    var interactionDeletedUniqueIds: Set<UniqueId> { get }
     var attachmentDeletedUniqueIds: Set<UniqueId> { get }
 
     var tableNames: Set<String> { get }
@@ -68,7 +68,7 @@ class ObservedDatabaseChanges: NSObject {
         case .mainThread:
             AssertIsOnMainThread()
         case .uiDatabaseObserverSerialQueue:
-            AssertIsOnUIDatabaseObserverSerialQueue()
+            AssertHasUIDatabaseObserverLock()
         }
     }
     #endif
@@ -244,6 +244,14 @@ class ObservedDatabaseChanges: NSObject {
         attachments.append(uniqueIds: attachmentUniqueIds)
     }
 
+    func append(interactionDeletedUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(deletedUniqueIds: interactionDeletedUniqueIds)
+    }
+
     func append(attachmentDeletedUniqueIds: Set<UniqueId>) {
         #if TESTABLE_BUILD
         checkConcurrency()
@@ -274,6 +282,14 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         attachments.append(deletedRowId: deletedAttachmentRowId)
+    }
+
+    func append(deletedInteractionRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(deletedRowId: deletedInteractionRowId)
     }
 
     // MARK: - Errors
@@ -416,6 +432,16 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
         }
     }
 
+    var interactionDeletedUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return interactions.deletedUniqueIds
+        }
+    }
+
     var attachmentDeletedUniqueIds: Set<UniqueId> {
         get {
             #if TESTABLE_BUILD
@@ -513,14 +539,20 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
             uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
 
         // We need to convert _deleted_ attachment "row ids" to "unique ids".
-        //
-        // NOTE: We only publish _deleted_ attachment unique ids.
         attachments.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,
                                                                       rowIds: attachments.deletedRowIds,
                                                                       uniqueIds: attachments.deletedUniqueIds,
                                                                       rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
                                                                       tableName: "\(AttachmentRecord.databaseTableName)",
-            uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
+                                                                      uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
+
+        // We need to convert _deleted_ interaction "row ids" to "unique ids".
+        interactions.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,
+                                                                       rowIds: interactions.deletedRowIds,
+                                                                       uniqueIds: interactions.deletedUniqueIds,
+                                                                       rowIdToUniqueIdMap: interactions.rowIdToUniqueIdMap,
+                                                                       tableName: "\(InteractionRecord.databaseTableName)",
+                                                                       uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
 
         // We need to convert db table names to "collections."
         mapTableNamesToCollections()
@@ -532,7 +564,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                       rowIdToUniqueIdMap: [RowId: UniqueId],
                                       tableName: String,
                                       uniqueIdColumnName: String) throws -> Set<String> {
-        AssertIsOnUIDatabaseObserverSerialQueue()
+        AssertHasUIDatabaseObserverLock()
 
         // We try to avoid the query below by leveraging the
         // fact that we know the uniqueId and rowId for

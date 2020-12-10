@@ -31,7 +31,8 @@ extension ConversationViewController {
             .max { $0.row < $1.row }
 
         if let lastVisibleIndexPath = lastVisibleIndexPath {
-            assert(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
+            // TODO: Fix this assert.
+            // assert(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
         }
         return lastVisibleIndexPath
     }
@@ -39,50 +40,53 @@ extension ConversationViewController {
     @objc
     var lastVisibleSortId: UInt64 {
         guard let lastVisibleIndexPath = lastVisibleIndexPath else { return 0 }
-        return firstIndexPathWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath)?.sortId ?? 0
+        return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath)?.sortId ?? 0
     }
 
     @objc
     var lastIndexPathInLoadedWindow: IndexPath? {
-        guard !viewItems.isEmpty else { return nil }
-        return IndexPath(row: viewItems.count - 1, section: 0)
+        guard !renderItems.isEmpty else { return nil }
+        return IndexPath(row: renderItems.count - 1, section: 0)
     }
 
     @objc
     var lastSortIdInLoadedWindow: UInt64 {
         guard let lastIndexPath = lastIndexPathInLoadedWindow else { return 0 }
-        return firstIndexPathWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
+        return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
     }
 
     @objc
     func saveLastVisibleSortIdAndOnScreenPercentage() {
         AssertIsOnMainThread()
 
-        let sortIdToSave: UInt64
-        let onScreenPercentageToSave: Double
-
-        if let lastVisibleIndexPath = lastVisibleIndexPath,
-            let (indexPath, sortId) = firstIndexPathWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
-
-            sortIdToSave = sortId
-            onScreenPercentageToSave = Double(percentOfIndexPathVisibleAboveBottom(indexPath))
-        } else {
-            sortIdToSave = 0
-            onScreenPercentageToSave = 0
+        guard hasAppearedAndHasAppliedFirstLoad else {
+            return
+        }
+        guard !isMeasuringKeyboardHeight else {
+            return
         }
 
-        guard thread.lastVisibleSortId != sortIdToSave
-            || !thread.lastVisibleSortIdOnScreenPercentage.isEqual(to: onScreenPercentageToSave) else {
-                return
+        var newValue: TSThread.LastVisibleInteraction?
+        if let lastVisibleIndexPath = lastVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+
+            newValue = TSThread.LastVisibleInteraction(sortId: reference.sortId,
+                                                       onScreenPercentage: onScreenPercentage)
         }
 
         let thread = self.thread
+        let oldValue = databaseStorage.read { transaction in
+            thread.lastVisibleInteraction(transaction: transaction)
+        }
+
+        guard oldValue != newValue else {
+            return
+        }
+
         databaseStorage.asyncWrite { transaction in
-            thread.update(
-                withLastVisibleSortId: sortIdToSave,
-                onScreenPercentage: onScreenPercentageToSave,
-                transaction: transaction
-            )
+            thread.setLastVisibleInteraction(newValue, transaction: transaction)
         }
     }
 
@@ -99,18 +103,31 @@ extension ConversationViewController {
         return CGFloatClamp01(heightAboveBottom / cellFrameInPrimaryCoordinateSpace.height)
     }
 
-    private func firstIndexPathWithSortId(atOrBeforeIndexPath indexPath: IndexPath) -> (indexPath: IndexPath, sortId: UInt64)? {
+    struct RenderItemReference {
+        let renderItem: CVRenderItem
+        let indexPath: IndexPath
+
+        var interaction: TSInteraction { renderItem.interaction }
+        var sortId: UInt64 { interaction.sortId }
+    }
+
+    private func firstRenderItemReferenceWithSortId(atOrBeforeIndexPath indexPath: IndexPath) -> RenderItemReference? {
         AssertIsOnMainThread()
 
         var matchingIndexPath = indexPath
 
-        while let viewItem = viewItem(forIndex: matchingIndexPath.row), matchingIndexPath.row > 0 {
-            guard !viewItem.interaction.isDynamicInteraction() else {
+        while matchingIndexPath.row >= 0,
+              matchingIndexPath.row < renderItems.count,
+              let renderItem = renderItem(forIndex: matchingIndexPath.row) {
+            guard !renderItem.interaction.isDynamicInteraction() else {
+                guard matchingIndexPath.row > 0 else {
+                    return nil
+                }
                 matchingIndexPath.row -= 1
                 continue
             }
 
-            return (matchingIndexPath, viewItem.interaction.sortId)
+            return RenderItemReference(renderItem: renderItem, indexPath: matchingIndexPath)
         }
 
         return nil

@@ -124,6 +124,8 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 - (void)startAnimation
 {
+    OWSAssertIsOnMainThread();
+
     [self clearAnimation];
 
     self.animationTimer = [NSTimer weakTimerWithTimeInterval:0.1f
@@ -136,6 +138,8 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 - (void)clearAnimation
 {
+    OWSAssertIsOnMainThread();
+
     [self.animationTimer invalidate];
     self.animationTimer = nil;
 }

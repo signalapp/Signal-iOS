@@ -31,8 +31,8 @@ enum DatabaseObserverError: Error {
 
 // MARK: -
 
-func AssertIsOnUIDatabaseObserverSerialQueue() {
-    assert(UIDatabaseObserver.isOnUIDatabaseObserverSerialQueue)
+func AssertHasUIDatabaseObserverLock() {
+    assert(UIDatabaseObserver.hasUIDatabaseObserverLock)
 }
 
 // MARK: -
@@ -67,10 +67,10 @@ public class UIDatabaseObserver: NSObject {
     //
     // Some of our snapshot observers read from the database *while* accessing this
     // state. Note that reading from the db must be done on GRDB's DispatchQueue.
-    private static var _isOnUIDatabaseObserverSerialQueue = AtomicBool(false)
+    private static var _hasUIDatabaseObserverLock = AtomicBool(false)
 
-    static var isOnUIDatabaseObserverSerialQueue: Bool {
-        return _isOnUIDatabaseObserverSerialQueue.get()
+    static var hasUIDatabaseObserverLock: Bool {
+        return _hasUIDatabaseObserverLock.get()
     }
 
     // Toggle to skip expensive observations resulting
@@ -78,13 +78,15 @@ public class UIDatabaseObserver: NSObject {
     // Should only be accessed within UIDatabaseObserver.serializedSync
     public static var skipTouchObservations: Bool = false
 
+    private static let uiDatabaseObserverLock = UnfairLock()
+
     public class func serializedSync(block: () -> Void) {
-        objc_sync_enter(self)
-        assert(!_isOnUIDatabaseObserverSerialQueue.get())
-        _isOnUIDatabaseObserverSerialQueue.set(true)
-        block()
-        _isOnUIDatabaseObserverSerialQueue.set(false)
-        objc_sync_exit(self)
+        uiDatabaseObserverLock.withLock {
+            assert(!_hasUIDatabaseObserverLock.get())
+            _hasUIDatabaseObserverLock.set(true)
+            block()
+            _hasUIDatabaseObserverLock.set(false)
+        }
     }
 
     private var _snapshotDelegates: [Weak<UIDatabaseSnapshotDelegate>] = []
@@ -256,9 +258,33 @@ extension UIDatabaseObserver: TransactionObserver {
         return true
     }
 
+    // This should only be called by DatabaseStorage.
+    func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
+        AssertHasUIDatabaseObserverLock()
+
+        pendingChanges.append(thread: thread)
+        pendingChanges.append(tableName: TSThread.table.tableName)
+    }
+
+    // This should only be called by DatabaseStorage.
+    func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+        AssertHasUIDatabaseObserverLock()
+
+        pendingChanges.append(interaction: interaction)
+        pendingChanges.append(tableName: TSInteraction.table.tableName)
+    }
+
+    // This should only be called by DatabaseStorage.
+    func updateIdMapping(attachment: TSAttachment, transaction: GRDBWriteTransaction) {
+        AssertHasUIDatabaseObserverLock()
+
+        pendingChanges.append(attachment: attachment)
+        pendingChanges.append(tableName: TSAttachment.table.tableName)
+    }
+
     // internal - should only be called by DatabaseStorage
     func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
-        AssertIsOnUIDatabaseObserverSerialQueue()
+        AssertHasUIDatabaseObserverLock()
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
@@ -278,7 +304,7 @@ extension UIDatabaseObserver: TransactionObserver {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-        AssertIsOnUIDatabaseObserverSerialQueue()
+        AssertHasUIDatabaseObserverLock()
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
@@ -316,9 +342,11 @@ extension UIDatabaseObserver: TransactionObserver {
                 pendingChanges.append(attachmentRowId: event.rowID)
             }
 
-            // We record deleted attachments.
+            // We record certain deletions.
             if event.kind == .delete && event.tableName == AttachmentRecord.databaseTableName {
                 pendingChanges.append(deletedAttachmentRowId: event.rowID)
+            } else if event.kind == .delete && event.tableName == InteractionRecord.databaseTableName {
+                pendingChanges.append(deletedInteractionRowId: event.rowID)
             }
 
             #if TESTABLE_BUILD
@@ -343,6 +371,7 @@ extension UIDatabaseObserver: TransactionObserver {
                 let interactionUniqueIds = pendingChangesToCommit.interactionUniqueIds
                 let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
                 let attachmentUniqueIds = pendingChangesToCommit.attachmentUniqueIds
+                let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
                 let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
                 let collections = pendingChangesToCommit.collections
                 let completionBlocks = pendingChangesToCommit.completionBlocks
@@ -351,6 +380,7 @@ extension UIDatabaseObserver: TransactionObserver {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
                     self.committedChanges.append(threadUniqueIds: threadUniqueIds)
                     self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
+                    self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)
                     self.committedChanges.append(attachmentDeletedUniqueIds: attachmentDeletedUniqueIds)
                     self.committedChanges.append(collections: collections)
                     self.committedChanges.append(completionBlocks: completionBlocks)
