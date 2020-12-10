@@ -174,8 +174,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"");
-
     BOOL success = [self.audioSession startAudioActivity:self.audioActivity];
     OWSAssertDebug(success);
 
@@ -199,8 +197,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)pause
 {
     OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
 
     self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
     [self.audioPlayer pause];

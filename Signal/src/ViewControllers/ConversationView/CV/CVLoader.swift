@@ -45,7 +45,7 @@ public class CVLoader: NSObject {
         let lastRenderState = self.lastRenderState
         let messageMapping = self.messageMapping
 
-        Logger.verbose("---- loadType: \(loadRequest.loadType)")
+        Logger.verbose("LoadType: \(loadRequest.loadType)")
 
         struct LoadState {
             let threadViewModel: ThreadViewModel
@@ -99,33 +99,27 @@ public class CVLoader: NSObject {
                     switch loadRequest.loadType {
                     case .loadInitialMapping(let focusMessageIdOnOpen, _):
                         owsAssertDebug(reusableInteractions.isEmpty)
-                        Logger.verbose("---- .loadInitialMapping")
                         try messageMapping.loadInitialMessagePage(focusMessageId: focusMessageIdOnOpen,
                                                                   reusableInteractions: [:],
                                                                   deletedInteractionIds: [],
                                                                   transaction: transaction)
                     case .loadSameLocation:
-                        Logger.verbose("---- .loadSameLocation")
                         try messageMapping.loadSameLocation(reusableInteractions: reusableInteractions,
                                                             deletedInteractionIds: deletedInteractionIds,
                                                             transaction: transaction)
                     case .loadOlder:
-                        Logger.verbose("---- .loadOlder")
                         try messageMapping.loadOlderMessagePage(reusableInteractions: reusableInteractions,
                                                                 deletedInteractionIds: deletedInteractionIds,
                                                                 transaction: transaction)
                     case .loadNewer:
-                        Logger.verbose("---- .loadNewer")
                         try messageMapping.loadNewerMessagePage(reusableInteractions: reusableInteractions,
                                                                 deletedInteractionIds: deletedInteractionIds,
                                                                 transaction: transaction)
                     case .loadNewest:
-                        Logger.verbose("---- .loadNewest")
                         try messageMapping.loadNewestMessagePage(reusableInteractions: reusableInteractions,
                                                                  deletedInteractionIds: deletedInteractionIds,
                                                                  transaction: transaction)
                     case .loadPageAroundInteraction(let interactionId, _):
-                        Logger.verbose("---- .loadPageAroundInteraction")
                         try messageMapping.loadMessagePage(aroundInteractionId: interactionId,
                                                            reusableInteractions: reusableInteractions,
                                                            deletedInteractionIds: deletedInteractionIds,
@@ -174,10 +168,6 @@ public class CVLoader: NSObject {
                 items = loadState.items
             }
 
-            //                for item in items {
-            //                    Logger.verbose("item: \(item.debugDescription)")
-            //                }
-
             let threadViewModel = loadState.threadViewModel
             let renderState = CVRenderState(threadViewModel: threadViewModel,
                                             lastThreadViewModel: lastRenderState.threadViewModel,
@@ -202,7 +192,6 @@ public class CVLoader: NSObject {
 
             self.benchSteps.logAll()
 
-            Logger.verbose("---- load complete: \(renderState.items.count)")
             return update
         }
     }
@@ -231,9 +220,6 @@ public class CVLoader: NSObject {
         }
         let itemModels: [CVItemModel] = itemModelBuilder.buildItems()
 
-        //        Logger.verbose("---- itemViewStates: \(itemViewStates.count)")
-        //        Logger.verbose("---- itemModels: \(itemModels.count)")
-
         var renderItems = [CVRenderItem]()
         for itemModel in itemModels {
             guard let renderItem = buildRenderItem(itemBuildingContext: loadContext,
@@ -242,8 +228,6 @@ public class CVLoader: NSObject {
             }
             renderItems.append(renderItem)
         }
-
-        //        Logger.verbose("---- renderItems: \(renderItems.count)")
 
         return renderItems
     }
@@ -333,10 +317,10 @@ public class CVLoader: NSObject {
             }
             rootComponent = CVComponentSystemMessage(itemModel: itemModel, systemMessage: systemMessage)
         case .unknown:
-            Logger.warn("---- discarding item: \(itemModel.messageCellType).")
+            Logger.warn("Discarding item: \(itemModel.messageCellType).")
             return nil
         default:
-            owsFailDebug("---- discarding item: \(itemModel.messageCellType).")
+            owsFailDebug("Discarding item: \(itemModel.messageCellType).")
             return nil
         }
 

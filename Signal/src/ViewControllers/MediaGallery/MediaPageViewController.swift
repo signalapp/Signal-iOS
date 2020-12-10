@@ -599,11 +599,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         Logger.debug("cache miss.")
 
-//        guard let renderItem = buildRenderItem(forGalleryItem: galleryItem) else {
-//            owsFailDebug("viewItem was unexpectedly nil")
-//            return nil
-//        }
-
         let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem))
         viewController.delegate = self
 

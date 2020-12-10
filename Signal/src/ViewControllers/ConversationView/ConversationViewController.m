@@ -610,8 +610,8 @@ typedef enum : NSUInteger {
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewWillAppear.1"];
 #endif
-    OWSLogDebug(@"---- viewWillAppear");
-    //    OWSLogDebug(@"viewWillAppear");
+
+    OWSLogDebug(@"viewWillAppear");
 
     [self ensureBannerState];
 
@@ -640,8 +640,6 @@ typedef enum : NSUInteger {
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
-
-    //    [self resetContentAndLayoutWithSneakyTransaction];
 
     // One-time work performed the first time we enter the view.
     if (!self.viewHasEverAppeared) {
@@ -954,7 +952,7 @@ typedef enum : NSUInteger {
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewDidAppear.1"];
 #endif
-    OWSLogDebug(@"---- viewDidAppear");
+    OWSLogDebug(@"viewDidAppear");
 
     [super viewDidAppear:animated];
 
