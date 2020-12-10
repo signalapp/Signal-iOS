@@ -98,12 +98,6 @@ extension ConversationViewController {
     func perform(scrollAction: CVScrollAction) {
         AssertIsOnMainThread()
 
-        if case .none = scrollAction.action {
-        } else {
-            Logger.verbose("---- scrollAction.action: \(scrollAction.action), isAnimated: \(scrollAction.isAnimated)")
-            //            Logger.flush()
-        }
-
         switch scrollAction.action {
         case .none:
             break
@@ -271,8 +265,6 @@ extension ConversationViewController {
             // If we're scrolling to the last index AND we want it entirely on screen,
             // scroll directly to the bottom regardless of the requested destination.
             let contentOffset = CGPoint(x: 0, y: bottomDestinationY)
-            //            Logger.verbose("---- contentOffset: \(contentOffset.y)")
-            //            Logger.flush()
             collectionView.setContentOffset(contentOffset, animated: animated)
             updateLastKnownDistanceFromBottom()
             return
@@ -303,8 +295,6 @@ extension ConversationViewController {
         else if destinationY > bottomDestinationY { destinationY = bottomDestinationY }
 
         let contentOffset = CGPoint(x: 0, y: destinationY)
-        //        Logger.verbose("---- contentOffset: \(contentOffset.y)")
-        //        Logger.flush()
         collectionView.setContentOffset(contentOffset, animated: animated)
         updateLastKnownDistanceFromBottom()
     }

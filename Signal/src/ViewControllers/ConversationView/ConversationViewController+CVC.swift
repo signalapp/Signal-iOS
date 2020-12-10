@@ -149,7 +149,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
 
         Logger.verbose("---- Landing load. update: \(update.type.debugName), load: \(update.loadType), isFirstLoad: \(isFirstLoad), renderItems: \(renderItems.count), scrollAction: \(scrollAction.description)")
-        //        Logger.flush()
 
         benchSteps.step("2")
 
