@@ -184,7 +184,7 @@ class ConversationInputTextView: MentionTextView {
 
     override func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         textIsChanging = true
-        return true
+        return super.textView(self, shouldChangeTextIn: range, replacementText: text)
     }
 
     override func textViewDidChange(_ textView: UITextView) {
