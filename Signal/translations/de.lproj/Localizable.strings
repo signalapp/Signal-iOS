@@ -1559,16 +1559,16 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Anrufteilnehmer · %ld Personen";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "»%1$@«, »%2$@« und %3$@ Weitere nehmen an diesem Anruf teil";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ und %3$@ Weitere nehmen an diesem Anruf teil";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Audio- & Videodaten von »%@« können nicht empfangen werden";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Audio- & Videodaten von %@ können nicht empfangen werden";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dies kann daran liegen, dass der Teilnehmer die Änderung deiner Sicherheitsnummer nicht verifiziert hat, ein Problem mit dessen Gerät besteht oder er dich blockiert.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Audio- und Videodaten von »%@« können nicht empfangen werden";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Audio- und Videodaten von %@ können nicht empfangen werden";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Niemand anderes ist hier";
@@ -1610,7 +1610,7 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Jemand hat einen Gruppenanruf gestartet";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Zum Ansichtswechsel wischen";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Zum Ansichtswechsel nach oben wischen";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Anruf starten";
@@ -1619,13 +1619,13 @@
 "GROUP_CALL_STARTED_BY_YOU" = "Du hast einen Gruppenanruf gestartet";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "»%@« hat einen Gruppenanruf gestartet";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ hat einen Gruppenanruf gestartet";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "»%1$@«, »%2$@« und 1 Weiterer nehmen an diesem Anruf teil";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ und 1 Weiterer nehmen an diesem Anruf teil";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "»%1$@« und »%2$@« nehmen an diesem Anruf teil";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ und %2$@ nehmen an diesem Anruf teil";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du wurdest vom Anruf getrennt. Überprüfe deine Verbindung und versuche es erneut.";

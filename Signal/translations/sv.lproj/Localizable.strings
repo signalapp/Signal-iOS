@@ -65,7 +65,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vill du dela din profil med denna grupp?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Vill du lägga till den här användaren i dina kontakter?";
+"ADD_TO_CONTACTS_OFFER" = "Vill du lägga till denna användare i dina kontakter?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Lägg till i en annan grupp";
@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_TITLE" = "Lägg till i en annan grupp";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Vill du dela din profil med den här användaren?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Vill du dela din profil med denna användare?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Uppfattat";
@@ -263,7 +263,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Det gick inte att välja dokument.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Vänligen skapa ett komprimerat arkiv av den här filen eller katalogen och försök att skicka den istället.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Vänligen skapa ett komprimerat arkiv av denna fil eller katalogen och försök att skicka den istället.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen stöds inte";
@@ -614,13 +614,13 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivera kontaktåtkomst i appen Inställningar för att se vilka av dina kontakter som är Signal-användare.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Det här kommer att återställa appen  genom att ta bort dina meddelanden och avregistrera dig från servern. Appen kommer att stängas efter att denna process är klar.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Detta kommer att återställa appen genom att ta bort dina meddelanden och avregistrera dig från servern. Appen kommer att stängas efter att denna process är klar.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill ta bort ditt konto?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Detta kommer att återställa appen genom att ta bort alla dina meddelanden från den här enheten. Du kan alltid länka med din telefon igen men det kommer inte att återställa borttagna meddelanden. Appen kommer att stängas efter att den här processen är klar.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Detta kommer att återställa appen genom att ta bort alla dina meddelanden från denna enhet. Du kan alltid länka med din telefon igen men det kommer inte att återställa borttagna meddelanden. Appen kommer att stängas efter att denna process är klar.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Är du säker på att du vill ta bort alla data?";
@@ -773,7 +773,7 @@
 "CONTACT_WITHOUT_NAME" = "Okänd kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Den här konversationen kommer att tas bort från den här enheten.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Denna konversation kommer att tas bort från denna enhet.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ta bort konversation?";
@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Välj vem som kan redigera gruppnamn, foto och meddelandetidtagare.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Du kommer inte längre att få meddelanden eller uppdateringar från den här användaren.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Du kommer inte längre att få meddelanden eller uppdateringar från denna användare.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Du kommer inte längre att få meddelanden eller uppdateringar från denna grupp.";
@@ -962,7 +962,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ljud på";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Vill du spara de ändringar du gjort i den här konversationen?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Vill du spara de ändringar du gjort i denna konversation?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Osparade ändringar";
@@ -971,7 +971,7 @@
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Visa alla medlemmar";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Den här användaren finns i dina kontakter";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Denna användare finns i dina kontakter";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Dela profil";
@@ -1106,10 +1106,10 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stoppa överföringen?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Om du har din gamla iOS-enhet kan du säkert överföra ditt konto och meddelanden till den här enheten.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Om du har din gamla iOS-enhet kan du säkert överföra ditt konto och meddelanden till denna enhet.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Om du tidigare använde Signal på en länkad iPad kan du säkert överföra ditt konto och meddelanden till den här enheten.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Om du tidigare använde Signal på en länkad iPad kan du säkert överföra ditt konto och meddelanden till denna enhet.";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Fortsätt utan att överföra ditt konto och dina meddelanden";
@@ -1232,7 +1232,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Ändra grupp";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Den här användaren kan inte läggas till i gruppen förrän de uppgraderar Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Denna användare kan inte läggas till i gruppen förrän de uppgraderar Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximal gruppstorlek på %@ medlemmar nådd.";
@@ -1349,7 +1349,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ogiltigt svar från tjänsten.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Den här enheten är inte längre registrerad med ditt telefonnummer. Vänligen installera om Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denna enhet är inte längre registrerad med ditt telefonnummer. Vänligen installera om Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfel. Vänligen försök igen senare.";
@@ -1364,7 +1364,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Hämtning av bilagan misslyckades.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Det gick inte att ta emot bilaga: Be den här kontakten att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Det gick inte att ta emot bilaga: Be denna kontakt att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mottog ett duplicerat meddelande.";
@@ -1376,7 +1376,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Mottaget meddelande var inte i synk.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Fick ett meddelande som inte är kompatibelt med den här versionen.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Fick ett meddelande som inte är kompatibelt med denna version.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Ingen tillgänglig session för kontakten.";
@@ -1418,7 +1418,7 @@
 "EXPIRATION_WARNING_TODAY" = "Din version av Signal kommer att löpa ut idag. Tryck för att uppdatera till senaste versionen.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "För många misslyckanden med den här kontakten. Vänligen försök igen senare.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "För många misslyckanden med denna kontakt. Vänligen försök igen senare.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ditt säkerhetsnummer med %@ har nyligen ändrats. Du vill nog verifiera innan du skickar det här meddelandet igen.";
@@ -1523,7 +1523,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Endast administratörer kan ändra detta alternativ.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Du kommer inte att ta emot deras ljud eller video och de kommer inte att ta emot dina.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ är blockerad";
@@ -1562,13 +1562,13 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ och %3$@ andra är i detta samtal";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan inte ta emot ljud & video från %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Det kan bero på att de inte har verifierat ditt säkerhetsnummerbyte, det finns ett problem med deras enhet eller att de har blockerat dig.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan inte ta emot ljud och video från %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Ingen annan är här";
@@ -1793,10 +1793,10 @@
 "GROUP_LINK_JOIN_GROUP_BUTTON" = "Gå med i gruppen";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Uppdatera Signal på den här enheten för att gå med i den här gruppen.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Uppdatera Signal på denna enhet för att gå med i denna grupp.";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personer som skannar den här koden kan gå med i din grupp. Administratörer måste fortfarande godkänna nya medlemmar om du har aktiverat den inställningen.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personer som skannar denna kod kan gå med i din grupp. Administratörer måste fortfarande godkänna nya medlemmar om du har aktiverat den inställningen.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Dela kod";
@@ -1841,7 +1841,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Dela via Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Alla med den här länken kan gå med i gruppen eller skicka en förfrågan om att gå med. Dela det med personer du litar på.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Alla med denna länk kan gå med i gruppen eller skicka en förfrågan om att gå med. Dela det med personer du litar på.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Grupplänk";
@@ -2180,7 +2180,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. Nya grupper";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uppgradera den här gruppen för att aktivera nya funktioner som @omnämnanden och administratörer. Medlemmar som inte har delat sitt namn eller foto i den här gruppen kommer att inbjudas att gå med. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uppgradera denna grupp för att aktivera nya funktioner som @omnämnanden och administratörer. Medlemmar som inte har delat sitt namn eller foto i denna grupp kommer att inbjudas att gå med. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Det går inte att uppgradera till Ny grupp";
@@ -2549,7 +2549,7 @@
 "LEAVE_GROUP_FAILED" = "Ett fel uppstod när gruppen lämnades.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Den här QR-koden är inte giltig. Vänligen se till att du skannar QR-koden som visas på enheten som du vill länka.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Denna QR-kod är inte giltig. Vänligen se till att du skannar QR-koden som visas på enheten som du vill länka.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Det gick inte att länka enhet";
@@ -2558,7 +2558,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Denna enhet kommer att kunna se dina grupper och kontakter, få tillgång till dina konversationer och skicka meddelanden i ditt namn.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Länka den här enheten?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Länka denna enhet?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Försök igen";
@@ -2798,7 +2798,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Fortsätt konversationen med %@ och dela ditt namn och foto med dem?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Fortsätt din konversation med den här gruppen och dela ditt namn och foto med dess medlemmar?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Fortsätt din konversation med denna grupp och dela ditt namn och foto med dess medlemmar?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Låt %@ meddela dig och dela ditt namn och foto med dem? De vet inte att du har sett deras meddelande förrän du accepterar det.";
@@ -2807,7 +2807,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Gå med i denna grupp och dela ditt namn och foto med dess medlemmar? De vet inte att du har sett sina meddelanden förrän du accepterar det.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Gå med i den här gruppen? De vet inte att du har sett deras meddelanden förrän du accepterar det.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Gå med i denna grupp? De vet inte att du har sett deras meddelanden förrän du accepterar det.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Sluta blockera";
@@ -2816,7 +2816,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Avbryt förfrågan";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Avbryt din förfrågan om att gå med i den här gruppen?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Avbryt din förfrågan om att gå med i denna grupp?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Din förfrågan om att gå med har skickats till gruppadministratören. Du får ett meddelande när de vidtar åtgärder.";
@@ -2885,16 +2885,16 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal behöver åtkomst till din kamera.";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "Du kan aktivera den här behörigheten i appen för iOS-inställningar.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Du kan aktivera denna behörighet i appen för iOS-inställningar.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal kräver åtkomst till din plats för den här funktionen.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal kräver åtkomst till din plats för denna funktion.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan aktivera den här behörigheten i appen för iOS-inställningar.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan aktivera denna behörighet i appen för iOS-inställningar.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "För den här funktionen behöver Signal åtkomst till dina foton.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "För denna funktion behöver Signal åtkomst till dina foton.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte länka fler enheter.";
@@ -3167,7 +3167,7 @@
 "ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Kontakta Signal-supporten";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "Den här koden är felaktig";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Denna kod är felaktig";
 
 /* Label for link that can be used when the original code did not arrive. */
 "ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Jag fick ingen kod.";
@@ -3275,7 +3275,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Detaljer om personer som är inbjudna av andra gruppmedlemmar visas inte. Om inbjudna väljer att gå med kommer deras information att delas med gruppen vid den tiden. De kommer inte att se några meddelanden i gruppen förrän de går med.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personer på den här listan försöker gå med i \"%@\" via grupplänken.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personer på denna lista försöker gå med i \"%@\" via grupplänken.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Ogiltiga inbjudningar";
@@ -3449,7 +3449,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Skapar PIN-kod…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ändra din PIN-kod så länge den här enheten är registrerad.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ändra din PIN-kod så länge denna enhet är registrerad.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Ändra din PIN-kod";
@@ -3560,7 +3560,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Det här ser inte ut som ditt säkerhetsnummer med %@. Verifierar du rätt kontakt?\n";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numret i urklippet ser inte ut som ett korrekt säkerhetsnummer för den här konversationen.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numret i urklippet ser inte ut som ett korrekt säkerhetsnummer för denna konversation.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal hittade inget säkerhetsnummer i ditt urklipp. Har du kopierat det korrekt?";
@@ -4034,7 +4034,7 @@
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Har du läst den här ännu?";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Har du läst denna ännu?";
 
 /* This is a file name 'Instructions' for the cat chat group. */
 "SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instruktioner.PDF";
@@ -4088,7 +4088,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Det går inte att hämta länkningskod";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Uppdatera Signal på den här enheten för att länka den med din telefon.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Uppdatera Signal på denna enhet för att länka den med din telefon.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versionen stöds inte";
@@ -4103,7 +4103,7 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Det gick inte att länka din enhet";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Välj ett namn för den här enheten";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Välj ett namn för denna enhet";
 
 /* label text */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Det här namnet visas under \"Länkade enheter.\"";
@@ -4127,7 +4127,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installera Signal på din telefon";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tryck på din profilbild för att öppna inställningarna för Signal på din telefon. Sedan \"Länkade enheter\" och \"Länka ny enhet\" för att skanna den här koden med din telefon:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tryck på din profilbild för att öppna inställningarna för Signal på din telefon. Sedan \"Länkade enheter\" och \"Länka ny enhet\" för att skanna denna kod med din telefon:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjälp med att länka din iPad här";
@@ -4190,7 +4190,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Plats: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Om påslaget så kommer Signal försöka kringgå censur. Slå bara på den här funktionen om du är på en plats där Signal censureras.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Om påslaget så kommer Signal försöka kringgå censur. Slå bara på denna funktion om du är på en plats där Signal censureras.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Kringgå censur har aktiverats baserat på ditt kontos telefonnummer";
@@ -4685,7 +4685,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem av %@, %@, och %lu ytterligare grupper";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan lägga till anteckningar för dig själv i den här konversationen. Om ditt konto har några länkade enheter synkroniseras nya anteckningar.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan lägga till anteckningar för dig själv i denna konversation. Om ditt konto har några länkade enheter synkroniseras nya anteckningar.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem av %@";
@@ -4781,7 +4781,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Uppdatera Signal nu";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Uppdaterad till den senaste versionen av Signal. Du kan nu ta emot den här meddelandetypen på din enhet.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Uppdaterad till den senaste versionen av Signal. Du kan nu ta emot denna meddelandetyp på din enhet.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Du kan be %@ att skicka det här meddelandet igen nu när du använder en aktuell version av Signal.";
@@ -4835,7 +4835,7 @@
 "UNSUPPORTED_ATTACHMENT" = "Mottagen bifogad filtyp stöds inte.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Den här funktionen stöds inte på din enhet.";
+"UNSUPPORTED_FEATURE_ERROR" = "Denna funktion stöds inte på din enhet.";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Uppdatera kontakt";

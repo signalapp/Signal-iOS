@@ -1532,7 +1532,7 @@
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "Continuar chamada";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "A chamada de grupo terminou";
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "Iniciar chamada";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Você iniciou uma chamada de grupo";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ iniciou uma chamada de grupo";

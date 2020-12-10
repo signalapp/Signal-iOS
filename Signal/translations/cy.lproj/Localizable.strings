@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Dim ond gweinyddwyr gall newid y dewis hwn.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Ni fyddwch yn derbyn eu sain na fideo a fyddan nhw ddim yn derbyn eich un chi.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Mae %@ wedi'i rwystro";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "Mae %@ wedi'i rwystro";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "Parhau'r Alwad";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "Gorffennodd y galwad grŵp";
@@ -1553,7 +1553,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Ymuno â'r Alwad";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "Gadael Galwad";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Yn yr alwad hon · %ld person";
@@ -1562,13 +1562,13 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "Mae %1$@, %2$@, a %3$@ arall yn yr alwad hon";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Methu derbyn sain a fideo gan %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Gall hyn fod oherwydd nad ydyn nhw wedi gwirio'ch newid rhif diogelwch, mae problem gyda'u dyfais, neu maen nhw wedi'ch rhwystro chi.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Methu derbyn sain a fideo gan %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Does neb arall yma";
@@ -1610,13 +1610,13 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Dechreuodd rhywun alwad grŵp";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Llusgo i fyny i newid golwg";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Cychwyn Galwad";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Dechreuasoch alwad grŵp";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "Dechreuodd%@ alwad grŵp";

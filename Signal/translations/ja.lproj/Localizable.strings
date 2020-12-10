@@ -1610,7 +1610,7 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "グループ通話が始まりました";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "上にスワイプして表示切替";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "通話を開始する";
