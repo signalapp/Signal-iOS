@@ -27,8 +27,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
 
 typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, KeyboardType_Sticker, KeyboardType_Attachment };
 
-static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
-
 const CGFloat kMinTextViewHeight = 36;
 const CGFloat kMinToolbarItemHeight = 44;
 const CGFloat kMaxTextViewHeight = 98;

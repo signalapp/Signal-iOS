@@ -593,7 +593,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Porovnať so schránkou";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signal pre začatie chatu.";
+"COMPOSE_BUTTON_HINT" = "Vyberte alebo nájdite používateľa Signal pre zahájenie chatu.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Skladať";
@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Toto nastavenie môžu zmeniť len administrátori.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Od tohto používateľa neprijmete audio ani video a ani on ich neprijme od vás.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Používateľ %@ je blokovaný";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "Používateľ %@ je blokovaný";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "Pokračovať v hovore";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "Skupinový hovor bol ukončený";
@@ -1553,7 +1553,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Pripojiť sa k hovoru";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "Opustiť hovor";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "V tomto hovore · %ld ľudí";
@@ -1562,13 +1562,13 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ a %3$@ ďalší sú v tomto hovore";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie je možné prijať audio a video od používateľa %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Môže to byť pre to, že daný používateľ nepotvrdil zmenu vášho bezpečnostného čísla, že sa vyskytol problém s jeho zariadením, alebo že vás zablokoval.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Nie je možné prijať audio a video od používateľa %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Nikto iný tu nie je";
@@ -1604,22 +1604,22 @@
 "GROUP_CALL_RECONNECTING" = "Pripája sa znovu";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "K tomuto hovoru sa pripojil niekto so zmeneným bezpečnostným číslom.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Niekto začal skupinový hovor";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Niekto zahájil skupinový hovor";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Posuňte smerom hore pre zmenu zobrazenia";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Začať hovor";
+"GROUP_CALL_START_BUTTON" = "Zahájiť hovor";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Zahájili ste skupinový hovor";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ začal(a) skupinový hovor";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ zahájil(a) skupinový hovor";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ a 1 ďalší je v tomto hovore";
@@ -2372,7 +2372,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Niektoré z vašich kontaktov už používajú Signal, vrátane %@, %@ a %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Začnite svoj prvý chat tu.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Zahájte svoj prvý chat tu.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ vás pridal(a) do skupiny";
@@ -2990,7 +2990,7 @@
 "NOTE_TO_SELF" = "Poznámka pre seba";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Mohli ste dostať nové správy kým sa Váš %@ reštartoval.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Mohli ste dostať nové správy, kým sa Váš %@ reštartoval.";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Pre prijímanie hlásení o nových správach:";
@@ -3122,7 +3122,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kto vás môže nájsť podľa vášho telefónneho čísla?";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Aby ste mohli začať, zadajte svoje telefónne číslo";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Pre začatie, zadajte svoje telefónne číslo";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neplatné číslo";
