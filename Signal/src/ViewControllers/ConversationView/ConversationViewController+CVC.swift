@@ -148,7 +148,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             updateNavigationTitle()
         }
 
-        Logger.verbose("---- Landing load. update: \(update.type.debugName), load: \(update.loadType), isFirstLoad: \(isFirstLoad), renderItems: \(renderItems.count), scrollAction: \(scrollAction.description)")
+        Logger.verbose("Landing load: \(update.type.debugName), load: \(update.loadType), isFirstLoad: \(isFirstLoad), renderItems: \(update.lastRenderState.items.count) -> \(renderItems.count), scrollAction: \(scrollAction.description)")
 
         benchSteps.step("2")
 
@@ -359,8 +359,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         Logger.verbose("")
 
-        Logger.verbose("---- layoutItems: \(loadCoordinator.layoutItems.count), canLoadOlderItems: \(canLoadOlderItems), canLoadNewerItems: \(canLoadNewerItems)")
-
         benchSteps.step("1")
 
         Logger.verbose("presentationStatus: \(presentationStatus), hasViewDidAppearEverCompleted: \(hasViewDidAppearEverCompleted).")
@@ -423,8 +421,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                     scrollAction: CVScrollAction) {
 
         Logger.verbose("")
-
-        Logger.verbose("---- layoutItems: \(loadCoordinator.layoutItems.count), canLoadOlderItems: \(canLoadOlderItems), canLoadNewerItems: \(canLoadNewerItems)")
 
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()

@@ -81,8 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAttributedText:(nullable NSAttributedString *)attributedText
 {
-    //    OWSLogVerbose(@"---- textStorage: %@", self.textStorage.class);
-
     if ([NSObject isNullableObject:attributedText equalTo:self.attributedText]) {
         return;
     }

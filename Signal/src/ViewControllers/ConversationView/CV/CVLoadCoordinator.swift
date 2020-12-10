@@ -424,8 +424,6 @@ public class CVLoadCoordinator: NSObject {
         }
         let lastRenderState = renderState
 
-        Logger.verbose("---- loadRequest.scrollAction: \(loadRequest.scrollAction)")
-
         if loadRequest.loadType == .loadOlder {
             lastLoadOlderDate = Date()
         } else if loadRequest.loadType == .loadNewer {
@@ -462,13 +460,8 @@ public class CVLoadCoordinator: NSObject {
             }
 
             let renderState = update.renderState
-            Logger.verbose("---- load complete: \(renderState.items.count)")
-
             let oldItemCount = update.lastRenderState.items.count
             let newItemCount = renderState.items.count
-            if oldItemCount != newItemCount {
-                Logger.verbose("---- Updating render state: \(oldItemCount) -> \(newItemCount)")
-            }
 
             let updateToken = delegate.willUpdateWithNewRenderState(renderState)
 
@@ -574,7 +567,6 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
-        //        Logger.verbose("---- shouldHideCollectionViewContent: \(shouldHideCollectionViewContent), stateToRender: \(renderState.items.count)")
         owsAssertDebug(sectionIdx == Self.messageSection)
 
         return renderItems.count

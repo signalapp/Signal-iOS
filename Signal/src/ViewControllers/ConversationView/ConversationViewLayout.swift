@@ -157,8 +157,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         y += conversationStyle.contentMarginTop
         var contentBottom: CGFloat = y
 
-        //        Logger.verbose("---- layoutItems: \(layoutItems.count)")
-
         var row: Int = 0
         var previousLayoutItem: ConversationViewLayoutItem?
         for layoutItem in layoutItems {
@@ -181,10 +179,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let indexPath = IndexPath(row: row, section: 0)
             let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             itemAttributes.frame = itemFrame
-            //            Logger.verbose("---- itemAttributes: \(itemAttributes.indexPath)")
             self.itemAttributesMap[row] = itemAttributes
-
-            //            Logger.verbose("---- itemFrame: \(itemFrame)")
 
             contentBottom = itemFrame.origin.y + itemFrame.size.height
             y = contentBottom
@@ -228,7 +223,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         guard let attributes = itemAttributesMap[indexPath.row] else {
-            Logger.verbose("---- Missing attributes: \(itemAttributesMap.keys)")
+            Logger.verbose("Missing attributes: \(itemAttributesMap.keys)")
             return nil
         }
         return attributes

@@ -610,8 +610,8 @@ typedef enum : NSUInteger {
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewWillAppear.1"];
 #endif
-    OWSLogDebug(@"---- viewWillAppear");
-    //    OWSLogDebug(@"viewWillAppear");
+
+    OWSLogDebug(@"viewWillAppear");
 
     [self ensureBannerState];
 
@@ -954,7 +954,7 @@ typedef enum : NSUInteger {
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewDidAppear.1"];
 #endif
-    OWSLogDebug(@"---- viewDidAppear");
+    OWSLogDebug(@"viewDidAppear");
 
     [super viewDidAppear:animated];
 
