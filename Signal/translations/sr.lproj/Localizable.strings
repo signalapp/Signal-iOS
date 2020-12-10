@@ -293,7 +293,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Звучна порука";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Аудио позив";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Звучник";
@@ -515,7 +515,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Звук";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Одбиј";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Заврши позив";
@@ -581,13 +581,13 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal нема дозволу за приступ вашем iCloud налогу. Молимо вас да у iOS апликацији за подешавања Signal-у дозволите приступ вашем iCloud налогу, како бисте могли направити резервну копију ваших Signal података.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Изаберите боју за одлазне поруке у овој преписци.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Изабрана боја ће бити видљива само вама.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
+"COLOR_PICKER_SHEET_TITLE" = "Боја ћаскања";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Упореди са клипбордом";
@@ -806,7 +806,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d од %d резултата";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "Поставке ћаскања";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Додај чланове";
@@ -845,7 +845,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Подаци о контакту";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Боја ћаскања";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Ко може мењати опис групе";
@@ -992,7 +992,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Учитавање додатних порука...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Прочитајте више";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Ресетовање сесије омогућава примање будићих порука од %@, али не може повратити постојеће оштећене поруке.";
@@ -1202,10 +1202,10 @@
 "DISAPPEARING_MESSAGES" = "Нестајуће поруке";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Поруке у овој преписци ће нестати након %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Када је омогућено, послате и примљене поруке у овој преписци ће нестати након што буду приказане.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Поруке сада нестају након %@";
@@ -1442,7 +1442,7 @@
 "FORWARD_MESSAGE" = "Проследи поруку";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Нема медија у овој преписци.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Учитавање новијих медија...";
@@ -1766,7 +1766,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Придружи се";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Учитавање...";
@@ -1931,7 +1931,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Ви";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Аудио позив";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Нема чланова.";
@@ -2351,7 +2351,7 @@
 "HELP_SUPPORT_CENTER" = "Support Center";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивиране преписке";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Блокиран/на";
@@ -2444,7 +2444,7 @@
 "IN_CALL_TERMINATED" = "Позив је завршен.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ове преписке су архивиране. У сандучету ће се појавити искључиво по приспећу нових порука.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Дајте вашем сандучету разлог за хваљење. Започните слањем поруке пријатељу.";
@@ -2486,7 +2486,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Слање позивница за више особа одједном ће започети групни разговор у ком ће се сви међусобно видети.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "Придружи се";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Поруке ће нестати након %@.";
@@ -2555,7 +2555,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Повезивање уређаја није успело";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Овај уређај ће имати приступ вашем именику, групама, препискама и моћи ће да шаље поруке у ваше име.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Повежи уређај?";
@@ -2813,7 +2813,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Одблокирај";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Откажи захтев";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2903,7 +2903,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Достигли сте ограничење броја уређаја повезаних на ваш налог. Молимо вас да уклоните један уређај и покушате поново.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Нећете добијати обавештења утишаних преписки.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Muted";
@@ -3422,7 +3422,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Упозорење";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Ваш PIN није сачуван. Обавестићемо вас касније да додате PIN.";
@@ -3560,7 +3560,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ово не личи на ваш сигурносни број са %@. Да ли оверавате добар контакт?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Број у вашем клипборду се не подудара са сигурносним бројем за ову преписку.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal није успео да пронађе сигурносни број у вашем клипборду. Да ли сте га добро копирали?";
@@ -3629,7 +3629,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Профил може бити измењен само када сте повезани на интернет.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профил је потпуно енкриптован. Биће видљив вашим контактима када започнете или прихватите нову преписку и када се прирдужите новој групи.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Сачувај";
@@ -4313,7 +4313,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Премошћавање позива кроз Signal сервер спречава контакте да виде вашу IP адресу. Омогућавањем ће бити смањен квалитет позива.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "Очисти историју чета";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Ауторска права: Signal месинџер\nЛиценцирано под GPLv3";
@@ -4337,7 +4337,7 @@
 "SETTINGS_HELP" = "Помоћ";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "Очисти историју чета";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Информације";
@@ -4439,7 +4439,7 @@
 "SETTINGS_READ_RECEIPT" = "Потврда читања";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Сазнајте и делите да ли су поруке прочитане. Ово подешавање није обавезно и примењује се за све преписке. ";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Искључи";
@@ -4565,7 +4565,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Прикажи сигурносни број";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "Прикажи преписку";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Позивам те да инсталираш Signal! Ево га линк:";

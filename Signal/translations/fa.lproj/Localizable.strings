@@ -1610,7 +1610,7 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "برای تغییر نماها به بالا بکشید.";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "شروع تماس";
