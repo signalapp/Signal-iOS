@@ -991,8 +991,13 @@ public struct %s: SDSRecord {
 
         for property in persisted_properties:
             custom_column_name = custom_column_name_for_property(property)
+            was_property_renamed = was_property_renamed_for_property(property)            
             if custom_column_name is not None:
-                swift_body += '''        case %s = "%s"
+                if was_property_renamed:
+                    swift_body += '''        case %s
+''' % ( custom_column_name, )
+                else:
+                    swift_body += '''        case %s = "%s"
 ''' % ( custom_column_name, property.swift_identifier(), )
             else:
                 swift_body += '''        case %s
@@ -2344,6 +2349,7 @@ def accessor_name_for_property(property):
     return custom_accessors.get(key, property.name)
 
 
+# include_renamed_columns
 def custom_column_name_for_property(property):
     custom_column_names = configuration_json.get('custom_column_names')
     if custom_column_names is None:
@@ -2351,6 +2357,15 @@ def custom_column_name_for_property(property):
     key = property.class_name + '.' + property.name
     # print '--?--', key, custom_accessors.get(key, property.name)
     return custom_column_names.get(key)
+
+
+def was_property_renamed_for_property(property):
+    renamed_column_names = configuration_json.get('renamed_column_names')
+    if renamed_column_names is None:
+        fail('Configuration JSON is missing list of renamed column names.')
+    key = property.class_name + '.' + property.name
+    # print '--?--', key, custom_accessors.get(key, property.name)
+    return renamed_column_names.get(key) is not None
 
 
 # ---- Config JSON

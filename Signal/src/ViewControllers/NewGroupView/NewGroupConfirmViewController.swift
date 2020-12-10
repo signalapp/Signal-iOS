@@ -208,7 +208,7 @@ public class NewGroupConfirmViewController: OWSViewController {
                             cell.setAttributedSubtitle(warning.attributedString())
                         }
 
-                        cell.configure(withRecipientAddress: address)
+                        cell.configureWithSneakyTransaction(recipientAddress: address)
 
                         return cell
                 }))
@@ -480,7 +480,7 @@ class NewLegacyGroupView: UIView {
                 customCellBlock: {
                     let cell = ContactTableViewCell()
                     cell.selectionStyle = .none
-                    cell.configure(withRecipientAddress: address)
+                    cell.configureWithSneakyTransaction(recipientAddress: address)
                     return cell
             }))
         }

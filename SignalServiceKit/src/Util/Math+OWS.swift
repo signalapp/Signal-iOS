@@ -77,3 +77,11 @@ public extension UInt {
         return Swift.max(minValue, Swift.min(maxValue, self))
     }
 }
+
+// MARK: -
+
+public extension Bool {
+    static func ^ (left: Bool, right: Bool) -> Bool {
+        return left != right
+    }
+}

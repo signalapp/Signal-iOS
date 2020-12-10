@@ -59,8 +59,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMe
 //
 // If a new message is inserted into the conversation, this value
 // is cleared. We only restore this state if there are no unread messages.
-@property (nonatomic, readonly) uint64_t lastVisibleSortId;
-@property (nonatomic, readonly) double lastVisibleSortIdOnScreenPercentage;
+@property (nonatomic, readonly) uint64_t lastVisibleSortIdObsolete;
+@property (nonatomic, readonly) double lastVisibleSortIdOnScreenPercentageObsolete;
 
 // zero if thread has never had an interaction.
 // The corresponding interaction may have been deleted.
@@ -84,14 +84,14 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMe
                       isArchived:(BOOL)isArchived
                   isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
-               lastVisibleSortId:(uint64_t)lastVisibleSortId
-lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
+       lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
+lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortId:lastVisibleSortIdOnScreenPercentage:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -218,10 +218,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (nonatomic, readonly) TSThreadMentionNotificationMode mentionNotificationMode;
 
 #pragma mark - Update With... Methods
-
-- (void)updateWithLastVisibleSortId:(uint64_t)lastVisibleSortId
-                 onScreenPercentage:(double)onScreenPercentage
-                        transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 

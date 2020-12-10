@@ -169,7 +169,7 @@ public class GroupManager: NSObject {
     public static func isValidGroupIdOfAnyKind(_ groupId: Data) -> Bool {
         guard groupId.count == kGroupIdLengthV1 ||
             groupId.count == kGroupIdLengthV2 else {
-                owsFailDebug("Invalid groupId: \(groupId.count) != \(kGroupIdLengthV1), \(kGroupIdLengthV2)")
+            Logger.warn("Invalid groupId: \(groupId.count) != \(kGroupIdLengthV1), \(kGroupIdLengthV2)")
                 return false
         }
         return true

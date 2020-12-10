@@ -74,17 +74,22 @@ public class StickerMetadata: NSObject {
 
     @objc
     public var packId: Data {
-        return stickerInfo.packId
+        stickerInfo.packId
     }
 
     @objc
     public var packKey: Data {
-        return stickerInfo.packKey
+        stickerInfo.packKey
+    }
+
+    @objc
+    public var packInfo: StickerPackInfo {
+        StickerPackInfo(packId: packId, packKey: packKey)
     }
 
     @objc
     public var stickerId: UInt32 {
-        return stickerInfo.stickerId
+        stickerInfo.stickerId
     }
 
     @objc

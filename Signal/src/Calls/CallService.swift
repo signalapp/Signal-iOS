@@ -138,15 +138,21 @@ public final class CallService: NSObject {
 
     private var observers = WeakArray<CallServiceObserver>()
 
-    // The observer-related methods should be invoked on the main thread.
     @objc
     func addObserverAndSyncState(observer: CallServiceObserver) {
+        addObserver(observer: observer, syncStateImmediately: true)
+    }
+
+    @objc
+    func addObserver(observer: CallServiceObserver, syncStateImmediately: Bool) {
         AssertIsOnMainThread()
 
         observers.append(observer)
 
-        // Synchronize observer with current call state
-        observer.didUpdateCall(from: nil, to: currentCall)
+        if syncStateImmediately {
+            // Synchronize observer with current call state
+            observer.didUpdateCall(from: nil, to: currentCall)
+        }
     }
 
     // The observer-related methods should be invoked on the main thread.

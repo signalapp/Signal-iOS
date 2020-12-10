@@ -94,7 +94,7 @@ import PromiseKit
         var recipientIds = [String]()
         for recordName in recordNames {
             let regex = recordNamePrefixRegex
-            guard let match: NSTextCheckingResult = regex.firstMatch(in: recordName, options: [], range: NSRange(location: 0, length: recordName.utf16.count)) else {
+            guard let match: NSTextCheckingResult = regex.firstMatch(in: recordName, options: [], range: recordName.entireRange) else {
                 Logger.warn("no match: \(recordName)")
                 continue
             }

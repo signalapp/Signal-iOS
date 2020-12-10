@@ -22,7 +22,10 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 @property (nonatomic) BOOL useSmallAvatars;
 
-- (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
+- (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
+    NS_SWIFT_NAME(configureWithSneakyTransaction(recipientAddress:));
+
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 

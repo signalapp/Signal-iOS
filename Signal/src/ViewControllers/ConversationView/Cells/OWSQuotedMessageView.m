@@ -3,7 +3,6 @@
 //
 
 #import "OWSQuotedMessageView.h"
-#import "ConversationViewItem.h"
 #import "Environment.h"
 #import "OWSBubbleView.h"
 #import "Signal-Swift.h"

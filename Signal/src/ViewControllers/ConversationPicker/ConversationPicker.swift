@@ -632,7 +632,7 @@ private class ConversationPickerCell: ContactTableViewCell {
 
         switch conversationItem.messageRecipient {
         case .contact(let address):
-            super.configure(withRecipientAddress: address)
+            super.configure(withRecipientAddress: address, transaction: transaction)
         case .group(let groupThread):
             super.configure(with: groupThread, transaction: transaction)
         }

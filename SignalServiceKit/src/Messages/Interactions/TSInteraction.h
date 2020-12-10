@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class TSThread;
 
-typedef NS_ENUM(NSInteger, OWSInteractionType) {
+typedef NS_CLOSED_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Unknown,
     OWSInteractionType_IncomingMessage,
     OWSInteractionType_OutgoingMessage,

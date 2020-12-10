@@ -394,9 +394,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             owsAssertDebug(address.uuid == nil)
             return true
         }
-        #if TESTABLE_BUILD
-        Logger.warn("Skipping cache for: \(address), \(cacheName)")
-        #endif
+//        #if TESTABLE_BUILD
+//        Logger.warn("Skipping cache for: \(address), \(cacheName)")
+//        #endif
         return false
     }
 

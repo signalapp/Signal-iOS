@@ -24,6 +24,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactAvatarBuilder
 
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Initializers
 
 - (instancetype)initWithAddress:(nullable SignalServiceAddress *)address
@@ -51,8 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
                        diameter:(NSUInteger)diameter
 {
     // Components for avatar initials.
-    NSPersonNameComponents *_Nullable nameComponents =
-        [OWSContactAvatarBuilder.contactsManager nameComponentsForAddress:address];
+    __block NSPersonNameComponents *_Nullable nameComponents;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        nameComponents = [self.contactsManager nameComponentsForAddress:address transaction:transaction];
+    }];
     return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
 }
 
@@ -62,8 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
                     transaction:(SDSAnyReadTransaction *)transaction
 {
     // Components for avatar initials.
-    NSPersonNameComponents *_Nullable nameComponents =
-        [OWSContactAvatarBuilder.contactsManager nameComponentsForAddress:address transaction:transaction];
+    NSPersonNameComponents *_Nullable nameComponents = [self.contactsManager nameComponentsForAddress:address
+                                                                                          transaction:transaction];
     return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
 }
 
@@ -80,9 +94,25 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(diameter > 0);
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
+    __block OWSContactAvatarBuilder *instance;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        instance = [self initWithAddress:TSAccountManager.localAddress
+                               colorName:ConversationColorNameDefault
+                                diameter:diameter
+                             transaction:transaction];
+    }];
+    return instance;
+}
+
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(diameter > 0);
+    OWSAssertDebug(TSAccountManager.localAddress.isValid);
+
     return [self initWithAddress:TSAccountManager.localAddress
                        colorName:ConversationColorNameDefault
-                        diameter:diameter];
+                        diameter:diameter
+                     transaction:transaction];
 }
 
 #pragma mark - Dependencies

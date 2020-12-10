@@ -42,13 +42,23 @@ public class StickerSharingViewController: SelectThreadViewController {
         let packUrl = stickerPackInfo.shareUrl()
 
         // Try to include a link preview of the sticker pack.
-        firstly { () -> Promise<OWSLinkPreviewDraft> in
+        firstly { () -> Promise<OWSLinkPreviewDraft?> in
             guard let url = URL(string: packUrl) else {
                 throw OWSAssertionError("Invalid url")
             }
-            return linkPreviewManager.fetchLinkPreview(for: url)
-
-        }.done { (linkPreviewDraft) in
+            return firstly {
+                linkPreviewManager.fetchLinkPreview(for: url)
+            }.map(on: .global()) { draft in
+                return draft
+            }
+        }.recover(on: .global()) { error -> Promise<OWSLinkPreviewDraft?> in
+            // If link previews are disabled, just share the
+            // sticker pack URL.
+            if case LinkPreviewError.featureDisabled = error {
+                return Promise.value(nil)
+            }
+            throw error
+        }.done { (linkPreviewDraft: OWSLinkPreviewDraft?) in
             self.shareAndDismiss(thread: thread,
                                  packUrl: packUrl,
                                  linkPreviewDraft: linkPreviewDraft)

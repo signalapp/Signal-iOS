@@ -30,7 +30,7 @@ const NSUInteger ThumbnailDimensionPointsLarge()
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
-@interface TSAttachmentStream () <AudioWaveformSamplingObserver>
+@interface TSAttachmentStream ()
 
 // We only want to generate the file path for this attachment once, so that
 // changes in the file path generation logic don't break existing attachments.
@@ -42,7 +42,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
-@property (nullable, nonatomic) AudioWaveform *cachedAudioWaveform;
 
 @property (atomic, nullable) NSNumber *isValidImageCached;
 @property (atomic, nullable) NSNumber *isValidVideoCached;
@@ -799,15 +798,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 #pragma mark -
 
-- (CGFloat)calculateAudioDurationSeconds
+- (NSTimeInterval)calculateAudioDurationSeconds
 {
-    OWSAssertIsOnMainThread();
     OWSAssertDebug([self isAudio]);
 
     if (CurrentAppContext().isRunningTests) {
         // Return an arbitrary non-zero value to avoid
         // expected exceptions in AVFoundation.
-        return 1.f;
+        return 1;
     }
 
     NSError *error;
@@ -815,111 +813,40 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
         && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
         // Ignore "invalid audio file" errors.
-        return 0.f;
+        return 0;
     }
     if (!error) {
         [audioPlayer prepareToPlay];
-        return (CGFloat)[audioPlayer duration];
+        return [audioPlayer duration];
     } else {
         OWSLogError(@"Could not find audio duration: %@", self.originalMediaURL);
         return 0;
     }
 }
 
-- (CGFloat)audioDurationSeconds
+- (NSTimeInterval)audioDurationSeconds
 {
-    OWSAssertIsOnMainThread();
+    @synchronized(self) {
+        if (self.cachedAudioDurationSeconds) {
+            return self.cachedAudioDurationSeconds.doubleValue;
+        }
 
-    if (self.cachedAudioDurationSeconds) {
-        return self.cachedAudioDurationSeconds.floatValue;
+        NSTimeInterval audioDurationSeconds = [self calculateAudioDurationSeconds];
+        self.cachedAudioDurationSeconds = @(audioDurationSeconds);
+
+        if (self.canAsyncUpdate) {
+            [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
+                latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
+            }];
+        }
+
+        return audioDurationSeconds;
     }
-
-    CGFloat audioDurationSeconds = [self calculateAudioDurationSeconds];
-    self.cachedAudioDurationSeconds = @(audioDurationSeconds);
-
-    if (self.canAsyncUpdate) {
-        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *latestInstance) {
-            latestInstance.cachedAudioDurationSeconds = @(audioDurationSeconds);
-        }];
-    }
-
-    return audioDurationSeconds;
 }
 
 - (nullable AudioWaveform *)audioWaveform
 {
-    @synchronized(self) {
-        if (self.cachedAudioWaveform) {
-            return self.cachedAudioWaveform;
-        }
-
-        NSString *_Nullable audioWaveformPath = self.audioWaveformPath;
-
-        // This attachment doesn't support waveforms, likely because it's not audio.
-        if (!audioWaveformPath) {
-            OWSAssertDebug(!self.isAudio);
-            return nil;
-        }
-
-        AudioWaveform *_Nullable waveform;
-
-        // We have a cached waveform on disk, read it into memory.
-        if ([[NSFileManager defaultManager] fileExistsAtPath:audioWaveformPath]) {
-            NSError *error;
-            waveform = [[AudioWaveform alloc] initWithContentsOfFile:audioWaveformPath error:&error];
-            if (error || !waveform) {
-                OWSFailDebug(@"Failed to intialize audio waveform from cached file: %@", error);
-
-                // Remove the file from disk and create a new one.
-                if (![OWSFileSystem deleteFileIfExists:audioWaveformPath]) {
-                    OWSFailDebug(@"failed to remove corrupt waveform from disk: %@", error);
-                    return nil;
-                }
-
-                return self.audioWaveform;
-            }
-        } else {
-            AVURLAsset *asset = [AVURLAsset assetWithURL:self.originalMediaURL];
-
-            // If the asset isn't readable, we may not be able to generate a waveform for this file
-            if (!asset.isReadable) {
-                // Android sends voice messages in a hacky m4a container that we can't process
-                // when it has the m4a extension. If we hint to the OS that it's an AAC file with
-                // the file extension, we can. This is pretty brittle and hopefully android will
-                // be able to fix the issue in the future in which case `isReadable` will become
-                // true and this path will no longer be hit.
-                if (self.isVoiceMessage && [self.originalFilePath hasSuffix:@"m4a"]) {
-                    NSString *symlinkPath = [self.uniqueIdAttachmentFolder stringByAppendingString:@"/Voice-Memo.aac"];
-                    if (![NSFileManager.defaultManager fileExistsAtPath:symlinkPath]) {
-                        [self ensureUniqueIdAttachmentFolder];
-                        NSError *error;
-                        [[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath
-                                                             withDestinationPath:self.originalFilePath
-                                                                           error:&error];
-                        if (error) {
-                            OWSFailDebug(@"Failed to create voice memo symlink: %@", error);
-                            return nil;
-                        }
-                    }
-                    asset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:symlinkPath]];
-                }
-            }
-
-            if (!asset.isReadable) {
-                OWSFailDebug(@"unexpectedly encountered unreadable audio file.");
-                return nil;
-            }
-
-            waveform = [[AudioWaveform alloc] initWithAsset:asset];
-
-            // Listen for sampling completion so we can cache the final waveform to disk.
-            [waveform addSamplingObserver:self];
-        }
-
-        self.cachedAudioWaveform = waveform;
-
-        return waveform;
-    }
+    return [AudioWaveformManager audioWaveformForAttachment:self];
 }
 
 #pragma mark - Thumbnails
@@ -1263,28 +1190,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return nil;
     }
     return attachmentProto;
-}
-
-#pragma mark - AudioWaveformSamplingObserver
-
-- (void)audioWaveformDidFinishSampling:(AudioWaveform *)audioWaveform
-{
-    // We finished sampling the audio waveform, write it to disk.
-    __typeof(self) weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-
-        [strongSelf ensureUniqueIdAttachmentFolder];
-
-        NSError *error;
-        [audioWaveform writeToFile:strongSelf.audioWaveformPath atomically:YES error:&error];
-        if (error) {
-            OWSFailDebug(@"could not cache audio waveform to disk: %@", error);
-        }
-    });
 }
 
 @end

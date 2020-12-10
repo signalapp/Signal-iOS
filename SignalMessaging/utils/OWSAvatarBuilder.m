@@ -24,8 +24,27 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
 @implementation OWSAvatarBuilder
 
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (nullable UIImage *)buildImageForThread:(TSThread *)thread diameter:(NSUInteger)diameter
+{
+    __block UIImage *_Nullable result;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self buildImageForThread:thread diameter:diameter transaction:transaction];
+    }];
+    return result;
+}
+
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
+                              transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
 
@@ -35,13 +54,14 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
         ConversationColorName colorName = thread.conversationColorName;
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:contactThread.contactAddress
                                                                colorName:colorName
-                                                                diameter:diameter];
+                                                                diameter:diameter
+                                                             transaction:transaction];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];
     } else {
         OWSLogError(@"called with unsupported thread: %@", thread);
     }
-    return [avatarBuilder build];
+    return [avatarBuilder buildWithTransaction:transaction];
 }
 
 + (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter

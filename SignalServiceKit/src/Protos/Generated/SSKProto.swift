@@ -4890,14 +4890,17 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
     // MARK: - SSKProtoDataMessageReactionBuilder
 
     @objc
-    public class func builder(emoji: String, remove: Bool, timestamp: UInt64) -> SSKProtoDataMessageReactionBuilder {
-        return SSKProtoDataMessageReactionBuilder(emoji: emoji, remove: remove, timestamp: timestamp)
+    public class func builder(emoji: String, timestamp: UInt64) -> SSKProtoDataMessageReactionBuilder {
+        return SSKProtoDataMessageReactionBuilder(emoji: emoji, timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoDataMessageReactionBuilder {
-        let builder = SSKProtoDataMessageReactionBuilder(emoji: emoji, remove: remove, timestamp: timestamp)
+        let builder = SSKProtoDataMessageReactionBuilder(emoji: emoji, timestamp: timestamp)
+        if hasRemove {
+            builder.setRemove(remove)
+        }
         if let _value = authorE164 {
             builder.setAuthorE164(_value)
         }
@@ -4919,11 +4922,10 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(emoji: String, remove: Bool, timestamp: UInt64) {
+        fileprivate init(emoji: String, timestamp: UInt64) {
             super.init()
 
             setEmoji(emoji)
-            setRemove(remove)
             setTimestamp(timestamp)
         }
 
@@ -4991,10 +4993,16 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
     public let emoji: String
 
     @objc
-    public let remove: Bool
+    public let timestamp: UInt64
 
     @objc
-    public let timestamp: UInt64
+    public var remove: Bool {
+        return proto.remove
+    }
+    @objc
+    public var hasRemove: Bool {
+        return proto.hasRemove
+    }
 
     @objc
     public var authorE164: String? {
@@ -5076,11 +5084,9 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
 
     private init(proto: SignalServiceProtos_DataMessage.Reaction,
                  emoji: String,
-                 remove: Bool,
                  timestamp: UInt64) {
         self.proto = proto
         self.emoji = emoji
-        self.remove = remove
         self.timestamp = timestamp
     }
 
@@ -5101,11 +5107,6 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
         }
         let emoji = proto.emoji
 
-        guard proto.hasRemove else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: remove")
-        }
-        let remove = proto.remove
-
         guard proto.hasTimestamp else {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: timestamp")
         }
@@ -5117,7 +5118,6 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
 
         self.init(proto: proto,
                   emoji: emoji,
-                  remove: remove,
                   timestamp: timestamp)
     }
 

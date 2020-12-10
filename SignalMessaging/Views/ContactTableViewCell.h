@@ -22,7 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
               reuseIdentifier:(nullable NSString *)reuseIdentifier
          allowUserInteraction:(BOOL)allowUserInteraction NS_DESIGNATED_INITIALIZER;
 
-- (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
+- (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
+    NS_SWIFT_NAME(configureWithSneakyTransaction(recipientAddress:));
+
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 

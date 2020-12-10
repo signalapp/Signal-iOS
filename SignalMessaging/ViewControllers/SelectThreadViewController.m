@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
                             if (isBlocked) {
                                 cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
-                            [cell configureWithRecipientAddress:signalAccount.recipientAddress];
+                            [cell configureWithRecipientAddressWithSneakyTransaction:signalAccount.recipientAddress];
                             return cell;
                         }
                         actionBlock:^{

@@ -102,6 +102,9 @@ import Foundation
 
     @objc
     static public let addButton = NSLocalizedString("BUTTON_ADD", comment: "Label for the 'add' button.")
+
+    @objc
+    static public let genericError = NSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")
 }
 
 @objc

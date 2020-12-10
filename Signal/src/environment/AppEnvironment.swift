@@ -6,7 +6,8 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc public class AppEnvironment: NSObject {
+@objc
+public class AppEnvironment: NSObject {
 
     private static var _shared: AppEnvironment = AppEnvironment()
 
@@ -60,6 +61,9 @@ import SignalMessaging
 
     @objc
     let deviceTransferService = DeviceTransferService()
+
+    @objc
+    let audioPlayer = CVAudioPlayer()
 
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()

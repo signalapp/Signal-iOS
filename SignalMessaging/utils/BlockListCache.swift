@@ -58,7 +58,7 @@ public class BlockListCache: NSObject {
         self.delegate = delegate
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
-                                               name: ._BlockListDidChange,
+                                               name: .blockListDidChange,
                                                object: nil)
         updateWithoutNotifyingDelegate()
     }

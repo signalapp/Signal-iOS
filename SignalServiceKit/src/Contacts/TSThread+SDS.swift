@@ -144,8 +144,8 @@ extension TSThread {
             let isArchived: Bool = record.isArchived
             let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
-            let lastVisibleSortId: UInt64 = record.lastVisibleSortId
-            let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
@@ -164,8 +164,8 @@ extension TSThread {
                                    isArchived: isArchived,
                                    isMarkedUnread: isMarkedUnread,
                                    lastInteractionRowId: lastInteractionRowId,
-                                   lastVisibleSortId: lastVisibleSortId,
-                                   lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                   lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                                   lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                    mentionNotificationMode: mentionNotificationMode,
                                    messageDraft: messageDraft,
                                    messageDraftBodyRanges: messageDraftBodyRanges,
@@ -184,8 +184,8 @@ extension TSThread {
             let isArchived: Bool = record.isArchived
             let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
-            let lastVisibleSortId: UInt64 = record.lastVisibleSortId
-            let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
@@ -203,8 +203,8 @@ extension TSThread {
                                  isArchived: isArchived,
                                  isMarkedUnread: isMarkedUnread,
                                  lastInteractionRowId: lastInteractionRowId,
-                                 lastVisibleSortId: lastVisibleSortId,
-                                 lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                 lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                                 lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                  mentionNotificationMode: mentionNotificationMode,
                                  messageDraft: messageDraft,
                                  messageDraftBodyRanges: messageDraftBodyRanges,
@@ -221,8 +221,8 @@ extension TSThread {
             let isArchived: Bool = record.isArchived
             let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
-            let lastVisibleSortId: UInt64 = record.lastVisibleSortId
-            let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
@@ -238,8 +238,8 @@ extension TSThread {
                             isArchived: isArchived,
                             isMarkedUnread: isMarkedUnread,
                             lastInteractionRowId: lastInteractionRowId,
-                            lastVisibleSortId: lastVisibleSortId,
-                            lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                            lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                            lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                             mentionNotificationMode: mentionNotificationMode,
                             messageDraft: messageDraft,
                             messageDraftBodyRanges: messageDraftBodyRanges,
@@ -305,8 +305,8 @@ extension TSThread: DeepCopyable {
             let isArchived: Bool = modelToCopy.isArchived
             let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
-            let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
-            let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
             // NOTE: If this generates build errors, you made need to
@@ -335,8 +335,8 @@ extension TSThread: DeepCopyable {
                                  isArchived: isArchived,
                                  isMarkedUnread: isMarkedUnread,
                                  lastInteractionRowId: lastInteractionRowId,
-                                 lastVisibleSortId: lastVisibleSortId,
-                                 lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                 lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                                 lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                  mentionNotificationMode: mentionNotificationMode,
                                  messageDraft: messageDraft,
                                  messageDraftBodyRanges: messageDraftBodyRanges,
@@ -353,8 +353,8 @@ extension TSThread: DeepCopyable {
             let isArchived: Bool = modelToCopy.isArchived
             let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
-            let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
-            let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
             // NOTE: If this generates build errors, you made need to
@@ -383,8 +383,8 @@ extension TSThread: DeepCopyable {
                                    isArchived: isArchived,
                                    isMarkedUnread: isMarkedUnread,
                                    lastInteractionRowId: lastInteractionRowId,
-                                   lastVisibleSortId: lastVisibleSortId,
-                                   lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                   lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                                   lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                    mentionNotificationMode: mentionNotificationMode,
                                    messageDraft: messageDraft,
                                    messageDraftBodyRanges: messageDraftBodyRanges,
@@ -404,8 +404,8 @@ extension TSThread: DeepCopyable {
             let isArchived: Bool = modelToCopy.isArchived
             let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
-            let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
-            let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
             // NOTE: If this generates build errors, you made need to
@@ -431,8 +431,8 @@ extension TSThread: DeepCopyable {
                             isArchived: isArchived,
                             isMarkedUnread: isMarkedUnread,
                             lastInteractionRowId: lastInteractionRowId,
-                            lastVisibleSortId: lastVisibleSortId,
-                            lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                            lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                            lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                             mentionNotificationMode: mentionNotificationMode,
                             messageDraft: messageDraft,
                             messageDraftBodyRanges: messageDraftBodyRanges,
@@ -465,8 +465,8 @@ extension TSThreadSerializer {
     static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true)
     static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true)
     static let isMarkedUnreadColumn = SDSColumnMetadata(columnName: "isMarkedUnread", columnType: .int)
-    static let lastVisibleSortIdOnScreenPercentageColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentage", columnType: .double)
-    static let lastVisibleSortIdColumn = SDSColumnMetadata(columnName: "lastVisibleSortId", columnType: .int64)
+    static let lastVisibleSortIdOnScreenPercentageObsoleteColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentageObsolete", columnType: .double)
+    static let lastVisibleSortIdObsoleteColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdObsolete", columnType: .int64)
     static let messageDraftBodyRangesColumn = SDSColumnMetadata(columnName: "messageDraftBodyRanges", columnType: .blob, isOptional: true)
     static let mentionNotificationModeColumn = SDSColumnMetadata(columnName: "mentionNotificationMode", columnType: .int)
 
@@ -490,8 +490,8 @@ extension TSThreadSerializer {
         groupModelColumn,
         hasDismissedOffersColumn,
         isMarkedUnreadColumn,
-        lastVisibleSortIdOnScreenPercentageColumn,
-        lastVisibleSortIdColumn,
+        lastVisibleSortIdOnScreenPercentageObsoleteColumn,
+        lastVisibleSortIdObsoleteColumn,
         messageDraftBodyRangesColumn,
         mentionNotificationModeColumn
         ])
@@ -935,8 +935,8 @@ class TSThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
         let isMarkedUnread: Bool = model.isMarkedUnread
-        let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentage
-        let lastVisibleSortId: UInt64 = model.lastVisibleSortId
+        let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentageObsolete
+        let lastVisibleSortId: UInt64 = model.lastVisibleSortIdObsolete
         let messageDraftBodyRanges: Data? = optionalArchive(model.messageDraftBodyRanges)
         let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
 

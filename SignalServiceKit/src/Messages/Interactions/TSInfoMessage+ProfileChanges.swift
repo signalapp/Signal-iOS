@@ -105,7 +105,7 @@ public class ProfileChanges: MTLModel {
             return nil
         }
 
-        if contactsManager.hasNameInSystemContacts(for: address) {
+        if contactsManager.hasNameInSystemContacts(for: address, transaction: transaction) {
             let displayName = contactsManager.displayName(for: address, transaction: transaction)
 
             let formatString = NSLocalizedString(

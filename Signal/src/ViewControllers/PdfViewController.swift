@@ -12,7 +12,7 @@ public class PdfViewController: OWSViewController {
 
     // MARK: Properties
 
-    private let viewItem: ConversationViewItem
+    private let itemViewModel: CVItemViewModel
     private let attachmentStream: TSAttachmentStream
     private var pdfView: UIView?
     private var viewHasEverAppeared = false
@@ -20,9 +20,9 @@ public class PdfViewController: OWSViewController {
     // MARK: Initializers
 
     @objc
-    public required init(viewItem: ConversationViewItem,
+    public required init(itemViewModel: CVItemViewModel,
                          attachmentStream: TSAttachmentStream) {
-        self.viewItem = viewItem
+        self.itemViewModel = itemViewModel
         self.attachmentStream = attachmentStream
 
         super.init()
@@ -125,7 +125,7 @@ public class PdfViewController: OWSViewController {
     }
 
     @objc func forwardButtonPressed() {
-        ForwardMessageNavigationController.present(for: viewItem, from: self, delegate: self)
+        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
     }
 
     @objc
@@ -164,7 +164,7 @@ public class PdfViewController: OWSViewController {
 // MARK: -
 
 extension PdfViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel,
                                               threads: [TSThread]) {
         dismiss(animated: true) {
             self.didForwardMessage(threads: threads)
@@ -183,7 +183,7 @@ extension PdfViewController: ForwardMessageDelegate {
             owsFailDebug("Missing thread.")
             return
         }
-        guard thread.uniqueId != viewItem.interaction.uniqueThreadId else {
+        guard thread.uniqueId != itemViewModel.interaction.uniqueThreadId else {
             return
         }
         SignalApp.shared().presentConversation(for: thread, animated: true)

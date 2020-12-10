@@ -65,8 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
 {
     [super setContentOffset:contentOffset animated:animated];
-
-    return;
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset
@@ -95,6 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [super setContentOffset:contentOffset];
+}
+
+- (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
+{
+    [super scrollRectToVisible:rect animated:animated];
 }
 
 - (BOOL)shouldSkipAdjustmentDueToLoadingMoreWhileOverscrolledWithProposedContentOffset:(CGPoint)proposedContentOffset

@@ -410,9 +410,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return constraint;
 }
 
-- (NSTextAlignment)textAlignmentUnnatural
++ (NSTextAlignment)textAlignmentUnnatural
 {
     return (CurrentAppContext().isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
+}
+
+- (NSTextAlignment)textAlignmentUnnatural
+{
+    return UIView.textAlignmentUnnatural;
 }
 
 - (void)setHLayoutMargins:(CGFloat)value

@@ -73,8 +73,8 @@ class TSGroupThreadSerializer: SDSSerializer {
         let groupModel: Data? = optionalArchive(model.groupModel)
         let hasDismissedOffers: Bool? = nil
         let isMarkedUnread: Bool = model.isMarkedUnread
-        let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentage
-        let lastVisibleSortId: UInt64 = model.lastVisibleSortId
+        let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentageObsolete
+        let lastVisibleSortId: UInt64 = model.lastVisibleSortIdObsolete
         let messageDraftBodyRanges: Data? = optionalArchive(model.messageDraftBodyRanges)
         let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
 

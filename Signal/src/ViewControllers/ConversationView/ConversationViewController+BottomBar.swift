@@ -26,7 +26,7 @@ public extension ConversationViewController {
             // For perf reasons, we avoid adding any "bottom view"
             // to the view hierarchy until its necessary, e.g. when
             // the view is about to appear.
-            owsAssertDebug(hasViewWillAppearOccurred)
+            owsAssertDebug(hasViewWillAppearEverBegun)
 
             if viewState.bottomViewType != newValue {
                 viewState.bottomViewType = newValue
@@ -43,7 +43,7 @@ public extension ConversationViewController {
             // The ordering of this method determines
             // precendence of the bottom views.
 
-            if !hasViewWillAppearOccurred {
+            if !hasViewWillAppearEverBegun {
                 return .none
             } else if threadViewModel.hasPendingMessageRequest {
                 let messageRequestType = Self.databaseStorage.read { transaction in
@@ -70,6 +70,10 @@ public extension ConversationViewController {
 
     private func updateBottomBar() {
         AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            return
+        }
 
         // Animate the dismissal of any existing request view.
         dismissRequestView()
@@ -121,7 +125,8 @@ public extension ConversationViewController {
         }
 
         updateInputAccessoryPlaceholderHeight()
-        updateContentInsets(animated: viewHasEverAppeared)
+        updateBottomBarPosition()
+        updateContentInsets(animated: hasAppearedAndHasAppliedFirstLoad)
         updateInputVisibility()
     }
 
@@ -133,24 +138,37 @@ public extension ConversationViewController {
     func updateInputToolbar() {
         AssertIsOnMainThread()
 
-        let existingDraft = inputToolbar.messageBody()
-
-        let inputToolbar = buildInputToolbar(conversationStyle: conversationStyle)
-        inputToolbar.setMessageBody(existingDraft, animated: false)
-        self.inputToolbar = inputToolbar
-
-        // updateBottomBar() is expensive and we need to avoid it while
-        // initially configuring the view. viewWillAppear() will call
-        // updateBottomBar(). After viewWillAppear(), we need to call
-        // updateBottomBar() to reflect changes in the theme.
-        if hasViewWillAppearOccurred {
-            updateBottomBar()
+        guard hasViewWillAppearEverBegun else {
+            return
         }
+
+        let messageDraft: MessageBody?
+        if let oldInputToolbar = self.inputToolbar {
+            // Maintain draft continuity.
+            messageDraft = oldInputToolbar.messageBody()
+        } else {
+            messageDraft = Self.databaseStorage.uiRead { transaction in
+                self.thread.currentDraft(with: transaction)
+            }
+        }
+
+        let newInputToolbar = buildInputToolbar(conversationStyle: conversationStyle,
+                                                messageDraft: messageDraft)
+
+        self.inputToolbar = newInputToolbar
+
+        newInputToolbar.updateFontSizes()
+
+        updateBottomBar()
     }
 
     @objc
     func updateBottomBarPosition() {
         AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            return
+        }
 
         if let interactivePopGestureRecognizer = navigationController?.interactivePopGestureRecognizer {
             // Don't update the bottom bar position if an interactive pop is in progress
@@ -210,6 +228,14 @@ public extension ConversationViewController {
     func updateInputVisibility() {
         AssertIsOnMainThread()
 
+        guard hasViewWillAppearEverBegun else {
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
         if viewState.isInPreviewPlatter {
             inputToolbar.isHidden = true
             dismissKeyBoard()
@@ -229,6 +255,14 @@ public extension ConversationViewController {
     func updateInputToolbarLayout() {
         AssertIsOnMainThread()
 
+        guard hasViewWillAppearEverBegun else {
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
         inputToolbar.updateLayout(withSafeAreaInsets: view.safeAreaInsets)
     }
 
@@ -236,12 +270,30 @@ public extension ConversationViewController {
     func popKeyBoard() {
         AssertIsOnMainThread()
 
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
         inputToolbar.beginEditingMessage()
     }
 
     @objc
     func dismissKeyBoard() {
         AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
 
         inputToolbar.endEditingMessage()
         inputToolbar.clearDesiredKeyboard()

@@ -6,8 +6,8 @@ import Foundation
 
 @objcMembers
 public class GroupUpdateCopyItem: NSObject {
-    let type: GroupUpdateType
-    let text: String
+    public let type: GroupUpdateType
+    public let text: String
 
     init(type: GroupUpdateType, text: String) {
         self.type = type
@@ -447,7 +447,7 @@ extension GroupUpdateCopy {
         let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
         var allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
             // Use an arbitrary sort to ensure the output is deterministic.
-            return left.stringForDisplay > right.stringForDisplay
+            return left.sortKey > right.sortKey
         }
         // If local user had a membership update, ensure it appears _first_.
         if allUsersSorted.contains(localAddress) {

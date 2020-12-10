@@ -220,6 +220,14 @@ protocol MediaGalleryDelegate: class {
 
 class MediaGallery {
 
+    // MARK: - Dependencies
+
+    private var audioPlayer: CVAudioPlayer {
+        return AppEnvironment.shared.audioPlayer
+    }
+
+    // MARK: -
+
     var deletedAttachments: Set<TSAttachment> = Set()
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
@@ -239,6 +247,7 @@ class MediaGallery {
     @objc
     init(thread: TSThread) {
         self.mediaGalleryFinder = AnyMediaGalleryFinder(thread: thread)
+
         setupDatabaseObservation()
     }
 

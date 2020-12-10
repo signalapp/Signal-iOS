@@ -112,7 +112,7 @@ extension OWSAddToContactViewController: UITableViewDataSource {
             return cell
         }
 
-        cell.configure(contact: contact, subtitleType: .none, showsWhenSelected: false, contactsManager: contactsManager)
+        cell.configure(contact: contact, subtitleType: .none, showsWhenSelected: false)
 
         return cell
     }

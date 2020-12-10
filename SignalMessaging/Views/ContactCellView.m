@@ -130,7 +130,13 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     }
 }
 
-- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
+- (void)configureWithRecipientAddressWithSneakyTransaction:(SignalServiceAddress *)address
+{
+    [self.databaseStorage uiReadWithBlock:^(
+        SDSAnyReadTransaction *transaction) { [self configureWithRecipientAddress:address transaction:transaction]; }];
+}
+
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
@@ -138,18 +144,14 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     [self configureFontsAndColors];
 
     self.address = address;
-
-    // TODO remove sneaky transaction.
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
-    }];
+    self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
     [self updateNameLabels];
-    [self updateAvatar];
+    [self updateAvatarWithTransaction:transaction];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -192,7 +194,9 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     }
 
     self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:self.avatarSize];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread
+                                                         diameter:self.avatarSize
+                                                      transaction:transaction];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -203,7 +207,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     [self layoutSubviews];
 }
 
-- (void)updateAvatar
+- (void)updateAvatarWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
 
@@ -229,7 +233,8 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
     OWSContactAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:address
                                                                                     colorName:colorName
-                                                                                     diameter:self.avatarSize];
+                                                                                     diameter:self.avatarSize
+                                                                                  transaction:transaction];
 
     self.avatarView.image = [avatarBuilder build];
 }
@@ -291,7 +296,8 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
     if (address.isValid && [self.address isEqualToAddress:address]) {
         [self updateNameLabels];
-        [self updateAvatar];
+        [self.databaseStorage
+            uiReadWithBlock:^(SDSAnyReadTransaction *transaction) { [self updateAvatarWithTransaction:transaction]; }];
     }
 }
 

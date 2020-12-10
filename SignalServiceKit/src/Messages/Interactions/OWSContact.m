@@ -399,6 +399,15 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 @implementation OWSContact
 
+#pragma mark - Dependencies
+
++ (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
+#pragma mark -
+
 - (instancetype)init
 {
     if (self = [super init]) {
@@ -541,25 +550,30 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark - Phone Numbers and Recipient IDs
 
-- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
+- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers
 {
-    OWSAssertDebug(contactsManager);
-
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [contactsManager isSystemContactWithSignalAccount:recipientId];
+            return [OWSContact.contactsManager isSystemContactWithSignalAccount:recipientId];
         }]];
 }
 
-- (NSArray<NSString *> *)systemContactPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
+- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbersWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(contactsManager);
-
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [contactsManager isSystemContactWithPhoneNumber:recipientId];
+            return [OWSContact.contactsManager isSystemContactWithSignalAccount:recipientId transaction:transaction];
+        }]];
+}
+
+- (NSArray<NSString *> *)systemContactPhoneNumbers
+{
+    return [self.e164PhoneNumbers
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return [OWSContact.contactsManager isSystemContactWithPhoneNumber:recipientId];
         }]];
 }
 
