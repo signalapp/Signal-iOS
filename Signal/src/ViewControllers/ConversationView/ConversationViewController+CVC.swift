@@ -361,9 +361,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         benchSteps.step("1")
 
-        Logger.verbose("presentationStatus: \(presentationStatus), hasViewDidAppearEverCompleted: \(hasViewDidAppearEverCompleted).")
-        Logger.verbose("collectionView.frame: \(collectionView.frame).")
-
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -479,8 +476,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             var hasInserted = false
             var hasUpdated = false
             for item in items {
-                //                Logger.verbose("item: \(item.debugDescription)")
-
                 switch item {
                 case .insert(let renderItem, let newIndex):
                     // Always perform inserts before updates.

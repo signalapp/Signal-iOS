@@ -193,7 +193,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         if let action = systemMessage.action {
             let rootView = componentView.rootView
             if rootView.containsGestureLocation(sender) {
-                Logger.verbose("")
                 action.action.perform(delegate: componentDelegate)
                 return true
             }

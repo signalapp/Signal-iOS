@@ -168,10 +168,6 @@ public class CVLoader: NSObject {
                 items = loadState.items
             }
 
-            //                for item in items {
-            //                    Logger.verbose("item: \(item.debugDescription)")
-            //                }
-
             let threadViewModel = loadState.threadViewModel
             let renderState = CVRenderState(threadViewModel: threadViewModel,
                                             lastThreadViewModel: lastRenderState.threadViewModel,
