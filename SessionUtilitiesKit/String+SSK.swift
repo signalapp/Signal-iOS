@@ -5,6 +5,7 @@
 import Foundation
 
 public extension String {
+    
     var digitsOnly: String {
         return (self as NSString).digitsOnly()
     }

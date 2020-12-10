@@ -1,5 +1,6 @@
 import SessionProtocolKit
 import PromiseKit
+import Sodium
 
 public protocol SessionMessagingKitStorageProtocol {
 
@@ -15,6 +16,7 @@ public protocol SessionMessagingKitStorageProtocol {
 
     func getUserPublicKey() -> String?
     func getUserKeyPair() -> ECKeyPair?
+    func getUserED25519KeyPair() -> Box.KeyPair?
     func getUserDisplayName() -> String?
     func getUserProfileKey() -> Data?
     func getUserProfilePictureURL() -> String?
