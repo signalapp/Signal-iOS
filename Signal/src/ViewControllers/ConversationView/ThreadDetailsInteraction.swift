@@ -6,9 +6,6 @@ import Foundation
 
 @objc(OWSThreadDetailsInteraction)
 public class ThreadDetailsInteraction: TSInteraction {
-    // TODO: Remove.
-    @objc
-    public static let ThreadDetailsId = "ThreadDetails"
 
     @objc
     public override func isDynamicInteraction() -> Bool {

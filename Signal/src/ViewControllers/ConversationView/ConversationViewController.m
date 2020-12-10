@@ -641,8 +641,6 @@ typedef enum : NSUInteger {
     [self updateBarButtonItems];
     [self updateNavigationTitle];
 
-    //    [self resetContentAndLayoutWithSneakyTransaction];
-
     // One-time work performed the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [BenchManager
