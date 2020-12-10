@@ -27,7 +27,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     public var isDedicatedCell: Bool {
-        cellReuseIdentifier != .`default`
+        // TODO: Re-enable reuse of this component.
+        // cellReuseIdentifier != .`default`
+        return false
     }
 
     private var bodyText: CVComponent?
