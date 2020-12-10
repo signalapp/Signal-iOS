@@ -262,23 +262,17 @@ public struct CVTextViewConfig {
 public class CVText {
     public enum MeasurementMode { case view, layoutManager, boundingRect }
 
-    public static let measureOnMainThread = false
-
-    public static var measurementQueue: DispatchQueue {
-        measureOnMainThread
-            ? .main
-            : CVUtils.workQueue
-    }
+    public static var measurementQueue: DispatchQueue { CVUtils.workQueue }
 
     private static var reuseLabels: Bool {
-        measureOnMainThread
+        false
     }
     public static var defaultLabelMeasurementMode: MeasurementMode {
         .layoutManager
     }
 
     private static var reuseTextViews: Bool {
-        measureOnMainThread
+        false
     }
     public static var defaultTextViewMeasurementMode: MeasurementMode {
         .layoutManager
