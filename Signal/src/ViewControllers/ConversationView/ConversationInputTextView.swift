@@ -27,6 +27,7 @@ class ConversationInputTextView: MentionTextView {
 
     var trimmedText: String { text.ows_stripped() }
     var untrimmedText: String { text }
+    private var textIsChanging = false
 
     required init() {
         super.init()
@@ -114,10 +115,22 @@ class ConversationInputTextView: MentionTextView {
 
     override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
         // When creating new lines, contentOffset is animated, but because because
-        // we are simultaneously resizing the text view, this can cause the
-        // text in the textview to be "too high" in the text view.
-        // Solution is to disable animation for setting content offset.
-        super.setContentOffset(contentOffset, animated: false)
+        // we are simultaneously resizing the text view, on pre-iOS 13 this can
+        // cause the text in the textview to be "too high" in the text view.
+        // Solution is to disable animation for setting content offset between
+        // -textViewShouldChange... and -textViewDidChange.
+        //
+        // We can't unilaterally disable *all* animated scrolling because that breaks
+        // manipulation of the cursor in scrollable text. Animation is required to
+        // slow the text view scrolling down to human scale when the cursor reaches
+        // the top or bottom edge.
+        let shouldAnimate: Bool
+        if #available(iOS 13, *) {
+            shouldAnimate = animated
+        } else {
+            shouldAnimate = animated && !textIsChanging
+        }
+        super.setContentOffset(contentOffset, animated: shouldAnimate)
     }
 
     override var contentInset: UIEdgeInsets {
@@ -169,8 +182,14 @@ class ConversationInputTextView: MentionTextView {
 
     // MARK: - UITextViewDelegate
 
+    override func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        textIsChanging = true
+        return true
+    }
+
     override func textViewDidChange(_ textView: UITextView) {
         super.textViewDidChange(textView)
+        textIsChanging = false
 
         updatePlaceholderVisibility()
         updateTextContainerInset()
