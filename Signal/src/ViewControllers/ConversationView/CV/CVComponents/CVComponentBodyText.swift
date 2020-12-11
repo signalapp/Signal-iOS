@@ -462,9 +462,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        let label = componentView.ensuredLabel
-        label.charac
-        
         guard let textView = componentView.possibleTextView else {
             // Not using a text view.
             return nil
