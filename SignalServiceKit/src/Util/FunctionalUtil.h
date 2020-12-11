@@ -4,21 +4,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSArray (FunctionalUtil)
+@interface NSArray <ObjectType>(FunctionalUtil)
+
+/// Returns the first item in the array satisfying the predicate
+- (nullable ObjectType)firstSatisfying:(BOOL (^)(ObjectType item))predicate;
 
 /// Returns true when any of the items in this array match the given predicate.
-- (bool)any:(int (^)(id item))predicate;
+- (BOOL)anySatisfy:(BOOL (^)(ObjectType item))predicate;
 
 /// Returns true when all of the items in this array match the given predicate.
-- (bool)all:(int (^)(id item))predicate;
+- (BOOL)allSatisfy:(BOOL (^)(ObjectType item))predicate;
 
 /// Returns an array of all the results of passing items from this array through the given projection function.
-- (NSArray *)map:(id (^)(id item))projection;
+- (NSArray *)map:(id (^)(ObjectType item))projection;
 
 /// Returns an array of all the results of passing items from this array through the given projection function.
-- (NSArray *)filter:(int (^)(id item))predicate;
+- (NSArray<ObjectType> *)filter:(BOOL (^)(ObjectType item))predicate;
 
-- (NSDictionary *)groupBy:(id (^)(id value))keySelector;
+- (NSDictionary<id, NSArray<ObjectType> *> *)groupBy:(id (^)(id value))keySelector;
 
 @end
 
