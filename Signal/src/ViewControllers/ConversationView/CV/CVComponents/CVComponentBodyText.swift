@@ -61,7 +61,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewBodyText(componentDelegate: componentDelegate)
-    }7
+    }
 
     private var isJumbomoji: Bool {
         componentState.isJumbomojiMessage
@@ -322,6 +322,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return CVLabelConfig(text: text,
                              font: textMessageFont.ows_italic,
                              textColor: bodyTextColor,
+                             numberOfLines: 0,
+                             lineBreakMode: .byWordWrapping,
                              textAlignment: .center)
     }
 
@@ -331,6 +333,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return CVLabelConfig(text: text,
                              font: textMessageFont.ows_italic,
                              textColor: bodyTextColor,
+                             numberOfLines: 0,
+                             lineBreakMode: .byWordWrapping,
                              textAlignment: .center)
     }
 
@@ -351,7 +355,11 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                                          attributedText: attributedText)
                 return .textViewConfig(textViewConfig: textViewConfig)
             } else {
-                let labelConfig = CVLabelConfig(text: text, font: textMessageFont, textColor: bodyTextColor)
+                let labelConfig = CVLabelConfig(text: text,
+                                                font: textMessageFont,
+                                                textColor: bodyTextColor,
+                                                numberOfLines: 0,
+                                                lineBreakMode: .byWordWrapping)
                 return .labelConfig(labelConfig: labelConfig)
             }
         case .attributedText(let attributedText):
