@@ -660,7 +660,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return false
         }
 
-        guard sender.uuidString == nil || sender.uuidString == tsAccountManager.localUuid?.uuidString else {
+        owsAssert(tsAccountManager.localUuid != nil)
+        // Note that the certificate's UUID string may not be the same form as what UUID.uuidString produces.
+        guard sender.uuidString == nil || UUID(uuidString: sender.uuidString!) == tsAccountManager.localUuid else {
             Logger.warn("Sender certificate has incorrect UUID")
             return false
         }
