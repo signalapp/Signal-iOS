@@ -299,7 +299,9 @@ public class CVText {
         if Thread.isMainThread {
             return label_main
         } else {
-            assertOnQueue(measurementQueue)
+            if !CurrentAppContext().isRunningTests {
+                assertOnQueue(measurementQueue)
+            }
 
             return label_workQueue
         }
@@ -311,7 +313,9 @@ public class CVText {
     private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        assertOnQueue(measurementQueue)
+        if !CurrentAppContext().isRunningTests {
+            assertOnQueue(measurementQueue)
+        }
 
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
@@ -431,7 +435,9 @@ public class CVText {
         if Thread.isMainThread {
             return textView_main
         } else {
-            assertOnQueue(measurementQueue)
+            if !CurrentAppContext().isRunningTests {
+                assertOnQueue(measurementQueue)
+            }
 
             return textView_workQueue
         }
@@ -442,7 +448,9 @@ public class CVText {
     public static func measureTextView(mode: MeasurementMode = defaultTextViewMeasurementMode,
                                        config: CVTextViewConfig,
                                        maxWidth: CGFloat) -> CGSize {
-        assertOnQueue(measurementQueue)
+        if !CurrentAppContext().isRunningTests {
+            assertOnQueue(measurementQueue)
+        }
 
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,

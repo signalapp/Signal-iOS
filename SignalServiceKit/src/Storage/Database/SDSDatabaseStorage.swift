@@ -288,7 +288,9 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite:
-            owsFailDebug("Unexpected transaction.")
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Unexpected transaction.")
+            }
         case .grdbWrite(let grdb):
             UIDatabaseObserver.serializedSync {
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
@@ -304,7 +306,9 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite:
-            owsFailDebug("Unexpected transaction.")
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Unexpected transaction.")
+            }
         case .grdbWrite(let grdb):
             UIDatabaseObserver.serializedSync {
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
@@ -320,7 +324,9 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite:
-            owsFailDebug("Unexpected transaction.")
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Unexpected transaction.")
+            }
         case .grdbWrite(let grdb):
             UIDatabaseObserver.serializedSync {
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
