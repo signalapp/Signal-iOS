@@ -2011,7 +2011,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)canPresentPreviewFromIndexPath:(nullable NSIndexPath *)indexPath
 {
+    NSString *currentSelectedThreadId = self.conversationSplitViewController.selectedThread.uniqueId;
     if (!indexPath) {
+        return NO;
+    } else if ([[self threadForIndexPath:indexPath].uniqueId isEqual:currentSelectedThreadId]) {
+        // Currently, no previewing the currently selected thread.
+        // Though, in a scene-aware, multiwindow world, we may opt to permit this.
+        // If only to allow the user to pick up and drag a conversation to a new window.
         return NO;
     } else {
         switch (indexPath.section) {
