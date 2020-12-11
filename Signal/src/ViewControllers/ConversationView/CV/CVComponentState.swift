@@ -19,24 +19,46 @@ public class CVComponentState: Equatable {
     }
     let senderAvatar: SenderAvatar?
 
-    struct BodyText: Equatable {
-        enum State: Equatable {
-            case bodyText(displayableBodyText: DisplayableText)
+    enum BodyText: Equatable {
+        case bodyText(displayableText: DisplayableText)
 
-            // TODO: Should we have oversizeTextFailed?
-            case oversizeTextDownloading
+        // TODO: Should we have oversizeTextFailed?
+        case oversizeTextDownloading
 
-            // We use the "body text" component to
-            // render the "remotely deleted" indicator.
-            case remotelyDeleted
-        }
-        var state: State
+        // We use the "body text" component to
+        // render the "remotely deleted" indicator.
+        case remotelyDeleted
 
-        var displayableBodyText: DisplayableText? {
-            if case .bodyText(let displayableBodyText) = state {
-                return displayableBodyText
+        var displayableText: DisplayableText? {
+            if case .bodyText(let displayableText) = self {
+                return displayableText
             }
             return nil
+        }
+
+        func textValue(isTextExpanded: Bool) -> CVTextValue? {
+            switch self {
+            case .bodyText(let displayableText):
+                return displayableText.textValue(isTextExpanded: isTextExpanded)
+            default:
+                return nil
+            }
+        }
+
+        var jumbomojiCount: UInt? {
+            switch self {
+            case .bodyText(let displayableText):
+                return displayableText.jumbomojiCount
+            default:
+                return nil
+            }
+        }
+
+        var isJumbomojiMessage: Bool {
+            guard let jumbomojiCount = jumbomojiCount else {
+                return false
+            }
+            return jumbomojiCount > 0
         }
     }
     let bodyText: BodyText?
@@ -501,13 +523,7 @@ public class CVComponentState: Equatable {
     }()
 
     lazy var isJumbomojiMessage: Bool = {
-        if isTextOnlyMessage,
-           let bodyText = bodyText,
-           let displayableBodyText = bodyText.displayableBodyText,
-           displayableBodyText.jumbomojiCount > 0 {
-            return true
-        }
-        return false
+        isTextOnlyMessage && (bodyText?.isJumbomojiMessage == true)
     }()
 
     lazy var isBodyMediaOnlyMessage: Bool = {
@@ -667,7 +683,7 @@ fileprivate extension CVComponentState.Builder {
 
         if message.wasRemotelyDeleted {
             // If the message has been remotely deleted, suppress everything else.
-            self.bodyText = BodyText(state: .remotelyDeleted)
+            self.bodyText = .remotelyDeleted
             return build()
         }
 
@@ -894,10 +910,10 @@ fileprivate extension CVComponentState.Builder {
         var displayableQuotedText: DisplayableText?
         if let quotedBody = quotedReplyModel.body,
            !quotedBody.isEmpty {
-            displayableQuotedText = Self.displayableQuotedText(text: quotedBody,
-                                                               ranges: quotedReplyModel.bodyRanges,
-                                                               interaction: message,
-                                                               transaction: transaction)
+            displayableQuotedText = CVComponentState.displayableQuotedText(text: quotedBody,
+                                                                           ranges: quotedReplyModel.bodyRanges,
+                                                                           interaction: message,
+                                                                           transaction: transaction)
         }
         let viewState = QuotedMessageView.stateForConversation(quotedReplyModel: quotedReplyModel,
                                                                displayableQuotedText: displayableQuotedText,
@@ -908,32 +924,8 @@ fileprivate extension CVComponentState.Builder {
     }
 
     mutating func buildBodyText(message: TSMessage) throws {
-        // TODO: We might want to treat text that is completely stripped
-        // as not present.
-        if let oversizeTextAttachment = message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) {
-            if let oversizeTextAttachmentStream = oversizeTextAttachment as? TSAttachmentStream {
-                let displayableBodyText = Self.displayableBodyText(oversizeTextAttachment: oversizeTextAttachmentStream,
-                                                                   ranges: message.bodyRanges,
-                                                                   interaction: message,
-                                                                   transaction: transaction)
-                self.bodyText = BodyText(state: .bodyText(displayableBodyText: displayableBodyText))
-            } else if nil != oversizeTextAttachment as? TSAttachmentPointer {
-                // TODO: Handle backup restore.
-                // TODO: If there's media, should we display that while the oversize text is downloading?
-                self.bodyText = BodyText(state: .oversizeTextDownloading)
-            } else {
-                throw OWSAssertionError("Invalid oversizeTextAttachment.")
-            }
-        } else if let body = message.body, !body.isEmpty {
-            let displayableBodyText = Self.displayableBodyText(text: body,
-                                                               ranges: message.bodyRanges,
-                                                               interaction: message,
+        bodyText = try CVComponentBodyText.buildComponentState(message: message,
                                                                transaction: transaction)
-            self.bodyText = BodyText(state: .bodyText(displayableBodyText: displayableBodyText))
-        } else {
-            // No body text.
-            return
-        }
     }
 
     // MARK: -
@@ -952,9 +944,9 @@ fileprivate extension CVComponentState.Builder {
 
             var caption: String?
             if let rawCaption = attachment.caption {
-                caption = Self.displayableCaption(text: rawCaption,
-                                                  attachmentId: attachment.uniqueId,
-                                                  transaction: transaction).displayAttributedText.string
+                caption = CVComponentState.displayableCaption(text: rawCaption,
+                                                              attachmentId: attachment.uniqueId,
+                                                              transaction: transaction).displayTextValue.stringValue
             }
 
             guard let attachmentStream = attachment as? TSAttachmentStream else {
@@ -1082,7 +1074,7 @@ fileprivate extension CVComponentState.Builder {
 
 // MARK: - DisplayableText
 
-fileprivate extension CVComponentState.Builder {
+public extension CVComponentState {
 
     static func displayableBodyText(text: String,
                                     ranges: MessageBodyRanges?,
@@ -1130,6 +1122,11 @@ fileprivate extension CVComponentState.Builder {
             return MessageBody(text: text, ranges: ranges ?? .empty)
         }
     }
+}
+
+// MARK: -
+
+fileprivate extension CVComponentState {
 
     static func displayableQuotedText(text: String,
                                       ranges: MessageBodyRanges?,
@@ -1153,9 +1150,9 @@ fileprivate extension CVComponentState.Builder {
         let cacheKey = "attachment-caption-\(attachmentId)"
 
         let mentionStyle: Mention.Style = .incoming
-        return Self.displayableText(cacheKey: cacheKey,
-                                    mentionStyle: mentionStyle,
-                                    transaction: transaction) {
+        return CVComponentState.displayableText(cacheKey: cacheKey,
+                                                mentionStyle: mentionStyle,
+                                                transaction: transaction) {
             MessageBody(text: text, ranges: .empty)
         }
     }

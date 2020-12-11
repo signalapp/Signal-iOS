@@ -9,15 +9,16 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     struct State: Equatable {
         let bodyText: CVComponentState.BodyText
-        let isTruncatedTextVisible: Bool
+        let isTextExpanded: Bool
         let searchText: String?
         let hasTapForMore: Bool
+        let shouldUseAttributedText: Bool
 
         public var canUseDedicatedCell: Bool {
             if hasTapForMore || searchText != nil {
                 return false
             }
-            switch bodyText.state {
+            switch bodyText {
             case .bodyText:
                 return true
             case .oversizeTextDownloading:
@@ -26,14 +27,21 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return false
             }
         }
+
+        var textValue: CVTextValue? {
+            bodyText.textValue(isTextExpanded: isTextExpanded)
+        }
     }
     private let bodyTextState: State
 
     private var bodyText: CVComponentState.BodyText {
         bodyTextState.bodyText
     }
-    private var isTruncatedTextVisible: Bool {
-        bodyTextState.isTruncatedTextVisible
+    private var textValue: CVTextValue? {
+        bodyTextState.textValue
+    }
+    private var isTextExpanded: Bool {
+        bodyTextState.isTextExpanded
     }
     private var searchText: String? {
         bodyTextState.searchText
@@ -41,16 +49,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private var hasTapForMore: Bool {
         bodyTextState.hasTapForMore
     }
-
-    private var displayableBodyText: DisplayableText? {
-        switch bodyText.state {
-        case .bodyText(let displayableBodyText):
-            return displayableBodyText
-        case .oversizeTextDownloading:
-            return nil
-        case .remotelyDeleted:
-            return nil
-        }
+    public var shouldUseAttributedText: Bool {
+        bodyTextState.shouldUseAttributedText
     }
 
     init(itemModel: CVItemModel, bodyTextState: State) {
@@ -61,15 +61,46 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewBodyText(componentDelegate: componentDelegate)
-    }
+    }7
 
     private var isJumbomoji: Bool {
-        guard isTextOnlyMessage,
-              let displayableBodyText = self.displayableBodyText,
-              displayableBodyText.jumbomojiCount > 0 else {
-            return false
+        componentState.isJumbomojiMessage
+    }
+
+    private static func buildDataDetectorWithLinks(shouldAllowLinkification: Bool) -> NSDataDetector? {
+        let uiDataDetectorTypes: UIDataDetectorTypes = (shouldAllowLinkification
+                                                            ? kOWSAllowedDataDetectorTypes
+                                                            : kOWSAllowedDataDetectorTypesExceptLinks)
+        var nsDataDetectorTypes: NSTextCheckingTypes = 0
+        if uiDataDetectorTypes.contains(UIDataDetectorTypes.link) {
+            nsDataDetectorTypes |= NSTextCheckingResult.CheckingType.link.rawValue
         }
-        return true
+        if uiDataDetectorTypes.contains(UIDataDetectorTypes.address) {
+            nsDataDetectorTypes |= NSTextCheckingResult.CheckingType.address.rawValue
+        }
+        // TODO: There doesn't seem to be an equivalent to UIDataDetectorTypes.calendarEvent.
+
+        do {
+            return try NSDataDetector(types: nsDataDetectorTypes)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
+    private static var dataDetectorWithLinks: NSDataDetector? = {
+        buildDataDetectorWithLinks(shouldAllowLinkification: true)
+    }()
+
+    private static var dataDetectorWithoutLinks: NSDataDetector? = {
+        buildDataDetectorWithLinks(shouldAllowLinkification: false)
+    }()
+
+    // DataDetectors are expensive to build, so we reuse them.
+    private static func dataDetector(shouldAllowLinkification: Bool) -> NSDataDetector? {
+        assertOnQueue(CVUtils.workQueue)
+
+        return shouldAllowLinkification ? dataDetectorWithLinks : dataDetectorWithoutLinks
     }
 
     static func buildState(interaction: TSInteraction,
@@ -78,21 +109,91 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                            hasTapForMore: Bool) -> State {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
+        let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
 
-        let isTruncatedTextVisible = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
+        var shouldUseAttributedText = false
+        if let displayableText = bodyText.displayableText,
+           let textValue = bodyText.textValue(isTextExpanded: isTextExpanded) {
+            switch textValue {
+            case .text(let text):
+                // UILabels are much cheaper than UITextViews, and we can
+                // usually use them for rendering body text.
+                //
+                // We need to use attributed text in a UITextViews if:
+                //
+                // * We're displaying search results (and need to highlight matches).
+                // * The text value is an attributed string (has mentions).
+                // * The text value should be linkified.
+                if searchText != nil {
+                    shouldUseAttributedText = true
+                } else {
+                    // NSDataDetector and UIDataDetector behavior should be aligned.
+                    //
+                    // TODO: We might want to move this detection logic into
+                    // DisplayableText so that we can leverage caching.
+                    if let detector = dataDetector(shouldAllowLinkification: displayableText.shouldAllowLinkification) {
+                        shouldUseAttributedText = !detector.matches(in: text, options: [], range: text.entireRange).isEmpty
+                    } else {
+                        // If the data detectors can't be built, default to using attributed text.
+                        shouldUseAttributedText = true
+                    }
+                }
+            case .attributedText:
+                shouldUseAttributedText = true
+            }
+        }
+
         return State(bodyText: bodyText,
-                     isTruncatedTextVisible: isTruncatedTextVisible,
+                     isTextExpanded: isTextExpanded,
                      searchText: searchText,
-                     hasTapForMore: hasTapForMore)
+                     hasTapForMore: hasTapForMore,
+                     shouldUseAttributedText: shouldUseAttributedText)
+    }
+
+    static func buildComponentState(message: TSMessage,
+                                    transaction: SDSAnyReadTransaction) throws -> CVComponentState.BodyText? {
+
+        func build(displayableText: DisplayableText) -> CVComponentState.BodyText? {
+            guard !displayableText.fullTextValue.stringValue.isEmpty else {
+                return nil
+            }
+            return .bodyText(displayableText: displayableText)
+        }
+
+        // TODO: We might want to treat text that is completely stripped
+        // as not present.
+        if let oversizeTextAttachment = message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) {
+            if let oversizeTextAttachmentStream = oversizeTextAttachment as? TSAttachmentStream {
+                let displayableText = CVComponentState.displayableBodyText(oversizeTextAttachment: oversizeTextAttachmentStream,
+                                                                           ranges: message.bodyRanges,
+                                                                           interaction: message,
+                                                                           transaction: transaction)
+                return build(displayableText: displayableText)
+            } else if nil != oversizeTextAttachment as? TSAttachmentPointer {
+                // TODO: Handle backup restore.
+                // TODO: If there's media, should we display that while the oversize text is downloading?
+                return .oversizeTextDownloading
+            } else {
+                throw OWSAssertionError("Invalid oversizeTextAttachment.")
+            }
+        } else if let body = message.body, !body.isEmpty {
+            let displayableText = CVComponentState.displayableBodyText(text: body,
+                                                                       ranges: message.bodyRanges,
+                                                                       interaction: message,
+                                                                       transaction: transaction)
+            return build(displayableText: displayableText)
+        } else {
+            // No body text.
+            return nil
+        }
     }
 
     private var textMessageFont: UIFont {
         owsAssertDebug(DisplayableText.kMaxJumbomojiCount == 5)
 
-        if let displayableBodyText = self.displayableBodyText,
-           isJumbomoji {
+        if isJumbomoji, let jumbomojiCount = bodyText.jumbomojiCount {
             let basePointSize = UIFont.ows_dynamicTypeBodyClamped.pointSize
-            switch displayableBodyText.jumbomojiCount {
+            switch jumbomojiCount {
             case 0:
                 break
             case 1:
@@ -106,7 +207,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             case 5:
                 return UIFont.ows_regularFont(withSize: basePointSize * 2.25)
             default:
-                owsFailDebug("Unexpected jumbomoji count: \(displayableBodyText.jumbomojiCount)")
+                owsFailDebug("Unexpected jumbomoji count: \(jumbomojiCount)")
                 break
             }
         }
@@ -132,10 +233,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let hStackView = componentView.hStackView
         hStackView.apply(config: stackViewConfig)
 
-        switch bodyText.state {
-        case .bodyText(let displayableBodyText):
-            configureForBodyText(componentView: componentView,
-                                 displayableBodyText: displayableBodyText)
+        switch bodyText {
+        case .bodyText(let displayableText):
+            configureForBodyText(componentView: componentView, displayableText: displayableText)
         case .oversizeTextDownloading:
             owsAssertDebug(!componentView.isDedicatedCellView)
 
@@ -148,51 +248,64 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private func configureForRemotelyDeleted(componentView: CVComponentViewBodyText) {
-        // TODO: The border, foreground and background colors are wrong.
-        configureForLabel(componentView: componentView,
+        // TODO: Set accessibilityLabel.
+        _ = configureForLabel(componentView: componentView,
                           labelConfig: labelConfigForRemotelyDeleted)
     }
 
     private func configureForOversizeTextDownloading(componentView: CVComponentViewBodyText) {
-        configureForLabel(componentView: componentView,
+        // TODO: Set accessibilityLabel.
+        _ = configureForLabel(componentView: componentView,
                           labelConfig: labelConfigForOversizeTextDownloading)
     }
 
     private func configureForLabel(componentView: CVComponentViewBodyText,
-                                   labelConfig: CVLabelConfig) {
-        let label = componentView.label
+                                   labelConfig: CVLabelConfig) -> UILabel {
+        let label = componentView.ensuredLabel
         labelConfig.applyForRendering(label: label)
-        label.setCompressionResistanceVerticalHigh()
 
-        let hStackView = componentView.hStackView
-        hStackView.addArrangedSubview(label)
+        label.isHidden = false
+        if label.superview == nil {
+            let hStackView = componentView.hStackView
+            hStackView.addArrangedSubview(label)
+            label.setCompressionResistanceVerticalHigh()
+        }
+        componentView.possibleTextView?.isHidden = true
+
+        return label
     }
 
     public func configureForBodyText(componentView: CVComponentViewBodyText,
-                                     displayableBodyText: DisplayableText) {
+                                     displayableText: DisplayableText) {
 
-        let hStackView = componentView.hStackView
-        let textView = componentView.textView
+        switch textConfig(displayableText: displayableText) {
+        case .labelConfig(let labelConfig):
+            let label = configureForLabel(componentView: componentView, labelConfig: labelConfig)
+            label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
+        case .textViewConfig(let textViewConfig):
+            let textView = componentView.ensuredTextView
 
-        var shouldIgnoreEvents = false
-        if let outgoingMessage = interaction as? TSOutgoingMessage {
-            // Ignore taps on links in outgoing messages that haven't been sent yet, as
-            // this interferes with "tap to retry".
-            shouldIgnoreEvents = outgoingMessage.messageState != .sent
+            var shouldIgnoreEvents = false
+            if let outgoingMessage = interaction as? TSOutgoingMessage {
+                // Ignore taps on links in outgoing messages that haven't been sent yet, as
+                // this interferes with "tap to retry".
+                shouldIgnoreEvents = outgoingMessage.messageState != .sent
+            }
+            textView.shouldIgnoreEvents = shouldIgnoreEvents
+
+            textView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
+
+            textViewConfig.applyForRendering(textView: textView)
+
+            textView.accessibilityLabel = accessibilityLabel(description: textViewConfig.stringValue)
+
+            textView.isHidden = false
+            if textView.superview == nil {
+                let hStackView = componentView.hStackView
+                hStackView.addArrangedSubview(textView)
+            }
+            componentView.possibleLabel?.isHidden = true
         }
-        textView.shouldIgnoreEvents = shouldIgnoreEvents
-
-        textView.ensureShouldLinkifyText(displayableBodyText.shouldAllowLinkification)
-
-        let textViewConfig = self.textViewConfig(displayableBodyText: displayableBodyText)
-        textViewConfig.applyForRendering(textView: textView)
-        let isReusing = componentView.rootView.superview != nil
-        if !isReusing {
-            hStackView.addArrangedSubview(textView)
-        }
-
-        let accessibilityDescription = displayableBodyText.displayAttributedText.string
-        textView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
     }
 
     private var stackViewConfig: CVStackViewConfig {
@@ -221,7 +334,35 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                              textAlignment: .center)
     }
 
-    private func textViewConfig(displayableBodyText: DisplayableText) -> CVTextViewConfig {
+    private enum TextConfig {
+        case labelConfig(labelConfig: CVLabelConfig)
+        case textViewConfig(textViewConfig: CVTextViewConfig)
+    }
+
+    private func textConfig(displayableText: DisplayableText) -> TextConfig {
+
+        let textValue = displayableText.textValue(isTextExpanded: isTextExpanded)
+
+        switch textValue {
+        case .text(let text):
+            if shouldUseAttributedText {
+                let attributedText = NSAttributedString(string: text)
+                let textViewConfig = self.textViewConfig(displayableText: displayableText,
+                                                         attributedText: attributedText)
+                return .textViewConfig(textViewConfig: textViewConfig)
+            } else {
+                let labelConfig = CVLabelConfig(text: text, font: textMessageFont, textColor: bodyTextColor)
+                return .labelConfig(labelConfig: labelConfig)
+            }
+        case .attributedText(let attributedText):
+            let textViewConfig = self.textViewConfig(displayableText: displayableText,
+                                                     attributedText: attributedText)
+            return .textViewConfig(textViewConfig: textViewConfig)
+        }
+    }
+
+    private func textViewConfig(displayableText: DisplayableText,
+                                attributedText attributedTextParam: NSAttributedString) -> CVTextViewConfig {
 
         // Honor dynamic type in the message bodies.
         let linkTextAttributes: [NSAttributedString.Key: Any] = [
@@ -229,21 +370,14 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
 
-        let displayableAttributedText: NSAttributedString
-        let displayableTextAlignment: NSTextAlignment
-        if displayableBodyText.isTextTruncated && isTruncatedTextVisible {
-            displayableAttributedText = displayableBodyText.fullAttributedText
-            displayableTextAlignment = displayableBodyText.fullTextNaturalAlignment
-        } else {
-            owsAssertDebug(!isTruncatedTextVisible)
-            displayableAttributedText = displayableBodyText.displayAttributedText
-            displayableTextAlignment = displayableBodyText.displayTextNaturalAlignment
-        }
+        let textAlignment = (isTextExpanded
+                                ? displayableText.fullTextNaturalAlignment
+                                : displayableText.displayTextNaturalAlignment)
 
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = displayableTextAlignment
+        paragraphStyle.alignment = textAlignment
 
-        let attributedText = displayableAttributedText.mutableCopy() as! NSMutableAttributedString
+        let attributedText = attributedTextParam.mutableCopy() as! NSMutableAttributedString
         attributedText.addAttributes(
             [
                 .font: textMessageFont,
@@ -280,11 +414,14 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        switch bodyText.state {
-        case .bodyText(let displayableBodyText):
-            let textViewConfig = self.textViewConfig(displayableBodyText: displayableBodyText)
-            let bodyTextSize = CVText.measureTextView(config: textViewConfig, maxWidth: maxWidth)
-            return bodyTextSize.ceil
+        switch bodyText {
+        case .bodyText(let displayableText):
+            switch textConfig(displayableText: displayableText) {
+            case .labelConfig(let labelConfig):
+                return CVText.measureLabel(config: labelConfig, maxWidth: maxWidth).ceil
+            case .textViewConfig(let textViewConfig):
+                return CVText.measureTextView(config: textViewConfig, maxWidth: maxWidth).ceil
+            }
         case .oversizeTextDownloading:
             return CVText.measureLabel(config: labelConfigForOversizeTextDownloading, maxWidth: maxWidth).ceil
         case .remotelyDeleted:
@@ -325,7 +462,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        let textView = componentView.textView
+        let label = componentView.ensuredLabel
+        label.charac
+        
+        guard let textView = componentView.possibleTextView else {
+            // Not using a text view.
+            return nil
+        }
         let location = sender.location(in: textView)
         guard textView.bounds.contains(location) else {
             return nil
@@ -357,8 +500,29 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         public weak var componentDelegate: CVComponentDelegate?
 
         fileprivate let hStackView = OWSStackView(name: "bodyText")
-        fileprivate let textView: OWSMessageTextView
-        fileprivate let label = UILabel()
+
+        private var _textView: OWSMessageTextView?
+        fileprivate var possibleTextView: OWSMessageTextView? { _textView }
+        fileprivate var ensuredTextView: OWSMessageTextView {
+            if let textView = _textView {
+                return textView
+            }
+            let textView = Self.buildTextView()
+            textView.delegate = self
+            _textView = textView
+            return textView
+        }
+
+        private var _label: UILabel?
+        fileprivate var possibleLabel: UILabel? { _label }
+        fileprivate var ensuredLabel: UILabel {
+            if let label = _label {
+                return label
+            }
+            let label = UILabel()
+            _label = label
+            return label
+        }
 
         public var isDedicatedCellView = false
 
@@ -368,11 +532,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         required init(componentDelegate: CVComponentDelegate) {
             self.componentDelegate = componentDelegate
-            textView = Self.buildTextView()
 
             super.init()
-
-            textView.delegate = self
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
@@ -388,8 +549,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 hStackView.reset()
             }
 
-            textView.text = nil
-            label.text = nil
+            _textView?.text = nil
+            _label?.text = nil
         }
 
         // MARK: - UITextViewDelegate

@@ -6,7 +6,7 @@ import Foundation
 
 private typealias CacheKey = String
 
-private enum CVTextValue: Equatable, Hashable {
+public enum CVTextValue: Equatable, Hashable {
     case text(text: String)
     case attributedText(attributedText: NSAttributedString)
 
@@ -25,6 +25,15 @@ private enum CVTextValue: Equatable, Hashable {
             textView.text = text
         case .attributedText(let attributedText):
             textView.attributedText = attributedText
+        }
+    }
+
+    public var stringValue: String {
+        switch self {
+        case .text(let text):
+            return text
+        case .attributedText(let attributedText):
+            return attributedText.string
         }
     }
 
@@ -136,6 +145,10 @@ public struct CVLabelConfig {
         CVText.measureLabel(config: self, maxWidth: maxWidth)
     }
 
+    public var stringValue: String {
+        text.stringValue
+    }
+
     public var debugDescription: String {
         "CVLabelConfig: \(text.debugDescription)"
     }
@@ -234,6 +247,10 @@ public struct CVTextViewConfig {
         CVText.measureTextView(config: self, maxWidth: maxWidth)
     }
 
+    public var stringValue: String {
+        text.stringValue
+    }
+
     public var debugDescription: String {
         "CVTextViewConfig: \(text.debugDescription)"
     }
@@ -282,7 +299,9 @@ public class CVText {
         if Thread.isMainThread {
             return label_main
         } else {
-            assertOnQueue(measurementQueue)
+            if !CurrentAppContext().isRunningTests {
+                assertOnQueue(measurementQueue)
+            }
 
             return label_workQueue
         }
@@ -294,7 +313,9 @@ public class CVText {
     private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        assertOnQueue(measurementQueue)
+        if !CurrentAppContext().isRunningTests {
+            assertOnQueue(measurementQueue)
+        }
 
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
@@ -414,7 +435,9 @@ public class CVText {
         if Thread.isMainThread {
             return textView_main
         } else {
-            assertOnQueue(measurementQueue)
+            if !CurrentAppContext().isRunningTests {
+                assertOnQueue(measurementQueue)
+            }
 
             return textView_workQueue
         }
@@ -425,7 +448,9 @@ public class CVText {
     public static func measureTextView(mode: MeasurementMode = defaultTextViewMeasurementMode,
                                        config: CVTextViewConfig,
                                        maxWidth: CGFloat) -> CGSize {
-        assertOnQueue(measurementQueue)
+        if !CurrentAppContext().isRunningTests {
+            assertOnQueue(measurementQueue)
+        }
 
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
