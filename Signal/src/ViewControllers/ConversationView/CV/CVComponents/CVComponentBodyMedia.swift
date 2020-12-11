@@ -229,16 +229,36 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // MARK: -
 
+    // We use this view to implement BodyMediaPresentationContext below.
+    class CVComponentViewBodyMediaRootView: OWSStackView {
+
+        fileprivate var bodyMediaGradientView: UIView?
+
+        fileprivate var footerOverlayView: CVComponentView?
+
+        public override func reset() {
+            bodyMediaGradientView = nil
+            footerOverlayView = nil
+
+            super.reset()
+        }
+    }
+
+    // MARK: -
+
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
     public class CVComponentViewBodyMedia: NSObject, CVComponentView {
 
-        fileprivate let blockLayoutView = OWSStackView(name: "blockLayoutView")
+        fileprivate let blockLayoutView = CVComponentViewBodyMediaRootView(name: "blockLayoutView")
 
         fileprivate let albumView = CVMediaAlbumView()
 
-        fileprivate var bodyMediaGradientView: UIView?
+        fileprivate var bodyMediaGradientView: UIView? {
+            get { blockLayoutView.bodyMediaGradientView }
+            set { blockLayoutView.bodyMediaGradientView = newValue }
+        }
 
         fileprivate var innerShadowView: OWSBubbleShapeView?
 
@@ -252,7 +272,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         // MARK: - Subcomponents
 
-        var footerOverlayView: CVComponentView?
+        fileprivate var footerOverlayView: CVComponentView? {
+            get { blockLayoutView.footerOverlayView }
+            set { blockLayoutView.footerOverlayView = newValue }
+        }
+
+        // MARK: -
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
@@ -276,5 +301,26 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             NSLayoutConstraint.deactivate(layoutConstraints)
             layoutConstraints = []
         }
+    }
+}
+
+// MARK: -
+
+protocol BodyMediaPresentationContext {
+    var mediaOverlayViews: [UIView] { get }
+}
+
+// MARK: -
+
+extension CVComponentBodyMedia.CVComponentViewBodyMediaRootView: BodyMediaPresentationContext {
+    var mediaOverlayViews: [UIView] {
+        var result = [UIView]()
+        if let footerOverlayView = footerOverlayView {
+            result.append(footerOverlayView.rootView)
+        }
+        if let bodyMediaGradientView = bodyMediaGradientView {
+            result.append(bodyMediaGradientView)
+        }
+        return result
     }
 }

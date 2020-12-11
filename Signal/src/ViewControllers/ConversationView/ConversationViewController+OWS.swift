@@ -325,43 +325,28 @@ extension ConversationViewController: MediaPresentationContextProvider {
     }
 
     func mediaWillDismiss(toContext: MediaPresentationContext) {
-        // TODO: Refine dismiss animation.
-        //        guard let messageBubbleView = toContext.messageBubbleView else { return }
-        //
-        //        // To avoid flicker when transition view is animated over the message bubble,
-        //        // we initially hide the overlaying elements and fade them in.
-        //        messageBubbleView.footerView.alpha = 0
-        //        messageBubbleView.bodyMediaGradientView?.alpha = 0.0
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let mediaOverlayViews = toContext.mediaOverlayViews
+        for mediaOverlayView in mediaOverlayViews {
+            mediaOverlayView.alpha = 0
+        }
     }
 
     func mediaDidDismiss(toContext: MediaPresentationContext) {
-        // TODO: Refine dismiss animation.
-        //        guard let messageBubbleView = toContext.messageBubbleView else { return }
-        //
-        //        // To avoid flicker when transition view is animated over the message bubble,
-        //        // we initially hide the overlaying elements and fade them in.
-        //        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
-        //        UIView.animate(
-        //            withDuration: duration,
-        //            animations: {
-        //                messageBubbleView.footerView.alpha = 1.0
-        //                messageBubbleView.bodyMediaGradientView?.alpha = 1.0
-        //        })
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let mediaOverlayViews = toContext.mediaOverlayViews
+        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
+        UIView.animate(
+            withDuration: duration,
+            animations: {
+                for mediaOverlayView in mediaOverlayViews {
+                    mediaOverlayView.alpha = 1
+                }
+            })
     }
 }
-
-// MARK: -
-
-//private extension MediaPresentationContext {
-//    var messageBubbleView: OWSMessageBubbleView? {
-//        guard let messageBubbleView = mediaView.firstAncestor(ofType: OWSMessageBubbleView.self) else {
-//            owsFailDebug("unexpected mediaView: \(mediaView)")
-//            return nil
-//        }
-//
-//        return messageBubbleView
-//    }
-//}
 
 // MARK: -
 

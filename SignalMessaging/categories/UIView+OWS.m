@@ -523,17 +523,27 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         OWSLogVerbose(@"%@ ----", label);
     });
 
-    UIResponder *responder = self;
+    [self traverseViewHierarchyUpwardWithVisitor:^(UIView *subview) { [subview logFrameLaterWithLabel:@"\t"]; }];
+}
+
+- (void)traverseViewHierarchyUpwardWithVisitor:(UIViewVisitorBlock)visitor
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(visitor);
+
+    visitor(self);
+
+    UIResponder *_Nullable responder = self;
     while (responder) {
         if ([responder isKindOfClass:[UIView class]]) {
             UIView *view = (UIView *)responder;
-            [view logFrameLaterWithLabel:@"\t"];
+            visitor(view);
         }
         responder = responder.nextResponder;
     }
 }
 
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor
+- (void)traverseViewHierarchyDownwardWithVisitor:(UIViewVisitorBlock)visitor
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(visitor);
@@ -541,7 +551,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     visitor(self);
 
     for (UIView *subview in self.subviews) {
-        [subview traverseViewHierarchyWithVisitor:visitor];
+        [subview traverseViewHierarchyDownwardWithVisitor:visitor];
     }
 }
 
