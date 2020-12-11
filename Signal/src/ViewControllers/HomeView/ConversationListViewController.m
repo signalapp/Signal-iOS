@@ -620,8 +620,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self applyDefaultBackButton];
 
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
-        && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
+    if (@available(iOS 13, *)) {
+        // Automatically handled by UITableViewDelegate callbacks
+        // -tableView:contextMenuConfigurationForRowAtIndexPath:point:
+        // -tableView:willPerformPreviewActionForMenuWithConfiguration:animator:
+    } else if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
 
@@ -1951,6 +1954,94 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListMode_Archive:
             return TSArchiveGroup;
     }
+}
+
+#pragma mark - Previewing
+
+#pragma mark Old Style
+
+- (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+                       viewControllerForLocation:(CGPoint)location
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    if ([self canPresentPreviewFromIndexPath:indexPath] == NO) {
+        return nil;
+    }
+
+    [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
+    return [self createPreviewControllerAtIndexPath:indexPath];
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+     commitViewController:(UIViewController *)viewControllerToCommit
+{
+    [self commitPreviewController:viewControllerToCommit];
+}
+
+#pragma mark New Style
+
+- (nullable UIContextMenuConfiguration *)tableView:(UITableView *)tableView
+         contextMenuConfigurationForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
+                                             point:(CGPoint)point API_AVAILABLE(ios(13.0))
+{
+    if ([self canPresentPreviewFromIndexPath:indexPath] == NO) {
+        return nil;
+    }
+
+    __weak typeof(self) wSelf = self;
+    return [UIContextMenuConfiguration configurationWithIdentifier:nil
+        previewProvider:^UIViewController *_Nullable { return [wSelf createPreviewControllerAtIndexPath:indexPath]; }
+        actionProvider:^UIMenu *_Nullable(NSArray<UIMenuElement *> *_Nonnull suggestedActions) {
+            // nil for now. But we may want to add options like "Pin" or "Mute" in the future
+            return nil;
+        }];
+}
+
+- (void)tableView:(UITableView *)tableView
+    willPerformPreviewActionForMenuWithConfiguration:(UIContextMenuConfiguration *)configuration
+                                            animator:(id<UIContextMenuInteractionCommitAnimating>)animator
+    API_AVAILABLE(ios(13.0))
+{
+    UIViewController *vc = animator.previewViewController;
+    __weak typeof(self) wSelf = self;
+    [animator addCompletion:^{ [wSelf commitPreviewController:vc]; }];
+}
+
+#pragma mark Shared
+
+- (BOOL)canPresentPreviewFromIndexPath:(nullable NSIndexPath *)indexPath
+{
+    if (!indexPath) {
+        return NO;
+    } else {
+        switch (indexPath.section) {
+            case ConversationListViewControllerSectionPinned:
+            case ConversationListViewControllerSectionUnpinned:
+                return YES;
+            default:
+                return NO;
+        }
+    }
+}
+
+- (UIViewController *)createPreviewControllerAtIndexPath:(NSIndexPath *)indexPath
+{
+    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
+    self.lastViewedThread = threadViewModel.threadRecord;
+    ConversationViewController *vc =
+        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
+                                                             action:ConversationViewActionNone
+                                                     focusMessageId:nil];
+    [vc previewSetup];
+    return vc;
+}
+
+- (void)commitPreviewController:(UIViewController *)previewController
+{
+    if ([previewController isKindOfClass:[ConversationViewController class]]) {
+        [(ConversationViewController *)previewController previewWillCommit];
+    }
+    [self.navigationController pushViewController:previewController animated:NO];
 }
 
 #pragma mark - DatabaseSnapshotDelegate

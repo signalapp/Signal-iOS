@@ -52,9 +52,10 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                                    messageDraft:(nullable MessageBody *)messageDraft
     NS_SWIFT_NAME(buildInputToolbar(conversationStyle:messageDraft:));
 
-#pragma mark 3D Touch Methods
+#pragma mark 3D Touch/UIContextMenu Methods
 
-- (void)peekSetup;
+- (void)previewSetup;
+- (void)previewWillCommit;
 
 #pragma mark - Keyboard Shortcuts
 
