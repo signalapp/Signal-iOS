@@ -98,7 +98,7 @@ extension ConversationViewController {
     //  * you sent this message
     //  * you haven't already remotely deleted this message
     //  * it has been less than 3 hours since you sent the message
-    func canBeRemotelyDeleted(item: CVItemViewModel) -> Bool {
+    func canBeRemotelyDeleted(item: CVItemViewModelBridge) -> Bool {
         guard let outgoingMessage = item.interaction as? TSOutgoingMessage else { return false }
         guard !outgoingMessage.wasRemotelyDeleted else { return false }
         guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 3) else { return false }

@@ -285,7 +285,7 @@ extension ConversationViewController {
     }
 
     @objc
-    public func didSelectMessage(_ message: CVItemViewModel) {
+    public func didSelectMessage(_ message: CVItemViewModelBridge) {
         AssertIsOnMainThread()
         owsAssertDebug(isShowingSelectionUI)
 
@@ -306,7 +306,7 @@ extension ConversationViewController {
     }
 
     @objc
-    public func didDeselectMessage(_ message: CVItemViewModel) {
+    public func didDeselectMessage(_ message: CVItemViewModelBridge) {
         AssertIsOnMainThread()
         owsAssertDebug(isShowingSelectionUI)
 
