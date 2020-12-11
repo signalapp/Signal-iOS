@@ -12,7 +12,7 @@ public class PdfViewController: OWSViewController {
 
     // MARK: Properties
 
-    private let itemViewModel: CVItemViewModel
+    private let itemViewModel: CVItemViewModelImpl
     private let attachmentStream: TSAttachmentStream
     private var pdfView: UIView?
     private var viewHasEverAppeared = false
@@ -20,7 +20,7 @@ public class PdfViewController: OWSViewController {
     // MARK: Initializers
 
     @objc
-    public required init(itemViewModel: CVItemViewModel,
+    public required init(itemViewModel: CVItemViewModelImpl,
                          attachmentStream: TSAttachmentStream) {
         self.itemViewModel = itemViewModel
         self.attachmentStream = attachmentStream
@@ -164,7 +164,7 @@ public class PdfViewController: OWSViewController {
 // MARK: -
 
 extension PdfViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel,
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
                                               threads: [TSThread]) {
         dismiss(animated: true) {
             self.didForwardMessage(threads: threads)

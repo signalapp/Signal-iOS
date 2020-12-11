@@ -4,31 +4,9 @@
 
 import Foundation
 
-@objc
-public protocol CVItemViewModel: CVItemViewModelBridge {
-    var interaction: TSInteraction { get }
-    var thread: TSThread { get }
-    var reactionState: InteractionReactionState? { get }
-    var displayableBodyText: DisplayableText? { get }
-    var audioAttachmentStream: TSAttachmentStream? { get }
-    var genericAttachmentStream: TSAttachmentStream? { get }
-    var bodyMediaAttachmentStreams: [TSAttachmentStream] { get }
-    var isViewOnce: Bool { get }
-    var messageCellType: CVMessageCellType { get }
-    var contactShare: ContactShareViewModel? { get }
-    var stickerMetadata: StickerMetadata? { get }
-    var stickerAttachment: TSAttachmentStream? { get }
-    var stickerInfo: StickerInfo? { get }
-    var linkPreview: OWSLinkPreview? { get }
-    var linkPreviewAttachment: TSAttachment? { get }
-    var hasUnloadedAttachments: Bool { get }
-}
-
-// MARK: -
-
 // This class should only be accessed on the main thread.
 @objc
-public class CVItemViewModelImpl: NSObject {
+public class CVItemViewModelImpl: NSObject, CVItemViewModel {
 
     public let renderItem: CVRenderItem
     private var componentState: CVComponentState { renderItem.componentState }
@@ -39,13 +17,10 @@ public class CVItemViewModelImpl: NSObject {
 
         self.renderItem = renderItem
     }
-}
 
-// MARK: -
+    // MARK: -
 
-@objc
-extension CVItemViewModelImpl: CVItemViewModel {
-
+    @objc
     public var interaction: TSInteraction {
         AssertIsOnMainThread()
 
@@ -168,7 +143,7 @@ extension CVItemViewModelImpl: CVItemViewModel {
 
 // MARK: - Actions
 
-extension CVItemViewModel {
+extension CVItemViewModelImpl {
 
     // MARK: - Dependencies
 

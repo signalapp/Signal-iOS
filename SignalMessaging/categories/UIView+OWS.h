@@ -112,7 +112,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
 
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor;
+- (void)traverseViewHierarchyUpwardWithVisitor:(UIViewVisitorBlock)visitor;
+
+- (void)traverseViewHierarchyDownwardWithVisitor:(UIViewVisitorBlock)visitor;
 
 #pragma mark - Containers
 

@@ -403,42 +403,42 @@ private class MockOutgoingMessage: TSOutgoingMessage {
 extension ColorPickerView: CVComponentDelegate {
 
     func cvc_didLongPressTextViewItem(_ cell: CVCell,
-                                      itemViewModel: CVItemViewModel,
+                                      itemViewModel: CVItemViewModelImpl,
                                       shouldAllowReply: Bool) {}
 
     func cvc_didLongPressMediaViewItem(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModel,
+                                       itemViewModel: CVItemViewModelImpl,
                                        shouldAllowReply: Bool) {}
 
     func cvc_didLongPressQuote(_ cell: CVCell,
-                               itemViewModel: CVItemViewModel,
+                               itemViewModel: CVItemViewModelImpl,
                                shouldAllowReply: Bool) {}
 
     func cvc_didLongPressSystemMessage(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModel) {}
+                                       itemViewModel: CVItemViewModelImpl) {}
 
     func cvc_didLongPressSticker(_ cell: CVCell,
-                                 itemViewModel: CVItemViewModel,
+                                 itemViewModel: CVItemViewModelImpl,
                                  shouldAllowReply: Bool) {}
 
-    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: -
 
-    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     func cvc_didTapSenderAvatar(_ interaction: TSInteraction) {}
 
-    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModel) -> Bool { false }
+    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
     func cvc_didTapReactions(reactionState: InteractionReactionState,
                              message: TSMessage) {}
 
-    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
     var cvc_hasPendingMessageRequest: Bool { false }
 
@@ -446,11 +446,11 @@ extension ColorPickerView: CVComponentDelegate {
 
     // MARK: - Messages
 
-    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModel,
+    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
                              attachmentStream: TSAttachmentStream,
                              imageView: UIView) {}
 
-    func cvc_didTapPdf(itemViewModel: CVItemViewModel, attachmentStream: TSAttachmentStream) {}
+    func cvc_didTapPdf(itemViewModel: CVItemViewModelImpl, attachmentStream: TSAttachmentStream) {}
 
     func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage) {}
 
@@ -478,9 +478,9 @@ extension ColorPickerView: CVComponentDelegate {
 
     func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool { false }
 
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: - System Cell
 

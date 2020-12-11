@@ -66,7 +66,7 @@ public protocol MessageActionsViewControllerDelegate: class {
 @objc
 public class MessageActionsViewController: UIViewController {
 
-    private let itemViewModel: CVItemViewModel
+    private let itemViewModel: CVItemViewModelImpl
     @objc
     public var focusedInteraction: TSInteraction { itemViewModel.interaction }
     var thread: TSThread { itemViewModel.thread }
@@ -85,7 +85,7 @@ public class MessageActionsViewController: UIViewController {
     public weak var delegate: MessageActionsViewControllerDelegate?
 
     @objc
-    init(itemViewModel: CVItemViewModel, focusedView: UIView, actions: [MessageAction]) {
+    init(itemViewModel: CVItemViewModelImpl, focusedView: UIView, actions: [MessageAction]) {
         self.itemViewModel = itemViewModel
         self.focusedView = focusedView
         self.actionsToolbar = MessageActionsToolbar(actions: actions)

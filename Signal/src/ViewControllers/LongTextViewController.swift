@@ -17,7 +17,7 @@ public class LongTextViewController: OWSViewController {
 
     weak var delegate: LongTextViewDelegate?
 
-    let itemViewModel: CVItemViewModel
+    let itemViewModel: CVItemViewModelImpl
 
     var messageTextView: UITextView!
 
@@ -26,7 +26,7 @@ public class LongTextViewController: OWSViewController {
 
     // MARK: Initializers
 
-    public required init(itemViewModel: CVItemViewModel) {
+    public required init(itemViewModel: CVItemViewModelImpl) {
         self.itemViewModel = itemViewModel
         super.init()
     }
@@ -194,7 +194,7 @@ extension LongTextViewController: UIDatabaseSnapshotDelegate {
 // MARK: -
 
 extension LongTextViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel,
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
                                               threads: [TSThread]) {
         dismiss(animated: true) {
             self.didForwardMessage(threads: threads)

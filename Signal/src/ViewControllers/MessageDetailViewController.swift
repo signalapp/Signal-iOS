@@ -24,7 +24,7 @@ class MessageDetailViewController: OWSViewController {
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
-    let itemViewModel: CVItemViewModel
+    let itemViewModel: CVItemViewModelImpl
     var message: TSMessage
     var wasDeleted: Bool = false
 
@@ -54,7 +54,7 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: Initializers
 
-    required init(itemViewModel: CVItemViewModel,
+    required init(itemViewModel: CVItemViewModelImpl,
                   message: TSMessage,
                   thread: TSThread,
                   mode: MessageMetadataViewMode) {
@@ -359,8 +359,7 @@ class MessageDetailViewController: OWSViewController {
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
-        // TODO: We probably don't want to do this.
-        let renderItem = (itemViewModel as! CVItemViewModelImpl).renderItem
+        let renderItem = itemViewModel.renderItem
         cellView.reset()
         cellView.configure(renderItem: renderItem, componentDelegate: self)
         cellView.isCellVisible = true
@@ -648,40 +647,39 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
     }
 
     func mediaWillDismiss(toContext: MediaPresentationContext) {
-        // TODO: Fix.
-//        guard let messageBubbleView = toContext.messageBubbleView else { return }
-//
-//        // To avoid flicker when transition view is animated over the message bubble,
-//        // we initially hide the overlaying elements and fade them in.
-//        messageBubbleView.footerView.alpha = 0
-//        messageBubbleView.bodyMediaGradientView?.alpha = 0.0
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let mediaOverlayViews = toContext.mediaOverlayViews
+        for mediaOverlayView in mediaOverlayViews {
+            mediaOverlayView.alpha = 0
+        }
     }
 
     func mediaDidDismiss(toContext: MediaPresentationContext) {
-        // TODO: Fix.
-//        guard let messageBubbleView = toContext.messageBubbleView else { return }
-//
-//        // To avoid flicker when transition view is animated over the message bubble,
-//        // we initially hide the overlaying elements and fade them in.
-//        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
-//        UIView.animate(
-//            withDuration: duration,
-//            animations: {
-//                messageBubbleView.footerView.alpha = 1.0
-//                messageBubbleView.bodyMediaGradientView?.alpha = 1.0
-//        })
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let mediaOverlayViews = toContext.mediaOverlayViews
+        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
+        UIView.animate(
+            withDuration: duration,
+            animations: {
+                for mediaOverlayView in mediaOverlayViews {
+                    mediaOverlayView.alpha = 1
+                }
+            })
     }
 }
 
-private extension MediaPresentationContext {
-//    var messageBubbleView: OWSMessageBubbleView? {
-//        guard let messageBubbleView = mediaView.firstAncestor(ofType: OWSMessageBubbleView.self) else {
-//            owsFailDebug("unexpected mediaView: \(mediaView)")
-//            return nil
-//        }
-//
-//        return messageBubbleView
-//    }
+// MARK: -
+
+extension MediaPresentationContext {
+    var mediaOverlayViews: [UIView] {
+        guard let bodyMediaPresentationContext = mediaView.firstAncestor(ofType: BodyMediaPresentationContext.self) else {
+            owsFailDebug("unexpected mediaView: \(mediaView)")
+            return []
+        }
+        return bodyMediaPresentationContext.mediaOverlayViews
+    }
 }
 
 // MARK: -
@@ -764,53 +762,53 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // TODO:
     func cvc_didLongPressTextViewItem(_ cell: CVCell,
-                                      itemViewModel: CVItemViewModel,
+                                      itemViewModel: CVItemViewModelImpl,
                                       shouldAllowReply: Bool) {}
 
     // TODO:
     func cvc_didLongPressMediaViewItem(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModel,
+                                       itemViewModel: CVItemViewModelImpl,
                                        shouldAllowReply: Bool) {}
 
     // TODO:
     func cvc_didLongPressQuote(_ cell: CVCell,
-                               itemViewModel: CVItemViewModel,
+                               itemViewModel: CVItemViewModelImpl,
                                shouldAllowReply: Bool) {}
 
     // TODO:
     func cvc_didLongPressSystemMessage(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModel) {}
+                                       itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
     func cvc_didLongPressSticker(_ cell: CVCell,
-                                 itemViewModel: CVItemViewModel,
+                                 itemViewModel: CVItemViewModelImpl,
                                  shouldAllowReply: Bool) {}
 
     // TODO:
-    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
-    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
-    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: -
 
     // TODO:
-    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
     func cvc_didTapSenderAvatar(_ interaction: TSInteraction) {}
 
     // TODO:
-    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModel) -> Bool { false }
+    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
     // TODO:
     func cvc_didTapReactions(reactionState: InteractionReactionState,
                              message: TSMessage) {}
 
-    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModel) {
+    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         let viewController = LongTextViewController(itemViewModel: itemViewModel)
@@ -825,7 +823,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: - Messages
 
-    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModel,
+    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
                          attachmentStream: TSAttachmentStream,
                          imageView: UIView) {
         let mediaPageVC = MediaPageViewController(
@@ -837,7 +835,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         present(mediaPageVC, animated: true)
     }
 
-    func cvc_didTapPdf(itemViewModel: CVItemViewModel, attachmentStream: TSAttachmentStream) {
+    func cvc_didTapPdf(itemViewModel: CVItemViewModelImpl, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
         let pdfView = PdfViewController(itemViewModel: itemViewModel, attachmentStream: attachmentStream)
@@ -898,10 +896,10 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool { false }
 
     // TODO:
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: - System Cell
 

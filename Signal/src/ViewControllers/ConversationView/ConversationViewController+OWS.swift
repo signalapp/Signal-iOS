@@ -71,7 +71,7 @@ extension ConversationViewController {
 // MARK: - ForwardMessageDelegate
 
 extension ConversationViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel, threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl, threads: [TSThread]) {
         self.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
 
@@ -98,7 +98,7 @@ extension ConversationViewController {
     //  * you sent this message
     //  * you haven't already remotely deleted this message
     //  * it has been less than 3 hours since you sent the message
-    func canBeRemotelyDeleted(item: CVItemViewModelBridge) -> Bool {
+    func canBeRemotelyDeleted(item: CVItemViewModel) -> Bool {
         guard let outgoingMessage = item.interaction as? TSOutgoingMessage else { return false }
         guard !outgoingMessage.wasRemotelyDeleted else { return false }
         guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 3) else { return false }
@@ -325,43 +325,28 @@ extension ConversationViewController: MediaPresentationContextProvider {
     }
 
     func mediaWillDismiss(toContext: MediaPresentationContext) {
-        // TODO: Refine dismiss animation.
-        //        guard let messageBubbleView = toContext.messageBubbleView else { return }
-        //
-        //        // To avoid flicker when transition view is animated over the message bubble,
-        //        // we initially hide the overlaying elements and fade them in.
-        //        messageBubbleView.footerView.alpha = 0
-        //        messageBubbleView.bodyMediaGradientView?.alpha = 0.0
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let mediaOverlayViews = toContext.mediaOverlayViews
+        for mediaOverlayView in mediaOverlayViews {
+            mediaOverlayView.alpha = 0
+        }
     }
 
     func mediaDidDismiss(toContext: MediaPresentationContext) {
-        // TODO: Refine dismiss animation.
-        //        guard let messageBubbleView = toContext.messageBubbleView else { return }
-        //
-        //        // To avoid flicker when transition view is animated over the message bubble,
-        //        // we initially hide the overlaying elements and fade them in.
-        //        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
-        //        UIView.animate(
-        //            withDuration: duration,
-        //            animations: {
-        //                messageBubbleView.footerView.alpha = 1.0
-        //                messageBubbleView.bodyMediaGradientView?.alpha = 1.0
-        //        })
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let mediaOverlayViews = toContext.mediaOverlayViews
+        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
+        UIView.animate(
+            withDuration: duration,
+            animations: {
+                for mediaOverlayView in mediaOverlayViews {
+                    mediaOverlayView.alpha = 1
+                }
+            })
     }
 }
-
-// MARK: -
-
-//private extension MediaPresentationContext {
-//    var messageBubbleView: OWSMessageBubbleView? {
-//        guard let messageBubbleView = mediaView.firstAncestor(ofType: OWSMessageBubbleView.self) else {
-//            owsFailDebug("unexpected mediaView: \(mediaView)")
-//            return nil
-//        }
-//
-//        return messageBubbleView
-//    }
-//}
 
 // MARK: -
 
@@ -396,7 +381,7 @@ extension ConversationViewController: LongTextViewDelegate {
     }
 
     @objc
-    public func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModel) {
+    public func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         guard let displayableBodyText = itemViewModel.displayableBodyText else {

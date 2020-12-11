@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSearchBar.h"
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
         searchFieldBackgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray05Color;
     }
 
-    [searchBar traverseViewHierarchyWithVisitor:^(UIView *view) {
+    [searchBar traverseViewHierarchyDownwardWithVisitor:^(UIView *view) {
         if ([view isKindOfClass:[UITextField class]]) {
             UITextField *textField = (UITextField *)view;
             textField.backgroundColor = searchFieldBackgroundColor;

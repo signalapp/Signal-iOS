@@ -893,7 +893,7 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 // MARK: -
 
 extension MediaPageViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel,
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
                                               threads: [TSThread]) {
         dismiss(animated: true) {
             self.didForwardMessage(itemViewModel: itemViewModel, threads: threads)
@@ -904,7 +904,7 @@ extension MediaPageViewController: ForwardMessageDelegate {
         dismiss(animated: true)
     }
 
-    func didForwardMessage(itemViewModel: CVItemViewModel,
+    func didForwardMessage(itemViewModel: CVItemViewModelImpl,
                            threads: [TSThread]) {
         guard threads.count == 1 else {
             return

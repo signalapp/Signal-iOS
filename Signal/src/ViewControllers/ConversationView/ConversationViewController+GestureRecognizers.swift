@@ -208,7 +208,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 public struct CVLongPressHandler {
     private weak var delegate: CVComponentDelegate?
     let renderItem: CVRenderItem
-    let itemViewModel: CVItemViewModel
+    let itemViewModel: CVItemViewModelImpl
 
     enum GestureLocation {
         case `default`
