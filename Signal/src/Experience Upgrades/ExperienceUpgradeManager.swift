@@ -158,7 +158,8 @@ class ExperienceUpgradeManager: NSObject {
              .notificationPermissionReminder,
              .contactPermissionReminder,
              .linkPreviews,
-             .researchMegaphone1:
+             .researchMegaphone1,
+             .groupCallsMegaphone:
             return true
         case .groupsV2AndMentionsSplash2:
             return false
@@ -181,6 +182,8 @@ class ExperienceUpgradeManager: NSObject {
             return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .researchMegaphone1:
             return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .groupCallsMegaphone:
+            return GroupCallsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
