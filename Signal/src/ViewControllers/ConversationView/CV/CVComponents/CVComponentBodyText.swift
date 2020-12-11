@@ -61,7 +61,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewBodyText(componentDelegate: componentDelegate)
-    }
+    }7
 
     private var isJumbomoji: Bool {
         componentState.isJumbomojiMessage
@@ -462,7 +462,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        let textView = componentView.ensuredTextView
+        let label = componentView.ensuredLabel
+        label.charac
+        
+        guard let textView = componentView.possibleTextView else {
+            // Not using a text view.
+            return nil
+        }
         let location = sender.location(in: textView)
         guard textView.bounds.contains(location) else {
             return nil
