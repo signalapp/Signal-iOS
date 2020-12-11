@@ -83,8 +83,10 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalArgon2 (1.3.2)
   - SignalArgon2/Tests (1.3.2)
-  - SignalClient (0.1.0)
-  - SignalClient/Tests (0.1.0)
+  - SignalClient (0.1.0):
+    - SignalCoreKit
+  - SignalClient/Tests (0.1.0):
+    - SignalCoreKit
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - GRKOpenSSLFramework
@@ -351,7 +353,7 @@ CHECKOUT OPTIONS:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
-    :commit: 40d77fd50fdc44fad66426f846d783c1f24a1d43
+    :commit: 87bfaf0748ecbac417fe90219b529d4f6f0eb272
     :git: "ssh://git@github.com/signalapp/Curve25519Kit-Private"
   GRKOpenSSLFramework:
     :commit: 4d9944de35ed56a95879c5a8a1b410ae03f71d57
@@ -370,13 +372,13 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalClient:
-    :commit: 8b4f610952ef1b353470fd8a51179629bf664767
+    :commit: d1b8d4a6d4c34f5c0e027d76a765eb5127f97f4d
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 276a3cc8739a41821e39029128edd8ba538c030d
+    :commit: 7beae489c8c645cb6fcddcbb40c59c0d54733739
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -413,7 +415,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalClient: f4d285cb4084ff7d28d3e454910456e250f54af0
+  SignalClient: 6f79dbba1667960c60f091a42ab5cfd4e418ff82
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a40217605426975468175eb9328a170e2162be94
   SignalRingRTC: d59de0ae05da586f043f83e5a6f7e5bc0c60a482
