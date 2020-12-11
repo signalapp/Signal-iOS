@@ -21,7 +21,7 @@ private func prependKeyType(to data: Data) -> Data {
 }
 
 private func removeKeyType(from data: Data) -> Data {
-    validate((try? PublicKey(data)) == nil)
+    validate((try? PublicKey(data)) != nil)
     return data.dropFirst()
 }
 
