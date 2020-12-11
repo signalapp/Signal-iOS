@@ -24,7 +24,7 @@ class MessageDetailViewController: OWSViewController {
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
-    let itemViewModel: CVItemViewModel
+    let itemViewModel: CVItemViewModelImpl
     var message: TSMessage
     var wasDeleted: Bool = false
 
@@ -54,7 +54,7 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: Initializers
 
-    required init(itemViewModel: CVItemViewModel,
+    required init(itemViewModel: CVItemViewModelImpl,
                   message: TSMessage,
                   thread: TSThread,
                   mode: MessageMetadataViewMode) {
@@ -763,53 +763,53 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // TODO:
     func cvc_didLongPressTextViewItem(_ cell: CVCell,
-                                      itemViewModel: CVItemViewModel,
+                                      itemViewModel: CVItemViewModelImpl,
                                       shouldAllowReply: Bool) {}
 
     // TODO:
     func cvc_didLongPressMediaViewItem(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModel,
+                                       itemViewModel: CVItemViewModelImpl,
                                        shouldAllowReply: Bool) {}
 
     // TODO:
     func cvc_didLongPressQuote(_ cell: CVCell,
-                               itemViewModel: CVItemViewModel,
+                               itemViewModel: CVItemViewModelImpl,
                                shouldAllowReply: Bool) {}
 
     // TODO:
     func cvc_didLongPressSystemMessage(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModel) {}
+                                       itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
     func cvc_didLongPressSticker(_ cell: CVCell,
-                                 itemViewModel: CVItemViewModel,
+                                 itemViewModel: CVItemViewModelImpl,
                                  shouldAllowReply: Bool) {}
 
     // TODO:
-    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
-    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
-    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: -
 
     // TODO:
-    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
     func cvc_didTapSenderAvatar(_ interaction: TSInteraction) {}
 
     // TODO:
-    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModel) -> Bool { false }
+    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
     // TODO:
     func cvc_didTapReactions(reactionState: InteractionReactionState,
                              message: TSMessage) {}
 
-    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModel) {
+    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         let viewController = LongTextViewController(itemViewModel: itemViewModel)
@@ -824,7 +824,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: - Messages
 
-    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModel,
+    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
                          attachmentStream: TSAttachmentStream,
                          imageView: UIView) {
         let mediaPageVC = MediaPageViewController(
@@ -836,7 +836,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         present(mediaPageVC, animated: true)
     }
 
-    func cvc_didTapPdf(itemViewModel: CVItemViewModel, attachmentStream: TSAttachmentStream) {
+    func cvc_didTapPdf(itemViewModel: CVItemViewModelImpl, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
         let pdfView = PdfViewController(itemViewModel: itemViewModel, attachmentStream: attachmentStream)
@@ -897,10 +897,10 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool { false }
 
     // TODO:
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // TODO:
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModel) {}
+    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: - System Cell
 

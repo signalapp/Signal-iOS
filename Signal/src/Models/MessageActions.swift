@@ -6,17 +6,17 @@ import Foundation
 
 @objc
 protocol MessageActionsDelegate: class {
-    func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModel)
-    func messageActionsReplyToItem(_ itemViewModel: CVItemViewModel)
-    func messageActionsForwardItem(_ itemViewModel: CVItemViewModel)
-    func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModel)
-    func messageActionsDeleteItem(_ itemViewModel: CVItemViewModel)
+    func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsReplyToItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl)
+    func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
 
 struct MessageActionBuilder {
-    static func reply(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func reply(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.reply,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
@@ -26,7 +26,7 @@ struct MessageActionBuilder {
         })
     }
 
-    static func copyText(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func copyText(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.copy,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
@@ -35,7 +35,7 @@ struct MessageActionBuilder {
         })
     }
 
-    static func showDetails(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func showDetails(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.info,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
@@ -44,7 +44,7 @@ struct MessageActionBuilder {
         })
     }
 
-    static func deleteMessage(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func deleteMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.delete,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
@@ -53,7 +53,7 @@ struct MessageActionBuilder {
         })
     }
 
-    static func shareMedia(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func shareMedia(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.share,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SHARE_MEDIA", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "share_media"),
@@ -62,7 +62,7 @@ struct MessageActionBuilder {
         })
     }
 
-    static func forwardMessage(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func forwardMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.forward,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
@@ -71,7 +71,7 @@ struct MessageActionBuilder {
         })
     }
 
-    static func selectMessage(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> MessageAction {
+    static func selectMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.select,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SELECT_MESSAGE", comment: "Action sheet accessibility label"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "select_message"),
@@ -85,7 +85,7 @@ struct MessageActionBuilder {
 class MessageActions: NSObject {
 
     @objc
-    class func textActions(itemViewModel: CVItemViewModel, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+    class func textActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
         let showDetailsAction = MessageActionBuilder.showDetails(itemViewModel: itemViewModel, delegate: delegate)
@@ -115,7 +115,7 @@ class MessageActions: NSObject {
     }
 
     @objc
-    class func mediaActions(itemViewModel: CVItemViewModel, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+    class func mediaActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
         let showDetailsAction = MessageActionBuilder.showDetails(itemViewModel: itemViewModel, delegate: delegate)
@@ -145,7 +145,7 @@ class MessageActions: NSObject {
     }
 
     @objc
-    class func quotedMessageActions(itemViewModel: CVItemViewModel, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
+    class func quotedMessageActions(itemViewModel: CVItemViewModelImpl, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
         let showDetailsAction = MessageActionBuilder.showDetails(itemViewModel: itemViewModel, delegate: delegate)
@@ -170,7 +170,7 @@ class MessageActions: NSObject {
     }
 
     @objc
-    class func infoMessageActions(itemViewModel: CVItemViewModel, delegate: MessageActionsDelegate) -> [MessageAction] {
+    class func infoMessageActions(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> [MessageAction] {
         let deleteAction = MessageActionBuilder.deleteMessage(itemViewModel: itemViewModel, delegate: delegate)
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         return [deleteAction, selectAction]

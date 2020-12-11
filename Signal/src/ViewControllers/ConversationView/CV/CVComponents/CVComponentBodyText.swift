@@ -443,7 +443,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
 
         if hasTapForMore {
-            let itemViewModel = CVItemViewModel(renderItem: renderItem)
+            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             componentDelegate.cvc_didTapTruncatedTextMessage(itemViewModel)
             return true
         }

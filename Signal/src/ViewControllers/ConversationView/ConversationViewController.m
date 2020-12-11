@@ -1696,7 +1696,7 @@ typedef enum : NSUInteger {
 
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions
               withFocusedCell:(UICollectionViewCell *)cell
-                itemViewModel:(CVItemViewModel *)itemViewModel
+                itemViewModel:(CVItemViewModelImpl *)itemViewModel
 {
     MessageActionsViewController *messageActionsViewController =
         [[MessageActionsViewController alloc] initWithItemViewModel:itemViewModel
@@ -4156,7 +4156,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)cvc_didLongPressTextViewItem:(CVCell *)cell
-                       itemViewModel:(CVItemViewModel *)itemViewModel
+                       itemViewModel:(CVItemViewModelImpl *)itemViewModel
                     shouldAllowReply:(BOOL)shouldAllowReply
 {
     OWSAssertIsOnMainThread();
@@ -4168,7 +4168,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)cvc_didLongPressMediaViewItem:(CVCell *)cell
-                        itemViewModel:(CVItemViewModel *)itemViewModel
+                        itemViewModel:(CVItemViewModelImpl *)itemViewModel
                      shouldAllowReply:(BOOL)shouldAllowReply
 {
     OWSAssertIsOnMainThread();
@@ -4180,7 +4180,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)cvc_didLongPressQuote:(CVCell *)cell
-                itemViewModel:(CVItemViewModel *)itemViewModel
+                itemViewModel:(CVItemViewModelImpl *)itemViewModel
              shouldAllowReply:(BOOL)shouldAllowReply
 {
     OWSAssertIsOnMainThread();
@@ -4191,7 +4191,7 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell itemViewModel:itemViewModel];
 }
 
-- (void)cvc_didLongPressSystemMessage:(CVCell *)cell itemViewModel:(CVItemViewModel *)itemViewModel
+- (void)cvc_didLongPressSystemMessage:(CVCell *)cell itemViewModel:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4201,7 +4201,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)cvc_didLongPressSticker:(CVCell *)cell
-                  itemViewModel:(CVItemViewModel *)itemViewModel
+                  itemViewModel:(CVItemViewModelImpl *)itemViewModel
                shouldAllowReply:(BOOL)shouldAllowReply
 {
     OWSAssertIsOnMainThread();
@@ -4212,7 +4212,7 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell itemViewModel:itemViewModel];
 }
 
-- (void)cvc_didTapReplyToItem:(CVItemViewModel *)itemViewModel
+- (void)cvc_didTapReplyToItem:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4236,7 +4236,7 @@ typedef enum : NSUInteger {
     [actionSheet presentFromViewController:self];
 }
 
-- (BOOL)cvc_shouldAllowReplyForItem:(CVItemViewModel *)itemViewModel
+- (BOOL)cvc_shouldAllowReplyForItem:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4269,7 +4269,7 @@ typedef enum : NSUInteger {
     return YES;
 }
 
-- (void)cvc_didChangeLongpress:(CVItemViewModel *)itemViewModel
+- (void)cvc_didChangeLongpress:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4282,7 +4282,7 @@ typedef enum : NSUInteger {
     [self.messageActionsViewController didChangeLongpress];
 }
 
-- (void)cvc_didEndLongpress:(CVItemViewModel *)itemViewModel
+- (void)cvc_didEndLongpress:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4295,7 +4295,7 @@ typedef enum : NSUInteger {
     [self.messageActionsViewController didEndLongpress];
 }
 
-- (void)cvc_didCancelLongpress:(CVItemViewModel *)itemViewModel
+- (void)cvc_didCancelLongpress:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4331,7 +4331,7 @@ typedef enum : NSUInteger {
     return self.threadViewModel.hasPendingMessageRequest;
 }
 
-- (void)cvc_didTapTruncatedTextMessage:(CVItemViewModel *)itemViewModel
+- (void)cvc_didTapTruncatedTextMessage:(CVItemViewModelImpl *)itemViewModel
 {
     OWSAssertIsOnMainThread();
 
@@ -4345,7 +4345,7 @@ typedef enum : NSUInteger {
     [self handleFailedDownloadTapForMessage:message];
 }
 
-- (void)cvc_didTapBodyMediaWithItemViewModel:(CVItemViewModel *)itemViewModel
+- (void)cvc_didTapBodyMediaWithItemViewModel:(CVItemViewModelImpl *)itemViewModel
                             attachmentStream:(TSAttachmentStream *)attachmentStream
                                    imageView:(UIView *)imageView
 {
@@ -4358,7 +4358,7 @@ typedef enum : NSUInteger {
     [self presentViewController:pageVC animated:YES completion:nil];
 }
 
-- (void)cvc_didTapPdfWithItemViewModel:(CVItemViewModel *_Nonnull)itemViewModel
+- (void)cvc_didTapPdfWithItemViewModel:(CVItemViewModelImpl *_Nonnull)itemViewModel
                       attachmentStream:(TSAttachmentStream *_Nonnull)attachmentStream
 {
     OWSAssertIsOnMainThread();
@@ -4494,13 +4494,13 @@ typedef enum : NSUInteger {
 }
 
 // TODO: Move these methods to +Selection.swift
-- (void)cvc_didSelectViewItem:(CVItemViewModel *)itemViewModel
+- (void)cvc_didSelectViewItem:(CVItemViewModelImpl *)itemViewModel
 {
     [self didSelectMessage:itemViewModel];
 }
 
 // TODO: Move these methods to +Selection.swift
-- (void)cvc_didDeselectViewItem:(CVItemViewModel *)itemViewModel
+- (void)cvc_didDeselectViewItem:(CVItemViewModelImpl *)itemViewModel
 {
     [self didDeselectMessage:itemViewModel];
 }

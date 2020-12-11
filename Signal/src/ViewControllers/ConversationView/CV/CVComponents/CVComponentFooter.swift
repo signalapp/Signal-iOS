@@ -294,7 +294,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         guard hasTapForMore else {
             return false
         }
-        let itemViewModel = CVItemViewModel(renderItem: renderItem)
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
         componentDelegate.cvc_didTapTruncatedTextMessage(itemViewModel)
         return true
     }

@@ -71,7 +71,7 @@ extension ConversationViewController {
 // MARK: - ForwardMessageDelegate
 
 extension ConversationViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel, threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl, threads: [TSThread]) {
         self.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
 
@@ -98,7 +98,7 @@ extension ConversationViewController {
     //  * you sent this message
     //  * you haven't already remotely deleted this message
     //  * it has been less than 3 hours since you sent the message
-    func canBeRemotelyDeleted(item: CVItemViewModelBridge) -> Bool {
+    func canBeRemotelyDeleted(item: CVItemViewModel) -> Bool {
         guard let outgoingMessage = item.interaction as? TSOutgoingMessage else { return false }
         guard !outgoingMessage.wasRemotelyDeleted else { return false }
         guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 3) else { return false }
@@ -396,7 +396,7 @@ extension ConversationViewController: LongTextViewDelegate {
     }
 
     @objc
-    public func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModel) {
+    public func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         guard let displayableBodyText = itemViewModel.displayableBodyText else {

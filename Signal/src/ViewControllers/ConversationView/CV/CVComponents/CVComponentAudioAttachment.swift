@@ -90,7 +90,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        let itemViewModel = CVItemViewModel(renderItem: renderItem)
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
         guard componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) else {
             return nil
         }

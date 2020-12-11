@@ -28,7 +28,7 @@ extension ConversationViewController {
     }
 
     @objc
-    public func indexPath(forItemViewModel itemViewModel: CVItemViewModel) -> IndexPath? {
+    public func indexPath(forItemViewModel itemViewModel: CVItemViewModelImpl) -> IndexPath? {
         indexPath(forInteractionUniqueId: itemViewModel.interaction.uniqueId)
     }
 

@@ -12,8 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class TSInteraction;
 
-// TODO: Remove this protocol.
-@protocol CVItemViewModelBridge <NSObject>
+@protocol CVItemViewModel <NSObject>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;

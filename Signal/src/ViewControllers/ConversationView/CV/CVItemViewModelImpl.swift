@@ -6,7 +6,7 @@ import Foundation
 
 // This class should only be accessed on the main thread.
 @objc
-public class CVItemViewModel: NSObject, CVItemViewModelBridge {
+public class CVItemViewModelImpl: NSObject, CVItemViewModel {
 
     public let renderItem: CVRenderItem
     private var componentState: CVComponentState { renderItem.componentState }
@@ -143,7 +143,7 @@ public class CVItemViewModel: NSObject, CVItemViewModelBridge {
 
 // MARK: - Actions
 
-extension CVItemViewModel {
+extension CVItemViewModelImpl {
 
     // MARK: - Dependencies
 

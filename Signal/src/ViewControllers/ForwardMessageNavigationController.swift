@@ -6,7 +6,7 @@ import PromiseKit
 
 @objc
 public protocol ForwardMessageDelegate: AnyObject {
-    func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModel,
+    func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
                                        threads: [TSThread])
     func forwardMessageFlowDidCancel()
 }
@@ -26,10 +26,10 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
     var selectedConversations: [ConversationItem] = []
 
-    private let itemViewModel: CVItemViewModel
+    private let itemViewModel: CVItemViewModelImpl
 
     @objc
-    public init(itemViewModel: CVItemViewModel) {
+    public init(itemViewModel: CVItemViewModelImpl) {
         self.itemViewModel = itemViewModel
 
         if let displayableBodyText = itemViewModel.displayableBodyText {
@@ -48,7 +48,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
     }
 
     @objc
-    public class func present(for itemViewModel: CVItemViewModel,
+    public class func present(for itemViewModel: CVItemViewModelImpl,
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
         let modal = ForwardMessageNavigationController(itemViewModel: itemViewModel)

@@ -208,7 +208,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 public struct CVLongPressHandler {
     private weak var delegate: CVComponentDelegate?
     let renderItem: CVRenderItem
-    let itemViewModel: CVItemViewModel
+    let itemViewModel: CVItemViewModelImpl
 
     enum GestureLocation {
         case `default`
@@ -227,7 +227,7 @@ public struct CVLongPressHandler {
         self.gestureLocation = gestureLocation
 
         // TODO: shouldAutoUpdate?
-        self.itemViewModel = CVItemViewModel(renderItem: renderItem)
+        self.itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
     }
 
     func startGesture(cell: CVCell) {

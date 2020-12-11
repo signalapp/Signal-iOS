@@ -3,11 +3,11 @@
 //
 
 extension ConversationViewController: MessageActionsDelegate {
-    func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModel) {
+    func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl) {
         showDetailView(itemViewModel)
     }
 
-    func showDetailView(_ itemViewModel: CVItemViewModel) {
+    func showDetailView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         guard let message = itemViewModel.interaction as? TSMessage else {
@@ -23,12 +23,12 @@ extension ConversationViewController: MessageActionsDelegate {
         navigationController?.pushViewController(detailVC, animated: true)
     }
 
-    func messageActionsReplyToItem(_ itemViewModel: CVItemViewModel) {
+    func messageActionsReplyToItem(_ itemViewModel: CVItemViewModelImpl) {
         populateReplyForMessage(itemViewModel)
     }
 
     @objc
-    public func populateReplyForMessage(_ itemViewModel: CVItemViewModel) {
+    public func populateReplyForMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         if DebugFlags.internalLogging {
@@ -55,11 +55,11 @@ extension ConversationViewController: MessageActionsDelegate {
         inputToolbar.beginEditingMessage()
     }
 
-    func messageActionsForwardItem(_ itemViewModel: CVItemViewModel) {
+    func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl) {
         ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
     }
 
-    func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModel) {
+    func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {
         self.scrollContinuity = .bottom
 
         uiMode = .selection
@@ -67,7 +67,7 @@ extension ConversationViewController: MessageActionsDelegate {
         self.addToSelection(itemViewModel.interaction.uniqueId)
     }
 
-    func messageActionsDeleteItem(_ itemViewModel: CVItemViewModel) {
+    func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl) {
         let actionSheetController = ActionSheetController(message: NSLocalizedString(
             "MESSAGE_ACTION_DELETE_FOR_TITLE",
             comment: "The title for the action sheet asking who the user wants to delete the message for."
