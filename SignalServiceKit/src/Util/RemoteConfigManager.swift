@@ -136,7 +136,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupCalling: Bool {
-        return DebugFlags.forceGroupCalling || isEnabled(.groupCalling)
+        return DebugFlags.forceGroupCalling || !isEnabled(.groupCallingKillSwitch)
     }
 
     @objc
@@ -320,7 +320,7 @@ private struct Flags {
         case groupsV2autoMigrations
         case groupsV2manualMigrations
         case groupsV2blockingMigrations
-        case groupCalling
+        case groupCallingKillSwitch
     }
 
     // Values defined in this array remain set once they are
