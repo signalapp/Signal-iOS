@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                    thumbnailDownloadFailed:thumbnailDownloadFailed];
 }
 
-+ (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModelBridge>)item
++ (nullable instancetype)quotedReplyForSendingWithItem:(CVItemViewModel *)item
                                            transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);

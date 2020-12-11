@@ -2,11 +2,11 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "CVItemViewModelBridge.h"
 #import <SignalServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class CVItemViewModel;
 @class ContactShareViewModel;
 @class MessageBodyRanges;
 @class OWSLinkPreview;
@@ -19,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class TSInteraction;
 @class TSMessage;
-
-@protocol CVItemViewModel;
 
 // View model which has already fetched any attachments.
 @interface OWSQuotedReplyModel : NSObject
@@ -54,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
-+ (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModelBridge>)item
++ (nullable instancetype)quotedReplyForSendingWithItem:(CVItemViewModel *)item
                                            transaction:(SDSAnyReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessageForSending;
