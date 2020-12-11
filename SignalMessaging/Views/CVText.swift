@@ -4,6 +4,8 @@
 
 import Foundation
 
+private typealias CacheKey = String
+
 private enum CVTextValue: Equatable, Hashable {
     case text(text: String)
     case attributedText(attributedText: NSAttributedString)
@@ -32,6 +34,15 @@ private enum CVTextValue: Equatable, Hashable {
             return "text: \(text)"
         case .attributedText(let attributedText):
             return "attributedText: \(attributedText.string)"
+        }
+    }
+
+    fileprivate var cacheKey: CacheKey {
+        switch self {
+        case .text(let text):
+            return "t\(text)"
+        case .attributedText(let attributedText):
+            return "a\(attributedText.description)"
         }
     }
 }
@@ -129,23 +140,9 @@ public struct CVLabelConfig {
         "CVLabelConfig: \(text.debugDescription)"
     }
 
-    // textColor doesn't affect measurement.
-    fileprivate struct CacheKey: Equatable, Hashable {
-        let text: CVTextValue
-        let fontName: String
-        let fontPointSize: CGFloat
-        let numberOfLines: Int
-        let lineBreakMode: NSLineBreakMode
-        let textAlignment: NSTextAlignment?
-    }
-
     fileprivate var cacheKey: CacheKey {
-        CacheKey(text: text,
-                 fontName: font.fontName,
-                 fontPointSize: font.pointSize,
-                 numberOfLines: numberOfLines,
-                 lineBreakMode: lineBreakMode,
-                 textAlignment: textAlignment)
+        // textColor doesn't affect measurement.
+        "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment?.rawValue ?? 0)"
     }
 }
 
@@ -241,19 +238,10 @@ public struct CVTextViewConfig {
         "CVTextViewConfig: \(text.debugDescription)"
     }
 
-    // textColor and linkTextAttributes don't affect measurement.
-    fileprivate struct CacheKey: Equatable, Hashable {
-        let text: CVTextValue
-        let fontName: String
-        let fontPointSize: CGFloat
-        let textAlignment: NSTextAlignment?
-    }
-
     fileprivate var cacheKey: CacheKey {
-        CacheKey(text: text,
-                 fontName: font.fontName,
-                 fontPointSize: font.pointSize,
-                 textAlignment: textAlignment)
+        // textColor and linkTextAttributes (for the attributes we set)
+        // don't affect measurement.
+        "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(textAlignment?.rawValue ?? 0)"
     }
 }
 
@@ -262,23 +250,17 @@ public struct CVTextViewConfig {
 public class CVText {
     public enum MeasurementMode { case view, layoutManager, boundingRect }
 
-    public static let measureOnMainThread = false
-
-    public static var measurementQueue: DispatchQueue {
-        measureOnMainThread
-            ? .main
-            : CVUtils.workQueue
-    }
+    public static var measurementQueue: DispatchQueue { CVUtils.workQueue }
 
     private static var reuseLabels: Bool {
-        measureOnMainThread
+        false
     }
     public static var defaultLabelMeasurementMode: MeasurementMode {
         .layoutManager
     }
 
     private static var reuseTextViews: Bool {
-        measureOnMainThread
+        false
     }
     public static var defaultTextViewMeasurementMode: MeasurementMode {
         .layoutManager
@@ -306,16 +288,15 @@ public class CVText {
         }
     }
 
-    private struct LabelCacheKey: Equatable, Hashable {
-        let config: CVLabelConfig.CacheKey
-        let maxWidth: CGFloat
+    private static func buildCacheKey(configKey: String, maxWidth: CGFloat) -> CacheKey {
+        "\(configKey),\(maxWidth)"
     }
-    private static let labelCache = LRUCache<LabelCacheKey, CGSize>(maxSize: cacheSize)
+    private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         assertOnQueue(measurementQueue)
 
-        let cacheKey = LabelCacheKey(config: config.cacheKey, maxWidth: maxWidth)
+        let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = labelCache.get(key: cacheKey) {
             return result
@@ -439,18 +420,14 @@ public class CVText {
         }
     }
 
-    private struct TextViewCacheKey: Equatable, Hashable {
-        let config: CVTextViewConfig.CacheKey
-        let maxWidth: CGFloat
-    }
-    private static let textViewCache = LRUCache<TextViewCacheKey, CGSize>(maxSize: cacheSize)
+    private static let textViewCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
     public static func measureTextView(mode: MeasurementMode = defaultTextViewMeasurementMode,
                                        config: CVTextViewConfig,
                                        maxWidth: CGFloat) -> CGSize {
         assertOnQueue(measurementQueue)
 
-        let cacheKey = TextViewCacheKey(config: config.cacheKey, maxWidth: maxWidth)
+        let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = textViewCache.get(key: cacheKey) {
             return result

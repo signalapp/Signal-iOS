@@ -53,9 +53,9 @@ public class CVLoader: NSObject {
             let threadInteractionCount: UInt
         }
 
-        return firstly(on: CVUtils.workQueue) { () -> LoadState in
-            // To ensure coherency, the entire load should use this transaction.
-            try Self.databaseStorage.read { transaction in
+        return firstly(on: CVUtils.workQueue) { () -> CVUpdate in
+            // To ensure coherency, the entire load should be done with a single transaction.
+            let loadState: LoadState = try Self.databaseStorage.read { transaction in
 
                 self.benchSteps.step("start")
                 let loadThreadViewModel = { () -> ThreadViewModel in
@@ -148,26 +148,8 @@ public class CVLoader: NSObject {
                                  items: items,
                                  threadInteractionCount: threadInteractionCount)
             }
-        }.map(on: CVText.measurementQueue) { (loadState: LoadState) -> (LoadState, CVRenderState) in
 
-            let conversationStyle = viewStateSnapshot.conversationStyle
-            let items: [CVRenderItem]
-            if CVText.measureOnMainThread {
-                self.benchSteps.step("measure cells on main.1")
-                items = loadState.items.map { item in
-                    // Measure
-                    let cellMeasurement = Self.buildCellMeasurement(rootComponent: item.rootComponent,
-                                                                    conversationStyle: conversationStyle)
-                    return CVRenderItem(itemModel: item.itemModel,
-                                        rootComponent: item.rootComponent,
-                                        cellMeasurement: cellMeasurement)
-                }
-                self.benchSteps.step("measure cells on main.2")
-            } else {
-                // Items are already measured.
-                items = loadState.items
-            }
-
+            let items = loadState.items
             let threadViewModel = loadState.threadViewModel
             let renderState = CVRenderState(threadViewModel: threadViewModel,
                                             lastThreadViewModel: lastRenderState.threadViewModel,
@@ -178,9 +160,6 @@ public class CVLoader: NSObject {
                                             loadType: loadRequest.loadType)
 
             self.benchSteps.step("build render state")
-
-            return (loadState, renderState)
-        }.map(on: CVUtils.workQueue) { (loadState: LoadState, renderState: CVRenderState) -> CVUpdate in
 
             let threadInteractionCount = loadState.threadInteractionCount
             let update = CVUpdate.build(renderState: renderState,
@@ -326,12 +305,8 @@ public class CVLoader: NSObject {
 
         assertOnQueue(CVUtils.workQueue)
 
-        // If we're going to measure on the main thread, use
-        // an empty placeholder measurement for now.
-        let cellMeasurement = (CVText.measureOnMainThread
-                                ? buildEmptyCellMeasurement()
-                                : buildCellMeasurement(rootComponent: rootComponent,
-                                                       conversationStyle: conversationStyle))
+        let cellMeasurement = buildCellMeasurement(rootComponent: rootComponent,
+                                                   conversationStyle: conversationStyle)
 
         return CVRenderItem(itemModel: itemModel,
                             rootComponent: rootComponent,
