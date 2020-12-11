@@ -227,7 +227,7 @@ public struct CVLongPressHandler {
         self.gestureLocation = gestureLocation
 
         // TODO: shouldAutoUpdate?
-        self.itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        self.itemViewModel = CVItemViewModel(renderItem: renderItem)
     }
 
     func startGesture(cell: CVCell) {

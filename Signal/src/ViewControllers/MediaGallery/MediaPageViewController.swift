@@ -407,7 +407,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             owsFailDebug("viewItem was unexpectedly nil")
             return
         }
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        let itemViewModel = CVItemViewModel(renderItem: renderItem)
         ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
     }
 

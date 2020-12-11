@@ -808,7 +808,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         if isShowingSelectionUI {
             let selectionView = componentView.selectionView
-            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            let itemViewModel = CVItemViewModel(renderItem: renderItem)
             if componentDelegate.cvc_isMessageSelected(interaction) {
                 selectionView.isSelected = false
                 componentDelegate.cvc_didDeselectViewItem(itemViewModel)
@@ -1229,7 +1229,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return panHandler
         }
 
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        let itemViewModel = CVItemViewModel(renderItem: renderItem)
         guard componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) else {
             return nil
         }
@@ -1480,7 +1480,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         panHandler.isReplyActive = isReplyActive
 
         if panHandler.isReplyActive && hasFinished {
-            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            let itemViewModel = CVItemViewModel(renderItem: renderItem)
             componentDelegate.cvc_didTapReplyToItem(itemViewModel)
         }
     }

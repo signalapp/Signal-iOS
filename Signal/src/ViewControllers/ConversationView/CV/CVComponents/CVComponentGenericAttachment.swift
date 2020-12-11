@@ -226,7 +226,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         guard let attachmentStream = attachmentStream else {
             return false
         }
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        let itemViewModel = CVItemViewModel(renderItem: renderItem)
         if attachmentStream.contentType == OWSMimeTypePdf {
             componentDelegate.cvc_didTapPdf(itemViewModel: itemViewModel,
                                             attachmentStream: attachmentStream)

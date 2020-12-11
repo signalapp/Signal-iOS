@@ -359,8 +359,7 @@ class MessageDetailViewController: OWSViewController {
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
-        // TODO: We probably don't want to do this.
-        let renderItem = (itemViewModel as! CVItemViewModelImpl).renderItem
+        let renderItem = itemViewModel.renderItem
         cellView.reset()
         cellView.configure(renderItem: renderItem, componentDelegate: self)
         cellView.isCellVisible = true

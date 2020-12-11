@@ -178,7 +178,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         if isShowingSelectionUI {
             let selectionView = componentView.selectionView
-            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            let itemViewModel = CVItemViewModel(renderItem: renderItem)
             if componentDelegate.cvc_isMessageSelected(interaction) {
                 selectionView.isSelected = false
                 componentDelegate.cvc_didDeselectViewItem(itemViewModel)

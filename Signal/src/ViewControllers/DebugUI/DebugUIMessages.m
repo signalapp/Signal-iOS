@@ -2045,7 +2045,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                                                        thread:thread
                                                                                 containerView:containerView
                                                                                   transaction:transaction];
-                CVItemViewModelImpl *itemViewModel = [[CVItemViewModelImpl alloc] initWithRenderItem:renderItem];
+                CVItemViewModel *itemViewModel = [[CVItemViewModel alloc] initWithRenderItem:renderItem];
 
                 quotedMessage =
                     [[OWSQuotedReplyModel quotedReplyForSendingWithItem:itemViewModel
@@ -2069,7 +2069,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                                                        thread:thread
                                                                                 containerView:containerView
                                                                                   transaction:transaction];
-                CVItemViewModelImpl *itemViewModel = [[CVItemViewModelImpl alloc] initWithRenderItem:renderItem];
+                CVItemViewModel *itemViewModel = [[CVItemViewModel alloc] initWithRenderItem:renderItem];
 
                 quotedMessage =
                     [[OWSQuotedReplyModel quotedReplyForSendingWithItem:itemViewModel

@@ -206,7 +206,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             return false
         }
 
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        let itemViewModel = CVItemViewModel(renderItem: renderItem)
         componentDelegate.cvc_didTapBodyMedia(itemViewModel: itemViewModel,
                                               attachmentStream: attachmentStream,
                                               imageView: mediaView)
