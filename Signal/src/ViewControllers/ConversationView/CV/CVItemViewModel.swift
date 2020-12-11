@@ -73,15 +73,7 @@ extension CVItemViewModelImpl: CVItemViewModel {
     public var displayableBodyText: DisplayableText? {
         AssertIsOnMainThread()
 
-        guard let bodyText = componentState.bodyText else {
-            return nil
-        }
-        switch bodyText.state {
-        case .bodyText(let displayableBodyText):
-            return displayableBodyText
-        case .oversizeTextDownloading, .remotelyDeleted:
-            return nil
-        }
+        return componentState.bodyText?.displayableText
     }
 
     public var isViewOnce: Bool {
@@ -155,8 +147,7 @@ extension CVItemViewModelImpl: CVItemViewModel {
 
     public var hasUnloadedAttachments: Bool {
 
-        if let bodyText = componentState.bodyText,
-           bodyText.state == .oversizeTextDownloading {
+        if componentState.bodyText == .oversizeTextDownloading {
             return true
         }
         if componentState.audioAttachment?.attachment as? TSAttachmentPointer != nil {

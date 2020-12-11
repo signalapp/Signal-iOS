@@ -211,10 +211,10 @@ struct CVItemModelBuilder: CVItemBuilding {
 
         let hasTapForMore: Bool = {
             guard let bodyText = item.componentState.bodyText,
-                  let displayableBodyText = bodyText.displayableBodyText else {
+                  let displayableText = bodyText.displayableText else {
                 return false
             }
-            guard displayableBodyText.isTextTruncated else {
+            guard displayableText.isTextTruncated else {
                 return false
             }
             let interactionId = item.interaction.uniqueId
