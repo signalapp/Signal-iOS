@@ -1615,6 +1615,9 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Iniciar llamada";
 
+/* Tooltip highlighting group calls. */
+"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Has iniciado una llamada en grupo";
 
@@ -1638,6 +1641,12 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Tú (en otro dispositivo)";
+
+/* Body for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+
+/* Title for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Has creado el grupo.";
@@ -2168,7 +2177,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "¿Qué son los grupos antiguos?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Los grupos antiguos no se pueden actualizar al nuevo sistema de grupos, pero puedes crear un grupo con la misma gente, si tod@s usan la versión de Signal más actual.\n\nSignal ofrecerá un modo de actualizar grupos antiguos en un futuro.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Los grupos antiguos no se pueden actualizar al nuevo sistema de grupos, pero puedes crear un grupo con la misma gente, si tod@s usan la versión de Signal más actual.\n\nSignal ofrecerá un modo de actualizar grupos antiguos en unas semanas.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "¿Cómo actualizo un grupo antiguo?";

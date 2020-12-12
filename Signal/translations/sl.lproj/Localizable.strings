@@ -539,7 +539,7 @@
 "CALLBACK_BUTTON_TITLE" = "Pokliči nazaj";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Vaša kamera je izključena";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Uporabnik/ca aplikacije Signal";
@@ -1615,6 +1615,9 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Začni klic";
 
+/* Tooltip highlighting group calls. */
+"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Začeki ste skupinski klic";
 
@@ -1638,6 +1641,12 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vi (na drugi napravi)";
+
+/* Body for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+
+/* Title for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Ustvarili ste skupino.";

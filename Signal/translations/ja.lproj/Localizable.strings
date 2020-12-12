@@ -1523,16 +1523,16 @@
 "GROUP_ADMIN_ONLY_WARNING" = "管理者だけがこのオプションを変更できます。";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "音声や映像の送受信を行いません。";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ はブロックされました";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ はブロックされました";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "通話を続ける";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "グループ通話が終了しました。";
@@ -1553,7 +1553,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "通話に参加";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "通話から抜ける";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "現在 %ld 人が参加中";
@@ -1562,13 +1562,13 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, %3$@などが参加中";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ からの音声と映像を受信できません";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "相手があなたの安全番号の変更を検証していないか、相手の端末に問題があるか、あなたがブロックされている可能性があります。";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ からの音声と映像を受信できません";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "誰も参加していません";
@@ -1615,8 +1615,11 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "通話を開始する";
 
+/* Tooltip highlighting group calls. */
+"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "グループ通話を開始しました";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@がグループ通話を開始しました";
@@ -1638,6 +1641,12 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "あなた（別端末）";
+
+/* Body for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+
+/* Title for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "グループを作成しました。";
@@ -2120,25 +2129,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "グループ名が「%@」になりました。";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "このグループは新グループにアップグレードされました。";
+"GROUP_WAS_MIGRATED" = "このグループは新しいグループにアップデートされました。";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "新グループに追加できないメンバーがグループから削除されました。";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "新しいグループに追加できなかったメンバーが、グループから削除されました。";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "あなたは、新グループに追加できないため、グループから削除されました。";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "あなたは新しいグループに追加できなかっため、グループから削除されました。";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "新グループに参加できない%@人のメンバーがグループから削除されました。";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@人のメンバーが新しいグループに追加できなかっため、グループから削除されました。";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "新グループに追加できないメンバーに招待を送りました。";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "新しいグループに追加できなかったメンバーに、招待を送りました。";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "新グループに追加できないあなたに招待を送りました。";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "新しいグループに追加できなかったあなたに、招待を送りました。";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "新グループに追加できない%@人のメンバーに招待を送りました。";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "新しいグループに追加できなかった%@人のメンバーに、招待を送りました。";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "グループを離れました。";
@@ -2183,7 +2192,7 @@
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "メンションや管理機能のある「新グループ」にアップグレードしてください。このグループで名前か写真を公開しているメンバーには%@への招待が送られます。";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "新グループにアップグレードできません。";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "新しいグループにアップグレードできません";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "このグループはメンバーが多すぎるため、新グループに更新できません。新グループの上限は%@人です。";
@@ -2219,22 +2228,22 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "新グループをサポートしないメンバーが%1$@人いるため、このグループはレガシーグループになります。%2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "これは旧式グループ（レガシーグループ）です。グループの管理機能などの新機能を利用するには、新グループを作成してください。%@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "これはレガシーグループです。グループ管理者などの新機能を利用するには、新しいグループを作成してください。%@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "この旧グループ（レガシーグループ）はまだ新グループにアップグレードできません。%@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "このレガシーグループは、まだ新しいグループにアップグレードできません。%@。";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "この旧グループ（レガシーグループ）は大きすぎるので、新グループにアップグレードできません。%@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "このレガシーグループは大きすぎるため、新しいグループにアップグレードできません。%@。";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "このグループは旧グループ（レガシーグループ）です。メンションや管理機能を利用するには、%@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "これはレガシーグループです。@メンションや管理者などの新機能を利用するには、%@。";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "新グループに追加できなかったメンバーがいます。追加しますか？";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1人のメンバーを新しいグループに再追加できませんでした。追加しますか？";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@人のメンバーが新グループに追加できませんでした。追加しますか？";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@人のメンバーが新しいグループに追加できませんでした。追加しますか？";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "レガシーグループ";
@@ -2246,19 +2255,19 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "グループのアップグレード";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "メンションや管理機能を利用するには、このグループをアップグレードしてください。";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "メンションや管理者などの新機能を利用するには、このグループをアップグレードしてください。";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "「新グループ」とは？";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "新しいグループとは？";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "すべてのメッセージ履歴とメディアは、アップグレード前から維持されています。";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "新グループには、@mentionや管理者機能などがあります。将来、新しい機能も追加されます。";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "新しいグループには、@メンションやグループ管理者機能などがあります。将来、新しい機能も追加されます。";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "新グループ";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "新しいグループ";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "メンバーを追加";
@@ -2273,10 +2282,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "メンバーを追加";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "このメンバーは、新グループに自動追加できませんでした。";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "以下のメンバーは、新しいグループにアップグレードした際に、自動で追加できませんでした:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "このメンバーは、新グループに自動追加できませんでした。";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "以下のメンバーは、新しいグループにアップグレードした際に、自動で追加できませんでした:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "すべてのメッセージ履歴とメディアは、アップグレード前から維持されています。";
@@ -2294,34 +2303,34 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "このメンバーがグループへの招待を受け入れるまで、グループメッセージは受信できません:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "このメンバーには新グループに参加する機能（バージョン）がないため、グループから削除されました:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "このメンバーは新しいグループに参加できないため、グループから削除されます:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "このメンバーには新グループに参加する機能（バージョン）がないため、グループから削除されました:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "以下のメンバーは新しいグループに参加できないため、グループから削除されます:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "新グループにアップグレード";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "新しいグループにアップグレードする";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "このグループをアップグレード";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "このグループは新グループにアップデートできませんでした。";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "このグループは新しいグループにアップデートできませんでした。";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "インターネットに現在接続していないため、このグループを新グループにアップグレードできませんでした。";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "インターネットに接続していないため、このグループを新しいグループにアップグレードできませんでした。";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "アップグレードが完了しませんでした。";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "新グループにアップグレード";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "新しいグループにアップグレードしました。";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "このグループをアップグレード";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "去る前に、このグループの新しい管理者を選択してください。";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "グループから抜ける前に、新しい管理者を選択してください。";
 
 /* Title for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "新しい管理者を選択";
@@ -2930,7 +2939,7 @@
 "NEW_GROUP_CREATION_FAILED" = "新しいグループを作成できませんでした。";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "新グループが作成できませんでした。インターネット接続を確認し再度試してください。";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "新しいグループを作成できませんでした。インターネット接続を確認して再度試してください。";
 
 /* Indicates that a group member does not support New Groups. */
 "NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "新しいグループをサポートしていません";
@@ -2942,7 +2951,7 @@
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "グループ名がありません";
 
 /* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "新グループ";
+"NEW_GROUP_DEFAULT_TITLE" = "新規グループ";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ から %@";
@@ -4577,16 +4586,16 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "設定済みのグループは数週間で、新機能が追加されます。";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "新グループ";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "新しいグループ";
 
 /* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "新グループはここ!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "新しいグループがやって来ました！";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "新グループには、@mentionや管理者機能などがあります。タップして試用してみてください。";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "新しいグループには、@メンションやグループ管理者機能などがあります。以下をタップして試してください:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ステッカーメッセージ";
