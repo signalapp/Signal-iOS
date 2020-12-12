@@ -52,6 +52,8 @@ NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWa
 NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
     = @"OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown";
 NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlurTooltipShown";
+NSString *const OWSPreferencesKeyWasGroupCallTooltipShown = @"OWSPreferencesKeyWasGroupCallTooltipShown";
+NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreferencesKeyWasGroupCallTooltipShownCount";
 
 @interface OWSPreferences ()
 
@@ -413,6 +415,29 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 - (void)setWasViewOnceTooltipShown
 {
     [self setBool:YES forKey:OWSPreferencesKeyWasViewOnceTooltipShown];
+}
+
+- (BOOL)wasGroupCallTooltipShown
+{
+    return [self boolForKey:OWSPreferencesKeyWasGroupCallTooltipShown defaultValue:NO];
+}
+
+- (void)incrementGroupCallTooltipShownCount
+{
+    NSUInteger currentCount = [self uintForKey:OWSPreferencesKeyWasGroupCallTooltipShownCount defaultValue:0];
+    NSUInteger incrementedCount = currentCount + 1;
+
+    // If we have shown the tooltip more than 3 times, don't show it again.
+    if (incrementedCount > 3) {
+        [self setWasGroupCallTooltipShown];
+    } else {
+        [self setUInt:incrementedCount forKey:OWSPreferencesKeyWasGroupCallTooltipShownCount];
+    }
+}
+
+- (void)setWasGroupCallTooltipShown
+{
+    [self setBool:YES forKey:OWSPreferencesKeyWasGroupCallTooltipShown];
 }
 
 - (BOOL)wasBlurTooltipShown

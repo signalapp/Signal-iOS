@@ -194,6 +194,11 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) DebouncedEvent *otherUsersProfileDidChangeEvent;
 
+@property (nonatomic, nullable) GroupCallTooltip *groupCallTooltip;
+@property (nonatomic, nullable) UIView *groupCallTooltipTailReferenceView;
+@property (nonatomic, nullable) UIBarButtonItem *groupCallBarButtonItem;
+@property (nonatomic) BOOL hasIncrementedGroupCallTooltipShownCount;
+
 @end
 
 #pragma mark -
@@ -1152,6 +1157,8 @@ typedef enum : NSUInteger {
     // which is used to determine height.
     // So here we unsure the proper height once we know everything's been layed out.
     [self.inputToolbar ensureTextViewHeight];
+
+    [self positionGroupCallTooltip];
 }
 
 #pragma mark - Initiliazers
@@ -1255,6 +1262,7 @@ typedef enum : NSUInteger {
 
     self.navigationItem.hidesBackButton = NO;
     self.navigationItem.leftBarButtonItem = nil;
+    self.groupCallBarButtonItem = nil;
 
     switch (self.uiMode) {
         case ConversationUIMode_Search: {
@@ -1308,6 +1316,7 @@ typedef enum : NSUInteger {
                     videoCallButton.enabled = (self.callService.currentCall == nil) || self.isCurrentCallForThread;
                     videoCallButton.accessibilityLabel
                         = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
+                    self.groupCallBarButtonItem = videoCallButton;
                     [barButtons addObject:videoCallButton];
                 } else {
                     UIBarButtonItem *audioCallButton =
@@ -1333,6 +1342,7 @@ typedef enum : NSUInteger {
             }
 
             self.navigationItem.rightBarButtonItems = [barButtons copy];
+            [self showGroupCallTooltipIfNecessary];
             return;
         }
     }
@@ -1447,6 +1457,8 @@ typedef enum : NSUInteger {
         OWSFailDebug(@"Tried to initiate a call but thread is not callable.");
         return;
     }
+
+    [self removeGroupCallTooltip];
 
     // We initiated a call, so if there was a pending message request we should accept it.
     [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
@@ -5435,6 +5447,92 @@ typedef enum : NSUInteger {
     inputToolbar.mentionDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, inputToolbar);
     return inputToolbar;
+}
+
+#pragma mark - Group Call Tooltip
+
+- (void)showGroupCallTooltipIfNecessary
+{
+    [self removeGroupCallTooltip];
+
+    if (!self.canCall || !self.isGroupConversation) {
+        return;
+    }
+
+    if (self.preferences.wasGroupCallTooltipShown) {
+        return;
+    }
+
+    // We only want to increment once per CVC lifecycle, since
+    // we may tear down and rebuild the tooltip multiple times
+    // as the navbar items change.
+    if (!self.hasIncrementedGroupCallTooltipShownCount) {
+        [self.preferences incrementGroupCallTooltipShownCount];
+        self.hasIncrementedGroupCallTooltipShownCount = YES;
+    }
+
+    if (self.threadViewModel.groupCallInProgress) {
+        return;
+    }
+
+    UIView *tailReferenceView = [UIView new];
+    tailReferenceView.userInteractionEnabled = NO;
+    [self.view addSubview:tailReferenceView];
+    self.groupCallTooltipTailReferenceView = tailReferenceView;
+
+    __weak ConversationViewController *weakSelf = self;
+    GroupCallTooltip *tooltip = [GroupCallTooltip presentFromView:self.view
+                                               widthReferenceView:self.view
+                                                tailReferenceView:tailReferenceView
+                                                   wasTappedBlock:^{ [weakSelf showGroupLobbyOrActiveCall]; }];
+    self.groupCallTooltip = tooltip;
+
+    // This delay is unfortunate, but the bar button item is not always
+    // ready to use as a position reference right away after it is set
+    // on the navigation item. So we wait a short amount of time for it
+    // to hopefully be ready since there's unfortunately not a simple
+    // way to monitor when the navigation bar layout has finished (without
+    // subclassing navigation bar). Since the stakes are low here (the
+    // tooltip just won't be visible), it's not worth doing that for.
+
+    self.groupCallTooltip.hidden = YES;
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self positionGroupCallTooltip];
+    });
+}
+
+- (void)positionGroupCallTooltip
+{
+    if (!self.groupCallTooltipTailReferenceView) {
+        return;
+    }
+
+    if (!self.groupCallBarButtonItem) {
+        return;
+    }
+
+    UIView *_Nullable barButtonView = [self.groupCallBarButtonItem valueForKey:@"view"];
+    if (!barButtonView) {
+        return;
+    }
+
+    if (![barButtonView isKindOfClass:[UIView class]]) {
+        OWSFailDebug(@"Unexpected view type for bar button");
+        return;
+    }
+
+    self.groupCallTooltipTailReferenceView.frame = [self.view convertRect:barButtonView.frame
+                                                                 fromView:barButtonView.superview];
+    self.groupCallTooltip.hidden = NO;
+}
+
+- (void)removeGroupCallTooltip
+{
+    [self.groupCallTooltip removeFromSuperview];
+    self.groupCallTooltip = nil;
+    [self.groupCallTooltipTailReferenceView removeFromSuperview];
+    self.groupCallTooltipTailReferenceView = nil;
 }
 
 @end

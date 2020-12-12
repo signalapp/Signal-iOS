@@ -41,7 +41,7 @@ public class BlurTooltip: TooltipView {
         return UIColor.ows_accentBlue
     }
 
-    override var tailDirection: TooltipView.TailDirection {
+    public override var tailDirection: TooltipView.TailDirection {
         return .up
     }
 

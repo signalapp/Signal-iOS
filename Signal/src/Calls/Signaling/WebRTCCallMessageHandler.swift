@@ -170,7 +170,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         for groupThread: TSGroupThread,
         serverReceivedTimestamp: UInt64) {
 
-        Logger.info("Received group call update for thread \(groupThread)")
+        Logger.info("Received group call update for thread \(groupThread.uniqueId)")
         callService.groupCallMessageHandler.handleUpdateMessage(update, for: groupThread, serverReceivedTimestamp: serverReceivedTimestamp)
     }
 }
