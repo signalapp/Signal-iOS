@@ -1331,7 +1331,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Det går inte att skicka på grund av inaktuella prekey-data.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Det gick inte att skicka meddelande till användaren eftersom du har blockerat dem.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Det gick inte att skicka meddelande till användaren eftersom du har blockerat användaren.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte ansluta till internet. Vänligen försök igen.";
@@ -1615,6 +1615,9 @@
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Starta samtal";
 
+/* Tooltip highlighting group calls. */
+"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Du startade ett gruppsamtal";
 
@@ -1638,6 +1641,12 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Du (på en annan enhet)";
+
+/* Body for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+
+/* Title for group calls megaphone */
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Du skapade gruppen.";
@@ -2195,7 +2204,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All meddelandehistorik och media kommer att sparas före uppgraderingen.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Denna grupp kan inte skapas eftersom 1 medlem använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Denna grupp kan inte skapas eftersom 1 medlem använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med medlemmen efter att medlemmen har uppdaterat Signal eller ta bort medlemmen innan du skapar gruppen.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Denna grupp kan inte skapas eftersom %@ medlemmar använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.";
@@ -2207,10 +2216,10 @@
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Denna grupp kan inte skapas eftersom %1$@ medlemmar använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "En Äldre grupp skapas eftersom en medlem använder en gammal version av Signal. Du kan skapa en ny stilgrupp med dem när de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "En Äldre grupp skapas eftersom en medlem använder en gammal version av Signal. Du kan skapa en ny formatgrupp med dem när de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "En Äldre grupp skapas eftersom %@ medlemmar använder en gammal version av Signal. Du kan skapa en ny stilgrupp med dem när de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "En Äldre grupp skapas eftersom %@ medlemmar använder en gammal version av Signal. Du kan skapa en ny formatgrupp med dem när de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 medlem stöder inte Nya grupper, så detta kommer att vara en Äldre grupp. %@";
@@ -2231,7 +2240,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Detta är en Äldre grupp. För att komma åt nya funktioner som @omnämnanden och administratörer, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 medlem kunde inte läggas till igen i den Nya gruppen. Vill du lägga till dem nu?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 medlem kunde inte läggas till igen i den Nya gruppen. Vill du lägga till medlemmen nu?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ medlemmar kunde inte läggas till igen i den Nya gruppen. Vill du lägga till dem nu?";
@@ -2780,13 +2789,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blockera";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Låt %@ meddela dig och dela ditt namn och foto med dem? Du får inte några meddelanden förrän du har slutat blockera dem.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Tillåt att %@ meddelar dig och dela ditt namn och foto? Du får inte några meddelanden förrän du har avblockerat.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Ta bort blockeringen av denna grupp och dela ditt namn och foto med dess medlemmar? Du får inte några meddelanden förrän du har blockerat dem.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Avblockera denna grupp och dela ditt namn och foto med dess medlemmar? Du får inte några meddelanden förrän du har avblockerat.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Ta bort blockeringen av denna grupp? De vet inte att du har sett deras meddelanden förrän du har slutat blockera dem.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Avblockera denna grupp? De vet inte att du har sett deras meddelanden förrän du har slutat avblockerat dem.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Fortsätt";
@@ -2795,13 +2804,13 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Ta bort";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Fortsätt konversationen med %@ och dela ditt namn och foto med dem?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Fortsätt konversationen med %@ och dela ditt namn och foto?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Fortsätt din konversation med denna grupp och dela ditt namn och foto med dess medlemmar?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Låt %@ meddela dig och dela ditt namn och foto med dem? De vet inte att du har sett deras meddelande förrän du accepterar det.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Tillåt att %@ meddelar dig och dela ditt namn och foto med dem? Personen vet inte att du har sett meddelandet förrän du accepterar det.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Gå med i denna grupp och dela ditt namn och foto med dess medlemmar? De vet inte att du har sett sina meddelanden förrän du accepterar det.";

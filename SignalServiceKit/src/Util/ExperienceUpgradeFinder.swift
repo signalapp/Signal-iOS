@@ -14,6 +14,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case linkPreviews
     case researchMegaphone1
     case groupsV2AndMentionsSplash2
+    case groupCallsMegaphone
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -58,6 +59,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return RemoteConfig.researchMegaphone
         case .groupsV2AndMentionsSplash2:
             return FeatureFlags.groupsV2showSplash
+        case .groupCallsMegaphone:
+            return RemoteConfig.groupCalling
         }
     }
 
@@ -109,6 +112,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .researchMegaphone1:
             return .low
         case .groupsV2AndMentionsSplash2:
+            return .medium
+        case .groupCallsMegaphone:
             return .medium
         }
     }
@@ -170,6 +175,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
         case .groupsV2AndMentionsSplash2:       return .groupsV2AndMentionsSplash2
+        case .groupCallsMegaphone:              return .groupCallsMegaphone
         }
     }
 }
@@ -331,6 +337,7 @@ public enum ObjcExperienceUpgradeId: Int {
     case linkPreviews
     case researchMegaphone1
     case groupsV2AndMentionsSplash2
+    case groupCallsMegaphone
 
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
@@ -341,6 +348,7 @@ public enum ObjcExperienceUpgradeId: Int {
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
         case .groupsV2AndMentionsSplash2:       return .groupsV2AndMentionsSplash2
+        case .groupCallsMegaphone:              return .groupCallsMegaphone
         }
     }
 }

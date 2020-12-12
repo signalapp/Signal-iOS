@@ -780,6 +780,8 @@
 		88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C659AF24688335002AC115 /* SelfSignedIdentity.swift */; };
 		88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */; };
 		88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */; };
+		88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */; };
+		88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CB462125843758001900F2 /* GroupCallTooltip.swift */; };
 		88D1BCB924F73C05009A1738 /* PhoneNumberSharingSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */; };
 		88D1BCBB24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */; };
 		88D1BCBE24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCBD24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */; };
@@ -1869,6 +1871,8 @@
 		88C659AF24688335002AC115 /* SelfSignedIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentity.swift; sourceTree = "<group>"; };
 		88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
 		88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPinSettingsTableViewController.swift; sourceTree = "<group>"; };
+		88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallsMegaphone.swift; sourceTree = "<group>"; };
+		88CB462125843758001900F2 /* GroupCallTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallTooltip.swift; sourceTree = "<group>"; };
 		88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberSharingSettingsTableViewController.swift; sourceTree = "<group>"; };
 		88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilitySettingsTableViewController.swift; sourceTree = "<group>"; };
 		88D1BCBC24F74991009A1738 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = translations/fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -3386,6 +3390,7 @@
 			isa = PBXGroup;
 			children = (
 				88588D17252D312800405414 /* GroupCallViewController.swift */,
+				88CB462125843758001900F2 /* GroupCallTooltip.swift */,
 				88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */,
 				88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */,
 				88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */,
@@ -3496,6 +3501,7 @@
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */,
+				88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -5213,6 +5219,7 @@
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,
 				88D23D2723CEC0C700B0E74B /* WebRTCCallMessageHandler.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
+				88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
@@ -5235,6 +5242,7 @@
 				880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				347C3847252CE6C900F3D941 /* CVComponentBodyMedia.swift in Sources */,
+				88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */,

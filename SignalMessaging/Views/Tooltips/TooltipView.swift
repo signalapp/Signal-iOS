@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class TooltipView: UIView {
+open class TooltipView: UIView {
 
     private let wasTappedBlock: (() -> Void)?
 
@@ -24,7 +24,7 @@ public class TooltipView: UIView {
                        tailReferenceView: tailReferenceView)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -32,30 +32,24 @@ public class TooltipView: UIView {
     private let tailWidth: CGFloat = 16
     private let bubbleRounding: CGFloat = 8
 
-    public func bubbleContentView() -> UIView {
+    open func bubbleContentView() -> UIView {
         owsFailDebug("Not implemented.")
         return UIView()
     }
 
-    public var bubbleColor: UIColor {
+    open var bubbleColor: UIColor {
         owsFailDebug("Not implemented.")
         return UIColor.ows_accentBlue
     }
 
-    public var bubbleInsets: UIEdgeInsets {
+    open var bubbleInsets: UIEdgeInsets {
         return UIEdgeInsets(top: 7, left: 12, bottom: 7, right: 12)
     }
 
-    public var bubbleHSpacing: CGFloat {
-        return 20
-    }
+    open var bubbleHSpacing: CGFloat { 20 }
 
-    enum TailDirection {
-        case up, down
-    }
-    var tailDirection: TailDirection {
-        return .down
-    }
+    public enum TailDirection { case up, down }
+    open var tailDirection: TailDirection { .down }
 
     private func createContents(fromView: UIView,
                                 widthReferenceView: UIView,
