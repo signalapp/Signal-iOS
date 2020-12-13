@@ -236,6 +236,7 @@
 		B82B408E239DC00D00A248E7 /* DisplayNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */; };
 		B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408F239DD75000A248E7 /* RestoreVC.swift */; };
 		B82B4094239DF15900A248E7 /* ConversationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B4093239DF15900A248E7 /* ConversationTitleView.swift */; };
+		B83786802586D296003CE78E /* KeyPairMigrationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */; };
 		B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
@@ -1362,6 +1363,7 @@
 		B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameVC.swift; sourceTree = "<group>"; };
 		B82B408F239DD75000A248E7 /* RestoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreVC.swift; sourceTree = "<group>"; };
 		B82B4093239DF15900A248E7 /* ConversationTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleView.swift; sourceTree = "<group>"; };
+		B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairMigrationSheet.swift; sourceTree = "<group>"; };
 		B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationButtonSet.swift; sourceTree = "<group>"; };
 		B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Scaling.swift"; sourceTree = "<group>"; };
 		B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Conversion.swift"; sourceTree = "<group>"; };
@@ -2620,6 +2622,7 @@
 				B88847BB23E10BC6009836D2 /* GroupMembersVC.swift */,
 				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
 				B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */,
+				B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */,
 				B82B40872399EB0E00A248E7 /* LandingVC.swift */,
 				C329FEEB24F7277900B1C64C /* LightModeSheet.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
@@ -5532,6 +5535,7 @@
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				B88847BC23E10BC6009836D2 /* GroupMembersVC.swift in Sources */,
 				B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */,
+				B83786802586D296003CE78E /* KeyPairMigrationSheet.swift in Sources */,
 				C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
