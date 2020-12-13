@@ -405,7 +405,7 @@ public enum OnionRequestAPI {
             }
         }
         promise.catch2 { error in // Must be invoked on Threading.workQueue
-            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
+            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else { return }
             let path = paths.first { $0.contains(guardSnode) }
             func handleUnspecificError() {
                 guard let path = path else { return }
