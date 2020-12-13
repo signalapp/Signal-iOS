@@ -970,12 +970,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
         }];
 
-        NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
-        NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
-        if ([result hasSuffix:suffix]) {
-            return [result substringToIndex:result.length - suffix.length];
+        if (recipientID.length > 8) {
+            NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
+            NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
+            if ([result hasSuffix:suffix]) {
+                return [result substringToIndex:result.length - suffix.length];
+            } else {
+                return result;
+            }
         } else {
-            return result;
+            return result; // Should never occur
         }
     } else {
         return recipientID;

@@ -349,11 +349,11 @@ public enum OnionRequestAPI {
 
     public static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
-        var guardSnode: Snode!
+        var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
-                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req/v2"
+                let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
                 if case Destination.server = destination, Double(onion.count) > 0.75 * Double(maxFileSize) {
