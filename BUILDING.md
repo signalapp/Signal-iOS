@@ -49,7 +49,7 @@ open Signal.xcworkspace
 
 In the TARGETS area of the General tab, change the Team dropdown to
 your own. You will need to do that for all the listed targets, for ex.
-Session, SessionShareExtension, and SessionPushNotificationExtension. You
+Session, SessionShareExtension, and SessionNotificationServiceExtension. You
 will need an Apple Developer account for this.
 
 On the Capabilities tab, turn off Push Notifications and Data Protection,
