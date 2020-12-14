@@ -245,6 +245,7 @@
 		B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */; };
 		B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */; };
 		B8566C7D256F62030045A0B9 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B85A68B12587141A008CC492 /* Storage+Resetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85A68B02587141A008CC492 /* Storage+Resetting.swift */; };
 		B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
@@ -1375,6 +1376,7 @@
 		B8544E3023D16CA500299F14 /* DeviceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUtilities.swift; sourceTree = "<group>"; };
 		B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Conversion.swift"; sourceTree = "<group>"; };
+		B85A68B02587141A008CC492 /* Storage+Resetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Resetting.swift"; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
@@ -2605,6 +2607,7 @@
 				C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
+				B85A68B02587141A008CC492 /* Storage+Resetting.swift */,
 				B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */,
 				B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */,
 				C31A6C59247F214E001123EF /* UIView+Glow.swift */,
@@ -5432,6 +5435,7 @@
 				C396DAF42518408B00FF6DC5 /* Parser.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
+				B85A68B12587141A008CC492 /* Storage+Resetting.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,

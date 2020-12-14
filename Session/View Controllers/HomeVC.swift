@@ -165,11 +165,11 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
     
     private func showKeyPairMigrationNudgeIfNeeded() {
-        guard !KeyPairUtilities.hasV2KeyPair() else { return }
+//        guard !KeyPairUtilities.hasV2KeyPair() else { return }
         let lastNudge = UserDefaults.standard[.lastKeyPairMigrationNudge]
         let nudgeInterval: Double = 3 * 24 * 60 * 60 // 3 days
         let nudge = given(lastNudge) { Date().timeIntervalSince($0) > nudgeInterval } ?? true
-        guard nudge else { return }
+//        guard nudge else { return }
         let sheet = KeyPairMigrationSheet()
         sheet.modalPresentationStyle = .overFullScreen
         sheet.modalTransitionStyle = .crossDissolve
