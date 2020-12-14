@@ -63,6 +63,25 @@ public class ConversationViewLayout: UICollectionViewLayout {
             }
             return nil
         }
+
+        var debugDescription: String {
+            var result = "["
+            for item in itemAttributesMap.keys.sorted() {
+                guard let itemAttributes = itemAttributesMap[item] else {
+                    owsFailDebug("Missing attributes for item: \(item)")
+                    continue
+                }
+                result += "item: \(itemAttributes.indexPath), "
+            }
+            if let headerLayoutAttributes = headerLayoutAttributes {
+                result += "header: \(headerLayoutAttributes.indexPath), "
+            }
+            if let footerLayoutAttributes = footerLayoutAttributes {
+                result += "footer: \(footerLayoutAttributes.indexPath), "
+            }
+            result += "]"
+            return result
+        }
     }
 
     private var hasEverHadLayout = false
@@ -81,13 +100,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         hasEverHadLayout = true
         return layoutInfo
     }
-
-    private var lastViewWidth: CGFloat? { currentLayoutInfo?.viewWidth }
-    private var contentSize: CGSize { ensureCurrentLayoutInfo().contentSize }
-    private var itemAttributesMap: [Int: UICollectionViewLayoutAttributes] { ensureCurrentLayoutInfo().itemAttributesMap }
-    private var headerLayoutAttributes: UICollectionViewLayoutAttributes? { ensureCurrentLayoutInfo().headerLayoutAttributes }
-    private var footerLayoutAttributes: UICollectionViewLayoutAttributes? { ensureCurrentLayoutInfo().footerLayoutAttributes }
-    private var hasLayout: Bool { currentLayoutInfo != nil }
 
     // This is used during performBatchUpdates() to determine
     // the initial (last) layout state for items.
@@ -110,14 +122,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         lastLayoutInfo = nil
     }
-
-//    private var currentAttributes: AttributeSet?
-//    private var lastAttributes: AttributeSet?
-//
-//    private var contentSize: CGSize = .zero
-//    private var itemAttributesMap = [Int: UICollectionViewLayoutAttributes]()
-//    private var headerLayoutAttributes: UICollectionViewLayoutAttributes?
-//    private var footerLayoutAttributes: UICollectionViewLayoutAttributes?
 
     @objc
     public required init(conversationStyle: ConversationStyle) {
@@ -168,34 +172,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         _ = ensureCurrentLayoutInfo()
     }
-
-//    private func func prepare() {
-//        super.prepare()
-//
-//        guard let delegate = delegate else {
-//            owsFailDebug("Missing delegate")
-//            clearState()
-//            return
-//        }
-//        guard let collectionView = collectionView else {
-//            owsFailDebug("Missing collectionView")
-//            clearState()
-//            return
-//        }
-//        guard collectionView.width > 0, collectionView.height > 0 else {
-//            owsFailDebug("Collection view has invalid size: \(collectionView.bounds)")
-//            clearState()
-//            return
-//        }
-//        guard !hasLayout else {
-//            return
-//        }
-//
-//        clearState()
-//        hasLayout = true
-//
-//        prepareLayoutOfItems(delegate: delegate)
-//    }
 
     // TODO: We need to eventually audit this and make sure we're not
     //       invalidating our layout unnecessarily.  Having said that,
@@ -301,13 +277,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-
+        let layoutInfo = ensureCurrentLayoutInfo()
         var result = [UICollectionViewLayoutAttributes]()
-        if let headerLayoutAttributes = headerLayoutAttributes {
+        if let headerLayoutAttributes = layoutInfo.headerLayoutAttributes {
             result.append(headerLayoutAttributes)
         }
-        result += itemAttributesMap.values
-        if let footerLayoutAttributes = footerLayoutAttributes {
+        result += layoutInfo.itemAttributesMap.values
+        if let footerLayoutAttributes = layoutInfo.footerLayoutAttributes {
             result.append(footerLayoutAttributes)
         }
         return result.filter { $0.frame.intersects(rect) }
@@ -331,12 +307,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override var collectionViewContentSize: CGSize {
-        contentSize
+        ensureCurrentLayoutInfo().contentSize
     }
 
     @objc
     public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        lastViewWidth != newBounds.width
+        let lastViewWidth = currentLayoutInfo?.viewWidth
+        return lastViewWidth != newBounds.width
     }
 
 //    // A layout can return the content offset to be applied during transition or update animations.
@@ -355,14 +332,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 //            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
 //        }
 //        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-//    }
-
-//    private var initialLayoutInfo: LayoutInfo {
-//        guard let lastLayoutInfo = lastLayoutInfo else {
-//            owsFailDebug("Missing lastLayoutInfo.")
-//            return ensureCurrentLayoutInfo()
-//        }
-//        return lastLayoutInfo
 //    }
 
     private var initialLayoutInfo: LayoutInfo? {
@@ -408,21 +377,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override var debugDescription: String {
-        var result = "["
-        for item in itemAttributesMap.keys.sorted() {
-            guard let itemAttributes = itemAttributesMap[item] else {
-                owsFailDebug("Missing attributes for item: \(item)")
-                continue
-            }
-            result += "item: \(itemAttributes.indexPath), "
-        }
-        if let headerLayoutAttributes = headerLayoutAttributes {
-            result += "header: \(headerLayoutAttributes.indexPath), "
-        }
-        if let footerLayoutAttributes = footerLayoutAttributes {
-            result += "footer: \(footerLayoutAttributes.indexPath), "
-        }
-        result += "]"
-        return result
+        ensureCurrentLayoutInfo().debugDescription
     }
 }

@@ -64,11 +64,7 @@ public class CVViewState: NSObject {
     @objc
     public var isUserScrolling = false
     @objc
-    public var isScrollingToTop = false {
-        didSet {
-            tryToFireCanLandLoad()
-        }
-    }
+    public var isScrollingToTop = false
     @objc
     public var scrollContinuity: ScrollContinuity = .bottom
     public var scrollContinuityMap: CVScrollContinuityMap?
@@ -136,34 +132,6 @@ public class CVViewState: NSObject {
     @objc
     public let presentationStatusBenchSteps = BenchSteps(title: "presentationStatusBenchSteps")
     #endif
-
-    // MARK: - Can Land Load
-
-    public func waitUntilCanLandLoad() -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        guard let canLandLoadPromise = canLandLoadPromise else {
-            return Promise.value(())
-        }
-        return canLandLoadPromise.promise
-    }
-    private func tryToFireCanLandLoad() {
-        AssertIsOnMainThread()
-
-        guard let canLandLoadPromise = canLandLoadPromise else {
-            return
-        }
-        guard !isScrollingToTop else {
-            return
-        }
-        canLandLoadPromise.resolver.fulfill(())
-        self.canLandLoadPromise = nil
-    }
-    private struct PromiseAndResolver {
-        let promise: Promise<Void>
-        let resolver: Resolver<Void>
-    }
-    private var canLandLoadPromise: PromiseAndResolver?
 
     // MARK: - 
 
