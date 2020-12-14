@@ -7,7 +7,7 @@ There are people all around the world who can benefit from access to Session —
 Translating Session iOS into a new language is easy! You’ll need a web browser, a plaintext editor (TextEdit on macOS or Notepad on Windows will do), and a little bit of time and patience.
 
 #### Step 1: Retrieving English strings
-- Go to Session’s iOS GitHub page 
+- Go to [Session’s iOS GitHub page](https://github.com/loki-project/session-ios)
 - In the list of folders and files, click **Session**
 - Click **Meta**
 - Click **Translations**
@@ -33,7 +33,7 @@ Once you are finished translating, save the file with a filename that specifies 
 It’s just as easy to add new translations on Session Android! Once again, you’ll need a web browser, a plaintext editor (TextEdit on macOS or Notepad on Windows will do), and a little bit of time and patience.
 
 #### Step 1: Retrieving English strings
-- Go to Session’s Android GitHub page
+- Go to [Session’s Android GitHub page](https://github.com/loki-project/session-android)
 - In the list of files and folders, click **res**
 - Click **values** (you will need to scroll down to find this folder; make sure you click the folder named **values** and not any of the folders named **values-xx** or with other suffixes)
 - Click **strings.xml**
