@@ -13,6 +13,34 @@ public extension OWSContactsManager {
         return SDSDatabaseStorage.shared
     }
 
+    // MARK: - Avatar Cache
+
+    private static let unfairLock = UnfairLock()
+
+    func getImageFromAvatarCache(key: String, diameter: CGFloat) -> UIImage? {
+        Self.unfairLock.withLock {
+            self.avatarCachePrivate.image(forKey: key as NSString, diameter: diameter)
+        }
+    }
+
+    func setImageForAvatarCache(_ image: UIImage, forKey key: String, diameter: CGFloat) {
+        Self.unfairLock.withLock {
+            self.avatarCachePrivate.setImage(image, forKey: key as NSString, diameter: diameter)
+        }
+    }
+
+    func removeAllFromAvatarCacheWithKey(_ key: String) {
+        Self.unfairLock.withLock {
+            self.avatarCachePrivate.removeAllImages(forKey: key as NSString)
+        }
+    }
+
+    func removeAllFromAvatarCache() {
+        Self.unfairLock.withLock {
+            self.avatarCachePrivate.removeAllImages()
+        }
+    }
+
     // MARK: -
 
     func sortSignalAccountsWithSneakyTransaction(_ signalAccounts: [SignalAccount]) -> [SignalAccount] {

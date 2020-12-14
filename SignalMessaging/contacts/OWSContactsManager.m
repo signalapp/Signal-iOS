@@ -80,7 +80,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSContactsManagerCollection];
 
     // TODO: We need to configure the limits of this cache.
-    _avatarCache = [ImageCache new];
+    _avatarCachePrivate = [ImageCache new];
     _colorNameCache = [NSCache new];
 
     _allContacts = @[];
@@ -514,7 +514,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
         OWSAssertDebug(address.isValid);
 
-        [self.avatarCache removeAllImagesForKey:address.stringForDisplay];
+        [self removeAllFromAvatarCacheWithKey:address.stringForDisplay];
     }];
 }
 
@@ -553,7 +553,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             [self.cnContactCache removeAllObjects];
             [self.cnContactAvatarCache removeAllObjects];
 
-            [self.avatarCache removeAllImages];
+            [self removeAllFromAvatarCache];
 
             [self intersectContacts:allContacts
                     isUserRequested:isUserRequested
