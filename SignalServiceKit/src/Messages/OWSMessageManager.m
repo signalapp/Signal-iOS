@@ -2258,6 +2258,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [incomingMessage anyInsertWithTransaction:transaction];
 
+    OWSAssertDebug(incomingMessage.sortId == 0);
+    [incomingMessage ensureSortIdForInsertedInteractionWithTransaction:transaction];
+    OWSAssertDebug(incomingMessage.sortId > 0);
+
     [self.earlyMessageManager applyPendingMessagesFor:incomingMessage transaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
