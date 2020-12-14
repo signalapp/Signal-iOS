@@ -13,7 +13,7 @@ Translating Session iOS into a new language is easy! You’ll need a web browser
 - Click **Translations**
 - Click **en.lproj**
 - Click **localizable.strings**
-- Scroll down to Line #2557 (using the line numbers on the left-hand side of the text). This line should contain the text `// MARK: - Session` (note: if this line does not contain that text, use Ctrl+F, Cmd+F, or your browser’s Find on Page function to find the line which contains that text)
+- Scroll down to line #2557 (using the line numbers on the left-hand side of the text). This line should contain the text `// MARK: - Session` (note: if this line does not contain that text, use Ctrl+F, Cmd+F, or your browser’s Find on Page function to find the line which contains that text)
 - Select and copy all text from that line down to the end of the file
 - Open a plaintext editor (TextEdit on macOS, Notepad on Windows, or your preferred plaintext editor) and create a new file
 - Paste the text you copied earlier into this blank file
@@ -37,7 +37,7 @@ It’s just as easy to add new translations on Session Android! Once again, you�
 - In the list of files and folders, click **res**
 - Click **values** (you will need to scroll down to find this folder; make sure you click the folder named **values** and not any of the folders named **values-xx** or with other suffixes)
 - Click **strings.xml**
-- Scroll down to Line #1657 (using the line numbers on the left-hand side of the text). This line should contain the text `<!-- Session -->` (note: if this line does not contain that text, use Ctrl+F, Cmd+F, or your browser’s Find on Page function to find the line which contains that text)
+- Scroll down to line #1657 (using the line numbers on the left-hand side of the text). This line should contain the text `<!-- Session -->` (note: if this line does not contain that text, use Ctrl+F, Cmd+F, or your browser’s Find on Page function to find the line which contains that text)
 - Select and copy all text from that line down to the end of the file
 - Open a plaintext editor (TextEdit on macOS, Notepad on Windows, or your preferred plaintext editor) and create a new file
 - Paste the text you copied earlier into this blank file
