@@ -73,6 +73,7 @@ public class CVViewState: NSObject {
     public var scrollContinuity: ScrollContinuity = .bottom
     public var scrollContinuityMap: CVScrollContinuityMap?
     public var scrollActionForSizeTransition: CVScrollAction?
+    public var scrollActionForUpdate: CVScrollAction?
     public var lastKnownDistanceFromBottom: CGFloat?
     @objc
     public var lastSearchedText: String?

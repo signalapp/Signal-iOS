@@ -1830,7 +1830,7 @@ typedef enum : NSUInteger {
     return [self indexPathForInteractionUniqueId:messageActionInteractionId] == nil;
 }
 
-- (nullable NSValue *)contentOffsetForMessageActionInteraction
+- (nullable NSValue *)targetContentOffsetForMessageActionInteraction
 {
     OWSAssertDebug(self.messageActionsViewController);
 
