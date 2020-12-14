@@ -100,6 +100,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                   scrollAction: CVScrollAction,
                                   updateToken: CVUpdateToken) {
         AssertIsOnMainThread()
+        owsAssertDebug(layout.hasLayout)
 
         owsAssertDebug(self.viewState.scrollContinuityMap != nil)
 
@@ -327,6 +328,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             UIView.performWithoutAnimation {
                 self.collectionView.reloadData()
                 self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.collectionViewLayout.prepare()
             }
 
             updateViewToReflectLoad(loadedRenderState: self.renderState)
@@ -364,6 +366,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.collectionViewLayout.prepare()
         }
 
         benchSteps.step("2")
@@ -422,6 +425,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.collectionViewLayout.prepare()
         }
 
         DispatchQueue.main.async { [weak self] in
@@ -452,6 +456,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 threadInteractionCount: UInt,
                                 updateToken: CVUpdateToken) {
         owsAssertDebug(!items.isEmpty)
+        owsAssertDebug(layout.hasLayout)
 
         Logger.verbose("")
 
@@ -587,6 +592,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
+        owsAssertDebug(layout.hasLayout)
         self.performBatchUpdates(batchUpdatesBlock,
                                  completion: completion,
                                  logFailureBlock: logFailureBlock,

@@ -3759,7 +3759,20 @@ typedef enum : NSUInteger {
     @try {
         void (^updateBlock)(void) = ^{
             [self.collectionView performBatchUpdates:batchUpdates completion:completion];
+
+            // AFAIK the collection view layout should reflect the old layout
+            // until performBatchUpdates(), then we need to invalidate and prepare
+            // the (new) layout just _after_ performBatchUpdates.
+            //
+            // Moreover it's important that the (old) layout is prepared when
+            // performBatchUpdates() is called.  We ensure this in
+            // willUpdateWithNewRenderState().
+            //
+            // Otherwise UICollectionView can throw (crashing) exceptions like this:
+            //
+            // UICollectionView received layout attributes for a cell with an index path that does not exist...
             [self.layout invalidateLayout];
+            [self.layout prepareLayout];
             [BenchManager completeEventWithEventId:@"message-send"];
         };
 

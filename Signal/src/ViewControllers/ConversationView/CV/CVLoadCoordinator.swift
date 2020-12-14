@@ -484,10 +484,10 @@ public class CVLoadCoordinator: NSObject {
             // Initiate new load if necessary.
             self.loadIfNecessary()
         }.catch(on: CVUtils.workQueue) { [weak self] (error) in
-            owsFailDebug("Error: \(error)")
             guard let self = self else {
                 return
             }
+            owsFailDebug("Error: \(error)")
             guard self.isLoading.tryToClearFlag() else {
                 owsFailDebug("Could not clear isLoading flag.")
                 return

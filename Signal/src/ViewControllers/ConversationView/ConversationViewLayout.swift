@@ -37,7 +37,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // prepareLayout from view logic to ensure that we always have a¸valid
     // layout without incurring any of the (great) expense of performing an
     // unnecessary layout pass.
-    private var hasLayout = false {
+    public private(set) var hasLayout = false {
         didSet {
             AssertIsOnMainThread()
 
@@ -77,6 +77,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         self.conversationStyle = conversationStyle
 
         invalidateLayout()
+        prepare()
     }
 
     @objc
