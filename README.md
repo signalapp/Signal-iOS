@@ -17,6 +17,10 @@ Please search for any [existing issues](https://github.com/loki-project/session-
 
 Build instructions can be found in [BUILDING.md](BUILDING.md).
 
+## Translations
+
+Want to help us translate Session into your language? See [TRANSLATION.md](TRANSLATION.md) for instructions on how to do that!
+
 ## License
 
 Copyright 2011 Whisper Systems
