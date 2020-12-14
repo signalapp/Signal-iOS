@@ -2,47 +2,70 @@
 final class KeyPairMigrationSheet : Sheet {
 
     override func populateContentView() {
-        // Set up image view
+        // Image view
         let imageView = UIImageView(image: #imageLiteral(resourceName: "Sun"))
-        // Set up title label
+        // Title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "Session IDs Just Got Better"
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        // Set up top stack view
+        // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ imageView, titleLabel ])
         topStackView.axis = .vertical
         topStackView.spacing = Values.largeSpacing
         topStackView.alignment = .center
-        // Set up explanation label
+        // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.textAlignment = .center
         explanationLabel.text = """
-        We upgraded the way Session IDs work. They're now even more secure bla bla bla.
+        We’ve upgraded Session IDs to make them even more private and secure. We recommend upgrading to a new Session ID now.
 
-        Migrate now to ensure your account is as secure as possible.
+        You will lose existing contacts and conversations, but you’ll gain even more privacy and security. You will need to upgrade your Session ID eventually, but you can choose to delay the upgrade if you need to save contacts or conversations.
         """
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Set up OK button
-        let okButton = Button(style: .prominentOutline, size: .large)
-        okButton.set(.width, to: 240)
-        okButton.setTitle(NSLocalizedString("OK", comment: ""), for: UIControl.State.normal)
-        okButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
-        // Set up main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, explanationLabel, okButton ])
+        // Upgrade now button
+        let upgradeNowButton = Button(style: .prominentOutline, size: .large)
+        upgradeNowButton.set(.width, to: 240)
+        upgradeNowButton.setTitle(NSLocalizedString("Upgrade Now", comment: ""), for: UIControl.State.normal)
+        upgradeNowButton.addTarget(self, action: #selector(upgradeNow), for: UIControl.Event.touchUpInside)
+        // Upgrade later button
+        let upgradeLaterButton = Button(style: .prominentOutline, size: .large)
+        upgradeLaterButton.set(.width, to: 240)
+        upgradeLaterButton.setTitle(NSLocalizedString("Upgrade Later", comment: ""), for: UIControl.State.normal)
+        upgradeLaterButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        // Button stack view
+        let buttonStackView = UIStackView(arrangedSubviews: [ upgradeNowButton, upgradeLaterButton ])
+        buttonStackView.axis = .vertical
+        buttonStackView.spacing = Values.mediumSpacing
+        buttonStackView.alignment = .center
+        // Main stack view
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, explanationLabel, buttonStackView ])
         stackView.axis = .vertical
         stackView.spacing = Values.veryLargeSpacing
         stackView.alignment = .center
-        // Set up constraints
+        // Constraints
         contentView.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.veryLargeSpacing)
         stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.veryLargeSpacing)
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.veryLargeSpacing + overshoot)
+    }
+    
+    @objc private func upgradeNow() {
+        guard let presentingVC = presentingViewController else { return }
+        let message = "You’re upgrading to a new Session ID. This will give you improved privacy and security, but it will clear ALL app data. Contacts and conversations will be lost. Proceed?"
+        let alert = UIAlertController(title: "Upgrade Session ID?", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in
+            NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        presentingVC.dismiss(animated: true) { // Dismiss self first
+            presentingVC.present(alert, animated: true, completion: nil)
+        }
     }
 }
