@@ -442,15 +442,6 @@ public class CVLoadCoordinator: NSObject {
 
         firstly { () -> Promise<CVUpdate> in
             loader.loadPromise()
-        }.then { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
-            firstly { () -> Promise<Void> in
-                guard let self = self else {
-                    throw OWSGenericError("Missing self.")
-                }
-                return self.viewState.waitUntilCanLandLoad()
-            }.map { () -> CVUpdate in
-                update
-            }
         }.then { [weak self] (update: CVUpdate) -> Promise<Void> in
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
@@ -458,21 +449,53 @@ public class CVLoadCoordinator: NSObject {
             guard let delegate = self.delegate else {
                 throw OWSGenericError("Missing delegate.")
             }
+            return self.loadLandWhenSafePromise(update: update, delegate: delegate)
+//            return self.loadLandWhenSafePromise {
+//                let renderState = update.renderState
+//                let oldItemCount = update.lastRenderState.items.count
+//                let newItemCount = renderState.items.count
+//
+//                let updateToken = delegate.willUpdateWithNewRenderState(renderState)
+//
+//                self.renderState = renderState
+//
+//                let (promise, resolver) = Promise<Void>.pending()
+//                self.loadDidLandResolver = resolver
+//                delegate.updateWithNewRenderState(update: update,
+//                                                  scrollAction: loadRequest.scrollAction,
+//                                                  updateToken: updateToken)
+//            }
 
-            let renderState = update.renderState
-            let oldItemCount = update.lastRenderState.items.count
-            let newItemCount = renderState.items.count
-
-            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
-
-            self.renderState = renderState
-
-            let (promise, resolver) = Promise<Void>.pending()
-            self.loadDidLandResolver = resolver
-            delegate.updateWithNewRenderState(update: update,
-                                              scrollAction: loadRequest.scrollAction,
-                                              updateToken: updateToken)
-            return promise
+//            firstly { () -> Promise<Void> in
+//                guard let self = self else {
+//                    throw OWSGenericError("Missing self.")
+//                }
+//                return self.viewState.waitUntilCanLandLoad()
+//            }.map { () -> CVUpdate in
+//                update
+//            }
+//        }.then { [weak self] (update: CVUpdate) -> Promise<Void> in
+//            guard let self = self else {
+//                throw OWSGenericError("Missing self.")
+//            }
+//            guard let delegate = self.delegate else {
+//                throw OWSGenericError("Missing delegate.")
+//            }
+//
+//            let renderState = update.renderState
+//            let oldItemCount = update.lastRenderState.items.count
+//            let newItemCount = renderState.items.count
+//
+//            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
+//
+//            self.renderState = renderState
+//
+//            let (promise, resolver) = Promise<Void>.pending()
+//            self.loadDidLandResolver = resolver
+//            delegate.updateWithNewRenderState(update: update,
+//                                              scrollAction: loadRequest.scrollAction,
+//                                              updateToken: updateToken)
+//            return promise
         }.done { [weak self] () -> Void in
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
@@ -496,6 +519,87 @@ public class CVLoadCoordinator: NSObject {
             self.loadIfNecessary()
         }
     }
+
+    // MARK: - Safe Landing
+
+    private func loadLandWhenSafePromise(update: CVUpdate,
+                                         delegate: CVLoadCoordinatorDelegate) -> Promise<Void> {
+        AssertIsOnMainThread()
+
+        let (loadPromise, loadResolver) = Promise<Void>.pending()
+
+        let viewState = self.viewState
+        func canLoad() -> Bool {
+            !viewState.isScrollingToTop && !viewState.isUserScrolling
+        }
+
+        func tryToResolve() {
+            guard canLoad() else {
+                // TODO: async() or asyncAfter()?
+                Logger.verbose("Waiting to land load.")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+//                DispatchQueue.main.async {
+                    tryToResolve()
+                }
+                return
+            }
+
+            let renderState = update.renderState
+//            let oldItemCount = update.lastRenderState.items.count
+//            let newItemCount = renderState.items.count
+
+            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
+
+            self.renderState = renderState
+
+            let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
+            self.loadDidLandResolver = loadDidLandResolver
+
+            let loadRequest = update.loadRequest
+            delegate.updateWithNewRenderState(update: update,
+                                              scrollAction: loadRequest.scrollAction,
+                                              updateToken: updateToken)
+
+            firstly { () -> Promise<Void> in
+                loadDidLandPromise
+            }.done(on: .global()) {
+                loadResolver.fulfill(())
+            }.catch(on: .global()) { error in
+                loadResolver.reject(error)
+            }
+        }
+
+        tryToResolve()
+
+        return loadPromise
+    }
+    //    public func waitUntilCanLandLoad() -> Promise<Void> {
+    //        AssertIsOnMainThread()
+    //
+    //        guard let canLandLoadPromise = canLandLoadPromise else {
+    //            return Promise.value(())
+    //        }
+    //        return canLandLoadPromise.promise
+    //    }
+    //    private func tryToFireCanLandLoad() {
+    //        AssertIsOnMainThread()
+    //
+    //        guard let canLandLoadPromise = canLandLoadPromise else {
+    //            return
+    //        }
+    //        guard !isScrollingToTop else {
+    //            return
+    //        }
+    //        canLandLoadPromise.resolver.fulfill(())
+    //        self.canLandLoadPromise = nil
+    //    }
+    //    private struct PromiseAndResolver {
+    //        let promise: Promise<Void>
+    //        let resolver: Resolver<Void>
+    //    }
+    //    private var canLandLoadPromise: PromiseAndResolver?
+
+    // -
 
     public func loadDidLand() {
         AssertIsOnMainThread()

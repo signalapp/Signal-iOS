@@ -100,7 +100,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                   scrollAction: CVScrollAction,
                                   updateToken: CVUpdateToken) {
         AssertIsOnMainThread()
-        owsAssertDebug(layout.hasLayout)
 
         owsAssertDebug(self.viewState.scrollContinuityMap != nil)
 
@@ -456,7 +455,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 threadInteractionCount: UInt,
                                 updateToken: CVUpdateToken) {
         owsAssertDebug(!items.isEmpty)
-        owsAssertDebug(layout.hasLayout)
 
         Logger.verbose("")
 
@@ -592,7 +590,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        owsAssertDebug(layout.hasLayout)
         self.performBatchUpdates(batchUpdatesBlock,
                                  completion: completion,
                                  logFailureBlock: logFailureBlock,

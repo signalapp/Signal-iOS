@@ -15,7 +15,32 @@ extension ConversationViewController {
     }
 
     /// The index path of the last item in the collection view's visible rect
-    @objc var lastVisibleIndexPath: IndexPath? {
+    @objc
+    var firstVisibleIndexPath: IndexPath? {
+        // For people looking at this in the future, UICollectionView has a very similar looking
+        // property: -indexPathsForVisibleItems. Why aren't we using that?
+        //
+        // That property *almost* gives us what we want, but UIKit ordering isn't favorable. That property
+        // gets updated after -scrollViewDidScroll: returns. But sometimes we want to know what cells are visible
+        // with the updated -contentOffset in -scrollViewDidScroll:. So instead, we'll just see what layoutAttributes
+        // are now in the collection view's visible content rect. This should be safe, since it's computed from the
+        // already updated -contentOffset.
+        layout.prepare()
+        let visibleLayoutAttributes = layout.layoutAttributesForElements(in: visibleContentRect) ?? []
+
+        let firstVisibleIndexPath = visibleLayoutAttributes
+            .map { $0.indexPath }
+            .min { $0.row < $1.row }
+
+        if let firstVisibleIndexPath = firstVisibleIndexPath {
+             assert(percentOfIndexPathVisibleAboveBottom(firstVisibleIndexPath) > 0)
+        }
+        return firstVisibleIndexPath
+    }
+
+    /// The index path of the last item in the collection view's visible rect
+    @objc
+    var lastVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
         //
@@ -33,7 +58,7 @@ extension ConversationViewController {
 
         if let lastVisibleIndexPath = lastVisibleIndexPath {
             // TODO: Fix this assert.
-            // assert(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
+             assert(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
         }
         return lastVisibleIndexPath
     }
@@ -89,6 +114,28 @@ extension ConversationViewController {
         databaseStorage.asyncWrite { transaction in
             thread.setLastVisibleInteraction(newValue, transaction: transaction)
         }
+    }
+
+    @objc
+    func logFirstAndLastVisibleItems() {
+        AssertIsOnMainThread()
+
+        if let firstVisibleIndexPath = firstVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: firstVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
+            Logger.verbose("---- first visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage), ")
+        }
+
+        if let lastVisibleIndexPath = lastVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
+            Logger.verbose("---- last visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage)")
+        }
+
     }
 
     private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
