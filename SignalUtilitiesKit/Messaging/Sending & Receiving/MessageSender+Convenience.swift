@@ -3,6 +3,7 @@ import PromiseKit
 
 extension MessageSender {
 
+    // MARK: Durable
     @objc(send:withAttachments:inThread:usingTransaction:)
     public static func send(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         prep(attachments, for: message, using: transaction)
@@ -15,8 +16,16 @@ extension MessageSender {
         let destination = Message.Destination.from(thread)
         let job = MessageSendJob(message: message, destination: destination)
         JobQueue.shared.add(job, using: transaction)
+        guard let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey() else { return }
+        if case .contact(let recipientPublicKey) = destination, message is VisibleMessage, recipientPublicKey != userPublicKey {
+            DispatchQueue.main.async {
+                // Not strictly true, but nicer from a UX perspective
+                NotificationCenter.default.post(name: .encryptingMessage, object: NSNumber(value: message.sentTimestamp!))
+            }
+        }
     }
 
+    // MARK: Non-Durable
     @objc(sendNonDurably:withAttachments:inThread:usingTransaction:)
     public static func objc_sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(sendNonDurably(message, with: attachments, in: thread, using: transaction))
