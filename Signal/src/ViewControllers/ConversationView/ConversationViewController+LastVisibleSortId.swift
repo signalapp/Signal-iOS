@@ -24,6 +24,7 @@ extension ConversationViewController {
         // with the updated -contentOffset in -scrollViewDidScroll:. So instead, we'll just see what layoutAttributes
         // are now in the collection view's visible content rect. This should be safe, since it's computed from the
         // already updated -contentOffset.
+        layout.prepare()
         let visibleLayoutAttributes = layout.layoutAttributesForElements(in: visibleContentRect) ?? []
 
         let lastVisibleIndexPath = visibleLayoutAttributes
@@ -91,6 +92,8 @@ extension ConversationViewController {
     }
 
     private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
+        layout.prepare()
+
         // If we don't have layout attributes, it's not visible
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else { return 0.0 }
 

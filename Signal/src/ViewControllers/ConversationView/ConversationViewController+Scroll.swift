@@ -236,6 +236,7 @@ extension ConversationViewController {
         guard !isUserScrolling else { return }
 
         view.layoutIfNeeded()
+        layout.prepare()
 
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else {
             return owsFailDebug("failed to get attributes for indexPath \(indexPath)")
@@ -740,6 +741,7 @@ extension ConversationViewController {
             // This is expected if the menu action interaction is being deleted.
             return nil
         }
+        layout.prepare()
         guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
             owsFailDebug("Missing layoutAttributes.")
             return nil
