@@ -10,7 +10,6 @@ public protocol ConversationViewLayoutItem {
     var cellSize: CGSize { get }
 
     func vSpacing(previousLayoutItem: ConversationViewLayoutItem) -> CGFloat
-
 }
 
 // MARK: -
@@ -22,6 +21,8 @@ public protocol ConversationViewLayoutDelegate {
 
     var layoutHeaderHeight: CGFloat { get }
     var layoutFooterHeight: CGFloat { get }
+
+    func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint
 }
 
 // MARK: -
@@ -34,12 +35,25 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     private var conversationStyle: ConversationStyle
 
-    private struct LayoutInfo {
+    private class LayoutInfo {
+
         let viewWidth: CGFloat
         let contentSize: CGSize
         let itemAttributesMap: [Int: UICollectionViewLayoutAttributes]
         let headerLayoutAttributes: UICollectionViewLayoutAttributes?
         let footerLayoutAttributes: UICollectionViewLayoutAttributes?
+
+        required init(viewWidth: CGFloat,
+                      contentSize: CGSize,
+                      itemAttributesMap: [Int: UICollectionViewLayoutAttributes],
+                      headerLayoutAttributes: UICollectionViewLayoutAttributes?,
+                      footerLayoutAttributes: UICollectionViewLayoutAttributes?) {
+            self.viewWidth = viewWidth
+            self.contentSize = contentSize
+            self.itemAttributesMap = itemAttributesMap
+            self.headerLayoutAttributes = headerLayoutAttributes
+            self.footerLayoutAttributes = footerLayoutAttributes
+        }
 
         func layoutAttributesForItem(at indexPath: IndexPath, assertIfMissing: Bool) -> UICollectionViewLayoutAttributes? {
             if assertIfMissing {
@@ -105,13 +119,18 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // the initial (last) layout state for items.
     private var lastLayoutInfo: LayoutInfo?
 
+    private var isPerformingBatchUpdates = false
+    private var hasInvalidatedDataSourceCounts = false
+
     @objc
     public func willPerformBatchUpdates() {
         AssertIsOnMainThread()
         owsAssertDebug(currentLayoutInfo != nil)
         owsAssertDebug(lastLayoutInfo == nil)
 
+        isPerformingBatchUpdates = true
         lastLayoutInfo = ensureCurrentLayoutInfo()
+        hasInvalidatedDataSourceCounts = false
         invalidateLayout()
     }
 
@@ -120,7 +139,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
         AssertIsOnMainThread()
         owsAssertDebug(lastLayoutInfo != nil)
 
+        isPerformingBatchUpdates = false
         lastLayoutInfo = nil
+        hasInvalidatedDataSourceCounts = false
     }
 
     @objc
@@ -143,7 +164,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         self.conversationStyle = conversationStyle
 
         invalidateLayout()
-        prepare()
     }
 
     @objc
@@ -155,6 +175,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
+
+        if context.invalidateDataSourceCounts {
+            hasInvalidatedDataSourceCounts = true
+        }
+
         super.invalidateLayout(with: context)
 
         clearState()
@@ -210,7 +235,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         } else {
             let headerIndexPath = IndexPath(row: 0, section: 0)
             let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-                                                                          with: headerIndexPath)
+                                                                    with: headerIndexPath)
 
             layoutAttributes.frame = CGRect(x: 0, y: y, width: viewWidth, height: layoutHeaderHeight)
             headerLayoutAttributes = layoutAttributes
@@ -259,7 +284,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             // Do nothing.
         } else {
             let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-                                                                          with: footerIndexPath)
+                                                                    with: footerIndexPath)
 
             layoutAttributes.frame = CGRect(x: 0, y: contentBottom, width: viewWidth, height: layoutFooterHeight)
             footerLayoutAttributes = layoutAttributes
@@ -277,7 +302,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let layoutInfo = ensureCurrentLayoutInfo()
+        let layoutInfo = effectiveLayoutInfo
         var result = [UICollectionViewLayoutAttributes]()
         if let headerLayoutAttributes = layoutInfo.headerLayoutAttributes {
             result.append(headerLayoutAttributes)
@@ -291,9 +316,17 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        layoutAttributesForItem(at: indexPath, alwaysUseLatestLayout: false)
+    }
+
+    @objc
+    public func layoutAttributesForItem(at indexPath: IndexPath,
+                                        alwaysUseLatestLayout: Bool) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
-        return ensureCurrentLayoutInfo().layoutAttributesForItem(at: indexPath, assertIfMissing: true)
+        let layoutInfo = alwaysUseLatestLayout ? ensureCurrentLayoutInfo() : effectiveLayoutInfo
+
+        return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
     }
 
     @objc
@@ -301,8 +334,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                               at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
-        return ensureCurrentLayoutInfo().layoutAttributesForSupplementaryElement(ofKind: elementKind,
-                                                                                 at: indexPath)
+        return effectiveLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+                                                                           at: indexPath)
     }
 
     @objc
@@ -316,23 +349,71 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return lastViewWidth != newBounds.width
     }
 
-//    // A layout can return the content offset to be applied during transition or update animations.
-//    public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint,
-//                                             withScrollingVelocity velocity: CGPoint) -> CGPoint {
-//        guard let delegate = delegate else {
-//            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset,
-//                                             withScrollingVelocity: velocity)
+    private var effectiveLayoutInfo: LayoutInfo {
+        if isPerformingBatchUpdates, !hasInvalidatedDataSourceCounts {
+            if let lastLayoutInfo = self.lastLayoutInfo {
+                return lastLayoutInfo
+            } else {
+                owsFailDebug("Missing lastLayoutInfo.")
+            }
+        }
+
+        return ensureCurrentLayoutInfo()
 //        }
-//        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-//    }
-//
-//    // A layout can return the content offset to be applied during transition or update animations.
-//    public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-//        guard let delegate = delegate else {
-//            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-//        }
-//        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-//    }
+    }
+
+    // This method is called when there is an update with deletes/inserts to the collection view.
+    //
+    // It will be called prior to calling the initial/final layout attribute methods below to give
+    // the layout an opportunity to do batch computations for the insertion and deletion layout attributes.
+    //
+    // The updateItems parameter is an array of UICollectionViewUpdateItem instances for each
+    // element that is moving to a new index path.
+    public override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
+        super.prepare(forCollectionViewUpdates: updateItems)
+    }
+
+    // Called inside an animation block after the update.
+    public override func finalizeCollectionViewUpdates() {
+        super.finalizeCollectionViewUpdates()
+    }
+
+    // UICollectionView calls this when its bounds have changed inside an
+    // animation block before displaying cells in its new bounds.
+    public override func prepare(forAnimatedBoundsChange oldBounds: CGRect) {
+        super.prepare(forAnimatedBoundsChange: oldBounds)
+    }
+
+    // also called inside the animation block
+    public override func finalizeAnimatedBoundsChange() {
+        super.finalizeAnimatedBoundsChange()
+    }
+
+    // UICollectionView calls this when prior the layout transition animation
+    // on the incoming and outgoing layout.
+    public override func prepareForTransition(to newLayout: UICollectionViewLayout) {
+        super.prepareForTransition(to: newLayout)
+    }
+
+    public override func prepareForTransition(from oldLayout: UICollectionViewLayout) {
+        super.prepareForTransition(from: oldLayout)
+    }
+
+    // called inside an animation block after the transition
+    public override func finalizeLayoutTransition() {
+        super.finalizeLayoutTransition()
+    }
+
+    // A layout can return the content offset to be applied during transition or update animations.
+    public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint,
+                                             withScrollingVelocity velocity: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
+
+    // A layout can return the content offset to be applied during transition or update animations.
+    public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
 
     private var initialLayoutInfo: LayoutInfo? {
         lastLayoutInfo

@@ -1840,7 +1840,6 @@ typedef enum : NSUInteger {
         // This is expected if the menu action interaction is being deleted.
         return nil;
     }
-    [self.layout prepareLayout];
     UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
         [self.layout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes == nil) {
@@ -3117,7 +3116,6 @@ typedef enum : NSUInteger {
     //
     // We can safely call prepareLayout to ensure the layout state is up-to-date
     // since our layout uses a dirty flag internally to debounce redundant work.
-    [self.layout prepareLayout];
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
@@ -3753,6 +3751,9 @@ typedef enum : NSUInteger {
 {
     @try {
         void (^updateBlock)(void) = ^{
+            // Suppress responding to certain events during the updates.
+            self.isPerformingBatchUpdates = YES;
+
             [self.layout willPerformBatchUpdates];
             [self.collectionView
                 performBatchUpdates:^{
@@ -3760,6 +3761,8 @@ typedef enum : NSUInteger {
                 }
                          completion:completion];
             [self.layout didPerformBatchUpdates];
+
+            self.isPerformingBatchUpdates = NO;
 
             // AFAIK the collection view layout should reflect the old layout
             // until performBatchUpdates(), then we need to invalidate and prepare

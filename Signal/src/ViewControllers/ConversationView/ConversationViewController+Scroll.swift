@@ -236,7 +236,6 @@ extension ConversationViewController {
         guard !isUserScrolling else { return }
 
         view.layoutIfNeeded()
-        layout.prepare()
 
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else {
             return owsFailDebug("failed to get attributes for indexPath \(indexPath)")
@@ -556,7 +555,6 @@ extension ConversationViewController {
                                          items: [])
         }
 
-        layout.prepare()
 
         let contentOffset = collectionView.contentOffset
 
@@ -617,7 +615,6 @@ extension ConversationViewController {
         guard let scrollContinuityMap = viewState.scrollContinuityMap else {
             return nil
         }
-        layout.prepare()
 
         var sortIdToIndexPathMap = [UInt64: IndexPath]()
         for (index, renderItem) in renderItems.enumerated() {
@@ -642,7 +639,8 @@ extension ConversationViewController {
                 continue
             }
 
-            guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
+            guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath,
+                                                                        alwaysUseLatestLayout: true) else {
                 owsFailDebug("Missing layoutAttributes.")
                 continue
             }
@@ -679,7 +677,6 @@ extension ConversationViewController {
     private func targetContentOffsetForScrollAction(_ scrollAction: CVScrollAction) -> CGPoint? {
         owsAssertDebug(!scrollAction.isAnimated)
 
-        layout.prepare()
 
         switch scrollAction.action {
         case .bottomOfLoadWindow:
@@ -741,7 +738,6 @@ extension ConversationViewController {
             // This is expected if the menu action interaction is being deleted.
             return nil
         }
-        layout.prepare()
         guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
             owsFailDebug("Missing layoutAttributes.")
             return nil

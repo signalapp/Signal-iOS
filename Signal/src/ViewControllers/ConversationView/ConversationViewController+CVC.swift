@@ -327,7 +327,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             UIView.performWithoutAnimation {
                 self.collectionView.reloadData()
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.collectionViewLayout.prepare()
             }
 
             updateViewToReflectLoad(loadedRenderState: self.renderState)
@@ -365,7 +364,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.collectionViewLayout.prepare()
         }
 
         benchSteps.step("2")
@@ -424,7 +422,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.collectionViewLayout.prepare()
         }
 
         DispatchQueue.main.async { [weak self] in

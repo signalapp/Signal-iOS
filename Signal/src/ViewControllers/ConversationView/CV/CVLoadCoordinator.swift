@@ -836,6 +836,14 @@ extension CVLoadCoordinator: ConversationViewLayoutDelegate {
     public var layoutFooterHeight: CGFloat {
         showLoadNewerHeader ? LoadMoreMessagesView.fixedHeight : 0
     }
+
+    public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return proposedContentOffset
+        }
+        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
+    }
 }
 
 // MARK: -
