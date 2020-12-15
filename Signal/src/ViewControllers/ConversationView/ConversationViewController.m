@@ -3011,7 +3011,7 @@ typedef enum : NSUInteger {
     }
     @try {
         [self.collectionView reloadData];
-        [self.collectionView.collectionViewLayout invalidateLayout];
+        [self.layout invalidateLayout];
     } @catch (NSException *exception) {
         OWSLogWarn(@"currentRenderStateDebugDescription: %@", self.currentRenderStateDebugDescription);
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",

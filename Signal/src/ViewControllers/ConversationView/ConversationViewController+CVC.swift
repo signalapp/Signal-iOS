@@ -326,7 +326,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         if reloadIfClearingFlag, hasRenderState {
             UIView.performWithoutAnimation {
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.layout.invalidateLayout()
             }
 
             updateViewToReflectLoad(loadedRenderState: self.renderState)
@@ -363,7 +363,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.layout.invalidateLayout()
         }
 
         benchSteps.step("2")
@@ -421,7 +421,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.layout.invalidateLayout()
         }
 
         DispatchQueue.main.async { [weak self] in

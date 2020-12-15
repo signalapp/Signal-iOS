@@ -555,7 +555,6 @@ extension ConversationViewController {
                                          items: [])
         }
 
-
         let contentOffset = collectionView.contentOffset
 
         var sortIdToIndexPathMap = [UInt64: IndexPath]()
@@ -638,14 +637,12 @@ extension ConversationViewController {
             guard let indexPath = sortIdToIndexPathMap[sortId] else {
                 continue
             }
-
-            guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath,
-                                                                        alwaysUseLatestLayout: true) else {
+            guard let latestFrame = layout.latestFrame(forIndexPath: indexPath) else {
                 owsFailDebug("Missing layoutAttributes.")
                 continue
             }
 
-            let newLocation = layoutAttributes.frame.topLeft
+            let newLocation = latestFrame.topLeft
             let contentOffsetY = newLocation.y - oldDistanceY
             let contentOffset = CGPoint(x: 0, y: contentOffsetY)
             return contentOffset
@@ -676,7 +673,6 @@ extension ConversationViewController {
 
     private func targetContentOffsetForScrollAction(_ scrollAction: CVScrollAction) -> CGPoint? {
         owsAssertDebug(!scrollAction.isAnimated)
-
 
         switch scrollAction.action {
         case .bottomOfLoadWindow:

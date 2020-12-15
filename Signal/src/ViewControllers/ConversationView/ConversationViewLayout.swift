@@ -9,6 +9,8 @@ public protocol ConversationViewLayoutItem {
 
     var cellSize: CGSize { get }
 
+    var layoutItemIdentifier: String { get }
+
     func vSpacing(previousLayoutItem: ConversationViewLayoutItem) -> CGFloat
 }
 
@@ -35,6 +37,14 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     private var conversationStyle: ConversationStyle
 
+    private typealias ItemIdentifier = String
+
+    private struct ItemLayout {
+        let itemIdentifier: ItemIdentifier
+        let indexPath: IndexPath
+        let layoutAttributes: UICollectionViewLayoutAttributes
+    }
+
     private class LayoutInfo {
 
         let viewWidth: CGFloat
@@ -42,21 +52,27 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let itemAttributesMap: [Int: UICollectionViewLayoutAttributes]
         let headerLayoutAttributes: UICollectionViewLayoutAttributes?
         let footerLayoutAttributes: UICollectionViewLayoutAttributes?
+        let itemLayouts: [ItemLayout]
 
         required init(viewWidth: CGFloat,
                       contentSize: CGSize,
                       itemAttributesMap: [Int: UICollectionViewLayoutAttributes],
                       headerLayoutAttributes: UICollectionViewLayoutAttributes?,
-                      footerLayoutAttributes: UICollectionViewLayoutAttributes?) {
+                      footerLayoutAttributes: UICollectionViewLayoutAttributes?,
+                      itemLayouts: [ItemLayout]) {
             self.viewWidth = viewWidth
             self.contentSize = contentSize
             self.itemAttributesMap = itemAttributesMap
             self.headerLayoutAttributes = headerLayoutAttributes
             self.footerLayoutAttributes = footerLayoutAttributes
+            self.itemLayouts = itemLayouts
         }
 
         func layoutAttributesForItem(at indexPath: IndexPath, assertIfMissing: Bool) -> UICollectionViewLayoutAttributes? {
             if assertIfMissing {
+                if !(indexPath.row >= 0 && indexPath.row < itemAttributesMap.count) {
+                    Logger.verbose("indexPath: \(indexPath.row) / \(itemAttributesMap.count)")
+                }
                 owsAssertDebug(indexPath.row >= 0 && indexPath.row < itemAttributesMap.count)
             }
             return itemAttributesMap[indexPath.row]
@@ -113,35 +129,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         currentLayoutInfo = layoutInfo
         hasEverHadLayout = true
         return layoutInfo
-    }
-
-    // This is used during performBatchUpdates() to determine
-    // the initial (last) layout state for items.
-    private var lastLayoutInfo: LayoutInfo?
-
-    private var isPerformingBatchUpdates = false
-    private var hasInvalidatedDataSourceCounts = false
-
-    @objc
-    public func willPerformBatchUpdates() {
-        AssertIsOnMainThread()
-        owsAssertDebug(currentLayoutInfo != nil)
-        owsAssertDebug(lastLayoutInfo == nil)
-
-        isPerformingBatchUpdates = true
-        lastLayoutInfo = ensureCurrentLayoutInfo()
-        hasInvalidatedDataSourceCounts = false
-        invalidateLayout()
-    }
-
-    @objc
-    public func didPerformBatchUpdates() {
-        AssertIsOnMainThread()
-        owsAssertDebug(lastLayoutInfo != nil)
-
-        isPerformingBatchUpdates = false
-        lastLayoutInfo = nil
-        hasInvalidatedDataSourceCounts = false
     }
 
     @objc
@@ -209,7 +196,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
                               contentSize: .zero,
                               itemAttributesMap: [:],
                               headerLayoutAttributes: nil,
-                              footerLayoutAttributes: nil)
+                              footerLayoutAttributes: nil,
+                              itemLayouts: [])
         }
 
         guard let delegate = delegate else {
@@ -236,7 +224,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let headerIndexPath = IndexPath(row: 0, section: 0)
             let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                                                     with: headerIndexPath)
-
             layoutAttributes.frame = CGRect(x: 0, y: y, width: viewWidth, height: layoutHeaderHeight)
             headerLayoutAttributes = layoutAttributes
 
@@ -248,6 +235,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         var row: Int = 0
         var previousLayoutItem: ConversationViewLayoutItem?
+        var itemLayouts = [ItemLayout]()
         for layoutItem in layoutItems {
             if let previousLayoutItem = previousLayoutItem {
                 y += layoutItem.vSpacing(previousLayoutItem: previousLayoutItem)
@@ -274,6 +262,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
             y = contentBottom
             row += 1
             previousLayoutItem = layoutItem
+
+            let itemIdentifier = layoutItem.layoutItemIdentifier
+            itemLayouts.append(ItemLayout(itemIdentifier: itemIdentifier,
+                                          indexPath: indexPath,
+                                          layoutAttributes: itemAttributes))
         }
 
         contentBottom += conversationStyle.contentMarginBottom
@@ -297,8 +290,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
                           contentSize: contentSize,
                           itemAttributesMap: itemAttributesMap,
                           headerLayoutAttributes: headerLayoutAttributes,
-                          footerLayoutAttributes: footerLayoutAttributes)
+                          footerLayoutAttributes: footerLayoutAttributes,
+                          itemLayouts: itemLayouts)
     }
+
+    // MARK: - UICollectionViewLayout Impl.
 
     @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -307,7 +303,26 @@ public class ConversationViewLayout: UICollectionViewLayout {
         if let headerLayoutAttributes = layoutInfo.headerLayoutAttributes {
             result.append(headerLayoutAttributes)
         }
-        result += layoutInfo.itemAttributesMap.values
+        if isPerformingBatchUpdates, !hasInvalidatedDataSourceCounts {
+            if let lastLayoutInfo = lastLayoutInfo {
+                for itemLayout in lastLayoutInfo.itemLayouts {
+                    result.append(itemLayout.layoutAttributes)
+                }
+//                let lastItemIdentifiers = Set(lastLayoutInfo.itemLayouts.map { $0.itemIdentifier })
+//                for itemLayout in layoutInfo.itemLayouts {
+//                    guard lastItemIdentifiers.contains(itemLayout.itemIdentifier) else {
+//                        Logger.verbose("Ignoring new identifier: \(itemLayout.itemIdentifier)")
+//                        continue
+//                    }
+//                    result.append(itemLayout.layoutAttributes)
+//                }
+            } else {
+                owsFailDebug("Missing lastLayoutInfo.")
+                result += layoutInfo.itemAttributesMap.values
+            }
+        } else {
+            result += layoutInfo.itemAttributesMap.values
+        }
         if let footerLayoutAttributes = layoutInfo.footerLayoutAttributes {
             result.append(footerLayoutAttributes)
         }
@@ -319,14 +334,17 @@ public class ConversationViewLayout: UICollectionViewLayout {
         layoutAttributesForItem(at: indexPath, alwaysUseLatestLayout: false)
     }
 
-    @objc
-    public func layoutAttributesForItem(at indexPath: IndexPath,
-                                        alwaysUseLatestLayout: Bool) -> UICollectionViewLayoutAttributes? {
+    private func layoutAttributesForItem(at indexPath: IndexPath,
+                                         alwaysUseLatestLayout: Bool) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
         let layoutInfo = alwaysUseLatestLayout ? ensureCurrentLayoutInfo() : effectiveLayoutInfo
 
         return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
+    }
+
+    public func latestFrame(forIndexPath indexPath: IndexPath) -> CGRect? {
+        layoutAttributesForItem(at: indexPath, alwaysUseLatestLayout: true)?.frame
     }
 
     @objc
@@ -349,17 +367,42 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return lastViewWidth != newBounds.width
     }
 
-    private var effectiveLayoutInfo: LayoutInfo {
-        if isPerformingBatchUpdates, !hasInvalidatedDataSourceCounts {
-            if let lastLayoutInfo = self.lastLayoutInfo {
-                return lastLayoutInfo
-            } else {
-                owsFailDebug("Missing lastLayoutInfo.")
-            }
-        }
+    // MARK: -
 
-        return ensureCurrentLayoutInfo()
+    private var effectiveLayoutInfo: LayoutInfo {
+        ensureCurrentLayoutInfo()
 //        }
+    }
+
+    // MARK: - performBatchUpdates()
+
+    // This is used during performBatchUpdates() to determine
+    // the initial (last) layout state for items.
+    private var lastLayoutInfo: LayoutInfo?
+
+    private var isPerformingBatchUpdates = false
+    private var hasInvalidatedDataSourceCounts = false
+
+    @objc
+    public func willPerformBatchUpdates() {
+        AssertIsOnMainThread()
+
+        owsAssertDebug(currentLayoutInfo != nil)
+        owsAssertDebug(lastLayoutInfo == nil)
+
+        isPerformingBatchUpdates = true
+        lastLayoutInfo = ensureCurrentLayoutInfo()
+        hasInvalidatedDataSourceCounts = false
+    }
+
+    @objc
+    public func didPerformBatchUpdates() {
+        AssertIsOnMainThread()
+        owsAssertDebug(lastLayoutInfo != nil)
+
+        isPerformingBatchUpdates = false
+        lastLayoutInfo = nil
+        hasInvalidatedDataSourceCounts = false
     }
 
     // This method is called when there is an update with deletes/inserts to the collection view.
@@ -423,36 +466,50 @@ public class ConversationViewLayout: UICollectionViewLayout {
         ensureCurrentLayoutInfo()
     }
 
-    // This set of methods is called when the collection view undergoes an animated
-    // transition such as a batch update block or an animated bounds change.
-    //
-    // For each element on screen before the invalidation, finalLayoutAttributesForDisappearingXXX
-    // will be called and an animation setup from what is on screen to those final attributes.
-    //
-    // For each element on screen after the invalidation, initialLayoutAttributesForAppearingXXX
-    // will be called and an animation setup from those initial attributes to what ends up on screen.
-    public override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        owsAssertDebug(lastLayoutInfo != nil)
-        return lastLayoutInfo?.layoutAttributesForItem(at: indexPath,
-                                                       assertIfMissing: false)
-    }
-
-    public override func finalLayoutAttributesForDisappearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        finalLayoutInfo.layoutAttributesForItem(at: indexPath,
-                                                assertIfMissing: false)
-    }
-
-    public override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String,
-                                                                                 at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        owsAssertDebug(lastLayoutInfo != nil)
-        return lastLayoutInfo?.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-                                                                       at: indexPath)
-    }
+//    // This set of methods is called when the collection view undergoes an animated
+//    // transition such as a batch update block or an animated bounds change.
+//    //
+//    // For each element on screen before the invalidation, finalLayoutAttributesForDisappearingXXX
+//    // will be called and an animation setup from what is on screen to those final attributes.
+//    //
+//    // For each element on screen after the invalidation, initialLayoutAttributesForAppearingXXX
+//    // will be called and an animation setup from those initial attributes to what ends up on screen.
+//    public override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+//        owsAssertDebug(lastLayoutInfo != nil)
+//        //        Logger.verbose("---- indexPath: \(indexPath)")
+//        //        return lastLayoutInfo?.layoutAttributesForItem(at: indexPath,
+//        //                                                       assertIfMissing: false)
+//        let attributes = finalLayoutInfo.layoutAttributesForItem(at: indexPath,
+//                                                                 assertIfMissing: false)
+//        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
+//        return attributes
+//    }
+//
+//    public override func finalLayoutAttributesForDisappearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+//        let attributes = finalLayoutInfo.layoutAttributesForItem(at: indexPath,
+//                                                                 assertIfMissing: false)
+//        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
+//        return attributes
+//    }
+//
+//    public override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String,
+//                                                                                 at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+//        owsAssertDebug(lastLayoutInfo != nil)
+//        //        Logger.verbose("---- indexPath: \(indexPath)")
+//        //        return lastLayoutInfo?.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+//        //                                                                       at: indexPath)
+//        let attributes = finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+//                                                                                 at: indexPath)
+//        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
+//        return attributes
+//    }
 
     public override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String,
                                                                                   at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-                                                                at: indexPath)
+        let attributes = finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+                                                                                 at: indexPath)
+        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
+        return attributes
     }
 
     @objc
