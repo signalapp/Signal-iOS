@@ -3751,9 +3751,6 @@ typedef enum : NSUInteger {
 {
     @try {
         void (^updateBlock)(void) = ^{
-            // Suppress responding to certain events during the updates.
-            self.isPerformingBatchUpdates = YES;
-
             [self.layout willPerformBatchUpdates];
             [self.collectionView
                 performBatchUpdates:^{
@@ -3761,8 +3758,6 @@ typedef enum : NSUInteger {
                 }
                          completion:completion];
             [self.layout didPerformBatchUpdates];
-
-            self.isPerformingBatchUpdates = NO;
 
             // AFAIK the collection view layout should reflect the old layout
             // until performBatchUpdates(), then we need to invalidate and prepare
