@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "저장하지 않음";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "오류";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "검증으로 표시";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "세션 초기화";
 
 /* Accessibility label for finishing new group */
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "잘못된 링크";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "링크가 더 이상 유효하지 않음";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "그룹 참가";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "이 그룹에 참가하려면 이 기기의 Signal을 업데이트하세요.";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "스티커 팩 설치됨";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "스티커";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "설치";

@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Không lưu";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Lỗi";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Đánh dấu là Đã xác minh";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Thiết lập lại Phiên";
 
 /* Accessibility label for finishing new group */
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link is no longer valid";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Join Group";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Đã cài đặt bộ nhãn dán";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Nhãn dán";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Cài đặt";

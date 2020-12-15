@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Nie zapisuj";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Błąd";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz jako zweryfikowane";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Zresetuj sesję";
 
 /* Accessibility label for finishing new group */
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "Połącz";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Stuknij tutaj, aby rozpocząć połączenie grupowe";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Rozpocząłeś(ęłaś) połączenie grupowe";
@@ -1643,10 +1643,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Ty (na innym urządzeniu)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Otwórz Nową grupę, aby rozpocząć darmowe, zaszyfrowane połączenie grupowe";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Przedstawiamy rozmowy grupowe";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Utworzyłeś(aś) tę grupę.";
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Nieprawidłowy link";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link jest nieaktualny.";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Dołącz do grupy";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Uaktualnij Signal na tym urządzeniu, aby dołączyć do tej grupy.";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Zainstalowano pakiet naklejek";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Naklejka";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Zainstaluj";

@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "No guardar";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Fallo";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marcar como verificada";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Retablecer sesión";
 
 /* Accessibility label for finishing new group */
@@ -1571,10 +1571,10 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "No se puede recibir ni audio ni vídeo de %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "Nadie más está aquí";
+"GROUP_CALL_NO_ONE_HERE" = "No hay nadie más";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nadie más está aquí.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "No hay nadie más.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ y %ld más se han unido a esta llamada";
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "Iniciar llamada";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Toca aquí para iniciar una llamada en grupo";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Has iniciado una llamada en grupo";
@@ -1643,10 +1643,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Tú (en otro dispositivo)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Entra en un grupo del nuevo sistema para iniciar una llamada en grupo cifrada";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "¡Las llamadas en grupo están aquí!";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Has creado el grupo.";
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Enlace inválido";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "El enlace ha caducado";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Unirse al grupo";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualiza Signal en este dispositivo para poder unirte al grupo.";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Paquete de cromos instalado";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Cromo";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalar";

@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Να μην αποθηκευτεί";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Σφάλμα";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Σημείωση ως επιβεβαιωμένο";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Επαναφορά συνεδρίας";
 
 /* Accessibility label for finishing new group */
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "Έναρξη κλήσης";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Πάτα εδώ για να ξεκινήσεις μια ομαδική κλήση";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Ξεκίνησες μια ομαδική κλήση";
@@ -1643,10 +1643,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Εσύ (από άλλη συσκευή)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Δημιούργησε μια Ομάδα νέου τύπου για να κάνεις μια ελεύθερη, κρυπτογραφημένη ομαδική κλήση.";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Ήρθαν οι Ομαδικές κλήσεις";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Δημιούργησες την ομάδα.";
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Μη έγκυρος σύνδεσμος";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Ο σύνδεσμος δεν είναι πια έγκυρος";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Μπες στην ομάδα";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Αναβάθμισε το Signal σε αυτή τη συσκευή για να μπεις στην ομάδα.";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Το πακέτο αυτοκολλήτων εγκαταστάθηκε";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Αυτοκόλλητο";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Εγκατάσταση";

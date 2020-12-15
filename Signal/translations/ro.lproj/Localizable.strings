@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Nu salva";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Eroare";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marchează ca verificat";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetează sesiunea";
 
 /* Accessibility label for finishing new group */
@@ -1610,7 +1610,7 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Cineva a început un apel de grup";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Glisați în sus pentru a schimba ecranul";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Începeți apelul";
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Link invalid";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Linkul nu mai este valid";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Alăturați-vă grupului";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualizați Signal de pe acest dispozitiv pentru a vă alătura acestui grup.";
@@ -2201,7 +2195,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tot istoricul mesajelor și conținutul media o să fie păstrate înainte de actualizare.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Pachetul cu autocolante este instalat";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Autocolant";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalați";

@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ikke lagre";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Feil";
 
 /* The label for the 'save' button in action sheets. */
@@ -533,7 +533,7 @@
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Bytt til lydsamtale";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Bytt til videosamtale";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Bytt til videoanrop";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tilbake";
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merk som verifisert";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Nullstill sesjon";
 
 /* Accessibility label for finishing new group */
@@ -1607,22 +1607,22 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Noen gjorde et gruppeanrop";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start samtale";
+"GROUP_CALL_START_BUTTON" = "Start anrop";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Trykk her for å gjøre et gruppeanrop";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Du gjorde et gruppeanrop";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ gjorde et gruppeanrop";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
@@ -1643,7 +1643,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Deg (på en annen enhet)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Åpne en ny gruppe for å gjøre et gratis gruppeanrop";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Ugyldig lenke";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Lenken er ikke lenger gyldig";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Bli med i gruppen";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Oppdater Signal på denne enheten for å bli med i denne gruppen.";
@@ -1952,7 +1946,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Melding";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "Videosamtale";
+"GROUP_MEMBERS_VIDEO_CALL" = "Videoanrop";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Gruppenavn (påkrevd)";
@@ -4603,9 +4597,6 @@
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Klistremerkepakke installert";
 
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Klistremerke";
-
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installer";
 
@@ -4943,7 +4934,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Gjennomgå sikkerhetsnumre";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "Videosamtale";
+"VIDEO_CALL_LABEL" = "Videoanrop";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du har allerede sett denne meldingen.";

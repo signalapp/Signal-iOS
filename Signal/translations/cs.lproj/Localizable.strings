@@ -103,7 +103,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Neukládat";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Chyba";
 
 /* The label for the 'save' button in action sheets. */
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označit jako ověřený";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Restartovat";
 
 /* Accessibility label for finishing new group */
@@ -1526,10 +1526,10 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ je zablokován";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ je zablokován";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Pokračovat ve volání";
@@ -1553,7 +1553,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Připojit se k hovoru";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "Opustit hovor";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "V tomto hovoru · %ld lidí";
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "Zahájit hovor";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Ťukněte sem pro zahájení skupinového hovoru";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Zahájil jste skupinový hovor";
@@ -1646,7 +1646,7 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Představujeme skupinové hovory";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Vytvořili jste skupinu.";
@@ -1794,12 +1794,6 @@
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Neplatný odkaz";
-
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Odkaz již není platný";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Přistoupit ke skupině";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Aktualizujte Signal na tomto zařízení pro přistoupení ke skupině.";
@@ -2273,10 +2267,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Přidat členy";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Přidat člena?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Přidat členy?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Přidat členy";
@@ -4602,9 +4596,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Balíček nálepek nainstalován";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Nálepka";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalovat";
