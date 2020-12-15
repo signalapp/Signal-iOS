@@ -122,13 +122,15 @@ extension DeviceTransferService {
             throw OWSAssertionError("path contains invalid character: *")
         }
 
-        guard !path.contains("~") else {
-            throw OWSAssertionError("path starts with invalid character: .")
+        let components = path.components(separatedBy: "/")
+
+        guard components.first != "~" else {
+            throw OWSAssertionError("path starts with invalid component: ~")
         }
 
-        for component in path.components(separatedBy: "/") {
+        for component in components {
             guard !component.starts(with: ".") else {
-                throw OWSAssertionError("path starts with invalid character: .")
+                throw OWSAssertionError("path component starts with invalid character: .")
             }
         }
 
