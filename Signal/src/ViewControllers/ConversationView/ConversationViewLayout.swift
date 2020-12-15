@@ -432,28 +432,27 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // For each element on screen after the invalidation, initialLayoutAttributesForAppearingXXX
     // will be called and an animation setup from those initial attributes to what ends up on screen.
     public override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        lastLayoutInfo?.layoutAttributesForItem(at: indexPath,
-                                                assertIfMissing: false)
-            ?? finalLayoutInfo.layoutAttributesForItem(at: indexPath,
-                                                       assertIfMissing: true)
+        owsAssertDebug(lastLayoutInfo != nil)
+        return lastLayoutInfo?.layoutAttributesForItem(at: indexPath,
+                                                       assertIfMissing: false)
     }
 
     public override func finalLayoutAttributesForDisappearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         finalLayoutInfo.layoutAttributesForItem(at: indexPath,
                                                 assertIfMissing: false)
-            ?? lastLayoutInfo?.layoutAttributesForItem(at: indexPath,
-                                                       assertIfMissing: true)
     }
 
     public override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String,
                                                                                  at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        lastLayoutInfo?.layoutAttributesForSupplementaryElement(ofKind: elementKind, at: indexPath)
-            ?? finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind, at: indexPath)
+        owsAssertDebug(lastLayoutInfo != nil)
+        return lastLayoutInfo?.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+                                                                       at: indexPath)
     }
 
     public override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String,
                                                                                   at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind, at: indexPath)
+        finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+                                                                at: indexPath)
     }
 
     @objc
