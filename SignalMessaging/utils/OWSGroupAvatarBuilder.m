@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
         stringWithFormat:@"%@-%d-%lu", groupId.hexadecimalString, Theme.isDarkThemeEnabled, (unsigned long)diameter];
 
     UIImage *_Nullable cachedAvatar =
-        [OWSGroupAvatarBuilder.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)diameter];
+        [OWSGroupAvatarBuilder.contactsManager getImageFromAvatarCacheWithKey:cacheKey diameter:(CGFloat)diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [OWSGroupAvatarBuilder.contactsManager.avatarCache setImage:image forKey:cacheKey diameter:diameter];
+    [OWSGroupAvatarBuilder.contactsManager setImageForAvatarCache:image forKey:cacheKey diameter:diameter];
     return image;
 }
 

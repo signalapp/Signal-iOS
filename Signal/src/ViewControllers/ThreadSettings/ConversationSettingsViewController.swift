@@ -1046,7 +1046,7 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
             self.thread.updateConversationColorName(conversationColor.name, transaction: transaction)
         }
 
-        contactsManager.avatarCache.removeAllImages()
+        contactsManager.removeAllFromAvatarCache()
         contactsManager.clearColorNameCache()
         updateTableContents()
         conversationSettingsViewDelegate?.conversationColorWasUpdated()

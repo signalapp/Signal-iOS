@@ -100,7 +100,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         let timestampLabel = componentView.timestampLabel
         let textColor: UIColor
-        if isOverlayingMedia {
+        if wasRemotelyDeleted {
+            owsAssertDebug(!isOverlayingMedia)
+            textColor = Theme.primaryTextColor
+        } else if isOverlayingMedia {
             textColor = .ows_white
         } else if isOutsideBubble {
             textColor = Theme.secondaryTextAndIconColor
@@ -218,7 +221,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     }
 
     private var tapForMoreLabelConfig: CVLabelConfig? {
-        guard hasTapForMore else {
+        guard hasTapForMore, !wasRemotelyDeleted else {
             return nil
         }
         guard let message = interaction as? TSMessage else {

@@ -155,8 +155,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSCAssertDebug(self.address.isLocalAddress);
     NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
     UIImage *_Nullable cachedAvatar =
-        [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:noteToSelfCacheKey
-                                                                diameter:(CGFloat)self.diameter];
+        [OWSContactAvatarBuilder.contactsManager getImageFromAvatarCacheWithKey:noteToSelfCacheKey
+                                                                       diameter:(CGFloat)self.diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -167,9 +167,9 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image
-                                                           forKey:noteToSelfCacheKey
-                                                         diameter:self.diameter];
+    [OWSContactAvatarBuilder.contactsManager setImageForAvatarCache:image
+                                                             forKey:noteToSelfCacheKey
+                                                           diameter:self.diameter];
     return image;
 }
 
@@ -205,7 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)buildDefaultImage
 {
     UIImage *_Nullable cachedAvatar =
-        [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:self.cacheKey diameter:(CGFloat)self.diameter];
+        [OWSContactAvatarBuilder.contactsManager getImageFromAvatarCacheWithKey:self.cacheKey
+                                                                       diameter:(CGFloat)self.diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -245,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
+    [OWSContactAvatarBuilder.contactsManager setImageForAvatarCache:image forKey:self.cacheKey diameter:self.diameter];
     return image;
 }
 

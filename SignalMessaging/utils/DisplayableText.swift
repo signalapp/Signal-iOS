@@ -297,7 +297,9 @@ public class DisplayableText: NSObject {
 
             switch textValue {
             case .text(let text):
-                let truncatedText = text.substring(to: snippetLength)
+                let truncatedText = (text.substring(to: snippetLength)
+                                        .ows_stripped()
+                                        + "…")
                 truncatedContent = Content(textValue: .text(text: truncatedText),
                                            naturalAlignment: truncatedText.naturalTextAlignment)
             case .attributedText(let attributedText):

@@ -208,8 +208,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var result = [UICollectionViewLayoutAttributes]()
+        owsAssertDebug(hasLayout)
 
+        var result = [UICollectionViewLayoutAttributes]()
         if let headerLayoutAttributes = headerLayoutAttributes {
             result.append(headerLayoutAttributes)
         }
@@ -222,6 +223,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        owsAssertDebug(hasLayout)
+
         guard let attributes = itemAttributesMap[indexPath.row] else {
             Logger.verbose("Missing attributes: \(itemAttributesMap.keys)")
             return nil
@@ -231,6 +234,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        owsAssertDebug(hasLayout)
+
         if elementKind == UICollectionView.elementKindSectionHeader {
             return headerLayoutAttributes
         } else if elementKind == UICollectionView.elementKindSectionFooter {

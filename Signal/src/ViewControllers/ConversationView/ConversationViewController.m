@@ -1830,7 +1830,7 @@ typedef enum : NSUInteger {
     return [self indexPathForInteractionUniqueId:messageActionInteractionId] == nil;
 }
 
-- (nullable NSValue *)contentOffsetForMessageActionInteraction
+- (nullable NSValue *)targetContentOffsetForMessageActionInteraction
 {
     OWSAssertDebug(self.messageActionsViewController);
 
@@ -1845,6 +1845,7 @@ typedef enum : NSUInteger {
         // This is expected if the menu action interaction is being deleted.
         return nil;
     }
+    [self.layout prepareLayout];
     UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
         [self.layout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes == nil) {

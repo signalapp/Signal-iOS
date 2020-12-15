@@ -457,6 +457,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         let renderState = update.renderState
         let isScrolledToBottom = updateToken.isScrolledToBottom
+        let viewState = self.viewState
 
         var scrollAction = scrollActionParam
 
@@ -469,23 +470,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             owsFailDebug("Missing loadType.")
         }
 
-        let batchUpdatesBlock = {
-            AssertIsOnMainThread()
-
-            let section = Self.messageSection
-            var hasInserted = false
-            var hasUpdated = false
+        // Update scroll action to auto-scroll if necessary.
+        if scrollAction.action == .none, !self.isUserScrolling {
             for item in items {
                 switch item {
-                case .insert(let renderItem, let newIndex):
-                    // Always perform inserts before updates.
-                    owsAssertDebug(!hasUpdated)
-
-                    Logger.verbose("insert newIndex: \(newIndex)")
-
-                    let indexPath = IndexPath(row: newIndex, section: section)
-                    self.collectionView.insertItems(at: [indexPath])
-                    hasInserted = true
+                case .insert(let renderItem, _):
 
                     var wasJustInserted = false
                     if let lastMessageForInboxSortId = updateToken.lastMessageForInboxSortId,
@@ -500,31 +489,54 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     case .typingIndicator:
                         isAutoScrollInteraction = true
                     case .incomingMessage,
-                        .outgoingMessage,
-                        .call,
-                        .error,
-                        .info:
+                         .outgoingMessage,
+                         .call,
+                         .error,
+                         .info:
                         isAutoScrollInteraction = wasJustInserted
                     default:
                         isAutoScrollInteraction = false
                     }
-                    if scrollAction.action == .none,
-                       !self.isUserScrolling {
-                        if let outgoingMessage = renderItem.interaction as? TSOutgoingMessage,
-                           !outgoingMessage.isFromLinkedDevice,
-                           wasJustInserted {
-                            // Whenever we send an outgoing message from the local device,
-                            // auto-scroll to the bottom of the conversation, regardless
-                            // of scroll state.
-                            scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
-                        } else if isAutoScrollInteraction,
-                                  isScrolledToBottom {
-                            // If we're already at the bottom of the conversation and
-                            // a freshly inserted message or typing indicator appears,
-                            // auto-scroll to show it.
-                            scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
-                        }
+
+                    if let outgoingMessage = renderItem.interaction as? TSOutgoingMessage,
+                       !outgoingMessage.isFromLinkedDevice,
+                       wasJustInserted {
+                        // Whenever we send an outgoing message from the local device,
+                        // auto-scroll to the bottom of the conversation, regardless
+                        // of scroll state.
+                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
+                        break
+                    } else if isAutoScrollInteraction,
+                              isScrolledToBottom {
+                        // If we're already at the bottom of the conversation and
+                        // a freshly inserted message or typing indicator appears,
+                        // auto-scroll to show it.
+                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: false)
+                        break
                     }
+                default:
+                    break
+                }
+            }
+        }
+
+        viewState.scrollActionForUpdate = scrollAction
+
+        let batchUpdatesBlock = {
+            AssertIsOnMainThread()
+
+            let section = Self.messageSection
+            var hasInserted = false
+            var hasUpdated = false
+            for item in items {
+                switch item {
+                case .insert(_, let newIndex):
+                    // Always perform inserts before updates.
+                    owsAssertDebug(!hasUpdated)
+                    Logger.verbose("insert newIndex: \(newIndex)")
+                    let indexPath = IndexPath(row: newIndex, section: section)
+                    self.collectionView.insertItems(at: [indexPath])
+                    hasInserted = true
                 case .update(_, let oldIndex, _):
                     Logger.verbose("update oldIndex: \(oldIndex)")
                     let indexPath = IndexPath(row: oldIndex, section: section)
@@ -553,6 +565,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             self.loadDidLand()
 
             self.perform(scrollAction: scrollAction)
+
+            viewState.scrollActionForUpdate = nil
 
             if !finished {
                 Logger.warn("performBatchUpdates did not finish")

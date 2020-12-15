@@ -87,7 +87,7 @@ public struct CVScrollAction: Equatable, CustomStringConvertible {
     // MARK: - CustomStringConvertible
 
     public var description: String {
-        "action: \(action), isAnimated: \(isAnimated)"
+        "[scrollAction: \(action), isAnimated: \(isAnimated)]"
     }
 }
 
@@ -236,6 +236,7 @@ extension ConversationViewController {
         guard !isUserScrolling else { return }
 
         view.layoutIfNeeded()
+        layout.prepare()
 
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else {
             return owsFailDebug("failed to get attributes for indexPath \(indexPath)")
@@ -505,23 +506,28 @@ extension ConversationViewController {
         Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
 
         if isPresentingMessageActions,
-           let contentOffset = contentOffsetForMessageActionInteraction {
-            Logger.verbose("---- contentOffsetForMessageActionInteraction: \(contentOffset)")
+           let contentOffset = targetContentOffsetForMessageActionInteraction {
+            Logger.verbose("---- targetContentOffsetForMessageActionInteraction: \(contentOffset)")
             return contentOffset
         }
 
-        if let contentOffset = contentOffsetForSizeTransition() {
-            Logger.verbose("---- contentOffsetForSizeTransition: \(contentOffset)")
+        if let contentOffset = targetContentOffsetForSizeTransition() {
+            Logger.verbose("---- targetContentOffsetForSizeTransition: \(contentOffset)")
             return contentOffset
         }
 
-        if let contentOffset = contentOffsetForScrollContinuityMap() {
-            Logger.verbose("---- contentOffsetForScrollContinuityMap: \(contentOffset)")
+        if let contentOffset = targetContentOffsetForUpdate() {
+            Logger.verbose("---- targetContentOffsetForUpdate: \(contentOffset)")
+            return contentOffset
+        }
+
+        if let contentOffset = targetContentOffsetForScrollContinuityMap() {
+            Logger.verbose("---- targetContentOffsetForScrollContinuityMap: \(contentOffset)")
             return contentOffset
         }
 
         if scrollContinuity == .bottom,
-           let contentOffset = contentOffsetForBottom() {
+           let contentOffset = targetContentOffsetForBottom() {
             Logger.verbose("---- forLastKnownDistanceFromBottom: \(contentOffset)")
             return contentOffset
         }
@@ -530,7 +536,7 @@ extension ConversationViewController {
         return proposedContentOffset
     }
 
-    private func contentOffsetForBottom() -> CGPoint? {
+    private func targetContentOffsetForBottom() -> CGPoint? {
         guard let lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom else {
             return nil
         }
@@ -607,7 +613,7 @@ extension ConversationViewController {
 
     // We use this hook to ensure scroll state continuity.  As the collection
     // view's content size changes, we want to keep the same cells in view.
-    private func contentOffsetForScrollContinuityMap() -> CGPoint? {
+    private func targetContentOffsetForScrollContinuityMap() -> CGPoint? {
         guard let scrollContinuityMap = viewState.scrollContinuityMap else {
             return nil
         }
@@ -652,10 +658,27 @@ extension ConversationViewController {
         return nil
     }
 
-    private func contentOffsetForSizeTransition() -> CGPoint? {
+    private func targetContentOffsetForSizeTransition() -> CGPoint? {
         guard let scrollAction = viewState.scrollActionForSizeTransition else {
             return nil
         }
+        owsAssertDebug(!scrollAction.isAnimated)
+        return targetContentOffsetForScrollAction(scrollAction)
+    }
+
+    private func targetContentOffsetForUpdate() -> CGPoint? {
+        guard let scrollAction = viewState.scrollActionForUpdate else {
+            return nil
+        }
+        guard scrollAction.action != .none, !scrollAction.isAnimated else {
+            return nil
+        }
+        return targetContentOffsetForScrollAction(scrollAction)
+    }
+
+    private func targetContentOffsetForScrollAction(_ scrollAction: CVScrollAction) -> CGPoint? {
+        owsAssertDebug(!scrollAction.isAnimated)
+
         layout.prepare()
 
         switch scrollAction.action {
@@ -705,7 +728,7 @@ extension ConversationViewController {
         }
     }
 
-    private var contentOffsetForMessageActionInteraction: CGPoint? {
+    private var targetContentOffsetForMessageActionInteraction: CGPoint? {
         guard isPresentingMessageActions,
               let messageActionsViewController = messageActionsViewController else {
             owsFailDebug("Not presenting message actions.")
@@ -718,6 +741,7 @@ extension ConversationViewController {
             // This is expected if the menu action interaction is being deleted.
             return nil
         }
+        layout.prepare()
         guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
             owsFailDebug("Missing layoutAttributes.")
             return nil
