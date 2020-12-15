@@ -2259,7 +2259,7 @@ NS_ASSUME_NONNULL_BEGIN
     [incomingMessage anyInsertWithTransaction:transaction];
 
     OWSAssertDebug(incomingMessage.sortId == 0);
-    [incomingMessage ensureSortIdForInsertedInteractionWithTransaction:transaction];
+    [incomingMessage fillInMissingSortIdForJustInsertedInteractionWithTransaction:transaction];
     OWSAssertDebug(incomingMessage.sortId > 0);
 
     [self.earlyMessageManager applyPendingMessagesFor:incomingMessage transaction:transaction];
