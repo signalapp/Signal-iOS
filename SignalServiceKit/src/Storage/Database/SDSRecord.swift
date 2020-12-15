@@ -88,9 +88,26 @@ public extension SDSRecord {
     }
 }
 
+// MARK: -
+
 fileprivate extension SDSRecord {
 
-    func grdbIdByUniqueId(transaction: GRDBWriteTransaction) -> Int64? {
+    func grdbIdByUniqueId(transaction: GRDBReadTransaction) -> Int64? {
+        BaseModel.grdbIdByUniqueId(tableMetadata: tableMetadata,
+                                   uniqueIdColumnName: uniqueIdColumnName,
+                                   uniqueIdColumnValue: uniqueIdColumnValue,
+                                   transaction: transaction)
+    }
+}
+
+// MARK: -
+
+extension BaseModel {
+
+    static func grdbIdByUniqueId(tableMetadata: SDSTableMetadata,
+                                 uniqueIdColumnName: String,
+                                 uniqueIdColumnValue: String,
+                                 transaction: GRDBReadTransaction) -> Int64? {
         do {
             let tableName = tableMetadata.tableName
             let sql = "SELECT id FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
