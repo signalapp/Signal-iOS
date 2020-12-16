@@ -180,9 +180,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         _ = ensureCurrentLayoutInfo()
     }
 
-    // TODO: We need to eventually audit this and make sure we're not
-    //       invalidating our layout unnecessarily.  Having said that,
-    //       doing layout should be pretty cheap now.
     private static func buildLayoutInfo(delegate: ConversationViewLayoutDelegate?,
                                         conversationStyle: ConversationStyle) -> LayoutInfo {
         AssertIsOnMainThread()
