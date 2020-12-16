@@ -3,7 +3,7 @@ final class KeyPairMigrationSheet : Sheet {
 
     override func populateContentView() {
         // Image view
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "Shield"))
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "Shield").withTint(Colors.text))
         imageView.set(.width, to: 64)
         imageView.set(.height, to: 64)
         imageView.contentMode = .scaleAspectFit
