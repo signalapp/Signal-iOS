@@ -3738,22 +3738,20 @@ typedef enum : NSUInteger {
     [self.conversationViewModel appendUnsavedOutgoingTextMessage:tsMessage];
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         message.linkPreview = [SNLinkPreview from:linkPreviewDraft using:transaction];
-    } completion:^{
+    } completion:^{ // Completes on the main queue
+        tsMessage.linkPreview = [OWSLinkPreview from:message.linkPreview];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [tsMessage saveWithTransaction:transaction];
+        }];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [SNMessageSender send:message withAttachments:@[] inThread:thread usingTransaction:transaction];
+            [thread setDraft:@"" transaction:transaction];
+        }];
+        [self messageWasSent:tsMessage];
+        [self.inputToolbar clearTextMessageAnimated:YES];
+        [self resetMentions];
         dispatch_async(dispatch_get_main_queue(), ^{
-            tsMessage.linkPreview = [OWSLinkPreview from:message.linkPreview];
-            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [tsMessage saveWithTransaction:transaction];
-            }];
-            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [SNMessageSender send:message withAttachments:@[] inThread:thread usingTransaction:transaction];
-                [thread setDraft:@"" transaction:transaction];
-            }];
-            [self messageWasSent:tsMessage];
-            [self.inputToolbar clearTextMessageAnimated:YES];
-            [self resetMentions];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[weakSelf inputToolbar] toggleDefaultKeyboard];
-            });
+            [[weakSelf inputToolbar] toggleDefaultKeyboard];
         });
     }];
 }
