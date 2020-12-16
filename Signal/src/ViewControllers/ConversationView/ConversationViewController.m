@@ -3796,11 +3796,7 @@ typedef enum : NSUInteger {
     @try {
         void (^updateBlock)(void) = ^{
             [self.layout willPerformBatchUpdates];
-            [self.collectionView
-                performBatchUpdates:^{
-                    batchUpdates();
-                }
-                         completion:completion];
+            [self.collectionView performBatchUpdates:batchUpdates completion:completion];
             [self.layout didPerformBatchUpdates];
 
             // AFAIK the collection view layout should reflect the old layout
@@ -3814,6 +3810,7 @@ typedef enum : NSUInteger {
             // Otherwise UICollectionView can throw (crashing) exceptions like this:
             //
             // UICollectionView received layout attributes for a cell with an index path that does not exist...
+            [self.layout invalidateLayout];
             [BenchManager completeEventWithEventId:@"message-send"];
         };
 

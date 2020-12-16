@@ -32,7 +32,7 @@ extension ConversationViewController {
             .min { $0.row < $1.row }
 
         if let firstVisibleIndexPath = firstVisibleIndexPath {
-//            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(firstVisibleIndexPath) > 0)
+            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(firstVisibleIndexPath) > 0)
         }
         return firstVisibleIndexPath
     }
@@ -55,8 +55,7 @@ extension ConversationViewController {
             .max { $0.row < $1.row }
 
         if let lastVisibleIndexPath = lastVisibleIndexPath {
-            // TODO: Fix this assert.
-//            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
+            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
         }
         return lastVisibleIndexPath
     }
@@ -114,6 +113,7 @@ extension ConversationViewController {
         }
     }
 
+    #if TESTABLE_BUILD
     @objc
     func logFirstAndLastVisibleItems() {
         AssertIsOnMainThread()
@@ -135,6 +135,7 @@ extension ConversationViewController {
         }
 
     }
+    #endif
 
     private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
 

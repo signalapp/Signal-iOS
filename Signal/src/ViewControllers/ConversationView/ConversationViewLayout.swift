@@ -298,30 +298,29 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let layoutInfo = effectiveLayoutInfo
+
+        func getPreUpdateLayoutInfo() -> LayoutInfo? {
+            guard isPerformingBatchUpdates, !hasInvalidatedDataSourceCounts else {
+                return nil
+            }
+            guard let lastLayoutInfo = lastLayoutInfo else {
+                owsFailDebug("Missing lastLayoutInfo.")
+                return nil
+            }
+            return lastLayoutInfo
+        }
+
+        // During performBatchUpdates(), this method should reflect
+        // pre-update layout info until the layout is invalidated
+        // with the invalidateDataSourceCounts flag set.
+        let layoutInfo = getPreUpdateLayoutInfo() ?? ensureCurrentLayoutInfo()
+
         var result = [UICollectionViewLayoutAttributes]()
         if let headerLayoutAttributes = layoutInfo.headerLayoutAttributes {
             result.append(headerLayoutAttributes)
         }
-        if isPerformingBatchUpdates, !hasInvalidatedDataSourceCounts {
-            if let lastLayoutInfo = lastLayoutInfo {
-                for itemLayout in lastLayoutInfo.itemLayouts {
-                    result.append(itemLayout.layoutAttributes)
-                }
-//                let lastItemIdentifiers = Set(lastLayoutInfo.itemLayouts.map { $0.itemIdentifier })
-//                for itemLayout in layoutInfo.itemLayouts {
-//                    guard lastItemIdentifiers.contains(itemLayout.itemIdentifier) else {
-//                        Logger.verbose("Ignoring new identifier: \(itemLayout.itemIdentifier)")
-//                        continue
-//                    }
-//                    result.append(itemLayout.layoutAttributes)
-//                }
-            } else {
-                owsFailDebug("Missing lastLayoutInfo.")
-                result += layoutInfo.itemAttributesMap.values
-            }
-        } else {
-            result += layoutInfo.itemAttributesMap.values
+        for itemLayout in layoutInfo.itemLayouts {
+            result.append(itemLayout.layoutAttributes)
         }
         if let footerLayoutAttributes = layoutInfo.footerLayoutAttributes {
             result.append(footerLayoutAttributes)
@@ -338,8 +337,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                          alwaysUseLatestLayout: Bool) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
-        let layoutInfo = alwaysUseLatestLayout ? ensureCurrentLayoutInfo() : effectiveLayoutInfo
-
+        let layoutInfo = ensureCurrentLayoutInfo()
         return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
     }
 
@@ -352,8 +350,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                               at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
-        return effectiveLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-                                                                           at: indexPath)
+        let layoutInfo = ensureCurrentLayoutInfo()
+        return layoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
+                                                                  at: indexPath)
     }
 
     @objc
@@ -369,11 +368,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     // MARK: -
 
-    private var effectiveLayoutInfo: LayoutInfo {
-        ensureCurrentLayoutInfo()
-//        }
-    }
-
     // MARK: - performBatchUpdates()
 
     // This is used during performBatchUpdates() to determine
@@ -387,7 +381,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public func willPerformBatchUpdates() {
         AssertIsOnMainThread()
-
         owsAssertDebug(currentLayoutInfo != nil)
         owsAssertDebug(lastLayoutInfo == nil)
 
@@ -468,61 +461,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         guard isPerformingBatchUpdates else {
             return proposedContentOffset
         }
-                guard let delegate = delegate else {
-                    return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-                }
-                return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-    }
-
-
-    private var finalLayoutInfo: LayoutInfo {
-        ensureCurrentLayoutInfo()
-    }
-
-//    // This set of methods is called when the collection view undergoes an animated
-//    // transition such as a batch update block or an animated bounds change.
-//    //
-//    // For each element on screen before the invalidation, finalLayoutAttributesForDisappearingXXX
-//    // will be called and an animation setup from what is on screen to those final attributes.
-//    //
-//    // For each element on screen after the invalidation, initialLayoutAttributesForAppearingXXX
-//    // will be called and an animation setup from those initial attributes to what ends up on screen.
-//    public override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-//        owsAssertDebug(lastLayoutInfo != nil)
-//        //        Logger.verbose("---- indexPath: \(indexPath)")
-//        //        return lastLayoutInfo?.layoutAttributesForItem(at: indexPath,
-//        //                                                       assertIfMissing: false)
-//        let attributes = finalLayoutInfo.layoutAttributesForItem(at: indexPath,
-//                                                                 assertIfMissing: false)
-//        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
-//        return attributes
-//    }
-//
-//    public override func finalLayoutAttributesForDisappearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-//        let attributes = finalLayoutInfo.layoutAttributesForItem(at: indexPath,
-//                                                                 assertIfMissing: false)
-//        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
-//        return attributes
-//    }
-//
-//    public override func initialLayoutAttributesForAppearingSupplementaryElement(ofKind elementKind: String,
-//                                                                                 at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-//        owsAssertDebug(lastLayoutInfo != nil)
-//        //        Logger.verbose("---- indexPath: \(indexPath)")
-//        //        return lastLayoutInfo?.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-//        //                                                                       at: indexPath)
-//        let attributes = finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-//                                                                                 at: indexPath)
-//        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
-//        return attributes
-//    }
-
-    public override func finalLayoutAttributesForDisappearingSupplementaryElement(ofKind elementKind: String,
-                                                                                  at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = finalLayoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-                                                                                 at: indexPath)
-        Logger.verbose("---- indexPath: \(indexPath), attributes: \(attributes?.debugDescription ?? "none")")
-        return attributes
+        guard let delegate = delegate else {
+            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
+        }
+        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
     }
 
     @objc
