@@ -29,6 +29,10 @@ public extension ConversationViewController {
             owsAssertDebug(hasViewWillAppearEverBegun)
 
             if viewState.bottomViewType != newValue {
+                if viewState.bottomViewType == .inputToolbar {
+                    // Dismiss the keyboard if we're swapping out the input toolbar
+                    dismissKeyBoard()
+                }
                 viewState.bottomViewType = newValue
                 updateBottomBar()
             }
@@ -62,7 +66,11 @@ public extension ConversationViewController {
                 case .selection:
                     return .selection
                 case .normal:
-                    return .inputToolbar
+                    if viewState.isInPreviewPlatter || userLeftGroup {
+                        return .none
+                    } else {
+                        return .inputToolbar
+                    }
                 }
             }
         }()
@@ -127,7 +135,6 @@ public extension ConversationViewController {
         updateInputAccessoryPlaceholderHeight()
         updateBottomBarPosition()
         updateContentInsets(animated: hasAppearedAndHasAppliedFirstLoad)
-        updateInputVisibility()
     }
 
     // This is expensive. We only need to do it if conversationStyle has changed.
@@ -222,33 +229,6 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         ensureBottomViewType()
-    }
-
-    @objc
-    func updateInputVisibility() {
-        AssertIsOnMainThread()
-
-        guard hasViewWillAppearEverBegun else {
-            return
-        }
-        guard let inputToolbar = inputToolbar else {
-            owsFailDebug("Missing inputToolbar.")
-            return
-        }
-
-        if viewState.isInPreviewPlatter {
-            inputToolbar.isHidden = true
-            dismissKeyBoard()
-            return
-        }
-
-        if self.userLeftGroup {
-            // user has requested they leave the group. further sends disallowed
-            inputToolbar.isHidden = true
-            dismissKeyBoard()
-        } else {
-            inputToolbar.isHidden = false
-        }
     }
 
     @objc

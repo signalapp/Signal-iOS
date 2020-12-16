@@ -357,6 +357,10 @@ typedef enum : NSUInteger {
 {
     if (self.viewState.isInPreviewPlatter != inPreviewPlatter) {
         self.viewState.isInPreviewPlatter = inPreviewPlatter;
+
+        if (self.hasViewWillAppearEverBegun) {
+            [self ensureBottomViewType];
+        }
         [self configureScrollDownButtons];
     }
 }
@@ -365,12 +369,6 @@ typedef enum : NSUInteger {
 {
     [self setInPreviewPlatter:YES];
     self.actionOnOpen = ConversationViewActionNone;
-}
-
-- (void)popped
-{
-    [self setInPreviewPlatter:NO];
-    [self updateInputVisibility];
 }
 
 - (void)updateV2GroupIfNecessary
@@ -423,7 +421,8 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad
 {
-    OWSAssertDebug(self.navigationController != nil);
+    // We won't have a navigation controller if we're presented in a preview
+    OWSAssertDebug(self.navigationController != nil || self.isInPreviewPlatter);
 
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewDidLoad.1"];
@@ -631,10 +630,6 @@ typedef enum : NSUInteger {
 
         [self createGestureRecognizers];
     }
-
-    // We need to recheck on every appearance, since the user may have left the group in the settings VC,
-    // or on another device.
-    [self updateInputVisibility];
 
     self.isViewVisible = YES;
     [self viewWillAppearForLoad];

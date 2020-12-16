@@ -626,14 +626,19 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         guard self.conversationStyle.type != .`default` else {
             // Once we built a normal style, never go back to
             // building an initial or placeholder style.
-            owsAssertDebug(navigationController != nil)
+            owsAssertDebug(navigationController != nil || viewState.isInPreviewPlatter)
             return buildDefaultConversationStyle(type: .`default`)
         }
 
         guard let navigationController = navigationController else {
-            // Treat all styles as "initial" (not to be trusted) until
-            // we have a navigationController.
-            return buildDefaultConversationStyle(type: .initial)
+            if viewState.isInPreviewPlatter {
+                // In a preview platter, we'll never have a navigation controller
+                return buildDefaultConversationStyle(type: .`default`)
+            } else {
+                // Treat all styles as "initial" (not to be trusted) until
+                // we have a navigationController.
+                return buildDefaultConversationStyle(type: .initial)
+            }
         }
 
         let collectionViewWidth = self.collectionView.width
@@ -649,12 +654,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         let hasValidStyle = !isMissingSafeAreaInsets && !hasInvalidWidth
         if hasValidStyle {
             // No need to rewrite style; style is already valid.
-            //
-            // Verify that navigationController view and CVC view
-            // state converge.
-            owsAssertDebug(navigationViewWidth == rootViewWidth)
-            owsAssertDebug(navigationViewWidth == collectionViewWidth)
-
             return buildDefaultConversationStyle(type: .`default`)
         } else {
             let viewAge = abs(self.viewState.viewCreationDate.timeIntervalSinceNow)
