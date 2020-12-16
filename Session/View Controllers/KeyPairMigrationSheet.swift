@@ -3,7 +3,10 @@ final class KeyPairMigrationSheet : Sheet {
 
     override func populateContentView() {
         // Image view
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "Sun"))
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "Shield"))
+        imageView.set(.width, to: 64)
+        imageView.set(.height, to: 64)
+        imageView.contentMode = .scaleAspectFit
         // Title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
