@@ -190,6 +190,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
     //       doing layout should be pretty cheap now.
     private static func buildLayoutInfo(delegate: ConversationViewLayoutDelegate?,
                                         conversationStyle: ConversationStyle) -> LayoutInfo {
+        AssertIsOnMainThread()
 
         func buildEmptyLayoutInfo() -> LayoutInfo {
             return LayoutInfo(viewWidth: 0,
@@ -298,6 +299,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        AssertIsOnMainThread()
 
         func getPreUpdateLayoutInfo() -> LayoutInfo? {
             guard isPerformingBatchUpdates, !hasInvalidatedDataSourceCounts else {
@@ -330,19 +332,15 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        layoutAttributesForItem(at: indexPath, alwaysUseLatestLayout: false)
-    }
-
-    private func layoutAttributesForItem(at indexPath: IndexPath,
-                                         alwaysUseLatestLayout: Bool) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
         let layoutInfo = ensureCurrentLayoutInfo()
         return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
     }
 
+    // Used by targetContentOffset(forProposedContentOffset:).
     public func latestFrame(forIndexPath indexPath: IndexPath) -> CGRect? {
-        layoutAttributesForItem(at: indexPath, alwaysUseLatestLayout: true)?.frame
+        layoutAttributesForItem(at: indexPath)?.frame
     }
 
     @objc
@@ -357,7 +355,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public override var collectionViewContentSize: CGSize {
-        ensureCurrentLayoutInfo().contentSize
+        AssertIsOnMainThread()
+
+        return ensureCurrentLayoutInfo().contentSize
     }
 
     @objc

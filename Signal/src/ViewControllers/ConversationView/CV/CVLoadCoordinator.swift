@@ -450,52 +450,6 @@ public class CVLoadCoordinator: NSObject {
                 throw OWSGenericError("Missing delegate.")
             }
             return self.loadLandWhenSafePromise(update: update, delegate: delegate)
-//            return self.loadLandWhenSafePromise {
-//                let renderState = update.renderState
-//                let oldItemCount = update.lastRenderState.items.count
-//                let newItemCount = renderState.items.count
-//
-//                let updateToken = delegate.willUpdateWithNewRenderState(renderState)
-//
-//                self.renderState = renderState
-//
-//                let (promise, resolver) = Promise<Void>.pending()
-//                self.loadDidLandResolver = resolver
-//                delegate.updateWithNewRenderState(update: update,
-//                                                  scrollAction: loadRequest.scrollAction,
-//                                                  updateToken: updateToken)
-//            }
-
-//            firstly { () -> Promise<Void> in
-//                guard let self = self else {
-//                    throw OWSGenericError("Missing self.")
-//                }
-//                return self.viewState.waitUntilCanLandLoad()
-//            }.map { () -> CVUpdate in
-//                update
-//            }
-//        }.then { [weak self] (update: CVUpdate) -> Promise<Void> in
-//            guard let self = self else {
-//                throw OWSGenericError("Missing self.")
-//            }
-//            guard let delegate = self.delegate else {
-//                throw OWSGenericError("Missing delegate.")
-//            }
-//
-//            let renderState = update.renderState
-//            let oldItemCount = update.lastRenderState.items.count
-//            let newItemCount = renderState.items.count
-//
-//            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
-//
-//            self.renderState = renderState
-//
-//            let (promise, resolver) = Promise<Void>.pending()
-//            self.loadDidLandResolver = resolver
-//            delegate.updateWithNewRenderState(update: update,
-//                                              scrollAction: loadRequest.scrollAction,
-//                                              updateToken: updateToken)
-//            return promise
         }.done { [weak self] () -> Void in
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
@@ -522,27 +476,24 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: - Safe Landing
 
+    // Lands the load when its safe, blocking on scrolling.
     private func loadLandWhenSafePromise(update: CVUpdate,
                                          delegate: CVLoadCoordinatorDelegate) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
-        var attemptCount = 0
-
         let viewState = self.viewState
         func canLandLoad() -> Bool {
-            let canLandLoad = !viewState.hasScrollingAnimation && !viewState.isUserScrolling
-            attemptCount += 1
-            Logger.verbose("attemptCount: \(attemptCount), canLandLoad: \(canLandLoad), hasScrollingAnimation: \(viewState.hasScrollingAnimation), isUserScrolling: \(viewState.isUserScrolling), ")
-            return canLandLoad
-//            !viewState.hasScrollingAnimation && !viewState.isUserScrolling
+            !viewState.hasScrollingAnimation && !viewState.isUserScrolling
         }
 
         func tryToResolve() {
             guard canLandLoad() else {
                 // TODO: async() or asyncAfter()?
                 Logger.verbose("Waiting to land load.")
+                // We wait in a pretty tight loop to ensure loads land in a timely way.
+                //
                 // DispatchQueue.asyncAfter() will take longer to perform
                 // its block than DispatchQueue.async() if the CPU is under
                 // heavy load. That's desirable in this case.
@@ -553,9 +504,6 @@ public class CVLoadCoordinator: NSObject {
             }
 
             let renderState = update.renderState
-//            let oldItemCount = update.lastRenderState.items.count
-//            let newItemCount = renderState.items.count
-
             let updateToken = delegate.willUpdateWithNewRenderState(renderState)
 
             self.renderState = renderState
@@ -569,6 +517,10 @@ public class CVLoadCoordinator: NSObject {
                                               updateToken: updateToken)
 
             firstly { () -> Promise<Void> in
+                // We've started the process of landing the load,
+                // but its completion may be async.
+                //
+                // Block on load land completion.
                 loadDidLandPromise
             }.done(on: .global()) {
                 loadResolver.fulfill(())
