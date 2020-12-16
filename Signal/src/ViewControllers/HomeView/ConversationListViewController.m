@@ -66,7 +66,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic, readonly) ThreadMapping *threadMapping;
 @property (nonatomic) ConversationListMode conversationListMode;
-@property (nonatomic) id previewingContext;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -778,43 +777,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
 
     self.navigationItem.rightBarButtonItems = @[ compose, camera ];
-}
-
-- (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-                       viewControllerForLocation:(CGPoint)location
-{
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-
-    if (!indexPath) {
-        return nil;
-    }
-
-    switch (indexPath.section) {
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned:
-            break;
-        default:
-            return nil;
-    }
-
-    [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
-
-    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
-    self.lastViewedThread = threadViewModel.threadRecord;
-    ConversationViewController *vc =
-        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
-                                                             action:ConversationViewActionNone
-                                                     focusMessageId:nil];
-    [vc peekSetup];
-
-    return vc;
-}
-
-- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-     commitViewController:(UIViewController *)viewControllerToCommit
-{
-    ConversationViewController *vc = (ConversationViewController *)viewControllerToCommit;
-    [self presentThread:vc.thread action:ConversationViewActionNone animated:NO];
 }
 
 - (void)showNewConversationView
@@ -2045,9 +2007,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)commitPreviewController:(UIViewController *)previewController
 {
     if ([previewController isKindOfClass:[ConversationViewController class]]) {
-        [(ConversationViewController *)previewController previewWillCommit];
+        ConversationViewController *vc = (ConversationViewController *)previewController;
+        [self presentThread:vc.thread action:ConversationViewActionNone animated:NO];
+    } else {
+        OWSFailDebug(@"Unexpected preview controller %@", previewController);
     }
-    [self.navigationController pushViewController:previewController animated:NO];
 }
 
 #pragma mark - DatabaseSnapshotDelegate

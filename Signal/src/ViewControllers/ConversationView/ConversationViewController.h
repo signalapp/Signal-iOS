@@ -55,7 +55,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 #pragma mark 3D Touch/UIContextMenu Methods
 
 - (void)previewSetup;
-- (void)previewWillCommit;
 
 #pragma mark - Keyboard Shortcuts
 
