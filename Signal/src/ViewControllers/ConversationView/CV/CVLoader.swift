@@ -303,8 +303,6 @@ public class CVLoader: NSObject {
             return nil
         }
 
-        assertOnQueue(CVUtils.workQueue)
-
         let cellMeasurement = buildCellMeasurement(rootComponent: rootComponent,
                                                    conversationStyle: conversationStyle)
 
@@ -319,8 +317,6 @@ public class CVLoader: NSObject {
 
     private static func buildCellMeasurement(rootComponent: CVRootComponent,
                                              conversationStyle: ConversationStyle) -> CVCellMeasurement {
-        assertOnQueue(CVText.measurementQueue)
-
         let measurementBuilder = CVCellMeasurement.Builder()
         measurementBuilder.cellSize = rootComponent.measure(maxWidth: conversationStyle.viewWidth,
                                                             measurementBuilder: measurementBuilder)

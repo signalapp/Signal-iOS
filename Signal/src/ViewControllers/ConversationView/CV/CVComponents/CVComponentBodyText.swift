@@ -98,9 +98,27 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     // DataDetectors are expensive to build, so we reuse them.
     private static func dataDetector(shouldAllowLinkification: Bool) -> NSDataDetector? {
-        assertOnQueue(CVUtils.workQueue)
+        shouldAllowLinkification ? dataDetectorWithLinks : dataDetectorWithoutLinks
+    }
 
-        return shouldAllowLinkification ? dataDetectorWithLinks : dataDetectorWithoutLinks
+    private static let unfairLock = UnfairLock()
+
+    private static func shouldUseAttributedText(text: String,
+                                                shouldAllowLinkification: Bool) -> Bool {
+        // Use a lock to ensure that measurement on and off the main thread
+        // don't conflict.
+        unfairLock.withLock {
+            // NSDataDetector and UIDataDetector behavior should be aligned.
+            //
+            // TODO: We might want to move this detection logic into
+            // DisplayableText so that we can leverage caching.
+            guard let detector = dataDetector(shouldAllowLinkification: shouldAllowLinkification) else {
+                // If the data detectors can't be built, default to using attributed text.
+                owsFailDebug("Could not build dataDetector.")
+                return true
+            }
+            return !detector.matches(in: text, options: [], range: text.entireRange).isEmpty
+        }
     }
 
     static func buildState(interaction: TSInteraction,
@@ -127,16 +145,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 if searchText != nil {
                     shouldUseAttributedText = true
                 } else {
-                    // NSDataDetector and UIDataDetector behavior should be aligned.
-                    //
-                    // TODO: We might want to move this detection logic into
-                    // DisplayableText so that we can leverage caching.
-                    if let detector = dataDetector(shouldAllowLinkification: displayableText.shouldAllowLinkification) {
-                        shouldUseAttributedText = !detector.matches(in: text, options: [], range: text.entireRange).isEmpty
-                    } else {
-                        // If the data detectors can't be built, default to using attributed text.
-                        shouldUseAttributedText = true
-                    }
+                    let shouldAllowLinkification = displayableText.shouldAllowLinkification
+                    shouldUseAttributedText = self.shouldUseAttributedText(text: text,
+                                                                           shouldAllowLinkification: shouldAllowLinkification)
                 }
             case .attributedText:
                 shouldUseAttributedText = true
