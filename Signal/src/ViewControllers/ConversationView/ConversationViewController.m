@@ -3904,7 +3904,6 @@ typedef enum : NSUInteger {
     // No animation, just follow along with the keyboard.
     self.isDismissingInteractively = YES;
     [self updateBottomBarPosition];
-    [self updateContentInsetsAnimated:NO];
     self.isDismissingInteractively = NO;
 }
 
