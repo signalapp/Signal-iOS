@@ -7,11 +7,14 @@ public enum MessageReceiver {
         case invalidMessage
         case unknownMessage
         case unknownEnvelopeType
-        case noUserPublicKey
+        case noUserX25519KeyPair
+        case noUserED25519KeyPair
+        case invalidSignature
         case noData
         case senderBlocked
         case noThread
         case selfSend
+        case decryptionFailed
         // Shared sender keys
         case invalidGroupPublicKey
         case noGroupPrivateKey
@@ -19,7 +22,7 @@ public enum MessageReceiver {
 
         public var isRetryable: Bool {
             switch self {
-            case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType, .noData, .senderBlocked, .selfSend: return false
+            case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType, .invalidSignature, .noData, .senderBlocked, .selfSend, .decryptionFailed: return false
             default: return true
             }
         }
@@ -30,15 +33,18 @@ public enum MessageReceiver {
             case .invalidMessage: return "Invalid message."
             case .unknownMessage: return "Unknown message type."
             case .unknownEnvelopeType: return "Unknown envelope type."
-            case .noUserPublicKey: return "Couldn't find user key pair."
+            case .noUserX25519KeyPair: return "Couldn't find user X25519 key pair."
+            case .noUserED25519KeyPair: return "Couldn't find user ED25519 key pair."
+            case .invalidSignature: return "Invalid message signature."
             case .noData: return "Received an empty envelope."
             case .senderBlocked: return "Received a message from a blocked user."
             case .noThread: return "Couldn't find thread for message."
+            case .selfSend: return "Message addressed at self."
+            case .decryptionFailed: return "Decryption failed."
             // Shared sender keys
             case .invalidGroupPublicKey: return "Invalid group public key."
             case .noGroupPrivateKey: return "Missing group private key."
             case .sharedSecretGenerationFailed: return "Couldn't generate a shared secret."
-            case .selfSend: return "Message addressed at self."
             }
         }
     }
@@ -59,9 +65,20 @@ public enum MessageReceiver {
             (plaintext, sender) = (envelope.content!, envelope.source!)
         } else {
             switch envelope.type {
-            case .unidentifiedSender: (plaintext, sender) = try decryptWithSignalProtocol(envelope: envelope, using: transaction)
+            case .unidentifiedSender:
+                do {
+                    (plaintext, sender) = try decryptWithSessionProtocol(envelope: envelope)
+                } catch {
+                    // Migration
+                    (plaintext, sender) = try decryptWithSignalProtocol(envelope: envelope, using: transaction)
+                }
             case .closedGroupCiphertext:
-                (plaintext, sender) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
+                do {
+                    (plaintext, sender) = try decryptWithSessionProtocol(envelope: envelope)
+                } catch {
+                    // Migration
+                    (plaintext, sender) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
+                }
                 groupPublicKey = envelope.source
             default: throw Error.unknownEnvelopeType
             }

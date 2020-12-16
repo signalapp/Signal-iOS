@@ -11,6 +11,7 @@ public enum LKUserDefaults {
 
     public enum Date : Swift.String {
         case lastProfilePictureUpload
+        case lastKeyPairMigrationNudge
     }
 
     public enum Double : Swift.String {

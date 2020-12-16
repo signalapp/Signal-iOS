@@ -19,7 +19,7 @@ public final class PushNotificationAPI : NSObject {
     private override init() { }
 
     // MARK: Registration
-    static func unregister(with token: Data, isForcedUpdate: Bool) -> Promise<Void> {
+    public static func unregister(_ token: Data) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let parameters = [ "token" : hexEncodedToken ]
         let url = URL(string: "\(server)/unregister")!
@@ -45,12 +45,12 @@ public final class PushNotificationAPI : NSObject {
         return promise
     }
 
-    @objc(unregisterWithToken:isForcedUpdate:)
-    public static func objc_unregister(with token: Data, isForcedUpdate: Bool) -> AnyPromise {
-        return AnyPromise.from(unregister(with: token, isForcedUpdate: isForcedUpdate))
+    @objc(unregisterToken:)
+    public static func objc_unregister(token: Data) -> AnyPromise {
+        return AnyPromise.from(unregister(token))
     }
 
-    static func register(with token: Data, publicKey: String, isForcedUpdate: Bool) -> Promise<Void> {
+    public static func register(with token: Data, publicKey: String, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let oldToken = userDefaults[.deviceToken]

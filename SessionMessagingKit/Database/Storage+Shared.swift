@@ -1,4 +1,5 @@
 import PromiseKit
+import Sodium
 
 extension Storage {
 
@@ -22,6 +23,16 @@ extension Storage {
 
     public func getUserKeyPair() -> ECKeyPair? {
         return OWSIdentityManager.shared().identityKeyPair()
+    }
+    
+    public func getUserED25519KeyPair() -> Box.KeyPair? {
+        let dbConnection = OWSIdentityManager.shared().dbConnection
+        let collection = OWSPrimaryStorageIdentityKeyStoreCollection
+        guard let hexEncodedPublicKey = dbConnection.object(forKey: LKED25519PublicKey, inCollection: collection) as? String,
+            let hexEncodedSecretKey = dbConnection.object(forKey: LKED25519SecretKey, inCollection: collection) as? String else { return nil }
+        let publicKey = Box.KeyPair.PublicKey(hex: hexEncodedPublicKey)
+        let secretKey = Box.KeyPair.SecretKey(hex: hexEncodedSecretKey)
+        return Box.KeyPair(publicKey: publicKey, secretKey: secretKey)
     }
 
     public func getUserDisplayName() -> String? {

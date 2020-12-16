@@ -10,7 +10,10 @@ public final class MessageSender : NSObject {
         case invalidMessage
         case protoConversionFailed
         case proofOfWorkCalculationFailed
-        case noUserPublicKey
+        case noUserX25519KeyPair
+        case noUserED25519KeyPair
+        case signingFailed
+        case encryptionFailed
         // Closed groups
         case noThread
         case noPrivateKey
@@ -18,7 +21,7 @@ public final class MessageSender : NSObject {
 
         internal var isRetryable: Bool {
             switch self {
-            case .invalidMessage, .protoConversionFailed, .proofOfWorkCalculationFailed, .invalidClosedGroupUpdate: return false
+            case .invalidMessage, .protoConversionFailed, .proofOfWorkCalculationFailed, .invalidClosedGroupUpdate, .signingFailed, .encryptionFailed: return false
             default: return true
             }
         }
@@ -28,7 +31,10 @@ public final class MessageSender : NSObject {
             case .invalidMessage: return "Invalid message."
             case .protoConversionFailed: return "Couldn't convert message to proto."
             case .proofOfWorkCalculationFailed: return "Proof of work calculation failed."
-            case .noUserPublicKey: return "Couldn't find user key pair."
+            case .noUserX25519KeyPair: return "Couldn't find user X25519 key pair."
+            case .noUserED25519KeyPair: return "Couldn't find user ED25519 key pair."
+            case .signingFailed: return "Couldn't sign message."
+            case .encryptionFailed: return "Couldn't encrypt message."
             // Closed groups
             case .noThread: return "Couldn't find a thread associated with the given group public key."
             case .noPrivateKey: return "Couldn't find a private key associated with the given group public key."

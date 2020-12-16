@@ -633,7 +633,7 @@ static NSTimeInterval launchStartedAt;
     if (isUsingFullAPNs) {
         __unused AnyPromise *promise = [LKPushNotificationAPI registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
     } else {
-        __unused AnyPromise *promise = [LKPushNotificationAPI unregisterWithToken:deviceToken isForcedUpdate:NO];
+        __unused AnyPromise *promise = [LKPushNotificationAPI unregisterToken:deviceToken];
     }
 }
 
@@ -817,7 +817,7 @@ static NSTimeInterval launchStartedAt;
     NSString *hexEncodedDeviceToken = [userDefaults stringForKey:@"deviceToken"];
     if (isUsingFullAPNs && hexEncodedDeviceToken != nil) {
         NSData *deviceToken = [NSData dataFromHexString:hexEncodedDeviceToken];
-        [[LKPushNotificationAPI unregisterWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete];
+        [[LKPushNotificationAPI unregisterToken:deviceToken] retainUntilComplete];
     }
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.identityManager clearIdentityKey];

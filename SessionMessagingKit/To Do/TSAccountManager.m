@@ -277,7 +277,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     NSData *pushTokenAsData = [NSData dataFromHexString:pushToken];
     AnyPromise *promise = isUsingFullAPNs ? [LKPushNotificationAPI registerWithToken:pushTokenAsData hexEncodedPublicKey:self.localNumber isForcedUpdate:isForcedUpdate]
-        : [LKPushNotificationAPI unregisterWithToken:pushTokenAsData isForcedUpdate:isForcedUpdate];
+        : [LKPushNotificationAPI unregisterToken:pushTokenAsData];
     promise
     .then(^() {
         successHandler();

@@ -161,6 +161,20 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         super.viewDidAppear(animated)
         isViewVisible = true
         UserDefaults.standard[.hasLaunchedOnce] = true
+        showKeyPairMigrationNudgeIfNeeded()
+    }
+    
+    private func showKeyPairMigrationNudgeIfNeeded() {
+        guard !KeyPairUtilities.hasV2KeyPair() else { return }
+        let lastNudge = UserDefaults.standard[.lastKeyPairMigrationNudge]
+        let nudgeInterval: Double = 3 * 24 * 60 * 60 // 3 days
+        let nudge = given(lastNudge) { Date().timeIntervalSince($0) > nudgeInterval } ?? true
+        guard nudge else { return }
+        let sheet = KeyPairMigrationSheet()
+        sheet.modalPresentationStyle = .overFullScreen
+        sheet.modalTransitionStyle = .crossDissolve
+        present(sheet, animated: true, completion: nil)
+        UserDefaults.standard[.lastKeyPairMigrationNudge] = Date()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

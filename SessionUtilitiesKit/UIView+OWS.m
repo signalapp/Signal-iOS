@@ -500,7 +500,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius
 {
-
     UIView *borderView = [UIView new];
     borderView.userInteractionEnabled = NO;
     borderView.backgroundColor = UIColor.clearColor;

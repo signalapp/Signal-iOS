@@ -236,6 +236,7 @@
 		B82B408E239DC00D00A248E7 /* DisplayNameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */; };
 		B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408F239DD75000A248E7 /* RestoreVC.swift */; };
 		B82B4094239DF15900A248E7 /* ConversationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B4093239DF15900A248E7 /* ConversationTitleView.swift */; };
+		B83786802586D296003CE78E /* KeyPairMigrationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */; };
 		B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */; };
 		B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B84664F4235022F30083A1CD /* MentionUtilities.swift */; };
 		B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85357BE23A1AE0800AAF6CD /* SeedReminderView.swift */; };
@@ -244,6 +245,8 @@
 		B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */; };
 		B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */; };
 		B8566C7D256F62030045A0B9 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B85A68B12587141A008CC492 /* Storage+Resetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85A68B02587141A008CC492 /* Storage+Resetting.swift */; };
+		B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */; };
@@ -914,7 +917,6 @@
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
-		C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		C3ECBF7B257056B700EA7FCE /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECBF7A257056B700EA7FCE /* Threading.swift */; };
 		C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */; };
 		D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
@@ -1362,6 +1364,7 @@
 		B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameVC.swift; sourceTree = "<group>"; };
 		B82B408F239DD75000A248E7 /* RestoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreVC.swift; sourceTree = "<group>"; };
 		B82B4093239DF15900A248E7 /* ConversationTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTitleView.swift; sourceTree = "<group>"; };
+		B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairMigrationSheet.swift; sourceTree = "<group>"; };
 		B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationButtonSet.swift; sourceTree = "<group>"; };
 		B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Scaling.swift"; sourceTree = "<group>"; };
 		B84072952565E9F50037CB17 /* TSOutgoingMessage+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Conversion.swift"; sourceTree = "<group>"; };
@@ -1373,6 +1376,7 @@
 		B8544E3023D16CA500299F14 /* DeviceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtilities.swift; sourceTree = "<group>"; };
 		B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUtilities.swift; sourceTree = "<group>"; };
 		B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Conversion.swift"; sourceTree = "<group>"; };
+		B85A68B02587141A008CC492 /* Storage+Resetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Resetting.swift"; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
@@ -2603,7 +2607,7 @@
 				C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
-				C3E7134E251C867C009649BB /* Sodium+Conversion.swift */,
+				B85A68B02587141A008CC492 /* Storage+Resetting.swift */,
 				B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */,
 				B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */,
 				C31A6C59247F214E001123EF /* UIView+Glow.swift */,
@@ -2621,6 +2625,7 @@
 				B88847BB23E10BC6009836D2 /* GroupMembersVC.swift */,
 				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
 				B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */,
+				B837867F2586D296003CE78E /* KeyPairMigrationSheet.swift */,
 				B82B40872399EB0E00A248E7 /* LandingVC.swift */,
 				C329FEEB24F7277900B1C64C /* LightModeSheet.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
@@ -3372,6 +3377,7 @@
 				C33FDB91255A581200E217F9 /* ProtoUtils.h */,
 				C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */,
 				C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */,
+				C3E7134E251C867C009649BB /* Sodium+Conversion.swift */,
 				C33FDB31255A580A00E217F9 /* SSKEnvironment.h */,
 				C33FDAF4255A580600E217F9 /* SSKEnvironment.m */,
 				C33FDB32255A580A00E217F9 /* SSKIncrementingIdFinder.swift */,
@@ -5253,6 +5259,7 @@
 				C3D9E3BE25676AD70040E4F3 /* TSAttachmentPointer.m in Sources */,
 				C3ECBF7B257056B700EA7FCE /* Threading.swift in Sources */,
 				C32C5AAB256DBE8F003C73A2 /* TSIncomingMessage+Conversion.swift in Sources */,
+				B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */,
 				C32C5A88256DBCF9003C73A2 /* MessageReceiver+Handling.swift in Sources */,
 				C32C5C1B256DC9E0003C73A2 /* General.swift in Sources */,
 				C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */,
@@ -5428,6 +5435,7 @@
 				C396DAF42518408B00FF6DC5 /* Parser.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
+				B85A68B12587141A008CC492 /* Storage+Resetting.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
@@ -5522,7 +5530,6 @@
 				34D1F0831F8678AA0066283D /* ConversationInputTextView.m in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
-				C3E7134F251C867C009649BB /* Sodium+Conversion.swift in Sources */,
 				340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */,
 				C33100082558FF6D00070591 /* NewConversationButtonSet.swift in Sources */,
 				B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */,
@@ -5532,6 +5539,7 @@
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				B88847BC23E10BC6009836D2 /* GroupMembersVC.swift in Sources */,
 				B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */,
+				B83786802586D296003CE78E /* KeyPairMigrationSheet.swift in Sources */,
 				C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
