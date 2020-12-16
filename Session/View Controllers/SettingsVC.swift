@@ -170,19 +170,28 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             button.set(.height, to: Values.settingButtonHeight)
             return button
         }
-        return [
+        var result = [
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
             getSeparator(),
             getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation)),
-            getSeparator(),
+            getSeparator()
+        ]
+        if !KeyPairUtilities.hasV2KeyPair() {
+            result += [
+                getSettingButton(withTitle: "Upgrade Session ID", color: Colors.text, action: #selector(upgradeSessionID)),
+                getSeparator()
+            ]
+        }
+        result += [
             getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)),
             getSeparator()
         ]
+        return result
     }
     
     // MARK: General
@@ -387,6 +396,16 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey())!"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
         navigationController!.present(shareVC, animated: true, completion: nil)
+    }
+    
+    @objc private func upgradeSessionID() {
+        let message = "You’re upgrading to a new Session ID. This will give you improved privacy and security, but it will clear ALL app data. Contacts and conversations will be lost. Proceed?"
+        let alert = UIAlertController(title: "Upgrade Session ID?", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in
+            Storage.reset()
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     @objc private func showSeed() {
