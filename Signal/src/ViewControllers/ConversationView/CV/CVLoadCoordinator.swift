@@ -528,17 +528,25 @@ public class CVLoadCoordinator: NSObject {
 
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
+        var attemptCount = 0
+
         let viewState = self.viewState
-        func canLoad() -> Bool {
-            !viewState.isScrollingToTop && !viewState.isUserScrolling
+        func canLandLoad() -> Bool {
+            let canLandLoad = !viewState.hasScrollingAnimation && !viewState.isUserScrolling
+            attemptCount += 1
+            Logger.verbose("attemptCount: \(attemptCount), canLandLoad: \(canLandLoad), hasScrollingAnimation: \(viewState.hasScrollingAnimation), isUserScrolling: \(viewState.isUserScrolling), ")
+            return canLandLoad
+//            !viewState.hasScrollingAnimation && !viewState.isUserScrolling
         }
 
         func tryToResolve() {
-            guard canLoad() else {
+            guard canLandLoad() else {
                 // TODO: async() or asyncAfter()?
                 Logger.verbose("Waiting to land load.")
+                // DispatchQueue.asyncAfter() will take longer to perform
+                // its block than DispatchQueue.async() if the CPU is under
+                // heavy load. That's desirable in this case.
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-//                DispatchQueue.main.async {
                     tryToResolve()
                 }
                 return
@@ -573,31 +581,6 @@ public class CVLoadCoordinator: NSObject {
 
         return loadPromise
     }
-    //    public func waitUntilCanLandLoad() -> Promise<Void> {
-    //        AssertIsOnMainThread()
-    //
-    //        guard let canLandLoadPromise = canLandLoadPromise else {
-    //            return Promise.value(())
-    //        }
-    //        return canLandLoadPromise.promise
-    //    }
-    //    private func tryToFireCanLandLoad() {
-    //        AssertIsOnMainThread()
-    //
-    //        guard let canLandLoadPromise = canLandLoadPromise else {
-    //            return
-    //        }
-    //        guard !isScrollingToTop else {
-    //            return
-    //        }
-    //        canLandLoadPromise.resolver.fulfill(())
-    //        self.canLandLoadPromise = nil
-    //    }
-    //    private struct PromiseAndResolver {
-    //        let promise: Promise<Void>
-    //        let resolver: Resolver<Void>
-    //    }
-    //    private var canLandLoadPromise: PromiseAndResolver?
 
     // -
 
@@ -871,6 +854,10 @@ extension CVLoadCoordinator: UIScrollViewDelegate {
 
     public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         delegate?.scrollViewDidScrollToTop?(scrollView)
+    }
+
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        delegate?.scrollViewDidEndScrollingAnimation?(scrollView)
     }
 }
 

@@ -380,7 +380,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // the initial (last) layout state for items.
     private var lastLayoutInfo: LayoutInfo?
 
-    private var isPerformingBatchUpdates = false
+    @objc
+    public var isPerformingBatchUpdates = false
     private var hasInvalidatedDataSourceCounts = false
 
     @objc
@@ -447,20 +448,32 @@ public class ConversationViewLayout: UICollectionViewLayout {
         super.finalizeLayoutTransition()
     }
 
+    // MARK: -
+
     // A layout can return the content offset to be applied during transition or update animations.
     public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint,
                                              withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        return proposedContentOffset
+        guard isPerformingBatchUpdates else {
+            return proposedContentOffset
+        }
+        guard let delegate = delegate else {
+            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset,
+                                             withScrollingVelocity: velocity)
+        }
+        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
     }
 
     // A layout can return the content offset to be applied during transition or update animations.
     public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-        return proposedContentOffset
+        guard isPerformingBatchUpdates else {
+            return proposedContentOffset
+        }
+                guard let delegate = delegate else {
+                    return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
+                }
+                return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
     }
 
-    private var initialLayoutInfo: LayoutInfo? {
-        lastLayoutInfo
-    }
 
     private var finalLayoutInfo: LayoutInfo {
         ensureCurrentLayoutInfo()

@@ -64,6 +64,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
 {
+    if (animated) {
+        [self.layoutDelegate collectionViewWillAnimate];
+    }
+
     [super setContentOffset:contentOffset animated:animated];
 }
 
@@ -97,6 +101,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
 {
+    if (animated) {
+        [self.layoutDelegate collectionViewWillAnimate];
+    }
+
     [super scrollRectToVisible:rect animated:animated];
 }
 

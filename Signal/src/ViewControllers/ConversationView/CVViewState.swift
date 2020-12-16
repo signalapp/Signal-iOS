@@ -64,7 +64,9 @@ public class CVViewState: NSObject {
     @objc
     public var isUserScrolling = false
     @objc
-    public var isScrollingToTop = false
+    public var scrollingAnimationStartDate: Date?
+    @objc
+    public var hasScrollingAnimation: Bool { scrollingAnimationStartDate != nil }
     @objc
     public var scrollContinuity: ScrollContinuity = .bottom
     public var scrollContinuityMap: CVScrollContinuityMap?
@@ -202,10 +204,12 @@ public extension ConversationViewController {
         set { viewState.isUserScrolling = newValue }
     }
 
-    var isScrollingToTop: Bool {
-        get { viewState.isScrollingToTop }
-        set { viewState.isScrollingToTop = newValue }
+    var scrollingAnimationStartDate: Date? {
+        get { viewState.scrollingAnimationStartDate }
+        set { viewState.scrollingAnimationStartDate = newValue }
     }
+
+    var hasScrollingAnimation: Bool { viewState.hasScrollingAnimation }
 
     var scrollContinuity: ScrollContinuity {
         get { viewState.scrollContinuity }
