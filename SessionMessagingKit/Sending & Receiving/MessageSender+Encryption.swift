@@ -18,10 +18,10 @@ internal extension MessageSender {
         let recipientX25519PublicKey = Data(hex: recipientHexEncodedX25519PublicKey.removing05PrefixIfNeeded())
         let sodium = Sodium()
         
-        let data = plaintext + Data(userED25519KeyPair.publicKey) + recipientX25519PublicKey
-        guard let signature = sodium.sign.signature(message: Bytes(data), secretKey: userED25519KeyPair.secretKey) else { throw Error.signingFailed }
-        guard let ciphertext = sodium.box.seal(message: Bytes(plaintext + Data(userED25519KeyPair.publicKey)
-            + Data(signature)), recipientPublicKey: Bytes(recipientX25519PublicKey)) else { throw Error.encryptionFailed }
+        let verificationData = plaintext + Data(userED25519KeyPair.publicKey) + recipientX25519PublicKey
+        guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else { throw Error.signingFailed }
+        let plaintextWithMetadata = plaintext + Data(userED25519KeyPair.publicKey) + Data(signature)
+        guard let ciphertext = sodium.box.seal(message: Bytes(plaintextWithMetadata), recipientPublicKey: Bytes(recipientX25519PublicKey)) else { throw Error.encryptionFailed }
         
         return Data(ciphertext)
     }

@@ -45,7 +45,8 @@ internal extension MessageReceiver {
         let senderED25519PublicKey = Bytes(plaintextWithMetadata[plaintextWithMetadata.count - (signatureSize + ed25519PublicKeySize) ..< plaintextWithMetadata.count - signatureSize])
         let plaintext = Bytes(plaintextWithMetadata[0..<plaintextWithMetadata.count - (signatureSize + ed25519PublicKeySize)])
         // 3. ) Verify the signature
-        let isValid = sodium.sign.verify(message: plaintext + senderED25519PublicKey + recipientX25519PublicKey, publicKey: senderED25519PublicKey, signature: signature)
+        let verificationData = plaintext + senderED25519PublicKey + recipientX25519PublicKey
+        let isValid = sodium.sign.verify(message: verificationData, publicKey: senderED25519PublicKey, signature: signature)
         guard isValid else { throw Error.invalidSignature }
         // 4. ) Get the sender's X25519 public key
         guard let senderX25519PublicKey = sodium.sign.toX25519(ed25519PublicKey: senderED25519PublicKey) else { throw Error.decryptionFailed }
