@@ -129,8 +129,12 @@ extension DeviceTransferService {
         }
 
         for component in components {
-            guard !component.starts(with: ".") else {
-                throw OWSAssertionError("path component starts with invalid character: .")
+            guard component != "." else {
+                throw OWSAssertionError("path contains invalid component: .")
+            }
+
+            guard component != ".." else {
+                throw OWSAssertionError("path contains invalid component: ..")
             }
         }
 
