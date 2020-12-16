@@ -9,8 +9,6 @@ public protocol ConversationViewLayoutItem {
 
     var cellSize: CGSize { get }
 
-    var layoutItemIdentifier: String { get }
-
     func vSpacing(previousLayoutItem: ConversationViewLayoutItem) -> CGFloat
 }
 
@@ -37,10 +35,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     private var conversationStyle: ConversationStyle
 
-    private typealias ItemIdentifier = String
-
     private struct ItemLayout {
-        let itemIdentifier: ItemIdentifier
         let indexPath: IndexPath
         let layoutAttributes: UICollectionViewLayoutAttributes
     }
@@ -264,9 +259,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             row += 1
             previousLayoutItem = layoutItem
 
-            let itemIdentifier = layoutItem.layoutItemIdentifier
-            itemLayouts.append(ItemLayout(itemIdentifier: itemIdentifier,
-                                          indexPath: indexPath,
+            itemLayouts.append(ItemLayout(indexPath: indexPath,
                                           layoutAttributes: itemAttributes))
         }
 

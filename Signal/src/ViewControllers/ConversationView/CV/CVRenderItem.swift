@@ -95,8 +95,6 @@ public class CVRenderItem: NSObject {
 
 extension CVRenderItem: ConversationViewLayoutItem {
 
-    public var layoutItemIdentifier: String { interactionUniqueId }
-
     public func vSpacing(previousLayoutItem: ConversationViewLayoutItem) -> CGFloat {
         guard let previousLayoutItem = previousLayoutItem as? CVRenderItem else {
             owsFailDebug("Invalid previousLayoutItem.")
