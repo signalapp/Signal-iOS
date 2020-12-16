@@ -402,7 +402,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let message = "You’re upgrading to a new Session ID. This will give you improved privacy and security, but it will clear ALL app data. Contacts and conversations will be lost. Proceed?"
         let alert = UIAlertController(title: "Upgrade Session ID?", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in
-            Storage.reset()
+            Storage.prepareForV2KeyPairMigration()
         })
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

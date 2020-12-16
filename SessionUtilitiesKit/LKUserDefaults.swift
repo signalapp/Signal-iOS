@@ -7,6 +7,7 @@ public enum LKUserDefaults {
         case hasSeenGIFMetadataWarning
         case hasViewedSeed
         case isUsingFullAPNs
+        case isMigratingToV2KeyPair
     }
 
     public enum Date : Swift.String {
@@ -24,6 +25,8 @@ public enum LKUserDefaults {
     
     public enum String : Swift.String {
         case deviceToken
+        /// Just used for migration purposes.
+        case displayName
     }
 }
 

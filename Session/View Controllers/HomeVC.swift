@@ -162,6 +162,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         isViewVisible = true
         UserDefaults.standard[.hasLaunchedOnce] = true
         showKeyPairMigrationNudgeIfNeeded()
+        showKeyPairMigrationSuccessModalIfNeeded()
     }
     
     private func showKeyPairMigrationNudgeIfNeeded() {
@@ -175,6 +176,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         sheet.modalTransitionStyle = .crossDissolve
         present(sheet, animated: true, completion: nil)
         UserDefaults.standard[.lastKeyPairMigrationNudge] = Date()
+    }
+    
+    private func showKeyPairMigrationSuccessModalIfNeeded() {
+        let userDefaults = UserDefaults.standard
+        guard KeyPairUtilities.hasV2KeyPair() && userDefaults[.isMigratingToV2KeyPair] else { return }
+        let sheet = KeyPairMigrationSuccessSheet()
+        sheet.modalPresentationStyle = .overFullScreen
+        sheet.modalTransitionStyle = .crossDissolve
+        present(sheet, animated: true, completion: nil)
+        UserDefaults.standard[.isMigratingToV2KeyPair] = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {

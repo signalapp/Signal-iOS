@@ -70,6 +70,13 @@ final class LandingVC : BaseVC {
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        // Auto-migrate if needed
+        let userDefaults = UserDefaults.standard
+        if userDefaults[.isMigratingToV2KeyPair] {
+            if userDefaults[.displayName] != nil {
+                Storage.finishV2KeyPairMigration(navigationController: navigationController!)
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
