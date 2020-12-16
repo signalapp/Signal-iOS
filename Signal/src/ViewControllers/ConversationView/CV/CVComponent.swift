@@ -130,6 +130,10 @@ public struct CVCellMeasurement: Equatable {
         values[key]
     }
 
+    public var debugDescription: String {
+        "[cellSize: \(cellSize), sizes: \(sizes), values: \(values)]"
+    }
+
     public func debugLog() {
         Logger.verbose("cellSize: \(cellSize)")
         Logger.verbose("sizes: \(sizes)")

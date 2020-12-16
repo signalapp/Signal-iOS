@@ -11,8 +11,12 @@ class OWSStackView: UIStackView {
     public var layoutBlock: LayoutBlock?
 
     @objc
-    public required init(name: String) {
+    public required init(name: String, arrangedSubviews: [UIView] = []) {
         super.init(frame: .zero)
+
+        for subview in arrangedSubviews {
+            addArrangedSubview(subview)
+        }
 
         #if TESTABLE_BUILD
         self.accessibilityLabel = name
