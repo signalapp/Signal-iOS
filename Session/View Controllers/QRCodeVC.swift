@@ -159,6 +159,8 @@ private final class ViewMyQRCodeVC : UIViewController {
         qrCodeImageView.set(.width, to: isIPhone5OrSmaller ? 180 : 240)
         // Set up QR code image view container
         let qrCodeImageViewContainer = UIView()
+        qrCodeImageViewContainer.accessibilityLabel = "Your QR code"
+        qrCodeImageViewContainer.isAccessibilityElement = true
         qrCodeImageViewContainer.addSubview(qrCodeImageView)
         qrCodeImageView.center(.horizontal, in: qrCodeImageViewContainer)
         qrCodeImageView.pin(.top, to: .top, of: qrCodeImageViewContainer)
