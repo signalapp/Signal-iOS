@@ -15,6 +15,7 @@ protocol AttachmentKeyboardDelegate {
     func didTapFile()
     func didTapContact()
     func didTapLocation()
+    func attachmentKeyboardFirstResponderStateDidChange(_ attachmentKeyboard: AttachmentKeyboard)
 }
 
 class AttachmentKeyboard: CustomKeyboard {
@@ -79,6 +80,24 @@ class AttachmentKeyboard: CustomKeyboard {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    public override func resignFirstResponder() -> Bool {
+        let oldValue = isFirstResponder
+        let result = super.resignFirstResponder()
+        let didChange = oldValue != isFirstResponder
+        if didChange { delegate?.attachmentKeyboardFirstResponderStateDidChange(self) }
+        return result
+    }
+
+    @objc
+    public override func becomeFirstResponder() -> Bool {
+        let oldValue = isFirstResponder
+        let result = super.becomeFirstResponder()
+        let didChange = oldValue != isFirstResponder
+        if didChange { delegate?.attachmentKeyboardFirstResponderStateDidChange(self) }
+        return result
     }
 
     // MARK: Recent Photos

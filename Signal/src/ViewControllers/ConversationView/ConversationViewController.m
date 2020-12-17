@@ -3515,6 +3515,15 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)inputToolbarFirstResponderStateDidChange
+{
+    OWSLogVerbose(@"----");
+
+    [self updateContentInsetsAnimated:NO];
+}
+
+#pragma mark -
+
 - (void)voiceMemoGestureDidStart
 {
     OWSAssertIsOnMainThread();
