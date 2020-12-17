@@ -154,20 +154,24 @@ extension MessageReceiver {
         // Update profile if needed
         if let newProfile = message.profile {
             let profileManager = SSKEnvironment.shared.profileManager
-            let oldProfile = OWSUserProfile.fetch(uniqueId: message.sender!, transaction: transaction)
+            let sessionID = message.sender!
+            let oldProfile = OWSUserProfile.fetch(uniqueId: sessionID, transaction: transaction)
+            let contact = Storage.shared.getContact(with: sessionID) ?? Contact(sessionID: sessionID)
             if let displayName = newProfile.displayName, displayName != oldProfile?.profileName {
-                profileManager.updateProfileForContact(withID: message.sender!, displayName: displayName, with: transaction)
+                profileManager.updateProfileForContact(withID: sessionID, displayName: displayName, with: transaction)
+                contact.displayName = displayName
             }
             if let profileKey = newProfile.profileKey, let profilePictureURL = newProfile.profilePictureURL, profileKey.count == kAES256_KeyByteLength,
                 profileKey != oldProfile?.profileKey?.keyData {
-                profileManager.setProfileKeyData(profileKey, forRecipientId: message.sender!, avatarURL: profilePictureURL)
+                profileManager.setProfileKeyData(profileKey, forRecipientId: sessionID, avatarURL: profilePictureURL)
+                contact.profilePictureURL = profilePictureURL
+                contact.profilePictureEncryptionKey = OWSAES256Key(data: profileKey)
             }
             if let rawDisplayName = newProfile.displayName, let openGroupID = openGroupID {
-                let publicKey = message.sender!
-                let endIndex = publicKey.endIndex
-                let cutoffIndex = publicKey.index(endIndex, offsetBy: -8)
-                let displayName = "\(rawDisplayName) (...\(publicKey[cutoffIndex..<endIndex]))"
-                Storage.shared.setOpenGroupDisplayName(to: displayName, for: message.sender!, inOpenGroupWithID: openGroupID, using: transaction)
+                let endIndex = sessionID.endIndex
+                let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
+                let displayName = "\(rawDisplayName) (...\(sessionID[cutoffIndex..<endIndex]))"
+                Storage.shared.setOpenGroupDisplayName(to: displayName, for: sessionID, inOpenGroupWithID: openGroupID, using: transaction)
             }
         }
         // Get or create thread

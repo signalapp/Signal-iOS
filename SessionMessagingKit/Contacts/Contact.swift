@@ -3,6 +3,8 @@
 public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let sessionID: String
     /// The display name of the contact.
+    ///
+    /// - Note: In open groups use `openGroupDisplayName`.
     public var displayName: String?
     /// The URL from which to fetch the contact's profile picture.
     public var profilePictureURL: String?
@@ -13,6 +15,16 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     /// The ID of the thread associated with this contact.
     public var threadID: String?
     
+    /// In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
+    /// a user's display name for added context.
+    public var openGroupDisplayName: String? {
+        guard let displayName = displayName else { return nil }
+        let endIndex = sessionID.endIndex
+        let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
+        return "\(displayName) (...\(sessionID[cutoffIndex..<endIndex]))"
+    }
+    
+    // MARK: Initialization
     public init(sessionID: String) {
         self.sessionID = sessionID
         super.init()
@@ -20,6 +32,13 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
 
     private override init() { preconditionFailure("Use init(sessionID:) instead.") }
 
+    // MARK: Validation
+    public var isValid: Bool {
+        if profilePictureURL != nil { return (profilePictureEncryptionKey != nil) }
+        if profilePictureEncryptionKey != nil { return (profilePictureURL != nil) }
+        return true
+    }
+    
     // MARK: Coding
     public required init?(coder: NSCoder) {
         guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String? else { return nil }
