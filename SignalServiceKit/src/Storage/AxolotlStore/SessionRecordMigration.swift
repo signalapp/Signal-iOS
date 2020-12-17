@@ -98,7 +98,10 @@ extension PendingPreKey {
     fileprivate func buildProto() -> SessionRecordProtos_SessionStructure.PendingPreKey {
         var result = SessionRecordProtos_SessionStructure.PendingPreKey()
 
-        result.preKeyID = UInt32(bitPattern: preKeyId)
+        // AxolotlKit uses -1 to represent "no pre-key ID".
+        if preKeyId >= 0 {
+            result.preKeyID = UInt32(preKeyId)
+        }
         result.signedPreKeyID = signedPreKeyId
         result.baseKey = prependKeyType(to: baseKey)
 
@@ -184,7 +187,9 @@ extension SessionState {
         if proto.hasPendingPreKey {
             validate(proto.pendingPreKey.unknownFields.data.isEmpty)
 
-            setUnacknowledgedPreKeyMessage(Int32(proto.pendingPreKey.preKeyID),
+            // AxolotlKit uses -1 to represent "no pre-key ID".
+            let preKeyID = proto.pendingPreKey.hasPreKeyID ? Int32(proto.pendingPreKey.preKeyID) : -1
+            setUnacknowledgedPreKeyMessage(preKeyID,
                                            signedPreKey: Int32(proto.pendingPreKey.signedPreKeyID),
                                            baseKey: removeKeyType(from: proto.pendingPreKey.baseKey))
         }

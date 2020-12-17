@@ -2,61 +2,61 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-syntax = "proto3";
+syntax = "proto2";
 
 // iOS - package name determines class prefix
 package SessionRecordProtos;
 
 message SessionStructure {
   message Chain {
-    bytes sender_ratchet_key         = 1;
-    bytes sender_ratchet_key_private = 2;
+    optional bytes senderRatchetKey = 1;
+    optional bytes senderRatchetKeyPrivate = 2;
 
     message ChainKey {
-      uint32 index = 1;
-      bytes  key   = 2;
+      optional uint32 index = 1;
+      optional bytes  key   = 2;
     }
 
-    ChainKey chain_key = 3;
+    optional ChainKey chainKey = 3;
 
     message MessageKey {
-      uint32 index      = 1;
-      bytes  cipher_key = 2;
-      bytes  mac_key    = 3;
-      bytes  iv         = 4;
+      optional uint32 index     = 1;
+      optional bytes  cipherKey = 2;
+      optional bytes  macKey    = 3;
+      optional bytes  iv        = 4;
     }
 
-    repeated MessageKey message_keys = 4;
+    repeated MessageKey messageKeys = 4;
   }
 
   message PendingPreKey {
-    uint32 pre_key_id        = 1;
-    int32  signed_pre_key_id = 3;
-    bytes  base_key          = 2;
+    optional uint32 preKeyId       = 1;
+    optional int32  signedPreKeyId = 3;
+    optional bytes  baseKey        = 2;
   }
 
-  uint32         session_version            = 1;
-  bytes          local_identity_public      = 2;
-  bytes          remote_identity_public     = 3;
+  optional uint32 sessionVersion      = 1;
+  optional bytes localIdentityPublic  = 2;
+  optional bytes remoteIdentityPublic = 3;
 
-  bytes          root_key                   = 4;
-  uint32         previous_counter           = 5;
+  optional bytes rootKey              = 4;
+  optional uint32 previousCounter     = 5;
 
-  Chain          sender_chain               = 6;
+  optional Chain senderChain          = 6;
   // The order is significant; keys at the end are "older" and will get trimmed.
-  repeated Chain receiver_chains            = 7;
+  repeated Chain receiverChains       = 7;
 
-  PendingPreKey      pending_pre_key        = 9;
+  optional PendingPreKey pendingPreKey = 9;
 
-  uint32             remote_registration_id = 10;
-  uint32             local_registration_id  = 11;
+  optional uint32 remoteRegistrationId = 10;
+  optional uint32 localRegistrationId  = 11;
 
-  bool               needs_refresh          = 12;
-  bytes              alice_base_key         = 13;
+  optional bool needsRefresh = 12;
+  optional bytes aliceBaseKey = 13;
 }
 
 message RecordStructure {
-  SessionStructure          current_session   = 1;
+  optional SessionStructure currentSession   = 1;
   // The order is significant; sessions at the end are "older" and will get trimmed.
-  repeated SessionStructure previous_sessions = 2;
+  repeated SessionStructure previousSessions = 2;
 }

@@ -29,29 +29,49 @@ struct SessionRecordProtos_SessionStructure {
   // methods supported on all messages.
 
   var sessionVersion: UInt32 {
-    get {return _storage._sessionVersion}
+    get {return _storage._sessionVersion ?? 0}
     set {_uniqueStorage()._sessionVersion = newValue}
   }
+  /// Returns true if `sessionVersion` has been explicitly set.
+  var hasSessionVersion: Bool {return _storage._sessionVersion != nil}
+  /// Clears the value of `sessionVersion`. Subsequent reads from it will return its default value.
+  mutating func clearSessionVersion() {_uniqueStorage()._sessionVersion = nil}
 
   var localIdentityPublic: Data {
-    get {return _storage._localIdentityPublic}
+    get {return _storage._localIdentityPublic ?? Data()}
     set {_uniqueStorage()._localIdentityPublic = newValue}
   }
+  /// Returns true if `localIdentityPublic` has been explicitly set.
+  var hasLocalIdentityPublic: Bool {return _storage._localIdentityPublic != nil}
+  /// Clears the value of `localIdentityPublic`. Subsequent reads from it will return its default value.
+  mutating func clearLocalIdentityPublic() {_uniqueStorage()._localIdentityPublic = nil}
 
   var remoteIdentityPublic: Data {
-    get {return _storage._remoteIdentityPublic}
+    get {return _storage._remoteIdentityPublic ?? Data()}
     set {_uniqueStorage()._remoteIdentityPublic = newValue}
   }
+  /// Returns true if `remoteIdentityPublic` has been explicitly set.
+  var hasRemoteIdentityPublic: Bool {return _storage._remoteIdentityPublic != nil}
+  /// Clears the value of `remoteIdentityPublic`. Subsequent reads from it will return its default value.
+  mutating func clearRemoteIdentityPublic() {_uniqueStorage()._remoteIdentityPublic = nil}
 
   var rootKey: Data {
-    get {return _storage._rootKey}
+    get {return _storage._rootKey ?? Data()}
     set {_uniqueStorage()._rootKey = newValue}
   }
+  /// Returns true if `rootKey` has been explicitly set.
+  var hasRootKey: Bool {return _storage._rootKey != nil}
+  /// Clears the value of `rootKey`. Subsequent reads from it will return its default value.
+  mutating func clearRootKey() {_uniqueStorage()._rootKey = nil}
 
   var previousCounter: UInt32 {
-    get {return _storage._previousCounter}
+    get {return _storage._previousCounter ?? 0}
     set {_uniqueStorage()._previousCounter = newValue}
   }
+  /// Returns true if `previousCounter` has been explicitly set.
+  var hasPreviousCounter: Bool {return _storage._previousCounter != nil}
+  /// Clears the value of `previousCounter`. Subsequent reads from it will return its default value.
+  mutating func clearPreviousCounter() {_uniqueStorage()._previousCounter = nil}
 
   var senderChain: SessionRecordProtos_SessionStructure.Chain {
     get {return _storage._senderChain ?? SessionRecordProtos_SessionStructure.Chain()}
@@ -62,6 +82,7 @@ struct SessionRecordProtos_SessionStructure {
   /// Clears the value of `senderChain`. Subsequent reads from it will return its default value.
   mutating func clearSenderChain() {_uniqueStorage()._senderChain = nil}
 
+  /// The order is significant; keys at the end are "older" and will get trimmed.
   var receiverChains: [SessionRecordProtos_SessionStructure.Chain] {
     get {return _storage._receiverChains}
     set {_uniqueStorage()._receiverChains = newValue}
@@ -77,24 +98,40 @@ struct SessionRecordProtos_SessionStructure {
   mutating func clearPendingPreKey() {_uniqueStorage()._pendingPreKey = nil}
 
   var remoteRegistrationID: UInt32 {
-    get {return _storage._remoteRegistrationID}
+    get {return _storage._remoteRegistrationID ?? 0}
     set {_uniqueStorage()._remoteRegistrationID = newValue}
   }
+  /// Returns true if `remoteRegistrationID` has been explicitly set.
+  var hasRemoteRegistrationID: Bool {return _storage._remoteRegistrationID != nil}
+  /// Clears the value of `remoteRegistrationID`. Subsequent reads from it will return its default value.
+  mutating func clearRemoteRegistrationID() {_uniqueStorage()._remoteRegistrationID = nil}
 
   var localRegistrationID: UInt32 {
-    get {return _storage._localRegistrationID}
+    get {return _storage._localRegistrationID ?? 0}
     set {_uniqueStorage()._localRegistrationID = newValue}
   }
+  /// Returns true if `localRegistrationID` has been explicitly set.
+  var hasLocalRegistrationID: Bool {return _storage._localRegistrationID != nil}
+  /// Clears the value of `localRegistrationID`. Subsequent reads from it will return its default value.
+  mutating func clearLocalRegistrationID() {_uniqueStorage()._localRegistrationID = nil}
 
   var needsRefresh: Bool {
-    get {return _storage._needsRefresh}
+    get {return _storage._needsRefresh ?? false}
     set {_uniqueStorage()._needsRefresh = newValue}
   }
+  /// Returns true if `needsRefresh` has been explicitly set.
+  var hasNeedsRefresh: Bool {return _storage._needsRefresh != nil}
+  /// Clears the value of `needsRefresh`. Subsequent reads from it will return its default value.
+  mutating func clearNeedsRefresh() {_uniqueStorage()._needsRefresh = nil}
 
   var aliceBaseKey: Data {
-    get {return _storage._aliceBaseKey}
+    get {return _storage._aliceBaseKey ?? Data()}
     set {_uniqueStorage()._aliceBaseKey = newValue}
   }
+  /// Returns true if `aliceBaseKey` has been explicitly set.
+  var hasAliceBaseKey: Bool {return _storage._aliceBaseKey != nil}
+  /// Clears the value of `aliceBaseKey`. Subsequent reads from it will return its default value.
+  mutating func clearAliceBaseKey() {_uniqueStorage()._aliceBaseKey = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -103,9 +140,23 @@ struct SessionRecordProtos_SessionStructure {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var senderRatchetKey: Data = Data()
+    var senderRatchetKey: Data {
+      get {return _senderRatchetKey ?? Data()}
+      set {_senderRatchetKey = newValue}
+    }
+    /// Returns true if `senderRatchetKey` has been explicitly set.
+    var hasSenderRatchetKey: Bool {return self._senderRatchetKey != nil}
+    /// Clears the value of `senderRatchetKey`. Subsequent reads from it will return its default value.
+    mutating func clearSenderRatchetKey() {self._senderRatchetKey = nil}
 
-    var senderRatchetKeyPrivate: Data = Data()
+    var senderRatchetKeyPrivate: Data {
+      get {return _senderRatchetKeyPrivate ?? Data()}
+      set {_senderRatchetKeyPrivate = newValue}
+    }
+    /// Returns true if `senderRatchetKeyPrivate` has been explicitly set.
+    var hasSenderRatchetKeyPrivate: Bool {return self._senderRatchetKeyPrivate != nil}
+    /// Clears the value of `senderRatchetKeyPrivate`. Subsequent reads from it will return its default value.
+    mutating func clearSenderRatchetKeyPrivate() {self._senderRatchetKeyPrivate = nil}
 
     var chainKey: SessionRecordProtos_SessionStructure.Chain.ChainKey {
       get {return _chainKey ?? SessionRecordProtos_SessionStructure.Chain.ChainKey()}
@@ -125,13 +176,30 @@ struct SessionRecordProtos_SessionStructure {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var index: UInt32 = 0
+      var index: UInt32 {
+        get {return _index ?? 0}
+        set {_index = newValue}
+      }
+      /// Returns true if `index` has been explicitly set.
+      var hasIndex: Bool {return self._index != nil}
+      /// Clears the value of `index`. Subsequent reads from it will return its default value.
+      mutating func clearIndex() {self._index = nil}
 
-      var key: Data = Data()
+      var key: Data {
+        get {return _key ?? Data()}
+        set {_key = newValue}
+      }
+      /// Returns true if `key` has been explicitly set.
+      var hasKey: Bool {return self._key != nil}
+      /// Clears the value of `key`. Subsequent reads from it will return its default value.
+      mutating func clearKey() {self._key = nil}
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
+
+      fileprivate var _index: UInt32? = nil
+      fileprivate var _key: Data? = nil
     }
 
     struct MessageKey {
@@ -139,21 +207,56 @@ struct SessionRecordProtos_SessionStructure {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var index: UInt32 = 0
+      var index: UInt32 {
+        get {return _index ?? 0}
+        set {_index = newValue}
+      }
+      /// Returns true if `index` has been explicitly set.
+      var hasIndex: Bool {return self._index != nil}
+      /// Clears the value of `index`. Subsequent reads from it will return its default value.
+      mutating func clearIndex() {self._index = nil}
 
-      var cipherKey: Data = Data()
+      var cipherKey: Data {
+        get {return _cipherKey ?? Data()}
+        set {_cipherKey = newValue}
+      }
+      /// Returns true if `cipherKey` has been explicitly set.
+      var hasCipherKey: Bool {return self._cipherKey != nil}
+      /// Clears the value of `cipherKey`. Subsequent reads from it will return its default value.
+      mutating func clearCipherKey() {self._cipherKey = nil}
 
-      var macKey: Data = Data()
+      var macKey: Data {
+        get {return _macKey ?? Data()}
+        set {_macKey = newValue}
+      }
+      /// Returns true if `macKey` has been explicitly set.
+      var hasMacKey: Bool {return self._macKey != nil}
+      /// Clears the value of `macKey`. Subsequent reads from it will return its default value.
+      mutating func clearMacKey() {self._macKey = nil}
 
-      var iv: Data = Data()
+      var iv: Data {
+        get {return _iv ?? Data()}
+        set {_iv = newValue}
+      }
+      /// Returns true if `iv` has been explicitly set.
+      var hasIv: Bool {return self._iv != nil}
+      /// Clears the value of `iv`. Subsequent reads from it will return its default value.
+      mutating func clearIv() {self._iv = nil}
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
+
+      fileprivate var _index: UInt32? = nil
+      fileprivate var _cipherKey: Data? = nil
+      fileprivate var _macKey: Data? = nil
+      fileprivate var _iv: Data? = nil
     }
 
     init() {}
 
+    fileprivate var _senderRatchetKey: Data? = nil
+    fileprivate var _senderRatchetKeyPrivate: Data? = nil
     fileprivate var _chainKey: SessionRecordProtos_SessionStructure.Chain.ChainKey? = nil
   }
 
@@ -162,15 +265,40 @@ struct SessionRecordProtos_SessionStructure {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var preKeyID: UInt32 = 0
+    var preKeyID: UInt32 {
+      get {return _preKeyID ?? 0}
+      set {_preKeyID = newValue}
+    }
+    /// Returns true if `preKeyID` has been explicitly set.
+    var hasPreKeyID: Bool {return self._preKeyID != nil}
+    /// Clears the value of `preKeyID`. Subsequent reads from it will return its default value.
+    mutating func clearPreKeyID() {self._preKeyID = nil}
 
-    var signedPreKeyID: Int32 = 0
+    var signedPreKeyID: Int32 {
+      get {return _signedPreKeyID ?? 0}
+      set {_signedPreKeyID = newValue}
+    }
+    /// Returns true if `signedPreKeyID` has been explicitly set.
+    var hasSignedPreKeyID: Bool {return self._signedPreKeyID != nil}
+    /// Clears the value of `signedPreKeyID`. Subsequent reads from it will return its default value.
+    mutating func clearSignedPreKeyID() {self._signedPreKeyID = nil}
 
-    var baseKey: Data = Data()
+    var baseKey: Data {
+      get {return _baseKey ?? Data()}
+      set {_baseKey = newValue}
+    }
+    /// Returns true if `baseKey` has been explicitly set.
+    var hasBaseKey: Bool {return self._baseKey != nil}
+    /// Clears the value of `baseKey`. Subsequent reads from it will return its default value.
+    mutating func clearBaseKey() {self._baseKey = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
+
+    fileprivate var _preKeyID: UInt32? = nil
+    fileprivate var _signedPreKeyID: Int32? = nil
+    fileprivate var _baseKey: Data? = nil
   }
 
   init() {}
@@ -192,6 +320,7 @@ struct SessionRecordProtos_RecordStructure {
   /// Clears the value of `currentSession`. Subsequent reads from it will return its default value.
   mutating func clearCurrentSession() {self._currentSession = nil}
 
+  /// The order is significant; sessions at the end are "older" and will get trimmed.
   var previousSessions: [SessionRecordProtos_SessionStructure] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -208,33 +337,33 @@ fileprivate let _protobuf_package = "SessionRecordProtos"
 extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SessionStructure"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "session_version"),
-    2: .standard(proto: "local_identity_public"),
-    3: .standard(proto: "remote_identity_public"),
-    4: .standard(proto: "root_key"),
-    5: .standard(proto: "previous_counter"),
-    6: .standard(proto: "sender_chain"),
-    7: .standard(proto: "receiver_chains"),
-    9: .standard(proto: "pending_pre_key"),
-    10: .standard(proto: "remote_registration_id"),
-    11: .standard(proto: "local_registration_id"),
-    12: .standard(proto: "needs_refresh"),
-    13: .standard(proto: "alice_base_key"),
+    1: .same(proto: "sessionVersion"),
+    2: .same(proto: "localIdentityPublic"),
+    3: .same(proto: "remoteIdentityPublic"),
+    4: .same(proto: "rootKey"),
+    5: .same(proto: "previousCounter"),
+    6: .same(proto: "senderChain"),
+    7: .same(proto: "receiverChains"),
+    9: .same(proto: "pendingPreKey"),
+    10: .same(proto: "remoteRegistrationId"),
+    11: .same(proto: "localRegistrationId"),
+    12: .same(proto: "needsRefresh"),
+    13: .same(proto: "aliceBaseKey"),
   ]
 
   fileprivate class _StorageClass {
-    var _sessionVersion: UInt32 = 0
-    var _localIdentityPublic: Data = Data()
-    var _remoteIdentityPublic: Data = Data()
-    var _rootKey: Data = Data()
-    var _previousCounter: UInt32 = 0
+    var _sessionVersion: UInt32? = nil
+    var _localIdentityPublic: Data? = nil
+    var _remoteIdentityPublic: Data? = nil
+    var _rootKey: Data? = nil
+    var _previousCounter: UInt32? = nil
     var _senderChain: SessionRecordProtos_SessionStructure.Chain? = nil
     var _receiverChains: [SessionRecordProtos_SessionStructure.Chain] = []
     var _pendingPreKey: SessionRecordProtos_SessionStructure.PendingPreKey? = nil
-    var _remoteRegistrationID: UInt32 = 0
-    var _localRegistrationID: UInt32 = 0
-    var _needsRefresh: Bool = false
-    var _aliceBaseKey: Data = Data()
+    var _remoteRegistrationID: UInt32? = nil
+    var _localRegistrationID: UInt32? = nil
+    var _needsRefresh: Bool? = nil
+    var _aliceBaseKey: Data? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -291,20 +420,20 @@ extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProt
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if _storage._sessionVersion != 0 {
-        try visitor.visitSingularUInt32Field(value: _storage._sessionVersion, fieldNumber: 1)
+      if let v = _storage._sessionVersion {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
       }
-      if !_storage._localIdentityPublic.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._localIdentityPublic, fieldNumber: 2)
+      if let v = _storage._localIdentityPublic {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
       }
-      if !_storage._remoteIdentityPublic.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._remoteIdentityPublic, fieldNumber: 3)
+      if let v = _storage._remoteIdentityPublic {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
       }
-      if !_storage._rootKey.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._rootKey, fieldNumber: 4)
+      if let v = _storage._rootKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
       }
-      if _storage._previousCounter != 0 {
-        try visitor.visitSingularUInt32Field(value: _storage._previousCounter, fieldNumber: 5)
+      if let v = _storage._previousCounter {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
       }
       if let v = _storage._senderChain {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
@@ -315,17 +444,17 @@ extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProt
       if let v = _storage._pendingPreKey {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
       }
-      if _storage._remoteRegistrationID != 0 {
-        try visitor.visitSingularUInt32Field(value: _storage._remoteRegistrationID, fieldNumber: 10)
+      if let v = _storage._remoteRegistrationID {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
       }
-      if _storage._localRegistrationID != 0 {
-        try visitor.visitSingularUInt32Field(value: _storage._localRegistrationID, fieldNumber: 11)
+      if let v = _storage._localRegistrationID {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 11)
       }
-      if _storage._needsRefresh != false {
-        try visitor.visitSingularBoolField(value: _storage._needsRefresh, fieldNumber: 12)
+      if let v = _storage._needsRefresh {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 12)
       }
-      if !_storage._aliceBaseKey.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._aliceBaseKey, fieldNumber: 13)
+      if let v = _storage._aliceBaseKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 13)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -360,10 +489,10 @@ extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProt
 extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.protoMessageName + ".Chain"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "sender_ratchet_key"),
-    2: .standard(proto: "sender_ratchet_key_private"),
-    3: .standard(proto: "chain_key"),
-    4: .standard(proto: "message_keys"),
+    1: .same(proto: "senderRatchetKey"),
+    2: .same(proto: "senderRatchetKeyPrivate"),
+    3: .same(proto: "chainKey"),
+    4: .same(proto: "messageKeys"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -372,8 +501,8 @@ extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, Swi
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self.senderRatchetKey) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self.senderRatchetKeyPrivate) }()
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._senderRatchetKey) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._senderRatchetKeyPrivate) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._chainKey) }()
       case 4: try { try decoder.decodeRepeatedMessageField(value: &self.messageKeys) }()
       default: break
@@ -382,11 +511,11 @@ extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, Swi
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.senderRatchetKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.senderRatchetKey, fieldNumber: 1)
+    if let v = self._senderRatchetKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
     }
-    if !self.senderRatchetKeyPrivate.isEmpty {
-      try visitor.visitSingularBytesField(value: self.senderRatchetKeyPrivate, fieldNumber: 2)
+    if let v = self._senderRatchetKeyPrivate {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
     if let v = self._chainKey {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
@@ -398,8 +527,8 @@ extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, Swi
   }
 
   static func ==(lhs: SessionRecordProtos_SessionStructure.Chain, rhs: SessionRecordProtos_SessionStructure.Chain) -> Bool {
-    if lhs.senderRatchetKey != rhs.senderRatchetKey {return false}
-    if lhs.senderRatchetKeyPrivate != rhs.senderRatchetKeyPrivate {return false}
+    if lhs._senderRatchetKey != rhs._senderRatchetKey {return false}
+    if lhs._senderRatchetKeyPrivate != rhs._senderRatchetKeyPrivate {return false}
     if lhs._chainKey != rhs._chainKey {return false}
     if lhs.messageKeys != rhs.messageKeys {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -420,26 +549,26 @@ extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Mes
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self.key) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._key) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.index != 0 {
-      try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 1)
+    if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
     }
-    if !self.key.isEmpty {
-      try visitor.visitSingularBytesField(value: self.key, fieldNumber: 2)
+    if let v = self._key {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionRecordProtos_SessionStructure.Chain.ChainKey, rhs: SessionRecordProtos_SessionStructure.Chain.ChainKey) -> Bool {
-    if lhs.index != rhs.index {return false}
-    if lhs.key != rhs.key {return false}
+    if lhs._index != rhs._index {return false}
+    if lhs._key != rhs._key {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -449,8 +578,8 @@ extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.M
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.Chain.protoMessageName + ".MessageKey"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "index"),
-    2: .standard(proto: "cipher_key"),
-    3: .standard(proto: "mac_key"),
+    2: .same(proto: "cipherKey"),
+    3: .same(proto: "macKey"),
     4: .same(proto: "iv"),
   ]
 
@@ -460,36 +589,36 @@ extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.M
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self.cipherKey) }()
-      case 3: try { try decoder.decodeSingularBytesField(value: &self.macKey) }()
-      case 4: try { try decoder.decodeSingularBytesField(value: &self.iv) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self._index) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._cipherKey) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._macKey) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._iv) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.index != 0 {
-      try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 1)
+    if let v = self._index {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
     }
-    if !self.cipherKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.cipherKey, fieldNumber: 2)
+    if let v = self._cipherKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
-    if !self.macKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.macKey, fieldNumber: 3)
+    if let v = self._macKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
-    if !self.iv.isEmpty {
-      try visitor.visitSingularBytesField(value: self.iv, fieldNumber: 4)
+    if let v = self._iv {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionRecordProtos_SessionStructure.Chain.MessageKey, rhs: SessionRecordProtos_SessionStructure.Chain.MessageKey) -> Bool {
-    if lhs.index != rhs.index {return false}
-    if lhs.cipherKey != rhs.cipherKey {return false}
-    if lhs.macKey != rhs.macKey {return false}
-    if lhs.iv != rhs.iv {return false}
+    if lhs._index != rhs._index {return false}
+    if lhs._cipherKey != rhs._cipherKey {return false}
+    if lhs._macKey != rhs._macKey {return false}
+    if lhs._iv != rhs._iv {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -498,9 +627,9 @@ extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.M
 extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.protoMessageName + ".PendingPreKey"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "pre_key_id"),
-    3: .standard(proto: "signed_pre_key_id"),
-    2: .standard(proto: "base_key"),
+    1: .same(proto: "preKeyId"),
+    3: .same(proto: "signedPreKeyId"),
+    2: .same(proto: "baseKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -509,31 +638,31 @@ extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Mess
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.preKeyID) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self.baseKey) }()
-      case 3: try { try decoder.decodeSingularInt32Field(value: &self.signedPreKeyID) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self._preKeyID) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._baseKey) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self._signedPreKeyID) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.preKeyID != 0 {
-      try visitor.visitSingularUInt32Field(value: self.preKeyID, fieldNumber: 1)
+    if let v = self._preKeyID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
     }
-    if !self.baseKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.baseKey, fieldNumber: 2)
+    if let v = self._baseKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
-    if self.signedPreKeyID != 0 {
-      try visitor.visitSingularInt32Field(value: self.signedPreKeyID, fieldNumber: 3)
+    if let v = self._signedPreKeyID {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionRecordProtos_SessionStructure.PendingPreKey, rhs: SessionRecordProtos_SessionStructure.PendingPreKey) -> Bool {
-    if lhs.preKeyID != rhs.preKeyID {return false}
-    if lhs.signedPreKeyID != rhs.signedPreKeyID {return false}
-    if lhs.baseKey != rhs.baseKey {return false}
+    if lhs._preKeyID != rhs._preKeyID {return false}
+    if lhs._signedPreKeyID != rhs._signedPreKeyID {return false}
+    if lhs._baseKey != rhs._baseKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -542,8 +671,8 @@ extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Mess
 extension SessionRecordProtos_RecordStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RecordStructure"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "current_session"),
-    2: .standard(proto: "previous_sessions"),
+    1: .same(proto: "currentSession"),
+    2: .same(proto: "previousSessions"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
