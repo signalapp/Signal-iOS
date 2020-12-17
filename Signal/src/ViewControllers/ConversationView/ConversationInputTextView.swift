@@ -10,16 +10,11 @@ import Foundation
     func textViewDidChange(_ textView: UITextView)
 }
 
-// MARK: -
-
 @objc protocol ConversationTextViewToolbarDelegate {
     func textViewDidChange(_ textView: UITextView)
     func textViewDidChangeSelection(_ textView: UITextView)
     func textViewDidBecomeFirstResponder(_ textView: UITextView)
-    func textViewFirstResponderStateDidChange(_ textView: UITextView)
 }
-
-// MARK: -
 
 @objcMembers
 class ConversationInputTextView: MentionTextView {
@@ -153,20 +148,9 @@ class ConversationInputTextView: MentionTextView {
         }
     }
 
-    public override func resignFirstResponder() -> Bool {
-        let oldValue = isFirstResponder
-        let result = super.resignFirstResponder()
-        let didChange = oldValue != isFirstResponder
-        if didChange { textViewToolbarDelegate?.textViewFirstResponderStateDidChange(self) }
-        return result
-    }
-
-    public override func becomeFirstResponder() -> Bool {
-        let oldValue = isFirstResponder
+    override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
-        let didChange = oldValue != isFirstResponder
         if result { textViewToolbarDelegate?.textViewDidBecomeFirstResponder(self) }
-        if didChange { textViewToolbarDelegate?.textViewFirstResponderStateDidChange(self) }
         return result
     }
 

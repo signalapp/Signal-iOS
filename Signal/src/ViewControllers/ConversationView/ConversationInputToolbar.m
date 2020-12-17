@@ -1354,13 +1354,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.desiredKeyboardType = KeyboardType_System;
 }
 
-- (void)textViewFirstResponderStateDidChange:(UITextView *)textView
-{
-    OWSAssertIsOnMainThread();
-
-    [self.inputToolbarDelegate inputToolbarFirstResponderStateDidChange];
-}
-
 #pragma mark QuotedReplyPreviewViewDelegate
 
 - (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
@@ -1522,15 +1515,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     OWSLogVerbose(@"");
 
     [self.inputToolbarDelegate presentManageStickersView];
-}
-
-- (void)stickerKeyboardFirstResponderStateDidChange:(StickerKeyboard *)stickerKeyboard
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    [self.inputToolbarDelegate inputToolbarFirstResponderStateDidChange];
 }
 
 #pragma mark - Suggested Stickers
@@ -1717,15 +1701,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)didTapLocation
 {
     [self.inputToolbarDelegate locationButtonPressed];
-}
-
-- (void)attachmentKeyboardFirstResponderStateDidChange:(AttachmentKeyboard *)attachmentKeyboard
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    [self.inputToolbarDelegate inputToolbarFirstResponderStateDidChange];
 }
 
 - (void)updateConversationStyle:(ConversationStyle *)conversationStyle

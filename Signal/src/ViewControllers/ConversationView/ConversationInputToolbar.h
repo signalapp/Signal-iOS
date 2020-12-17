@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateToolbarHeight;
 
-- (void)inputToolbarFirstResponderStateDidChange;
-
 #pragma mark - Voice Memo
 
 - (void)voiceMemoGestureDidStart;

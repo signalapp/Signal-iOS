@@ -8,7 +8,6 @@ import Foundation
 public protocol StickerKeyboardDelegate {
     func didSelectSticker(stickerInfo: StickerInfo)
     func presentManageStickersView()
-    func stickerKeyboardFirstResponderStateDidChange(_ stickerKeyboard: StickerKeyboard)
 }
 
 // MARK: -
@@ -54,24 +53,6 @@ public class StickerKeyboard: CustomKeyboard {
 
     required public init(coder: NSCoder) {
         notImplemented()
-    }
-
-    @objc
-    public override func resignFirstResponder() -> Bool {
-        let oldValue = isFirstResponder
-        let result = super.resignFirstResponder()
-        let didChange = oldValue != isFirstResponder
-        if didChange { delegate?.stickerKeyboardFirstResponderStateDidChange(self) }
-        return result
-    }
-
-    @objc
-    public override func becomeFirstResponder() -> Bool {
-        let oldValue = isFirstResponder
-        let result = super.becomeFirstResponder()
-        let didChange = oldValue != isFirstResponder
-        if didChange { delegate?.stickerKeyboardFirstResponderStateDidChange(self) }
-        return result
     }
 
     private func createSubviews() {
