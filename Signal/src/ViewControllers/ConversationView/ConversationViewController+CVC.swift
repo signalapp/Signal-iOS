@@ -244,7 +244,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         self.viewState.scrollContinuityMap = nil
 
         self.loadCoordinator.loadDidLand()
-        self.configureScrollDownButtons()
     }
 
     // The view's first appearance and the first load can race.
