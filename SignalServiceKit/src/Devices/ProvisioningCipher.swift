@@ -27,16 +27,16 @@ public enum ProvisioningError: Error {
 public class ProvisioningCipher {
 
     public var secondaryDevicePublicKey: ECPublicKey {
-        return try! secondaryDeviceKeyPair.ecPublicKey()
+        return ECPublicKey(secondaryDeviceKeyPair.publicKey)
     }
 
-    let secondaryDeviceKeyPair: ECKeyPair
-    init(secondaryDeviceKeyPair: ECKeyPair) {
+    let secondaryDeviceKeyPair: IdentityKeyPair
+    init(secondaryDeviceKeyPair: IdentityKeyPair) {
         self.secondaryDeviceKeyPair = secondaryDeviceKeyPair
     }
 
     public class func generate() -> ProvisioningCipher {
-        return ProvisioningCipher(secondaryDeviceKeyPair: Curve25519.generateKeyPair())
+        return ProvisioningCipher(secondaryDeviceKeyPair: IdentityKeyPair.generate())
     }
 
     internal class var messageInfo: String {
@@ -46,7 +46,7 @@ public class ProvisioningCipher {
     // MARK: 
 
     public func decrypt(envelope: ProvisioningProtoProvisionEnvelope) throws -> ProvisionMessage {
-        let primaryDeviceEphemeralPublicKey = try ECPublicKey(serializedKeyData: envelope.publicKey)
+        let primaryDeviceEphemeralPublicKey = try PublicKey(envelope.publicKey)
         let bytes = [UInt8](envelope.body)
 
         let versionLength = 1
@@ -67,8 +67,8 @@ public class ProvisioningCipher {
         let messageToAuthenticate = bytes[0..<(bytes.count - 32)]
         let ciphertext = Array(bytes[17..<(bytes.count - 32)])
 
-        let agreement = try PrivateKey(secondaryDeviceKeyPair.privateKey).keyAgreement(
-            with: PublicKey(primaryDeviceEphemeralPublicKey.keyData))
+        let agreement = secondaryDeviceKeyPair.privateKey.keyAgreement(
+            with: primaryDeviceEphemeralPublicKey)
 
         let keyBytes = try Self.messageInfo.utf8.withContiguousStorageIfAvailable {
             try hkdf(outputLength: 64, version: 3, inputKeyMaterial: agreement, salt: [], info: $0)
@@ -106,7 +106,8 @@ public class ProvisioningCipher {
         let plaintext = Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
         let proto = try ProvisioningProtoProvisionMessage(serializedData: plaintext)
 
-        let identityKeyPair = try ECKeyPair(serializedPublicKeyData: proto.identityKeyPublic, privateKeyData: proto.identityKeyPrivate)
+        let identityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.identityKeyPublic),
+                                                  privateKey: PrivateKey(proto.identityKeyPrivate))
         guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
             throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
         }
@@ -129,18 +130,11 @@ public class ProvisioningCipher {
 
         return ProvisionMessage(uuid: uuid,
                                 phoneNumber: phoneNumber,
-                                identityKeyPair: identityKeyPair,
+                                identityKeyPair: ECKeyPair(identityKeyPair),
                                 profileKey: profileKey,
                                 areReadReceiptsEnabled: areReadReceiptsEnabled,
                                 primaryUserAgent: primaryUserAgent,
                                 provisioningCode: provisioningCode,
                                 provisioningVersion: provisioningVersion)
-    }
-}
-
-private extension ECKeyPair {
-    convenience init(serializedPublicKeyData: Data, privateKeyData: Data) throws {
-        let publicKey = try (serializedPublicKeyData as NSData).removeKeyType() as Data
-        try self.init(publicKeyData: publicKey, privateKeyData: privateKeyData)
     }
 }

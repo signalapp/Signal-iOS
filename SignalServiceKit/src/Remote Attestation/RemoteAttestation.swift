@@ -5,7 +5,6 @@
 import Foundation
 import PromiseKit
 import SignalClient
-import AxolotlKit // for prependKeyType
 
 extension RemoteAttestation {
 
@@ -270,9 +269,9 @@ public class RemoteAttestationKeys: NSObject {
         self.serverStaticPublic = serverStaticPublic
 
         do {
-            let clientPrivateKey = try! PrivateKey(clientEphemeralKeyPair.privateKey)
-            let serverEphemeralPublicKey = try! PublicKey((serverEphemeralPublic as NSData).prependKeyType() as Data)
-            let serverStaticPublicKey = try! PublicKey((serverStaticPublic as NSData).prependKeyType() as Data)
+            let clientPrivateKey = clientEphemeralKeyPair.identityKeyPair.privateKey
+            let serverEphemeralPublicKey = try! ECPublicKey(keyData: serverEphemeralPublic).key
+            let serverStaticPublicKey = try! ECPublicKey(keyData: serverStaticPublic).key
 
             let ephemeralToEphemeral = clientPrivateKey.keyAgreement(with: serverEphemeralPublicKey)
             let ephemeralToStatic = clientPrivateKey.keyAgreement(with: serverStaticPublicKey)
