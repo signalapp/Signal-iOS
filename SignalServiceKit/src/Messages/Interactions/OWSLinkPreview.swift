@@ -635,12 +635,7 @@ public class OWSLinkPreviewManager: NSObject {
                     }.map { (avatarData: Data) -> Data? in
                         return avatarData
                     }.recover { (error: Error) -> Promise<Data?> in
-                        if IsNetworkConnectivityFailure(error) {
-                            Logger.warn("Error: \(error)")
-
-                        } else {
-                            owsFailDebug("Error: \(error)")
-                        }
+                        owsFailDebugUnlessNetworkFailure(error)
                         return Promise.value(nil)
                     }
                 }.then(on: Self.workQueue) { (imageData: Data?) -> Promise<PreviewThumbnail?> in

@@ -1058,11 +1058,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }.done { _ in
             Logger.verbose("Update succeeded.")
         }.catch { error in
-            if IsNetworkConnectivityFailure(error) {
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebug("Error: \(error)")
-            }
+            owsFailDebugUnlessNetworkFailure(error)
         }
     }
 
