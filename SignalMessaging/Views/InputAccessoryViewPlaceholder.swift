@@ -9,9 +9,6 @@ protocol InputAccessoryViewPlaceholderDelegate: class {
     func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
-
-    @objc
-    optional func inputAccessoryPlaceholderKeyboardHeightDidChange()
 }
 
 /// Input accessory views always render at the full width of the window.
@@ -165,14 +162,10 @@ public class InputAccessoryViewPlaceholder: UIView {
         // follow along as the keyboard moves up and down.
         superview?.removeObserver(self, forKeyPath: "center")
         newSuperview?.addObserver(self, forKeyPath: "center", options: [.initial, .new], context: nil)
-
-        superview?.layer.removeObserver(self, forKeyPath: "bounds")
-        newSuperview?.layer.addObserver(self, forKeyPath: "bounds", options: [.new], context: nil)
     }
 
     deinit {
         superview?.removeObserver(self, forKeyPath: "center")
-        superview?.layer.removeObserver(self, forKeyPath: "bounds")
     }
 
     public override func observeValue(
@@ -181,52 +174,18 @@ public class InputAccessoryViewPlaceholder: UIView {
         change: [NSKeyValueChangeKey: Any]?,
         context: UnsafeMutableRawPointer?
     ) {
-        guard let keyPath = keyPath else { return }
-
-        switch keyPath {
-        case "center":
-            centerDidChange()
-            visibleKeyboardHeightMayHaveChanged()
-        case "bounds":
-            visibleKeyboardHeightMayHaveChanged()
-        default:
-            break
-        }
-    }
-
-    private var lastKnownVisibleKeyboardHeight: CGFloat?
-
-    private func visibleKeyboardHeightMayHaveChanged() {
         // Do nothing unless the keyboard is currently presented.
         // We're only checking for interactive dismissal, which
         // can only happen while presented.
         guard case .presented = keyboardState else { return }
+
         guard superview != nil else { return }
-        guard let delegate = delegate else { return }
-
-        let visibleKeyboardHeight = self.visibleKeyboardHeight
-        guard visibleKeyboardHeight != lastKnownVisibleKeyboardHeight else { return }
-        lastKnownVisibleKeyboardHeight = visibleKeyboardHeight
-
-
-        delegate.inputAccessoryPlaceholderKeyboardHeightDidChange?()
-    }
-
-
-    private func centerDidChange() {
-
-        // Do nothing unless the keyboard is currently presented.
-        // We're only checking for interactive dismissal, which
-        // can only happen while presented.
-        guard case .presented = keyboardState else { return }
-        guard superview != nil else { return }
-        guard let delegate = delegate else { return }
 
         // While the visible keyboard height is greater than zero,
         // and the keyboard is presented, we can safely assume
         // an interactive dismissal is in progress.
         if visibleKeyboardHeight > 0 {
-            delegate.inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
+            delegate?.inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
         }
     }
 
