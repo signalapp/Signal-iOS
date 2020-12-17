@@ -306,6 +306,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     private func updateNavigationBarButtons() {
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
+        profilePictureView.accessibilityLabel = "Settings button"
         profilePictureView.size = profilePictureSize
         profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
@@ -314,24 +315,33 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         let profilePictureViewContainer = UIView()
+        profilePictureViewContainer.accessibilityLabel = "Settings button"
         profilePictureViewContainer.addSubview(profilePictureView)
         profilePictureView.pin(.leading, to: .leading, of: profilePictureViewContainer, withInset: 4)
         profilePictureView.pin(.top, to: .top, of: profilePictureViewContainer)
         profilePictureView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
         profilePictureView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
+        let leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
+        leftBarButtonItem.accessibilityLabel = "Settings button"
+        leftBarButtonItem.isAccessibilityElement = true
+        navigationItem.leftBarButtonItem = leftBarButtonItem
         let pathStatusViewContainer = UIView()
+        pathStatusViewContainer.accessibilityLabel = "Current onion routing path button"
         let pathStatusViewContainerSize = Values.verySmallProfilePictureSize // Match the profile picture view
         pathStatusViewContainer.set(.width, to: pathStatusViewContainerSize)
         pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
         let pathStatusView = PathStatusView()
+        pathStatusView.accessibilityLabel = "Current onion routing path button"
         pathStatusView.set(.width, to: Values.pathStatusViewSize)
         pathStatusView.set(.height, to: Values.pathStatusViewSize)
         pathStatusViewContainer.addSubview(pathStatusView)
         pathStatusView.center(.horizontal, in: pathStatusViewContainer)
         pathStatusView.center(.vertical, in: pathStatusViewContainer)
         pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
+        let rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
+        rightBarButtonItem.accessibilityLabel = "Current onion routing path button"
+        rightBarButtonItem.isAccessibilityElement  = true
+        navigationItem.rightBarButtonItem = rightBarButtonItem
     }
 
     @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {

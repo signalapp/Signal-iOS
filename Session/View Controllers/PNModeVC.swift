@@ -11,8 +11,19 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     // MARK: Components
-    private lazy var apnsOptionView = OptionView(title: "Fast Mode", explanation: "You’ll be notified of new messages reliably and immediately using Apple’s notification servers. The contents of your messages, and who you’re messaging, are never exposed to Apple.", delegate: self, isRecommended: true)
-    private lazy var backgroundPollingOptionView = OptionView(title: "Slow Mode", explanation: "Session will occasionally check for new messages in the background. Full metadata protection is guaranteed, but message notifications will be unreliable.", delegate: self)
+    private lazy var apnsOptionView: OptionView = {
+        let explanation = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers. The contents of your messages, and who you’re messaging, are never exposed to Apple."
+        let result = OptionView(title: "Fast Mode", explanation: explanation, delegate: self, isRecommended: true)
+        result.accessibilityLabel = "Fast mode option"
+        return result
+    }()
+    
+    private lazy var backgroundPollingOptionView: OptionView = {
+        let explanation = "Session will occasionally check for new messages in the background. Full metadata protection is guaranteed, but message notifications will be unreliable."
+        let result = OptionView(title: "Slow Mode", explanation: explanation, delegate: self)
+        result.accessibilityLabel = "Slow mode option"
+        return result
+    }()
 
     // MARK: Lifecycle
     override func viewDidLoad() {

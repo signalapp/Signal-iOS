@@ -127,6 +127,8 @@ const CGFloat kMaxTextViewHeight = 120;
     self.inputTextView.backgroundColor = LKColors.composeViewTextFieldBackground;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
+    self.inputTextView.accessibilityLabel = @"Input text view";
+    self.inputTextView.isAccessibilityElement = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputTextView);
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
@@ -147,11 +149,15 @@ const CGFloat kMaxTextViewHeight = 120;
     [self.sendButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    self.sendButton.accessibilityLabel = @"Send button";
+    self.sendButton.isAccessibilityElement = YES;
 
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *voiceMemoIcon = [[UIImage imageNamed:@"Microphone"] asTintedImageWithColor:LKColors.text];
     [self.voiceMemoButton setImage:voiceMemoIcon forState:UIControlStateNormal];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    self.voiceMemoButton.accessibilityLabel = @"Voice message button";
+    self.voiceMemoButton.isAccessibilityElement = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     // We want to be permissive about the voice message gesture, so we hang

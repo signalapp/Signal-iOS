@@ -9,6 +9,7 @@ final class DisplayNameVC : BaseVC {
     private lazy var displayNameTextField: TextField = {
         let result = TextField(placeholder: NSLocalizedString("vc_display_name_text_field_hint", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
+        result.accessibilityLabel = "Display name text field"
         return result
     }()
     

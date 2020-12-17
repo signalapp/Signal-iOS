@@ -599,6 +599,8 @@ typedef enum : NSUInteger {
     self.collectionView.backgroundColor = UIColor.clearColor;
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Gear"] style:UIBarButtonItemStylePlain target:self action:@selector(showConversationSettings)];
     settingsButton.tintColor = LKColors.text;
+    settingsButton.accessibilityLabel = @"Conversation settings button";
+    settingsButton.isAccessibilityElement = YES;
     self.navigationItem.rightBarButtonItem = settingsButton;
 
     if (self.thread.isGroupThread) {

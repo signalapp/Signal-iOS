@@ -31,6 +31,14 @@ final class NewConversationButtonSet : UIView {
     }
     
     private func setUpViewHierarchy() {
+        mainButton.accessibilityLabel = "Toggle conversation options button"
+        mainButton.isAccessibilityElement = true
+        createNewPrivateChatButton.accessibilityLabel = "Start new one-on-one conversation button"
+        createNewPrivateChatButton.isAccessibilityElement = true
+        createNewClosedGroupButton.accessibilityLabel = "Start new closed group button"
+        createNewClosedGroupButton.isAccessibilityElement = true
+        joinOpenGroupButton.accessibilityLabel = "Join open group button"
+        joinOpenGroupButton.isAccessibilityElement = true
         let inset = (Values.newConversationButtonExpandedSize - Values.newConversationButtonCollapsedSize) / 2
         addSubview(joinOpenGroupButton)
         horizontalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.left, to: .left, of: self, withInset: inset)

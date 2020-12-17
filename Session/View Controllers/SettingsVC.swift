@@ -11,6 +11,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.size = size
         result.set(.width, to: size)
         result.set(.height, to: size)
+        result.accessibilityLabel = "Edit profile picture button"
+        result.isAccessibilityElement = true
         return result
     }()
     
@@ -32,6 +34,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     private lazy var displayNameTextField: TextField = {
         let result = TextField(placeholder: NSLocalizedString("vc_settings_display_name_text_field_hint", comment: ""), usesDefaultHeight: false)
         result.textAlignment = .center
+        result.accessibilityLabel = "Edit display name text field"
         return result
     }()
     
@@ -69,6 +72,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         displayNameLabel.text = OWSProfileManager.shared().profileNameForRecipient(withID: getUserHexEncodedPublicKey())
         // Set up display name container
         let displayNameContainer = UIView()
+        displayNameContainer.accessibilityLabel = "Edit display name text field"
+        displayNameContainer.isAccessibilityElement = true
         displayNameContainer.addSubview(displayNameLabel)
         displayNameLabel.pin(to: displayNameContainer)
         displayNameContainer.addSubview(displayNameTextField)
@@ -236,13 +241,19 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         if isEditingDisplayName {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancelDisplayNameEditingButtonTapped))
             cancelButton.tintColor = Colors.text
+            cancelButton.accessibilityLabel = "Cancel button"
+            cancelButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = cancelButton
             let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleSaveDisplayNameButtonTapped))
             doneButton.tintColor = Colors.text
+            doneButton.accessibilityLabel = "Done button"
+            doneButton.isAccessibilityElement = true
             navigationItem.rightBarButtonItem = doneButton
         } else {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
             closeButton.tintColor = Colors.text
+            closeButton.accessibilityLabel = "Close button"
+            closeButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = closeButton
             if #available(iOS 13, *) { // Pre iOS 13 the user can't switch actively but the app still responds to system changes
                 let appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on").withTintColor(.white) : #imageLiteral(resourceName: "ic_dark_theme_off").withTintColor(.black)
@@ -250,11 +261,13 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 appModeButton.setImage(appModeIcon, for: UIControl.State.normal)
                 appModeButton.tintColor = Colors.text
                 appModeButton.addTarget(self, action: #selector(switchAppMode), for: UIControl.Event.touchUpInside)
+                appModeButton.accessibilityLabel = "Switch app mode button"
                 let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").withTintColor(.white) : #imageLiteral(resourceName: "QRCode").withTintColor(.black)
                 let qrCodeButton = UIButton()
                 qrCodeButton.setImage(qrCodeIcon, for: UIControl.State.normal)
                 qrCodeButton.tintColor = Colors.text
                 qrCodeButton.addTarget(self, action: #selector(showQRCode), for: UIControl.Event.touchUpInside)
+                qrCodeButton.accessibilityLabel = "Show QR code button"
                 let stackView = UIStackView(arrangedSubviews: [ appModeButton, qrCodeButton ])
                 stackView.axis = .horizontal
                 stackView.spacing = Values.mediumSpacing
