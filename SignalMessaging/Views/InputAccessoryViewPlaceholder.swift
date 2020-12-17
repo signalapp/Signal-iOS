@@ -79,7 +79,8 @@ public class InputAccessoryViewPlaceholder: UIView {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
             heightConstraintView.layoutIfNeeded()
-            layoutIfNeeded()
+            self.layoutIfNeeded()
+            superview?.layoutIfNeeded()
         }
         get {
             return heightConstraint.constant
