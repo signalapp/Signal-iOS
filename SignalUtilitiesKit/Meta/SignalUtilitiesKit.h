@@ -16,6 +16,7 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/NSURLSessionDataTask+StatusCode.h>
 #import <SignalUtilitiesKit/OWSAnyTouchGestureRecognizer.h>
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
+#import <SignalUtilitiesKit/OWSDatabaseMigration.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SignalUtilitiesKit/OWSFormat.h>

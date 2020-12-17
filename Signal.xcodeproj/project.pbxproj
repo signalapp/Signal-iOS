@@ -284,6 +284,7 @@
 		B8B26C8F234D629C004ED98C /* MentionCandidateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */; };
 		B8B32021258B1A650020074B /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32020258B1A650020074B /* Contact.swift */; };
 		B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32032258B235D0020074B /* Storage+Contacts.swift */; };
+		B8B3204E258C15C80020074B /* ContactsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32044258C117C0020074B /* ContactsMigration.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BC00C0257D90E30032E807 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC00BF257D90E30032E807 /* General.swift */; };
 		B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B2C72563685C00551B4D /* CircleView.swift */; };
@@ -1379,6 +1380,7 @@
 		B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionCandidateSelectionView.swift; sourceTree = "<group>"; };
 		B8B32020258B1A650020074B /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		B8B32032258B235D0020074B /* Storage+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Contacts.swift"; sourceTree = "<group>"; };
+		B8B32044258C117C0020074B /* ContactsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsMigration.swift; sourceTree = "<group>"; };
 		B8B5BCEB2394D869003823C9 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		B8BB829F238F322400BA5194 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		B8BB82A1238F356100BA5194 /* Values.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Values.swift; sourceTree = "<group>"; };
@@ -3073,6 +3075,7 @@
 		C379DCE82567330E0002D4EB /* Migration */ = {
 			isa = PBXGroup;
 			children = (
+				B8B32044258C117C0020074B /* ContactsMigration.swift */,
 				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
 				C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */,
 				C38EF26F255B6D79007E1867 /* OWSDatabaseMigrationRunner.h */,
@@ -5037,6 +5040,7 @@
 				C38EF3F2255B6DF7007E1867 /* DisappearingTimerConfigurationView.swift in Sources */,
 				C38EF3F9255B6DF7007E1867 /* OWSLayerView.swift in Sources */,
 				C33FDD03255A582000E217F9 /* WeakTimer.swift in Sources */,
+				B8B3204E258C15C80020074B /* ContactsMigration.swift in Sources */,
 				C33FDD41255A582000E217F9 /* JobQueue.swift in Sources */,
 				C38EF3B9255B6DE7007E1867 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
 				C33FDC98255A582000E217F9 /* SwiftSingletons.swift in Sources */,

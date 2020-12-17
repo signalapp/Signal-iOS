@@ -39,4 +39,24 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(profilePictureEncryptionKey, forKey: "profilePictureEncryptionKey")
         coder.encode(threadID, forKey: "threadID")
     }
+    
+    // MARK: Equality
+    override public func isEqual(_ other: Any?) -> Bool {
+        guard let other = other as? Contact else { return false }
+        return sessionID == other.sessionID
+    }
+
+    // MARK: Hashing
+    override public var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
+        return sessionID.hash
+    }
+
+    // MARK: Description
+    override public var description: String {
+        if let displayName = displayName {
+            return displayName
+        } else {
+            return sessionID
+        }
+    }
 }
