@@ -222,7 +222,7 @@ public class AudioWaveform: NSObject {
             return nil
         }
 
-        // If we're trying to downsample to less samples than exist, just return what we have
+        // If we're trying to downsample to more samples than exist, just return what we have.
         guard decibelSamples.count > sampleCount else {
             return decibelSamples.map { 1 - ($0 / AudioWaveform.silenceDecibelThreshold) }
         }

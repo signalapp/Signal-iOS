@@ -32,18 +32,9 @@ class AudioWaveformProgressView: UIView {
     }
 
     @objc
-    var sampleWidth: CGFloat = 2
-
-    @objc
-    var sampleSpacing: CGFloat = 2
-
-    @objc
-    var minSampleHeight: CGFloat = 2
-
-    @objc
-    var value: CGFloat = 0 {
+    var progress: CGFloat = 0 {
         didSet {
-            guard value != oldValue else { return }
+            guard progress != oldValue else { return }
             redrawSamples()
         }
     }
@@ -114,12 +105,18 @@ class AudioWaveformProgressView: UIView {
     private func redrawSamples() {
         AssertIsOnMainThread()
 
-        // Show the loading state if sampling of the waveform hasn't finished yet.
-        // TODO: This will eventually be a lottie animation of a waveform moving up and down
-        guard audioWaveform?.isSamplingComplete == true else {
+        func showLoadingAnimation() {
+            playedShapeLayer.path = nil
+            unplayedShapeLayer.path = nil
             thumbImageView.isHidden = true
             loadingAnimation.isHidden = false
             loadingAnimation.play()
+        }
+
+        // Show the loading state if sampling of the waveform hasn't finished yet.
+        // TODO: This will eventually be a lottie animation of a waveform moving up and down
+        guard audioWaveform?.isSamplingComplete == true else {
+            showLoadingAnimation()
             return
         }
 
@@ -127,19 +124,38 @@ class AudioWaveformProgressView: UIView {
         loadingAnimation.isHidden = true
         thumbImageView.isHidden = false
 
+        let sampleWidth: CGFloat = 2
+        let minSampleSpacing: CGFloat = 2
+        let minSampleHeight: CGFloat = 2
+
         let playedBezierPath = UIBezierPath()
         let unplayedBezierPath = UIBezierPath()
 
         // Calculate the number of lines we want to render based on the view width.
-        let numberOfSamplesToDraw = Int(width / (sampleWidth + sampleSpacing))
-        let samplesWidth = CGFloat(numberOfSamplesToDraw) * (sampleWidth + sampleSpacing) - sampleSpacing
-        let sampleHMargin = (width - samplesWidth) / 2
+        let targetSamplesCount = Int((width + minSampleSpacing) / (sampleWidth + minSampleSpacing))
+
+        guard let amplitudes = audioWaveform?.normalizedLevelsToDisplay(sampleCount: targetSamplesCount),
+              amplitudes.count > 0 else {
+            owsFailDebug("Missing sample amplitudes.")
+            showLoadingAnimation()
+            return
+        }
+        // We might not have enough samples.
+        let samplesCount = min(targetSamplesCount, amplitudes.count)
+
+        let sampleSpacingCount = max(0, samplesCount - 1)
+        let sampleSpacing: CGFloat
+        if sampleSpacingCount > 0 {
+            sampleSpacing = max(0, (width - (sampleWidth * CGFloat(samplesCount))) / CGFloat(sampleSpacingCount))
+        } else {
+            sampleSpacing = 0
+        }
 
         playedShapeLayer.frame = layer.frame
         unplayedShapeLayer.frame = layer.frame
 
-        var thumbXPos = sampleHMargin + (samplesWidth * value)
-        if CurrentAppContext().isRTL { thumbXPos = samplesWidth - thumbXPos }
+        var thumbXPos = width * progress
+        if CurrentAppContext().isRTL { thumbXPos = width - thumbXPos }
         thumbImageView.center = CGPoint(x: thumbXPos, y: layer.frame.center.y)
 
         defer {
@@ -147,13 +163,10 @@ class AudioWaveformProgressView: UIView {
             unplayedShapeLayer.path = unplayedBezierPath.cgPath
         }
 
-        guard let amplitudes = audioWaveform?.normalizedLevelsToDisplay(sampleCount: numberOfSamplesToDraw),
-            amplitudes.count > 0 else { return }
-
-        let playedLines = Int(CGFloat(amplitudes.count) * value)
+        let playedLines = Int(CGFloat(amplitudes.count) * progress)
 
         for (x, sample) in amplitudes.enumerated() {
-            let path: UIBezierPath = ((x > playedLines) || (value == 0)) ? unplayedBezierPath : playedBezierPath
+            let path: UIBezierPath = ((x > playedLines) || (progress == 0)) ? unplayedBezierPath : playedBezierPath
 
             // The sample represents the magnitude of sound at this point
             // from 0 (silence) to 1 (loudest possible value). Calculate the
@@ -164,20 +177,17 @@ class AudioWaveformProgressView: UIView {
             // Center the sample vertically.
             let yPos = frame.center.y - height / 2
 
-            var xPos = CGFloat(x) * (sampleWidth + sampleSpacing) + sampleHMargin
-            if CurrentAppContext().isRTL { xPos = samplesWidth - xPos }
+            var xPos = CGFloat(x) * (sampleWidth + sampleSpacing)
+            if CurrentAppContext().isRTL { xPos = width - xPos }
 
-            path.append(
-                UIBezierPath(
-                    roundedRect: CGRect(
-                        x: xPos,
-                        y: yPos,
-                        width: sampleWidth,
-                        height: height
-                    ),
-                    cornerRadius: sampleWidth / 2
-                )
+            let sampleFrame = CGRect(
+                x: xPos,
+                y: yPos,
+                width: sampleWidth,
+                height: height
             )
+
+            path.append(UIBezierPath(roundedRect: sampleFrame, cornerRadius: sampleWidth / 2))
         }
     }
 }

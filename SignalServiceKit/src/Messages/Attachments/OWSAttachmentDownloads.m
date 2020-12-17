@@ -498,7 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
                         [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:attachmentStream.uniqueId
                                                                        transaction:transaction];
                     if (existingAttachment == nil) {
-                        OWSFailDebug(@"Attachment no longer exists.");
+                        OWSLogWarn(@"Attachment no longer exists.");
                         return;
                     }
                     if (![existingAttachment isKindOfClass:[TSAttachmentPointer class]]) {
