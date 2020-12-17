@@ -4,7 +4,7 @@ public class ContactsMigration : OWSDatabaseMigration {
 
     @objc
     class func migrationId() -> String {
-        return "004"
+        return "005"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
@@ -19,7 +19,13 @@ public class ContactsMigration : OWSDatabaseMigration {
                 guard let thread = object as? TSContactThread else { return }
                 let sessionID = thread.contactIdentifier()
                 let contact = Contact(sessionID: sessionID)
-                if let profile = OWSUserProfile.fetch(uniqueId: sessionID, transaction: transaction) {
+                var profileOrNil: OWSUserProfile? = nil
+                if sessionID == getUserHexEncodedPublicKey() {
+                    profileOrNil = OWSProfileManager.shared().getLocalUserProfile(with: transaction)
+                } else if let profile = OWSUserProfile.fetch(uniqueId: sessionID, transaction: transaction) {
+                    profileOrNil = profile
+                }
+                if let profile = profileOrNil {
                     contact.displayName = profile.profileName
                     contact.profilePictureURL = profile.avatarUrlPath
                     contact.profilePictureFileName = profile.avatarFileName
