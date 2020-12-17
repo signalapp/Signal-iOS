@@ -75,17 +75,20 @@ public class InputAccessoryViewPlaceholder: UIView {
         set {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
+            heightConstraintView.layoutIfNeeded()
+            layoutIfNeeded()
         }
         get {
             return heightConstraint.constant
         }
     }
 
+    private let heightConstraintView = UIView()
+
     private lazy var heightConstraint: NSLayoutConstraint = {
-        let view = UIView()
-        addSubview(view)
-        view.autoPinHeightToSuperview()
-        return view.autoSetDimension(.height, toSize: 0)
+        addSubview(heightConstraintView)
+        heightConstraintView.autoPinHeightToSuperview()
+        return heightConstraintView.autoSetDimension(.height, toSize: 0)
     }()
 
     private enum KeyboardState {
