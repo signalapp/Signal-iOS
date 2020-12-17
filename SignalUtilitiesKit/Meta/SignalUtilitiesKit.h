@@ -13,14 +13,12 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/BlockListUIUtils.h>
 #import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
-#import <SignalUtilitiesKit/NSError+MessageSending.h>
 #import <SignalUtilitiesKit/NSURLSessionDataTask+StatusCode.h>
 #import <SignalUtilitiesKit/OWSAnyTouchGestureRecognizer.h>
 #import <SignalUtilitiesKit/OWSAttachmentDownloads.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
-#import <SignalUtilitiesKit/OWSHTTPSecurityPolicy.h>
 #import <SignalUtilitiesKit/OWSMessageUtils.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSOperation.h>
@@ -34,7 +32,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSTextField.h>
 #import <SignalUtilitiesKit/OWSTextView.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
-#import <SignalUtilitiesKit/OWSUploadOperation.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
 #import <SignalUtilitiesKit/SelectRecipientViewController.h>
@@ -42,7 +39,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
-#import <SignalUtilitiesKit/SSKMessageSenderJobRecord.h>
 #import <SignalUtilitiesKit/Theme.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SignalUtilitiesKit/TSConstants.h>

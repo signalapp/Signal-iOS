@@ -8,7 +8,6 @@
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
 #import <SessionUtilitiesKit/AppContext.h>
-#import <SignalUtilitiesKit/OWSUploadOperation.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -41,11 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
         self.attachment = attachment;
 
         [self createContents];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(attachmentUploadProgress:)
-                                                     name:kAttachmentUploadProgressNotification
-                                                   object:nil];
 
         _isAttachmentReady = self.attachment.isUploaded;
 
@@ -117,23 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.backgroundColor = (isUploading ? [UIColor colorWithWhite:0.f alpha:0.2f] : nil);
     self.progressView.hidden = !isUploading;
     self.progressLabel.hidden = !isUploading;
-}
-
-- (void)attachmentUploadProgress:(NSNotification *)notification
-{
-    NSDictionary *userinfo = [notification userInfo];
-    double progress = [[userinfo objectForKey:kAttachmentUploadProgressKey] doubleValue];
-    NSString *attachmentID = [userinfo objectForKey:kAttachmentUploadAttachmentIDKey];
-    if ([self.attachment.uniqueId isEqual:attachmentID]) {
-        if (!isnan(progress)) {
-            [self.progressView setProgress:(CGFloat)progress];
-            self.lastProgress = (CGFloat)progress;
-            self.isAttachmentReady = self.attachment.isUploaded;
-        } else {
-            OWSFailDebug(@"Invalid attachment progress.");
-            self.isAttachmentReady = YES;
-        }
-    }
 }
 
 @end
