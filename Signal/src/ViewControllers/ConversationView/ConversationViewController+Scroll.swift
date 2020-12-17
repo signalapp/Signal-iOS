@@ -468,7 +468,8 @@ extension ConversationViewController {
         return isScrolledToBottom
     }
 
-    private var safeDistanceFromBottom: CGFloat {
+    @objc
+    public var safeDistanceFromBottom: CGFloat {
         // This is a bit subtle.
         //
         // The _wrong_ way to determine if we're scrolled to the bottom is to
