@@ -105,6 +105,8 @@ class AudioWaveformProgressView: UIView {
     private func redrawSamples() {
         AssertIsOnMainThread()
 
+        // Show the loading state if sampling of the waveform hasn't finished yet.
+        // TODO: This will eventually be a lottie animation of a waveform moving up and down
         func showLoadingAnimation() {
             playedShapeLayer.path = nil
             unplayedShapeLayer.path = nil
@@ -113,8 +115,6 @@ class AudioWaveformProgressView: UIView {
             loadingAnimation.play()
         }
 
-        // Show the loading state if sampling of the waveform hasn't finished yet.
-        // TODO: This will eventually be a lottie animation of a waveform moving up and down
         guard audioWaveform?.isSamplingComplete == true else {
             showLoadingAnimation()
             return
