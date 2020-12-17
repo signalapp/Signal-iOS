@@ -478,8 +478,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 case .insert(let renderItem, _):
 
                     var wasJustInserted = false
-                    if let lastMessageForInboxSortId = updateToken.lastMessageForInboxSortId,
-                       lastMessageForInboxSortId < renderItem.interaction.sortId {
+                    if let lastMessageForInboxSortId = updateToken.lastMessageForInboxSortId {
+                        if lastMessageForInboxSortId < renderItem.interaction.sortId {
+                            wasJustInserted = true
+                        }
+                    } else {
+                        // The first interaction in the thread.
                         wasJustInserted = true
                     }
 
