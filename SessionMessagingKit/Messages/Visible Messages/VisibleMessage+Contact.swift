@@ -1,7 +1,7 @@
 
 public extension VisibleMessage {
 
-    @objc(SNContact)
+    @objc(SNMessageContact)
     class Contact : NSObject, NSCoding {
 
         public required init?(coder: NSCoder) { }
