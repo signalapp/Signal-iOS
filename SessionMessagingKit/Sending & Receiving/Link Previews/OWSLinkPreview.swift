@@ -277,83 +277,6 @@ public class OWSLinkPreview: MTLModel {
         return result.filterStringForDisplay()
     }
 
-    // MARK: - Whitelists
-
-    // For link domains, we require an exact match - no subdomains allowed.
-    //
-    // Note that order matters in this whitelist since the logic for determining
-    // how to render link preview domains in displayDomain(...) uses the first match.
-    // We should list TLDs first and subdomains later.
-    private static let linkDomainWhitelist = [
-        // YouTube
-        "youtube.com",
-        "www.youtube.com",
-        "m.youtube.com",
-        "youtu.be",
-
-        // Reddit
-        "reddit.com",
-        "www.reddit.com",
-        "m.reddit.com",
-        // NOTE: We don't use redd.it.
-
-        // Imgur
-        //
-        // NOTE: Subdomains are also used for content.
-        //
-        // For example, you can access "user/member" pages: https://sillygoose2.imgur.com/
-        // A different member page can be accessed without a subdomain: https://imgur.com/user/SillyGoose2
-        //
-        // I'm not sure we need to support these subdomains; they don't appear to be core functionality.
-        "imgur.com",
-        "www.imgur.com",
-        "m.imgur.com",
-
-        // Instagram
-        "instagram.com",
-        "www.instagram.com",
-        "m.instagram.com",
-
-        // Pinterest
-        "pinterest.com",
-        "www.pinterest.com",
-        "pin.it",
-        
-        // Giphy
-        "giphy.com",
-        "media.giphy.com",
-        "media1.giphy.com",
-        "media2.giphy.com",
-        "media3.giphy.com",
-        "gph.is"
-    ]
-
-    // For media domains, we DO NOT require an exact match - subdomains are allowed.
-    private static let mediaDomainWhitelist = [
-        // YouTube
-        "ytimg.com",
-
-        // Reddit
-        "redd.it",
-
-        // Imgur
-        "imgur.com",
-
-        // Instagram
-        "cdninstagram.com",
-        "fbcdn.net",
-
-        // Pinterest
-        "pinimg.com",
-        
-        // Giphy
-        "giphy.com"
-    ]
-
-    private static let protocolWhitelist = [
-        "https"
-    ]
-
     @objc
     public func displayDomain() -> String? {
         return OWSLinkPreview.displayDomain(forUrl: urlString)
@@ -367,12 +290,7 @@ public class OWSLinkPreview: MTLModel {
         guard let url = URL(string: urlString) else {
             return nil
         }
-        guard let result = whitelistedDomain(forUrl: url,
-                                             domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
-                                             allowSubdomains: false) else {
-            return nil
-        }
-        return result
+        return url.host
     }
 
     @objc
@@ -380,9 +298,7 @@ public class OWSLinkPreview: MTLModel {
         guard let url = URL(string: urlString) else {
             return false
         }
-        return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
-                                 allowSubdomains: false) != nil
+        return true
     }
 
     @objc
@@ -390,36 +306,7 @@ public class OWSLinkPreview: MTLModel {
         guard let url = URL(string: urlString) else {
             return false
         }
-        return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.mediaDomainWhitelist,
-                                 allowSubdomains: true) != nil
-    }
-
-    private class func whitelistedDomain(forUrl url: URL, domainWhitelist: [String], allowSubdomains: Bool) -> String? {
-        guard let urlProtocol = url.scheme?.lowercased() else {
-            return nil
-        }
-        guard protocolWhitelist.contains(urlProtocol) else {
-            return nil
-        }
-        guard let domain = url.host?.lowercased() else {
-            return nil
-        }
-        guard url.path.count > 1 else {
-            // URL must have non-empty path.
-            return nil
-        }
-
-        for whitelistedDomain in domainWhitelist {
-            if domain == whitelistedDomain.lowercased() {
-                return whitelistedDomain
-            }
-            if allowSubdomains,
-                domain.hasSuffix("." + whitelistedDomain.lowercased()) {
-                return whitelistedDomain
-            }
-        }
-        return nil
+        return true
     }
 
     // MARK: - Serial Queue
@@ -577,8 +464,8 @@ public class OWSLinkPreview: MTLModel {
             return Promise.value(cachedInfo)
         }
         return downloadLink(url: previewUrl)
-            .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
-                return parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
+            .then(on: DispatchQueue.global()) { (data, response) -> Promise<OWSLinkPreviewDraft> in
+                return parseLinkDataAndBuildDraft(linkData: data, response: response, linkUrlString: previewUrl)
             }.then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
                 guard linkPreviewDraft.isValid() else {
                     throw LinkPreviewError.noPreview
@@ -588,9 +475,17 @@ public class OWSLinkPreview: MTLModel {
                 return Promise.value(linkPreviewDraft)
         }
     }
+    
+    // Twitter doesn't return OpenGraph tags to Signal
+    // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
+    // If this ever changes, we can switch back to our default User-Agent
+    private static let userAgentString = "WhatsApp"
 
     class func downloadLink(url urlString: String,
-                            remainingRetries: UInt = 3) -> Promise<Data> {
+                            remainingRetries: UInt = 3) -> Promise<(Data, URLResponse)> {
+
+        Logger.verbose("url: \(urlString)")
+
         // let sessionConfiguration = ContentProxy.sessionConfiguration() // Loki: Signal's proxy appears to have been banned by YouTube
         let sessionConfiguration = URLSessionConfiguration.ephemeral
 
@@ -606,8 +501,10 @@ public class OWSLinkPreview: MTLModel {
         guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
             return Promise(error: LinkPreviewError.assertionFailure)
         }
+        
+        sessionManager.requestSerializer.setValue(self.userAgentString, forHTTPHeaderField: "User-Agent")
 
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, resolver) = Promise<(Data, URLResponse)>.pending()
         sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
                            headers: nil,
@@ -632,7 +529,7 @@ public class OWSLinkPreview: MTLModel {
                                 resolver.reject(LinkPreviewError.invalidContent)
                                 return
                             }
-                            resolver.fulfill(data)
+                            resolver.fulfill((data, response))
         },
                            failure: { _, error in
                             guard isRetryable(error: error) else {
@@ -645,8 +542,8 @@ public class OWSLinkPreview: MTLModel {
                                 return
                             }
                             OWSLinkPreview.downloadLink(url: urlString, remainingRetries: remainingRetries - 1)
-                            .done(on: DispatchQueue.global()) { (data) in
-                                resolver.fulfill(data)
+                            .done(on: DispatchQueue.global()) { (data, response) in
+                                resolver.fulfill((data, response))
                             }.catch(on: DispatchQueue.global()) { (error) in
                                 resolver.reject(error)
                             }.retainUntilComplete()
@@ -670,7 +567,7 @@ public class OWSLinkPreview: MTLModel {
                                                                             resolver.fulfill(asset)
             }, failure: { (_) in
                 resolver.reject(LinkPreviewError.couldNotDownload)
-            })
+            }, shouldIgnoreSignalProxy: true)
         }
         return promise.then(on: DispatchQueue.global()) { (asset: ProxiedContentAsset) -> Promise<Data> in
             do {
@@ -719,9 +616,10 @@ public class OWSLinkPreview: MTLModel {
     }
 
     class func parseLinkDataAndBuildDraft(linkData: Data,
+                                          response: URLResponse,
                                           linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
         do {
-            let contents = try parse(linkData: linkData)
+            let contents = try parse(linkData: linkData, response: response)
 
             let title = contents.title
             guard let imageUrl = contents.imageUrl else {
@@ -752,28 +650,26 @@ public class OWSLinkPreview: MTLModel {
         }
     }
 
-    // Example:
-    //
-    //    <meta property="og:title" content="Randomness is Random - Numberphile">
-    //    <meta property="og:image" content="https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg">
-    class func parse(linkData: Data) throws -> OWSLinkPreviewContents {
-        guard let linkText = String(bytes: linkData, encoding: .utf8) else {
+    class func parse(linkData: Data, response: URLResponse) throws -> OWSLinkPreviewContents {
+        guard let linkText = String(data: linkData, urlResponse: response) else {
+            print("Could not parse link text.")
             throw LinkPreviewError.invalidInput
         }
+        
+        let content = HTMLMetadata.construct(parsing: linkText)
 
         var title: String?
-        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+[^>]*content\\s*=\\s*\"(.*?)\"\\s*[^>]*/?>",
-                                                              text: linkText,
-                                                              options: .dotMatchesLineSeparators) {
-            if let decodedTitle = decodeHTMLEntities(inString: rawTitle) {
-                let normalizedTitle = OWSLinkPreview.normalizeTitle(title: decodedTitle)
-                if normalizedTitle.count > 0 {
-                    title = normalizedTitle
-                }
+        let rawTitle = content.ogTitle ?? content.titleTag
+        if let decodedTitle = decodeHTMLEntities(inString: rawTitle ?? "") {
+            let normalizedTitle = OWSLinkPreview.normalizeTitle(title: decodedTitle)
+            if normalizedTitle.count > 0 {
+                title = normalizedTitle
             }
         }
 
-        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+[^>]*content\\s*=\\s*\"(.*?)\"[^>]*/?>", text: linkText) else {
+        Logger.verbose("title: \(String(describing: title))")
+
+        guard let rawImageUrlString = content.ogImageUrlString ?? content.faviconUrlString else {
             return OWSLinkPreviewContents(title: title)
         }
         guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {
@@ -790,7 +686,8 @@ public class OWSLinkPreview: MTLModel {
         let imageFilename = imageUrl.lastPathComponent
         let imageFileExtension = (imageFilename as NSString).pathExtension.lowercased()
         guard imageFileExtension.count > 0 else {
-            return nil
+            // TODO: For those links don't have a file extension, we should figure out a way to know the image mime type
+            return "png"
         }
         return imageFileExtension
     }

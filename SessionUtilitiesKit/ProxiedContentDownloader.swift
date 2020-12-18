@@ -141,7 +141,8 @@ public class ProxiedContentAssetRequest: NSObject {
     // the request succeeds or fails.
     private var success: ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void)?
     private var failure: ((ProxiedContentAssetRequest) -> Void)?
-
+    
+    var shouldIgnoreSignalProxy = false
     var wasCancelled = false
     // This property is an internal implementation detail of the download process.
     var assetFilePath: String?
@@ -438,6 +439,19 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                                  delegateQueue: nil)
         return session
     }()
+    
+    private lazy var downloadSessionWithoutProxy: URLSession = {
+        let configuration = URLSessionConfiguration.ephemeral
+        // Don't use any caching to protect privacy of these requests.
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringCacheData
+
+        configuration.httpMaximumConnectionsPerHost = 10
+        let session = URLSession(configuration: configuration,
+                                 delegate: self,
+                                 delegateQueue: nil)
+        return session
+    }()
 
     // 100 entries of which at least half will probably be stills.
     // Actual animated GIFs will usually be less than 3 MB so the
@@ -458,7 +472,8 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     public func requestAsset(assetDescription: ProxiedContentAssetDescription,
                              priority: ProxiedContentRequestPriority,
                              success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-                             failure:@escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
+                             failure:@escaping ((ProxiedContentAssetRequest) -> Void),
+                             shouldIgnoreSignalProxy: Bool = false) -> ProxiedContentAssetRequest? {
         if let asset = assetMap.get(key: assetDescription.url) {
             // Synchronous cache hit.
             success(nil, asset)
@@ -472,6 +487,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                                              priority: priority,
                                              success: success,
                                              failure: failure)
+        assetRequest.shouldIgnoreSignalProxy = shouldIgnoreSignalProxy
         assetRequestQueue.append(assetRequest)
         // Process the queue (which may start this request)
         // asynchronously so that the caller has time to store
@@ -614,10 +630,17 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                 processRequestQueueSync()
                 return
             }
-
-            let task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
-                self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
-            })
+            
+            var task: URLSessionDataTask
+            if (assetRequest.shouldIgnoreSignalProxy) {
+                task = downloadSessionWithoutProxy.dataTask(with: request, completionHandler: { data, response, error -> Void in
+                    self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
+                })
+            } else {
+                task = downloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
+                    self.handleAssetSizeResponse(assetRequest: assetRequest, data: data, response: response, error: error)
+                })
+            }
 
             assetRequest.contentLengthTask = task
             task.resume()
@@ -625,6 +648,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             // Start a download task.
 
             guard let assetSegment = assetRequest.firstWaitingSegment() else {
+                print("queued asset request does not have a waiting segment.")
                 return
             }
             assetSegment.state = .downloading
@@ -641,7 +665,12 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                 return
             }
 
-            let task: URLSessionDataTask = downloadSession.dataTask(with: request)
+            var task: URLSessionDataTask
+            if (assetRequest.shouldIgnoreSignalProxy) {
+                task = downloadSessionWithoutProxy.dataTask(with: request)
+            } else {
+                task = downloadSession.dataTask(with: request)
+            }
             task.assetRequest = assetRequest
             task.assetSegment = assetSegment
             assetSegment.task = task
@@ -660,11 +689,13 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         }
         guard let data = data,
         data.count > 0 else {
+            print("Asset size response missing data.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard let httpResponse = response as? HTTPURLResponse else {
+            print("Asset size response is invalid.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -672,6 +703,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         var firstContentRangeString: String?
         for header in httpResponse.allHeaderFields.keys {
             guard let headerString = header as? String else {
+                print("Invalid header: \(header)")
                 continue
             }
             if headerString.lowercased() == "content-range" {
@@ -679,6 +711,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             }
         }
         guard let contentRangeString = firstContentRangeString else {
+            print("Asset size response is missing content range.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -693,11 +726,13 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         }
         guard contentLengthString.count > 0,
             let contentLength = Int(contentLengthString) else {
+            print("Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard contentLength > 0 else {
+            print("Asset size response has invalid content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
