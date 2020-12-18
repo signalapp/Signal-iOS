@@ -108,6 +108,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // if called for the first time.
 
             Logger.info("View is not yet loaded.")
+            loadDidLand()
             return
         }
 
