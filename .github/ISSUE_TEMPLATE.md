@@ -33,7 +33,6 @@ Describe here the issue that you are experiencing.
 ### Screenshots
 <!-- you can drag and drop images below -->
 
-
 ### Device info
 <!-- replace the examples with your info -->
 **Device**: iDevice X
