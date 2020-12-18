@@ -379,7 +379,7 @@ extension CVComponentBase: CVNode {
         }
         let attachmentId = attachmentPointer.uniqueId
         guard nil != Self.attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
-            owsFailDebug("Missing download progress.")
+            Logger.warn("Missing download progress.")
             return nil
         }
 
