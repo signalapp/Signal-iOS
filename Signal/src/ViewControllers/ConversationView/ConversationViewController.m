@@ -4001,12 +4001,18 @@ typedef enum : NSUInteger {
     // stash the current value before making any changes.
     CGFloat oldYOffset = self.collectionView.contentOffset.y;
 
+    BOOL didChangeInsets = !UIEdgeInsetsEqualToEdgeInsets(oldInsets, newInsets);
+
     [UIView performWithoutAnimation:^{
-        if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
+        if (didChangeInsets) {
             self.collectionView.contentInset = newInsets;
         }
         self.collectionView.scrollIndicatorInsets = newInsets;
     }];
+
+    if (!didChangeInsets) {
+        return;
+    }
 
     // Adjust content offset to prevent the presented keyboard from obscuring content.
     if (!self.hasAppearedAndHasAppliedFirstLoad) {
