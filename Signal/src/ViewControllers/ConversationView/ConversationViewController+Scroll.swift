@@ -497,10 +497,12 @@ extension ConversationViewController {
         maxContentOffsetY - collectionView.contentOffset.y
     }
 
+    // The lowest valid content offset when the view is at rest.
     private var minContentOffsetY: CGFloat {
         -collectionView.adjustedContentInset.top
     }
 
+    // The highest valid content offset when the view is at rest.
     private var maxContentOffsetY: CGFloat {
         let contentHeight = self.safeContentHeight
         let adjustedContentInset = collectionView.adjustedContentInset
