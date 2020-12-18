@@ -462,10 +462,20 @@ extension ConversationViewController {
 
     @objc
     var isScrolledToBottom: Bool {
-        let distanceFromBottom = safeDistanceFromBottom
-        let kIsAtBottomTolerancePts: CGFloat = 5
-        let isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts
-        return isScrolledToBottom
+        isScrolledToBottom(tolerancePoints: 5)
+    }
+
+    func isScrolledToBottom(tolerancePoints: CGFloat) -> Bool {
+        safeDistanceFromBottom <= tolerancePoints
+    }
+
+    func isScrolledToTop(tolerancePoints: CGFloat) -> Bool {
+        safeDistanceFromTop <= tolerancePoints
+    }
+
+    @objc
+    public var safeDistanceFromTop: CGFloat {
+        collectionView.contentOffset.y - minContentOffsetY
     }
 
     @objc
@@ -484,13 +494,15 @@ extension ConversationViewController {
         // To determine that, we find the appropriate "content offset y" if
         // the scroll view were scrolled down as far as possible.  IFF the
         // actual "content offset y" is "near" that value, we return YES.
-        let distanceFromBottom = maxContentOffsetY - collectionView.contentOffset.y
-        return distanceFromBottom
+        maxContentOffsetY - collectionView.contentOffset.y
+    }
+
+    private var minContentOffsetY: CGFloat {
+        -collectionView.adjustedContentInset.top
     }
 
     private var maxContentOffsetY: CGFloat {
         let contentHeight = self.safeContentHeight
-
         let adjustedContentInset = collectionView.adjustedContentInset
         let minContentOffsetY = -adjustedContentInset.top
         let rawValue = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height

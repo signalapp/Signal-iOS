@@ -606,6 +606,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                  shouldAnimateUpdates: shouldAnimateUpdate)
     }
 
+    var isScrollNearEdgeOfLoadWindow: Bool {
+        let tolerancePoints: CGFloat = 50
+        return (isScrolledToBottom(tolerancePoints: tolerancePoints) ||
+                    isScrolledToTop(tolerancePoints: tolerancePoints))
+    }
+
     @objc
     public func registerReuseIdentifiers() {
         CVCell.registerReuseIdentifiers(collectionView: self.collectionView)
@@ -624,7 +630,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // Treat all styles as "initial" (not to be trusted) until
             // we have a view config.
             let viewWidth = floor(collectionView.width)
-            let safeAreaInsets = view.safeAreaInsets
             return ConversationStyle(type: type,
                                      thread: thread,
                                      viewWidth: viewWidth)
