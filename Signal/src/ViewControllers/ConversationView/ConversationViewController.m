@@ -936,7 +936,7 @@ typedef enum : NSUInteger {
 
 - (void)readTimerDidFire
 {
-    if (self.layout.isPerformingBatchUpdates || self.hasScrollingAnimation) {
+    if (self.layout.isPerformingBatchUpdates) {
         return;
     }
     [self markVisibleMessagesAsRead];
