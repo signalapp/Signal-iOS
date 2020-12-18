@@ -75,24 +75,41 @@ public class InputAccessoryViewPlaceholder: UIView {
         set {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
+            heightConstraintView.layoutIfNeeded()
+            self.layoutIfNeeded()
+            superview?.layoutIfNeeded()
         }
         get {
             return heightConstraint.constant
         }
     }
 
+    private let heightConstraintView = UIView()
+
     private lazy var heightConstraint: NSLayoutConstraint = {
-        let view = UIView()
-        addSubview(view)
-        view.autoPinHeightToSuperview()
-        return view.autoSetDimension(.height, toSize: 0)
+        addSubview(heightConstraintView)
+        heightConstraintView.autoPinHeightToSuperview()
+        return heightConstraintView.autoSetDimension(.height, toSize: 0)
     }()
 
-    private enum KeyboardState {
+    private enum KeyboardState: CustomStringConvertible {
         case dismissed
         case dismissing
         case presented
         case presenting(frame: CGRect)
+
+        public var description: String {
+            switch self {
+            case .dismissed:
+                return "dismissed"
+            case .dismissing:
+                return "dismissing"
+            case .presented:
+                return "presented"
+            case .presenting:
+                return "presenting"
+            }
+        }
     }
     private var keyboardState: KeyboardState = .dismissed
 

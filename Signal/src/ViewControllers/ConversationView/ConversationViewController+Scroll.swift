@@ -492,10 +492,12 @@ extension ConversationViewController {
         let contentHeight = self.safeContentHeight
 
         let adjustedContentInset = collectionView.adjustedContentInset
+        let minContentOffsetY = -adjustedContentInset.top
+        let rawValue = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height
         // Note the usage of MAX() to handle the case where there isn't enough
         // content to fill the collection view at its current size.
-        let maxContentOffsetY = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height
-        return maxContentOffsetY
+        let clampedValue = max(minContentOffsetY, rawValue)
+        return clampedValue
     }
 
     // We use this hook to ensure scroll state continuity.  As the collection

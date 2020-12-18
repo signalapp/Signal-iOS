@@ -3505,14 +3505,7 @@ typedef enum : NSUInteger {
     [self updateInputAccessoryPlaceholderHeight];
     [self updateBottomBarPosition];
 
-    // Normally, the keyboard frame change triggered by updating
-    // the bottom bar height will cause the content insets to reload.
-    // However, if the toolbar updates while it's not the first
-    // responder (e.g. dismissing a quoted reply) we need to preserve
-    // our constraints here.
-    if (!self.inputToolbar.isInputViewFirstResponder) {
-        [self updateContentInsetsAnimated:NO];
-    }
+    [self updateContentInsetsAnimated:NO];
 }
 
 - (void)voiceMemoGestureDidStart

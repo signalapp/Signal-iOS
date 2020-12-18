@@ -1285,13 +1285,24 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 #pragma mark - ConversationTextViewToolbarDelegate
 
+- (void)setFrame:(CGRect)frame
+{
+    BOOL didChange = frame.size.height != self.frame.size.height;
+
+    [super setFrame:frame];
+
+    if (didChange) {
+        [self.inputToolbarDelegate updateToolbarHeight];
+    }
+}
+
 - (void)setBounds:(CGRect)bounds
 {
-    CGFloat oldHeight = self.bounds.size.height;
+    BOOL didChange = bounds.size.height != self.bounds.size.height;
 
     [super setBounds:bounds];
 
-    if (oldHeight != bounds.size.height) {
+    if (didChange) {
         [self.inputToolbarDelegate updateToolbarHeight];
     }
 }
