@@ -16,7 +16,7 @@ extension ConversationViewController {
 
     /// The index path of the last item in the collection view's visible rect
     @objc
-    var firstVisibleIndexPath: IndexPath? {
+    public var firstVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
         //
@@ -39,7 +39,7 @@ extension ConversationViewController {
 
     /// The index path of the last item in the collection view's visible rect
     @objc
-    var lastVisibleIndexPath: IndexPath? {
+    public var lastVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
         //

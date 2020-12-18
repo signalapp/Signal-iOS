@@ -329,9 +329,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 self.layout.invalidateLayout()
             }
 
-            updateViewToReflectLoad(loadedRenderState: self.renderState)
-
             scrollToInitialPosition(animated: false)
+
+            updateViewToReflectLoad(loadedRenderState: self.renderState)
 
             loadCoordinator.enqueueReload()
 
@@ -342,11 +342,19 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     private func updateForMinorUpdate(scrollAction: CVScrollAction) {
         Logger.verbose("")
 
+        // If the scroll action is not animated, perform it _before_
+        // updateViewToReflectLoad().
+        if !scrollAction.isAnimated {
+            self.perform(scrollAction: scrollAction)
+        }
+
         updateViewToReflectLoad(loadedRenderState: self.renderState)
 
         loadDidLand()
 
-        perform(scrollAction: scrollAction)
+        if scrollAction.isAnimated {
+            self.perform(scrollAction: scrollAction)
+        }
     }
 
     private func updateWithFirstLoad() {
@@ -368,16 +376,16 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         benchSteps.step("2")
 
-        updateViewToReflectLoad(loadedRenderState: self.renderState)
+        scrollToInitialPosition(animated: false)
+        clearInitialScrollState()
 
         benchSteps.step("3")
 
-        loadDidLand()
+        updateViewToReflectLoad(loadedRenderState: self.renderState)
 
         benchSteps.step("4")
 
-        scrollToInitialPosition(animated: false)
-        clearInitialScrollState()
+        loadDidLand()
 
         benchSteps.step("5")
 
@@ -396,22 +404,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
         viewState.hasAppliedFirstLoad = true
         clearInitialScrollState()
-
-        guard hasViewWillAppearEverBegun else {
-            Logger.verbose("Not fading in collection view.")
-            return
-        }
-
-        // If we apply a load for the first time after the view
-        // appeared, we should fade in the collection view.
-        let useFadeAnimations = false
-        if useFadeAnimations {
-            // Fade in the collection view.
-            collectionView.alpha = 0.05
-            UIView.animate(withDuration: 0.025) {
-                self.collectionView.alpha = 1.0
-            }
-        }
     }
 
     private func updateReloadingAll(renderState: CVRenderState,
@@ -426,9 +418,17 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+
+            // If the scroll action is not animated, perform it _before_
+            // updateViewToReflectLoad().
+            if !scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
             self.updateViewToReflectLoad(loadedRenderState: renderState)
             self.loadDidLand()
-            self.perform(scrollAction: scrollAction)
+            if scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
         }
     }
 
@@ -560,11 +560,19 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 return
             }
 
+            // If the scroll action is not animated, perform it _before_
+            // updateViewToReflectLoad().
+            if !scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
+
             self.updateViewToReflectLoad(loadedRenderState: renderState)
 
             self.loadDidLand()
 
-            self.perform(scrollAction: scrollAction)
+            if scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
 
             viewState.scrollActionForUpdate = nil
 

@@ -2007,8 +2007,6 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    // TODO: If you open CVC with one unread message, the scroll down button
-    // briefly flashes.
     if (!self.hasAppearedAndHasAppliedFirstLoad) {
         self.scrollDownButton.hidden = YES;
         self.scrollToNextMentionButton.hidden = YES;
@@ -2034,7 +2032,6 @@ typedef enum : NSUInteger {
     if (self.isInPreviewPlatter) {
         scrollDownIsHidden = YES;
         scrollToNextMentionIsHidden = YES;
-
     } else if (self.isPresentingMessageActions) {
         // Content offset calculations get messed up when we're presenting message actions
         // Don't change button visibility if we're presenting actions

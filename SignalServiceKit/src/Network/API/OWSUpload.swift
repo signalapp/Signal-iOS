@@ -723,11 +723,7 @@ public extension OWSUpload {
                     AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
                 }
 
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
-                }
+                owsFailDebugUnlessNetworkFailure(error)
                 resolver.reject(error)
             })
         }

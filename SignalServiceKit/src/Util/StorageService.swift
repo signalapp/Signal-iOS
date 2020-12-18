@@ -443,13 +443,8 @@ public struct StorageService {
 
             return StorageResponse(status: status, data: responseData)
         }.recover(on: .global()) { (error: Error) -> Promise<StorageResponse> in
-            if IsNetworkConnectivityFailure(error) {
-                throw StorageError.networkError(statusCode: 0, underlyingError: error)
-            } else {
-                // This should never happen.
-                owsFailDebug("Error: \(error)")
-                throw StorageError.networkError(statusCode: 0, underlyingError: error)
-            }
+            owsFailDebugUnlessNetworkFailure(error)
+            throw StorageError.networkError(statusCode: 0, underlyingError: error)
         }
     }
 }

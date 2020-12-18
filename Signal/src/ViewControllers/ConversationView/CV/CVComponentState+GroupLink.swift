@@ -157,11 +157,7 @@ extension CVComponentState {
                 touchMessage()
             }.catch { error in
                 // TODO: Add retry?
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
-                }
+                owsFailDebugUnlessNetworkFailure(error)
             }
 
             return GroupInviteLinkViewModel(url: url,
