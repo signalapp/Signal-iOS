@@ -6,9 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SignalRecipient;
-
-typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
+typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalServiceAddress *);
 
 /// This class is only used in debug tools
 @interface OWSDynamicOutgoingMessage : TSOutgoingMessage

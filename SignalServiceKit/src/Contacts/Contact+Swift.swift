@@ -10,7 +10,7 @@ public extension Contact {
     func signalRecipients(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
         e164sForIntersection.compactMap { e164Number in
             let address = SignalServiceAddress(phoneNumber: e164Number)
-            return SignalRecipient.registeredRecipient(for: address, mustHaveDevices: true, transaction: transaction)
+            return SignalRecipient.get(address: address, mustHaveDevices: true, transaction: transaction)
         }
     }
 

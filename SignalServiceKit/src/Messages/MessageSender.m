@@ -605,22 +605,6 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                             failure:failure];
 }
 
-- (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(addresses.count > 0);
-
-    NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        for (SignalServiceAddress *address in addresses) {
-            SignalRecipient *recipient = [SignalRecipient getOrBuildUnsavedRecipientForAddress:address
-                                                                                   transaction:transaction];
-            [recipients addObject:recipient];
-        }
-    }];
-    return [recipients copy];
-}
-
 - (AnyPromise *)unlockPreKeyUpdateFailuresPromise
 {
     OWSAssertDebug(!NSThread.isMainThread);
@@ -653,40 +637,40 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     }];
 }
 
-- (AnyPromise *)sendPromiseForRecipients:(NSArray<SignalRecipient *> *)recipients
-                                 message:(TSOutgoingMessage *)message
-                                  thread:(TSThread *)thread
-                      senderCertificates:(nullable SenderCertificates *)senderCertificates
-                          sendErrorBlock:(void (^_Nonnull)(SignalRecipient *recipient, NSError *))sendErrorBlock
+- (AnyPromise *)sendPromiseForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                message:(TSOutgoingMessage *)message
+                                 thread:(TSThread *)thread
+                     senderCertificates:(nullable SenderCertificates *)senderCertificates
+                         sendErrorBlock:(void (^_Nonnull)(SignalServiceAddress *address, NSError *))sendErrorBlock
 {
     OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(recipients.count > 0);
+    OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
 
     // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificates != nil) {
-        for (SignalRecipient *recipient in recipients) {
-            if (!recipient.address.isLocalAddress) {
-                sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
-                                                                              requireSyncAccess:YES
-                                                                             senderCertificates:senderCertificates];
+        for (SignalServiceAddress *address in addresses) {
+            if (!address.isLocalAddress) {
+                sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
+                                                                    requireSyncAccess:YES
+                                                                   senderCertificates:senderCertificates];
             }
         }
     }
 
     // 2. Build a "OWSMessageSend" for each recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
-    for (SignalRecipient *recipient in recipients) {
-        OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[recipient.address];
+    for (SignalServiceAddress *address in addresses) {
+        OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[address];
         OWSMessageSend *messageSend =
             [[OWSMessageSend alloc] initWithMessage:message
                                              thread:thread
-                                          recipient:recipient
+                                            address:address
                                     udSendingAccess:udSendingAccess
                                        localAddress:self.tsAccountManager.localAddress
-                                     sendErrorBlock:^(NSError *error) { sendErrorBlock(recipient, error); }];
+                                     sendErrorBlock:^(NSError *error) { sendErrorBlock(address, error); }];
         [messageSends addObject:messageSend];
     }
 
@@ -779,24 +763,22 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         return;
     }
 
-    NSArray<SignalRecipient *> *recipients = [self recipientsForAddresses:recipientAddresses];
-
     BOOL isGroupSend = thread.isGroupThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     NSMutableDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
     [self unlockPreKeyUpdateFailuresPromise]
         .thenInBackground(^(id value) {
-            return [self sendPromiseForRecipients:recipients
-                                          message:message
-                                           thread:thread
-                               senderCertificates:senderCertificates
-                                   sendErrorBlock:^(SignalRecipient *recipient, NSError *error) {
-                                       @synchronized(sendErrors) {
-                                           [sendErrors addObject:error];
-                                           sendErrorPerRecipient[recipient.address] = error;
-                                       }
-                                   }];
+            return [self sendPromiseForAddresses:recipientAddresses
+                                         message:message
+                                          thread:thread
+                              senderCertificates:senderCertificates
+                                  sendErrorBlock:^(SignalServiceAddress *address, NSError *error) {
+                                      @synchronized(sendErrors) {
+                                          [sendErrors addObject:error];
+                                          sendErrorPerRecipient[address] = error;
+                                      }
+                                  }];
         })
         .thenInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
@@ -925,7 +907,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend);
     OWSAssertDebug(errorHandle);
 
-    SignalRecipient *recipient = messageSend.recipient;
+    SignalServiceAddress *address = messageSend.address;
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
@@ -953,10 +935,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                 = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
                     @"action sheet header when re-sending message which failed because of untrusted identity keys");
 
-            NSString *localizedErrorDescription =
-                [NSString stringWithFormat:localizedErrorDescriptionFormat,
-                          [self.contactsManager displayNameForAddress:recipient.address]];
-            NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.address);
+            NSString *localizedErrorDescription = [NSString
+                stringWithFormat:localizedErrorDescriptionFormat, [self.contactsManager displayNameForAddress:address]];
+            NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, address);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit.
@@ -1017,12 +998,11 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend.thread);
 
     TSOutgoingMessage *message = messageSend.message;
-    SignalRecipient *recipient = messageSend.recipient;
+    SignalServiceAddress *address = messageSend.address;
+    OWSAssertDebug(address.isValid);
 
-    OWSLogInfo(@"attempting to send message: %@, timestamp: %llu, recipient: %@",
-        message.class,
-        message.timestamp,
-        recipient.address);
+    OWSLogInfo(
+        @"attempting to send message: %@, timestamp: %llu, recipient: %@", message.class, message.timestamp, address);
 
     if (messageSend.remainingAttempts <= 0) {
         // We should always fail with a specific error.
@@ -1035,7 +1015,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
     // If we have no UUID, consider the recipient unregistered.
-    BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);
+    BOOL isInvalidRecipient = (address.uuid == nil);
     if (isInvalidRecipient) {
         [self failSendForUnregisteredRecipient:messageSend];
         return;
@@ -1242,15 +1222,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     // we send a sync transcript to the "local thread".
     __block TSThread *_Nullable localThread;
     __block TSThread *_Nullable messageThread;
-    __block SignalRecipient *recipient;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         localThread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-
         messageThread = [self threadForMessage:message transaction:transaction];
-
-        recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress
-                                                          trustLevel:SignalRecipientTrustLevelLow
-                                                         transaction:transaction];
     });
     if (localThread == nil) {
         return failure(OWSErrorMakeAssertionError(@"Missing local thread"));
@@ -1267,12 +1241,16 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
                                                                    thread:localThread
-                                                                recipient:recipient
+                                                                  address:localAddress
                                                           udSendingAccess:nil
                                                              localAddress:localAddress
                                                            sendErrorBlock:nil];
-    [self sendMessageToRecipient:messageSend];
-    messageSend.asAnyPromise
+
+    [MessageSender ensureSessionsforMessageSendsObjc:@[ messageSend ] ignoreErrors:YES]
+        .thenInBackground(^(id value) {
+            [self sendMessageToRecipient:messageSend];
+            return messageSend.asAnyPromise;
+        })
         .thenInBackground(^{
             OWSLogInfo(@"Successfully sent sync transcript.");
 
@@ -1289,24 +1267,32 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(messageSend.message);
-    OWSAssertDebug(messageSend.recipient);
+    OWSAssertDebug(messageSend.address.isValid);
 
-    SignalRecipient *recipient = messageSend.recipient;
-    NSMutableArray<NSNumber *> *deviceIds = [messageSend.deviceIds mutableCopy];
-    OWSAssertDebug(deviceIds);
-
-    NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];
-
+    __block SignalRecipient *recipient;
     __block NSData *_Nullable plainText;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        plainText = [messageSend.message buildPlainTextData:messageSend.recipient
+        recipient = [SignalRecipient getRecipientForAddress:messageSend.address
+                                            mustHaveDevices:NO
+                                                transaction:transaction];
+        plainText = [messageSend.message buildPlainTextData:messageSend.address
                                                      thread:messageSend.thread
                                                 transaction:transaction];
     }];
 
+    if (!recipient) {
+        OWSRaiseException(InvalidMessageException, @"Unexpectedly missing recipient");
+    }
+
     if (!plainText) {
         OWSRaiseException(InvalidMessageException, @"Failed to build message proto");
     }
+
+    NSMutableArray<NSNumber *> *deviceIds = [recipient.devices.array mutableCopy];
+    OWSAssertDebug(deviceIds);
+
+    NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];
+
     OWSLogDebug(
         @"built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
 
@@ -1323,7 +1309,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     for (NSNumber *deviceId in deviceIds) {
         @try {
             // This may involve blocking network requests.
-            [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+            [self throws_ensureRecipientHasSessionForMessageSend:messageSend
+                                                        deviceId:deviceId
+                                                       accountId:recipient.accountId];
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:MessageSenderInvalidDeviceException]) {
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -1365,17 +1353,17 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
+- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend
+                                              deviceId:(NSNumber *)deviceId
+                                             accountId:(NSString *)accountId
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(messageSend);
-    OWSAssertDebug(messageSend.recipient);
     OWSAssertDebug(deviceId);
+    OWSAssertDebug(accountId);
 
-    SignalServiceAddress *recipientAddress = messageSend.recipient.address;
+    SignalServiceAddress *recipientAddress = messageSend.address;
     OWSAssertDebug(recipientAddress.isValid);
-
-    NSString *accountId = messageSend.recipient.accountId;
 
     __block BOOL hasSession;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -1397,6 +1385,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     __block NSException *_Nullable exception;
     [MessageSender makePrekeyRequestWithMessageSend:messageSend
         deviceId:deviceId
+        accountId:accountId
         success:^(PreKeyBundle *_Nullable responseBundle) {
             bundle = responseBundle;
             dispatch_semaphore_signal(sema);
@@ -1497,18 +1486,19 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(messageSend);
-    OWSAssertDebug(messageSend.recipient);
     OWSAssertDebug(deviceId);
     OWSAssertDebug(plainText);
     OWSAssertDebug(transaction);
 
     TSOutgoingMessage *message = messageSend.message;
-    SignalServiceAddress *recipientAddress = messageSend.recipient.address;
+    SignalServiceAddress *recipientAddress = messageSend.address;
     OWSAssertDebug(recipientAddress.isValid);
 
-    if (![self.sessionStore containsSessionForAddress:recipientAddress
-                                             deviceId:[deviceId intValue]
-                                          transaction:transaction]) {
+    NSString *accountId = [[OWSAccountIdFinder new] ensureAccountIdForAddress:recipientAddress transaction:transaction];
+
+    if (![self.sessionStore containsSessionForAccountId:accountId
+                                               deviceId:[deviceId intValue]
+                                            transaction:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipientAddress: %@, device: %@",
@@ -1520,7 +1510,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                                                             preKeyStore:self.preKeyStore
                                                       signedPreKeyStore:self.signedPreKeyStore
                                                        identityKeyStore:self.identityManager
-                                                            recipientId:messageSend.recipient.accountId
+                                                            recipientId:accountId
                                                                deviceId:[deviceId intValue]];
 
     NSData *_Nullable serializedMessage;
@@ -1537,7 +1527,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         if (error || !secretCipher) {
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
-        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:messageSend.recipient.accountId
+        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:accountId
                                                                              deviceId:deviceId.intValue
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:udSendingAcess.senderCertificate

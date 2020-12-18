@@ -131,56 +131,87 @@ extension MessageSender {
 
     private class func ensureSessions(forMessageSend messageSend: OWSMessageSend,
                                       ignoreErrors: Bool) -> [Promise<Void>] {
-        let recipient: SignalRecipient = messageSend.recipient
-        let recipientAddress = recipient.address
-        var deviceIds = messageSend.deviceIds.map { $0.uint32Value }
-        if messageSend.isLocalAddress {
-            let localDeviceId = tsAccountManager.storedDeviceId()
-            deviceIds = deviceIds.filter { $0 != localDeviceId }
-        }
 
-        guard let accountId = recipient.accountId else {
-            owsFailDebug("Missing account.")
-            return []
-        }
-        let deviceIdsWithoutSessions = databaseStorage.read { transaction in
-            deviceIds.filter { deviceId in
-                !self.sessionStore.containsSession(forAccountId: accountId,
-                                                   deviceId: Int32(deviceId),
-                                                   transaction: transaction)
+        var accountId: AccountId?
+        let deviceIdsWithoutSessions: [UInt32] = databaseStorage.read { transaction in
+            guard let recipient = SignalRecipient.get(
+                address: messageSend.address,
+                mustHaveDevices: false,
+                transaction: transaction
+            ) else {
+                // If there is no existing recipient for this address, try and send to
+                // the primary device so we can see if they are registered.
+                return [OWSDevicePrimaryDeviceId]
+            }
+
+            accountId = recipient.accountId
+
+            var deviceIds: [UInt32] = recipient.devices.compactMap { value in
+                guard let numberValue = value as? NSNumber else {
+                    owsFailDebug("Invalid device id: \(value)")
+                    return nil
+                }
+                return numberValue.uint32Value
+            }
+
+            // Filter out the current device, we never need a session for it.
+            if messageSend.isLocalAddress {
+                let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+                deviceIds = deviceIds.filter { $0 != localDeviceId }
+            }
+
+            return deviceIds.filter { deviceId in
+                !self.sessionStore.containsSession(
+                    forAccountId: recipient.accountId,
+                    deviceId: Int32(deviceId),
+                    transaction: transaction
+                )
             }
         }
-        guard !deviceIdsWithoutSessions.isEmpty else {
-            return []
-        }
+
+        guard !deviceIdsWithoutSessions.isEmpty else { return [] }
 
         var promises = [Promise<Void>]()
         for deviceId in deviceIdsWithoutSessions {
 
-            Logger.verbose("Fetching prekey for: \(messageSend.recipient.address), \(deviceId)")
+            Logger.verbose("Fetching prekey for: \(messageSend.address), \(deviceId)")
 
             let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<PreKeyBundle> in
                 let (promise, resolver) = Promise<PreKeyBundle>.pending()
-                self.makePrekeyRequest(messageSend: messageSend,
-                                       deviceId: NSNumber(value: deviceId),
-                                       success: { preKeyBundle in
-                                        guard let preKeyBundle = preKeyBundle else {
-                                            return resolver.reject(OWSAssertionError("Missing preKeyBundle."))
-                                        }
-                                        resolver.fulfill(preKeyBundle)
-                },
-                                       failure: { error in
-                                        resolver.reject(error)
+                self.makePrekeyRequest(
+                    messageSend: messageSend,
+                    deviceId: NSNumber(value: deviceId),
+                    accountId: accountId,
+                    success: { preKeyBundle in
+                        guard let preKeyBundle = preKeyBundle else {
+                            return resolver.reject(OWSAssertionError("Missing preKeyBundle."))
+                        }
+                        resolver.fulfill(preKeyBundle)
+                    },
+                    failure: { error in
+                        resolver.reject(error)
 
-                })
+                    }
+                )
                 return promise
             }.done(on: .global()) { (preKeyBundle: PreKeyBundle) -> Void in
                 try self.databaseStorage.write { transaction in
-                    try self.createSession(forPreKeyBundle: preKeyBundle,
-                                           accountId: accountId,
-                                           recipientAddress: recipientAddress,
-                                           deviceId: NSNumber(value: deviceId),
-                                           transaction: transaction)
+                    // Since we successfully fetched the prekey bundle,
+                    // we know this device is registered. We can safely
+                    // mark it as such to acquire a stable accountId.
+                    let recipient = SignalRecipient.mark(
+                        asRegisteredAndGet: messageSend.address,
+                        deviceId: deviceId,
+                        trustLevel: .low,
+                        transaction: transaction
+                    )
+                    try self.createSession(
+                        forPreKeyBundle: preKeyBundle,
+                        accountId: recipient.accountId,
+                        recipientAddress: messageSend.address,
+                        deviceId: NSNumber(value: deviceId),
+                        transaction: transaction
+                    )
                 }
             }.recover(on: .global()) { (error: Error) in
                 switch error {
@@ -213,34 +244,38 @@ public extension MessageSender {
 
     class func makePrekeyRequest(messageSend: OWSMessageSend,
                                  deviceId: NSNumber,
+                                 accountId: AccountId?,
                                  success: @escaping (PreKeyBundle?) -> Void,
                                  failure: @escaping (Error) -> Void) {
         assert(!Thread.isMainThread)
 
-        let recipientAddress = messageSend.recipient.address
+        let recipientAddress = messageSend.address
         assert(recipientAddress.isValid)
 
         Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
-        guard isDeviceNotMissing(recipientAddress: recipientAddress,
-                                 deviceId: deviceId) else {
-                                    // We don't want to retry prekey requests if we've recently gotten
-                                    // a "404 missing device" for the same recipient/device.  Fail immediately
-                                    // as though we hit the "404 missing device" error again.
-                                    Logger.info("Skipping prekey request to avoid missing device error.")
-                                    return failure(MessageSenderError.missingDevice)
+        guard isDeviceNotMissing(
+            recipientAddress: recipientAddress,
+            deviceId: deviceId
+        ) else {
+            // We don't want to retry prekey requests if we've recently gotten
+            // a "404 missing device" for the same recipient/device.  Fail immediately
+            // as though we hit the "404 missing device" error again.
+            Logger.info("Skipping prekey request to avoid missing device error.")
+            return failure(MessageSenderError.missingDevice)
         }
 
-        if let accountId = messageSend.recipient.accountId {
+        // If we've never interacted with this account before, we won't
+        // have an accountId. It's safe to skip the identity key check
+        // in that case, since we don't yet know anything about them yet.
+        if let accountId = accountId {
             guard isPrekeyIdentityKeySafe(accountId: accountId,
                                           recipientAddress: recipientAddress) else {
-                                            // We don't want to make prekey requests if we can anticipate that
-                                            // we're going to get an untrusted identity error.
-                                            Logger.info("Skipping prekey request due to untrusted identity.")
-                                            return failure(MessageSenderError.untrustedIdentity)
+                // We don't want to make prekey requests if we can anticipate that
+                // we're going to get an untrusted identity error.
+                Logger.info("Skipping prekey request due to untrusted identity.")
+                return failure(MessageSenderError.untrustedIdentity)
             }
-        } else {
-            owsFailDebug("Missing accountId.")
         }
 
         let requestMaker = RequestMaker(label: "Prekey Fetch",
@@ -249,17 +284,17 @@ public extension MessageSender {
                                             return OWSRequestFactory.recipientPreKeyRequest(with: recipientAddress,
                                                                                             deviceId: deviceId.stringValue,
                                                                                             udAccessKey: udAccessKeyForRequest)
-        }, udAuthFailureBlock: {
-            // Note the UD auth failure so subsequent retries
-            // to this recipient also use basic auth.
-            messageSend.setHasUDAuthFailed()
-        }, websocketFailureBlock: {
-            // Note the websocket failure so subsequent retries
-            // to this recipient also use REST.
-            messageSend.hasWebsocketSendFailed = true
-        }, address: recipientAddress,
-           udAccess: messageSend.udSendingAccess?.udAccess,
-           canFailoverUDAuth: true)
+                                        }, udAuthFailureBlock: {
+                                            // Note the UD auth failure so subsequent retries
+                                            // to this recipient also use basic auth.
+                                            messageSend.setHasUDAuthFailed()
+                                        }, websocketFailureBlock: {
+                                            // Note the websocket failure so subsequent retries
+                                            // to this recipient also use REST.
+                                            messageSend.hasWebsocketSendFailed = true
+                                        }, address: recipientAddress,
+                                        udAccess: messageSend.udSendingAccess?.udAccess,
+                                        canFailoverUDAuth: true)
 
         firstly(on: .global()) { () -> Promise<RequestMakerResult> in
             return requestMaker.makeRequest()
@@ -420,8 +455,8 @@ fileprivate extension MessageSender {
         return databaseStorage.read { transaction in
             guard let currentRecipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: accountId,
                                                                                transaction: transaction) else {
-                                                                                owsFailDebug("Missing currentRecipientIdentity.")
-                                                                                return true
+                owsFailDebug("Missing currentRecipientIdentity.")
+                return true
             }
             let currentIdentityKey = currentRecipientIdentity.identityKey
             guard currentIdentityKey == staleIdentity.currentIdentityKey else {
@@ -540,10 +575,10 @@ extension MessageSender {
                 certificateExpirationPolicy: .permissive,
                 success: { senderCertificates in
                     resolver.fulfill(senderCertificates)
-            },
+                },
                 failure: { error in
                     resolver.reject(error)
-            }
+                }
             )
             return promise
         }.then(on: .global()) { senderCertificates in
@@ -756,7 +791,7 @@ public extension MessageSender {
                                    deviceMessages: [DeviceMessageType]) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let recipient: SignalRecipient = messageSend.recipient
+        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
         if deviceMessages.isEmpty {
@@ -778,22 +813,22 @@ public extension MessageSender {
 
         let requestMaker = RequestMaker(label: "Message Send",
                                         requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
-                                            OWSRequestFactory.submitMessageRequest(with: recipient.address,
+                                            OWSRequestFactory.submitMessageRequest(with: address,
                                                                                    messages: deviceMessages,
                                                                                    timeStamp: message.timestamp,
                                                                                    udAccessKey: udAccessKey)
-        },
+                                        },
                                         udAuthFailureBlock: {
                                             // Note the UD auth failure so subsequent retries
                                             // to this recipient also use basic auth.
                                             messageSend.setHasUDAuthFailed()
-        },
+                                        },
                                         websocketFailureBlock: {
                                             // Note the websocket failure so subsequent retries
                                             // to this recipient also use REST.
                                             messageSend.hasWebsocketSendFailed = true
-        },
-                                        address: recipient.address,
+                                        },
+                                        address: address,
                                         udAccess: messageSend.udSendingAccess?.udAccess,
                                         canFailoverUDAuth: false)
 
@@ -844,10 +879,10 @@ public extension MessageSender {
                                        wasSentByWebsocket: Bool) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let recipient: SignalRecipient = messageSend.recipient
+        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Successfully sent message: \(type(of: message)), recipient: \(recipient.address), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD)")
+        Logger.info("Successfully sent message: \(type(of: message)), recipient: \(address), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD)")
 
         if messageSend.isLocalAddress && deviceMessages.isEmpty {
             Logger.info("Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.")
@@ -862,15 +897,15 @@ public extension MessageSender {
         }
 
         Self.databaseStorage.write { transaction in
-            message.update(withSentRecipient: recipient.address, wasSentByUD: wasSentByUD, transaction: transaction)
+            message.update(withSentRecipient: address, wasSentByUD: wasSentByUD, transaction: transaction)
 
             // If we've just delivered a message to a user, we know they
             // have a valid Signal account. This is low trust, because we
             // don't actually know for sure the fully qualified address is
             // valid.
-            SignalRecipient.mark(asRegisteredAndGet: recipient.address, trustLevel: .low, transaction: transaction)
+            SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .low, transaction: transaction)
 
-            Self.profileManager.didSendOrReceiveMessage(from: recipient.address, transaction: transaction)
+            Self.profileManager.didSendOrReceiveMessage(from: address, transaction: transaction)
         }
 
         messageSend.success()
@@ -902,10 +937,10 @@ public extension MessageSender {
                                     responseData: Data?) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let recipient: SignalRecipient = messageSend.recipient
+        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Failed to send message: \(type(of: message)), recipient: \(recipient.address), timestamp: \(message.timestamp), to recipient: \(recipient.address), statusCode: \(statusCode), error: \(responseError)")
+        Logger.info("Failed to send message: \(type(of: message)), recipient: \(address), timestamp: \(message.timestamp), statusCode: \(statusCode), error: \(responseError)")
 
         let retrySend = {
             if messageSend.remainingAttempts <= 0 {
@@ -936,7 +971,7 @@ public extension MessageSender {
             return
         case 409:
             // Mismatched devices
-            Logger.warn("Mismatched devices for recipient: \(recipient.address) (\(deviceMessages.count))")
+            Logger.warn("Mismatched devices for recipient: \(address) (\(deviceMessages.count))")
 
             guard let response = MessageSendFailureResponse.parse(responseData) else {
                 let nsError = OWSAssertionError("Couldn't parse JSON response.") as NSError
@@ -956,7 +991,7 @@ public extension MessageSender {
 
         case 410:
             // Stale devices
-            Logger.warn("Stale devices for recipient: \(recipient.address)")
+            Logger.warn("Stale devices for recipient: \(address)")
 
             guard let response = MessageSendFailureResponse.parse(responseData) else {
                 let nsError = OWSAssertionError("Couldn't parse JSON response.") as NSError
@@ -965,7 +1000,7 @@ public extension MessageSender {
                 return
             }
 
-            handleStaleDevices(response, recipient: recipient)
+            handleStaleDevices(response, address: address)
 
             if messageSend.isLocalAddress {
                 // Don't use websocket; it may have obsolete cached state.
@@ -981,14 +1016,14 @@ public extension MessageSender {
     func failSendForUnregisteredRecipient(_ messageSend: OWSMessageSend) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let recipient: SignalRecipient = messageSend.recipient
+        let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.verbose("Unregistered recipient: \(recipient.address)")
+        Logger.verbose("Unregistered recipient: \(address)")
 
         let isSyncMessage = nil != message as? OWSOutgoingSyncMessage
         if !isSyncMessage {
-            markRecipientAsUnregistered(recipient, message: message, thread: messageSend.thread)
+            markAddressAsUnregistered(address, message: message, thread: messageSend.thread)
         }
 
         let error = OWSErrorMakeNoSuchSignalRecipientError() as NSError
@@ -1001,7 +1036,7 @@ public extension MessageSender {
         messageSend.failure(error)
     }
 
-    private func markRecipientAsUnregistered(_ recipient: SignalRecipient,
+    private func markAddressAsUnregistered(_ address: SignalServiceAddress,
                                              message: TSOutgoingMessage,
                                              thread: TSThread) {
         owsAssertDebug(!Thread.isMainThread)
@@ -1009,14 +1044,14 @@ public extension MessageSender {
         Self.databaseStorage.write { transaction in
             if thread.isGroupThread {
                 // Mark as "skipped" group members who no longer have signal accounts.
-                message.update(withSkippedRecipient: recipient.address, transaction: transaction)
+                message.update(withSkippedRecipient: address, transaction: transaction)
             }
 
-            if !SignalRecipient.isRegisteredRecipient(recipient.address, transaction: transaction) {
+            if !SignalRecipient.isRegisteredRecipient(address, transaction: transaction) {
                 return
             }
 
-            SignalRecipient.mark(asUnregistered: recipient.address, transaction: transaction)
+            SignalRecipient.mark(asUnregistered: address, transaction: transaction)
             // TODO: Should we deleteAllSessionsForContact here?
             //       If so, we'll need to avoid doing a prekey fetch every
             //       time we try to send a message to an unregistered user.
@@ -1046,12 +1081,12 @@ extension MessageSender {
 
     // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
     private func handleStaleDevices(_ response: MessageSendFailureResponse,
-                                    recipient: SignalRecipient) {
+                                    address: SignalServiceAddress) {
         owsAssertDebug(!Thread.isMainThread)
 
         let staleDevices = response.staleDevices ?? []
 
-        Logger.info("staleDevices: \(staleDevices) for \(recipient.address)")
+        Logger.info("staleDevices: \(staleDevices) for \(address)")
 
         guard !staleDevices.isEmpty else {
             // TODO: Is this assert necessary?
@@ -1062,7 +1097,7 @@ extension MessageSender {
         Self.databaseStorage.write { transaction in
             Logger.info("Archiving sessions for stale devices: \(staleDevices)")
             for staleDeviceId in staleDevices {
-                Self.sessionStore.archiveSession(for: recipient.address, deviceId: Int32(staleDeviceId), transaction: transaction)
+                Self.sessionStore.archiveSession(for: address, deviceId: Int32(staleDeviceId), transaction: transaction)
             }
         }
     }
@@ -1079,21 +1114,21 @@ extension MessageSender {
         }
         owsAssertDebug(Set(devicesToAdd).intersection(Set(devicesToRemove)).isEmpty)
 
-        let recipient = messageSend.recipient
-
-        if !devicesToAdd.isEmpty,
-            recipient.address.isLocalAddress {
+        if !devicesToAdd.isEmpty, messageSend.isLocalAddress {
             deviceManager.setMayHaveLinkedDevices()
         }
 
-        recipient.updateRegisteredRecipientWithDevices(toAdd: devicesToAdd,
-                                                       devicesToRemove: devicesToRemove,
-                                                       transaction: transaction)
+        SignalRecipient.update(
+            with: messageSend.address,
+            devicesToAdd: devicesToAdd,
+            devicesToRemove: devicesToRemove,
+            transaction: transaction
+        )
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove), \(devicesToRemove)")
             for deviceId in devicesToRemove {
-                sessionStore.archiveSession(for: recipient.address, deviceId: deviceId.int32Value, transaction: transaction)
+                sessionStore.archiveSession(for: messageSend.address, deviceId: deviceId.int32Value, transaction: transaction)
             }
         }
     }

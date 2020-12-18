@@ -427,7 +427,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 owsFailDebug("Error: \(error)")
                 continue
             }
-            let message = OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            let message = OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress) -> Data in
                 contentProtoData
             }
             ThreadUtil.sendMessageNonDurably(message: message)

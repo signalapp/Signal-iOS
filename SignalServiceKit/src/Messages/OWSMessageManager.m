@@ -2379,9 +2379,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Consult the device list cache we use for message sending
     // whether or not we know about this linked device.
-    SignalRecipient *_Nullable recipient = [SignalRecipient registeredRecipientForAddress:envelope.sourceAddress
-                                                                          mustHaveDevices:NO
-                                                                              transaction:transaction];
+    SignalRecipient *_Nullable recipient = [SignalRecipient getRecipientForAddress:envelope.sourceAddress
+                                                                   mustHaveDevices:NO
+                                                                       transaction:transaction];
     if (!recipient) {
         OWSFailDebug(@"No local SignalRecipient.");
     } else {
@@ -2390,9 +2390,9 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Message received from unknown linked device; adding to local SignalRecipient: %lu.",
                        (unsigned long) envelope.sourceDevice);
 
-            [recipient updateRegisteredRecipientWithDevicesToAdd:@[ @(envelope.sourceDevice) ]
-                                                 devicesToRemove:nil
-                                                     transaction:transaction];
+            [recipient updateWithDevicesToAdd:@[ @(envelope.sourceDevice) ]
+                              devicesToRemove:nil
+                                  transaction:transaction];
         }
     }
 

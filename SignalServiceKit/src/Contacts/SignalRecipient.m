@@ -79,21 +79,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 #pragma mark -
 
-+ (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
-                                         transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    OWSAssertDebug(address.isValid);
-
-    SignalRecipient *_Nullable recipient = [self registeredRecipientForAddress:address
-                                                               mustHaveDevices:NO
-                                                                   transaction:transaction];
-    if (!recipient) {
-        recipient = [[self alloc] initWithAddress:address];
-    }
-    return recipient;
-}
-
 - (instancetype)initWithUUIDString:(NSString *)uuidString
 {
     self = [super init];
@@ -219,9 +204,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return [AnySignalRecipientFinder new];
 }
 
-+ (nullable instancetype)registeredRecipientForAddress:(SignalServiceAddress *)address
-                                       mustHaveDevices:(BOOL)mustHaveDevices
-                                           transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)getRecipientForAddress:(SignalServiceAddress *)address
+                                mustHaveDevices:(BOOL)mustHaveDevices
+                                    transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(address.isValid);
@@ -253,9 +238,21 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     self.devices = [updatedDevices copy];
 }
 
-- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
-                                  devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
-                                      transaction:(SDSAnyWriteTransaction *)transaction
++ (void)updateWithAddress:(SignalServiceAddress *)address
+             devicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
+          devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
+
+    SignalRecipient *recipient = [self getOrCreateLowTrustRecipientWithAdddress:address transaction:transaction];
+    [recipient updateWithDevicesToAdd:devicesToAdd devicesToRemove:devicesToRemove transaction:transaction];
+}
+
+- (void)updateWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
+               devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
+                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
@@ -265,11 +262,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     // no devices left.
     if (devicesToAdd.count > 0) {
         OWSLogInfo(@"devicesToAdd: %@ for %@", devicesToAdd, self.address);
-        [self addDevicesToRegisteredRecipient:[NSSet setWithArray:devicesToAdd] transaction:transaction];
+        [self updateWithDevicesToAdd:[NSSet setWithArray:devicesToAdd] transaction:transaction];
     }
     if (devicesToRemove.count > 0) {
         OWSLogInfo(@"devicesToRemove: %@ for %@", devicesToRemove, self.address);
-        [self removeDevicesFromRecipient:[NSSet setWithArray:devicesToRemove] transaction:transaction];
+        [self updateWithDevicesToRemove:[NSSet setWithArray:devicesToRemove] transaction:transaction];
     }
 
     // Device changes
@@ -284,7 +281,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     });
 }
 
-- (void)addDevicesToRegisteredRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithDevicesToAdd:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
@@ -297,7 +294,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                              }];
 }
 
-- (void)removeDevicesFromRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithDevicesToRemove:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
@@ -342,7 +339,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(address.isValid);
-    return nil != [self registeredRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
+    return nil != [self getRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
 }
 
 + (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
@@ -354,14 +351,14 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
     switch (trustLevel) {
         case SignalRecipientTrustLevelLow:
-            return [self markLowTrustRecipientAsRegisteredAndGet:address transaction:transaction];
+            return [self getOrCreateLowTrustRecipientWithAdddress:address transaction:transaction];
         case SignalRecipientTrustLevelHigh:
-            return [self markHighTrustRecipientAsRegisteredAndGet:address transaction:transaction];
+            return [self getOrCreateHighTrustRecipientWithAddress:address markAsRegistered:YES transaction:transaction];
     }
 }
 
-+ (SignalRecipient *)markLowTrustRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
-                                                 transaction:(SDSAnyWriteTransaction *)transaction
++ (SignalRecipient *)getOrCreateLowTrustRecipientWithAdddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
@@ -409,7 +406,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     }
 }
 
-+ (SignalRecipient *)markHighTrustRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
++ (SignalRecipient *)getOrCreateHighTrustRecipientWithAddress:(SignalServiceAddress *)address
+                                             markAsRegistered:(BOOL)markAsRegistered
                                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -531,7 +529,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         return newInstance;
     }
 
-    if (existingInstance.devices.count == 0) {
+    if (markAsRegistered && existingInstance.devices.count == 0) {
         shouldUpdate = YES;
 
         // We know they're registered, so make sure they have at least one device.
@@ -608,10 +606,10 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return winningInstance;
 }
 
-+ (void)markRecipientAsRegistered:(SignalServiceAddress *)address
-                         deviceId:(UInt32)deviceId
-                       trustLevel:(SignalRecipientTrustLevel)trustLevel
-                      transaction:(SDSAnyWriteTransaction *)transaction
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
+                                            deviceId:(UInt32)deviceId
+                                          trustLevel:(SignalRecipientTrustLevel)trustLevel
+                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId > 0);
@@ -629,6 +627,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                                           [signalRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
                                       }];
     }
+
+    return recipient;
 }
 
 + (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
@@ -636,18 +636,14 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
-    SignalRecipient *recipient = [self getOrBuildUnsavedRecipientForAddress:address transaction:transaction];
+    SignalRecipient *recipient = [self getOrCreateLowTrustRecipientWithAdddress:address transaction:transaction];
+
     if (recipient.devices.count > 0) {
         OWSLogDebug(@"Marking recipient as not registered: %@", address);
-        if ([SignalRecipient anyFetchWithUniqueId:recipient.uniqueId transaction:transaction] == nil) {
-            [recipient removeDevices:recipient.devices.set];
-            [recipient anyInsertWithTransaction:transaction];
-        } else {
-            [recipient anyUpdateWithTransaction:transaction
-                                          block:^(SignalRecipient *signalRecipient) {
-                                              signalRecipient.devices = [NSOrderedSet new];
-                                          }];
-        }
+        [recipient anyUpdateWithTransaction:transaction
+                                      block:^(SignalRecipient *signalRecipient) {
+                                          signalRecipient.devices = [NSOrderedSet new];
+                                      }];
 
         // Remove the contact from our social graph
         [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ recipient.accountId ]];

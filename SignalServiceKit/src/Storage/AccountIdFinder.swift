@@ -18,7 +18,7 @@ public extension SignalRecipient {
 public class OWSAccountIdFinder: NSObject {
     @objc
     public func accountId(forAddress address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> AccountId? {
-        return SignalRecipient.registeredRecipient(for: address, mustHaveDevices: false, transaction: transaction)?.accountId
+        return SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction)?.accountId
     }
 
     @objc

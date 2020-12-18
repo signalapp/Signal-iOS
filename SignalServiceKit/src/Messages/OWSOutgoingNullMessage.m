@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
                                  thread:(TSThread *)thread
                             transaction:(SDSAnyReadTransaction *)transaction
 {
