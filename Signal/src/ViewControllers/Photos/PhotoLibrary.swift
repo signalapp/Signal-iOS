@@ -168,12 +168,37 @@ class PhotoCollectionContents {
     }
 
     private func requestVideoDataSource(for asset: PHAsset) -> Promise<(dataSource: DataSource, dataUTI: String)> {
+        func isValidVideo(dataSource: DataSource) -> Bool {
+            dataSource.dataLength <= SignalAttachment.kMaxFileSizeVideo
+        }
+
+        return firstly(on: .global()) { [weak self] () -> Promise<(dataSource: DataSource, dataUTI: String)> in
+            guard let self = self else {
+                throw OWSGenericError("Missing self.")
+            }
+            return self.requestVideoDataSource(for: asset, exportPreset: AVAssetExportPresetMediumQuality)
+        }.then(on: .global()) { [weak self] (dataSource, dataUTI) -> Promise<(dataSource: DataSource, dataUTI: String)> in
+            guard let self = self else {
+                throw OWSGenericError("Missing self.")
+            }
+            if isValidVideo(dataSource: dataSource) {
+                return Promise.value((dataSource, dataUTI))
+            }
+            // Try again with a lower quality.
+            Logger.verbose("Output too large: \(dataSource.dataLength) > \(SignalAttachment.kMaxFileSizeVideo)).")
+            Logger.warn("Failing over to AVAssetExportPresetLowQuality.")
+            return self.requestVideoDataSource(for: asset, exportPreset: AVAssetExportPresetLowQuality)
+        }
+    }
+
+    private func requestVideoDataSource(for asset: PHAsset,
+                                        exportPreset: String) -> Promise<(dataSource: DataSource, dataUTI: String)> {
         return Promise { resolver in
 
             let options: PHVideoRequestOptions = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
 
-            _ = imageManager.requestExportSession(forVideo: asset, options: options, exportPreset: AVAssetExportPresetMediumQuality) { exportSession, _ in
+            _ = imageManager.requestExportSession(forVideo: asset, options: options, exportPreset: exportPreset) { exportSession, _ in
 
                 guard let exportSession = exportSession else {
                     resolver.reject(PhotoLibraryError.assertionError(description: "exportSession was unexpectedly nil"))
@@ -189,10 +214,9 @@ class PhotoCollectionContents {
 
                 Logger.debug("starting video export")
                 exportSession.exportAsynchronously {
-                    Logger.debug("Completed video export")
-
                     do {
                         let dataSource = try DataSourcePath.dataSource(with: exportURL, shouldDeleteOnDeallocation: true)
+                        Logger.debug("Completed video export (\(dataSource.dataLength)).")
                         resolver.fulfill((dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String))
                     } catch {
                         resolver.reject(error)

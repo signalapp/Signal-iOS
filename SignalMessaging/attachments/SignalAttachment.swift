@@ -185,11 +185,11 @@ public class SignalAttachment: NSObject {
 
     // MARK: Constants
 
-    static let kMaxFileSizeAnimatedImage = OWSMediaUtils.kMaxFileSizeAnimatedImage
-    static let kMaxFileSizeImage = OWSMediaUtils.kMaxFileSizeImage
-    static let kMaxFileSizeVideo = OWSMediaUtils.kMaxFileSizeVideo
-    static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
-    static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
+    public static let kMaxFileSizeAnimatedImage = OWSMediaUtils.kMaxFileSizeAnimatedImage
+    public static let kMaxFileSizeImage = OWSMediaUtils.kMaxFileSizeImage
+    public static let kMaxFileSizeVideo = OWSMediaUtils.kMaxFileSizeVideo
+    public static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
+    public static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
 
     // MARK: 
 
@@ -1158,16 +1158,20 @@ public class SignalAttachment: NSObject {
 
     private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
         guard let dataSource = dataSource else {
+            Logger.warn("Missing dataSource.")
             return false
         }
 
         guard SignalAttachment.outputVideoUTISet.contains(dataUTI) else {
+            Logger.warn("Invalid UTI type: \(dataUTI).")
             return false
         }
 
         if dataSource.dataLength <= kMaxFileSizeVideo {
             return true
         }
+        Logger.verbose("Invalid file size: \(dataSource.dataLength) > \(kMaxFileSizeVideo).")
+        Logger.warn("Invalid file size.")
         return false
     }
 
