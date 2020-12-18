@@ -8,17 +8,17 @@ import SignalCoreKit
 extension TSInteraction {
 
     @objc
-    public func ensureSortIdForInsertedInteraction(transaction: SDSAnyReadTransaction) {
+    public func fillInMissingSortIdForJustInsertedInteraction(transaction: SDSAnyReadTransaction) {
         switch transaction.readTransaction {
         case .yapRead:
             owsFailDebug("Unexpected transaction.")
             return
         case .grdbRead(let grdbRead):
-            ensureSortIdForInsertedInteraction(transaction: grdbRead)
+            fillInMissingSortIdForJustInsertedInteraction(transaction: grdbRead)
         }
     }
 
-    private func ensureSortIdForInsertedInteraction(transaction: GRDBReadTransaction) {
+    private func fillInMissingSortIdForJustInsertedInteraction(transaction: GRDBReadTransaction) {
         guard self.sortId == 0 else {
             owsFailDebug("Unexpected sortId: \(sortId).")
             return

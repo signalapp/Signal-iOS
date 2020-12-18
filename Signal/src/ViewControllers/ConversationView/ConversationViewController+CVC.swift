@@ -295,7 +295,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let maxHideTime = kSecondInterval * 2
             guard viewAge < maxHideTime else {
                 // This should only occur on very slow devices.
-                owsFailDebug("View taking a long time to render content.")
+                Logger.warn("View taking a long time to render content.")
                 return false
             }
 
@@ -663,7 +663,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 // how long we're willing to infer view state from the
                 // navigationController. It might not always be safe to assume that
                 // navigationController view and CVC view state converge.
-                owsFailDebug("View state taking a long time to be configured.")
+                Logger.warn("View state taking a long time to be configured.")
                 return buildDefaultConversationStyle(type: .placeholder)
             }
 
