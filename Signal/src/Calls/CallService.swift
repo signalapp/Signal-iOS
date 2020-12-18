@@ -651,7 +651,7 @@ extension CallService {
             return
         }
         guard let memberInfo = groupMemberInfo(for: thread) else {
-            Logger.error("Failed to fetch group member info to peek \(thread.uniqueId)")
+            owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
             return
         }
 
