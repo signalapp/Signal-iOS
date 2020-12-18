@@ -31,8 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path
 {
-    return
-        [self protectFileOrFolderAtPath:path fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+    return [self protectFileOrFolderAtPath:path fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
 }
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
