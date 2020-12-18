@@ -16,14 +16,6 @@ public class RefreshPreKeysOperation: OWSOperation {
         return TSAccountManager.sharedInstance()
     }
 
-    private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
-    }
-
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     private var identityKeyManager: OWSIdentityManager {
         return OWSIdentityManager.shared()
     }
@@ -36,48 +28,18 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
         
-        // Loki: Doing this on the global queue to match Signal
         DispatchQueue.global().async {
-            SessionManagementProtocol.refreshSignedPreKey()
+            let storage = OWSPrimaryStorage.shared()
+            guard storage.currentSignedPrekeyId() == nil else { return }
+            let signedPreKeyRecord = storage.generateRandomSignedRecord()
+            signedPreKeyRecord.markAsAcceptedByService()
+            storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            TSPreKeyManager.clearPreKeyUpdateFailureCount()
+            TSPreKeyManager.clearSignedPreKeyRecords()
+            SNLog("Signed pre key refreshed successfully.")
             self.reportSuccess()
         }
-        
-        /* Loki: Original code
-         * ================
-        firstly {
-            self.accountServiceClient.getPreKeysCount()
-        }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in
-            Logger.debug("preKeysCount: \(preKeysCount)")
-            guard preKeysCount < kEphemeralPreKeysMinimumCount || self.primaryStorage.currentSignedPrekeyId() == nil else {
-                Logger.debug("Available keys sufficient: \(preKeysCount)")
-                return Promise.value(())
-            }
-
-            let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
-            let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
-            let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
-
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-            self.primaryStorage.storePreKeyRecords(preKeyRecords)
-
-            return firstly {
-                self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
-            }.done {
-                signedPreKeyRecord.markAsAcceptedByService()
-                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-                self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-
-                TSPreKeyManager.clearPreKeyUpdateFailureCount()
-                TSPreKeyManager.clearSignedPreKeyRecords()
-            }
-        }.done {
-            Logger.debug("done")
-            self.reportSuccess()
-        }.catch { error in
-            self.reportError(error)
-        }.retainUntilComplete()
-         * ================
-         */
     }
 
     public override func didSucceed() {
@@ -85,21 +47,6 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     override public func didFail(error: Error) {
-        switch error {
-        case let networkManagerError as NetworkManagerError:
-            guard !networkManagerError.isNetworkError else {
-                Logger.debug("Don't report SPK rotation failure w/ network error")
-                return
-            }
-
-            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
-                Logger.debug("Don't report SPK rotation failure w/ non application error")
-                return
-            }
-
-            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
-        default:
-            Logger.debug("Don't report SPK rotation failure w/ non NetworkManager error: \(error)")
-        }
+        Logger.debug("Don't report SPK rotation failure w/ non NetworkManager error: \(error)")
     }
 }

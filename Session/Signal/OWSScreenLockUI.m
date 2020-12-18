@@ -7,7 +7,7 @@
 #import "Session-Swift.h"
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

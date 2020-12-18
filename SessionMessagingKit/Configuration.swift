@@ -1,16 +1,28 @@
 import SessionProtocolKit
 
-public struct Configuration {
+@objc
+public final class SNMessagingKitConfiguration : NSObject {
     public let storage: SessionMessagingKitStorageProtocol
-    public let signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore
+    @objc public let signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore
     public let identityKeyStore: IdentityKeyStore
     public let sessionRestorationImplementation: SessionRestorationProtocol
     public let certificateValidator: SMKCertificateValidator
-    public let openGroupAPIDelegate: OpenGroupAPIDelegate
-    public let pnServerURL: String
-    public let pnServerPublicKey: String
 
-    internal static var shared: Configuration!
+    @objc public static var shared: SNMessagingKitConfiguration!
+
+    fileprivate init(
+        storage: SessionMessagingKitStorageProtocol,
+        signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore,
+        identityKeyStore: IdentityKeyStore,
+        sessionRestorationImplementation: SessionRestorationProtocol,
+        certificateValidator: SMKCertificateValidator
+    ) {
+        self.storage = storage
+        self.signalStorage = signalStorage
+        self.identityKeyStore = identityKeyStore
+        self.sessionRestorationImplementation = sessionRestorationImplementation
+        self.certificateValidator = certificateValidator
+    }
 }
 
 public enum SNMessagingKit { // Just to make the external API nice
@@ -20,20 +32,14 @@ public enum SNMessagingKit { // Just to make the external API nice
         signalStorage: SessionStore & PreKeyStore & SignedPreKeyStore,
         identityKeyStore: IdentityKeyStore,
         sessionRestorationImplementation: SessionRestorationProtocol,
-        certificateValidator: SMKCertificateValidator,
-        openGroupAPIDelegate: OpenGroupAPIDelegate,
-        pnServerURL: String,
-        pnServerPublicKey: String
+        certificateValidator: SMKCertificateValidator
     ) {
-        Configuration.shared = Configuration(
+        SNMessagingKitConfiguration.shared = SNMessagingKitConfiguration(
             storage: storage,
             signalStorage: signalStorage,
             identityKeyStore: identityKeyStore,
             sessionRestorationImplementation: sessionRestorationImplementation,
-            certificateValidator: certificateValidator,
-            openGroupAPIDelegate: openGroupAPIDelegate,
-            pnServerURL: pnServerURL,
-            pnServerPublicKey: pnServerPublicKey
+            certificateValidator: certificateValidator
         )
     }
 }

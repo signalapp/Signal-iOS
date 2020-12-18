@@ -144,7 +144,7 @@ DEPENDENCIES:
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (~> 1.5.0)
-  - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
+  - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
 
@@ -181,7 +181,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :branch: signal-release
-    :git: https://github.com/signalapp/YapDatabase.git
+    :git: https://github.com/loki-project/session-ios-yap-database.git
   YYImage:
     :git: https://github.com/signalapp/YYImage
 
@@ -199,8 +199,8 @@ CHECKOUT OPTIONS:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
-    :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
-    :git: https://github.com/signalapp/YapDatabase.git
+    :commit: 5806f6b6e0b34124ee09283a9eca9ce7e6eaf14e
+    :git: https://github.com/loki-project/session-ios-yap-database.git
   YYImage:
     :commit: d91910e6f313a255febbf69795198e74259bd51c
     :git: https://github.com/signalapp/YYImage
@@ -230,6 +230,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 3489ed70ea51f2bf705bf99703efc71d697de373
+PODFILE CHECKSUM: 3263ab95f60e220882ca53cca4c6bdc2e7a80381
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0.rc.1

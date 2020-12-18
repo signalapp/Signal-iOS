@@ -7,12 +7,12 @@
 #import "Session-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import "ViewControllerUtils.h"
+
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
-#import <SignalUtilitiesKit/MimeTypeUtil.h>
-#import <SignalUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionUtilitiesKit/MIMETypeUtil.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SignalCoreKit/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)iconHeight
 {
-    return kStandardAvatarSize;
+    return 48.0f;
 }
 
 - (void)createContentsWithConversationStyle:(ConversationStyle *)conversationStyle

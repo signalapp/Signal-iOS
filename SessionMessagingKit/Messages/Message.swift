@@ -3,17 +3,24 @@
 @objc(SNMessage)
 public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public var id: String?
-    public var threadID: String?
+    @objc public var threadID: String?
     public var sentTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
     public var recipient: String?
+    public var sender: String?
+    public var groupPublicKey: String?
+    public var openGroupServerMessageID: UInt64?
 
     public class var ttl: UInt64 { 2 * 24 * 60 * 60 * 1000 }
 
     public override init() { }
 
     // MARK: Validation
-    public var isValid: Bool { true }
+    public var isValid: Bool {
+        if let sentTimestamp = sentTimestamp { guard sentTimestamp > 0 else { return false } }
+        if let receivedTimestamp = receivedTimestamp { guard receivedTimestamp > 0 else { return false } }
+        return sender != nil && recipient != nil
+    }
 
     // MARK: Coding
     public required init?(coder: NSCoder) {
@@ -37,7 +44,19 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         preconditionFailure("fromProto(_:) is abstract and must be overridden.")
     }
 
-    public func toProto() -> SNProtoContent? {
-        preconditionFailure("toProto() is abstract and must be overridden.")
+    public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+        preconditionFailure("toProto(using:) is abstract and must be overridden.")
+    }
+
+    public func setGroupContextIfNeeded(on dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder, using transaction: YapDatabaseReadTransaction) throws {
+        guard let thread = TSThread.fetch(uniqueId: threadID!, transaction: transaction) as? TSGroupThread, thread.usesSharedSenderKeys else { return }
+        // Android needs a group context or it'll interpret the message as a one-to-one message
+        let groupProto = SNProtoGroupContext.builder(id: thread.groupModel.groupId, type: .deliver)
+        dataMessage.setGroup(try groupProto.build())
+    }
+    
+    // MARK: General
+    @objc public func setSentTimestamp(_ sentTimestamp: UInt64) {
+        self.sentTimestamp = sentTimestamp
     }
 }

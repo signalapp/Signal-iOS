@@ -4,13 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class LKDeviceLinkMessage;
-@class LKUnlinkDeviceMessage;
 @class OWSBlockingManager;
-@class OWSContact;
-@class OWSContactsManager;
 @class OWSLinkPreviewDraft;
-@class OWSMessageSender;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SignalAttachment;
@@ -44,52 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ThreadUtil : NSObject
 
-#pragma mark - Durable Message Enqueue
-
-+ (void)enqueueDeviceLinkMessage:(LKDeviceLinkMessage *)message;
-
-+ (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
-                                     inThread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction;
-
-+ (TSOutgoingMessage *)enqueueMessageWithText:(nullable NSString *)fullMessageText
-                             mediaAttachments:(NSArray<SignalAttachment *> *)attachments
-                                     inThread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction;
-
-+ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
-+ (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
-
-#pragma mark - Non-Durable Sending
-
-// Used by SAE and "reply from lockscreen", otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
-                                            inThread:(TSThread *)thread
-                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^)(NSError *_Nullable error))completion;
-
-// Used by SAE, otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
-                                    mediaAttachments:(NSArray<SignalAttachment *> *)attachments
-                                            inThread:(TSThread *)thread
-                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^)(NSError *_Nullable error))completion;
-
-// Used by SAE, otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
-                                                    inThread:(TSThread *)thread
-                                               messageSender:(OWSMessageSender *)messageSender
-                                                  completion:(void (^)(NSError *_Nullable error))completion;
-
-
 #pragma mark - dynamic interactions
 
 // This method will create and/or remove any offers and indicators
@@ -111,22 +60,12 @@ NS_ASSUME_NONNULL_BEGIN
 //   size of the "load window" in that view. The unread indicator should
 //   always be inserted within that window.
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize;
-
-+ (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
-
-// This method should be called right _before_ we send a message to a thread,
-// since we want to auto-add contact threads to the profile whitelist if the
-// conversation was initiated by the local user.
-//
-// Returns YES IFF the thread was just added to the profile whitelist.
-+ (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread;
 
 #pragma mark - Delete Content
 

@@ -8,12 +8,12 @@
 #import "OWSBubbleView.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
-#import <SignalUtilitiesKit/TSMessage.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSMessage.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -543,23 +543,15 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
     NSString *_Nullable localNumber = [TSAccountManager localNumber];
     NSString *quotedAuthorText;
     if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
-
-        if (self.isOutgoing) {
-            quotedAuthorText = NSLocalizedString(@"You", @"");
-        } else {
-            quotedAuthorText = NSLocalizedString(@"You", @"");
-        }
+        quotedAuthorText = NSLocalizedString(@"You", @"");
     } else {
-        OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId] ?: [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId] ?: self.quotedMessage.authorId;
         
         if (quotedAuthor == self.quotedMessage.authorId) {
+            SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:self.quotedMessage.threadId];
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                SNOpenGroup *publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.quotedMessage.threadId transaction:transaction];
-                if (publicChat != nil) {
-                    quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:publicChat.channel on:publicChat.server using:transaction];
-                } else {
-                    quotedAuthor = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.quotedMessage.authorId];
+                if (openGroup != nil) {
+                    quotedAuthor = [LKUserDisplayNameUtilities getPublicChatDisplayNameFor:self.quotedMessage.authorId in:openGroup.channel on:openGroup.server using:transaction];
                 }
             }];
         }

@@ -50,11 +50,11 @@ final class ConversationTitleView : UIView {
         updateSubtitleForCurrentStatus()
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleProfileChangedNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleCalculatingPoWNotification(_:)), name: .calculatingPoW, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleRoutingNotification(_:)), name: .routing, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleCalculatingMessagePoWNotification(_:)), name: .calculatingMessagePoW, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleEncryptingMessageNotification(_:)), name: .encryptingMessage, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleMessageSendingNotification(_:)), name: .messageSending, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleMessageSentNotification(_:)), name: .messageSent, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleMessageFailedNotification(_:)), name: .messageFailed, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleMessageSendingFailedNotification(_:)), name: .messageSendingFailed, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -112,12 +112,12 @@ final class ConversationTitleView : UIView {
         updateProfilePicture()
     }
     
-    @objc private func handleCalculatingPoWNotification(_ notification: Notification) {
+    @objc private func handleCalculatingMessagePoWNotification(_ notification: Notification) {
         guard let timestamp = notification.object as? NSNumber else { return }
         setStatusIfNeeded(to: .calculatingPoW, forMessageWithTimestamp: timestamp)
     }
     
-    @objc private func handleRoutingNotification(_ notification: Notification) {
+    @objc private func handleEncryptingMessageNotification(_ notification: Notification) {
         guard let timestamp = notification.object as? NSNumber else { return }
         setStatusIfNeeded(to: .routing, forMessageWithTimestamp: timestamp)
     }
@@ -136,7 +136,7 @@ final class ConversationTitleView : UIView {
         }
     }
     
-    @objc private func handleMessageFailedNotification(_ notification: Notification) {
+    @objc private func handleMessageSendingFailedNotification(_ notification: Notification) {
         guard let timestamp = notification.object as? NSNumber else { return }
         clearStatusIfNeededForMessageWithTimestamp(timestamp)
     }
@@ -149,14 +149,7 @@ final class ConversationTitleView : UIView {
             uncheckedTargetInteraction = interaction
         }
         guard let targetInteraction = uncheckedTargetInteraction, targetInteraction.interactionType() == .outgoingMessage,
-            status.rawValue > (currentStatus?.rawValue ?? 0), let hexEncodedPublicKey = targetInteraction.thread.contactIdentifier() else { return }
-        var masterHexEncodedPublicKey: String!
-        let storage = OWSPrimaryStorage.shared()
-        storage.dbReadConnection.read { transaction in
-            masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-        }
-        let isSlaveDevice = masterHexEncodedPublicKey != hexEncodedPublicKey
-        guard !isSlaveDevice else { return }
+            status.rawValue > (currentStatus?.rawValue ?? 0) else { return }
         currentStatus = status
     }
     
@@ -174,7 +167,8 @@ final class ConversationTitleView : UIView {
     }
     
     @objc func updateSubtitleForCurrentStatus() {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.subtitleLabel.isHidden = false
             let subtitle = NSMutableAttributedString()
             if let muteEndDate = self.thread.mutedUntilDate, self.thread.isMuted {
@@ -184,16 +178,13 @@ final class ConversationTitleView : UIView {
                 dateFormatter.timeStyle = .medium
                 dateFormatter.dateStyle = .medium
                 subtitle.append(NSAttributedString(string: "Muted until " + dateFormatter.string(from: muteEndDate)))
-            } else if let thread = self.thread as? TSGroupThread, !thread.isRSSFeed {
-                let storage = OWSPrimaryStorage.shared()
+            } else if let thread = self.thread as? TSGroupThread {
                 var userCount: Int?
                 if thread.groupModel.groupType == .closedGroup {
                     userCount = GroupUtilities.getClosedGroupMemberCount(thread)
                 } else if thread.groupModel.groupType == .openGroup {
-                    storage.dbReadConnection.read { transaction in
-                        if let publicChat = LokiDatabaseUtilities.getPublicChat(for: self.thread.uniqueId!, in: transaction) {
-                            userCount = storage.getUserCount(for: publicChat, in: transaction)
-                        }
+                    if let openGroup = Storage.shared.getOpenGroup(for: self.thread.uniqueId!) {
+                        userCount = Storage.shared.getUserCount(forOpenGroupWithID: openGroup.id)
                     }
                 }
                 if let userCount = userCount {

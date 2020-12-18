@@ -7,9 +7,9 @@
 #import "NotificationSettingsViewController.h"
 #import "NotificationSettingsOptionsViewController.h"
 #import "OWSSoundSettingsViewController.h"
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSPreferences.h>
-#import <SignalUtilitiesKit/OWSSounds.h>
+#import <SessionMessagingKit/Environment.h>
+#import <SessionMessagingKit/OWSPreferences.h>
+#import <SessionMessagingKit/OWSSounds.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"
 

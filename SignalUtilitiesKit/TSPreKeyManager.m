@@ -8,7 +8,7 @@
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "SSKEnvironment.h"
-#import "TSNetworkManager.h"
+
 #import "TSStorageHeaders.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
@@ -216,7 +216,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     if (!keyId) {
         // currentSignedPreKeyId should only be nil before we've completed registration.
         // We have this guard here for robustness, but we should never get here.
-        OWSFailDebug(@"Ignoring request to clear signed preKeys since no keyId was specified");
         return;
     }
 

@@ -7,15 +7,9 @@ import SignalUtilitiesKit
 
 @objc class GroupTableViewCell: UITableViewCell {
 
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     // MARK: -
 
-    private let avatarView = AvatarImageView()
+//    private let avatarView = AvatarImageView()
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
 
@@ -30,14 +24,14 @@ import SignalUtilitiesKit
 
         // Layout
 
-        avatarView.autoSetDimension(.width, toSize: CGFloat(kStandardAvatarSize))
-        avatarView.autoPinToSquareAspectRatio()
+//        avatarView.autoSetDimension(.width, toSize: CGFloat(kStandardAvatarSize))
+//        avatarView.autoPinToSquareAspectRatio()
 
         let textRows = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
         textRows.axis = .vertical
         textRows.alignment = .leading
 
-        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        let columns = UIStackView(arrangedSubviews: [ textRows ])
         columns.axis = .horizontal
         columns.alignment = .center
         columns.spacing = kContactCellAvatarTextMargin
@@ -62,11 +56,11 @@ import SignalUtilitiesKit
 
         let groupMemberIds: [String] = thread.groupModel.groupMemberIds
         let groupMemberNames = groupMemberIds.map { (recipientId: String) in
-            contactsManager.displayName(forPhoneIdentifier: recipientId)
+            SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: recipientId, avoidingWriteTransaction: true)!
         }.joined(separator: ", ")
         self.subtitleLabel.text = groupMemberNames
 
-        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kStandardAvatarSize)
+//        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kStandardAvatarSize)
     }
 
 }

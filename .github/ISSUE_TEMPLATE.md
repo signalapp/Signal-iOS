@@ -26,9 +26,9 @@ Describe here the issue that you are experiencing.
 - list the steps
 - that reproduce the bug
 
-**Actual result:** Describe here what happens after you run the steps above (i.e. the buggy behaviour)
+**Actual result:** Describe here what happens after you run the steps above (i.e. the buggy behaviour).
 
-**Expected result:** Describe here what should happen after you run the steps above (i.e. what would be the correct behaviour)
+**Expected result:** Describe here what should happen after you run the steps above (i.e. what would be the correct behaviour).
 
 ### Screenshots
 <!-- you can drag and drop images below -->
@@ -41,27 +41,3 @@ Describe here the issue that you are experiencing.
 **iOS version**: X.Y.Z
 
 **Session version:** X.Y.Z
-
-### Link to debug log
-<!-- Ensure that "Enable Debug Log" is on in Session's settings then make the bug happen and immediately after that tap "Submit Debug Log" from settings and paste the link below. -->
-
-<!--  If this is a crashing bug, after filing this issue, email a copy of your latest crash report to support@loki.network
-
-To get a crash log:
-
-1. Go to the iOS Settings app.
-2. Go to Privacy.
-3. Go to Analytics or Diagnostics & Usage.
-4. Select Analytics Data or Diagnostics & Usage Data.
-5. Locate the .ips crash log for Session.
-    The logs will be named in the format: Session(DateTime).ips
-6. Select the desired Session log.
-7.a iOS 11 users, tap the Share icon in the top right corner and jump to step 10.
-7.b iOS 9&10 users, long press to see the option to highlight text and select the entire text of the log. It will end in EOF.
-8. Once the text is selected, tap Copy.
-9. Paste the copied text into an email.
-10. Send the email to support@loki.network with a subject like:
-  * "iOS Crash Log: (your github issue)"
-  * Example subject: iOS Crash Log: Crash on launch #111
-  * Example subject: iOS Crash Log: Crash when sending video #222
--->

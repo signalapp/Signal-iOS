@@ -1,14 +1,14 @@
 
-public struct Configuration {
+public struct SNProtocolKitConfiguration {
     public let storage: SessionProtocolKitStorageProtocol
     public let sharedSenderKeysDelegate: SharedSenderKeysDelegate
 
-    internal static var shared: Configuration!
+    internal static var shared: SNProtocolKitConfiguration!
 }
 
-public enum SessionProtocolKit { // Just to make the external API nice
+public enum SNProtocolKit { // Just to make the external API nice
 
     public static func configure(storage: SessionProtocolKitStorageProtocol, sharedSenderKeysDelegate: SharedSenderKeysDelegate) {
-        Configuration.shared = Configuration(storage: storage, sharedSenderKeysDelegate: sharedSenderKeysDelegate)
+        SNProtocolKitConfiguration.shared = SNProtocolKitConfiguration(storage: storage, sharedSenderKeysDelegate: sharedSenderKeysDelegate)
     }
 }

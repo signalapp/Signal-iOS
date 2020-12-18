@@ -4,8 +4,8 @@
 
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SignalUtilitiesKit/OWSAudioPlayer.h>
-#import <SignalUtilitiesKit/OWSSounds.h>
+#import <SessionMessagingKit/OWSAudioPlayer.h>
+#import <SessionMessagingKit/OWSSounds.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"

@@ -5,16 +5,13 @@
 #import "VersionMigrations.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "SignalKeyingStorage.h"
-
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppVersion.h>
-#import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
+#import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
-#import <SignalUtilitiesKit/OWSRequestFactory.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSNetworkManager.h>
-#import <SignalUtilitiesKit/TSThread.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSThread.h>
+#import <SessionMessagingKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
@@ -66,27 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
         });
         return;
     }
-
-    /*
-    if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
-        OWSLogError(@"Migrating from RedPhone no longer supported. Quitting.");
-        // Not translating these as so few are affected.
-        UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:@"You must reinstall Signal"
-                             message:
-                                 @"Sorry, your installation is too old for us to update. You'll have to start fresh."
-                      preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *_Nonnull action) {
-                                                               OWSFail(@"Obsolete install.");
-                                                           }];
-        [alert addAction:quitAction];
-
-        [CurrentAppContext().frontmostViewController presentAlert:alert];
-    }
-     */
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [self.tsAccountManager isRegistered]) {
         [self clearVideoCache];

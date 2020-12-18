@@ -16,20 +16,19 @@ public final class OpenGroupAPI : DotNetAPI {
     private static let maxRetryCount: UInt = 4
 
     public static let profilePictureType = "network.loki.messenger.avatar"
-    
     @objc public static let openGroupMessageType = "network.loki.messenger.publicChat"
 
     // MARK: Open Group Public Key Validation
     public static func getOpenGroupServerPublicKey(for server: String) -> Promise<String> {
-        if let publicKey = Configuration.shared.storage.getOpenGroupPublicKey(for: server) {
+        if let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: server) {
             return Promise.value(publicKey)
         } else {
             return FileServerAPI.getPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { publicKey -> Promise<String> in
                 let url = URL(string: server)!
                 let request = TSRequest(url: url)
                 return OnionRequestAPI.sendOnionRequest(request, to: server, using: publicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { _ -> String in
-                    Configuration.shared.storage.with { transaction in
-                        Configuration.shared.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
+                    SNMessagingKitConfiguration.shared.storage.writeSync { transaction in
+                        SNMessagingKitConfiguration.shared.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
                     }
                     return publicKey
                 }
@@ -44,7 +43,7 @@ public final class OpenGroupAPI : DotNetAPI {
     }
 
     public static func getMessages(for channel: UInt64, on server: String) -> Promise<[OpenGroupMessage]> {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         var queryParameters = "include_annotations=1"
         if let lastMessageServerID = storage.getLastMessageServerID(for: channel, on: server) {
             queryParameters += "&since_id=\(lastMessageServerID)"
@@ -82,13 +81,13 @@ public final class OpenGroupAPI : DotNetAPI {
                         }
                         let lastMessageServerID = storage.getLastMessageServerID(for: channel, on: server)
                         if serverID > (lastMessageServerID ?? 0) {
-                            storage.with { transaction in
+                            storage.writeSync { transaction in
                                 storage.setLastMessageServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
                         let quote: OpenGroupMessage.Quote?
                         if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String,
-                            let quotedMessageBody = quoteAsJSON["text"] as? String {
+                           let quotedMessageBody = quoteAsJSON["text"] as? String {
                             let quotedMessageServerID = message["reply_to"] as? UInt64
                             quote = OpenGroupMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteePublicKey, quotedMessageBody: quotedMessageBody,
                                 quotedMessageServerID: quotedMessageServerID)
@@ -142,7 +141,7 @@ public final class OpenGroupAPI : DotNetAPI {
 
     public static func sendMessage(_ message: OpenGroupMessage, to channel: UInt64, on server: String) -> Promise<OpenGroupMessage> {
         SNLog("Sending message to open group channel with ID: \(channel) on server: \(server).")
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         guard let userKeyPair = storage.getUserKeyPair() else { return Promise(error: Error.generic) }
         guard let userDisplayName = storage.getUserDisplayName() else { return Promise(error: Error.generic) }
         let (promise, seal) = Promise<OpenGroupMessage>.pending()
@@ -182,7 +181,7 @@ public final class OpenGroupAPI : DotNetAPI {
     // MARK: Deletion
     public static func getDeletedMessageServerIDs(for channel: UInt64, on server: String) -> Promise<[UInt64]> {
         SNLog("Getting deleted messages for open group channel with ID: \(channel) on server: \(server).")
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         let queryParameters: String
         if let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server) {
             queryParameters = "since_id=\(lastDeletionServerID)"
@@ -206,7 +205,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         }
                         let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server)
                         if serverID > (lastDeletionServerID ?? 0) {
-                            storage.with { transaction in
+                            storage.writeSync { transaction in
                                 storage.setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
@@ -256,14 +255,14 @@ public final class OpenGroupAPI : DotNetAPI {
                         SNLog("Couldn't parse display names for users: \(publicKeys) from: \(json).")
                         throw Error.parsingFailed
                     }
-                    let storage = Configuration.shared.storage
-                    storage.with { transaction in
+                    let storage = SNMessagingKitConfiguration.shared.storage
+                    storage.writeSync { transaction in
                         data.forEach { data in
                             guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
                             let endIndex = hexEncodedPublicKey.endIndex
                             let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
                             let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                            storage.setOpenGroupDisplayName(to: displayName, for: hexEncodedPublicKey, on: channel, server: server, using: transaction)
+                            storage.setOpenGroupDisplayName(to: displayName, for: hexEncodedPublicKey, inOpenGroupWithID: "\(server).\(channel)", using: transaction)
                         }
                     }
                 }
@@ -346,16 +345,57 @@ public final class OpenGroupAPI : DotNetAPI {
                             SNLog("Couldn't parse info for open group channel with ID: \(channel) on server: \(server) from: \(json).")
                             throw Error.parsingFailed
                         }
-                        let storage = Configuration.shared.storage
-                        storage.with { transaction in
+                        let storage = SNMessagingKitConfiguration.shared.storage
+                        storage.writeSync { transaction in
                             storage.setUserCount(to: memberCount, forOpenGroupWithID: "\(server).\(channel)", using: transaction)
                         }
                         let openGroupInfo = OpenGroupInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
-                        Configuration.shared.openGroupAPIDelegate.updateProfileIfNeeded(for: channel, on: server, from: openGroupInfo)
+                        OpenGroupAPI.updateProfileIfNeeded(for: channel, on: server, from: openGroupInfo)
                         return openGroupInfo
                     }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
+        }
+    }
+
+    public static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: OpenGroupInfo) {
+        let openGroupID = "\(server).\(channel)"
+        SNMessagingKitConfiguration.shared.storage.write { transaction in
+            let transaction = transaction as! YapDatabaseReadWriteTransaction
+            // Update user count
+            Storage.shared.setUserCount(to: info.memberCount, forOpenGroupWithID: openGroupID, using: transaction)
+            let thread = TSGroupThread.getOrCreateThread(withGroupId: openGroupID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
+            // Update display name if needed
+            let model = thread.groupModel
+            if model.groupName != info.displayName {
+                let newGroupModel = TSGroupModel(title: info.displayName, memberIds: model.groupMemberIds, image: model.groupImage, groupId: model.groupId, groupType: model.groupType, adminIds: model.groupAdminIds)
+                thread.groupModel = newGroupModel
+                thread.save(with: transaction)
+            }
+            // Download and update profile picture if needed
+            let oldProfilePictureURL = Storage.shared.getProfilePictureURL(forOpenGroupWithID: openGroupID)
+            if oldProfilePictureURL != info.profilePictureURL || model.groupImage == nil {
+                Storage.shared.setProfilePictureURL(to: info.profilePictureURL, forOpenGroupWithID: openGroupID, using: transaction)
+                if let profilePictureURL = info.profilePictureURL {
+                    var sanitizedServerURL = server
+                    while sanitizedServerURL.hasSuffix("/") { sanitizedServerURL.removeLast() }
+                    var sanitizedProfilePictureURL = profilePictureURL
+                    while sanitizedProfilePictureURL.hasPrefix("/") { sanitizedProfilePictureURL.removeFirst() }
+                    let url = "\(sanitizedServerURL)/\(sanitizedProfilePictureURL)"
+                    FileServerAPI.downloadAttachment(from: url).map2 { rawData in
+                        let attachmentStream: TSAttachmentStream
+                        let data: Data
+                        if let rawImage = UIImage(data: rawData), let jpegData = rawImage.jpegData(compressionQuality: 0.8) {
+                            data = jpegData
+                        } else {
+                            data = rawData
+                        }
+                        attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
+                        try attachmentStream.write(data)
+                        thread.updateAvatar(with: attachmentStream)
+                    }
+                }
+            }
         }
     }
 
@@ -441,8 +481,8 @@ internal extension Promise {
         return recover(on: DispatchQueue.global(qos: .userInitiated)) { error -> Promise<T> in
             if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 SNLog("Auth token for: \(server) expired; dropping it.")
-                let storage = Configuration.shared.storage
-                storage.with { transaction in
+                let storage = SNMessagingKitConfiguration.shared.storage
+                storage.writeSync { transaction in
                     storage.removeAuthToken(for: server, using: transaction)
                 }
             }

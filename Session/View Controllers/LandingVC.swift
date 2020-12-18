@@ -1,5 +1,5 @@
 
-final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate {
+final class LandingVC : BaseVC {
     private var fakeChatViewContentOffset: CGPoint!
     
     // MARK: Components
@@ -22,14 +22,6 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         result.setTitle(NSLocalizedString("vc_landing_restore_button_title", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
-        return result
-    }()
-    
-    private lazy var linkButton: Button = {
-        let result = Button(style: .regularBorderless, size: .small)
-        result.setTitle(NSLocalizedString("vc_landing_link_button_title", comment: ""), for: UIControl.State.normal)
-        result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        result.addTarget(self, action: #selector(linkDevice), for: UIControl.Event.touchUpInside)
         return result
     }()
     
@@ -59,11 +51,6 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         // Set up link button container
         let linkButtonContainer = UIView()
         linkButtonContainer.set(.height, to: Values.onboardingButtonBottomOffset)
-//        linkButtonContainer.addSubview(linkButton)
-//        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: Values.massiveSpacing)
-//        linkButton.pin(.top, to: .top, of: linkButtonContainer)
-//        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: Values.massiveSpacing)
-//        linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: isIPhone5OrSmaller ? 6 : 10)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, restoreButton ])
         buttonStackView.axis = .vertical
@@ -83,12 +70,12 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
-        // Show device unlinked alert if needed
-        if UserDefaults.standard[.wasUnlinked] {
-            let alert = UIAlertController(title: "Device Unlinked", message: NSLocalizedString("vc_landing_device_unlinked_modal_title", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
-            UserDefaults.removeAll()
+        // Auto-migrate if needed
+        let userDefaults = UserDefaults.standard
+        if userDefaults[.isMigratingToV2KeyPair] {
+            if userDefaults[.displayName] != nil {
+                Storage.finishV2KeyPairMigration(navigationController: navigationController!)
+            }
         }
     }
     
@@ -118,58 +105,9 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         navigationController!.pushViewController(restoreVC, animated: true)
     }
     
-    @objc private func linkDevice() {
-        let linkDeviceVC = LinkDeviceVC()
-        linkDeviceVC.delegate = self
-        let navigationController = OWSNavigationController(rootViewController: linkDeviceVC)
-        present(navigationController, animated: true, completion: nil)
-    }
-    
-    // MARK: Device Linking
-    func requestDeviceLink(with hexEncodedPublicKey: String) {
-        guard ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) else {
-            let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: "Please make sure the Session ID you entered is correct and try again.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
-        }
-        let seed = Randomness.generateRandomBytes(16)
-        preconditionFailure("This code path shouldn't be invoked.")
-        let keyPair = Curve25519.generateKeyPair()
-        let identityManager = OWSIdentityManager.shared()
-        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
-        databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-        databaseConnection.setObject(keyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
-        TSAccountManager.sharedInstance().didRegister()
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.startPollerIfNeeded()
-        let deviceLinkingModal = DeviceLinkingModal(mode: .slave, delegate: self)
-        deviceLinkingModal.modalPresentationStyle = .overFullScreen
-        deviceLinkingModal.modalTransitionStyle = .crossDissolve
-        self.present(deviceLinkingModal, animated: true, completion: nil)
-        let linkingRequestMessage = DeviceLinkingUtilities.getLinkingRequestMessage(for: hexEncodedPublicKey)
-        ThreadUtil.enqueue(linkingRequestMessage)
-    }
-    
-    func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        UserDefaults.standard[.masterHexEncodedPublicKey] = deviceLink.master.publicKey
-        fakeChatViewContentOffset = fakeChatView.contentOffset
-        DispatchQueue.main.async {
-            self.fakeChatView.contentOffset = self.fakeChatViewContentOffset
-        }
-        let homeVC = HomeVC()
-        navigationController!.setViewControllers([ homeVC ], animated: true)
-    }
-    
-    func handleDeviceLinkingModalDismissed() {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.stopPoller()
-        TSAccountManager.sharedInstance().resetForReregistration()
-    }
-    
     // MARK: Convenience
     private func setUserInteractionEnabled(_ isEnabled: Bool) {
-        [ registerButton, restoreButton, linkButton ].forEach {
+        [ registerButton, restoreButton ].forEach {
             $0.isUserInteractionEnabled = isEnabled
         }
     }

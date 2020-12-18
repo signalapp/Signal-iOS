@@ -18,8 +18,7 @@
     #import <SignalCoreKit/NSObject+OWS.h>
     #import <SignalCoreKit/OWSAsserts.h>
     #import <SignalUtilitiesKit/SSKAsserts.h>
-    #import <SignalUtilitiesKit/OWSAnalytics.h>
-    #import <SignalUtilitiesKit/NSArray+Functional.h>
+    #import <SessionUtilitiesKit/NSArray+Functional.h>
     #import <SignalUtilitiesKit/NSSet+Functional.h>
     #import <SignalUtilitiesKit/NSObject+Casting.h>
     #import <SessionUIKit/SessionUIKit.h>

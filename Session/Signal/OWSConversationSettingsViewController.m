@@ -4,34 +4,31 @@
 
 #import "OWSConversationSettingsViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactsViewHelper.h"
-#import "FingerprintViewController.h"
-#import "OWSAddToContactViewController.h"
+
+
+
 #import "OWSBlockingManager.h"
 #import "OWSSoundSettingsViewController.h"
-#import "PhoneNumber.h"
-#import "ShowGroupMembersViewController.h"
+
 #import "Session-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import "UpdateGroupViewController.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSAvatarBuilder.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SessionMessagingKit/Environment.h>
+
 #import <SignalUtilitiesKit/OWSProfileManager.h>
-#import <SignalUtilitiesKit/OWSSounds.h>
-#import <SignalUtilitiesKit/OWSUserProfile.h>
+#import <SessionMessagingKit/OWSSounds.h>
+#import <SessionMessagingKit/OWSUserProfile.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalUtilitiesKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage.h>
-#import <SignalUtilitiesKit/TSGroupThread.h>
-#import <SignalUtilitiesKit/TSOutgoingMessage.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
+
+#import <SessionMessagingKit/OWSPrimaryStorage.h>
+#import <SessionMessagingKit/TSGroupThread.h>
+#import <SessionMessagingKit/TSOutgoingMessage.h>
+#import <SessionMessagingKit/TSThread.h>
 
 @import ContactsUI;
 @import PromiseKit;
@@ -42,8 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kIconViewLength = 24;
 
-@interface OWSConversationSettingsViewController () <ContactEditingDelegate,
-    ContactsViewHelperDelegate,
+@interface OWSConversationSettingsViewController () <
 #ifdef SHOW_COLOR_PICKER
     ColorPickerDelegate,
 #endif
@@ -107,7 +103,6 @@ const CGFloat kIconViewLength = 24;
 
 - (void)commonInit
 {
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
     [self observeNotifications];
 }
@@ -119,26 +114,11 @@ const CGFloat kIconViewLength = 24;
 
 #pragma mark - Dependencies
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
 - (TSAccountManager *)tsAccountManager
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
 
     return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (OWSMessageSender *)messageSender
-{
-    return SSKEnvironment.shared.messageSender;
 }
 
 - (OWSBlockingManager *)blockingManager
@@ -174,7 +154,7 @@ const CGFloat kIconViewLength = 24;
 {
     NSString *threadName = self.thread.name;
     if (self.thread.contactIdentifier) {
-        return [self.contactsManager profileNameForRecipientId:self.thread.contactIdentifier];
+        return [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.thread.contactIdentifier avoidingWriteTransaction:YES];
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -186,20 +166,20 @@ const CGFloat kIconViewLength = 24;
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
-- (BOOL)isOpenGroupChat
+- (BOOL)isOpenGroup
 {
     if ([self isGroupThread]) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
-        return thread.isPublicChat;
+        return thread.isOpenGroup;
     }
     return false;
 }
 
--(BOOL)isPrivateGroupChat
+-(BOOL)isClosedGroup
 {
     if (self.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
-        return !thread.isRSSFeed && !thread.isPublicChat;
+        return thread.groupModel.groupType == closedGroup;
     }
     return false;
 }
@@ -209,31 +189,6 @@ const CGFloat kIconViewLength = 24;
     OWSAssertDebug(thread);
     self.thread = thread;
     self.uiDatabaseConnection = uiDatabaseConnection;
-
-    [self updateEditButton];
-}
-
-- (void)updateEditButton
-{
-    OWSAssertDebug(self.thread);
-
-    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
-        && self.hasExistingContact) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapEditButton)
-                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"edit")];
-    }
-}
-
-- (BOOL)hasExistingContact
-{
-    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *recipientId = contactThread.contactIdentifier;
-    return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -263,16 +218,6 @@ const CGFloat kIconViewLength = 24;
         OWSLogDebug(@"canceled editing contact.");
         [self dismissViewControllerAnimated:YES completion:nil];
     }
-}
-
-#pragma mark - ContactsViewHelperDelegate
-
-- (void)contactsViewHelperDidUpdateContacts
-{
-    // Loki: Original code
-    // ========
-    // [self updateTableContents];
-    // ========
 }
 
 #pragma mark - View Lifecycle
@@ -322,8 +267,6 @@ const CGFloat kIconViewLength = 24;
         self.showVerificationOnAppear = NO;
         if (self.isGroupThread) {
             [self showGroupMembersView];
-        } else {
-            [self showVerificationView];
         }
     }
 }
@@ -349,49 +292,6 @@ const CGFloat kIconViewLength = 24;
         BOOL isSmallScreen = (UIScreen.mainScreen.bounds.size.height - 568) < 1;
         mainSection.customHeaderHeight = isSmallScreen ? @(201.f) : @(208.f);
     }
-
-    /**
-     * Loki: Original code
-     * ========
-    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
-        && !self.hasExistingContact) {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            return [weakSelf
-                                 disclosureCellWithName:
-                                     NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
-                                         @"Label for 'new contact' button in conversation settings view.")
-                                               iconName:@"table_ic_new_contact"
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController, @"new_contact")];
-                        }
-                        actionBlock:^{
-                            [weakSelf presentContactViewController];
-                        }]];
-        [mainSection addItem:[OWSTableItem
-                                 itemWithCustomCellBlock:^{
-                                     return [weakSelf
-                                          disclosureCellWithName:
-                                              NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                  @"Label for 'new contact' button in conversation settings view.")
-                                                        iconName:@"table_ic_add_to_existing_contact"
-                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                     OWSConversationSettingsViewController,
-                                                                     @"add_to_existing_contact")];
-                                 }
-                                 actionBlock:^{
-                                     OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                     OWSCAssertDebug(strongSelf);
-                                     TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
-                                     NSString *recipientId = contactThread.contactIdentifier;
-                                     [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
-                                 }]];
-    }
-     
-     if (SSKFeatureFlags.conversationSearch) {
-     * ========
-     */
 
     if ([self.thread isKindOfClass:TSContactThread.class]) {
         [mainSection addItem:[OWSTableItem
@@ -433,79 +333,8 @@ const CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf tappedConversationSearch];
                              }]];
-    /*
-    }
 
-    if (!isNoteToSelf && !self.isGroupThread && self.thread.hasSafetyNumbers) {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            return [weakSelf
-                                 disclosureCellWithName:NSLocalizedString(@"VERIFY_PRIVACY",
-                                                            @"Label for button or row which allows users to verify the "
-                                                            @"safety number of another user.")
-                                               iconName:@"table_ic_not_verified"
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController, @"safety_numbers")];
-                        }
-                        actionBlock:^{
-                            [weakSelf showVerificationView];
-                        }]];
-    }
-
-    if (isNoteToSelf) {
-        // Skip the profile whitelist.
-    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
-                            return [strongSelf
-                                      labelCellWithName:
-                                          (strongSelf.isGroupThread
-                                                  ? NSLocalizedString(
-                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                                                        @"Indicates that user's profile has been shared with a group.")
-                                                  : NSLocalizedString(
-                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                                                        @"Indicates that user's profile has been shared with a user."))
-                                               iconName:@"table_ic_share_profile"
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController,
-                                                            @"profile_is_shared")];
-                        }
-                                    actionBlock:nil]];
-    } else {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
-                            UITableViewCell *cell = [strongSelf
-                                 disclosureCellWithName:
-                                     (strongSelf.isGroupThread
-                                             ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                                   @"Action that shares user profile with a group.")
-                                             : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                                   @"Action that shares user profile with a user."))
-                                               iconName:@"table_ic_share_profile"
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController, @"share_profile")];
-                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
-
-                            return cell;
-                        }
-                        actionBlock:^{
-                            [weakSelf showShareProfileAlert];
-                        }]];
-    }
-     * =======
-     */
-
-    if (![self isOpenGroupChat]) {
+    if (![self isOpenGroup]) {
         [mainSection addItem:[OWSTableItem
                                  itemWithCustomCellBlock:^{
                                      UITableViewCell *cell = [OWSTableItem newCell];
@@ -652,12 +481,10 @@ const CGFloat kIconViewLength = 24;
     __block BOOL isUserMember = NO;
     if (self.isGroupThread) {
         NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey transaction:transaction];
-        }];
+        isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey];
     }
 
-    if (self.isGroupThread && self.isPrivateGroupChat && isUserMember) {
+    if (self.isGroupThread && self.isClosedGroup && isUserMember) {
         if (((TSGroupThread *)self.thread).usesSharedSenderKeys) {
             [mainSection addItem:[OWSTableItem
                 itemWithCustomCellBlock:^{
@@ -675,20 +502,6 @@ const CGFloat kIconViewLength = 24;
                 }]
             ];
         }
-//        [mainSection addItem:[OWSTableItem
-//            itemWithCustomCellBlock:^{
-//                UITableViewCell *cell =
-//                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
-//                                                         @"table cell label in conversation settings")
-//                                            iconName:@"table_ic_group_members"
-//                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-//                                                         OWSConversationSettingsViewController, @"group_members")];
-//                return cell;
-//            }
-//            actionBlock:^{
-//                [weakSelf showGroupMembersView];
-//            }]
-//        ];
         [mainSection addItem:[OWSTableItem
             itemWithCustomCellBlock:^{
                 UITableViewCell *cell =
@@ -711,11 +524,6 @@ const CGFloat kIconViewLength = 24;
     // Mute thread section.
 
     if (!isNoteToSelf) {
-//        OWSTableSection *notificationsSection = [OWSTableSection new];
-        // We need a section header to separate the notifications UI from the group settings UI.
-//        notificationsSection.headerTitle = NSLocalizedString(
-//            @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
-
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -825,25 +633,10 @@ const CGFloat kIconViewLength = 24;
                     actionBlock:^{
                         [weakSelf showMuteUnmuteActionSheet];
                     }]];
-//        mainSection.footerTitle = NSLocalizedString(
-//            @"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
-//            [contents addSection:notificationsSection];
     }
     // Block Conversation section.
 
     if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
-        [mainSection addItem:[OWSTableItem
-                                 itemWithCustomCellBlock:^{
-                                     return [weakSelf
-                                          disclosureCellWithName:@"Reset Secure Session"
-                                                        iconName:@"system_message_security"
-                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                     OWSConversationSettingsViewController, @"reset_secure_ession")];
-                                 }
-                                 actionBlock:^{
-                                     [weakSelf resetSecureSession];
-                                 }]];
-
         mainSection.footerTitle = NSLocalizedString(
             @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
 
@@ -883,19 +676,6 @@ const CGFloat kIconViewLength = 24;
 - (CGFloat)iconSpacing
 {
     return 12.f;
-}
-
-- (UITableViewCell *)cellWithName:(NSString *)name
-                         iconName:(NSString *)iconName
-              disclosureIconColor:(UIColor *)disclosureIconColor
-{
-    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
-    OWSColorPickerAccessoryView *accessoryView =
-        [[OWSColorPickerAccessoryView alloc] initWithColor:disclosureIconColor];
-    [accessoryView sizeToFit];
-    cell.accessoryView = accessoryView;
-
-    return cell;
 }
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
@@ -1031,24 +811,6 @@ static CGRect oldframe;
     return stackView;
 }
 
-- (void)conversationNameTouched:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        if (self.isGroupThread) {
-            CGPoint location = [sender locationInView:self.avatarView];
-            if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                [self showUpdateGroupView:UpdateGroupMode_EditGroupAvatar];
-            } else {
-                [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
-            }
-        } else {
-            if (self.contactsManager.supportsContactEditing) {
-                [self presentContactViewController];
-            }
-        }
-    }
-}
-
 - (UIImageView *)viewForIconWithName:(NSString *)iconName
 {
     UIImage *icon = [UIImage imageNamed:iconName];
@@ -1090,11 +852,9 @@ static CGRect oldframe;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
-            // MJK TODO - should be safe to remove this senderTimestamp
-            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-                [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage = [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                          initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                     thread:self.thread
                              configuration:self.disappearingMessagesConfiguration
@@ -1102,11 +862,10 @@ static CGRect oldframe;
                     createdInExistingGroup:NO];
             [infoMessage saveWithTransaction:transaction];
 
-            OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
-                initWithConfiguration:self.disappearingMessagesConfiguration
-                               thread:self.thread];
-
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            SNExpirationTimerUpdate *expirationTimerUpdate = [SNExpirationTimerUpdate new];
+            BOOL isEnabled = self.disappearingMessagesConfiguration.enabled;
+            expirationTimerUpdate.duration = isEnabled ? self.disappearingMessagesConfiguration.durationSeconds : 0;
+            [SNMessageSender send:expirationTimerUpdate inThread:self.thread usingTransaction:transaction];
         }];
     }
 }
@@ -1122,70 +881,11 @@ static CGRect oldframe;
                                                     }];
 }
 
-- (void)showVerificationView
-{
-    NSString *recipientId = self.thread.contactIdentifier;
-    OWSAssertDebug(recipientId.length > 0);
-
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
-}
-
 - (void)showGroupMembersView
 {
     TSGroupThread *thread = (TSGroupThread *)self.thread;
     LKGroupMembersVC *groupMembersVC = [[LKGroupMembersVC alloc] initWithThread:thread];
     [self.navigationController pushViewController:groupMembersVC animated:YES];
-}
-
-- (void)showUpdateGroupView:(UpdateGroupMode)mode
-{
-    OWSAssertDebug(self.conversationSettingsViewDelegate);
-
-    UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
-    updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
-    updateGroupViewController.thread = (TSGroupThread *)self.thread;
-    updateGroupViewController.mode = mode;
-    [self.navigationController pushViewController:updateGroupViewController animated:YES];
-}
-
-- (void)presentContactViewController
-{
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFailDebug(@"Contact editing not supported");
-        return;
-    }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
-}
-
-- (void)presentAddToContactViewControllerWithRecipientId:(NSString *)recipientId
-{
-    if (!self.contactsManager.supportsContactEditing) {
-        // Should not expose UI that lets the user get here.
-        OWSFailDebug(@"Contact editing not supported.");
-        return;
-    }
-
-    if (!self.contactsManager.isSystemContactsAuthorized) {
-        [self.contactsViewHelper presentMissingContactAccessAlertControllerFromViewController:self];
-        return;
-    }
-
-    OWSAddToContactViewController *viewController = [OWSAddToContactViewController new];
-    [viewController configureWithRecipientId:recipientId];
-    [self.navigationController pushViewController:viewController animated:YES];
-}
-
-- (void)didTapEditButton
-{
-    [self presentContactViewController];
 }
 
 - (void)editGroup
@@ -1218,7 +918,7 @@ static CGRect oldframe;
 {
     if (self.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return !groupThread.isLocalUserInGroup;
+        return !groupThread.isCurrentUserMemberInGroup;
     }
 
     return NO;
@@ -1231,15 +931,7 @@ static CGRect oldframe;
     if (gThread.usesSharedSenderKeys) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [[LKClosedGroupsProtocol leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
-        }];
-    } else {
-        TSOutgoingMessage *message =
-            [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
-
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
-            [gThread leaveGroupWithTransaction:transaction];
+            [[SNMessageSender leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
         }];
     }
 
@@ -1273,8 +965,6 @@ static CGRect oldframe;
         [BlockListUIUtils showBlockThreadActionSheet:self.thread
                                   fromViewController:self
                                      blockingManager:self.blockingManager
-                                     contactsManager:self.contactsManager
-                                       messageSender:self.messageSender
                                      completionBlock:^(BOOL isBlocked) {
                                          // Update switch state if user cancels action.
                                          blockConversationSwitch.on = isBlocked;
@@ -1290,7 +980,6 @@ static CGRect oldframe;
         [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                     fromViewController:self
                                        blockingManager:self.blockingManager
-                                       contactsManager:self.contactsManager
                                        completionBlock:^(BOOL isBlocked) {
                                            // Update switch state if user cancels action.
                                            blockConversationSwitch.on = isBlocked;
@@ -1485,26 +1174,6 @@ static CGRect oldframe;
 - (void)tappedConversationSearch
 {
     [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
-}
-
-- (void)resetSecureSession
-{
-    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
-    TSContactThread *thread = (TSContactThread *)self.thread;
-    __weak OWSConversationSettingsViewController *weakSelf = self;
-    NSString *message = @"This may help if you're having encryption problems in this conversation. Your messages will be kept.";
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Reset Secure Session?" message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") style:UIAlertActionStyleDefault handler:nil]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Reset" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
-                [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
-            }];
-            [weakSelf.navigationController popViewControllerAnimated:YES];
-        });
-    }]];
-    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Notifications

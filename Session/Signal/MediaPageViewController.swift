@@ -587,7 +587,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             let conversationStyle = ConversationStyle(thread: thread)
             fetchedItem = ConversationInteractionViewItem(interaction: message,
                                                           isGroupThread: thread.isGroupThread(),
-                                                          isRSSFeed: false,
                                                           transaction: transaction,
                                                           conversationStyle: conversationStyle)
         }
@@ -670,19 +669,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: Dynamic Header
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     private func senderName(message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
             let hexEncodedPublicKey = incomingMessage.authorId
             if incomingMessage.thread.isGroupThread() {
-                var publicChat: OpenGroup?
-                OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                    publicChat = LokiDatabaseUtilities.getPublicChat(for: incomingMessage.thread.uniqueId!, in: transaction)
-                }
+                let publicChat = Storage.shared.getOpenGroup(for: incomingMessage.thread.uniqueId!)
                 if let publicChat = publicChat {
                     return UserDisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? hexEncodedPublicKey
                 } else {

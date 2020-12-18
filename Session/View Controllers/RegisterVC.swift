@@ -12,6 +12,7 @@ final class RegisterVC : BaseVC {
         result.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : 20)
         result.numberOfLines = 0
         result.lineBreakMode = .byCharWrapping
+        result.accessibilityLabel = "Session ID label"
         return result
     }()
     

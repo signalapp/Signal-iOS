@@ -13,7 +13,7 @@ A clear and concise description of what the bug is.
 
 **To reproduce**
 
-Steps to reproduce the behavior:
+Steps to reproduce the behavior.
 
 **Screenshots or logs**
 

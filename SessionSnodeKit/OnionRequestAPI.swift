@@ -4,8 +4,11 @@ import SessionUtilitiesKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var pathFailureCount: [Path:UInt] = [:]
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var snodeFailureCount: [Snode:UInt] = [:]
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var guardSnodes: Set<Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
@@ -137,9 +140,9 @@ public enum OnionRequestAPI {
                 }
             }.map2 { paths in
                 OnionRequestAPI.paths = paths + reusablePaths
-                Configuration.shared.storage.with { transaction in
+                SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                     SNLog("Persisting onion request paths to database.")
-                    Configuration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
+                    SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
                 }
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: .pathsBuilt, object: nil)
@@ -154,7 +157,7 @@ public enum OnionRequestAPI {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
         if paths.isEmpty {
-            paths = Configuration.shared.storage.getOnionRequestPaths()
+            paths = SNSnodeKitConfiguration.shared.storage.getOnionRequestPaths()
             OnionRequestAPI.paths = paths
             if !paths.isEmpty {
                 guardSnodes.formUnion([ paths[0][0] ])
@@ -196,10 +199,16 @@ public enum OnionRequestAPI {
     }
 
     private static func dropGuardSnode(_ snode: Snode) {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         guardSnodes = guardSnodes.filter { $0 != snode }
     }
 
     private static func drop(_ snode: Snode) throws {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         // We repair the path here because we can do it sync. In the case where we drop a whole
         // path we leave the re-building up to getPath(excluding:) because re-building the path
         // in that case is async.
@@ -217,25 +226,28 @@ public enum OnionRequestAPI {
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
         paths = newPaths
-        Configuration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
             SNLog("Persisting onion request paths to database.")
-            Configuration.shared.storage.setOnionRequestPaths(to: newPaths, using: transaction)
+            SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: newPaths, using: transaction)
         }
     }
 
     private static func drop(_ path: Path) {
+        #if DEBUG
+        dispatchPrecondition(condition: .onQueue(Threading.workQueue))
+        #endif
         OnionRequestAPI.pathFailureCount[path] = 0
         var paths = OnionRequestAPI.paths
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
-        Configuration.shared.storage.with { transaction in
+        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
             if !paths.isEmpty {
                 SNLog("Persisting onion request paths to database.")
-                Configuration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
+                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
             } else {
                 SNLog("Clearing onion request paths.")
-                Configuration.shared.storage.setOnionRequestPaths(to: [], using: transaction)
+                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: [], using: transaction)
             }
         }
     }
@@ -337,11 +349,11 @@ public enum OnionRequestAPI {
 
     public static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
-        var guardSnode: Snode!
+        var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
-                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req/v2"
+                let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
                 if case Destination.server = destination, Double(onion.count) > 0.75 * Double(maxFileSize) {
@@ -392,8 +404,8 @@ public enum OnionRequestAPI {
                 seal.reject(error)
             }
         }
-        promise.catch2 { error in // Must be invoked on LokiAPI.workQueue
-            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
+        promise.catch2 { error in // Must be invoked on Threading.workQueue
+            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else { return }
             let path = paths.first { $0.contains(guardSnode) }
             func handleUnspecificError() {
                 guard let path = path else { return }

@@ -49,7 +49,19 @@ final class NukeDataModal : Modal {
     
     // MARK: Interaction
     @objc private func nuke() {
-        UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
-        NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+        func proceed() {
+            UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
+            NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+        }
+        if KeyPairUtilities.hasV2KeyPair() {
+            proceed()
+        } else {
+            presentingViewController?.dismiss(animated: true, completion: nil)
+            let message = "We’ve upgraded the way Session IDs are generated, so you will be unable to restore your current Session ID."
+            let alert = UIAlertController(title: "Are You Sure?", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in proceed() })
+            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+            presentingViewController?.present(alert, animated: true, completion: nil)
+        }
     }
 }

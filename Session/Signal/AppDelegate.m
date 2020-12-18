@@ -8,39 +8,28 @@
 #import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
-#import "Pastelog.h"
 #import "Session-Swift.h"
 #import "SignalApp.h"
-#import "SignalsNavigationController.h"
-#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalUtilitiesKit/AppSetup.h>
-#import <SignalUtilitiesKit/Environment.h>
-#import <SignalUtilitiesKit/OWSContactsManager.h>
+#import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
-#import <SignalUtilitiesKit/OWSPreferences.h>
+#import <SessionMessagingKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/VersionMigrations.h>
-#import <SignalUtilitiesKit/AppReadiness.h>
-#import <SignalUtilitiesKit/NSUserDefaults+OWS.h>
-#import <SignalUtilitiesKit/OWS2FAManager.h>
-#import <SignalUtilitiesKit/OWSBatchMessageProcessor.h>
-#import <SignalUtilitiesKit/OWSDisappearingMessagesJob.h>
+#import <SessionMessagingKit/AppReadiness.h>
+#import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
+#import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
 #import <SignalUtilitiesKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalUtilitiesKit/OWSFailedMessagesJob.h>
-#import <SignalUtilitiesKit/OWSIncompleteCallsJob.h>
-#import <SignalUtilitiesKit/OWSMath.h>
-#import <SignalUtilitiesKit/OWSMessageManager.h>
-#import <SignalUtilitiesKit/OWSMessageSender.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+Calling.h>
-#import <SignalUtilitiesKit/OWSReadReceiptManager.h>
-#import <SignalUtilitiesKit/SSKEnvironment.h>
+#import <SessionUtilitiesKit/OWSMath.h>
+#import <SessionMessagingKit/OWSReadReceiptManager.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/TSAccountManager.h>
-#import <SignalUtilitiesKit/TSDatabaseView.h>
+#import <SessionMessagingKit/TSAccountManager.h>
+#import <SessionMessagingKit/TSDatabaseView.h>
 #import <SignalUtilitiesKit/TSPreKeyManager.h>
-#import <SignalUtilitiesKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
 
@@ -118,20 +107,6 @@ static NSTimeInterval launchStartedAt;
     return SSKEnvironment.shared.disappearingMessagesJob;
 }
 
-- (TSSocketManager *)socketManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.socketManager);
-
-    return SSKEnvironment.shared.socketManager;
-}
-
-- (OWSMessageManager *)messageManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageManager);
-
-    return SSKEnvironment.shared.messageManager;
-}
-
 - (OWSWindowManager *)windowManager
 {
     return Environment.shared.windowManager;
@@ -191,6 +166,11 @@ static NSTimeInterval launchStartedAt;
 
     [LKAppModeManager configureWithDelegate:self];
 
+    // OWSLinkPreview and OpenGroup are now in SessionMessagingKit, so to still be able to deserialize them we
+    // need to tell NSKeyedUnarchiver about the changes.
+    [NSKeyedUnarchiver setClass:OWSLinkPreview.class forClassName:@"SessionServiceKit.OWSLinkPreview"];
+    [NSKeyedUnarchiver setClass:SNOpenGroup.class forClassName:@"LKPublicChat"];
+
     BOOL isLoggingEnabled;
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
@@ -219,8 +199,6 @@ static NSTimeInterval launchStartedAt;
 #endif
 
     [AppVersion sharedInstance];
-
-    [self startupLogging];
 
     // Prevent the device from sleeping during database view async registration
     // (e.g. long database upgrades).
@@ -279,17 +257,11 @@ static NSTimeInterval launchStartedAt;
                                              selector:@selector(registrationStateDidChange)
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationLockDidChange:)
-                                                 name:NSNotificationName_2FAStateDidChange
-                                               object:nil];
 
     // Loki - Observe data nuke request notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDataNukeRequested:) name:NSNotification.dataNukeRequested object:nil];
     
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
-
-    [OWSAnalytics appLaunchDidBegin];
 
     return YES;
 }
@@ -394,75 +366,6 @@ static NSTimeInterval launchStartedAt;
     }
 }
 
-- (void)showLaunchFailureUI:(NSError *)error
-{
-    // Disable normal functioning of app.
-    self.didAppLaunchFail = YES;
-
-    // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-    [AppVersion sharedInstance];
-    [self startupLogging];
-
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-
-    // Show the launch screen
-    self.window.rootViewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
-    [self.window makeKeyAndVisible];
-
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE",
-                                                        @"Title for the 'app launch failed' alert.")
-                                            message:NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                                                        @"Message for the 'app launch failed' alert.")
-                                     preferredStyle:UIAlertControllerStyleAlert];
-
-    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                [Pastelog submitLogsWithCompletion:^{
-                                                    OWSFail(@"Exiting after sharing debug logs.");
-                                                }];
-                                            }]];
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentAlert:alert];
-}
-
-- (void)startupLogging
-{
-    OWSLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
-
-    NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
-    if (localeIdentifier.length > 0) {
-        OWSLogInfo(@"Locale Identifier: %@", localeIdentifier);
-    }
-    NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
-    if (countryCode.length > 0) {
-        OWSLogInfo(@"Country Code: %@", countryCode);
-    }
-    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
-    if (languageCode.length > 0) {
-        OWSLogInfo(@"Language Code: %@", languageCode);
-    }
-
-    struct utsname systemInfo;
-    uname(&systemInfo);
-
-    OWSLogInfo(@"Device Model: %@ (%@)",
-        UIDevice.currentDevice.model,
-        [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
-
-    NSDictionary<NSString *, NSString *> *buildDetails =
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
-    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
-    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
-    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
-    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
-    OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
-    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
-}
-
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -497,17 +400,11 @@ static NSTimeInterval launchStartedAt;
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+
+                if (CurrentAppContext().isMainApp) {
+                    [SNJobQueue.shared resumePendingJobs];
+                }
             });
-        } else {
-            OWSLogInfo(@"Running post launch block for unregistered user.");
-
-            // Unregistered user should have no unread messages. e.g. if you delete your account.
-            [AppEnvironment.shared.notificationPresenter clearAllNotifications];
-
-            UITapGestureRecognizer *gesture =
-                [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
-            gesture.numberOfTapsRequired = 8;
-            [self.window addGestureRecognizer:gesture];
         }
     }); // end dispatchOnce for first time we become active
 
@@ -619,19 +516,7 @@ static NSTimeInterval launchStartedAt;
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];
             }];
     }
-
-#ifdef DEBUG
-    // A bug in orphan cleanup could be disastrous so let's only
-    // run it in DEBUG builds for a few releases.
-    //
-    // TODO: Release to production once we have analytics.
-    // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
-    // TODO: of disk access.  We might want to only run it "once per version"
-    // TODO: or something like that in production.
-    [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
-#endif
-
-    [self.profileManager fetchLocalUsersProfile];
+    
     [self.readReceiptManager prepareCachedValues];
 
     // Disable the SAE until the main app has successfully completed launch process
@@ -639,8 +524,6 @@ static NSTimeInterval launchStartedAt;
     [OWSPreferences setIsReadyForAppExtensions];
 
     [self ensureRootViewController];
-
-    [self.messageManager startObserving];
 
     [self.udManager setup];
 
@@ -657,8 +540,6 @@ static NSTimeInterval launchStartedAt;
         if (appVersion.lastAppVersion.length > 0
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
             [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
-
-            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         }
     }
 }
@@ -734,18 +615,6 @@ static NSTimeInterval launchStartedAt;
     [UIViewController attemptRotationToDeviceOrientation];
 }
 
-#pragma mark - Status Bar Interaction
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [super touchesBegan:touches withEvent:event];
-    CGPoint location = [[[event allTouches] anyObject] locationInView:[self window]];
-    CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
-    if (CGRectContainsPoint(statusBarFrame, location)) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
-    }
-}
-
 #pragma mark - Notifications
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -762,9 +631,9 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) {
-        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
+        __unused AnyPromise *promise = [LKPushNotificationAPI registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
     } else {
-        __unused AnyPromise *promise = [LKPushNotificationManager unregisterWithToken:deviceToken isForcedUpdate:NO];
+        __unused AnyPromise *promise = [LKPushNotificationAPI unregisterToken:deviceToken];
     }
 }
 
@@ -782,7 +651,6 @@ static NSTimeInterval launchStartedAt;
     OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier.");
     [self.pushRegistrationManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
-    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
     [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }
@@ -901,7 +769,6 @@ static NSTimeInterval launchStartedAt;
 - (void)startOpenGroupPollersIfNeeded
 {
     [LKPublicChatManager.shared startPollersIfNeeded];
-    [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
 }
 
 - (void)stopOpenGroupPollers { [LKPublicChatManager.shared stopPollers]; }
@@ -950,10 +817,9 @@ static NSTimeInterval launchStartedAt;
     NSString *hexEncodedDeviceToken = [userDefaults stringForKey:@"deviceToken"];
     if (isUsingFullAPNs && hexEncodedDeviceToken != nil) {
         NSData *deviceToken = [NSData dataFromHexString:hexEncodedDeviceToken];
-        [[LKPushNotificationManager unregisterWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete];
+        [[LKPushNotificationAPI unregisterToken:deviceToken] retainUntilComplete];
     }
     [ThreadUtil deleteAllContent];
-    [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [SNSnodeAPI clearSnodePool];
     [self stopPoller];

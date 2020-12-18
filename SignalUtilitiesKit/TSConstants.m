@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
+
 BOOL IsUsingProductionService()
 {
 #ifdef USING_PRODUCTION_SERVICE

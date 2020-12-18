@@ -3,7 +3,7 @@
 //
 
 #import "SignalAccount.h"
-#import "Contact.h"
+
 #import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "SignalRecipient.h"
@@ -40,11 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)uniqueId
 {
     return _recipientId;
-}
-
-- (nullable NSString *)contactFullName
-{
-    return self.contact.fullName.filterStringForDisplay;
 }
 
 - (NSString *)multipleAccountLabelText

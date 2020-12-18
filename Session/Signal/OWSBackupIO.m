@@ -4,7 +4,7 @@
 
 #import "OWSBackupIO.h"
 #import <SignalCoreKit/Randomness.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
 
 @import Compression;
 

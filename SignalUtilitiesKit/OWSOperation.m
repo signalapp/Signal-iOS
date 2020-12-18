@@ -4,7 +4,6 @@
 
 #import "OWSOperation.h"
 #import "NSError+MessageSending.h"
-#import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
 #import <SessionProtocolKit/SessionProtocolKit.h>

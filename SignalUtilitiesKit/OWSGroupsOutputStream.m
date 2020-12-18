@@ -22,32 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *group = groupThread.groupModel;
     OWSAssertDebug(group);
 
-    SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetails builderWithId:group.groupId];
+    SNProtoGroupDetailsBuilder *groupBuilder = [SNProtoGroupDetails builderWithId:group.groupId];
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembers:group.groupMemberIds];
-    [groupBuilder setColor:groupThread.conversationColorName];
     [groupBuilder setAdmins:group.groupAdminIds];
 
     if ([OWSBlockingManager.sharedManager isGroupIdBlocked:group.groupId]) {
         [groupBuilder setBlocked:YES];
     }
-    /*
-    NSData *avatarPng;
-    if (group.groupImage) {
-        SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
-
-        [avatarBuilder setContentType:OWSMimeTypeImagePng];
-        avatarPng = UIImagePNGRepresentation(group.groupImage);
-        [avatarBuilder setLength:(uint32_t)avatarPng.length];
-
-        NSError *error;
-        SSKProtoGroupDetailsAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
-        if (error || !avatarProto) {
-            OWSFailDebug(@"could not build protobuf: %@", error);
-        } else {
-            [groupBuilder setAvatar:avatarProto];
-        }
-    } */
 
     OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
@@ -72,12 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self writeUInt32:groupDataLength];
     [self writeData:groupData];
-
-    /*
-    if (avatarPng) {
-        [self writeData:avatarPng];
-    }
-     */
 }
 
 @end

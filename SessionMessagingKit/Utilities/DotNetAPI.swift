@@ -16,15 +16,21 @@ public class DotNetAPI : NSObject {
     // MARK: Error
     public enum Error : LocalizedError {
         case generic
+        case invalidURL
         case parsingFailed
         case signingFailed
         case encryptionFailed
         case decryptionFailed
         case maxFileSizeExceeded
 
+        internal var isRetryable: Bool {
+            return false
+        }
+        
         public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
+            case .invalidURL: return "Invalid URL."
             case .parsingFailed: return "Invalid file server response."
             case .signingFailed: return "Couldn't sign message."
             case .encryptionFailed: return "Couldn't encrypt file."
@@ -40,7 +46,7 @@ public class DotNetAPI : NSObject {
     // MARK: Private API
     private static func requestNewAuthToken(for server: String) -> Promise<String> {
         SNLog("Requesting auth token for server: \(server).")
-        guard let userKeyPair = Configuration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
+        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
         let queryParameters = "pubKey=\(userKeyPair.publicKey.toHexString())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
@@ -71,7 +77,7 @@ public class DotNetAPI : NSObject {
     private static func submitAuthToken(_ token: String, for server: String) -> Promise<String> {
         SNLog("Submitting auth token for server: \(server).")
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
-        guard let userPublicKey = Configuration.shared.storage.getUserPublicKey() else { return Promise(error: Error.generic) }
+        guard let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey() else { return Promise(error: Error.generic) }
         let parameters = [ "pubKey" : userPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise.value(FileServerAPI.publicKey)
@@ -83,12 +89,12 @@ public class DotNetAPI : NSObject {
 
     // MARK: Public API
     public static func getAuthToken(for server: String) -> Promise<String> {
-        let storage = Configuration.shared.storage
+        let storage = SNMessagingKitConfiguration.shared.storage
         if let token = storage.getAuthToken(for: server) {
             return Promise.value(token)
         } else {
             return requestNewAuthToken(for: server).then(on: DispatchQueue.global(qos: .userInitiated)) { submitAuthToken($0, for: server) }.map(on: DispatchQueue.global(qos: .userInitiated)) { token in
-                storage.with { transaction in
+                storage.writeSync { transaction in
                     storage.setAuthToken(for: server, to: token, using: transaction)
                 }
                 return token
@@ -101,14 +107,15 @@ public class DotNetAPI : NSObject {
         return AnyPromise.from(downloadAttachment(from: url))
     }
 
-    public static func downloadAttachment(from url: String) -> Promise<Data> {
-        var host = "https://\(URL(string: url)!.host!)"
+    public static func downloadAttachment(from urlAsString: String) -> Promise<Data> {
+        guard let url = URL(string: urlAsString) else { return Promise(error: Error.invalidURL) }
+        var host = "https://\(url.host!)"
         let sanitizedURL: String
         if FileServerAPI.fileStorageBucketURL.contains(host) {
-            sanitizedURL = url.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
+            sanitizedURL = urlAsString.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
             host = FileServerAPI.server
         } else {
-            sanitizedURL = url.replacingOccurrences(of: host, with: "\(host)/loki/v1")
+            sanitizedURL = urlAsString.replacingOccurrences(of: host, with: "\(host)/loki/v1")
         }
         let request: NSMutableURLRequest
         do {
@@ -133,11 +140,11 @@ public class DotNetAPI : NSObject {
     }
 
     @objc(uploadAttachment:withID:toServer:)
-    public static func objc_uploadAttachment(_ attachment: AttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
+    public static func objc_uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
         return AnyPromise.from(uploadAttachment(attachment, with: attachmentID, to: server))
     }
 
-    public static func uploadAttachment(_ attachment: AttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
+    public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
         let isEncryptionRequired = (server == FileServerAPI.server)
         return Promise<Void>() { seal in
             func proceed(with token: String) {
@@ -151,7 +158,7 @@ public class DotNetAPI : NSObject {
                 if isEncryptionRequired {
                     var encryptionKey = NSData()
                     var digest = NSData()
-                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, shouldPad: true, outKey: &encryptionKey, outDigest: &digest) else {
+                    guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, shouldPad: false, outKey: &encryptionKey, outDigest: &digest) else {
                         SNLog("Couldn't encrypt attachment.")
                         return seal.reject(Error.encryptionFailed)
                     }

@@ -10,6 +10,7 @@ final class RestoreVC : BaseVC {
     private lazy var mnemonicTextView: TextView = {
         let result = TextView(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
+        result.accessibilityLabel = "Recovery phrase text view"
         return result
     }()
     

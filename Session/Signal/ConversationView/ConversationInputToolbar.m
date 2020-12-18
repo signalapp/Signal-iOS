@@ -5,18 +5,15 @@
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Session-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/NSTimer+OWS.h>
-#import <SignalUtilitiesKit/TSQuotedMessage.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
+#import <SessionMessagingKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -130,6 +127,8 @@ const CGFloat kMaxTextViewHeight = 120;
     self.inputTextView.backgroundColor = LKColors.composeViewTextFieldBackground;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
+    self.inputTextView.accessibilityLabel = @"Input text view";
+    self.inputTextView.isAccessibilityElement = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputTextView);
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
@@ -150,11 +149,15 @@ const CGFloat kMaxTextViewHeight = 120;
     [self.sendButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    self.sendButton.accessibilityLabel = @"Send button";
+    self.sendButton.isAccessibilityElement = YES;
 
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *voiceMemoIcon = [[UIImage imageNamed:@"Microphone"] asTintedImageWithColor:LKColors.text];
     [self.voiceMemoButton setImage:voiceMemoIcon forState:UIControlStateNormal];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    self.voiceMemoButton.accessibilityLabel = @"Voice message button";
+    self.voiceMemoButton.isAccessibilityElement = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     // We want to be permissive about the voice message gesture, so we hang
@@ -1092,10 +1095,7 @@ const CGFloat kMaxTextViewHeight = 120;
 
 - (void)showMentionCandidateSelectionViewFor:(NSArray<LKMention *> *)mentionCandidates in:(TSThread *)thread
 {
-    __block SNOpenGroup *publicChat;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
-    }];
+    SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:thread.uniqueId];
     if (publicChat != nil) {
         self.mentionCandidateSelectionView.publicChatServer = publicChat.server;
         [self.mentionCandidateSelectionView setPublicChatChannel:publicChat.channel];

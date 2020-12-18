@@ -9,11 +9,11 @@
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
-#import <SignalUtilitiesKit/OWSBackgroundTask.h>
-#import <SignalUtilitiesKit/OWSFileSystem.h>
-#import <SignalUtilitiesKit/TSAttachment.h>
-#import <SignalUtilitiesKit/TSMessage.h>
-#import <SignalUtilitiesKit/TSThread.h>
+#import <SessionMessagingKit/OWSBackgroundTask.h>
+#import <SessionUtilitiesKit/OWSFileSystem.h>
+#import <SessionMessagingKit/TSAttachment.h>
+#import <SessionMessagingKit/TSMessage.h>
+#import <SessionMessagingKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -179,8 +179,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         .then(^{
             // Kick off lazy restore on main thread.
             [self.backupLazyRestore clearCompleteAndRunIfNecessary];
-
-            [self.profileManager fetchLocalUsersProfile];
 
             // Make sure backup is enabled once we complete
             // a backup restore.

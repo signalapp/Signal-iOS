@@ -13,12 +13,6 @@ public class ConversationMediaView: UIView {
         case failed
     }
 
-    // MARK: - Dependencies
-
-    private var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
-    }
-
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>
@@ -163,11 +157,13 @@ public class ConversationMediaView: UIView {
             configure(forError: .invalid)
             return
         }
+        /*
         guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             // Not being downloaded.
             configure(forError: .missing)
             return
         }
+         */
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let view: UIView

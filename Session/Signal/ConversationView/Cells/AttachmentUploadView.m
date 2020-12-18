@@ -6,10 +6,10 @@
 #import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/OWSUploadOperation.h>
-#import <SignalUtilitiesKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

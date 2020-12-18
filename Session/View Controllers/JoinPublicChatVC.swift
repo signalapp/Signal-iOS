@@ -133,7 +133,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         isJoining = true
         let channelID: UInt64 = 1
         let urlAsString = url.absoluteString
-        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         let profileManager = OWSProfileManager.shared()
         let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
         let profilePictureURL = profileManager.profilePictureURL()
@@ -148,8 +148,6 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
                 let _ = OpenGroupAPI.setDisplayName(to: displayName, on: urlAsString)
                 let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
                 let _ = OpenGroupAPI.join(channelID, on: urlAsString)
-                let syncManager = SSKEnvironment.shared.syncManager
-                let _ = syncManager.syncAllOpenGroups()
                 self?.presentingViewController!.dismiss(animated: true, completion: nil)
             }
             .catch(on: DispatchQueue.main) { [weak self] error in

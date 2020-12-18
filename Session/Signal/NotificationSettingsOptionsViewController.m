@@ -5,7 +5,7 @@
 #import "NotificationSettingsOptionsViewController.h"
 #import "Session-Swift.h"
 #import "SignalApp.h"
-#import <SignalUtilitiesKit/Environment.h>
+#import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 @implementation NotificationSettingsOptionsViewController
@@ -62,9 +62,6 @@
 - (void)setNotificationType:(NotificationType)notificationType
 {
     [Environment.shared.preferences setNotificationPreviewType:notificationType];
-
-    // rebuild callUIAdapter since notification configuration changed.
-//    [AppEnvironment.shared.callService createCallUIAdapter];
 
     [self.navigationController popViewControllerAnimated:YES];
 }

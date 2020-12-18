@@ -377,7 +377,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
 
         guard let initialDetailItem = galleryItem else {
-            owsFailDebug("unexpectedly failed to build initialDetailItem.")
             return
         }
 
@@ -802,14 +801,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
     func buildGalleryItem(attachment: TSAttachment, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
-            // Avoid crash in debug mode
-            // owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
             return nil
         }
 
         guard let message = attachmentStream.fetchAlbumMessage(with: transaction) else {
-            // Avoid crash in debug mode
-            // owsFailDebug("message was unexpectedly nil")
             return nil
         }
 

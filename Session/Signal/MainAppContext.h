@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

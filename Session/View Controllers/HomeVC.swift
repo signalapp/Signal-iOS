@@ -96,8 +96,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         // Set up seed reminder view if needed
         let userDefaults = UserDefaults.standard
         let hasViewedSeed = userDefaults[.hasViewedSeed]
-        let isMasterDevice = userDefaults.isMasterDevice
-        if !hasViewedSeed && isMasterDevice {
+        if !hasViewedSeed {
             view.addSubview(seedReminderView)
             seedReminderView.pin(.leading, to: .leading, of: view)
             seedReminderView.pin(.top, to: .top, of: view)
@@ -108,7 +107,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        if !hasViewedSeed && isMasterDevice {
+        if !hasViewedSeed {
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
         } else {
             tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
@@ -162,6 +161,31 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         super.viewDidAppear(animated)
         isViewVisible = true
         UserDefaults.standard[.hasLaunchedOnce] = true
+        showKeyPairMigrationNudgeIfNeeded()
+        showKeyPairMigrationSuccessModalIfNeeded()
+    }
+    
+    private func showKeyPairMigrationNudgeIfNeeded() {
+        guard !KeyPairUtilities.hasV2KeyPair() else { return }
+        let lastNudge = UserDefaults.standard[.lastKeyPairMigrationNudge]
+        let nudgeInterval: Double = 3 * 24 * 60 * 60 // 3 days
+        let nudge = given(lastNudge) { Date().timeIntervalSince($0) > nudgeInterval } ?? true
+        guard nudge else { return }
+        let sheet = KeyPairMigrationSheet()
+        sheet.modalPresentationStyle = .overFullScreen
+        sheet.modalTransitionStyle = .crossDissolve
+        present(sheet, animated: true, completion: nil)
+        UserDefaults.standard[.lastKeyPairMigrationNudge] = Date()
+    }
+    
+    private func showKeyPairMigrationSuccessModalIfNeeded() {
+        let userDefaults = UserDefaults.standard
+        guard KeyPairUtilities.hasV2KeyPair() && userDefaults[.isMigratingToV2KeyPair] else { return }
+        let sheet = KeyPairMigrationSuccessSheet()
+        sheet.modalPresentationStyle = .overFullScreen
+        sheet.modalTransitionStyle = .crossDissolve
+        present(sheet, animated: true, completion: nil)
+        UserDefaults.standard[.isMigratingToV2KeyPair] = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -282,38 +306,42 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     private func updateNavigationBarButtons() {
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
+        profilePictureView.accessibilityLabel = "Settings button"
         profilePictureView.size = profilePictureSize
-        let userHexEncodedPublicKey: String
-        if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
-            userHexEncodedPublicKey = masterHexEncodedPublicKey
-        } else {
-            userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        }
-        profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
+        profilePictureView.hexEncodedPublicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
         let profilePictureViewContainer = UIView()
+        profilePictureViewContainer.accessibilityLabel = "Settings button"
         profilePictureViewContainer.addSubview(profilePictureView)
         profilePictureView.pin(.leading, to: .leading, of: profilePictureViewContainer, withInset: 4)
         profilePictureView.pin(.top, to: .top, of: profilePictureViewContainer)
         profilePictureView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
         profilePictureView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
+        let leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
+        leftBarButtonItem.accessibilityLabel = "Settings button"
+        leftBarButtonItem.isAccessibilityElement = true
+        navigationItem.leftBarButtonItem = leftBarButtonItem
         let pathStatusViewContainer = UIView()
+        pathStatusViewContainer.accessibilityLabel = "Current onion routing path button"
         let pathStatusViewContainerSize = Values.verySmallProfilePictureSize // Match the profile picture view
         pathStatusViewContainer.set(.width, to: pathStatusViewContainerSize)
         pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
         let pathStatusView = PathStatusView()
+        pathStatusView.accessibilityLabel = "Current onion routing path button"
         pathStatusView.set(.width, to: Values.pathStatusViewSize)
         pathStatusView.set(.height, to: Values.pathStatusViewSize)
         pathStatusViewContainer.addSubview(pathStatusView)
         pathStatusView.center(.horizontal, in: pathStatusViewContainer)
         pathStatusView.center(.vertical, in: pathStatusViewContainer)
         pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
+        let rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
+        rightBarButtonItem.accessibilityLabel = "Current onion routing path button"
+        rightBarButtonItem.isAccessibilityElement  = true
+        navigationItem.rightBarButtonItem = rightBarButtonItem
     }
 
     @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
@@ -372,30 +400,28 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         guard let thread = self.thread(at: indexPath.row) else { return [] }
-        var publicChat: OpenGroup?
-        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            publicChat = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)
-        }
+        let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-                Storage.writeSync { transaction in
-                    if let publicChat = publicChat {
+                Storage.write { transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
+                    if let openGroup = openGroup {
                         var messageIDs: Set<String> = []
                         thread.enumerateInteractions(with: transaction) { interaction, _ in
                             messageIDs.insert(interaction.uniqueId!)
                         }
                         OWSPrimaryStorage.shared().updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, in: transaction)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastMessageServerIDCollection)
-                        transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: Storage.lastDeletionServerIDCollection)
-                        let _ = OpenGroupAPI.leave(publicChat.channel, on: publicChat.server)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastMessageServerIDCollection)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastDeletionServerIDCollection)
+                        let _ = OpenGroupAPI.leave(openGroup.channel, on: openGroup.server)
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
                     } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                        let _ = ClosedGroupsProtocol.leave(groupPublicKey, using: transaction).ensure {
-                            Storage.writeSync { transaction in
+                        let _ = MessageSender.leave(groupPublicKey, using: transaction).ensure {
+                            Storage.write { transaction in
                                 thread.removeAllThreadInteractions(with: transaction)
                                 thread.remove(with: transaction)
                             }
@@ -413,10 +439,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         }
         delete.backgroundColor = Colors.destructive
         if thread is TSContactThread {
-            var publicKey: String!
-            Storage.read { transaction in
-                publicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: thread.contactIdentifier()!, in: transaction) ?? thread.contactIdentifier()!
-            }
+            let publicKey = thread.contactIdentifier()!
             let blockingManager = SSKEnvironment.shared.blockingManager
             let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
             let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in

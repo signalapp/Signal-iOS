@@ -93,10 +93,10 @@ public final class OpenGroupMessage : NSObject {
     }
     
     @objc public convenience init(senderPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64,
-            quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64,
+            quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String, quotedMessageServerID: UInt64,
             signatureData: Data?, signatureVersion: UInt64, serverTimestamp: UInt64) {
         let quote: Quote?
-        if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey, let quotedMessageBody = quotedMessageBody {
+        if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
             quote = Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
         } else {
@@ -117,7 +117,7 @@ public final class OpenGroupMessage : NSObject {
             SNLog("Failed to sign open group message.")
             return nil
         }
-        let userKeyPair = Configuration.shared.storage.getUserKeyPair()!
+        let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair()!
         guard let signatureData = try? Ed25519.sign(data, with: userKeyPair) else {
             SNLog("Failed to sign open group message.")
             return nil
@@ -137,7 +137,8 @@ public final class OpenGroupMessage : NSObject {
     internal func toJSON() -> JSON {
         var value: JSON = [ "timestamp" : timestamp ]
         if let quote = quote {
-            value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey, "text" : quote.quotedMessageBody ]
+            let quoteAsJSON: JSON = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey, "text" : quote.quotedMessageBody ]
+            value["quote"] = quoteAsJSON
         }
         if let signature = signature {
             value["sig"] = signature.data.toHexString()

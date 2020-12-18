@@ -4,7 +4,7 @@
 
 #import "ConversationInputTextView.h"
 #import "Session-Swift.h"
-#import <SignalUtilitiesKit/NSString+SSK.h>
+#import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalCoreKit/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
