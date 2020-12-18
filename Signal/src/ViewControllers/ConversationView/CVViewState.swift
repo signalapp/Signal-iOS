@@ -64,11 +64,9 @@ public class CVViewState: NSObject {
     @objc
     public var isUserScrolling = false
     @objc
-    public var isScrollingToTop = false {
-        didSet {
-            tryToFireCanLandLoad()
-        }
-    }
+    public var scrollingAnimationStartDate: Date?
+    @objc
+    public var hasScrollingAnimation: Bool { scrollingAnimationStartDate != nil }
     @objc
     public var scrollContinuity: ScrollContinuity = .bottom
     public var scrollContinuityMap: CVScrollContinuityMap?
@@ -136,34 +134,6 @@ public class CVViewState: NSObject {
     @objc
     public let presentationStatusBenchSteps = BenchSteps(title: "presentationStatusBenchSteps")
     #endif
-
-    // MARK: - Can Land Load
-
-    public func waitUntilCanLandLoad() -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        guard let canLandLoadPromise = canLandLoadPromise else {
-            return Promise.value(())
-        }
-        return canLandLoadPromise.promise
-    }
-    private func tryToFireCanLandLoad() {
-        AssertIsOnMainThread()
-
-        guard let canLandLoadPromise = canLandLoadPromise else {
-            return
-        }
-        guard !isScrollingToTop else {
-            return
-        }
-        canLandLoadPromise.resolver.fulfill(())
-        self.canLandLoadPromise = nil
-    }
-    private struct PromiseAndResolver {
-        let promise: Promise<Void>
-        let resolver: Resolver<Void>
-    }
-    private var canLandLoadPromise: PromiseAndResolver?
 
     // MARK: - 
 
@@ -234,10 +204,12 @@ public extension ConversationViewController {
         set { viewState.isUserScrolling = newValue }
     }
 
-    var isScrollingToTop: Bool {
-        get { viewState.isScrollingToTop }
-        set { viewState.isScrollingToTop = newValue }
+    var scrollingAnimationStartDate: Date? {
+        get { viewState.scrollingAnimationStartDate }
+        set { viewState.scrollingAnimationStartDate = newValue }
     }
+
+    var hasScrollingAnimation: Bool { viewState.hasScrollingAnimation }
 
     var scrollContinuity: ScrollContinuity {
         get { viewState.scrollContinuity }

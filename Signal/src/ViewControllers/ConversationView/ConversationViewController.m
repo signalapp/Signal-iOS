@@ -936,6 +936,9 @@ typedef enum : NSUInteger {
 
 - (void)readTimerDidFire
 {
+    if (self.layout.isPerformingBatchUpdates) {
+        return;
+    }
     [self markVisibleMessagesAsRead];
 }
 
@@ -1840,7 +1843,6 @@ typedef enum : NSUInteger {
         // This is expected if the menu action interaction is being deleted.
         return nil;
     }
-    [self.layout prepareLayout];
     UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
         [self.layout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes == nil) {
@@ -3012,7 +3014,7 @@ typedef enum : NSUInteger {
     }
     @try {
         [self.collectionView reloadData];
-        [self.collectionView.collectionViewLayout invalidateLayout];
+        [self.layout invalidateLayout];
     } @catch (NSException *exception) {
         OWSLogWarn(@"currentRenderStateDebugDescription: %@", self.currentRenderStateDebugDescription);
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
@@ -3117,7 +3119,6 @@ typedef enum : NSUInteger {
     //
     // We can safely call prepareLayout to ensure the layout state is up-to-date
     // since our layout uses a dirty flag internally to debounce redundant work.
-    [self.layout prepareLayout];
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
@@ -3175,10 +3176,15 @@ typedef enum : NSUInteger {
 {
     self.userHasScrolled = YES;
     self.isUserScrolling = YES;
+    [self scrollingAnimationDidStart];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)willDecelerate
 {
+    if (!willDecelerate) {
+        [self scrollingAnimationDidComplete];
+    }
+
     if (!self.isUserScrolling) {
         return;
     }
@@ -3194,6 +3200,8 @@ typedef enum : NSUInteger {
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    [self scrollingAnimationDidComplete];
+
     if (!self.isWaitingForDeceleration) {
         return;
     }
@@ -3205,24 +3213,74 @@ typedef enum : NSUInteger {
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
 {
-    self.isScrollingToTop = YES;
 
-    // isScrollingToTop blocks landing of loads, so we must ensure
-    // that it is always cleared in a timely way, even if the animation
-    // is cancelled. Wait no more than 2 seconds.
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)2.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        // isScrollingToTop should already have been cleared...
-        OWSAssertDebug(!weakSelf.isScrollingToTop);
-        // ...but we want to make sure.
-        weakSelf.isScrollingToTop = NO;
-    });
+    [self scrollingAnimationDidStart];
+
     return YES;
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
 {
-    self.isScrollingToTop = NO;
+    [self scrollingAnimationDidComplete];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self scrollingAnimationDidComplete];
+}
+
+#pragma mark - ConversationCollectionViewDelegate
+
+- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
+{
+    OWSAssertIsOnMainThread();
+}
+
+- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
+{
+    OWSAssertIsOnMainThread();
+
+    if (oldSize.width != newSize.width) {
+        [self resetForSizeOrOrientationChange];
+    }
+}
+
+- (void)collectionViewWillAnimate
+{
+    [self scrollingAnimationDidStart];
+}
+
+- (void)scrollingAnimationDidStart
+{
+    OWSAssertIsOnMainThread();
+
+    NSDate *startDate = [NSDate new];
+    self.scrollingAnimationStartDate = startDate;
+
+    // scrollingAnimationStartDate blocks landing of loads, so we must ensure
+    // that it is always cleared in a timely way, even if the animation
+    // is cancelled. Wait no more than N seconds.
+    __weak ConversationViewController *weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)5.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        ConversationViewController *_Nullable strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+        // scrollingAnimationStartDate should already have been cleared,
+        // but we need to ensure that it is cleared in a timely way.
+        if ([NSObject isNullableObject:strongSelf.scrollingAnimationStartDate equalTo:startDate]) {
+            OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
+            [strongSelf scrollingAnimationDidComplete];
+        }
+    });
+}
+
+- (void)scrollingAnimationDidComplete
+{
+    OWSAssertIsOnMainThread();
+
+    self.scrollingAnimationStartDate = nil;
     [self autoLoadMoreIfNecessary];
 }
 
@@ -3551,22 +3609,6 @@ typedef enum : NSUInteger {
     }
 }
 
-#pragma mark - ConversationCollectionViewDelegate
-
-- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
-{
-    OWSAssertIsOnMainThread();
-}
-
-- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
-{
-    OWSAssertIsOnMainThread();
-
-    if (oldSize.width != newSize.width) {
-        [self resetForSizeOrOrientationChange];
-    }
-}
-
 #pragma mark - ContactsPickerDelegate
 
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
@@ -3753,7 +3795,9 @@ typedef enum : NSUInteger {
 {
     @try {
         void (^updateBlock)(void) = ^{
+            [self.layout willPerformBatchUpdates];
             [self.collectionView performBatchUpdates:batchUpdates completion:completion];
+            [self.layout didPerformBatchUpdates];
 
             // AFAIK the collection view layout should reflect the old layout
             // until performBatchUpdates(), then we need to invalidate and prepare
@@ -3767,7 +3811,6 @@ typedef enum : NSUInteger {
             //
             // UICollectionView received layout attributes for a cell with an index path that does not exist...
             [self.layout invalidateLayout];
-            [self.layout prepareLayout];
             [BenchManager completeEventWithEventId:@"message-send"];
         };
 

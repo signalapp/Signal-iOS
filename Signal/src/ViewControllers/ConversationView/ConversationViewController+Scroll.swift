@@ -236,7 +236,6 @@ extension ConversationViewController {
         guard !isUserScrolling else { return }
 
         view.layoutIfNeeded()
-        layout.prepare()
 
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else {
             return owsFailDebug("failed to get attributes for indexPath \(indexPath)")
@@ -556,8 +555,6 @@ extension ConversationViewController {
                                          items: [])
         }
 
-        layout.prepare()
-
         let contentOffset = collectionView.contentOffset
 
         var sortIdToIndexPathMap = [UInt64: IndexPath]()
@@ -617,7 +614,6 @@ extension ConversationViewController {
         guard let scrollContinuityMap = viewState.scrollContinuityMap else {
             return nil
         }
-        layout.prepare()
 
         var sortIdToIndexPathMap = [UInt64: IndexPath]()
         for (index, renderItem) in renderItems.enumerated() {
@@ -641,13 +637,12 @@ extension ConversationViewController {
             guard let indexPath = sortIdToIndexPathMap[sortId] else {
                 continue
             }
-
-            guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
+            guard let latestFrame = layout.latestFrame(forIndexPath: indexPath) else {
                 owsFailDebug("Missing layoutAttributes.")
                 continue
             }
 
-            let newLocation = layoutAttributes.frame.topLeft
+            let newLocation = latestFrame.topLeft
             let contentOffsetY = newLocation.y - oldDistanceY
             let contentOffset = CGPoint(x: 0, y: contentOffsetY)
             return contentOffset
@@ -678,8 +673,6 @@ extension ConversationViewController {
 
     private func targetContentOffsetForScrollAction(_ scrollAction: CVScrollAction) -> CGPoint? {
         owsAssertDebug(!scrollAction.isAnimated)
-
-        layout.prepare()
 
         switch scrollAction.action {
         case .bottomOfLoadWindow:
@@ -741,7 +734,6 @@ extension ConversationViewController {
             // This is expected if the menu action interaction is being deleted.
             return nil
         }
-        layout.prepare()
         guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
             owsFailDebug("Missing layoutAttributes.")
             return nil
