@@ -382,8 +382,15 @@ public final class OpenGroupAPI : DotNetAPI {
                     var sanitizedProfilePictureURL = profilePictureURL
                     while sanitizedProfilePictureURL.hasPrefix("/") { sanitizedProfilePictureURL.removeFirst() }
                     let url = "\(sanitizedServerURL)/\(sanitizedProfilePictureURL)"
-                    FileServerAPI.downloadAttachment(from: url).map2 { data in
-                        let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
+                    FileServerAPI.downloadAttachment(from: url).map2 { rawData in
+                        let attachmentStream: TSAttachmentStream
+                        let data: Data
+                        if let rawImage = UIImage(data: rawData), let jpegData = rawImage.jpegData(compressionQuality: 0.8) {
+                            data = jpegData
+                        } else {
+                            data = rawData
+                        }
+                        attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
                         try attachmentStream.write(data)
                         thread.updateAvatar(with: attachmentStream)
                     }

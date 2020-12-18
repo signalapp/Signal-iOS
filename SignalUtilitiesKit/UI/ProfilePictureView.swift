@@ -60,11 +60,7 @@ public final class ProfilePictureView : UIView {
     public func update(for thread: TSThread) {
         openGroupProfilePicture = nil
         if let thread = thread as? TSGroupThread {
-            if thread.name() == "Loki Public Chat"
-                || thread.name() == "Session Public Chat" { // Override the profile picture for the Loki Public Chat and the Session Public Chat
-                hexEncodedPublicKey = ""
-                isRSSFeed = true
-            } else if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
+            if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
                 self.openGroupProfilePicture = openGroupProfilePicture
                 isRSSFeed = false
                 hasTappableProfilePicture = true

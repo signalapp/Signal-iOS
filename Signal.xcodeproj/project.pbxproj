@@ -287,6 +287,7 @@
 		B8B3204E258C15C80020074B /* ContactsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32044258C117C0020074B /* ContactsMigration.swift */; };
 		B8B32072258C22200020074B /* DisplayNameUtilities2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32071258C22200020074B /* DisplayNameUtilities2.swift */; };
 		B8B3207B258C22550020074B /* DisplayNameUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32067258C22010020074B /* DisplayNameUtilities.swift */; };
+		B8B320B7258C30D70020074B /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B320B6258C30D70020074B /* HTMLMetadata.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BC00C0257D90E30032E807 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC00BF257D90E30032E807 /* General.swift */; };
 		B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B2C72563685C00551B4D /* CircleView.swift */; };
@@ -1383,6 +1384,7 @@
 		B8B32044258C117C0020074B /* ContactsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsMigration.swift; sourceTree = "<group>"; };
 		B8B32067258C22010020074B /* DisplayNameUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameUtilities.swift; sourceTree = "<group>"; };
 		B8B32071258C22200020074B /* DisplayNameUtilities2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameUtilities2.swift; sourceTree = "<group>"; };
+		B8B320B6258C30D70020074B /* HTMLMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadata.swift; sourceTree = "<group>"; };
 		B8B5BCEB2394D869003823C9 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		B8BB829F238F322400BA5194 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		B8BB82A1238F356100BA5194 /* Values.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Values.swift; sourceTree = "<group>"; };
@@ -2878,6 +2880,7 @@
 		C32C5D22256DD496003C73A2 /* Link Previews */ = {
 			isa = PBXGroup;
 			children = (
+				B8B320B6258C30D70020074B /* HTMLMetadata.swift */,
 				C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */,
 				B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */,
 			);
@@ -5186,6 +5189,7 @@
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */,
 				B8856D34256F1192001CE70E /* Environment.m in Sources */,
+				B8B320B7258C30D70020074B /* HTMLMetadata.swift in Sources */,
 				C32C5AB1256DBE8F003C73A2 /* TSIncomingMessage.m in Sources */,
 				C3A3A107256E1A5C004D228D /* OWSDisappearingMessagesFinder.m in Sources */,
 				C32C59C3256DB41F003C73A2 /* TSGroupModel.m in Sources */,
