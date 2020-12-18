@@ -5,7 +5,7 @@
 import Foundation
 import Lottie
 
-class AudioMessageView: UIStackView {
+class AudioMessageView: OWSStackView {
 
     private let audioAttachment: AudioAttachment
     private var attachment: TSAttachment { audioAttachment.attachment }
@@ -37,23 +37,15 @@ class AudioMessageView: UIStackView {
         self.isIncoming = isIncoming
         self.conversationStyle = conversationStyle
 
-        super.init(frame: .zero)
+        super.init(name: "AudioMessageView")
 
-        axis = .vertical
-        spacing = AudioMessageView.vSpacing
+        self.apply(config: Self.outerStackConfig)
 
-        if !attachment.isVoiceMessage {
-            let topText: String
-            if let fileName = attachment.sourceFilename?.stripped, !fileName.isEmpty {
-                topText = fileName
-            } else {
-                topText = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
-            }
-
+        if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
+                                           isIncoming: isIncoming,
+                                           conversationStyle: conversationStyle) {
             let topLabel = UILabel()
-            topLabel.text = topText
-            topLabel.textColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
-            topLabel.font = AudioMessageView.labelFont
+            topLabelConfig.applyForRendering(label: topLabel)
             addArrangedSubview(topLabel)
         }
 
@@ -65,7 +57,7 @@ class AudioMessageView: UIStackView {
         playPauseAnimation.animationSpeed = 3
         playPauseAnimation.backgroundBehavior = .forceFinish
         playPauseAnimation.contentMode = .scaleAspectFit
-        playPauseAnimation.autoSetDimensions(to: CGSize(square: animationSize))
+        playPauseAnimation.autoSetDimensions(to: CGSize(square: Self.animationSize))
         playPauseAnimation.setContentHuggingHigh()
 
         let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
@@ -89,21 +81,14 @@ class AudioMessageView: UIStackView {
         progressSlider.autoSetDimension(.height, toSize: 12)
         progressSlider.autoVCenterInSuperview()
 
-        playbackTimeLabel.textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
-        playbackTimeLabel.font = UIFont.ows_dynamicTypeCaption1.ows_monospaced
+        Self.playbackTimeLabelConfig(isIncoming: isIncoming,
+                                     conversationStyle: conversationStyle).applyForRendering(label: playbackTimeLabel)
         playbackTimeLabel.setContentHuggingHigh()
 
-        let playerStack = UIStackView(arrangedSubviews: [playPauseAnimation, waveformContainer, playbackTimeLabel])
-        playerStack.isLayoutMarginsRelativeArrangement = true
-        playerStack.layoutMargins = UIEdgeInsets(
-            top: AudioMessageView.vMargin,
-            leading: hMargin,
-            bottom: AudioMessageView.vMargin,
-            trailing: hMargin
-        )
-        playerStack.spacing = hSpacing
-
-        addArrangedSubview(playerStack)
+        let innerStack = OWSStackView(name: "playerStack",
+                                      arrangedSubviews: [playPauseAnimation, waveformContainer, playbackTimeLabel])
+        innerStack.apply(config: Self.innerStackConfig)
+        addArrangedSubview(innerStack)
 
         waveformContainer.autoAlignAxis(.horizontal, toSameAxisOf: playPauseAnimation)
 
@@ -112,8 +97,75 @@ class AudioMessageView: UIStackView {
         audioPlayer.addListener(self)
     }
 
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @available(swift, obsoleted: 1.0)
+    required init(name: String, arrangedSubviews: [UIView] = []) {
+        owsFail("Do not use this initializer.")
+    }
+
+    private static var outerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: vSpacing,
+                          layoutMargins: .zero)
+    }
+
+    private static var innerStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .horizontal,
+                          alignment: .center,
+                          spacing: 12,
+                          layoutMargins: innerLayoutMargins)
+    }
+
+    private static func topLabelConfig(audioAttachment: AudioAttachment,
+                                       isIncoming: Bool,
+                                       conversationStyle: ConversationStyle) -> CVLabelConfig? {
+
+        let attachment = audioAttachment.attachment
+        guard !attachment.isVoiceMessage else {
+            return nil
+        }
+
+        let text: String
+        if let fileName = attachment.sourceFilename?.stripped, !fileName.isEmpty {
+            text = fileName
+        } else {
+            text = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
+        }
+
+        return CVLabelConfig(text: text,
+                             font: labelFont,
+                             textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming))
+    }
+
+    private static func playbackTimeLabelConfig(isIncoming: Bool,
+                                                conversationStyle: ConversationStyle) -> CVLabelConfig {
+        return CVLabelConfig(text: " ",
+                             font: UIFont.ows_dynamicTypeCaption1.ows_monospaced,
+                             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
+    }
+
+    @objc
+    static func measureHeight(audioAttachment: AudioAttachment,
+                              isIncoming: Bool,
+                              conversationStyle: ConversationStyle) -> CGFloat {
+
+        var outerSubviewSizes = [CGSize]()
+        if let topLabelConfig = Self.topLabelConfig(audioAttachment: audioAttachment,
+                                                    isIncoming: isIncoming,
+                                                    conversationStyle: conversationStyle) {
+            outerSubviewSizes.append(CGSize(width: 0, height: topLabelConfig.font.lineHeight))
+        }
+
+        let playPauseAnimationSize = CGSize(square: animationSize)
+        let waveformSize = CGSize(width: 0, height: waveformHeight)
+        let playbackTimeLabelSize = CGSize(width: 0, height: playbackTimeLabelConfig(isIncoming: isIncoming,
+                                                                                     conversationStyle: conversationStyle).font.lineHeight)
+        let innerSubviewSizes = [playPauseAnimationSize, waveformSize, playbackTimeLabelSize]
+        let innerStackSize = CVStackView.measure(config: innerStackConfig, subviewSizes: innerSubviewSizes)
+        outerSubviewSizes.append(innerStackSize)
+
+        let outerStackSize = CVStackView.measure(config: outerStackConfig, subviewSizes: outerSubviewSizes)
+        return outerStackSize.height
     }
 
     // MARK: - Scrubbing
@@ -157,12 +209,12 @@ class AudioMessageView: UIStackView {
 
     private static var labelFont: UIFont = .ows_dynamicTypeCaption2
     private static var waveformHeight: CGFloat = 35
-    private static var vMargin: CGFloat = 4
-    private var animationSize: CGFloat = 28
+    private static var animationSize: CGFloat = 28
     private var iconSize: CGFloat = 24
-    private var hMargin: CGFloat = 0
-    private var hSpacing: CGFloat = 12
     private static var vSpacing: CGFloat = 2
+    private static var innerLayoutMargins: UIEdgeInsets {
+        UIEdgeInsets(hMargin: 0, vMargin: 4)
+    }
 
     private lazy var playedColor: UIColor = isIncoming ? .init(rgbHex: 0x92caff) : .ows_white
     private lazy var unplayedColor: UIColor =
@@ -174,11 +226,6 @@ class AudioMessageView: UIStackView {
     // During pan gestures, this gives a preview
     // of playback scrubbing.
     private var overrideProgress: CGFloat?
-
-    @objc
-    static var bubbleHeight: CGFloat {
-        return labelFont.lineHeight + waveformHeight + vSpacing + (vMargin * 2)
-    }
 
     func updateContents(animated: Bool) {
         updatePlaybackState(animated: animated)

@@ -60,7 +60,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return CGSize(width: maxWidth, height: AudioMessageView.bubbleHeight).ceil
+        let height = AudioMessageView.measureHeight(audioAttachment: audioAttachment,
+                                                    isIncoming: isIncoming,
+                                                    conversationStyle: conversationStyle)
+        return CGSize(width: maxWidth, height: height).ceil
     }
 
     // MARK: - Events
