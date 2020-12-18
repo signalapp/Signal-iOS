@@ -32,9 +32,9 @@ class AudioWaveformProgressView: UIView {
     }
 
     @objc
-    var progress: CGFloat = 0 {
+    var value: CGFloat = 0 {
         didSet {
-            guard progress != oldValue else { return }
+            guard value != oldValue else { return }
             redrawSamples()
         }
     }
@@ -107,16 +107,18 @@ class AudioWaveformProgressView: UIView {
 
         // Show the loading state if sampling of the waveform hasn't finished yet.
         // TODO: This will eventually be a lottie animation of a waveform moving up and down
-        func showLoadingAnimation() {
+        func resetContents(showLoadingAnimation: Bool) {
             playedShapeLayer.path = nil
             unplayedShapeLayer.path = nil
             thumbImageView.isHidden = true
-            loadingAnimation.isHidden = false
-            loadingAnimation.play()
+            if showLoadingAnimation {
+                loadingAnimation.isHidden = false
+                loadingAnimation.play()
+            }
         }
 
         guard audioWaveform?.isSamplingComplete == true else {
-            showLoadingAnimation()
+            resetContents(showLoadingAnimation: true)
             return
         }
 
@@ -137,7 +139,7 @@ class AudioWaveformProgressView: UIView {
         guard let amplitudes = audioWaveform?.normalizedLevelsToDisplay(sampleCount: targetSamplesCount),
               amplitudes.count > 0 else {
             owsFailDebug("Missing sample amplitudes.")
-            showLoadingAnimation()
+            resetContents(showLoadingAnimation: false)
             return
         }
         // We might not have enough samples.
@@ -146,7 +148,9 @@ class AudioWaveformProgressView: UIView {
         let sampleSpacingCount = max(0, samplesCount - 1)
         let sampleSpacing: CGFloat
         if sampleSpacingCount > 0 {
-            sampleSpacing = max(0, (width - (sampleWidth * CGFloat(samplesCount))) / CGFloat(sampleSpacingCount))
+            // Divide the remaining space evenly between the samples.
+            let remainingSpace = max(0, width - (sampleWidth * CGFloat(samplesCount)))
+            sampleSpacing = remainingSpace / CGFloat(sampleSpacingCount)
         } else {
             sampleSpacing = 0
         }
@@ -154,6 +158,7 @@ class AudioWaveformProgressView: UIView {
         playedShapeLayer.frame = layer.frame
         unplayedShapeLayer.frame = layer.frame
 
+        let progress = self.value
         var thumbXPos = width * progress
         if CurrentAppContext().isRTL { thumbXPos = width - thumbXPos }
         thumbImageView.center = CGPoint(x: thumbXPos, y: layer.frame.center.y)

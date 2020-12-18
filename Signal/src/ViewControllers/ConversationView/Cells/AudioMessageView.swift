@@ -243,10 +243,10 @@ class AudioMessageView: OWSStackView {
 
     private var visibleProgressRatio: CGFloat {
         get {
-            waveformProgress.progress
+            waveformProgress.value
         }
         set {
-            waveformProgress.progress = newValue
+            waveformProgress.value = newValue
             progressSlider.value = Float(newValue)
             updateElapsedTime(durationSeconds * TimeInterval(newValue))
         }
