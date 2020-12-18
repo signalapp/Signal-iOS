@@ -555,11 +555,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                                         profileAvatarData:weakSelf.avatarData]
 
                           .then(^{
+                              OWSAssertIsOnMainThread();
+
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf updateProfileCompleted];
                               }];
                           })
                           .catch(^(NSError *error) {
+                              OWSAssertIsOnMainThread();
                               OWSFailDebug(@"Error: %@", error);
 
                               [modalActivityIndicator dismissWithCompletion:^{

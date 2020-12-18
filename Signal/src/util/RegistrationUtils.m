@@ -89,6 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             captchaToken:nil
                                                                                    isSMS:true]
                           .then(^{
+                              OWSAssertIsOnMainThread();
+
                               OWSLogInfo(@"re-registering: send verification code succeeded.");
 
                               [modalActivityIndicator dismissWithCompletion:^{
@@ -113,6 +115,8 @@ NS_ASSUME_NONNULL_BEGIN
                               }];
                           })
                           .catch(^(NSError *error) {
+                              OWSAssertIsOnMainThread();
+
                               OWSLogError(@"re-registering: send verification code failed.");
                               [modalActivityIndicator dismissWithCompletion:^{
                                   if (error.code == 400) {
