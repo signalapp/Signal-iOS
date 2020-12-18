@@ -249,7 +249,7 @@ public class DebugFlags: BaseFlags {
     public static let suppressBackgroundActivity = false
 
     @objc
-    public static let logSQLQueries = false
+    public static let logSQLQueries = build.includes(.dev)
 
     @objc
     public static let groupsV2IgnoreCapability = false
