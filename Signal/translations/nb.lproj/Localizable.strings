@@ -767,7 +767,7 @@
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Åpne i kart";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send epost";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send e-post";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Ikke navngitt kontakt";
@@ -1058,7 +1058,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Et steg til";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Kunne ikke åpne epost-app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Kunne ikke åpne e-postapp.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-lenken ble kopiert til din utklippstavle. Du blir nå videresendt til listen over innmeldte feil på Github.";
@@ -1646,7 +1646,7 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Åpne en ny gruppe for å gjøre et gratis gruppeanrop";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Vi introduserer gruppesamtaler";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Du opprettet gruppen.";
@@ -2243,7 +2243,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy-grupper";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Du må akseptere en invitasjon for å bli med i gruppen igjen, og vil ikke få gruppemeldinger før du har akseptert.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Oppgrader gruppe";
@@ -2276,16 +2276,16 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Legg til medlemmer";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Dette medlemmet kunne ikke legges til den nye gruppen automatisk mens den ble oppgradert:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Dette medlemmet kunne ikke automatisk legges til den nye gruppen mens den ble oppgradert:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Disse medlemmene kunne ikke legges til den nye gruppen automatisk mens den ble oppgradert:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Disse medlemmene kunne ikke automatisk legges til den nye gruppen mens den ble oppgradert:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All meldingshistorikk og alle mediefiler fra før oppgradering har blitt tatt vare på.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Denne brukeren ble fjernet fra gruppen og kan ikke bli med igjen før de oppgraderer sin Signal-versjon.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Denne brukeren ble fjernet fra gruppen og kan ikke bli med igjen før de oppgraderer sin Signal-versjon:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Disse brukerne ble fjernet fra gruppen og kan ikke bli med igjen før de oppgraderer sin Signal-versjon.";
@@ -3026,7 +3026,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Handlinger inkluderer \"Merk som lest\", \"Svar\" og \"Ring tilbake.\"";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ingen navn eller innhold";
+"NOTIFICATIONS_NONE" = "Verken navn eller innhold";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Spill av mens appen er åpen";
@@ -3035,10 +3035,10 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Lyder";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Legg til tilpasset lyd...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Legg til egendefinert lyd...";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn, Innhold, og handlinger";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn, innhold og handlinger";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Kun navn";

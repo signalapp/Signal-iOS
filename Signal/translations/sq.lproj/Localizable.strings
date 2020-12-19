@@ -2603,7 +2603,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Në secilën pajisje, hapni Rregullimet";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Aktivizoni “Rrejt Vendor”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Aktivizoni “Rrjet Vendor”";
 
 /* Second step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Kaloni te Signal-i";

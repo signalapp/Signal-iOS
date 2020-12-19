@@ -1562,7 +1562,7 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ e altri %3$@ partecipano a questa chiamata";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Non è possibile ricevere audio & video da %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Non è possibile ricevere audio e video da %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ciò potrebbe essere dovuto al fatto che non hanno verificato la modifica del codice di sicurezza, c'è un problema con il loro dispositivo o ti hanno bloccato.";

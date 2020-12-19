@@ -1523,7 +1523,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Seuls les administrateurs peuvent changer cette option.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Vous ne recevrez pas leur son ou leur vidéo et ils ne recevront pas les vôtres.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Vous ne recevrez ni leur son ni leur vidéo et ils ne recevront pas les vôtres.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ est bloqué";
@@ -1562,13 +1562,13 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ et %3$@ autres personnes font partie de cet appel";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir le son et la vidéo de %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir ni le son ni la vidéo de %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Cela peut être dû au fait qu'ils n'ont pas vérifié votre changement de numéro de sécurité, qu'il y a un problème avec leur appareil ou qu'ils vous ont bloqué.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Impossible de recevoir le son et la vidéo de %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Impossible de recevoir ni le son ni la vidéo de %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Il n’y a personne d’autre ici";
@@ -1643,7 +1643,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vous (sur un autre appareil)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Ouvrez un nouveau groupe pour lancer gratuitement un appel de groupe chiffré";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Ouvrez un Nouveau groupe pour lancer gratuitement un appel de groupe chiffré";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "Nous présentons les appels de groupe";
@@ -2123,25 +2123,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Le nom du groupe est désormais « %@ ».";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "Ce groupe a été converti en nouveau groupe.";
+"GROUP_WAS_MIGRATED" = "Ce groupe a été converti en Nouveau groupe.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Un membre n’a pas pu être ajouté au nouveau groupe et a été supprimé du groupe.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Un membre n’a pas pu être ajouté au Nouveau groupe et a été supprimé du groupe.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Vous n’avez pas pu être ajouté au nouveau groupe et avez été supprimé du groupe.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Vous n’avez pas pu être ajouté au Nouveau groupe et avez été supprimé du groupe.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ membres n’ont pas pu être ajoutés au nouveau groupe et ont été supprimés du groupe.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ membres n’ont pas pu être ajoutés au Nouveau groupe et ont été supprimés du groupe.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Un membre n’a pas pu être ajouté au nouveau groupe et a été invité à s’y joindre";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Un membre n’a pas pu être ajouté au Nouveau groupe et a été invité à s’y joindre";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Vous n’avez pas pu être ajouté au nouveau groupe et avez été invité à vous y joindre";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Vous n’avez pas pu être ajouté au Nouveau groupe et avez été invité à vous y joindre";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à s’y joindre.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membres n’ont pas pu être ajoutés au Nouveau groupe et ont été invités à s’y joindre.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
@@ -2165,34 +2165,34 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Bloquer %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Les groupes hérités sont des groupes qui ne sont pas compatibles avec les fonctions des nouveaux groupes, telles que les administrateurs et les mises à jour plus descriptives des groupes.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Les groupes hérités sont des groupes qui ne sont pas compatibles avec les fonctions des Nouveaux groupes, telles que les administrateurs et les mises à jour plus descriptives des groupes.";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Que sont les groupes hérités ?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Les groupes hérités ne peuvent pour le moment pas être convertis en nouveaux groupes, mais vous pouvez créer un nouveau groupe avec les mêmes membres s’ils utilisent la version la plus récente de Signal.\n\nSignal proposera dans le futur un moyen de convertir les groupes hérités.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Les groupes hérités ne peuvent pour le moment pas être convertis en Nouveaux groupes, mais vous pouvez créer un Nouveau groupe avec les mêmes membres s’ils utilisent la version la plus récente de Signal.\n\nSignal proposera dans le futur un moyen de convertir les groupes hérités.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puis-je convertir un groupe hérité en nouveau groupe ?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pour créer un nouveau groupe, tous les membres devraient mettre Signal à jour vers la version la plus récente.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pour créer un Nouveau groupe, tous les membres devraient mettre Signal à jour vers la version la plus récente.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Les groupes hérités comparés aux nouveaux";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Les groupes hérités comparés aux Nouveaux groupes";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Convertissez ce groupe pour activer de nouvelles fonctions telles que les @mentions et l’administration. Les membres qui n’ont pas partagé leur nom ou leur photo dans ce groupe seront invités à s’y joindre. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Impossible de convertir en nouveau groupe ";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Impossible de convertir en Nouveau groupe ";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Ce groupe ne peut pas être converti en nouveau groupe, car il comporte trop de membres. Le nombre maximal de membres pour la conversion du groupe est %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Ce groupe ne peut pas être converti en Nouveau groupe, car il comporte trop de membres. Le nombre maximal de membres pour la conversion du groupe est %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Quand tous les membres actuels du groupe utiliseront une version de Signal capable de se joindre à un nouveau groupe, ce groupe sera converti.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Quand tous les membres actuels du groupe utiliseront une version de Signal capable de se joindre à un Nouveau groupe, ce groupe sera converti.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tout l’historique des messages et tous les médias d’avant la conversion seront conservés.";
@@ -2216,28 +2216,28 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Un groupe hérité sera créé, car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Un membre ne prend pas en charge les nouveaux groupes, ce sera donc un groupe hérité. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Un membre ne prend pas en charge les Nouveaux groupes, ce sera donc un groupe hérité. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ membres ne prennent pas en charge les nouveaux groupes, ce sera donc un groupe hérité. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ membres ne prennent pas en charge les Nouveaux groupes, ce sera donc un groupe hérité. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ce groupe est un groupe hérité. Les fonctions telles que l’administration des groupes ne sont proposées que pour les nouveaux groupes. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ce groupe est un groupe hérité. Les fonctions telles que l’administration des groupes ne sont proposées que pour les Nouveaux groupes. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Ce groupe hérité n’est pas encore prêt à être converti en nouveau groupe. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Ce groupe hérité n’est pas encore prêt à être converti en Nouveau groupe. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ce groupe hérité ne peut pas être converti en nouveau groupe, car il est trop grand. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ce groupe hérité ne peut pas être converti en Nouveau groupe, car il est trop grand. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ce groupe est un groupe hérité. Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, %@";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Un membre n’a pas pu être rajouté au nouveau groupe. Voulez-vous l’ajouter maintenant ?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Un membre n’a pas pu être rajouté au Nouveau groupe. Voulez-vous l’ajouter maintenant ?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ membres n’ont pas pu être rajoutés au nouveau groupe. Voulez-vous les ajouter maintenant ?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ membres n’ont pas pu être rajoutés au Nouveau groupe. Voulez-vous les ajouter maintenant ?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Groupe hérité";
@@ -2252,16 +2252,16 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, convertissez ce groupe.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Que sont les nouveaux groupes ?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Que sont les Nouveaux groupes ?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Tout l’historique des messages et tous les médias d’avant la conversion ont été conservés.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Les nouveaux groupes offrent des fonctions telles que les @mentions et les administrateurs de groupes et en offriront d’autres dans le futur.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Les Nouveaux groupes offrent des fonctions telles que les @mentions et les administrateurs de groupes et en offriront d’autres dans le futur.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Nouveaux groupes";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Groupes de type nouveau";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Ajouter des membres";
@@ -2276,10 +2276,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Ajouter des membres";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Ce membre n’a pas pu être ajouté automatiquement au nouveau groupe lors de sa conversion :";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Ce membre n’a pas pu être ajouté automatiquement au Nouveau groupe lors de sa conversion :";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ces membres n’ont pas pu être ajoutés automatiquement au nouveau groupe lors de sa conversion :";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ces membres n’ont pas pu être ajoutés automatiquement au Nouveau groupe lors de sa conversion :";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Tout l’historique des messages et tous les médias d’avant la conversion ont été conservés.";
@@ -2297,28 +2297,28 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Ces membres devront accepter une invitation afin de se joindre à ce groupe de nouveau et ne recevront aucun message du groupe avant d’en avoir accepté une :";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ce membre ne peut pas se joindre aux nouveaux groupes et sera supprimé du groupe :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ce membre ne peut pas se joindre aux Nouveaux groupes et sera supprimé du groupe :";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ces membres ne peuvent pas se joindre aux nouveaux groupes et seront supprimés du groupe :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ces membres ne peuvent pas se joindre aux Nouveaux groupes et seront supprimés du groupe :";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Convertir en nouveau groupe";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Convertir en Nouveau groupe";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Convertir ce groupe";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Ce groupe n’a pas pu être converti en nouveau groupe pour le moment.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Ce groupe n’a pas pu être converti en Nouveau groupe pour le moment.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Ce groupe n’a pas pu être converti en nouveau groupe, car vous n’êtes pas connecté à Internet. Réessayez plus tard.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Ce groupe n’a pas pu être converti en Nouveau groupe, car vous n’êtes pas connecté à Internet. Réessayez plus tard.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Impossible de terminer la conversion";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Converti en nouveau groupe.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Converti en Nouveau groupe.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "convertissez ce groupe";
@@ -2936,7 +2936,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Impossible de créer le nouveau groupe. Vérifiez votre connexion à Internet et réessayez.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ne prend pas en charge les nouveaux groupes";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ne prend pas en charge les Nouveaux groupes";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Un nom de groupe est requis.";
@@ -3695,40 +3695,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Toutes · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "A réagi par 1%@ à votre message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "A réagi 1%@ à votre message";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "A réagi avec %@ à votre album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "A réagi %@ à votre album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "A réagi avec %@ à votre contenu son";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "A réagi %@ à votre contenu son";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "A réagi avec %@ à votre partage de contact";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "A réagi %@ à votre partage de contact";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "A réagi avec %@ à votre fichier";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "A réagi %@ à votre fichier";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "A réagi avec %@ à votre GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "A réagi %@ à votre GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "A réagi avec %@ à votre photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "A réagi %@ à votre photo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "A réagi avec %@ à votre autocollant";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "A réagi %@ à votre autocollant";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "A réagi avec %@ à : « %@ »";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "A réagi %@ à : « %@ »";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "A réagi avec %@ à votre vidéo";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "A réagi %@ à votre vidéo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "A réagi avec %@ à votre média éphémère";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "A réagi %@ à votre média éphémère";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "A réagi avec %@ à votre message vocal";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "A réagi %@ à votre message vocal";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Vous";
@@ -4586,10 +4586,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Les nouveaux groupes sont arrivés !";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Les Nouveaux groupes sont arrivés !";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Les fonctions des nouveaux groupes comprennent les @mentions, les administrateurs et plus encore. Essayez-les en touchant :";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Les fonctions des Nouveaux groupes comprennent les @mentions, les administrateurs et plus encore. Essayez-les en touchant :";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Message — Autocollant";

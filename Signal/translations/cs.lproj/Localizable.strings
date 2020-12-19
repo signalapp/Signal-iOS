@@ -1643,7 +1643,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vy (na jiném zařízení)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Zahájit bezplatné skupinové hovory lze po otevření nové skupiny.";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "Představujeme skupinové hovory";
