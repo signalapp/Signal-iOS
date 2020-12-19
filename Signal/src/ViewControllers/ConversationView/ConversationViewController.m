@@ -4010,12 +4010,12 @@ typedef enum : NSUInteger {
         self.collectionView.scrollIndicatorInsets = newInsets;
     }];
 
-    if (!didChangeInsets) {
-        return;
-    }
-
     // Adjust content offset to prevent the presented keyboard from obscuring content.
-    if (!self.hasAppearedAndHasAppliedFirstLoad) {
+    if (!didChangeInsets) {
+        // Do nothing.
+        //
+        // If content inset didn't change, no need to update content offset.
+    } else if (!self.hasAppearedAndHasAppliedFirstLoad) {
         // Do nothing.
     } else if (wasScrolledToBottom) {
         // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
