@@ -238,7 +238,7 @@ class ViewOnceMessageViewController: OWSViewController {
         let dismissButton = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
         }
-        dismissButton.layer.shadowColor = Theme.primaryTextColor.cgColor
+        dismissButton.layer.shadowColor = Theme.darkThemeBackgroundColor.cgColor
         dismissButton.layer.shadowOffset = .zero
         dismissButton.layer.shadowOpacity = 0.7
         dismissButton.layer.shadowRadius = 3.0
