@@ -262,17 +262,19 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         contentBottom += conversationStyle.contentMarginBottom
 
-        let layoutFooterHeight = delegate.layoutFooterHeight
-        let footerIndexPath = IndexPath(row: row, section: 0)
-        if layoutItems.isEmpty || layoutFooterHeight <= 0 || headerLayoutAttributes?.indexPath == footerIndexPath {
-            // Do nothing.
-        } else {
-            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-                                                                    with: footerIndexPath)
+        if row > 0 {
+            let layoutFooterHeight = delegate.layoutFooterHeight
+            let footerIndexPath = IndexPath(row: row - 1, section: 0)
+            if layoutItems.isEmpty || layoutFooterHeight <= 0 || headerLayoutAttributes?.indexPath == footerIndexPath {
+                // Do nothing.
+            } else {
+                let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                                                                        with: footerIndexPath)
 
-            layoutAttributes.frame = CGRect(x: 0, y: contentBottom, width: viewWidth, height: layoutFooterHeight)
-            footerLayoutAttributes = layoutAttributes
-            contentBottom += layoutFooterHeight
+                layoutAttributes.frame = CGRect(x: 0, y: contentBottom, width: viewWidth, height: layoutFooterHeight)
+                footerLayoutAttributes = layoutAttributes
+                contentBottom += layoutFooterHeight
+            }
         }
 
         let contentSize = CGSize(width: viewWidth, height: contentBottom)
