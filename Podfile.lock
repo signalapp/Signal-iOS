@@ -79,8 +79,8 @@ PODS:
   - PureLayout (3.1.4)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
-  - SignalArgon2 (1.3.1)
-  - SignalArgon2/Tests (1.3.1)
+  - SignalArgon2 (1.3.2)
+  - SignalArgon2/Tests (1.3.2)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - GRKOpenSSLFramework
@@ -352,7 +352,7 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalArgon2:
-    :commit: 27b7755998ba6ed1e2190e18c7eaf58943766f17
+    :commit: 6a37e32167500ff7830e337b726a1653061d86b2
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
@@ -395,7 +395,7 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalArgon2: 60d8fb5db6a6d0d26cd330d64af4be63775f6c26
+  SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
   SignalRingRTC: f77b817d18b9b0ea58c35162e610ff00046f7523
