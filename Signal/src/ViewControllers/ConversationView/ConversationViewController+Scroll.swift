@@ -506,7 +506,6 @@ extension ConversationViewController {
     private var maxContentOffsetY: CGFloat {
         let contentHeight = self.safeContentHeight
         let adjustedContentInset = collectionView.adjustedContentInset
-        let minContentOffsetY = -adjustedContentInset.top
         let rawValue = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height
         // Note the usage of MAX() to handle the case where there isn't enough
         // content to fill the collection view at its current size.

@@ -607,7 +607,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     var isScrollNearEdgeOfLoadWindow: Bool {
-        let tolerancePoints: CGFloat = 50
+        let deviceFrame = CurrentAppContext().frame
+        // Within 1 screenful of the edge of the load window.
+        let tolerancePoints = max(deviceFrame.width, deviceFrame.height)
         return (isScrolledToBottom(tolerancePoints: tolerancePoints) ||
                     isScrolledToTop(tolerancePoints: tolerancePoints))
     }
