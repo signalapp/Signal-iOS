@@ -366,11 +366,16 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                                          attributedText: attributedText)
                 return .textViewConfig(textViewConfig: textViewConfig)
             } else {
-                let labelConfig = CVLabelConfig(text: text,
-                                                font: textMessageFont,
-                                                textColor: bodyTextColor,
-                                                numberOfLines: 0,
-                                                lineBreakMode: .byWordWrapping)
+                let labelConfig = CVLabelConfig(
+                    text: text,
+                    font: textMessageFont,
+                    textColor: bodyTextColor,
+                    numberOfLines: 0,
+                    lineBreakMode: .byWordWrapping,
+                    textAlignment: isTextExpanded
+                        ? displayableText.fullTextNaturalAlignment
+                        : displayableText.displayTextNaturalAlignment
+                )
                 return .labelConfig(labelConfig: labelConfig)
             }
         case .attributedText(let attributedText):
