@@ -346,16 +346,12 @@ public class CVText {
             textStorage.addLayoutManager(layoutManager)
         }
 
-        let size = layoutManager.usedRect(for: textContainer).size
-
-        // For some reason, in production builds, the textStorage
-        // seems to get optimized out in many circumstances. This
-        // results in `usedRect` measuring an empty string and a
-        // size of 0,0.
-        // TODO: Figure out a better way to fix this. For now,
-        // by just using the textStorage later it ensures that it
-        // is properly measured.
-        _ = textStorage
+        // The NSTextStorage object owns all the other layout components,
+        // so there are only weak references to it. In optimized builds,
+        // this can result in it being freed before we perform measurement.
+        // We can work around this by explicitly extending the lifetime of
+        // textStorage until measurement is completed.
+        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }
 
         return size.ceil
     }
@@ -450,16 +446,12 @@ public class CVText {
             textStorage.addLayoutManager(layoutManager)
         }
 
-        let size = layoutManager.usedRect(for: textContainer).size
-
-        // For some reason, in production builds, the textStorage
-        // seems to get optimized out in many circumstances. This
-        // results in `usedRect` measuring an empty string and a
-        // size of 0,0.
-        // TODO: Figure out a better way to fix this. For now,
-        // by just using the textStorage later it ensures that it
-        // is properly measured.
-        _ = textStorage
+        // The NSTextStorage object owns all the other layout components,
+        // so there are only weak references to it. In optimized builds,
+        // this can result in it being freed before we perform measurement.
+        // We can work around this by explicitly extending the lifetime of
+        // textStorage until measurement is completed.
+        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }
 
         return size.ceil
     }
