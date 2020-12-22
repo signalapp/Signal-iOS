@@ -493,10 +493,6 @@ public class CVLoadCoordinator: NSObject {
             if viewState.isUserScrolling {
                 owsAssertDebug(viewState.hasScrollingAnimation)
             }
-            guard !viewState.isUserScrolling else {
-                // Never land a load if a scroll gesture is in progress.
-                return false
-            }
             guard viewState.hasScrollingAnimation else {
                 // If no scroll gesture or animation is in progress,
                 // we can land the load.
