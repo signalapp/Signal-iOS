@@ -759,11 +759,13 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            if isValidOutput {
+            if isValidOutput, canStripMetadata(for: attachment.mimeType) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)) attachment as supported image type.")
+                let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
+                Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
+
                 return convertAndCompressImage(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
@@ -793,9 +795,11 @@ public class SignalAttachment: NSObject {
 
         if imageQuality == .original &&
             attachment.dataLength < kMaxFileSizeGeneric &&
-            outputImageUTISet.contains(attachment.dataUTI) {
+            outputImageUTISet.contains(attachment.dataUTI) &&
+            canStripMetadata(for: attachment.dataUTI) {
             // We should avoid resizing images attached "as documents" if possible.
-            return attachment
+            // Just remove the metadata and return.
+            return removeImageMetadata(attachment: attachment)
         }
 
         var imageUploadQuality = imageQuality.imageQualityTier()
@@ -859,7 +863,7 @@ public class SignalAttachment: NSObject {
                 return recompressedAttachment
             }
 
-            // If the JPEG output is larger than the file size limit,
+            // If the image output is larger than the file size limit,
             // continue to try again by progressively reducing the
             // image upload quality.
             switch imageUploadQuality {
@@ -973,7 +977,17 @@ public class SignalAttachment: NSObject {
         }
     }
 
+    private class func canStripMetadata(for typeIdentifier: String) -> Bool {
+        let cgSupportedTypes = CGImageDestinationCopyTypeIdentifiers() as NSArray
+        return cgSupportedTypes.contains(typeIdentifier)
+    }
+
     private class func removeImageMetadata(attachment: SignalAttachment) -> SignalAttachment {
+        guard canStripMetadata(for: attachment.dataUTI) else {
+            owsFailDebug("CoreGraphics can't output \(attachment.dataUTI). Stripping unsupported.")
+            attachment.error = .couldNotRemoveMetadata
+            return attachment
+        }
 
         guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
