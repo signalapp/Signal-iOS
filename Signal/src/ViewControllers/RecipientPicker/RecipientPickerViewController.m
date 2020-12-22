@@ -1034,47 +1034,50 @@ const NSUInteger kMinimumSearchLength = 2;
                   backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
                       [self.profileManager fetchProfileForUsername:username
                           success:^(SignalServiceAddress *address) {
-                              OWSAssertIsOnMainThread();
                               if (modal.wasCancelled) {
                                   return;
                               }
 
-                              [modal dismissWithCompletion:^{
-                                  [weakSelf tryToSelectRecipient:[PickedRecipient forAddress:address]];
-                              }];
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modal dismissWithCompletion:^{
+                                      [weakSelf tryToSelectRecipient:[PickedRecipient forAddress:address]];
+                                  }];
+                              });
                           }
                           notFound:^{
-                              OWSAssertIsOnMainThread();
                               if (modal.wasCancelled) {
                                   return;
                               }
 
-                              [modal dismissWithCompletion:^{
-                                  NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
-                                      @"A message indicating that the given username is not a registered signal "
-                                      @"account. Embeds "
-                                      @"{{username}}");
-                                  [OWSActionSheets
-                                      showActionSheetWithTitle:
-                                          NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
-                                              @"A message indicating that the given username was not "
-                                              @"registered with signal.")
-                                                       message:[[NSString alloc]
-                                                                   initWithFormat:usernameNotFoundFormat,
-                                                                   [CommonFormats formatUsername:username]]];
-                              }];
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modal dismissWithCompletion:^{
+                                      NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
+                                          @"A message indicating that the given username is not a registered signal "
+                                          @"account. Embeds "
+                                          @"{{username}}");
+                                      [OWSActionSheets
+                                          showActionSheetWithTitle:
+                                              NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                                  @"A message indicating that the given username was not "
+                                                  @"registered with signal.")
+                                                           message:[[NSString alloc]
+                                                                       initWithFormat:usernameNotFoundFormat,
+                                                                       [CommonFormats formatUsername:username]]];
+                                  }];
+                              });
                           }
                           failure:^(NSError *error) {
-                              OWSAssertIsOnMainThread();
                               if (modal.wasCancelled) {
                                   return;
                               }
 
-                              [modal dismissWithCompletion:^{
-                                  [OWSActionSheets showErrorAlertWithMessage:
-                                                       NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
-                                                           @"A message indicating that username lookup failed.")];
-                              }];
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  [modal dismissWithCompletion:^{
+                                      [OWSActionSheets showErrorAlertWithMessage:
+                                                           NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+                                                               @"A message indicating that username lookup failed.")];
+                                  }];
+                              });
                           }];
                   }];
 }

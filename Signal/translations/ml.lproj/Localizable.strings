@@ -1547,7 +1547,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "കോൾ നിറഞ്ഞു";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "കോളിൽ ചേരുക";
@@ -1574,7 +1574,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "മറ്റാരുമില്ല";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "ഇതുവരെ ആരും ഈ കോളിൽ ഇല്ല.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
@@ -1583,10 +1583,10 @@
 "GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ കോളിൽ ചേർന്നു";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ കോൾ ഉപേക്ഷിച്ചു";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "കോൾ ആരംഭിക്കുക";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "ഒരു ഗ്രൂപ്പ് കോൾ ആരംഭിക്കാൻ ഇവിടെ ടാപ്പ് ചെയ്യുക";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "നിങ്ങൾ ഒരു ഗ്രൂപ്പ് കോൾ ആരംഭിച്ചു";
@@ -1646,7 +1646,7 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "ഗ്രൂപ്പ് കോളുകൾ അവതരിപ്പിക്കുന്നു";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് സൃഷ്ടിച്ചു.";
@@ -2087,7 +2087,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "നിങ്ങൾ ഫോട്ടോ നീക്കംചെയ്തു.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ഫോട്ടോ നീക്കംചെയ്തു";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
@@ -2246,7 +2246,7 @@
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "ഈ ഗ്രൂപ്പിൽ വീണ്ടും ചേരുന്നതിനുള്ള ഒരു ക്ഷണം നിങ്ങൾ സ്വീകരിക്കേണ്ടതുണ്ട്, നിങ്ങൾ സ്വീകരിക്കുന്നതുവരെ ഗ്രൂപ്പ് സന്ദേശങ്ങൾ ലഭിക്കില്ല.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ഗ്രൂപ്പ് അപ്‌ഗ്രേഡുചെയ്യുക";
 
 /* Title for the the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@പരാമർശങ്ങള്‍ അഡ്‌മിനുകള്‍ പോലുള്ള പുതിയ സവിശേഷതകൾ ആക്‌സസ് ചെയ്യുന്നതിന്, ഈ ഗ്രൂപ്പ് അപ്‌ഗ്രേഡുചെയ്യുക.";
@@ -2666,7 +2666,7 @@
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "എനിക്കായി ഇല്ലാതാക്കുക";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "ഈ സന്ദേശം ഇല്ലാതാക്കുക";
@@ -3122,7 +3122,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "നിങ്ങളുടെ നമ്പർ ഉപയോഗിച്ച് ആർക്കാണ് നിങ്ങളെ കണ്ടെത്താൻ കഴിയുക?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "ആരംഭിക്കുന്നതിന് വേണ്ടി നിങ്ങളുടെ ഫോൺ നമ്പർ നൽകുക";

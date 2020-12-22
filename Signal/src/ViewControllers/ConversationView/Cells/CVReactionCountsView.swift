@@ -48,8 +48,8 @@ class CVReactionCountsView: OWSStackView {
     }
 
     @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        super.init(name: name)
+    required init(name: String, arrangedSubviews: [UIView] = []) {
+        super.init(name: name, arrangedSubviews: arrangedSubviews)
     }
 
     static var stackConfig: CVStackViewConfig {

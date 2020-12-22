@@ -55,7 +55,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 #pragma mark 3D Touch Methods
 
 - (void)peekSetup;
-- (void)popped;
 
 #pragma mark - Keyboard Shortcuts
 

@@ -236,7 +236,6 @@ extension ConversationViewController {
         guard !isUserScrolling else { return }
 
         view.layoutIfNeeded()
-        layout.prepare()
 
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else {
             return owsFailDebug("failed to get attributes for indexPath \(indexPath)")
@@ -463,13 +462,24 @@ extension ConversationViewController {
 
     @objc
     var isScrolledToBottom: Bool {
-        let distanceFromBottom = safeDistanceFromBottom
-        let kIsAtBottomTolerancePts: CGFloat = 5
-        let isScrolledToBottom = distanceFromBottom <= kIsAtBottomTolerancePts
-        return isScrolledToBottom
+        isScrolledToBottom(tolerancePoints: 5)
     }
 
-    private var safeDistanceFromBottom: CGFloat {
+    func isScrolledToBottom(tolerancePoints: CGFloat) -> Bool {
+        safeDistanceFromBottom <= tolerancePoints
+    }
+
+    func isScrolledToTop(tolerancePoints: CGFloat) -> Bool {
+        safeDistanceFromTop <= tolerancePoints
+    }
+
+    @objc
+    public var safeDistanceFromTop: CGFloat {
+        collectionView.contentOffset.y - minContentOffsetY
+    }
+
+    @objc
+    public var safeDistanceFromBottom: CGFloat {
         // This is a bit subtle.
         //
         // The _wrong_ way to determine if we're scrolled to the bottom is to
@@ -484,18 +494,23 @@ extension ConversationViewController {
         // To determine that, we find the appropriate "content offset y" if
         // the scroll view were scrolled down as far as possible.  IFF the
         // actual "content offset y" is "near" that value, we return YES.
-        let distanceFromBottom = maxContentOffsetY - collectionView.contentOffset.y
-        return distanceFromBottom
+        maxContentOffsetY - collectionView.contentOffset.y
     }
 
+    // The lowest valid content offset when the view is at rest.
+    private var minContentOffsetY: CGFloat {
+        -collectionView.adjustedContentInset.top
+    }
+
+    // The highest valid content offset when the view is at rest.
     private var maxContentOffsetY: CGFloat {
         let contentHeight = self.safeContentHeight
-
         let adjustedContentInset = collectionView.adjustedContentInset
+        let rawValue = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height
         // Note the usage of MAX() to handle the case where there isn't enough
         // content to fill the collection view at its current size.
-        let maxContentOffsetY = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height
-        return maxContentOffsetY
+        let clampedValue = max(minContentOffsetY, rawValue)
+        return clampedValue
     }
 
     // We use this hook to ensure scroll state continuity.  As the collection
@@ -556,8 +571,6 @@ extension ConversationViewController {
                                          items: [])
         }
 
-        layout.prepare()
-
         let contentOffset = collectionView.contentOffset
 
         var sortIdToIndexPathMap = [UInt64: IndexPath]()
@@ -617,7 +630,6 @@ extension ConversationViewController {
         guard let scrollContinuityMap = viewState.scrollContinuityMap else {
             return nil
         }
-        layout.prepare()
 
         var sortIdToIndexPathMap = [UInt64: IndexPath]()
         for (index, renderItem) in renderItems.enumerated() {
@@ -641,13 +653,12 @@ extension ConversationViewController {
             guard let indexPath = sortIdToIndexPathMap[sortId] else {
                 continue
             }
-
-            guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
+            guard let latestFrame = layout.latestFrame(forIndexPath: indexPath) else {
                 owsFailDebug("Missing layoutAttributes.")
                 continue
             }
 
-            let newLocation = layoutAttributes.frame.topLeft
+            let newLocation = latestFrame.topLeft
             let contentOffsetY = newLocation.y - oldDistanceY
             let contentOffset = CGPoint(x: 0, y: contentOffsetY)
             return contentOffset
@@ -678,8 +689,6 @@ extension ConversationViewController {
 
     private func targetContentOffsetForScrollAction(_ scrollAction: CVScrollAction) -> CGPoint? {
         owsAssertDebug(!scrollAction.isAnimated)
-
-        layout.prepare()
 
         switch scrollAction.action {
         case .bottomOfLoadWindow:
@@ -741,7 +750,6 @@ extension ConversationViewController {
             // This is expected if the menu action interaction is being deleted.
             return nil
         }
-        layout.prepare()
         guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
             owsFailDebug("Missing layoutAttributes.")
             return nil

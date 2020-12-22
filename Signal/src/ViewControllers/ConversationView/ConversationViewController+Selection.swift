@@ -200,8 +200,7 @@ extension ConversationViewController {
             return nil
         }
 
-        layout.prepare()
-        guard let firstFrame = self.layout.layoutAttributesForItem(at: first)?.frame else {
+        guard let firstFrame = layout.layoutAttributesForItem(at: first)?.frame else {
             owsFailDebug("firstFrame was unexpectedly nil")
             return nil
         }

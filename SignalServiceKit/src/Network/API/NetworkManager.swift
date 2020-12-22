@@ -157,3 +157,18 @@ public extension Error {
         HTTPRetryAfterDateForError(self)
     }
 }
+
+// MARK: -
+
+@inlinable
+public func owsFailDebugUnlessNetworkFailure(_ error: Error,
+                                             file: String = #file,
+                                             function: String = #function,
+                                             line: Int = #line) {
+    if IsNetworkConnectivityFailure(error) {
+        // Log but otherwise ignore network failures.
+        Logger.warn("Error: \(error)", file: file, function: function, line: line)
+    } else {
+        owsFailDebug("Error: \(error)", file: file, function: function, line: line)
+    }
+}

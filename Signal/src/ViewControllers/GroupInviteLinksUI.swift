@@ -201,11 +201,9 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         }.catch { [weak self] error in
             if case GroupsV2Error.expiredGroupInviteLink = error {
                 self?.applyExpiredGroupInviteLink()
-            } else if IsNetworkConnectivityFailure(error) {
-                // TODO: Retry errors?
-                Logger.warn("Error: \(error)")
             } else {
-                owsFailDebug("Error: \(error)")
+                // TODO: Retry errors?
+                owsFailDebugUnlessNetworkFailure(error)
             }
         }
     }
@@ -218,11 +216,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             self?.applyGroupAvatar(groupAvatar)
         }.catch { error in
             // TODO: Add retry?
-            if IsNetworkConnectivityFailure(error) {
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebug("Error: \(error)")
-            }
+            owsFailDebugUnlessNetworkFailure(error)
         }
     }
 

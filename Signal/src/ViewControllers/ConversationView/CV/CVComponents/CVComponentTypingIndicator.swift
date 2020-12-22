@@ -140,7 +140,6 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
     private let minBubbleHeight: CGFloat = 36
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
-        assertOnQueue(CVText.measurementQueue)
         owsAssertDebug(maxWidth > 0)
 
         let insetsSize = innerLayoutMargins.asSize

@@ -225,8 +225,7 @@ public extension GroupsV2Migration {
                 }
                 return ContactDiscoveryTask(phoneNumbers: phoneNumbersWithoutUuids).perform().asVoid()
             }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-                // Log but otherwise ignore errors in CDS lookup.
-                owsFailDebug("Error: \(error)")
+                owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
             }.map(on: .global()) { _ in
                 Logger.verbose("")
@@ -257,7 +256,7 @@ public extension GroupsV2Migration {
                     }
                 }
             }.catch(on: .global()) { error in
-                owsFailDebug("Error: \(error)")
+                owsFailDebugUnlessNetworkFailure(error)
             }
         }
     }
@@ -398,12 +397,7 @@ fileprivate extension GroupsV2Migration {
             return firstly {
                 discoveryTask.perform().asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
-                // Log but ignore errors.
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
-                }
+                owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
             }
         }.then(on: .global()) { () -> Promise<Void> in
@@ -446,12 +440,7 @@ fileprivate extension GroupsV2Migration {
                     // Do not ignore throttling errors.
                     throw error
                 }
-                // Log but ignore errors.
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
-                }
+                owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
             }
         }

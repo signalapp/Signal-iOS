@@ -581,12 +581,24 @@ class ThreadMapping: NSObject {
         // Once the moves are complete, the new ordering should be correct.
         guard newPinnedThreadIds == naivePinnedThreadIdOrdering else {
             Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("oldPinnedThreadIds: \(oldPinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("oldUnpinnedThreadIds: \(oldUnpinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("newlyPinnedThreadIds: \(newlyPinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("newlyUnpinnedThreadIds: \(newlyUnpinnedThreadIds.joined(separator: "\n"))")
             Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering.joined(separator: "\n"))")
+            Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering.joined(separator: "\n"))")
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
-
+        
         guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
+            Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("oldPinnedThreadIds: \(oldPinnedThreadIds.joined(separator: "\n"))")
             Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("oldUnpinnedThreadIds: \(oldUnpinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("newlyPinnedThreadIds: \(newlyPinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("newlyUnpinnedThreadIds: \(newlyUnpinnedThreadIds.joined(separator: "\n"))")
+            Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering.joined(separator: "\n"))")
             Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering.joined(separator: "\n"))")
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }

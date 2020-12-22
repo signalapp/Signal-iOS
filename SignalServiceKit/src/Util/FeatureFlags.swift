@@ -133,16 +133,16 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let phoneNumberSharing = build.includes(.dev)
+    public static let phoneNumberSharing = build.includes(.qa)
 
     @objc
-    public static let phoneNumberDiscoverability = build.includes(.dev)
+    public static let phoneNumberDiscoverability = build.includes(.qa)
 
     @objc
     public static let complainAboutSlowDBWrites = true
 
     // Don't consult this flags; consult RemoteConfig.usernames.
-    static let usernamesSupported = build.includes(.dev)
+    static let usernamesSupported = build.includes(.qa)
 
     // Don't consult this flags; consult RemoteConfig.groupsV2...
     static var groupsV2Supported: Bool { !CurrentAppContext().isRunningTests }

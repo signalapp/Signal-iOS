@@ -15,7 +15,8 @@ extension ConversationViewController {
     }
 
     /// The index path of the last item in the collection view's visible rect
-    @objc var lastVisibleIndexPath: IndexPath? {
+    @objc
+    public var firstVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
         //
@@ -24,7 +25,29 @@ extension ConversationViewController {
         // with the updated -contentOffset in -scrollViewDidScroll:. So instead, we'll just see what layoutAttributes
         // are now in the collection view's visible content rect. This should be safe, since it's computed from the
         // already updated -contentOffset.
-        layout.prepare()
+        let visibleLayoutAttributes = layout.layoutAttributesForElements(in: visibleContentRect) ?? []
+
+        let firstVisibleIndexPath = visibleLayoutAttributes
+            .map { $0.indexPath }
+            .min { $0.row < $1.row }
+
+        if let firstVisibleIndexPath = firstVisibleIndexPath {
+            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(firstVisibleIndexPath) > 0)
+        }
+        return firstVisibleIndexPath
+    }
+
+    /// The index path of the last item in the collection view's visible rect
+    @objc
+    public var lastVisibleIndexPath: IndexPath? {
+        // For people looking at this in the future, UICollectionView has a very similar looking
+        // property: -indexPathsForVisibleItems. Why aren't we using that?
+        //
+        // That property *almost* gives us what we want, but UIKit ordering isn't favorable. That property
+        // gets updated after -scrollViewDidScroll: returns. But sometimes we want to know what cells are visible
+        // with the updated -contentOffset in -scrollViewDidScroll:. So instead, we'll just see what layoutAttributes
+        // are now in the collection view's visible content rect. This should be safe, since it's computed from the
+        // already updated -contentOffset.
         let visibleLayoutAttributes = layout.layoutAttributesForElements(in: visibleContentRect) ?? []
 
         let lastVisibleIndexPath = visibleLayoutAttributes
@@ -32,8 +55,7 @@ extension ConversationViewController {
             .max { $0.row < $1.row }
 
         if let lastVisibleIndexPath = lastVisibleIndexPath {
-            // TODO: Fix this assert.
-            // assert(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
+            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
         }
         return lastVisibleIndexPath
     }
@@ -91,8 +113,31 @@ extension ConversationViewController {
         }
     }
 
+    #if TESTABLE_BUILD
+    @objc
+    func logFirstAndLastVisibleItems() {
+        AssertIsOnMainThread()
+
+        if let firstVisibleIndexPath = firstVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: firstVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
+            Logger.verbose("---- first visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage), ")
+        }
+
+        if let lastVisibleIndexPath = lastVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
+            Logger.verbose("---- last visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage)")
+        }
+
+    }
+    #endif
+
     private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
-        layout.prepare()
 
         // If we don't have layout attributes, it's not visible
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else { return 0.0 }

@@ -130,6 +130,10 @@ public struct CVCellMeasurement: Equatable {
         values[key]
     }
 
+    public var debugDescription: String {
+        "[cellSize: \(cellSize), sizes: \(sizes), values: \(values)]"
+    }
+
     public func debugLog() {
         Logger.verbose("cellSize: \(cellSize)")
         Logger.verbose("sizes: \(sizes)")
@@ -375,7 +379,7 @@ extension CVComponentBase: CVNode {
         }
         let attachmentId = attachmentPointer.uniqueId
         guard nil != Self.attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
-            owsFailDebug("Missing download progress.")
+            Logger.warn("Missing download progress.")
             return nil
         }
 

@@ -17,6 +17,8 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
                                   updateToken: CVUpdateToken)
 
     var isScrolledToBottom: Bool { get }
+
+    var isScrollNearEdgeOfLoadWindow: Bool { get }
 }
 
 // MARK: -
@@ -442,15 +444,6 @@ public class CVLoadCoordinator: NSObject {
 
         firstly { () -> Promise<CVUpdate> in
             loader.loadPromise()
-        }.then { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
-            firstly { () -> Promise<Void> in
-                guard let self = self else {
-                    throw OWSGenericError("Missing self.")
-                }
-                return self.viewState.waitUntilCanLandLoad()
-            }.map { () -> CVUpdate in
-                update
-            }
         }.then { [weak self] (update: CVUpdate) -> Promise<Void> in
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
@@ -458,21 +451,7 @@ public class CVLoadCoordinator: NSObject {
             guard let delegate = self.delegate else {
                 throw OWSGenericError("Missing delegate.")
             }
-
-            let renderState = update.renderState
-            let oldItemCount = update.lastRenderState.items.count
-            let newItemCount = renderState.items.count
-
-            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
-
-            self.renderState = renderState
-
-            let (promise, resolver) = Promise<Void>.pending()
-            self.loadDidLandResolver = resolver
-            delegate.updateWithNewRenderState(update: update,
-                                              scrollAction: loadRequest.scrollAction,
-                                              updateToken: updateToken)
-            return promise
+            return self.loadLandWhenSafePromise(update: update, delegate: delegate)
         }.done { [weak self] () -> Void in
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
@@ -496,6 +475,86 @@ public class CVLoadCoordinator: NSObject {
             self.loadIfNecessary()
         }
     }
+
+    // MARK: - Safe Landing
+
+    // Lands the load when its safe, blocking on scrolling.
+    private func loadLandWhenSafePromise(update: CVUpdate,
+                                         delegate: CVLoadCoordinatorDelegate) -> Promise<Void> {
+        AssertIsOnMainThread()
+
+        let (loadPromise, loadResolver) = Promise<Void>.pending()
+
+        let viewState = self.viewState
+        func canLandLoad() -> Bool {
+            if viewState.isUserScrolling {
+                owsAssertDebug(viewState.hasScrollingAnimation)
+            }
+            guard !viewState.isUserScrolling else {
+                // Never land a load if a scroll gesture is in progress.
+                return false
+            }
+            guard viewState.hasScrollingAnimation else {
+                // If no scroll gesture or animation is in progress,
+                // we can land the load.
+                return true
+            }
+            if let delegate = self.delegate,
+               delegate.isScrollNearEdgeOfLoadWindow {
+                // If a scroll animation is progress, but we're very
+                // close to the edge of the load window, land the load.
+                return true
+            }
+            return false
+        }
+
+        func tryToResolve() {
+            guard canLandLoad() else {
+                // TODO: async() or asyncAfter()?
+                Logger.verbose("Waiting to land load.")
+                // We wait in a pretty tight loop to ensure loads land in a timely way.
+                //
+                // DispatchQueue.asyncAfter() will take longer to perform
+                // its block than DispatchQueue.async() if the CPU is under
+                // heavy load. That's desirable in this case.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+                    tryToResolve()
+                }
+                return
+            }
+
+            let renderState = update.renderState
+            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
+
+            self.renderState = renderState
+
+            let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
+            self.loadDidLandResolver = loadDidLandResolver
+
+            let loadRequest = update.loadRequest
+            delegate.updateWithNewRenderState(update: update,
+                                              scrollAction: loadRequest.scrollAction,
+                                              updateToken: updateToken)
+
+            firstly { () -> Promise<Void> in
+                // We've started the process of landing the load,
+                // but its completion may be async.
+                //
+                // Block on load land completion.
+                loadDidLandPromise
+            }.done(on: .global()) {
+                loadResolver.fulfill(())
+            }.catch(on: .global()) { error in
+                loadResolver.reject(error)
+            }
+        }
+
+        tryToResolve()
+
+        return loadPromise
+    }
+
+    // -
 
     public func loadDidLand() {
         AssertIsOnMainThread()
@@ -732,6 +791,14 @@ extension CVLoadCoordinator: ConversationViewLayoutDelegate {
     public var layoutFooterHeight: CGFloat {
         showLoadNewerHeader ? LoadMoreMessagesView.fixedHeight : 0
     }
+
+    public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return proposedContentOffset
+        }
+        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
+    }
 }
 
 // MARK: -
@@ -759,6 +826,10 @@ extension CVLoadCoordinator: UIScrollViewDelegate {
 
     public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         delegate?.scrollViewDidScrollToTop?(scrollView)
+    }
+
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        delegate?.scrollViewDidEndScrollingAnimation?(scrollView)
     }
 }
 

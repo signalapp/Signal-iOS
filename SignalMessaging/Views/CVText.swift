@@ -311,12 +311,15 @@ public class CVText {
         "\(configKey),\(maxWidth)"
     }
     private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
+    private static let unfairLock = UnfairLock()
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        if !CurrentAppContext().isRunningTests {
-            assertOnQueue(measurementQueue)
+        unfairLock.withLock {
+            measureLabelLocked(mode: mode, config: config, maxWidth: maxWidth)
         }
+    }
 
+    private static func measureLabelLocked(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = labelCache.get(key: cacheKey) {
@@ -448,10 +451,14 @@ public class CVText {
     public static func measureTextView(mode: MeasurementMode = defaultTextViewMeasurementMode,
                                        config: CVTextViewConfig,
                                        maxWidth: CGFloat) -> CGSize {
-        if !CurrentAppContext().isRunningTests {
-            assertOnQueue(measurementQueue)
+        unfairLock.withLock {
+            measureTextViewLocked(mode: mode, config: config, maxWidth: maxWidth)
         }
+    }
 
+    private static func measureTextViewLocked(mode: MeasurementMode = defaultTextViewMeasurementMode,
+                                              config: CVTextViewConfig,
+                                              maxWidth: CGFloat) -> CGSize {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = textViewCache.get(key: cacheKey) {

@@ -100,7 +100,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                   scrollAction: CVScrollAction,
                                   updateToken: CVUpdateToken) {
         AssertIsOnMainThread()
-        owsAssertDebug(layout.hasLayout)
 
         owsAssertDebug(self.viewState.scrollContinuityMap != nil)
 
@@ -109,6 +108,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // if called for the first time.
 
             Logger.info("View is not yet loaded.")
+            loadDidLand()
             return
         }
 
@@ -295,7 +295,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let maxHideTime = kSecondInterval * 2
             guard viewAge < maxHideTime else {
                 // This should only occur on very slow devices.
-                owsFailDebug("View taking a long time to render content.")
+                Logger.warn("View taking a long time to render content.")
                 return false
             }
 
@@ -327,13 +327,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         if reloadIfClearingFlag, hasRenderState {
             UIView.performWithoutAnimation {
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.collectionViewLayout.prepare()
+                self.layout.invalidateLayout()
             }
 
-            updateViewToReflectLoad(loadedRenderState: self.renderState)
-
             scrollToInitialPosition(animated: false)
+
+            updateViewToReflectLoad(loadedRenderState: self.renderState)
 
             loadCoordinator.enqueueReload()
 
@@ -344,11 +343,19 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     private func updateForMinorUpdate(scrollAction: CVScrollAction) {
         Logger.verbose("")
 
+        // If the scroll action is not animated, perform it _before_
+        // updateViewToReflectLoad().
+        if !scrollAction.isAnimated {
+            self.perform(scrollAction: scrollAction)
+        }
+
         updateViewToReflectLoad(loadedRenderState: self.renderState)
 
         loadDidLand()
 
-        perform(scrollAction: scrollAction)
+        if scrollAction.isAnimated {
+            self.perform(scrollAction: scrollAction)
+        }
     }
 
     private func updateWithFirstLoad() {
@@ -365,22 +372,21 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.collectionViewLayout.prepare()
+            self.layout.invalidateLayout()
         }
 
         benchSteps.step("2")
 
-        updateViewToReflectLoad(loadedRenderState: self.renderState)
+        scrollToInitialPosition(animated: false)
+        clearInitialScrollState()
 
         benchSteps.step("3")
 
-        loadDidLand()
+        updateViewToReflectLoad(loadedRenderState: self.renderState)
 
         benchSteps.step("4")
 
-        scrollToInitialPosition(animated: false)
-        clearInitialScrollState()
+        loadDidLand()
 
         benchSteps.step("5")
 
@@ -399,22 +405,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
         viewState.hasAppliedFirstLoad = true
         clearInitialScrollState()
-
-        guard hasViewWillAppearEverBegun else {
-            Logger.verbose("Not fading in collection view.")
-            return
-        }
-
-        // If we apply a load for the first time after the view
-        // appeared, we should fade in the collection view.
-        let useFadeAnimations = false
-        if useFadeAnimations {
-            // Fade in the collection view.
-            collectionView.alpha = 0.05
-            UIView.animate(withDuration: 0.025) {
-                self.collectionView.alpha = 1.0
-            }
-        }
     }
 
     private func updateReloadingAll(renderState: CVRenderState,
@@ -424,15 +414,22 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         UIView.performWithoutAnimation {
             self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.collectionViewLayout.prepare()
+            self.layout.invalidateLayout()
         }
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+
+            // If the scroll action is not animated, perform it _before_
+            // updateViewToReflectLoad().
+            if !scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
             self.updateViewToReflectLoad(loadedRenderState: renderState)
             self.loadDidLand()
-            self.perform(scrollAction: scrollAction)
+            if scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
         }
     }
 
@@ -456,7 +453,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 threadInteractionCount: UInt,
                                 updateToken: CVUpdateToken) {
         owsAssertDebug(!items.isEmpty)
-        owsAssertDebug(layout.hasLayout)
 
         Logger.verbose("")
 
@@ -482,8 +478,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 case .insert(let renderItem, _):
 
                     var wasJustInserted = false
-                    if let lastMessageForInboxSortId = updateToken.lastMessageForInboxSortId,
-                       lastMessageForInboxSortId < renderItem.interaction.sortId {
+                    if let lastMessageForInboxSortId = updateToken.lastMessageForInboxSortId {
+                        if lastMessageForInboxSortId < renderItem.interaction.sortId {
+                            wasJustInserted = true
+                        }
+                    } else {
+                        // The first interaction in the thread.
                         wasJustInserted = true
                     }
 
@@ -565,11 +565,19 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 return
             }
 
+            // If the scroll action is not animated, perform it _before_
+            // updateViewToReflectLoad().
+            if !scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
+
             self.updateViewToReflectLoad(loadedRenderState: renderState)
 
             self.loadDidLand()
 
-            self.perform(scrollAction: scrollAction)
+            if scrollAction.isAnimated {
+                self.perform(scrollAction: scrollAction)
+            }
 
             viewState.scrollActionForUpdate = nil
 
@@ -592,11 +600,18 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        owsAssertDebug(layout.hasLayout)
         self.performBatchUpdates(batchUpdatesBlock,
                                  completion: completion,
                                  logFailureBlock: logFailureBlock,
                                  shouldAnimateUpdates: shouldAnimateUpdate)
+    }
+
+    var isScrollNearEdgeOfLoadWindow: Bool {
+        let deviceFrame = CurrentAppContext().frame
+        // Within 1 screenful of the edge of the load window.
+        let tolerancePoints = max(deviceFrame.width, deviceFrame.height)
+        return (isScrolledToBottom(tolerancePoints: tolerancePoints) ||
+                    isScrolledToTop(tolerancePoints: tolerancePoints))
     }
 
     @objc
@@ -617,7 +632,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             // Treat all styles as "initial" (not to be trusted) until
             // we have a view config.
             let viewWidth = floor(collectionView.width)
-            let safeAreaInsets = view.safeAreaInsets
             return ConversationStyle(type: type,
                                      thread: thread,
                                      viewWidth: viewWidth)
@@ -626,14 +640,19 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         guard self.conversationStyle.type != .`default` else {
             // Once we built a normal style, never go back to
             // building an initial or placeholder style.
-            owsAssertDebug(navigationController != nil)
+            owsAssertDebug(navigationController != nil || viewState.isInPreviewPlatter)
             return buildDefaultConversationStyle(type: .`default`)
         }
 
         guard let navigationController = navigationController else {
-            // Treat all styles as "initial" (not to be trusted) until
-            // we have a navigationController.
-            return buildDefaultConversationStyle(type: .initial)
+            if viewState.isInPreviewPlatter {
+                // In a preview platter, we'll never have a navigation controller
+                return buildDefaultConversationStyle(type: .`default`)
+            } else {
+                // Treat all styles as "initial" (not to be trusted) until
+                // we have a navigationController.
+                return buildDefaultConversationStyle(type: .initial)
+            }
         }
 
         let collectionViewWidth = self.collectionView.width
@@ -649,12 +668,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         let hasValidStyle = !isMissingSafeAreaInsets && !hasInvalidWidth
         if hasValidStyle {
             // No need to rewrite style; style is already valid.
-            //
-            // Verify that navigationController view and CVC view
-            // state converge.
-            owsAssertDebug(navigationViewWidth == rootViewWidth)
-            owsAssertDebug(navigationViewWidth == collectionViewWidth)
-
             return buildDefaultConversationStyle(type: .`default`)
         } else {
             let viewAge = abs(self.viewState.viewCreationDate.timeIntervalSinceNow)
@@ -664,7 +677,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 // how long we're willing to infer view state from the
                 // navigationController. It might not always be safe to assume that
                 // navigationController view and CVC view state converge.
-                owsFailDebug("View state taking a long time to be configured.")
+                Logger.warn("View state taking a long time to be configured.")
                 return buildDefaultConversationStyle(type: .placeholder)
             }
 

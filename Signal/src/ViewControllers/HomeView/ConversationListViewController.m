@@ -811,9 +811,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
      commitViewController:(UIViewController *)viewControllerToCommit
 {
     ConversationViewController *vc = (ConversationViewController *)viewControllerToCommit;
-    [vc popped];
-
-    [self.navigationController pushViewController:vc animated:NO];
+    [self presentThread:vc.thread action:ConversationViewActionNone animated:NO];
 }
 
 - (void)showNewConversationView

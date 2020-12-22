@@ -357,6 +357,10 @@ typedef enum : NSUInteger {
 {
     if (self.viewState.isInPreviewPlatter != inPreviewPlatter) {
         self.viewState.isInPreviewPlatter = inPreviewPlatter;
+
+        if (self.hasViewWillAppearEverBegun) {
+            [self ensureBottomViewType];
+        }
         [self configureScrollDownButtons];
     }
 }
@@ -365,12 +369,6 @@ typedef enum : NSUInteger {
 {
     [self setInPreviewPlatter:YES];
     self.actionOnOpen = ConversationViewActionNone;
-}
-
-- (void)popped
-{
-    [self setInPreviewPlatter:NO];
-    [self updateInputVisibility];
 }
 
 - (void)updateV2GroupIfNecessary
@@ -423,7 +421,8 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad
 {
-    OWSAssertDebug(self.navigationController != nil);
+    // We won't have a navigation controller if we're presented in a preview
+    OWSAssertDebug(self.navigationController != nil || self.isInPreviewPlatter);
 
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewDidLoad.1"];
@@ -631,10 +630,6 @@ typedef enum : NSUInteger {
 
         [self createGestureRecognizers];
     }
-
-    // We need to recheck on every appearance, since the user may have left the group in the settings VC,
-    // or on another device.
-    [self updateInputVisibility];
 
     self.isViewVisible = YES;
     [self viewWillAppearForLoad];
@@ -941,6 +936,9 @@ typedef enum : NSUInteger {
 
 - (void)readTimerDidFire
 {
+    if (self.layout.isPerformingBatchUpdates) {
+        return;
+    }
     [self markVisibleMessagesAsRead];
 }
 
@@ -1845,7 +1843,6 @@ typedef enum : NSUInteger {
         // This is expected if the menu action interaction is being deleted.
         return nil;
     }
-    [self.layout prepareLayout];
     UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
         [self.layout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes == nil) {
@@ -2010,8 +2007,6 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    // TODO: If you open CVC with one unread message, the scroll down button
-    // briefly flashes.
     if (!self.hasAppearedAndHasAppliedFirstLoad) {
         self.scrollDownButton.hidden = YES;
         self.scrollToNextMentionButton.hidden = YES;
@@ -2037,7 +2032,6 @@ typedef enum : NSUInteger {
     if (self.isInPreviewPlatter) {
         scrollDownIsHidden = YES;
         scrollToNextMentionIsHidden = YES;
-
     } else if (self.isPresentingMessageActions) {
         // Content offset calculations get messed up when we're presenting message actions
         // Don't change button visibility if we're presenting actions
@@ -3017,7 +3011,7 @@ typedef enum : NSUInteger {
     }
     @try {
         [self.collectionView reloadData];
-        [self.collectionView.collectionViewLayout invalidateLayout];
+        [self.layout invalidateLayout];
     } @catch (NSException *exception) {
         OWSLogWarn(@"currentRenderStateDebugDescription: %@", self.currentRenderStateDebugDescription);
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
@@ -3122,7 +3116,6 @@ typedef enum : NSUInteger {
     //
     // We can safely call prepareLayout to ensure the layout state is up-to-date
     // since our layout uses a dirty flag internally to debounce redundant work.
-    [self.layout prepareLayout];
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
@@ -3180,10 +3173,15 @@ typedef enum : NSUInteger {
 {
     self.userHasScrolled = YES;
     self.isUserScrolling = YES;
+    [self scrollingAnimationDidStart];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)willDecelerate
 {
+    if (!willDecelerate) {
+        [self scrollingAnimationDidComplete];
+    }
+
     if (!self.isUserScrolling) {
         return;
     }
@@ -3199,6 +3197,8 @@ typedef enum : NSUInteger {
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    [self scrollingAnimationDidComplete];
+
     if (!self.isWaitingForDeceleration) {
         return;
     }
@@ -3210,24 +3210,74 @@ typedef enum : NSUInteger {
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
 {
-    self.isScrollingToTop = YES;
 
-    // isScrollingToTop blocks landing of loads, so we must ensure
-    // that it is always cleared in a timely way, even if the animation
-    // is cancelled. Wait no more than 2 seconds.
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)2.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        // isScrollingToTop should already have been cleared...
-        OWSAssertDebug(!weakSelf.isScrollingToTop);
-        // ...but we want to make sure.
-        weakSelf.isScrollingToTop = NO;
-    });
+    [self scrollingAnimationDidStart];
+
     return YES;
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
 {
-    self.isScrollingToTop = NO;
+    [self scrollingAnimationDidComplete];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self scrollingAnimationDidComplete];
+}
+
+#pragma mark - ConversationCollectionViewDelegate
+
+- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
+{
+    OWSAssertIsOnMainThread();
+}
+
+- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
+{
+    OWSAssertIsOnMainThread();
+
+    if (oldSize.width != newSize.width) {
+        [self resetForSizeOrOrientationChange];
+    }
+}
+
+- (void)collectionViewWillAnimate
+{
+    [self scrollingAnimationDidStart];
+}
+
+- (void)scrollingAnimationDidStart
+{
+    OWSAssertIsOnMainThread();
+
+    NSDate *startDate = [NSDate new];
+    self.scrollingAnimationStartDate = startDate;
+
+    // scrollingAnimationStartDate blocks landing of loads, so we must ensure
+    // that it is always cleared in a timely way, even if the animation
+    // is cancelled. Wait no more than N seconds.
+    __weak ConversationViewController *weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)5.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        ConversationViewController *_Nullable strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+        // scrollingAnimationStartDate should already have been cleared,
+        // but we need to ensure that it is cleared in a timely way.
+        if ([NSObject isNullableObject:strongSelf.scrollingAnimationStartDate equalTo:startDate]) {
+            OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
+            [strongSelf scrollingAnimationDidComplete];
+        }
+    });
+}
+
+- (void)scrollingAnimationDidComplete
+{
+    OWSAssertIsOnMainThread();
+
+    self.scrollingAnimationStartDate = nil;
     [self autoLoadMoreIfNecessary];
 }
 
@@ -3455,14 +3505,7 @@ typedef enum : NSUInteger {
     [self updateInputAccessoryPlaceholderHeight];
     [self updateBottomBarPosition];
 
-    // Normally, the keyboard frame change triggered by updating
-    // the bottom bar height will cause the content insets to reload.
-    // However, if the toolbar updates while it's not the first
-    // responder (e.g. dismissing a quoted reply) we need to preserve
-    // our constraints here.
-    if (!self.inputToolbar.isInputViewFirstResponder) {
-        [self updateContentInsetsAnimated:NO];
-    }
+    [self updateContentInsetsAnimated:NO];
 }
 
 - (void)voiceMemoGestureDidStart
@@ -3553,22 +3596,6 @@ typedef enum : NSUInteger {
     BOOL isCellVisible = self.isViewVisible && !isAppInBackground;
     for (CVCell *cell in self.collectionView.visibleCells) {
         cell.isCellVisible = isCellVisible;
-    }
-}
-
-#pragma mark - ConversationCollectionViewDelegate
-
-- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
-{
-    OWSAssertIsOnMainThread();
-}
-
-- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
-{
-    OWSAssertIsOnMainThread();
-
-    if (oldSize.width != newSize.width) {
-        [self resetForSizeOrOrientationChange];
     }
 }
 
@@ -3758,7 +3785,9 @@ typedef enum : NSUInteger {
 {
     @try {
         void (^updateBlock)(void) = ^{
+            [self.layout willPerformBatchUpdates];
             [self.collectionView performBatchUpdates:batchUpdates completion:completion];
+            [self.layout didPerformBatchUpdates];
 
             // AFAIK the collection view layout should reflect the old layout
             // until performBatchUpdates(), then we need to invalidate and prepare
@@ -3772,7 +3801,6 @@ typedef enum : NSUInteger {
             //
             // UICollectionView received layout attributes for a cell with an index path that does not exist...
             [self.layout invalidateLayout];
-            [self.layout prepareLayout];
             [BenchManager completeEventWithEventId:@"message-send"];
         };
 
@@ -3904,7 +3932,6 @@ typedef enum : NSUInteger {
     // No animation, just follow along with the keyboard.
     self.isDismissingInteractively = YES;
     [self updateBottomBarPosition];
-    [self updateContentInsetsAnimated:NO];
     self.isDismissingInteractively = NO;
 }
 
@@ -3974,15 +4001,21 @@ typedef enum : NSUInteger {
     // stash the current value before making any changes.
     CGFloat oldYOffset = self.collectionView.contentOffset.y;
 
+    BOOL didChangeInsets = !UIEdgeInsetsEqualToEdgeInsets(oldInsets, newInsets);
+
     [UIView performWithoutAnimation:^{
-        if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
+        if (didChangeInsets) {
             self.collectionView.contentInset = newInsets;
         }
         self.collectionView.scrollIndicatorInsets = newInsets;
     }];
 
     // Adjust content offset to prevent the presented keyboard from obscuring content.
-    if (!self.hasAppearedAndHasAppliedFirstLoad) {
+    if (!didChangeInsets) {
+        // Do nothing.
+        //
+        // If content inset didn't change, no need to update content offset.
+    } else if (!self.hasAppearedAndHasAppliedFirstLoad) {
         // Do nothing.
     } else if (wasScrolledToBottom) {
         // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.

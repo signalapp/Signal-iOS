@@ -2123,7 +2123,7 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Grupi nimi on nüüd “%@”.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "See grupp uuendati uueks grupiks.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
@@ -2660,7 +2660,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Kustuta kõigi jaoks";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "See sõnum kustutatakse kõigilt vestluse liikmetelt, kui neil on Signal-i värske versioon. Nad näevad, et sa kustutasid sõnumi.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "See sõnum kustutatakse kõigilt vestluse liikmetelt, kui nad kasutavad Signal-i värsket versiooni. Nad näevad, et sa kustutasid sõnumi.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Kelle jaoks soovid seda sõnumit kustutada?";

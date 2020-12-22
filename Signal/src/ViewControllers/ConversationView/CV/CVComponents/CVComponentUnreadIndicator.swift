@@ -85,7 +85,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
-        assertOnQueue(CVText.measurementQueue)
         owsAssertDebug(maxWidth > 0)
 
         // Full width.
