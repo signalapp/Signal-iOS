@@ -31,6 +31,17 @@ class CVTextTest: SignalBaseTest {
             ),
             CVTextViewConfig(
                 text: """
+                لكن لا بد أن أوضح لك أن كل هذه الأفكار المغلوطة حول استنكار  النشوة وتمجيد الألم نشأت بالفعل، وسأعرض لك التفاصيل لتكتشف حقيقة وأساس تلك السعادة البشرية، فلا أحد يرفض أو يكره أو يتجنب الشعور بالسعادة، ولكن بفضل هؤلاء الأشخاص الذين لا يدركون بأن السعادة لا بد أن نستشعرها بصورة أكثر عقلانية ومنطقية فيعرضهم هذا لمواجهة الظروف الأليمة، وأكرر بأنه لا يوجد من يرغب في الحب ونيل المنال ويتلذذ بالآلام، الألم هو الألم ولكن نتيجة لظروف ما قد تكمن السعاده فيما نتحمله من كد وأسي.
+
+                و سأعرض مثال حي لهذا، من منا لم يتحمل جهد بدني شاق إلا من أجل الحصول على ميزة أو فائدة؟ ولكن من لديه الحق أن ينتقد شخص ما أراد أن يشعر بالسعادة التي لا تشوبها عواقب أليمة أو آخر أراد أن يتجنب الألم الذي ربما تنجم عنه بعض المتعة ؟
+                علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم .
+
+                """,
+                font: .ows_dynamicTypeBody,
+                textColor: .black
+            ),
+            CVTextViewConfig(
+                text: """
                 東沢族応同市総暮見送軟因旧野声。療名岡無会婚必文政職産首堪。原馬果制前興禁出部医保機出。賞響子恵横大厳著美無新殺常芸観載。上属力一本彰料必転指影未税廟赤府研。読煙責負力異寺先発事製量情停並。国圏場権電別新力際営測進必。事藤着人体存止作月玉社英題写予者。間引内一強客透人戦一家万暮読。種扱報崎若陣加府大姿平問写提化針離定。
 
                 足己謙告保士清修根選暮区細理貨聞年半。読治問形球漂注出裏下公療演続。芸意記栄山写日撃掲国主治当性発。生意逃免渡資一取引裕督転。応点続果安罰村必禁家政拳。写禁法考証言心彫埼権川関員奏届新営覚掲。南応要参愛類娘都誰定尚同勝積鎌記写塁。政回過市主覧貨張加主子義空教対券。載捕構方聞度名出結字夜何動問暮理詳半話。
@@ -70,15 +81,7 @@ class CVTextTest: SignalBaseTest {
                 let viewSize = CVText.measureTextView(mode: .view, config: config, maxWidth: possibleWidth)
                 let defaultSize = CVText.measureTextView(config: config, maxWidth: possibleWidth)
                 XCTAssertEqual(viewSize.width, defaultSize.width)
-
-                if config.containsCJKCharacters {
-                    // TODO: In rare instances, measurement of CJK can be off by a lot, but
-                    // always in the "too big" direction, so nothing will clip. We should try
-                    // and fix this, but in simple cases it generally seems OK.
-                    XCTAssertLessThanOrEqual(viewSize.height, defaultSize.height)
-                } else {
-                    XCTAssertEqual(viewSize.height, defaultSize.height)
-                }
+                XCTAssertEqual(viewSize.height, defaultSize.height)
             }
         }
     }
@@ -108,6 +111,18 @@ class CVTextTest: SignalBaseTest {
                 textColor: .black,
                 numberOfLines: 0
 
+            ),
+            CVLabelConfig(
+                text: """
+                لكن لا بد أن أوضح لك أن كل هذه الأفكار المغلوطة حول استنكار  النشوة وتمجيد الألم نشأت بالفعل، وسأعرض لك التفاصيل لتكتشف حقيقة وأساس تلك السعادة البشرية، فلا أحد يرفض أو يكره أو يتجنب الشعور بالسعادة، ولكن بفضل هؤلاء الأشخاص الذين لا يدركون بأن السعادة لا بد أن نستشعرها بصورة أكثر عقلانية ومنطقية فيعرضهم هذا لمواجهة الظروف الأليمة، وأكرر بأنه لا يوجد من يرغب في الحب ونيل المنال ويتلذذ بالآلام، الألم هو الألم ولكن نتيجة لظروف ما قد تكمن السعاده فيما نتحمله من كد وأسي.
+
+                و سأعرض مثال حي لهذا، من منا لم يتحمل جهد بدني شاق إلا من أجل الحصول على ميزة أو فائدة؟ ولكن من لديه الحق أن ينتقد شخص ما أراد أن يشعر بالسعادة التي لا تشوبها عواقب أليمة أو آخر أراد أن يتجنب الألم الذي ربما تنجم عنه بعض المتعة ؟
+                علي الجانب الآخر نشجب ونستنكر هؤلاء الرجال المفتونون بنشوة اللحظة الهائمون في رغباتهم فلا يدركون ما يعقبها من الألم والأسي المحتم، واللوم كذلك يشمل هؤلاء الذين أخفقوا في واجباتهم نتيجة لضعف إرادتهم فيتساوي مع هؤلاء الذين يتجنبون وينأون عن تحمل الكدح والألم .
+
+                """,
+                font: .ows_dynamicTypeBody,
+                textColor: .black,
+                numberOfLines: 0
             ),
             CVLabelConfig(
                 text: """
@@ -150,22 +165,9 @@ class CVTextTest: SignalBaseTest {
             for possibleWidth: CGFloat in stride(from: 100, to: 2000, by: 50) {
                 let viewSize = CVText.measureLabel(mode: .view, config: config, maxWidth: possibleWidth)
                 let defaultSize = CVText.measureLabel(config: config, maxWidth: possibleWidth)
-                AssertLessThanUpToLimitOrEqualTo(viewSize.width, defaultSize.width, limit: 5)
-
-                if config.containsCJKCharacters {
-                    // TODO: In rare instances, measurement of CJK can be off by a lot, but
-                    // always in the "too big" direction, so nothing will clip. We should try
-                    // and fix this, but in simple cases it generally seems OK.
-                    XCTAssertLessThanOrEqual(viewSize.height, defaultSize.height)
-                } else {
-                    AssertLessThanUpToLimitOrEqualTo(viewSize.height, defaultSize.height, limit: 2)
-                }
+                XCTAssertEqual(viewSize.width, defaultSize.width)
+                XCTAssertEqual(viewSize.height, defaultSize.height)
             }
         }
-    }
-
-    public func AssertLessThanUpToLimitOrEqualTo<T>(_ expression1: @autoclosure () throws -> T, _ expression2: @autoclosure () throws -> T, limit: T, _ message: @autoclosure () -> String = "", file: StaticString = #filePath, line: UInt = #line) where T: Comparable & Numeric {
-        XCTAssertLessThanOrEqual(try expression1(), try expression2(), message(), file: file, line: line)
-        XCTAssertGreaterThanOrEqual(try expression1() + limit, try expression2(), message(), file: file, line: line)
     }
 }

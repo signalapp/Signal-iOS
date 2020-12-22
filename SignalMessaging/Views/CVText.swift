@@ -61,7 +61,6 @@ public enum CVTextValue: Equatable, Hashable {
 public struct CVLabelConfig {
 
     fileprivate let text: CVTextValue
-    public let containsCJKCharacters: Bool
     public let font: UIFont
     public let textColor: UIColor
     public let numberOfLines: Int
@@ -76,14 +75,7 @@ public struct CVLabelConfig {
                 textAlignment: NSTextAlignment? = nil) {
 
         self.text = .text(text: text)
-        self.containsCJKCharacters = text.containsCJKCharacters
-
-        if containsCJKCharacters {
-            self.font = font.cjkCompatibleVariant
-        } else {
-            self.font = font
-        }
-
+        self.font = font
         self.textColor = textColor
         self.numberOfLines = numberOfLines
         self.lineBreakMode = lineBreakMode
@@ -97,16 +89,8 @@ public struct CVLabelConfig {
                 lineBreakMode: NSLineBreakMode = .byWordWrapping,
                 textAlignment: NSTextAlignment? = nil) {
 
-        self.containsCJKCharacters = attributedText.string.containsCJKCharacters
-
-        if containsCJKCharacters {
-            self.text = .attributedText(attributedText: attributedText.withCJKCompatibleFonts)
-            self.font = font.cjkCompatibleVariant
-        } else {
-            self.text = .attributedText(attributedText: attributedText)
-            self.font = font
-        }
-
+        self.text = .attributedText(attributedText: attributedText)
+        self.font = font
         self.textColor = textColor
         self.numberOfLines = numberOfLines
         self.lineBreakMode = lineBreakMode
@@ -164,7 +148,6 @@ public struct CVLabelConfig {
 public struct CVTextViewConfig {
 
     fileprivate let text: CVTextValue
-    public let containsCJKCharacters: Bool
     public let font: UIFont
     public let textColor: UIColor
     public let textAlignment: NSTextAlignment?
@@ -177,14 +160,7 @@ public struct CVTextViewConfig {
                 linkTextAttributes: [NSAttributedString.Key: Any]? = nil) {
 
         self.text = .text(text: text)
-        self.containsCJKCharacters = text.containsCJKCharacters
-
-        if containsCJKCharacters {
-            self.font = font.cjkCompatibleVariant
-        } else {
-            self.font = font
-        }
-
+        self.font = font
         self.textColor = textColor
         self.textAlignment = textAlignment
         self.linkTextAttributes = linkTextAttributes
@@ -196,16 +172,8 @@ public struct CVTextViewConfig {
                 textAlignment: NSTextAlignment? = nil,
                 linkTextAttributes: [NSAttributedString.Key: Any]? = nil) {
 
-        self.containsCJKCharacters = attributedText.string.containsCJKCharacters
-
-        if containsCJKCharacters {
-            self.text = .attributedText(attributedText: attributedText.withCJKCompatibleFonts)
-            self.font = font.cjkCompatibleVariant
-        } else {
-            self.text = .attributedText(attributedText: attributedText)
-            self.font = font
-        }
-
+        self.text = .attributedText(attributedText: attributedText)
+        self.font = font
         self.textColor = textColor
         self.textAlignment = textAlignment
         self.linkTextAttributes = linkTextAttributes
@@ -265,7 +233,7 @@ public struct CVTextViewConfig {
 // MARK: -
 
 public class CVText {
-    public enum MeasurementMode { case view, layoutManager, boundingRect }
+    public enum MeasurementMode { case view, layoutManager }
 
     public static var measurementQueue: DispatchQueue { CVUtils.workQueue }
 
@@ -328,8 +296,6 @@ public class CVText {
 
         let result: CGSize
         switch mode {
-        case .boundingRect:
-            result = measureLabelUsingBoundingRect(config: config, maxWidth: maxWidth)
         case .layoutManager:
             result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
         case .view:
@@ -355,16 +321,6 @@ public class CVText {
     }
 
     private static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        let textStorage: NSTextStorage
-        switch config.text {
-        case .attributedText(let text):
-            textStorage = NSTextStorage(attributedString: text)
-        case .text(let text):
-            textStorage = NSTextStorage(string: text)
-        }
-
-        textStorage.addAttribute(.font, value: config.font, range: textStorage.entireRange)
-
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
         textContainer.maximumNumberOfLines = config.numberOfLines
         textContainer.lineBreakMode = config.lineBreakMode
@@ -373,51 +329,29 @@ public class CVText {
         let layoutManager = NSLayoutManager()
         layoutManager.addTextContainer(textContainer)
 
-        textStorage.addLayoutManager(layoutManager)
-
-        let size = layoutManager.usedRect(for: textContainer).size
-
-        // For some reason, in production builds, the textStorage
-        // seems to get optimized out in many circumstances. This
-        // results in `usedRect` measuring an empty string and a
-        // size of 0,0.
-        // TODO: Figure out a better way to fix this. For now,
-        // by just using the textStorage later it ensures that it
-        // is properly measured.
-        _ = textStorage
-
-        return size.ceil
-    }
-
-    private static func measureLabelUsingBoundingRect(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        let attributedText: NSMutableAttributedString
+        // NSTextStorage *must* be initialized with `NSOriginalFont` defined,
+        // otherwise measurement of character sets that San Francisco doesn't
+        // support (CJK, Arabic, etc.) will not measure correctly.
+        let textStorage: NSTextStorage
         switch config.text {
         case .attributedText(let text):
-            attributedText = NSMutableAttributedString(attributedString: text)
+            // In order for the `NSOriginalFont` attribute to be retained,
+            // the text must be assigned to the NSTextStorage *after* it
+            // has been associated with a layout manager.
+            textStorage = NSTextStorage(string: "", attributes: [.font: config.font, .originalFont: config.font])
+            textStorage.addLayoutManager(layoutManager)
+            textStorage.setAttributedString(text)
         case .text(let text):
-            attributedText = NSMutableAttributedString(string: text)
+            textStorage = NSTextStorage(string: text, attributes: [.font: config.font, .originalFont: config.font])
+            textStorage.addLayoutManager(layoutManager)
         }
 
-        attributedText.addAttribute(.font, value: config.font, range: attributedText.entireRange)
-
-        let maxHeight: CGFloat
-        if config.numberOfLines > 0 {
-            maxHeight = config.font.lineHeight * CGFloat(config.numberOfLines)
-        } else {
-            maxHeight = .greatestFiniteMagnitude
-        }
-
-        var size = attributedText.boundingRect(
-            with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            context: nil
-        ).size
-
-        // We can't pass max height to the measurement, because it results
-        // in the final width being way off.
-        size.height = min(maxHeight, size.height)
-
-        owsAssertDebug(size.width <= maxWidth)
+        // The NSTextStorage object owns all the other layout components,
+        // so there are only weak references to it. In optimized builds,
+        // this can result in it being freed before we perform measurement.
+        // We can work around this by explicitly extending the lifetime of
+        // textStorage until measurement is completed.
+        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }
 
         return size.ceil
     }
@@ -467,8 +401,6 @@ public class CVText {
 
         let result: CGSize
         switch mode {
-        case .boundingRect:
-            result = measureTextViewUsingBoundingRect(config: config, maxWidth: maxWidth)
         case .layoutManager:
             result = measureTextViewUsingLayoutManager(config: config, maxWidth: maxWidth)
         case .view:
@@ -491,78 +423,35 @@ public class CVText {
     }
 
     private static func measureTextViewUsingLayoutManager(config: CVTextViewConfig, maxWidth: CGFloat) -> CGSize {
-        let textStorage: NSTextStorage
-        switch config.text {
-        case .attributedText(let text):
-            textStorage = NSTextStorage(attributedString: text)
-        case .text(let text):
-            textStorage = NSTextStorage(string: text)
-        }
-
-        textStorage.addAttribute(.font, value: config.font, range: textStorage.entireRange)
-
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
         textContainer.lineFragmentPadding = 0
 
         let layoutManager = NSLayoutManager()
         layoutManager.addTextContainer(textContainer)
 
-        textStorage.addLayoutManager(layoutManager)
-
-        let size = layoutManager.usedRect(for: textContainer).size
-
-        // For some reason, in production builds, the textStorage
-        // seems to get optimized out in many circumstances. This
-        // results in `usedRect` measuring an empty string and a
-        // size of 0,0.
-        // TODO: Figure out a better way to fix this. For now,
-        // by just using the textStorage later it ensures that it
-        // is properly measured.
-        _ = textStorage
-
-        return size.ceil
-    }
-
-    private static func measureTextViewUsingBoundingRect(config: CVTextViewConfig, maxWidth: CGFloat) -> CGSize {
-        let attributedText: NSMutableAttributedString
+        // NSTextStorage *must* be initialized with `NSOriginalFont` defined,
+        // otherwise measurement of character sets that San Francisco doesn't
+        // support (CJK, Arabic, etc.) will not measure correctly.
+        let textStorage: NSTextStorage
         switch config.text {
         case .attributedText(let text):
-            attributedText = NSMutableAttributedString(attributedString: text)
+            // In order for the `NSOriginalFont` attribute to be retained,
+            // the text must be assigned to the NSTextStorage *after* it
+            // has been associated with a layout manager.
+            textStorage = NSTextStorage(string: "", attributes: [.font: config.font, .originalFont: config.font])
+            textStorage.addLayoutManager(layoutManager)
+            textStorage.setAttributedString(text)
         case .text(let text):
-            attributedText = NSMutableAttributedString(string: text)
+            textStorage = NSTextStorage(string: text, attributes: [.font: config.font, .originalFont: config.font])
+            textStorage.addLayoutManager(layoutManager)
         }
 
-        attributedText.addAttribute(.font, value: config.font, range: attributedText.entireRange)
-
-        // TODO: We might need to do something with linkTextAttributes, but in
-        // general since these don't have an impact on line height hopefully it
-        // should be unnecessary.
-
-        // In order to match `sizeThatFits` semantics on UITextView, we have to
-        // do some adjustments to the bounding box we try and measure in. Note,
-        // this will break if we change certain parameters of the UITextView
-        // like the textContainerInset or the contentInset. Right now we don't
-        // allow changing those paramters (they're hard coded in `buildTextView`)
-        // so we should be safe, but if that were ever to change we'd need to
-        // re-evaluate this measurement strategy. Ideally, we'd get these numbers
-        // from UIKit directly, but I have not found any good way to find them.
-        // If things don't work on certain iOS versions, this is also almost
-        // certainly the culprit (tested on iOS 13 + iOS 14 so far)
-        let textViewHeightAdjustment: CGFloat
-        if #available(iOS 14, *) {
-            textViewHeightAdjustment = 1
-        } else {
-            textViewHeightAdjustment = 1.7
-        }
-
-        var size = attributedText.boundingRect(
-            with: CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin],
-            context: nil
-        ).size
-        size.height += textViewHeightAdjustment
-
-        owsAssertDebug(size.width <= maxWidth)
+        // The NSTextStorage object owns all the other layout components,
+        // so there are only weak references to it. In optimized builds,
+        // this can result in it being freed before we perform measurement.
+        // We can work around this by explicitly extending the lifetime of
+        // textStorage until measurement is completed.
+        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }
 
         return size.ceil
     }
@@ -583,59 +472,6 @@ public class CVText {
     }
 }
 
-private extension String {
-    // TODO: Figure out if this check is too expensive to do
-    // as frequently as we are. It seems okay in initial examination.
-    var containsCJKCharacters: Bool {
-        range(of: "\\p{Han}", options: .regularExpression) != nil
-    }
-}
-
-private extension NSAttributedString {
-    var withCJKCompatibleFonts: NSAttributedString {
-        let mutableAttributedString = NSMutableAttributedString(attributedString: self)
-        mutableAttributedString.enumerateAttribute(
-            .font,
-            in: mutableAttributedString.entireRange,
-            options: []
-        ) { font, subrange, _ in
-            guard let font = font as? UIFont else { return }
-            mutableAttributedString.addAttribute(
-                .font,
-                value: font.cjkCompatibleVariant,
-                range: subrange
-            )
-        }
-        return NSAttributedString(attributedString: mutableAttributedString)
-    }
-}
-
-private extension UIFont {
-    // The San Francisco font (as of iOS 14) does not allow for correct
-    // measurement of CJK characters. In order to work around this, when
-    // a string is detected to contain a CJK character we replace its font
-    // with HelveticaNeue, which handles measurement correctly.
-    // For more details see: http://www.openradar.me/43337516
-    var cjkCompatibleVariant: UIFont {
-        guard let weight = fontDescriptor.object(forKey: .face) as? String else {
-            owsFailDebug("Missing font weight for font \(self)")
-            return self
-        }
-
-        let replacementFontName: String
-
-        switch weight {
-        case "Regular": replacementFontName = "HelveticaNeue"
-        case "Regular Italic": replacementFontName = "HelveticaNeue-Italic"
-        case "Semibold": replacementFontName = "HelveticaNeue-Medium"
-        default: replacementFontName = "HelveticaNeue-\(weight.replacingOccurrences(of: " ", with: ""))"
-        }
-
-        guard let replacementFont = UIFont(name: replacementFontName, size: pointSize) else {
-            owsFailDebug("Missing cjk compatible font for name \(replacementFontName)")
-            return self
-        }
-
-        return replacementFont
-    }
+private extension NSAttributedString.Key {
+    static var originalFont = Self("NSOriginalFont")
 }
