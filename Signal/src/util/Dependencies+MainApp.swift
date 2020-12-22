@@ -26,6 +26,14 @@ public extension UIResponder {
         AppEnvironment.shared.accountManager
     }
 
+    var tsAccountManager: TSAccountManager {
+        SSKEnvironment.shared.tsAccountManager
+    }
+
+    static var tsAccountManager: TSAccountManager {
+        SSKEnvironment.shared.tsAccountManager
+    }
+
     var callUIAdapter: CallUIAdapter {
         AppEnvironment.shared.callService.individualCallService.callUIAdapter
     }
