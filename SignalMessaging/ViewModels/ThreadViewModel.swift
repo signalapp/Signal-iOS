@@ -19,7 +19,7 @@ public class ThreadViewModel: NSObject {
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     @objc public let groupCallInProgress: Bool
 
-    @objc public var isContactThread: Bool {
+    public var isContactThread: Bool {
         return !isGroupThread
     }
 

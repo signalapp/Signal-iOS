@@ -9,7 +9,9 @@ protocol MessageRequestNameCollisionDelegate: class {
     func createBlockActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController
     func createDeleteActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController
 
-    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisions: Bool)
+    // Invoked when the controller has resolved all collisions
+    // Can be successful (name collisions are resolved) or unsuccessful (the user opted to block/delete instead)
+    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisionsSuccessfully: Bool)
 }
 
 class MessageRequestNameCollisionViewController: OWSTableViewController {
@@ -33,6 +35,16 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
         updateModel()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(donePressed))
+    }
+
     func updateModel() {
         databaseStorage.uiRead { readTx in
             self.requesterModel = NameCollisionModel.buildFromAddress(
@@ -49,7 +61,7 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
 
         if collisionModels?.count == 0 {
             Logger.info("No collisions remaining")
-            self.collisionDelegate?.nameCollisionController(self, didResolveCollisions: true)
+            self.collisionDelegate?.nameCollisionController(self, didResolveCollisionsSuccessfully: true)
         } else {
             updateTableContents()
         }
@@ -156,7 +168,7 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
         presentActionSheet(collisionDelegate.createDeleteActionSheet() { [weak self] shouldDismiss in
             if shouldDismiss {
                 guard let self = self else { return }
-                self.collisionDelegate?.nameCollisionController(self, didResolveCollisions: false)
+                self.collisionDelegate?.nameCollisionController(self, didResolveCollisionsSuccessfully: false)
             }
         })
     }
@@ -167,9 +179,14 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
         presentActionSheet(collisionDelegate.createBlockActionSheet() { [weak self] shouldDismiss in
             if shouldDismiss {
                 guard let self = self else { return }
-                self.collisionDelegate?.nameCollisionController(self, didResolveCollisions: false)
+                self.collisionDelegate?.nameCollisionController(self, didResolveCollisionsSuccessfully: false)
             }
         })
+    }
+
+    @objc
+    private func donePressed(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
     }
 }
 

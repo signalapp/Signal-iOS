@@ -237,18 +237,14 @@ extension ConversationViewController: MessageRequestNameCollisionDelegate {
         let actionSheetTitleFormat: String
         let actionSheetMessage: String
         if thread.isGroupThread {
-            actionSheetTitleFormat = NSLocalizedString(
-                "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
+            actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
                 comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
-            actionSheetMessage = NSLocalizedString(
-                "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
+            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
                 comment: "Action sheet message to confirm blocking a group via a message request.")
         } else {
-            actionSheetTitleFormat = NSLocalizedString(
-                "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
+            actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
                 comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
-            actionSheetMessage = NSLocalizedString(
-                "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
+            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
                 comment: "Action sheet message to confirm blocking a conversation via a message request.")
         }
 
@@ -256,11 +252,9 @@ extension ConversationViewController: MessageRequestNameCollisionDelegate {
         let actionSheetTitle = String(format: actionSheetTitleFormat, threadName)
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
 
-        let blockActionTitle = NSLocalizedString(
-            "MESSAGE_REQUEST_BLOCK_ACTION",
+        let blockActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
             comment: "Action sheet action to confirm blocking a thread via a message request.")
-        let blockAndDeleteActionTitle = NSLocalizedString(
-            "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
+        let blockAndDeleteActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
             comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")
 
         actionSheet.addAction(ActionSheetAction(title: blockActionTitle) { [weak self] _ in
@@ -316,10 +310,13 @@ extension ConversationViewController: MessageRequestNameCollisionDelegate {
         return actionSheet
     }
 
-    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisions: Bool) {
-        if didResolveCollisions {
+    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisionsSuccessfully success: Bool) {
+        if success {
             ensureBannerState()
         } else {
+            // This may have already been closed (e.g. if the user requested deletion), but
+            // it's not guaranteed (e.g. the user blocked the request). Let's close it just
+            // to be safe.
             self.conversationSplitViewController?.closeSelectedConversation(animated: false)
         }
         controller.dismiss(animated: true, completion: nil)

@@ -688,7 +688,7 @@ typedef enum : NSUInteger {
     NSMutableArray<UIView *> *banners = [NSMutableArray new];
 
     // Most of these banners should hide themselves when the user scrolls
-     if (self.userHasScrolled) {
+     if (!self.userHasScrolled) {
         NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
         if (noLongerVerifiedAddresses.count > 0) {
             NSString *message;

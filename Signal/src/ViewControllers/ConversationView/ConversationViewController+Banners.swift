@@ -319,12 +319,6 @@ public class GestureView: UIView {
     }
 }
 
-fileprivate extension SignalServiceAddress {
-    func getDisplayName(transaction readTx: SDSAnyReadTransaction) -> String {
-        Environment.shared.contactsManager.displayName(for: self, transaction: readTx)
-    }
-}
-
 fileprivate class MessageRequestNameCollisionBanner: UIView {
 
     var reviewAction: () -> Void {
@@ -376,6 +370,7 @@ fileprivate class MessageRequestNameCollisionBanner: UIView {
 
         let button = OWSButton(title: buttonText)
         button.setTitleColor(Theme.accentBlueColor, for: .normal)
+        button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
         button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
