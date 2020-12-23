@@ -300,3 +300,13 @@ public extension OWSTableSection {
                   footer: footer())
     }
 }
+
+public extension OWSTableItem {
+    convenience init(
+        customCell: UITableViewCell,
+        rowHeight: CGFloat = UITableView.automaticDimension,
+        actionBlock: OWSTableActionBlock? = nil) {
+
+        self.init(customCell: customCell, customRowHeight: rowHeight, actionBlock: actionBlock)
+    }
+}

@@ -3,23 +3,34 @@
 //
 
 import Foundation
+import ContactsUI
+
+protocol MessageRequestNameCollisionDelegate: class {
+    func createBlockActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController
+    func createDeleteActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController
+
+    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisions: Bool)
+}
 
 class MessageRequestNameCollisionViewController: OWSTableViewController {
 
-    let thread: TSContactThread
-    var requesterModel: NameCollisionModel?
-    var collisionModels: [NameCollisionModel]?
+    private let thread: TSContactThread
+    private var requesterModel: NameCollisionModel?
+    private var collisionModels: [NameCollisionModel]?
+    private weak var collisionDelegate: MessageRequestNameCollisionDelegate?
 
-    init(thread: TSContactThread) {
+    init(thread: TSContactThread, collisionDelegate: MessageRequestNameCollisionDelegate) {
         self.thread = thread
+        self.collisionDelegate = collisionDelegate
         super.init()
+
         useThemeBackgroundColors = true
+        contactsViewHelper.addObserver(self)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         updateModel()
-        updateTableContents()
     }
 
     func updateModel() {
@@ -32,10 +43,15 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
                 for: self.thread.contactAddress,
                 transaction: readTx)
                 .map { address in
-                    NameCollisionModel.buildFromAddress(
-                        address: address,
-                        transaction: readTx)
+                    NameCollisionModel.buildFromAddress(address: address, transaction: readTx)
                 }
+        }
+
+        if collisionModels?.count == 0 {
+            Logger.info("No collisions remaining")
+            self.collisionDelegate?.nameCollisionController(self, didResolveCollisions: true)
+        } else {
+            updateTableContents()
         }
     }
 
@@ -45,15 +61,14 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
         }
         owsAssertDebug(collisionModels.count > 0)
 
-        let newContents = OWSTableContents()
-        newContents.title = "Review Request"
-        newContents.addSection(createHeaderSection())
-        newContents.addSection(createRequesterSection(model: requesterModel))
-        collisionModels.forEach {
-            newContents.addSection(createCollisionSection(model: $0))
-        }
-
-        contents = newContents
+        contents = OWSTableContents(
+            title: "Review Request",
+            sections: [
+                createHeaderSection(),
+                createRequesterSection(model: requesterModel)
+            ] + collisionModels.map {
+                createCollisionSection(model: $0)
+            })
     }
 
     func createHeaderSection() -> OWSTableSection {
@@ -77,68 +92,88 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
     func createRequesterSection(model: NameCollisionModel) -> OWSTableSection {
         let contactInfoCell = NameCollisionReviewContactCell.createWithModel(model)
         contactInfoCell.isPairedWithActions = true
-        let actionCell = NameCollisionActionCell(
-            actions: [
-                (title: "Delete", action: {
 
-                }),
-                (title: "Block", action: {
+        var actions: [NameCollisionActionCell.Action] = [
+            (title: "Delete", action: { [weak self] in
+                self?.delete()
+            })
+        ]
+        if !model.isBlocked {
+            actions.append((title: "Block", action: { [weak self] in
+                self?.block()
+            }))
+        }
 
-                })
-            ])
-
-        return OWSTableSection(
-            title: "Request",
-            items: [
-                OWSTableItem(
-                    customCell: contactInfoCell,
-                    customRowHeight: UITableView.automaticDimension,
-                    actionBlock: nil),
-
-                OWSTableItem(
-                    customCell: actionCell,
-                    customRowHeight: UITableView.automaticDimension,
-                    actionBlock: nil)
-            ])
+        return OWSTableSection(title: "Request", items: [
+            OWSTableItem(customCell: contactInfoCell),
+            OWSTableItem(customCell: NameCollisionActionCell(actions: actions))
+        ])
     }
 
     func createCollisionSection(model: NameCollisionModel) -> OWSTableSection {
         let contactInfoCell = NameCollisionReviewContactCell.createWithModel(model)
-        let section = OWSTableSection(
-            title: "Your Contact",
-            items: [
-                OWSTableItem(
-                    customCell: contactInfoCell,
-                    customRowHeight: UITableView.automaticDimension,
-                    actionBlock: nil)
-            ])
+        contactInfoCell.isPairedWithActions = false
 
-        if contactsManager.isSystemContact(address: model.address) {
-            contactInfoCell.isPairedWithActions = true
-            section.add(OWSTableItem(customCell: NameCollisionActionCell(actions: [
-                (title: "Update Contact", action: {
+        let section = OWSTableSection(title: "Your Contact", items: [
+            OWSTableItem(customCell: contactInfoCell)
+        ])
 
-                })
-            ]), customRowHeight: UITableView.automaticDimension, actionBlock: nil))
-
-        } else {
-            contactInfoCell.isPairedWithActions = false
+        guard shouldShowContactUpdateAction(for: model.address) else {
+            return section
         }
 
+        contactInfoCell.isPairedWithActions = true
+
+        let actionCell = NameCollisionActionCell(actions: [
+            (title: "Update Contact", action: { [weak self] in
+                self?.presentContactUpdateSheet(for: model.address)
+            })
+        ])
+
+        section.add(OWSTableItem(customCell: actionCell))
+        contactInfoCell.isPairedWithActions = true
         return section
     }
 
-    // MARK: - Banner
+    private func delete() {
+        guard let collisionDelegate = collisionDelegate else { return }
+
+        presentActionSheet(collisionDelegate.createDeleteActionSheet() { [weak self] shouldDismiss in
+            if shouldDismiss {
+                guard let self = self else { return }
+                self.collisionDelegate?.nameCollisionController(self, didResolveCollisions: false)
+            }
+        })
+    }
+
+    private func block() {
+        guard let collisionDelegate = collisionDelegate else { return }
+
+        presentActionSheet(collisionDelegate.createBlockActionSheet() { [weak self] shouldDismiss in
+            if shouldDismiss {
+                guard let self = self else { return }
+                self.collisionDelegate?.nameCollisionController(self, didResolveCollisions: false)
+            }
+        })
+    }
+}
+
+// MARK: - Banner
+
+extension MessageRequestNameCollisionViewController {
 
     static func collidingAddresses(
         for address: SignalServiceAddress,
         transaction readTx: SDSAnyReadTransaction
-    ) -> [SignalServiceAddress] {
+        ) -> [SignalServiceAddress] {
 
         let displayName = address.getDisplayName(transaction: readTx)
         let possibleMatches = self.contactsViewHelper.signalAccounts(
             matchingSearch: displayName,
             transaction: readTx)
+
+        // TODO: Check with design. Should we consult...
+        // -[ContactsViewHelper nonSignalContactsMatchingSearchString:]
 
         // ContactsViewHelper uses substring matching, so it might return false positives
         // Filter to just the matches that have identical names
@@ -155,6 +190,40 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
         return collidingAddresses(for: contactThread.contactAddress, transaction: readTx).count > 0
     }
 }
+
+// MARK: - Contacts
+
+extension MessageRequestNameCollisionViewController: CNContactViewControllerDelegate, ContactsViewHelperObserver {
+
+    func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
+        return contactsManager.isSystemContact(address: address) && contactsManager.supportsContactEditing
+    }
+
+    func presentContactUpdateSheet(for address: SignalServiceAddress) {
+        owsAssertDebug(navigationController != nil)
+        guard contactsManager.supportsContactEditing else {
+            return owsFailDebug("Contact editing unsupported")
+        }
+        guard let contactVC = contactsViewHelper.contactViewController(for: address, editImmediately: true) else {
+            return owsFailDebug("Failed to create contact view controller")
+        }
+
+        contactVC.delegate = self
+        navigationController?.pushViewController(contactVC, animated: true)
+    }
+
+    func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+        DispatchQueue.main.async {
+            self.navigationController?.popToViewController(self, animated: true)
+        }
+    }
+
+    func contactsViewHelperDidUpdateContacts() {
+        updateModel()
+    }
+}
+
+// MARK: - Helpers
 
 fileprivate extension SignalServiceAddress {
     func getDisplayName(transaction readTx: SDSAnyReadTransaction) -> String {
@@ -186,126 +255,14 @@ fileprivate extension NameCollisionModel {
             diameter: 64,
             transaction: readTx)
 
+        let isBlocked = OWSBlockingManager.shared().isAddressBlocked(address)
+
         return NameCollisionModel(
             address: address,
             name: address.getDisplayName(transaction: readTx),
             commonGroupsString: commonGroupsString,
             avatar: avatar,
-            oldName: nil)
+            oldName: nil,
+            isBlocked: isBlocked)
     }
 }
-
-
-
-
-/* struct NameCollision {
-    struct Member {
-        let address: SignalServiceAddress
-        let oldName: String?
-        let name: String
-    }
-
-    let thread: TSThread
-    let collidingMembers: [Member]
-
-    static func createMatchingAnyKnownAccount(to thread: TSContactThread) -> Self {
-        return .init(thread: thread, collidingMembers: [])
-    }
-
-    static func createMatchingNames(within groupThread: TSGroupThread) -> Self {
-        return .init(thread: groupThread, collidingMembers: [])
-    }
-} */
-
-
-
-
-
-
-
- /*
-struct NameCollision {
-    struct Member {
-        let address: SignalServiceAddress
-
-        let oldName: String?
-        let name: String
-        let commonGroupNames: [String]
-    }
-    let thread: TSGroupThread
-    let collidingMembers: [Member]
-
-    static func findNameCollisionsInGroup(_ thread: TSGroupThread, readTx: SDSAnyReadTransaction) -> [NameCollision] {
-        return thread.groupMembership.fullMembers.compactMap { address in
-            guard !address.isLocalAddress else { return nil }
-
-            let name = Environment.shared.contactsManager.displayName(for: address)
-            let commonGroupNames = TSGroupThread
-                .groupThreads(with: address, transaction: readTx)
-                .map { $0.groupNameOrDefault }
-
-            return NameCollision(thread: thread, collidingMembers: [
-                Member(address: address, oldName: nil, name: name, commonGroupNames: commonGroupNames)
-            ])
-
-        }
-    }
-}
-
-
-
-
-
-
-
-
-class GroupNameCollisionViewController: OWSTableViewController {
-
-    let collisionModel: NameCollision
-    var isLocalUserAdmin: Bool {
-        collisionModel.thread.groupMembership.isLocalUserFullMemberAndAdministrator
-    }
-
-    init(collisionModel: NameCollision) {
-        self.collisionModel = collisionModel
-        super.init()
-    }
-
-    override func viewDidLoad() {
-        rebuildContents()
-    }
-
-    func rebuildContents() {
-        self.contents = OWSTableContents(
-            title: "Review Members",
-            sections: collisionModel.collidingMembers.map { member in
-                OWSTableSection(title: "Member", items: [
-                    createMemberCell(for: member),
-                    createRemoveButtonCell()
-                ])
-            })
-    }
-
-    func createMemberCell(for member: NameCollision.Member) -> OWSTableItem {
-
-        OWSTableItem { () -> UITableViewCell in
-            let cell = OWSTableItem.newCell()
-            cell.contentView.backgroundColor = .blue
-            cell.textLabel?.text = member.name
-            return cell
-
-        } actionBlock: {
-        }
-
-    }
-
-    func createRemoveButtonCell() -> OWSTableItem {
-        OWSTableItem(text: "Remove From Cell", actionBlock: {
-
-        }, accessoryType: .none)
-    }
-
-    
-
-}
-*/

@@ -10,6 +10,7 @@ struct NameCollisionModel {
     let commonGroupsString: String
     let avatar: UIImage?
     let oldName: String?
+    let isBlocked: Bool
 
     var phoneNumber: String? {
         address.phoneNumber.map {

@@ -769,6 +769,9 @@ typedef enum : NSUInteger {
     }
 
     if (banners.count < 1) {
+        if (self.hasViewDidAppearEverBegun) {
+            [self updateContentInsetsAnimated:NO];
+        }
         return;
     }
 
@@ -794,6 +797,9 @@ typedef enum : NSUInteger {
     [self.view layoutSubviews];
 
     self.bannerView = bannerView;
+    if (self.hasViewDidAppearEverBegun) {
+        [self updateContentInsetsAnimated:NO];
+    }
 }
 
 - (NSUInteger)pendingMemberRequestCount
@@ -4003,7 +4009,7 @@ typedef enum : NSUInteger {
 
     newInsets.bottom = self.messageActionsExtraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
         + self.bottomBar.height - self.view.safeAreaInsets.bottom;
-    newInsets.top = self.messageActionsExtraContentInsetPadding;
+    newInsets.top = self.messageActionsExtraContentInsetPadding + self.bannerView.height;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 

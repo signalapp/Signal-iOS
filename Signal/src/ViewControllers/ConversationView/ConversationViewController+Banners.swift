@@ -133,26 +133,30 @@ public extension ConversationViewController {
     func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
         guard !viewState.isMessageRequestNameCollisionBannerHidden else { return nil }
         guard viewState.threadViewModel.isContactThread else { return nil }
-//        guard databaseStorage.uiRead(block: { readTx in
-//            MessageRequestNameCollisionViewController.shouldShowBanner(
-//                for: viewState.threadViewModel.threadRecord,
-//                transaction: readTx)
-//        }) else { return nil }
+
+        guard databaseStorage.uiRead(block: { readTx in
+            MessageRequestNameCollisionViewController.shouldShowBanner(
+                for: viewState.threadViewModel.threadRecord,
+                transaction: readTx)
+        }) else { return nil }
 
         let banner = MessageRequestNameCollisionBanner()
+
         banner.closeAction = { [weak self] in
             viewState.isMessageRequestNameCollisionBannerHidden = true
             self?.ensureBannerState()
         }
+
         banner.reviewAction = { [weak self] in
             guard let self = self else { return }
             guard let contactThread = self.thread as? TSContactThread else {
                 return owsFailDebug("Unexpected thread type")
             }
 
-            let vc = MessageRequestNameCollisionViewController(thread: contactThread)
+            let vc = MessageRequestNameCollisionViewController(thread: contactThread, collisionDelegate: self)
             vc.present(from: self)
         }
+
         return banner
     }
 }
