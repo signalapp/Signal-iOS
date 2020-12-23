@@ -578,28 +578,32 @@ class ThreadMapping: NSObject {
             }
         }
 
+        func logThreadIds(_ threadIds: [String], name: String) {
+            Logger.verbose("\(name)[\(threadIds.count)]: \(threadIds.joined(separator: "\n"))")
+        }
+
         // Once the moves are complete, the new ordering should be correct.
         guard newPinnedThreadIds == naivePinnedThreadIdOrdering else {
-            Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("oldPinnedThreadIds: \(oldPinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("oldUnpinnedThreadIds: \(oldUnpinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("newlyPinnedThreadIds: \(newlyPinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("newlyUnpinnedThreadIds: \(newlyUnpinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering.joined(separator: "\n"))")
-            Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering.joined(separator: "\n"))")
+            logThreadIds(newPinnedThreadIds, name: "newPinnedThreadIds")
+            logThreadIds(oldPinnedThreadIds, name: "oldPinnedThreadIds")
+            logThreadIds(newUnpinnedThreadIds, name: "newUnpinnedThreadIds")
+            logThreadIds(oldUnpinnedThreadIds, name: "oldUnpinnedThreadIds")
+            logThreadIds(newlyPinnedThreadIds, name: "newlyPinnedThreadIds")
+            logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
+            logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
+            logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
-        
+
         guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
-            Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("oldPinnedThreadIds: \(oldPinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("oldUnpinnedThreadIds: \(oldUnpinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("newlyPinnedThreadIds: \(newlyPinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("newlyUnpinnedThreadIds: \(newlyUnpinnedThreadIds.joined(separator: "\n"))")
-            Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering.joined(separator: "\n"))")
-            Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering.joined(separator: "\n"))")
+            logThreadIds(newPinnedThreadIds, name: "newPinnedThreadIds")
+            logThreadIds(oldPinnedThreadIds, name: "oldPinnedThreadIds")
+            logThreadIds(newUnpinnedThreadIds, name: "newUnpinnedThreadIds")
+            logThreadIds(oldUnpinnedThreadIds, name: "oldUnpinnedThreadIds")
+            logThreadIds(newlyPinnedThreadIds, name: "newlyPinnedThreadIds")
+            logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
+            logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
+            logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 

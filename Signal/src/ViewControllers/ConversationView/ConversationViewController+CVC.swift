@@ -606,12 +606,18 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                  shouldAnimateUpdates: shouldAnimateUpdate)
     }
 
-    var isScrollNearEdgeOfLoadWindow: Bool {
+    private var scrolledToEdgeTolerancePoints: CGFloat {
         let deviceFrame = CurrentAppContext().frame
         // Within 1 screenful of the edge of the load window.
-        let tolerancePoints = max(deviceFrame.width, deviceFrame.height)
-        return (isScrolledToBottom(tolerancePoints: tolerancePoints) ||
-                    isScrolledToTop(tolerancePoints: tolerancePoints))
+        return max(deviceFrame.width, deviceFrame.height)
+    }
+
+    var isScrollNearTopOfLoadWindow: Bool {
+        return isScrolledToTop(tolerancePoints: scrolledToEdgeTolerancePoints)
+    }
+
+    var isScrollNearBottomOfLoadWindow: Bool {
+        return isScrolledToBottom(tolerancePoints: scrolledToEdgeTolerancePoints)
     }
 
     @objc

@@ -18,7 +18,9 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     var isScrolledToBottom: Bool { get }
 
-    var isScrollNearEdgeOfLoadWindow: Bool { get }
+    var isScrollNearTopOfLoadWindow: Bool { get }
+
+    var isScrollNearBottomOfLoadWindow: Bool { get }
 }
 
 // MARK: -
@@ -487,23 +489,27 @@ public class CVLoadCoordinator: NSObject {
 
         let viewState = self.viewState
         func canLandLoad() -> Bool {
+            // Ensure isUserScrolling is a substate of hasScrollingAnimation.
             if viewState.isUserScrolling {
                 owsAssertDebug(viewState.hasScrollingAnimation)
-            }
-            guard !viewState.isUserScrolling else {
-                // Never land a load if a scroll gesture is in progress.
-                return false
             }
             guard viewState.hasScrollingAnimation else {
                 // If no scroll gesture or animation is in progress,
                 // we can land the load.
                 return true
             }
-            if let delegate = self.delegate,
-               delegate.isScrollNearEdgeOfLoadWindow {
-                // If a scroll animation is progress, but we're very
-                // close to the edge of the load window, land the load.
-                return true
+            if let delegate = self.delegate {
+                if update.loadType == .loadOlder,
+                   delegate.isScrollNearTopOfLoadWindow {
+                    // If a scroll animation is progress, but we're very
+                    // close to the edge of the load window, land the load.
+                    return true
+                } else if update.loadType == .loadNewer,
+                          delegate.isScrollNearBottomOfLoadWindow {
+                    // If a scroll animation is progress, but we're very
+                    // close to the edge of the load window, land the load.
+                    return true
+                }
             }
             return false
         }

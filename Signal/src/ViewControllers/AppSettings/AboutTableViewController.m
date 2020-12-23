@@ -130,6 +130,39 @@
                                                                                       animated:YES];
                                          }]];
 
+    TSAccountManager *tsAccountManager = self.tsAccountManager;
+    NSString *localNumber = @"Unknown";
+    if (tsAccountManager.localNumber != nil) {
+        localNumber = tsAccountManager.localNumber;
+    }
+    [debugSection
+        addItem:[OWSTableItem actionItemWithText:[NSString stringWithFormat:@"Local Phone Number: %@", localNumber]
+                                     actionBlock:^{
+                                         if (tsAccountManager.localNumber != nil) {
+                                             UIPasteboard.generalPasteboard.string = tsAccountManager.localNumber;
+                                         }
+                                     }]];
+
+    NSString *localUuid = @"Unknown";
+    if (tsAccountManager.localUuid != nil) {
+        localUuid = tsAccountManager.localUuid.UUIDString;
+    }
+    [debugSection addItem:[OWSTableItem actionItemWithText:[NSString stringWithFormat:@"Local UUID: %@", localUuid]
+                                               actionBlock:^{
+                                                   if (tsAccountManager.localUuid != nil) {
+                                                       UIPasteboard.generalPasteboard.string
+                                                           = tsAccountManager.localUuid.UUIDString;
+                                                   }
+                                               }]];
+
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Device ID: %lu",
+                                                                    (unsigned long)tsAccountManager.storedDeviceId]]];
+
+    if (tsAccountManager.storedDeviceName != nil) {
+        [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Device Name: %@",
+                                                                        tsAccountManager.storedDeviceName]]];
+    }
+
     NSString *environmentName = TSConstants.isUsingProductionService ? @"Production" : @"Staging";
     [debugSection
      addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Environment: %@", environmentName]]];
