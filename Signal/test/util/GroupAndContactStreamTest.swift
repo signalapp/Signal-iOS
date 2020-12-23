@@ -11,7 +11,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
+        TSAccountManager.shared()
     }
 
     // MARK: - Test Life Cycle
@@ -177,7 +177,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 thread.updateConversationColorName(.blue, transaction: transaction)
 
                 let messageFactory = OutgoingMessageFactory()
-                messageFactory.threadCreator = { _ in return thread }
+                messageFactory.threadCreator = { _ in thread }
                 _ = messageFactory.create(transaction: transaction)
 
                 thread.archiveThread(updateStorageService: false, transaction: transaction)
@@ -221,7 +221,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213214321"),
                 SignalServiceAddress(uuidString: "1d4ab045-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+13213214323")
-                ])
+            ])
 
             XCTAssertEqual(group.conversationColorName, ConversationColorName.burlap.rawValue)
             XCTAssertEqual(group.isBlocked, false)
@@ -238,7 +238,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213214321"),
                 SignalServiceAddress(uuidString: "55555555-88fb-4c4e-9f6a-f921124bd529", phoneNumber: "+15553214323")
-                ])
+            ])
             XCTAssertEqual(group.conversationColorName, ConversationColorName.taupe.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)
@@ -254,7 +254,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertEqual(group.memberAddresses, [
                 SignalServiceAddress(phoneNumber: "+13213213333"),
                 SignalServiceAddress(uuidString: "55555555-88FB-4C4E-9F6A-222222222222", phoneNumber: "+15553212222")
-                ])
+            ])
             XCTAssertEqual(group.conversationColorName, ConversationColorName.blue.rawValue)
             XCTAssertEqual(group.isBlocked, false)
             XCTAssertEqual(group.expireTimer, 0)
@@ -319,85 +319,97 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
+    func hasNameInSystemContacts(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+        false
+    }
+
+    func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        self.displayName(for: address)
+    }
+
     func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
-        return signalAccount.recipientAddress.stringForDisplay
+        signalAccount.recipientAddress.stringForDisplay
     }
 
     func displayName(for address: SignalServiceAddress) -> String {
-        return address.stringForDisplay
+        address.stringForDisplay
     }
 
     func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return address.stringForDisplay
+        address.stringForDisplay
     }
 
     func displayName(for signalAccount: SignalAccount) -> String {
-        return signalAccount.recipientAddress.stringForDisplay
+        signalAccount.recipientAddress.stringForDisplay
     }
 
     func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
-        return "Fake Name"
+        "Fake Name"
     }
 
     func displayNameWithSneakyTransaction(thread: TSThread) -> String {
-        return "Fake Name"
+        "Fake Name"
     }
 
     func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return address.stringForDisplay
+        address.stringForDisplay
     }
 
-    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        return ConversationColorName.taupe.rawValue
+    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ConversationColorName {
+        ConversationColorName.taupe
     }
 
     func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
-        return PersonNameComponents()
+        PersonNameComponents()
     }
 
     func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
-        return PersonNameComponents()
+        PersonNameComponents()
     }
 
     func signalAccounts() -> [SignalAccount] {
-        return []
+        []
     }
 
     func isSystemContact(phoneNumber: String) -> Bool {
-        return true
+        true
     }
 
     func isSystemContact(address: SignalServiceAddress) -> Bool {
-        return true
+        true
     }
 
     func isSystemContact(withSignalAccount phoneNumber: String) -> Bool {
-        return true
+        true
+    }
+
+    func isSystemContact(withSignalAccount phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
+        true
     }
 
     func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
-        return false
+        false
     }
 
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
-        return .orderedSame
+        .orderedSame
     }
 
     public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],
                                            transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        return addresses
+        addresses
     }
 
     func cnContact(withId contactId: String?) -> CNContact? {
-        return nil
+        nil
     }
 
     func avatarData(forCNContactId contactId: String?) -> Data? {
-        return nil
+        nil
     }
 
     func avatarImage(forCNContactId contactId: String?) -> UIImage? {
-        return nil
+        nil
     }
 
     var unknownUserLabel: String = "unknown"

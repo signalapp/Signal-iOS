@@ -1,9 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
 #import "SignalBaseTest.h"
+#import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,6 +47,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)testDataScrubbed
 {
     NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        @"<01>" : @"[ REDACTED_DATA:01... ]",
+        @"<0123>" : @"[ REDACTED_DATA:01... ]",
+        @"<012345>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a2>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23d>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 23>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 2323>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 232345>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 23234567>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 23234567 89>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 23234567 89ab>" : @"[ REDACTED_DATA:01... ]",
+        @"<01234567 89a23def 23234567 89ab12>" : @"[ REDACTED_DATA:01... ]",
         @"<01234567 89a23def 23234567 89ab1234>" : @"[ REDACTED_DATA:01... ]",
         @"My data is: <01234567 89a23def 23234567 89ab1223>" : @"My data is: [ REDACTED_DATA:01... ]",
         @"My data is <12345670 89a23def 23234567 89ab1223> their data is <87654321 89ab1234>" :
