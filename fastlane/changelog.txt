@@ -1,1 +1,1 @@
-Your Legacy Signal Groups will be automatically upgraded to New Groups so they can get in on the new features we recently released, like admins, @mentions, group links, and more. Upgrades don’t happen all at once or instantly, and some groups may not upgrade for a while.
+Introducing group calling! Group calls are free, private, and end-to-end encrypted, like everything else on Signal. To get started, open a Signal group and tap the video call button. Available in New Groups only.

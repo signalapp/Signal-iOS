@@ -68,7 +68,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             self.recipientAddress = nil
             self.groupThreadId = groupThread.uniqueId
         default:
-            owsFailDebug("unexpected thread type: \(thread)")
+            owsFailDebug("unexpected thread type: \(thread.uniqueId)")
             self.recipientAddress = nil
             self.groupThreadId = nil
         }

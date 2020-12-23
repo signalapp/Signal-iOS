@@ -509,7 +509,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
             // Don't ever allow a conversation view controller to be transfered on the master
             // stack when expanding from collapsed mode. This should never happen.
             guard let vc = vc as? ConversationViewController else { return true }
-            owsFailDebug("Unexpected conversation in view hierarchy: \(vc.thread)")
+            owsFailDebug("Unexpected conversation in view hierarchy: \(vc.thread.uniqueId)")
             return false
         }
 
