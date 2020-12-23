@@ -165,7 +165,7 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
     private func delete() {
         guard let collisionDelegate = collisionDelegate else { return }
 
-        presentActionSheet(collisionDelegate.createDeleteActionSheet() { [weak self] shouldDismiss in
+        presentActionSheet(collisionDelegate.createDeleteActionSheet { [weak self] shouldDismiss in
             if shouldDismiss {
                 guard let self = self else { return }
                 self.collisionDelegate?.nameCollisionController(self, didResolveCollisionsSuccessfully: false)
@@ -176,7 +176,7 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
     private func block() {
         guard let collisionDelegate = collisionDelegate else { return }
 
-        presentActionSheet(collisionDelegate.createBlockActionSheet() { [weak self] shouldDismiss in
+        presentActionSheet(collisionDelegate.createBlockActionSheet { [weak self] shouldDismiss in
             if shouldDismiss {
                 guard let self = self else { return }
                 self.collisionDelegate?.nameCollisionController(self, didResolveCollisionsSuccessfully: false)

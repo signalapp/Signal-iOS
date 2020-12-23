@@ -319,7 +319,7 @@ public class GestureView: UIView {
     }
 }
 
-fileprivate class MessageRequestNameCollisionBanner: UIView {
+private class MessageRequestNameCollisionBanner: UIView {
 
     var reviewAction: () -> Void {
         get { reviewButton.block }
