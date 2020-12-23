@@ -645,7 +645,7 @@ extension CallService {
             return
         }
         guard let memberInfo = groupMemberInfo(for: thread) else {
-            Logger.error("Failed to fetch group member info to peek \(thread)")
+            Logger.error("Failed to fetch group member info to peek \(thread.uniqueId)")
             return
         }
 
@@ -664,12 +664,12 @@ extension CallService {
         }.done(on: .main) { info in
             // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
             // We may have a more appropriate timestamp waiting in the message processing queue.
-            Logger.info("Fetched group call PeekInfo for thread: \(thread) eraId: \(info.eraId ?? "(null)")")
+            Logger.info("Fetched group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
             if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
                 self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
             }
         }.catch(on: .main) { error in
-            Logger.error("Failed to fetch PeekInfo for \(thread): \(error)")
+            Logger.error("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
         }
     }
 
