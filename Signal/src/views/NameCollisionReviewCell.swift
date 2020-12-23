@@ -130,7 +130,7 @@ class NameCollisionReviewContactCell: UITableViewCell {
         if let oldName = model.oldName {
             nameChangeSpacer.isHidden = false
             recentNameChangeLabel.isHidden = false
-            recentNameChangeLabel.text = "Recently changed their profile name from \(oldName) to Michelle!"
+            recentNameChangeLabel.text = "" // TODO
         } else {
             nameChangeSpacer.isHidden = true
             recentNameChangeLabel.isHidden = true

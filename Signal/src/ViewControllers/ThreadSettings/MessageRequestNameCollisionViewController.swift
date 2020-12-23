@@ -60,9 +60,11 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
             return owsFailDebug("Models haven't been initialized")
         }
         owsAssertDebug(collisionModels.count > 0)
+        let titleString = NSLocalizedString("MESSAGE_REQUEST_NAME_COLLISON_TITLE",
+            comment: "A title string for a view that allows a user to review name collisions for an incoming message request")
 
         contents = OWSTableContents(
-            title: "Review Request",
+            title: titleString,
             sections: [
                 createHeaderSection(),
                 createRequesterSection(model: requesterModel)
@@ -81,7 +83,8 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
             label.adjustsFontForContentSizeCategory = true
             label.numberOfLines = 0
 
-            label.text = "If you’re not sure who the request is from, review the contacts below and take action."
+            label.text = NSLocalizedString("MESSAGE_REQUEST_NAME_COLLISON_HEADER",
+                comment: "A header string informing the user about name collisions in a message request")
 
             view.addSubview(label)
             label.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 24, leading: 16, bottom: 16, trailing: 16))
@@ -90,31 +93,43 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
     }
 
     func createRequesterSection(model: NameCollisionModel) -> OWSTableSection {
+        let deleteActionString = NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+            comment: "incoming message request button text which deletes a conversation")
+        let blockActionString = NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+            comment: "A button used to block a user on an incoming message request.")
+        let requesterHeader = NSLocalizedString("MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER",
+            comment: "A header string above the requester's contact info")
+
         let contactInfoCell = NameCollisionReviewContactCell.createWithModel(model)
         contactInfoCell.isPairedWithActions = true
 
         var actions: [NameCollisionActionCell.Action] = [
-            (title: "Delete", action: { [weak self] in
+            (title: deleteActionString, action: { [weak self] in
                 self?.delete()
             })
         ]
         if !model.isBlocked {
-            actions.append((title: "Block", action: { [weak self] in
+            actions.append((title: blockActionString, action: { [weak self] in
                 self?.block()
             }))
         }
 
-        return OWSTableSection(title: "Request", items: [
+        return OWSTableSection(title: requesterHeader, items: [
             OWSTableItem(customCell: contactInfoCell),
             OWSTableItem(customCell: NameCollisionActionCell(actions: actions))
         ])
     }
 
     func createCollisionSection(model: NameCollisionModel) -> OWSTableSection {
+        let updateContactActionString = NSLocalizedString("MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION",
+            comment: "A button that updates a known contact's information to resolve a name collision")
+        let contactHeader = NSLocalizedString("MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER",
+            comment: "A header string above a known contact's contact info")
+
         let contactInfoCell = NameCollisionReviewContactCell.createWithModel(model)
         contactInfoCell.isPairedWithActions = false
 
-        let section = OWSTableSection(title: "Your Contact", items: [
+        let section = OWSTableSection(title: contactHeader, items: [
             OWSTableItem(customCell: contactInfoCell)
         ])
 
@@ -125,7 +140,7 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
         contactInfoCell.isPairedWithActions = true
 
         let actionCell = NameCollisionActionCell(actions: [
-            (title: "Update Contact", action: { [weak self] in
+            (title: updateContactActionString, action: { [weak self] in
                 self?.presentContactUpdateSheet(for: model.address)
             })
         ])
@@ -240,14 +255,20 @@ fileprivate extension NameCollisionModel {
         let commonGroupsString: String
         switch commonGroups.count {
         case 0:
-            commonGroupsString = "No groups in common"
+            commonGroupsString = NSLocalizedString("NO_GROUPS_IN_COMMON",
+                comment: "A string describing that the user has no groups in common with another user")
         case 1:
-            commonGroupsString = "Member of \(commonGroups[0].groupNameOrDefault)"
+            let formatString = NSLocalizedString("THREAD_DETAILS_ONE_MUTUAL_GROUP",
+                comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}")
+            commonGroupsString = String(format: formatString, commonGroups[0].groupNameOrDefault)
         case 2...:
-            commonGroupsString = "\(commonGroups.count) groups in common"
+            let formatString = NSLocalizedString("MANY_GROUPS_IN_COMMON",
+                comment: "A string describing that the user has many groups in common with another user. Embeds {{common group count}}")
+            commonGroupsString = String(format: formatString, String(commonGroups.count))
         default:
             owsFailDebug("Invalid groups count")
-            commonGroupsString = "No groups in common"
+            commonGroupsString = NSLocalizedString("NO_GROUPS_IN_COMMON",
+                comment: "A string describing that the user has no groups in common with another user")
         }
 
         let avatar = OWSContactAvatarBuilder.buildImage(

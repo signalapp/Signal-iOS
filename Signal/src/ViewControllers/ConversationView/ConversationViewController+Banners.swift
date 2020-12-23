@@ -338,8 +338,12 @@ fileprivate class MessageRequestNameCollisionBanner: UIView {
     }
 
     private let label: UILabel = {
+        let labelText = NSLocalizedString(
+            "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL",
+            comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
+
         let label = UILabel()
-        label.text = "Review requests carefuly Signal found another contact with the same name."
+        label.text = labelText
         label.numberOfLines = 0
         label.font = UIFont.ows_dynamicTypeFootnote
         label.textColor = Theme.secondaryTextAndIconColor
@@ -366,7 +370,11 @@ fileprivate class MessageRequestNameCollisionBanner: UIView {
     }()
 
     private let reviewButton: OWSButton = {
-        let button = OWSButton(title: "Review Request")
+        let buttonText = NSLocalizedString(
+            "MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
+            comment: "Button to allow user to review known name collisions with an incoming message request")
+
+        let button = OWSButton(title: buttonText)
         button.setTitleColor(Theme.accentBlueColor, for: .normal)
         button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -380,7 +388,7 @@ fileprivate class MessageRequestNameCollisionBanner: UIView {
         [infoIcon, label, closeButton, reviewButton]
             .forEach { addSubview($0) }
 
-        // Notice how the UIButtons are being aligned based on their content subviews
+        // Note that UIButtons are being aligned based on their content subviews
         // UIButtons this small will have an intrinsic size larger than their content
         // That extra padding between the content and its frame messes up alignment
         label.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
