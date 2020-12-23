@@ -476,24 +476,25 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
 // MARK: -
 
+func filterForDBQueryLog(_ input: String) -> String {
+    var result = input
+    while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
+        let charCount = result.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
+        let byteCount = Int64(charCount) / 2
+        let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
+        result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
+    }
+    return result
+}
+
 private func dbQueryLog(_ value: String) {
     guard SDSDatabaseStorage.shouldLogDBQueries else {
         return
     }
-    func filter(_ input: String) -> String {
-        var result = input
-
-        while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
-            let charCount = input.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
-            let byteCount = Int64(charCount) / 2
-            let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
-            result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
-        }
-
-        return result
-    }
-    Logger.info(filter(value))
+    Logger.info(filterForDBQueryLog(value))
 }
+
+// MARK: -
 
 private struct GRDBStorage {
 
