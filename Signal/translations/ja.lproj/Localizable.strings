@@ -950,7 +950,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ をグループ管理者から外しますか？";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "会話の検索";
+"CONVERSATION_SETTINGS_SEARCH" = "会話を検索";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "グループのブロック解除";
@@ -1175,7 +1175,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "古い端末側で表示が出ませんか？";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "他の端末を待っています...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "他の端末を待っています…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "端末同士を近づけてください。どちらの端末も電源を切らず、Signalを開いたままにしてください。転送はエンドツーエンドで暗号化されます。";
@@ -3056,7 +3056,7 @@
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "新しいPINを作成";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "英数字PINを入力";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "英数字PINを入力してください";
 
 /* Button asking if the user would like to enter an numeric PIN */
 "ONBOARDING_2FA_ENTER_NUMERIC" = "数字PINを入力";
@@ -3077,10 +3077,10 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "スキップし新しいPINを作成";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "もし PIN を思い出せない場合、新規に作成することができます。登録してアカウントを使用することはできますが、保存されたプロフィール設定などは失われます。";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "もしPINを忘れてしまっても、新しく作成できます。アカウントを登録して使用することもできますが、プロフィールなどの保存されている設定情報は失われます。";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN の入力を飛ばしますか?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PINの入力を省略しますか？";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "メッセージに「人間っぽさ」を加える";
@@ -3401,7 +3401,7 @@
 "PIN_ACTION" = "ピン留めする";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PINは4桁以上にしてください";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PINは4文字以上にしてください";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "PINを変更";
@@ -3851,16 +3851,16 @@
 "RESEARCH_MEGAPHONE_TITLE" = "Signalへご意見ください";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "この調査は、Surveygizmoが安全なドメイン (surveys.signalusers.org) でホストしています。";
+"RESEARCH_MODAL_FOOTER" = "このアンケートは、Surveygizmoが安全なドメイン (surveys.signalusers.org) でホストしています。";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "参加しない";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>私たちはプライバシーを尊重しています。</bold>\n\nSignalはあなたのデータを収集したり追跡することはありません。Signalをより良いものにするために、ユーザの皆様からのフィードバックを<bold>お待ちしています。</bold>\n\n私たちは、あなたのSignalの使用方法について調査しています。この調査では、あなたを特定するデータを収集することはありません。追加のフィードバックを共有されたい場合は、連絡先情報を提供することもできます。\n\nお時間とご意見をお持ちの方は、ぜひご連絡ください。";
+"RESEARCH_MODAL_PLEA" = "<bold>私たちはプライバシーを尊重しています。</bold>\n\nSignalはあなたのデータを収集したり追跡することはありません。Signalをより良いものにするために、ユーザの皆様からのフィードバックを<bold>お待ちしています。</bold>\n\n私たちは、あなたのSignalの使用方法についてアンケート調査を行っています。この調査では、あなたを特定するデータを収集することはありません。追加のフィードバックを共有されたい場合は、連絡先情報を提供することもできます。\n\nお時間とご意見をお持ちの方は、ぜひご連絡ください。";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "調査に参加する";
+"RESEARCH_MODAL_TAKE_SURVEY" = "アンケートに参加する";
 
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signalリサーチ";
@@ -4130,13 +4130,13 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Signalのインストール";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "携帯電話のSignalで、あなたのアイコンをタップし、「リンク済み端末」の「新しい端末をリンク」から、このQRコードを撮影してください。";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "携帯電話のSignalであなたのアイコンをタップし、「リンク済み端末」の「新しい端末をリンク」から、このQRコードをスキャンしてください:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "iPadのリンクに関するヘルプはこちら";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QRコードをスキャン";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QRコードをスキャンしてください";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "アカウントを移行するため、以前のiPadでSignalを起動してください。";
@@ -4682,7 +4682,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "このメッセージは削除されました。";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@、%@、%luグループのメンバー";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ほか%luグループのメンバー";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "この会話に自分用のメモを追加できます。今後のメモはリンク済みの端末にも同期されます。";
@@ -4829,7 +4829,7 @@
 "UNREAD_ACTION" = "未読にする";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signalからの登録解除に失敗しました。";
+"UNREGISTER_SIGNAL_FAIL" = "Signalからの登録削除に失敗しました。";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "サポートされていない種類の添付ファイルを受信しました。";

@@ -349,7 +349,7 @@ CHECKOUT OPTIONS:
     :commit: 01c0b2a0626a149c98d3cfa4909184843f094293
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   Mantle:
-    :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
+    :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2

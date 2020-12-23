@@ -437,7 +437,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                            senderName,
                                            groupThread.groupNameOrDefault)
             default:
-                owsFailDebug("unexpected thread: \(thread)")
+                owsFailDebug("unexpected thread: \(thread.uniqueId)")
                 return
             }
 
@@ -513,7 +513,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 groupThread.groupNameOrDefault
             )
         default:
-            owsFailDebug("unexpected thread: \(thread)")
+            owsFailDebug("unexpected thread: \(thread.uniqueId)")
             return
         }
 

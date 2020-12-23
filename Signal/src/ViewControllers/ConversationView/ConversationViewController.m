@@ -365,7 +365,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)peekSetup
+- (void)previewSetup
 {
     [self setInPreviewPlatter:YES];
     self.actionOnOpen = ConversationViewActionNone;
@@ -2822,13 +2822,6 @@ typedef enum : NSUInteger {
         DatabaseStorageAsyncWrite(self.databaseStorage,
             ^(SDSAnyWriteTransaction *transaction) { [thread updateWithDraft:currentDraft transaction:transaction]; });
     }
-}
-
-#pragma mark 3D Touch Preview Actions
-
-- (NSArray<id<UIPreviewActionItem>> *)previewActionItems
-{
-    return @[];
 }
 
 #pragma mark - ConversationHeaderViewDelegate

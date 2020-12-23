@@ -1166,7 +1166,7 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Пренесите налог";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Отворите Signal на вашем старом уређају, приближите га и омогућите Wi-Fi и Bluetooth на оба уређаја.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Отворите Signal на вашем старом уређају, приближите га и укључите Wi-Fi и Bluetooth на оба уређаја.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Поставите овај QR код унутар оквира на другом уређају.";
@@ -2300,7 +2300,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ови чланови не могу да се придруже новим групама и биће уклоњени из групе:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Надоградите у нову групу";
@@ -2348,7 +2348,7 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "Контактирајте нас";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Support Center";
@@ -4646,7 +4646,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Сигурносни број се подудара!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "Контактирајте нас";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";

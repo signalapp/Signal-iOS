@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
@@ -42,13 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
     });
     return regex;
 }
+
 - (NSRegularExpression *)dataRegex
 {
     static NSRegularExpression *regex = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSError *error;
-        regex = [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{6}( [\\da-f]{8})*>"
+        regex = [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{0,6}( [\\da-f]{2,8})*>"
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
@@ -57,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
     return regex;
 }
+
 - (NSRegularExpression *)ios13DataRegex
 {
     static NSRegularExpression *regex = nil;

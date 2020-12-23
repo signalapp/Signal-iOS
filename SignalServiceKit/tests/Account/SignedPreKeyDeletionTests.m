@@ -89,10 +89,10 @@
 - (void)testSignedPreKeyDeletion {
     XCTAssertEqual(0, self.signedPreKeyCount);
 
-    int days = 20;
+    int days = 40;
     int lastPreKeyId = days;
 
-    for (int i = 0; i <= days; i++) { // 21 signed keys are generated, one per day from now until 20 days ago.
+    for (int i = 0; i <= days; i++) { // 41 signed keys are generated, one per day from now until 40 days ago.
         int secondsAgo = (i - days) * 24 * 60 * 60;
         NSAssert(secondsAgo <= 0, @"Time in past must be negative");
         NSDate *generatedAt = [NSDate dateWithTimeIntervalSinceNow:secondsAgo];
@@ -106,14 +106,14 @@
     }
 
     // Sanity check
-    XCTAssertEqual(21, self.signedPreKeyCount);
+    XCTAssertEqual(41, self.signedPreKeyCount);
 
     [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
 
     XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
-    // We'll delete every key created 7 or more days ago.
-    XCTAssertEqual(7, self.signedPreKeyCount);
+    // We'll delete every key created 30 or more days ago.
+    XCTAssertEqual(30, self.signedPreKeyCount);
 }
 
 - (void)testSignedPreKeyDeletionKeepsSomeOldKeys
@@ -122,8 +122,8 @@
 
     int lastPreKeyId = 10;
     for (int i = 0; i <= 10; i++) {
-        // All these keys will be considered "old", since they were created more than 7 days ago.
-        int secondsAgo = (i - 20) * 24 * 60 * 60;
+        // All these keys will be considered "old", since they were created more than 30 days ago.
+        int secondsAgo = (i - 40) * 24 * 60 * 60;
         NSAssert(secondsAgo <= 0, @"Time in past must be negative");
         NSDate *generatedAt = [NSDate dateWithTimeIntervalSinceNow:secondsAgo];
         SignedPreKeyRecord *record = [[SignedPreKeyRecord alloc] initWithId:i

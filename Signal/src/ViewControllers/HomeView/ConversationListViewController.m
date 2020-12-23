@@ -66,7 +66,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic, readonly) ThreadMapping *threadMapping;
 @property (nonatomic) ConversationListMode conversationListMode;
-@property (nonatomic) id previewingContext;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -620,8 +619,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self applyDefaultBackButton];
 
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
-        && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
+    if (@available(iOS 13, *)) {
+        // Automatically handled by UITableViewDelegate callbacks
+        // -tableView:contextMenuConfigurationForRowAtIndexPath:point:
+        // -tableView:willPerformPreviewActionForMenuWithConfiguration:animator:
+    } else if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
 
@@ -775,43 +777,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
 
     self.navigationItem.rightBarButtonItems = @[ compose, camera ];
-}
-
-- (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-                       viewControllerForLocation:(CGPoint)location
-{
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-
-    if (!indexPath) {
-        return nil;
-    }
-
-    switch (indexPath.section) {
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned:
-            break;
-        default:
-            return nil;
-    }
-
-    [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
-
-    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
-    self.lastViewedThread = threadViewModel.threadRecord;
-    ConversationViewController *vc =
-        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
-                                                             action:ConversationViewActionNone
-                                                     focusMessageId:nil];
-    [vc peekSetup];
-
-    return vc;
-}
-
-- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-     commitViewController:(UIViewController *)viewControllerToCommit
-{
-    ConversationViewController *vc = (ConversationViewController *)viewControllerToCommit;
-    [self presentThread:vc.thread action:ConversationViewActionNone animated:NO];
 }
 
 - (void)showNewConversationView
@@ -1950,6 +1915,153 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return TSInboxGroup;
         case ConversationListMode_Archive:
             return TSArchiveGroup;
+    }
+}
+
+#pragma mark - Previewing
+
+#pragma mark Old Style
+
+- (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+                       viewControllerForLocation:(CGPoint)location
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    if ([self canPresentPreviewFromIndexPath:indexPath] == NO) {
+        return nil;
+    }
+
+    [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
+    return [self createPreviewControllerAtIndexPath:indexPath];
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+     commitViewController:(UIViewController *)viewControllerToCommit
+{
+    [self commitPreviewController:viewControllerToCommit];
+}
+
+#pragma mark New Style
+
+- (nullable UIContextMenuConfiguration *)tableView:(UITableView *)tableView
+         contextMenuConfigurationForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
+                                             point:(CGPoint)point API_AVAILABLE(ios(13.0))
+{
+    if ([self canPresentPreviewFromIndexPath:indexPath] == NO) {
+        return nil;
+    }
+    NSString *threadId = [self threadForIndexPath:indexPath].uniqueId;
+    if (!threadId) {
+        return nil;
+    }
+
+    __weak typeof(self) wSelf = self;
+    return [UIContextMenuConfiguration configurationWithIdentifier:threadId
+        previewProvider:^UIViewController *_Nullable { return [wSelf createPreviewControllerAtIndexPath:indexPath]; }
+        actionProvider:^UIMenu *_Nullable(NSArray<UIMenuElement *> *_Nonnull suggestedActions) {
+            // nil for now. But we may want to add options like "Pin" or "Mute" in the future
+            return nil;
+        }];
+}
+
+- (nullable UITargetedPreview *)tableView:(UITableView *)tableView
+    previewForDismissingContextMenuWithConfiguration:(UIContextMenuConfiguration *)configuration
+    API_AVAILABLE(ios(13.0))
+{
+
+    NSString *threadId = (NSString *)configuration.identifier;
+    if (![threadId isKindOfClass:[NSString class]]) {
+        OWSFailDebug(@"Unexpected context menu configuration identifier");
+        return nil;
+    }
+    NSIndexPath *indexPath = [self.threadMapping indexPathForUniqueId:threadId];
+    if (!indexPath) {
+        OWSLogWarn(@"No index path for threadId %@", threadId);
+        return nil;
+    }
+
+    // Below is a partial workaround for database updates causing cells to reload mid-transition:
+    // When the conversation view controller is dismissed, it touches the database which causes
+    // the row to update.
+    //
+    // The way this *should* appear is that during presentation and dismissal, the row animates
+    // into and out of the platter. Currently, it looks like UIKit uses a portal view to accomplish
+    // this. It seems the row stays in its original position and is occluded by context menu internals
+    // while the portal view is translated.
+    //
+    // But in our case, when the table view is updated the old cell will be removed and hidden by
+    // UITableView. So mid-transition, the cell appears to disappear. What's left is the background
+    // provided by UIPreviewParameters. By default this is opaque and the end result is that an empty
+    // row appears while dismissal completes.
+    //
+    // A straightforward way to work around this is to just set the background color to clear. When
+    // the row is updated because of a database change, it will appear to snap into position instead
+    // of properly animating. This isn't *too* much of an issue since the row is usually occluded by
+    // the platter anyway. This avoids the empty row issue. A better solution would probably be to
+    // defer data source updates until the transition completes but, as far as I can tell, we aren't
+    // notified when this happens.
+
+    ConversationListCell *cell = (ConversationListCell *)[tableView cellForRowAtIndexPath:indexPath];
+    CGRect cellFrame = [tableView rectForRowAtIndexPath:indexPath];
+    CGPoint center = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
+
+    UIPreviewTarget *target = [[UIPreviewTarget alloc] initWithContainer:tableView center:center];
+    UIPreviewParameters *params = [[UIPreviewParameters alloc] init];
+    params.backgroundColor = UIColor.clearColor;
+    return [[UITargetedPreview alloc] initWithView:cell parameters:params target:target];
+}
+
+- (void)tableView:(UITableView *)tableView
+    willPerformPreviewActionForMenuWithConfiguration:(UIContextMenuConfiguration *)configuration
+                                            animator:(id<UIContextMenuInteractionCommitAnimating>)animator
+    API_AVAILABLE(ios(13.0))
+{
+    UIViewController *vc = animator.previewViewController;
+    __weak typeof(self) wSelf = self;
+    [animator addAnimations:^{ [wSelf commitPreviewController:vc]; }];
+}
+
+#pragma mark Shared
+
+- (BOOL)canPresentPreviewFromIndexPath:(nullable NSIndexPath *)indexPath
+{
+    NSString *currentSelectedThreadId = self.conversationSplitViewController.selectedThread.uniqueId;
+    if (!indexPath) {
+        return NO;
+    } else if ([[self threadForIndexPath:indexPath].uniqueId isEqual:currentSelectedThreadId]) {
+        // Currently, no previewing the currently selected thread.
+        // Though, in a scene-aware, multiwindow world, we may opt to permit this.
+        // If only to allow the user to pick up and drag a conversation to a new window.
+        return NO;
+    } else {
+        switch (indexPath.section) {
+            case ConversationListViewControllerSectionPinned:
+            case ConversationListViewControllerSectionUnpinned:
+                return YES;
+            default:
+                return NO;
+        }
+    }
+}
+
+- (UIViewController *)createPreviewControllerAtIndexPath:(NSIndexPath *)indexPath
+{
+    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
+    self.lastViewedThread = threadViewModel.threadRecord;
+    ConversationViewController *vc =
+        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
+                                                             action:ConversationViewActionNone
+                                                     focusMessageId:nil];
+    [vc previewSetup];
+    return vc;
+}
+
+- (void)commitPreviewController:(UIViewController *)previewController
+{
+    if ([previewController isKindOfClass:[ConversationViewController class]]) {
+        ConversationViewController *vc = (ConversationViewController *)previewController;
+        [self presentThread:vc.thread action:ConversationViewActionNone animated:NO];
+    } else {
+        OWSFailDebug(@"Unexpected preview controller %@", previewController);
     }
 }
 

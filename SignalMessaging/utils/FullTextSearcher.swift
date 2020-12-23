@@ -582,7 +582,7 @@ public class FullTextSearcher: NSObject {
             case let contactThread as TSContactThread:
                 return self.contactThreadSearcher.matches(item: contactThread, query: searchText, transaction: transaction)
             default:
-                owsFailDebug("Unexpected thread type: \(thread)")
+                owsFailDebug("Unexpected thread type: \(thread.uniqueId)")
                 return false
             }
         }

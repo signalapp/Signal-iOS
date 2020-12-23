@@ -467,10 +467,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "വീണ്ടും വിളിക്കുക";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ഇൻകമിംഗ് ഓഡിയോ കോൾ...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 നഷ്‌ടമായ ഓഡിയോ കോൾ";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "നിങ്ങൾക്ക് Signal വഴി കോൾ ചെയ്യുന്നതിനും വോയിസ് മെസേജുകൾ റെക്കോഡ് ചെയ്യുന്നതിനും iOS സെറ്റിംഗ്സ് ആപ്പിൽ മൈക്രോഫോൺ അക്സസ്സ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
@@ -1526,10 +1526,10 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@- - നെ തടഞ്ഞിരിക്കുന്നു";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@- - നെ തടഞ്ഞിരിക്കുന്നു";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "കോൾ തുടരുക";
@@ -1643,7 +1643,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "നിങ്ങൾ (മറ്റൊരു ഉപകരണത്തിൽ)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "എൻ‌ക്രിപ്റ്റ് ചെയ്ത ഗ്രൂപ്പ് കോൾ ആരംഭിക്കാൻ, ഒരു പുതിയ ഗ്രൂപ്പ് ചാറ്റ് തുറക്കുക";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "ഗ്രൂപ്പ് കോളുകൾ അവതരിപ്പിക്കുന്നു";
@@ -2006,7 +2006,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 വ്യക്തിയെ ഗ്രൂപ്പിലേക്ക് ക്ഷണിച്ചിരിക്കുന്നു.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@-നെ ഗ്രൂപ്പിലേക്ക് ക്ഷണിച്ചു.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "%@ നെ നിങ്ങൾ ഗ്രൂപ്പിലേക്ക് ക്ഷണിച്ചിരിക്കുന്നു.";
@@ -2024,7 +2024,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ ഗ്രൂപ്പിൽ ചേർന്നു.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ ഗ്രൂപ്പ് ലിങ്ക് ഉപയോഗിച്ച് ഗ്രൂപ്പിൽ ചേർന്നു.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ഗ്രൂപ്പിൽ നിന്നും പോയി.";
@@ -2300,7 +2300,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "ഈ അംഗങ്ങൾക്ക് പുതിയ ഗ്രൂപ്പുകളിൽ‌ ചേരാൻ‌ കഴിയില്ല, മാത്രമല്ല ഈ ഗ്രൂപ്പിൽ‌ നിന്നും നീക്കംചെയ്യുകയും ചെയ്യും:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യുക";

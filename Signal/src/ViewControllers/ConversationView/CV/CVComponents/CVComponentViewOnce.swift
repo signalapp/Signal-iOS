@@ -41,7 +41,6 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             return false
         }
     }
-
     private var attachmentStream: TSAttachmentStream? {
         if case .incomingAvailable(let attachmentStream) = viewOnceState {
             return attachmentStream

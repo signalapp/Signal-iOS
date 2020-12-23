@@ -213,7 +213,7 @@ class ConversationPickerViewController: OWSViewController {
                         groupItems.append(item)
                     }
                 default:
-                    owsFailDebug("unexpected thread: \(thread)")
+                    owsFailDebug("unexpected thread: \(thread.uniqueId)")
                 }
             }
 

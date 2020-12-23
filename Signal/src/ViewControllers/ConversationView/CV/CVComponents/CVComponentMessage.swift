@@ -167,18 +167,25 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return false
         } else if componentState.isSticker {
             return true
-        } else if let viewOnce = componentState.viewOnce {
-            switch viewOnce.viewOnceState {
-            case .unknown:
-                owsFailDebug("Invalid value.")
-                return true
-            case .incomingExpired, .incomingInvalidContent:
-                return true
-            default:
-                return false
-            }
+        } else if isBorderlessViewOnceMessage {
+            return true
         } else {
             return isBorderless
+        }
+    }
+
+    private var isBorderlessViewOnceMessage: Bool {
+        guard let viewOnce = componentState.viewOnce else {
+            return false
+        }
+        switch viewOnce.viewOnceState {
+        case .unknown:
+            owsFailDebug("Invalid value.")
+            return true
+        case .incomingExpired, .incomingInvalidContent:
+            return true
+        default:
+            return false
         }
     }
 
@@ -657,7 +664,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var bubbleStrokeColor: UIColor? {
-        wasRemotelyDeleted ? Theme.outlineColor : nil
+        if wasRemotelyDeleted || isBorderlessViewOnceMessage {
+            return Theme.outlineColor
+        } else {
+            return nil
+        }
     }
 
     private func measureStackView(config: CVStackViewConfig,
