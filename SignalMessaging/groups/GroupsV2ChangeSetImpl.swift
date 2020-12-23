@@ -422,8 +422,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
         actionsBuilder.setRevision(newRevision)
 
-        var fullMemberAdministratorCount: Int = currentGroupModel.groupMembership.fullMemberAdministrators.count
-        var allMemberCount = currentGroupModel.groupMembership.allMembersOfAnyKind.count
+        // Track member counts that are updated to reflect each
+        // new action.
+        var remainingMemberOfAnyKindUuids = Set(currentGroupModel.groupMembership.allMembersOfAnyKind.compactMap { $0.uuid })
+        var remainingFullMemberUuids = Set(currentGroupModel.groupMembership.fullMembers.compactMap { $0.uuid })
+        var remainingAdminUuids = Set(currentGroupModel.groupMembership.fullMemberAdministrators.compactMap { $0.uuid })
 
         var didChange = false
 
@@ -497,6 +500,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 actionBuilder.setUserID(userId)
                 actionBuilder.setRole(role.asProtoRole)
                 actionsBuilder.addPromoteRequestingMembers(try actionBuilder.build())
+
+                remainingMemberOfAnyKindUuids.insert(uuid)
+                remainingFullMemberUuids.insert(uuid)
+                if role == .administrator {
+                    remainingAdminUuids.insert(uuid)
+                }
             } else {
                 guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
                     throw OWSAssertionError("Missing profile key credential: \(uuid)")
@@ -506,12 +515,14 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                                                                            role: role.asProtoRole,
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
+
+                remainingMemberOfAnyKindUuids.insert(uuid)
+                remainingFullMemberUuids.insert(uuid)
+                if role == .administrator {
+                    remainingAdminUuids.insert(uuid)
+                }
             }
             didChange = true
-
-            if role == .administrator {
-                fullMemberAdministratorCount += 1
-            }
         }
 
         for uuid in self.membersToRemove {
@@ -522,24 +533,29 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
 
+                remainingMemberOfAnyKindUuids.remove(uuid)
+                remainingFullMemberUuids.remove(uuid)
                 if currentGroupMembership.isFullMemberAndAdministrator(uuid) {
-                    fullMemberAdministratorCount -= 1
+                    remainingAdminUuids.remove(uuid)
                 }
-                allMemberCount -= 1
             } else if currentGroupMembership.isInvitedMember(uuid) {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
-                allMemberCount -= 1
+
+                remainingMemberOfAnyKindUuids.remove(uuid)
+                remainingFullMemberUuids.remove(uuid)
             } else if currentGroupMembership.isRequestingMember(uuid) {
                 var actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
                 didChange = true
-                allMemberCount -= 1
+
+                remainingMemberOfAnyKindUuids.remove(uuid)
+                remainingFullMemberUuids.remove(uuid)
             } else {
                 // Another user has already removed this member or revoked their
                 // invitation.
@@ -556,7 +572,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 continue
             }
 
-            guard allMemberCount <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
+            guard remainingMemberOfAnyKindUuids.count <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
                 throw GroupsV2Error.tooManyMembers
             }
 
@@ -567,7 +583,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                                                                               groupV2Params: groupV2Params))
             actionsBuilder.addAddPendingMembers(try actionBuilder.build())
             didChange = true
-            allMemberCount += 1
+
+            remainingMemberOfAnyKindUuids.insert(uuid)
+            if role == .administrator {
+                remainingAdminUuids.insert(uuid)
+            }
         }
 
         if shouldRevokeInvalidInvites {
@@ -616,9 +636,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             didChange = true
 
             if currentRole == .administrator {
-                fullMemberAdministratorCount -= 1
+                remainingAdminUuids.remove(uuid)
             } else if newRole == .administrator {
-                fullMemberAdministratorCount += 1
+                remainingAdminUuids.insert(uuid)
             }
         }
 
@@ -677,11 +697,15 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                                                                               groupV2Params: groupV2Params))
             actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
             didChange = true
+
+            remainingMemberOfAnyKindUuids.insert(uuid)
+            remainingFullMemberUuids.insert(uuid)
         }
 
         if self.shouldLeaveGroupDeclineInvite {
             let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
-                                                                                           groupMembership: currentGroupMembership)
+                                                                                           remainingFullMemberUuids: remainingFullMemberUuids,
+                                                                                           remainingAdminUuids: remainingAdminUuids)
             guard canLeaveGroup else {
                 // This could happen if the last two admins leave at the same time
                 // and race.
