@@ -187,11 +187,20 @@ public extension ConversationViewController {
             }
         }
 
-        bottomBarBottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+        guard let bottomBarBottomConstraint = bottomBarBottomConstraint,
+              let bottomBarSuperview = bottomBar.superview else {
+            return
+        }
+        let bottomBarPosition = -inputAccessoryPlaceholder.keyboardOverlap
+        let didChange = bottomBarBottomConstraint.constant != bottomBarPosition
+        guard didChange else {
+            return
+        }
+        bottomBarBottomConstraint.constant = bottomBarPosition
 
         // We always want to apply the new bottom bar position immediately,
         // as this only happens during animations (interactive or otherwise)
-        bottomBar.superview?.layoutIfNeeded()
+        bottomBarSuperview.layoutIfNeeded()
     }
 
     @objc

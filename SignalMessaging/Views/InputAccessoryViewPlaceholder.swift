@@ -7,7 +7,9 @@ import Foundation
 @objc
 protocol InputAccessoryViewPlaceholderDelegate: class {
     func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
+    func inputAccessoryPlaceholderKeyboardDidPresent()
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
+    func inputAccessoryPlaceholderKeyboardDidDismiss()
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
 }
 
@@ -75,9 +77,11 @@ public class InputAccessoryViewPlaceholder: UIView {
         set {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
-            heightConstraintView.layoutIfNeeded()
-            self.layoutIfNeeded()
-            superview?.layoutIfNeeded()
+            UIView.performWithoutAnimation {
+                heightConstraintView.layoutIfNeeded()
+                self.layoutIfNeeded()
+                superview?.layoutIfNeeded()
+            }
         }
         get {
             return heightConstraint.constant
@@ -215,6 +219,7 @@ public class InputAccessoryViewPlaceholder: UIView {
     @objc
     private func keyboardDidPresent(_ notification: Notification) {
         keyboardState = .presented
+        delegate?.inputAccessoryPlaceholderKeyboardDidPresent()
     }
 
     @objc
@@ -234,5 +239,6 @@ public class InputAccessoryViewPlaceholder: UIView {
     @objc
     private func keyboardDidDismiss(_ notification: Notification) {
         keyboardState = .dismissed
+        delegate?.inputAccessoryPlaceholderKeyboardDidDismiss()
     }
 }
