@@ -4,6 +4,7 @@
 
 #import "OWSScrubbingLogFormatter.h"
 #import "SignalBaseTest.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -44,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        timestamp:self.testDate];
 }
 
-- (void)testDataScrubbed
+- (void)testIOS12AndLowerDataScrubbed
 {
     NSDictionary<NSString *, NSString *> *expectedOutputs = @{
         @"<01>" : @"[ REDACTED_DATA:01... ]",
@@ -87,10 +88,33 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)testIOS13DataScrubbed
+- (void)testIOS13AndHigherDataScrubbed
 {
     NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        @"{length = 32, bytes = 0x01}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x012345}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x01234567}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a2}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23d}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def23}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def2323}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def232345}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def23234567}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def2323456789}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def2323456789ab}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0x0123456789a23def2323456789ab12}" : @"[ REDACTED_DATA:01... ]",
         @"{length = 32, bytes = 0x0123456789a23def2323456789ab1234}" : @"[ REDACTED_DATA:01... ]",
+        @"{length = 32, bytes = 0xaa}" : @"[ REDACTED_DATA:aa... ]",
+        @"{length = 32, bytes = 0xaaaaaaaa}" : @"[ REDACTED_DATA:aa... ]",
+        @"{length = 32, bytes = 0xff}" : @"[ REDACTED_DATA:ff... ]",
+        @"{length = 32, bytes = 0xffff}" : @"[ REDACTED_DATA:ff... ]",
+        @"{length = 32, bytes = 0x00}" : @"[ REDACTED_DATA:00... ]",
+        @"{length = 32, bytes = 0x0000}" : @"[ REDACTED_DATA:00... ]",
+        @"{length = 32, bytes = 0x99}" : @"[ REDACTED_DATA:99... ]",
+        @"{length = 32, bytes = 0x999999}" : @"[ REDACTED_DATA:99... ]",
         @"My data is: {length = 32, bytes = 0x0123456789a23def2323456789ab1223}" :
             @"My data is: [ REDACTED_DATA:01... ]",
         @"My data is {length = 32, bytes = 0x1234567089a23def2323456789ab1223} their data is {length = 16, bytes = "
@@ -111,6 +135,54 @@ NS_ASSUME_NONNULL_BEGIN
             [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
 
         NSString *expected = expectedOutputs[input];
+
+        XCTAssertEqualObjects(expected, actual);
+    }
+}
+
+- (void)testDataScrubbed
+{
+    NSDictionary<NSData *, NSString *> *expectedOutputs = @{
+        [NSData dataFromHexString:@"01"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"012345"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"01234567"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a2"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23d"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def23"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def2323"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def232345"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def23234567"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def2323456789"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def2323456789ab"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def2323456789ab12"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"0123456789a23def2323456789ab1234"] : @"[ REDACTED_DATA:01... ]",
+        [NSData dataFromHexString:@"ff"] : @"[ REDACTED_DATA:ff... ]",
+        [NSData dataFromHexString:@"ffffff"] : @"[ REDACTED_DATA:ff... ]",
+        [NSData dataFromHexString:@"aa"] : @"[ REDACTED_DATA:aa... ]",
+        [NSData dataFromHexString:@"aaaaaa"] : @"[ REDACTED_DATA:aa... ]",
+        [NSData dataFromHexString:@"00"] : @"[ REDACTED_DATA:00... ]",
+        [NSData dataFromHexString:@"00000000"] : @"[ REDACTED_DATA:00... ]",
+        [NSData dataFromHexString:@"99"] : @"[ REDACTED_DATA:99... ]",
+        [NSData dataFromHexString:@"999999"] : @"[ REDACTED_DATA:99... ]",
+    };
+
+    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+
+    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
+    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
+
+    for (NSData *rawData in expectedOutputs) {
+
+        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:rawData.description]];
+
+        // strip out dynamic date portion of log line
+        NSString *actual =
+            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
+
+        NSString *expected = expectedOutputs[rawData];
 
         XCTAssertEqualObjects(expected, actual);
     }

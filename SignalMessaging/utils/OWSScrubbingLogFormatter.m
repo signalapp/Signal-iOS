@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSError *error;
-        regex = [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{2,6}( [\\da-f]{2,8})*>"
+        regex = [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{0,6}( [\\da-f]{2,8})*>"
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
