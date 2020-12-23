@@ -239,8 +239,16 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
+    func inputAccessoryPlaceholderKeyboardDidPresent() {
+        updateFooterViewPosition()
+    }
+
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardDidDismiss() {
+        updateFooterViewPosition()
     }
 
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {

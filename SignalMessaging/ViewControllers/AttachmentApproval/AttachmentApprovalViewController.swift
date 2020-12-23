@@ -1033,8 +1033,16 @@ extension AttachmentApprovalViewController: InputAccessoryViewPlaceholderDelegat
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
+    func inputAccessoryPlaceholderKeyboardDidPresent() {
+        updateBottomToolViewPosition()
+    }
+
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardDidDismiss() {
+        updateBottomToolViewPosition()
     }
 
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
