@@ -3947,7 +3947,7 @@
 "SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Lehtonen";
 
 /* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
-"SCREENSHOT_NAME_CONTACT_ONE" = "Chairman Meow";
+"SCREENSHOT_NAME_CONTACT_ONE" = "Předseda Mňau";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";

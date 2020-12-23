@@ -1637,16 +1637,16 @@
 "GROUP_CALL_YOU" = "Sinä";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "Olet ryhmäpuhelussa";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Avaa uuden tyylin ryhmä aloittaaksesi ilmaisen ja salatun ryhmäpuhelun";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Esittelemme ryhmäpuhelut";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Sinä loit ryhmän.";

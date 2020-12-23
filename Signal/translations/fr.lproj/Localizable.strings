@@ -1532,7 +1532,7 @@
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ est bloqué";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Poursuivre l'appel";
+"GROUP_CALL_CONTINUE_BUTTON" = "Poursuivre l’appel";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "L’appel de groupe a pris fin";
@@ -1553,7 +1553,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Me joindre à l’appel";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Quitter l'appel";
+"GROUP_CALL_LEAVE_BUTTON" = "Quitter l’appel";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dans cet appel · %ld personnes";
@@ -1565,7 +1565,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir ni le son ni la vidéo de %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Cela peut être dû au fait qu'ils n'ont pas vérifié votre changement de numéro de sécurité, qu'il y a un problème avec leur appareil ou qu'ils vous ont bloqué.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Cette personne n’a peut-être pas confirmé le changement de votre numéro de sécurité, il y a peut-être un problème avec son appareil ou elle vous a bloqué.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Impossible de recevoir ni le son ni la vidéo de %@";
@@ -1604,13 +1604,13 @@
 "GROUP_CALL_RECONNECTING" = "Reconnexion";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Quelqu'un s'est joint à cet appel avec un numéro de sécurité qui a été modifié.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Quelqu’un s’est joint à cet appel avec un numéro de sécurité qui a changé.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Quelqu’un a lancé un appel de groupe";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Glissez vers le haut pour changer de vue";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Faire glisser vers le haut pour changer de vue";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Démarrer un appel";
@@ -1643,7 +1643,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vous (sur un autre appareil)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Ouvrez un Nouveau groupe pour lancer gratuitement un appel de groupe chiffré";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Ouvrez un Nouveau groupe pour lancer un appel de groupe chiffré gratuit";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "Nous présentons les appels de groupe";
@@ -2243,7 +2243,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Groupe hérité";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Vous devrez accepter une invitation afin de vous joindre à ce groupe de nouveau et vous ne recevrez aucun message du groupe avant d’en avoir accepté une :";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Vous devrez accepter une invitation afin de vous joindre à ce groupe de nouveau et vous ne recevrez aucun message du groupe avant d’en avoir accepté une.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Convertir le groupe";
