@@ -31,7 +31,7 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver {
     }
 
     func sendUpdateMessageForThread(_ thread: TSGroupThread, eraId: String?) {
-        Logger.info("Sending call update message for thread \(thread)")
+        Logger.info("Sending call update message for thread \(thread.uniqueId)")
 
         let updateMessage = OWSOutgoingGroupCallMessage(thread: thread, eraId: eraId)
         let messagePreparer = updateMessage.asPreparer
