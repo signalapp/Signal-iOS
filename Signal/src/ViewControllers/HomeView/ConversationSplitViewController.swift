@@ -130,8 +130,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // and everything it pushed to the navigation stack from the nav controller. We don't want
             // to just pop to root as we might have opened this conversation from the archive.
             if let selectedConversationIndex = primaryNavController.viewControllers.firstIndex(of: selectedConversationViewController) {
-                let trimmedViewControllers = Array(primaryNavController.viewControllers[0..<selectedConversationIndex])
-                primaryNavController.setViewControllers(trimmedViewControllers, animated: animated)
+                let targetViewController = primaryNavController.viewControllers[max(0, selectedConversationIndex-1)]
+                primaryNavController.popToViewController(targetViewController, animated: animated)
             }
         } else {
             viewControllers[1] = detailPlaceholderVC

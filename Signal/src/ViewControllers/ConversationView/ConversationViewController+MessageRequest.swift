@@ -320,7 +320,7 @@ extension ConversationViewController: MessageRequestNameCollisionDelegate {
         if didResolveCollisions {
             ensureBannerState()
         } else {
-            self.conversationSplitViewController?.closeSelectedConversation(animated: true)
+            self.conversationSplitViewController?.closeSelectedConversation(animated: false)
         }
         controller.dismiss(animated: true, completion: nil)
     }
