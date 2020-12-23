@@ -127,6 +127,34 @@ public extension ConversationViewController {
         return createDroppedGroupMembersBanner(viewState: viewState,
                                                droppedMembersInfo: droppedMembersInfo)
     }
+
+    // MARK: - Name collision banners
+
+    func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
+        guard !viewState.isMessageRequestNameCollisionBannerHidden else { return nil }
+        guard viewState.threadViewModel.isContactThread else { return nil }
+//        guard databaseStorage.uiRead(block: { readTx in
+//            MessageRequestNameCollisionViewController.shouldShowBanner(
+//                for: viewState.threadViewModel.threadRecord,
+//                transaction: readTx)
+//        }) else { return nil }
+
+        let banner = MessageRequestNameCollisionBanner()
+        banner.closeAction = { [weak self] in
+            viewState.isMessageRequestNameCollisionBannerHidden = true
+            self?.ensureBannerState()
+        }
+        banner.reviewAction = { [weak self] in
+            guard let self = self else { return }
+            guard let contactThread = self.thread as? TSContactThread else {
+                return owsFailDebug("Unexpected thread type")
+            }
+
+            let vc = MessageRequestNameCollisionViewController(thread: contactThread)
+            vc.present(from: self)
+        }
+        return banner
+    }
 }
 
 // MARK: -
@@ -284,5 +312,91 @@ public class GestureView: UIView {
             return
         }
         tapBlock()
+    }
+}
+
+fileprivate extension SignalServiceAddress {
+    func getDisplayName(transaction readTx: SDSAnyReadTransaction) -> String {
+        Environment.shared.contactsManager.displayName(for: self, transaction: readTx)
+    }
+}
+
+fileprivate class MessageRequestNameCollisionBanner: UIView {
+
+    var reviewAction: () -> Void {
+        get { reviewButton.block }
+        set { reviewButton.block = newValue }
+    }
+
+    var closeAction: () -> Void {
+        get { closeButton.block }
+        set { closeButton.block = newValue }
+    }
+
+    private let label: UILabel = {
+        let label = UILabel()
+        label.text = "Review requests carefuly Signal found another contact with the same name."
+        label.numberOfLines = 0
+        label.font = UIFont.ows_dynamicTypeFootnote
+        label.textColor = Theme.secondaryTextAndIconColor
+        return label
+    }()
+
+    private let infoIcon: UIImageView = {
+        let icon = UIImageView.withTemplateImageName(
+            "info-outline-24",
+            tintColor: Theme.secondaryTextAndIconColor)
+        icon.setCompressionResistanceHigh()
+        icon.setContentHuggingHigh()
+        return icon
+    }()
+
+    private let closeButton: OWSButton = {
+        let button = OWSButton(
+            imageName: "x-circle-16",
+            tintColor: Theme.secondaryTextAndIconColor)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setCompressionResistanceHigh()
+        button.setContentHuggingHigh()
+        return button
+    }()
+
+    private let reviewButton: OWSButton = {
+        let button = OWSButton(title: "Review Request")
+        button.setTitleColor(Theme.accentBlueColor, for: .normal)
+        button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = Theme.secondaryBackgroundColor
+
+        [infoIcon, label, closeButton, reviewButton]
+            .forEach { addSubview($0) }
+
+        // Notice how the UIButtons are being aligned based on their content subviews
+        // UIButtons this small will have an intrinsic size larger than their content
+        // That extra padding between the content and its frame messes up alignment
+        label.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
+        infoIcon.autoPinEdge(.top, to: .top, of: label)
+        closeButton.imageView?.autoPinEdge(.top, to: .top, of: label)
+        reviewButton.titleLabel?.autoPinEdge(.top, to: .bottom, of: label, withOffset: 3)
+        reviewButton.titleLabel?.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: -12)
+
+        // Aligning things this way is useful, because we can also increase the tap target
+        // for the tiny close button without messing up the appearance.
+        closeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 8, vMargin: 8)
+
+        infoIcon.autoPinLeading(toEdgeOf: self, offset: 16)
+        label.autoPinLeading(toTrailingEdgeOf: infoIcon, offset: 16)
+        closeButton.imageView?.autoPinLeading(toTrailingEdgeOf: label, offset: 16)
+        closeButton.imageView?.autoPinTrailing(toEdgeOf: self, offset: -16)
+        reviewButton.titleLabel?.autoPinLeading(toEdgeOf: label)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

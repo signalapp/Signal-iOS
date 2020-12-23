@@ -34,6 +34,8 @@ public class CVViewState: NSObject {
     @objc
     public var isDroppedGroupMembersBannerHidden = false
     @objc
+    public var isMessageRequestNameCollisionBannerHidden = false
+    @objc
     public var hasTriedToMigrateGroup = false
 
     @objc

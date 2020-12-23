@@ -115,6 +115,18 @@ NS_ASSUME_NONNULL_BEGIN
                      transaction:transaction];
 }
 
++ (nullable UIImage *)buildImageForAddress:(SignalServiceAddress *)address
+                                  diameter:(NSUInteger)diameter
+                               transaction:(SDSAnyReadTransaction *)transaction
+{
+    ConversationColorName color = [self.contactsManager conversationColorNameForAddress:address
+                                                                            transaction:transaction];
+    return [[[self alloc] initWithAddress:address
+                                colorName:color
+                                 diameter:diameter
+                              transaction:transaction] build];
+}
+
 #pragma mark - Dependencies
 
 + (OWSContactsManager *)contactsManager
