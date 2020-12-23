@@ -175,23 +175,32 @@ public class GroupManager: NSObject {
         return true
     }
 
-    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: UUID,
-                                                                     groupMembership: GroupMembership) -> Bool {
-        canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress(uuid: localUuid),
-                                                      groupMembership: groupMembership)
-    }
-
     public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress,
                                                                      groupMembership: GroupMembership) -> Bool {
-        guard groupMembership.isFullMemberAndAdministrator(localAddress) else {
+        guard let localUuid = localAddress.uuid else {
+            owsFailDebug("Missing localUuid.")
+            return false
+        }
+        let remainingFullMemberUuids = Set(groupMembership.fullMembers.compactMap { $0.uuid })
+        let remainingAdminUuids = Set(groupMembership.fullMemberAdministrators.compactMap { $0.uuid })
+        return canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
+                                                             remainingFullMemberUuids: remainingFullMemberUuids,
+                                                             remainingAdminUuids: remainingAdminUuids)
+    }
+
+    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: UUID,
+                                                                     remainingFullMemberUuids: Set<UUID>,
+                                                                     remainingAdminUuids: Set<UUID>) -> Bool {
+        let isLocalUserAdministrator = remainingAdminUuids.contains(localUuid)
+        guard isLocalUserAdministrator else {
             // Only admins need to appoint new admins before leaving the group.
             return true
         }
-        guard groupMembership.fullMemberAdministrators.count == 1 else {
+        guard remainingAdminUuids.count == 1 else {
             // There's more than one admin.
             return true
         }
-        guard groupMembership.allMembersOfAnyKind.count > 1 else {
+        guard remainingFullMemberUuids.count > 1 else {
             // There's no one else in the group, we can abandon it.
             return true
         }
