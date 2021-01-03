@@ -26,21 +26,6 @@ public class MediaUploadView: UIView {
 
         layer.addSublayer(shapeLayer1)
         layer.addSublayer(shapeLayer2)
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.attachmentUploadProgress, object: nil, queue: nil) { [weak self] notification in
-            guard let strongSelf = self else { return }
-            guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
-                return
-            }
-            guard notificationAttachmentId == strongSelf.attachmentId else {
-                return
-            }
-            guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
-                return
-            }
-            strongSelf.lastProgress = CGFloat(progress.floatValue)
-            strongSelf.updateLayers()
-        }
     }
 
     @available(*, unavailable, message: "use other init() instead.")

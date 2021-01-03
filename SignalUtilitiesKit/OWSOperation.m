@@ -3,7 +3,6 @@
 //
 
 #import "OWSOperation.h"
-#import "NSError+MessageSending.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
 #import <SessionProtocolKit/SessionProtocolKit.h>
@@ -166,23 +165,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)reportError:(NSError *)error
 {
-    OWSLogDebug(@"reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
-        error,
-        error.isFatal,
-        error.isRetryable,
-        (unsigned long)self.remainingRetries);
-
     [self didReportError:error];
-
-    if (error.isFatal) {
-        [self failOperationWithError:error];
-        return;
-    }
-
-    if (!error.isRetryable) {
-        [self failOperationWithError:error];
-        return;
-    }
 
     if (self.remainingRetries == 0) {
         [self failOperationWithError:error];

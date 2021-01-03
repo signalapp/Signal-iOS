@@ -45,7 +45,7 @@ public final class Poller : NSObject {
     // MARK: Private API
     private func setUpPolling() {
         guard isPolling else { return }
-        let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey(), isForcedReload: true).then2 { [weak self] _ -> Promise<Void> in
+        let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey()).then2 { [weak self] _ -> Promise<Void> in
             guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
             strongSelf.usedSnodes.removeAll()
             let (promise, seal) = Promise<Void>.pending()
@@ -109,7 +109,7 @@ public final class Poller : NSObject {
             if strongSelf.pollCount == Poller.maxPollCount {
                 throw Error.pollLimitReached
             } else {
-                return withDelay(Poller.pollInterval, completionQueue: SnodeAPI.workQueue) {
+                return withDelay(Poller.pollInterval, completionQueue: DispatchQueue.main) {
                     guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
                     return strongSelf.poll(snode, seal: longTermSeal)
                 }

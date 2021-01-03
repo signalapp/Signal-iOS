@@ -13,6 +13,8 @@
 #import <SignalCoreKit/NSString+OWS.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <Curve25519Kit/Curve25519.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -116,6 +118,15 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 }
 
 #pragma mark -
+
+- (NSString *)sessionID
+{
+    if ([self.recipientId isEqual:kLocalProfileUniqueId]) {
+        return OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    } else {
+        return self.recipientId;
+    }
+}
 
 - (nullable NSString *)avatarUrlPath
 {
@@ -270,6 +281,12 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
           functionName:__PRETTY_FUNCTION__
           transaction:transaction
             completion:completion];
+        
+        SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
+        contact.displayName = [profileName ows_stripped];
+        contact.profilePictureURL = avatarUrlPath;
+        contact.profilePictureFileName = avatarFileName;
+        [LKStorage.shared setContact:contact usingTransaction:transaction];
 }
     
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -288,6 +305,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection
             completion:completion];
+        
+        SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
+        contact.displayName = [profileName ows_stripped];
+        contact.profilePictureURL = avatarUrlPath;
+        contact.profilePictureFileName = avatarFileName;
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage.shared setContact:contact usingTransaction:transaction];
+        }];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -302,6 +327,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection
             completion:completion];
+    
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
+    contact.displayName = [profileName ows_stripped];
+    contact.profilePictureURL = avatarUrlPath;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage.shared setContact:contact usingTransaction:transaction];
+    }];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -318,6 +350,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection
             completion:completion];
+    
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
+    contact.profilePictureURL = avatarUrlPath;
+    contact.profilePictureFileName = avatarFileName;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage.shared setContact:contact usingTransaction:transaction];
+    }];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
@@ -330,6 +369,12 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
           functionName:__PRETTY_FUNCTION__
           dbConnection:dbConnection
             completion:completion];
+    
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
+    contact.profilePictureFileName = avatarFileName;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage.shared setContact:contact usingTransaction:transaction];
+    }];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
@@ -368,6 +413,10 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
           functionName:__PRETTY_FUNCTION__
            transaction:transaction
             completion:completion];
+    
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:self.sessionID] ?: [[SNContact alloc] initWithSessionID:self.sessionID];
+    contact.profilePictureEncryptionKey = profileKey;
+    [LKStorage.shared setContact:contact usingTransaction:transaction];
 }
 
 #pragma mark - Database Connection Accessors

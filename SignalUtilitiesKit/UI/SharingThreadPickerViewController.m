@@ -71,11 +71,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(attachmentUploadProgress:)
-                                                 name:kAttachmentUploadProgressNotification
-                                               object:nil];
     
     // Loki: Customize title
     UILabel *titleLabel = [UILabel new];
@@ -455,36 +450,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                     });
                 }];
           }];
-}
-
-- (void)attachmentUploadProgress:(NSNotification *)notification
-{
-    OWSLogDebug(@"upload progress.");
-    OWSAssertIsOnMainThread();
-
-    if (!self.outgoingMessage) {
-        OWSLogDebug(@"Ignoring upload progress until there is an outgoing message.");
-        return;
-    }
-
-    // TODO: Support multi-image messages.
-    NSString *_Nullable attachmentRecordId = self.outgoingMessage.attachmentIds.firstObject;
-    if (!attachmentRecordId) {
-        OWSLogDebug(@"Ignoring upload progress until outgoing message has an attachment record id");
-        return;
-    }
-
-    NSDictionary *userinfo = [notification userInfo];
-    float progress = [[userinfo objectForKey:kAttachmentUploadProgressKey] floatValue];
-    NSString *attachmentID = [userinfo objectForKey:kAttachmentUploadAttachmentIDKey];
-
-    if ([attachmentRecordId isEqual:attachmentID]) {
-        if (!isnan(progress)) {
-            // This is where we'd set progress if we could
-        } else {
-            OWSFailDebug(@"Invalid attachment progress.");
-        }
-    }
 }
 
 @end

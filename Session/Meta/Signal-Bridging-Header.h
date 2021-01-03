@@ -69,7 +69,6 @@
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
-#import <SignalUtilitiesKit/OWSContactsOutputStream.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
