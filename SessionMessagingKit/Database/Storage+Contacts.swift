@@ -4,6 +4,7 @@ extension Storage {
     
     private static let contactCollection = "LokiContactCollection"
 
+    @objc(getContactWithSessionID:)
     public func getContact(with sessionID: String) -> Contact? {
         var result: Contact?
         Storage.read { transaction in
@@ -12,6 +13,7 @@ extension Storage {
         return result
     }
     
+    @objc(setContact:usingTransaction:)
     public func setContact(_ contact: Contact, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(contact, forKey: contact.sessionID, inCollection: Storage.contactCollection)
     }

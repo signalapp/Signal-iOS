@@ -1,19 +1,19 @@
 
 @objc(SNContact)
 public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
-    public let sessionID: String
+    @objc public let sessionID: String
     /// The display name of the contact.
     ///
     /// - Note: In open groups use `openGroupDisplayName`.
-    public var displayName: String?
+    @objc public var displayName: String?
     /// The URL from which to fetch the contact's profile picture.
-    public var profilePictureURL: String?
+    @objc public var profilePictureURL: String?
     /// The file name of the contact's profile picture on local storage.
-    public var profilePictureFileName: String?
+    @objc public var profilePictureFileName: String?
     /// The key with which the profile picture is encrypted.
-    public var profilePictureEncryptionKey: OWSAES256Key?
+    @objc public var profilePictureEncryptionKey: OWSAES256Key?
     /// The ID of the thread associated with this contact.
-    public var threadID: String?
+    @objc public var threadID: String?
     
     /// In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
     /// a user's display name for added context.
@@ -25,7 +25,7 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     }
     
     // MARK: Initialization
-    public init(sessionID: String) {
+    @objc public init(sessionID: String) {
         self.sessionID = sessionID
         super.init()
     }
