@@ -66,19 +66,9 @@ public enum MessageReceiver {
         } else {
             switch envelope.type {
             case .unidentifiedSender:
-                do {
-                    (plaintext, sender) = try decryptWithSessionProtocol(envelope: envelope)
-                } catch {
-                    // Migration
-                    (plaintext, sender) = try decryptWithSignalProtocol(envelope: envelope, using: transaction)
-                }
+                (plaintext, sender) = try decryptWithSessionProtocol(envelope: envelope)
             case .closedGroupCiphertext:
-                do {
-                    (plaintext, sender) = try decryptWithSessionProtocol(envelope: envelope)
-                } catch {
-                    // Migration
-                    (plaintext, sender) = try decryptWithSharedSenderKeys(envelope: envelope, using: transaction)
-                }
+                (plaintext, sender) = try decryptWithSessionProtocol(envelope: envelope)
                 groupPublicKey = envelope.source
             default: throw Error.unknownEnvelopeType
             }

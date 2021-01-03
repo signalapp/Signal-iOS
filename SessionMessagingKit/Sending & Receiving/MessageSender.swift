@@ -174,8 +174,8 @@ public final class MessageSender : NSObject {
         let ciphertext: Data
         do {
             switch destination {
-            case .contact(let publicKey): ciphertext = try encryptWithSignalProtocol(plaintext, associatedWith: message, for: publicKey, using: transaction)
-            case .closedGroup(let groupPublicKey): ciphertext = try encryptWithSharedSenderKeys(plaintext, for: groupPublicKey, using: transaction)
+            case .contact(let publicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
+            case .closedGroup(let groupPublicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: groupPublicKey)
             case .openGroup(_, _): preconditionFailure()
             }
         } catch {
