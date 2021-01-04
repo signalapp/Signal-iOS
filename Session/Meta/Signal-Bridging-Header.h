@@ -31,7 +31,6 @@
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"
-#import "OWSSessionResetJobRecord.h"
 #import "OWSWindowManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "RemoteVideoView.h"

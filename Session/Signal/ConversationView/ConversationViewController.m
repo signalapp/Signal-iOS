@@ -24,7 +24,6 @@
 #import "OWSSystemMessageCell.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import "Session-Swift.h"
-#import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
