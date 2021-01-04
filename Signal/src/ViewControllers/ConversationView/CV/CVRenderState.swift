@@ -49,6 +49,12 @@ class CVRenderState {
         threadViewModel.disappearingMessagesConfiguration
     }
 
+    public let indexPathOfUnreadIndicator: IndexPath?
+
+    private let interactionIdToIndexPathMap: [String: IndexPath]
+
+    public let allIndexPaths: [IndexPath]
+
     init(threadViewModel: ThreadViewModel,
          prevThreadViewModel: ThreadViewModel?,
          items: [CVRenderItem],
@@ -66,6 +72,23 @@ class CVRenderState {
         self.loadType = loadType
 
         self.renderStateId = Self.idCounter.increment()
+
+        let messageSection = CVLoadCoordinator.messageSection
+        var indexPathOfUnreadIndicator: IndexPath?
+        var interactionIdToIndexPathMap = [String: IndexPath]()
+        var allIndexPaths = [IndexPath]()
+        for (index, item) in items.enumerated() {
+            let indexPath = IndexPath(row: index, section: messageSection)
+            interactionIdToIndexPathMap[item.interaction.uniqueId] = indexPath
+            allIndexPaths.append(indexPath)
+
+            if item.interactionType == .unreadIndicator {
+                indexPathOfUnreadIndicator = indexPath
+            }
+        }
+        self.indexPathOfUnreadIndicator = indexPathOfUnreadIndicator
+        self.interactionIdToIndexPathMap = interactionIdToIndexPathMap
+        self.allIndexPaths = allIndexPaths
     }
 
     static func defaultRenderState(threadViewModel: ThreadViewModel,
@@ -77,6 +100,10 @@ class CVRenderState {
                       canLoadNewerItems: false,
                       viewStateSnapshot: viewStateSnapshot,
                       loadType: nil)
+    }
+
+    public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
+        interactionIdToIndexPathMap[interactionUniqueId]
     }
 
     public var debugDescription: String {

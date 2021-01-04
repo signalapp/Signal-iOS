@@ -624,11 +624,7 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
     var allIndexPaths: [IndexPath] {
         AssertIsOnMainThread()
 
-        var indexPaths = [IndexPath]()
-        for row in 0..<renderItems.count {
-            indexPaths.append(IndexPath(row: row, section: Self.messageSection))
-        }
-        return indexPaths
+        return renderState.allIndexPaths
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
@@ -715,21 +711,11 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
     }
 
     public var indexPathOfUnreadIndicator: IndexPath? {
-        for (index, item) in renderItems.enumerated() {
-            if item.interactionType == .unreadIndicator {
-                return IndexPath(row: index, section: Self.messageSection)
-            }
-        }
-        return nil
+        renderState.indexPathOfUnreadIndicator
     }
 
     public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
-        for (index, item) in renderItems.enumerated() {
-            if item.interaction.uniqueId == interactionUniqueId {
-                return IndexPath(row: index, section: Self.messageSection)
-            }
-        }
-        return nil
+        renderState.indexPath(forInteractionUniqueId: interactionUniqueId)
     }
 }
 
