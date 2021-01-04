@@ -856,6 +856,16 @@ struct SessionProtos_DataMessage {
   /// Clears the value of `closedGroupUpdate`. Subsequent reads from it will return its default value.
   mutating func clearClosedGroupUpdate() {self._closedGroupUpdate = nil}
 
+  /// Loki
+  var closedGroupUpdateV2: SessionProtos_DataMessage.ClosedGroupUpdateV2 {
+    get {return _closedGroupUpdateV2 ?? SessionProtos_DataMessage.ClosedGroupUpdateV2()}
+    set {_closedGroupUpdateV2 = newValue}
+  }
+  /// Returns true if `closedGroupUpdateV2` has been explicitly set.
+  var hasClosedGroupUpdateV2: Bool {return self._closedGroupUpdateV2 != nil}
+  /// Clears the value of `closedGroupUpdateV2`. Subsequent reads from it will return its default value.
+  mutating func clearClosedGroupUpdateV2() {self._closedGroupUpdateV2 = nil}
+
   /// Loki: Internal public chat info
   var publicChatInfo: SessionProtos_PublicChatInfo {
     get {return _publicChatInfo ?? SessionProtos_PublicChatInfo()}
@@ -1518,7 +1528,165 @@ struct SessionProtos_DataMessage {
     fileprivate var _profilePicture: String? = nil
   }
 
-  /// Loki
+  struct ClosedGroupUpdateV2 {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var type: SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum {
+      get {return _type ?? .new}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var publicKey: Data {
+      get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+      set {_publicKey = newValue}
+    }
+    /// Returns true if `publicKey` has been explicitly set.
+    var hasPublicKey: Bool {return self._publicKey != nil}
+    /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
+    mutating func clearPublicKey() {self._publicKey = nil}
+
+    var name: String {
+      get {return _name ?? String()}
+      set {_name = newValue}
+    }
+    /// Returns true if `name` has been explicitly set.
+    var hasName: Bool {return self._name != nil}
+    /// Clears the value of `name`. Subsequent reads from it will return its default value.
+    mutating func clearName() {self._name = nil}
+
+    var encryptionKeyPair: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair {
+      get {return _encryptionKeyPair ?? SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair()}
+      set {_encryptionKeyPair = newValue}
+    }
+    /// Returns true if `encryptionKeyPair` has been explicitly set.
+    var hasEncryptionKeyPair: Bool {return self._encryptionKeyPair != nil}
+    /// Clears the value of `encryptionKeyPair`. Subsequent reads from it will return its default value.
+    mutating func clearEncryptionKeyPair() {self._encryptionKeyPair = nil}
+
+    var members: [Data] = []
+
+    var admins: [Data] = []
+
+    var wrappers: [SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper] = []
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+
+      /// publicKey, name, encryptionKeyPair, members, admins
+      case new // = 1
+
+      /// name, members
+      case update // = 2
+
+      /// wrappers
+      case encryptionKeyPair // = 3
+
+      init() {
+        self = .new
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 1: self = .new
+        case 2: self = .update
+        case 3: self = .encryptionKeyPair
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .new: return 1
+        case .update: return 2
+        case .encryptionKeyPair: return 3
+        }
+      }
+
+    }
+
+    struct KeyPair {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// @required
+      var publicKey: Data {
+        get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+        set {_publicKey = newValue}
+      }
+      /// Returns true if `publicKey` has been explicitly set.
+      var hasPublicKey: Bool {return self._publicKey != nil}
+      /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
+      mutating func clearPublicKey() {self._publicKey = nil}
+
+      /// @required
+      var privateKey: Data {
+        get {return _privateKey ?? SwiftProtobuf.Internal.emptyData}
+        set {_privateKey = newValue}
+      }
+      /// Returns true if `privateKey` has been explicitly set.
+      var hasPrivateKey: Bool {return self._privateKey != nil}
+      /// Clears the value of `privateKey`. Subsequent reads from it will return its default value.
+      mutating func clearPrivateKey() {self._privateKey = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _publicKey: Data? = nil
+      fileprivate var _privateKey: Data? = nil
+    }
+
+    struct KeyPairWrapper {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// @required
+      var publicKey: Data {
+        get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+        set {_publicKey = newValue}
+      }
+      /// Returns true if `publicKey` has been explicitly set.
+      var hasPublicKey: Bool {return self._publicKey != nil}
+      /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
+      mutating func clearPublicKey() {self._publicKey = nil}
+
+      /// @required
+      var encryptedKeyPair: Data {
+        get {return _encryptedKeyPair ?? SwiftProtobuf.Internal.emptyData}
+        set {_encryptedKeyPair = newValue}
+      }
+      /// Returns true if `encryptedKeyPair` has been explicitly set.
+      var hasEncryptedKeyPair: Bool {return self._encryptedKeyPair != nil}
+      /// Clears the value of `encryptedKeyPair`. Subsequent reads from it will return its default value.
+      mutating func clearEncryptedKeyPair() {self._encryptedKeyPair = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _publicKey: Data? = nil
+      fileprivate var _encryptedKeyPair: Data? = nil
+    }
+
+    init() {}
+
+    fileprivate var _type: SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum? = nil
+    fileprivate var _publicKey: Data? = nil
+    fileprivate var _name: String? = nil
+    fileprivate var _encryptionKeyPair: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair? = nil
+  }
+
   struct ClosedGroupUpdate {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1673,6 +1841,7 @@ struct SessionProtos_DataMessage {
   fileprivate var _quote: SessionProtos_DataMessage.Quote? = nil
   fileprivate var _profile: SessionProtos_DataMessage.LokiProfile? = nil
   fileprivate var _closedGroupUpdate: SessionProtos_DataMessage.ClosedGroupUpdate? = nil
+  fileprivate var _closedGroupUpdateV2: SessionProtos_DataMessage.ClosedGroupUpdateV2? = nil
   fileprivate var _publicChatInfo: SessionProtos_PublicChatInfo? = nil
 }
 
@@ -1695,6 +1864,10 @@ extension SessionProtos_DataMessage.Contact.Email.TypeEnum: CaseIterable {
 }
 
 extension SessionProtos_DataMessage.Contact.PostalAddress.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -3027,6 +3200,12 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     103: .same(proto: "lokiDeviceLinkMessage"),
   ]
 
+  public var isInitialized: Bool {
+    if let v = self._dataMessage, !v.isInitialized {return false}
+    if let v = self._syncMessage, !v.isInitialized {return false}
+    return true
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
@@ -3481,8 +3660,14 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     10: .same(proto: "preview"),
     101: .same(proto: "profile"),
     103: .same(proto: "closedGroupUpdate"),
+    104: .same(proto: "closedGroupUpdateV2"),
     999: .same(proto: "publicChatInfo"),
   ]
+
+  public var isInitialized: Bool {
+    if let v = self._closedGroupUpdateV2, !v.isInitialized {return false}
+    return true
+  }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3499,6 +3684,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 10: try decoder.decodeRepeatedMessageField(value: &self.preview)
       case 101: try decoder.decodeSingularMessageField(value: &self._profile)
       case 103: try decoder.decodeSingularMessageField(value: &self._closedGroupUpdate)
+      case 104: try decoder.decodeSingularMessageField(value: &self._closedGroupUpdateV2)
       case 999: try decoder.decodeSingularMessageField(value: &self._publicChatInfo)
       default: break
       }
@@ -3542,6 +3728,9 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if let v = self._closedGroupUpdate {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 103)
     }
+    if let v = self._closedGroupUpdateV2 {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 104)
+    }
     if let v = self._publicChatInfo {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 999)
     }
@@ -3561,6 +3750,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs.preview != rhs.preview {return false}
     if lhs._profile != rhs._profile {return false}
     if lhs._closedGroupUpdate != rhs._closedGroupUpdate {return false}
+    if lhs._closedGroupUpdateV2 != rhs._closedGroupUpdateV2 {return false}
     if lhs._publicChatInfo != rhs._publicChatInfo {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -4090,6 +4280,168 @@ extension SessionProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, SwiftPro
   }
 }
 
+extension SessionProtos_DataMessage.ClosedGroupUpdateV2: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".ClosedGroupUpdateV2"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "type"),
+    2: .same(proto: "publicKey"),
+    3: .same(proto: "name"),
+    4: .same(proto: "encryptionKeyPair"),
+    5: .same(proto: "members"),
+    6: .same(proto: "admins"),
+    7: .same(proto: "wrappers"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._type == nil {return false}
+    if let v = self._encryptionKeyPair, !v.isInitialized {return false}
+    if !SwiftProtobuf.Internal.areAllInitialized(self.wrappers) {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularEnumField(value: &self._type)
+      case 2: try decoder.decodeSingularBytesField(value: &self._publicKey)
+      case 3: try decoder.decodeSingularStringField(value: &self._name)
+      case 4: try decoder.decodeSingularMessageField(value: &self._encryptionKeyPair)
+      case 5: try decoder.decodeRepeatedBytesField(value: &self.members)
+      case 6: try decoder.decodeRepeatedBytesField(value: &self.admins)
+      case 7: try decoder.decodeRepeatedMessageField(value: &self.wrappers)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
+    }
+    if let v = self._publicKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }
+    if let v = self._name {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    if let v = self._encryptionKeyPair {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }
+    if !self.members.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.members, fieldNumber: 5)
+    }
+    if !self.admins.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.admins, fieldNumber: 6)
+    }
+    if !self.wrappers.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.wrappers, fieldNumber: 7)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdateV2, rhs: SessionProtos_DataMessage.ClosedGroupUpdateV2) -> Bool {
+    if lhs._type != rhs._type {return false}
+    if lhs._publicKey != rhs._publicKey {return false}
+    if lhs._name != rhs._name {return false}
+    if lhs._encryptionKeyPair != rhs._encryptionKeyPair {return false}
+    if lhs.members != rhs.members {return false}
+    if lhs.admins != rhs.admins {return false}
+    if lhs.wrappers != rhs.wrappers {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "NEW"),
+    2: .same(proto: "UPDATE"),
+    3: .same(proto: "ENCRYPTION_KEY_PAIR"),
+  ]
+}
+
+extension SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.ClosedGroupUpdateV2.protoMessageName + ".KeyPair"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "publicKey"),
+    2: .same(proto: "privateKey"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._publicKey == nil {return false}
+    if self._privateKey == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self._publicKey)
+      case 2: try decoder.decodeSingularBytesField(value: &self._privateKey)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._publicKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._privateKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair, rhs: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair) -> Bool {
+    if lhs._publicKey != rhs._publicKey {return false}
+    if lhs._privateKey != rhs._privateKey {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.ClosedGroupUpdateV2.protoMessageName + ".KeyPairWrapper"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "publicKey"),
+    2: .same(proto: "encryptedKeyPair"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._publicKey == nil {return false}
+    if self._encryptedKeyPair == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self._publicKey)
+      case 2: try decoder.decodeSingularBytesField(value: &self._encryptedKeyPair)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._publicKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._encryptedKeyPair {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper, rhs: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper) -> Bool {
+    if lhs._publicKey != rhs._publicKey {return false}
+    if lhs._encryptedKeyPair != rhs._encryptedKeyPair {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension SessionProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".ClosedGroupUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -4346,6 +4698,11 @@ extension SessionProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     100: .same(proto: "openGroups"),
   ]
 
+  public var isInitialized: Bool {
+    if let v = self._sent, !v.isInitialized {return false}
+    return true
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
@@ -4424,6 +4781,11 @@ extension SessionProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._
     5: .same(proto: "unidentifiedStatus"),
     6: .same(proto: "isRecipientUpdate"),
   ]
+
+  public var isInitialized: Bool {
+    if let v = self._message, !v.isInitialized {return false}
+    return true
+  }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

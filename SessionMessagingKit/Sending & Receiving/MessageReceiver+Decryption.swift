@@ -3,24 +3,11 @@ import SessionProtocolKit
 import SessionUtilitiesKit
 import Sodium
 
-internal extension MessageReceiver {
+extension MessageReceiver {
 
-    static func decryptWithSessionProtocol(envelope: SNProtoEnvelope) throws -> (plaintext: Data, senderX25519PublicKey: String) {
-        guard let ciphertext = envelope.content else { throw Error.noData }
-        let recipientX25519PrivateKey: Data
-        let recipientX25519PublicKey: Data
-        switch envelope.type {
-        case .unidentifiedSender:
-            guard let userX25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { throw Error.noUserX25519KeyPair }
-            recipientX25519PrivateKey = userX25519KeyPair.privateKey
-            recipientX25519PublicKey = Data(hex: userX25519KeyPair.hexEncodedPublicKey.removing05PrefixIfNeeded())
-        case .closedGroupCiphertext:
-            guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }
-            guard let hexEncodedGroupPrivateKey = SNMessagingKitConfiguration.shared.storage.getClosedGroupPrivateKey(for: hexEncodedGroupPublicKey) else { throw Error.noGroupPrivateKey }
-            recipientX25519PrivateKey = Data(hex: hexEncodedGroupPrivateKey)
-            recipientX25519PublicKey = Data(hex: hexEncodedGroupPublicKey.removing05PrefixIfNeeded())
-        default: preconditionFailure()
-        }
+    internal static func decryptWithSessionProtocol(ciphertext: Data, using x25519KeyPair: ECKeyPair) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+        let recipientX25519PrivateKey = x25519KeyPair.privateKey
+        let recipientX25519PublicKey = Data(hex: x25519KeyPair.hexEncodedPublicKey.removing05PrefixIfNeeded())
         let sodium = Sodium()
         let signatureSize = sodium.sign.Bytes
         let ed25519PublicKeySize = sodium.sign.PublicKeyBytes
