@@ -95,8 +95,10 @@ public class CVLoader: NSObject {
                         return false
                     }
                     return (groupModel.groupName != prevGroupModel.groupName ||
-                                groupModel.groupAvatarData != prevGroupModel.groupAvatarData)
+                                groupModel.groupAvatarData != prevGroupModel.groupAvatarData ||
+                                groupModel.groupMembership.fullMembers.count != prevGroupModel.groupMembership.fullMembers.count)
                 }()
+
                 // If the thread details did change, reload the thread details
                 // item if one is in the load window.
                 if didThreadDetailsChange,

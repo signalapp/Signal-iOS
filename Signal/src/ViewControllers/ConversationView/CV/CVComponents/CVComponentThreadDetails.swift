@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -279,7 +279,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 return nil
             }
 
-            let memberCount = groupThread.groupModel.groupMembers.count
+            let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
             return GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         }()
 
