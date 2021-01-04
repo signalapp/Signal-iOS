@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SessionProtocolKit/IdentityKeyStore.h>
+#import <Curve25519Kit/Curve25519.h>
 #import <YapDatabase/YapDatabase.h>
 
 @class OWSPrimaryStorage;
@@ -34,7 +34,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 @class YapDatabaseReadWriteTransaction;
 
 // This class can be safely accessed and used from any thread.
-@interface OWSIdentityManager : NSObject <IdentityKeyStore>
+@interface OWSIdentityManager : NSObject
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 

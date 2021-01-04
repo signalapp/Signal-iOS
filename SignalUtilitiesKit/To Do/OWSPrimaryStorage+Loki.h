@@ -1,30 +1,11 @@
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 
-#import <SessionProtocolKit/AxolotlExceptions.h>
-#import <SessionProtocolKit/PreKeyBundle.h>
-#import <SessionProtocolKit/PreKeyRecord.h>
 #import <Curve25519Kit/Ed25519.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSPrimaryStorage (Loki)
-
-# pragma mark - Pre Key Record Management
-
-- (BOOL)hasPreKeyRecordForContact:(NSString *)hexEncodedPublicKey;
-- (PreKeyRecord *_Nullable)getPreKeyRecordForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
-- (PreKeyRecord *)getOrCreatePreKeyRecordForContact:(NSString *)hexEncodedPublicKey;
-
-# pragma mark - Pre Key Bundle Management
-
-/**
- * Generates a pre key bundle for the given contact. Doesn't store the pre key bundle (pre key bundles are supposed to be sent without ever being stored).
- */
-- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)hexEncodedPublicKey;
-- (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)hexEncodedPublicKey;
-- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)removePreKeyBundleForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 # pragma mark - Last Message Hash
 

@@ -1,3 +1,4 @@
+import CryptoSwift
 
 public final class ClosedGroupSenderKey : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let chainKey: Data

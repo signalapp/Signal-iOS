@@ -48,8 +48,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/TSIncomingMessage.h>
 #import <SessionMessagingKit/TSInfoMessage.h>
 #import <SessionMessagingKit/TSInteraction.h>
-#import <SessionMessagingKit/TSInvalidIdentityKeyErrorMessage.h>
-#import <SessionMessagingKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionMessagingKit/TSQuotedMessage.h>
 #import <SessionMessagingKit/TSThread.h>

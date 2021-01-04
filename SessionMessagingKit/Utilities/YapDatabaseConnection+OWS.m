@@ -65,21 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self objectForKey:key inCollection:collection ofExpectedType:[ECKeyPair class]];
 }
 
-- (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyRecord class]];
-}
-
-- (nullable PreKeyBundle *)preKeyBundleForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    return [self objectForKey:key inCollection:collection ofExpectedType:PreKeyBundle.class];
-}
-
-- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    return [self objectForKey:key inCollection:collection ofExpectedType:[SignedPreKeyRecord class]];
-}
-
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection
 {
     NSNumber *_Nullable number = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];

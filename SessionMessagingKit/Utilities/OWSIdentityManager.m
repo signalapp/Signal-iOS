@@ -16,10 +16,10 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
+#import "TSMessage.h"
 #import <SessionProtocolKit/SessionProtocolKit.h>
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
-#import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
@@ -222,8 +222,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                            isFirstKnownKey:NO
                                                  createdAt:[NSDate new]
                                          verificationState:verificationState] saveWithTransaction:transaction];
-
-        [SNMessagingKitConfiguration.shared.signalStorage archiveAllSessionsForContact:recipientId protocolContext:protocolContext];
 
         [self fireIdentityStateChangeNotification];
 

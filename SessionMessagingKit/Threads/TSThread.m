@@ -224,28 +224,6 @@ BOOL IsNoteToSelfEnabled(void)
     return [interactions copy];
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
-{
-    NSMutableArray *errorMessages = [NSMutableArray new];
-    [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
-        if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-            TSInvalidIdentityKeyReceivingErrorMessage *error = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
-            @try {
-                if ([[error throws_newIdentityKey] isEqualToData:key]) {
-                    [errorMessages addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)interaction];
-                }
-            } @catch (NSException *exception) {
-
-            }
-        }
-    }];
-
-    return [errorMessages copy];
-}
-#pragma clang diagnostic pop
-
 - (NSUInteger)numberOfInteractions
 {
     __block NSUInteger count;

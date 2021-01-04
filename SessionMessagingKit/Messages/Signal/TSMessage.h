@@ -6,6 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, TSMessageDirection) {
+    TSMessageDirectionIncoming,
+    TSMessageDirectionOutgoing
+};
+
 /**
  *  Abstract message class.
  */

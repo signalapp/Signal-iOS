@@ -5,7 +5,6 @@
 #import "OWSRecordTranscriptJob.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"

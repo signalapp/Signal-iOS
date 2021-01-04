@@ -64,7 +64,7 @@ NSString *const TSContactThreadPrefix = @"c";
 
 - (BOOL)hasSafetyNumbers
 {
-    return !![[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactIdentifier];
+    return NO;
 }
 
 - (NSString *)name

@@ -17,7 +17,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) OWSBlockingManager *blockingManager;
 @property (nonatomic) OWSIdentityManager *identityManager;
-@property (nonatomic) id<OWSUDManager> udManager;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
@@ -41,7 +40,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
                        blockingManager:(OWSBlockingManager *)blockingManager
                        identityManager:(OWSIdentityManager *)identityManager
-                             udManager:(id<OWSUDManager>)udManager
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
@@ -59,7 +57,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _primaryStorage = primaryStorage;
     _blockingManager = blockingManager;
     _identityManager = identityManager;
-    _udManager = udManager;
     _tsAccountManager = tsAccountManager;
     _disappearingMessagesJob = disappearingMessagesJob;
     _readReceiptManager = readReceiptManager;

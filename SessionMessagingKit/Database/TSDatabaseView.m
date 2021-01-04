@@ -7,7 +7,6 @@
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSIncomingMessage.h"
-#import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -123,33 +122,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     }];
 
     [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
-                                 viewGrouping:viewGrouping
-                                      version:@"2"
-                                      storage:storage];
-}
-
-+ (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if (![object isKindOfClass:[TSInteraction class]]) {
-            return nil;
-        }
-        TSInteraction *interaction = (TSInteraction *)object;
-        if ([interaction isDynamicInteraction]) {
-            return interaction.uniqueThreadId;
-        } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-            return interaction.uniqueThreadId;
-        } else if ([object isKindOfClass:[TSErrorMessage class]]) {
-            TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-            if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-                return errorMessage.uniqueThreadId;
-            }
-        }
-        return nil;
-    }];
-
-    [self registerMessageDatabaseViewWithName:TSThreadSpecialMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"2"
                                       storage:storage];

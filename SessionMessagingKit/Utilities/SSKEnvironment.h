@@ -41,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
                        blockingManager:(OWSBlockingManager *)blockingManager
                        identityManager:(OWSIdentityManager *)identityManager
-                             udManager:(id<OWSUDManager>)udManager
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
@@ -64,7 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
-@property (nonatomic, readonly) id<OWSUDManager> udManager;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;

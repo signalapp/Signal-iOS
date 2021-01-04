@@ -1,4 +1,5 @@
 import PromiseKit
+import SessionProtocolKit
 
 extension MessageSender : SharedSenderKeysDelegate {
 

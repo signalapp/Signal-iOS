@@ -131,13 +131,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return SSKEnvironment.shared.blockingManager;
 }
 
-- (id<OWSUDManager>)udManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.udManager);
-
-    return SSKEnvironment.shared.udManager;
-}
-
 #pragma mark - User Profile Accessor
 
 - (void)ensureLocalProfileCached
@@ -902,8 +895,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                             dbConnection:self.dbConnection
                               completion:^{
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                              recipientId:recipientId];
                 [userProfile updateWithAvatarUrlPath:avatarURL avatarFileName:nil dbConnection:self.dbConnection completion:^{
                     [self downloadAvatarForUserProfile:userProfile];
                 }];
