@@ -251,7 +251,7 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "موقع جغرافي";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "أمنح صلاحيات الوصول للصور من الإعدادات حتى تتمكن من إرسالهم هنا. ";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "منح صلاحيات الوصول للصور من الإعدادات للتمكن من إرسالها هنا.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "بمجرّد أن تلتقط صور، ستتمكن من إرسال أحدثها من هنا.";
@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "مكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر. ";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "العودة للمكالمة";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "لم يرد";
@@ -539,7 +539,7 @@
 "CALLBACK_BUTTON_TITLE" = "إعادة الإتصال";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "الكاميرا غير مشغلة";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "مستخدم Signal";
@@ -578,10 +578,10 @@
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "لا يوجد حساب iCloud. سجّل الدخول لحسابك على iCloud من إعدادات الجهاز لتتمكن من إجراء نسخ احتياطي لبيانات Signal الخاصة بك.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "تم منع Signal من الوصول لحسابك على iCloud. امنح Signal صلاحية الوصول إلى iCloud من خلال إعدادات الجهاز حتى تتمكن من إجراء نسخ احتياطي لبيانات Signal الخاصة بك.";
+"CLOUDKIT_STATUS_RESTRICTED" = "تم منع Signal من الوصول لحسابك على iCloud. يُرجى منح Signal صلاحية الوصول إلى iCloud من خلال إعدادات الجهاز للتمكن من إجراء نسخ احتياطي لبيانات Signal الخاصة بك.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "اختر لون الرسائل الصادرة في هذه المحادثة.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "أنت فقط من سيرى اللون الذي تختاره.";
@@ -593,7 +593,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "المقارنة مع الحافظة";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "يُرجى تحديد أو البحث عن مستخدم Signal لبدء محادثة معه.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "حرّر";
@@ -713,7 +713,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "شغِّل";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your chats.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "يُرجى الاطلاع على أسماء جهات الاتصال و صورها في محادثاتك.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "تفعيل وجهات الاتصال؟";
@@ -773,7 +773,7 @@
 "CONTACT_WITHOUT_NAME" = "جهة اتصال غير مسماة";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ستُحذَف هذه المحادثة من هذا الجهاز.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف المحادثة ؟";
@@ -782,7 +782,7 @@
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "تنزيل";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "لا يمكنك تحديد أكثر من %@ محادثة.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "مجموعة";
@@ -806,7 +806,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d من %d متوافق";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "إعدادات المحادثة";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "إضافة أعضاء";
@@ -863,19 +863,19 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "تحرير الاسم";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "من يمكنه إضافة الأعضاء";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "المشرفون فقط";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "يُرجى اختيار من يمكنه إضافة الأعضاء في هذه المجموعة :";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "جميع الأعضاء";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "وصلة المجموعة";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "اجعل مشرفا";
@@ -884,10 +884,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "سيستطيع %@ تعديل خصائص وأعضاء هذه المجموعة";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "دعوات الأعضاء";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "طلبات و دعوات اﻷعضاء";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "الأعضاء";
@@ -950,7 +950,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "أأزيل %@ من الإشراف على المجموعة ؟";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
+"CONVERSATION_SETTINGS_SEARCH" = "البحث في المحادثة";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ألغ الحظر للمجموعة";
@@ -962,7 +962,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "رفع الكتم";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "ألديك الرغبة في حفظ التغييرات التي أجريتها في هذه المحادثة ؟";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "التغييرات غير المحفوظة";
@@ -1070,7 +1070,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل الفحص";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "حذف كل الرسائل في هذه المحادثة ؟";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "احذف كل الرسائل";
@@ -1172,7 +1172,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ضع رمز الاستجابة السريعة في إطار جهازك الآخر.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ألا يظهر التنبيه الفوري في جهازك القديم ؟";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "في انتظار جهاز آخر ...";
@@ -1202,10 +1202,10 @@
 "DISAPPEARING_MESSAGES" = "رسائل مخفيّة";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ستختفي الرسائل في هذه المحادثة بعد %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "عند التفعيل, فإن الرسائل المُرسلَة أو المُستلَمة في هذه المحادثة سوف تختفي فور رؤيتها.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "الرسائل الحالية تختفي بعد %@";
@@ -1235,7 +1235,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يمكن إضافة هذا المستخدم إلى المجموعة حتى يقوم بترقية Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "وصلت المجموعة إلى %@ عضو، والذي يعد الحد الأقصى.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "صورة غير صالحة.";
@@ -1256,7 +1256,7 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "مرحبا,\n\nمؤخرا، أصبحتُ أستخدم Signal لجعل محادثاتي خصوصية على الـ iPhone. أرغب أن تثبّته أنت كذلك حتى نتأكد معا أننا الوحيدان اللذان يمكنهما قراءة رسائلنا أو سماع مكالماتنا.\n\nSignal متاح للـiPhone و لأندرويد. احصل عليه من هنا: %@\n\nيعمل Signal مثل تطبيق تراسلك الحالي. نستطيع إرسال الصور والفيديوهات, إجراء المكالمات, وبدء المحادثة الجماعية. وأفضل شيء فيه هو ألا أحد آخر قادر على رؤية أي شيء من ذلك، بما في ذلك مُصمّمو Signal !\n\nتستطيع قراءة المزيد عن Open Whisper Systems، مُصمّمو Signal، هنا : %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لنستخدم Signal";
@@ -1409,7 +1409,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "مستخدم غير مسجل : %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "انتهت صلاحية إصدار Signal ! المس لجلب الإصدار اﻷحدث.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "سوف تنتهي صلاحية إصدارة Signal المستخدمة خلال %dيوم. أنقر من اجل التحديث إلى أحدث نسخة.";
@@ -1442,7 +1442,7 @@
 "FORWARD_MESSAGE" = "أعد توجيه الرسالة";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "ليس لديك أي وسائط في هذه المحادثة.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "جار تحميل الوسائط الجديدة ...";
@@ -1520,133 +1520,133 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يمكن لـ \"%@\" تغيير عضوية المجموعة.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "المشرفون فقط هم من يحق لهم تغيير هذا الخيار.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "لا أنت ولا هم ستستلمون أصوات وصور بعضكم البعض.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "تم حظر %@";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "تم حظر %@";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "استئناف المكالمة";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "انتهت المكالمة الجماعية";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "معلومات أخرى";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "وصل عدد المشاركين إلى %ld مشاركا، وهو الحد الأقصى في هذه المكالمة. يُرجى المحاولة مرة أخرى لاحقا.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "وصل عدد المشاركين إلى  الحد الأقصى في هذه المكالمة. يُرجى المحاولة مرة أخرى لاحقا.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "المكالمة ممتلئة";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "الانضمام للمكالمة";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "مغادرة المكالمة";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "في هذه المكالمة · %ld شخص";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "الأعضاء %1$@ و %2$@ و%3$@  آخرون موجودون في هذه مكالمة جماعية";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "لا يمكن تلقي الصوت والصورة من %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "ربما يكون ذلك بسبب عدم تحقق الشخص من تغيير رقم أمانك، أو بسبب وجود مشكلة في جهازه، أو قيامه بحظرك.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "لا يمكن تلقي الصوت والصورة من %@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "لا يوجد أحد هنا";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "ﻻ يوجد أحد في هذه المكالمة بعد.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "الأعضاء %@ و %@ و%ld  آخرون انضموا لهذه مكالمة";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "الأعضاء %@ و %@ و%ld  آخرون غادروا هذه المكالمة";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "انضم العضو %@ لهذه المكالمة";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "غادر العضو %@ هذه المكالمة";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "انضم العضوان %@ و %@ لهذه المكالمة";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "غادر العضوان %@ و %@ هذه المكالمة";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "في هذه المكالمة : شخص واحد";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ في هذه المكالمة";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "تجري إعادة الاتصال";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "انضم شخص لهذه المكالمة برقم أمان مختلف.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "بدأ شخص ما مكالمة جماعية";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "يُرجى السحب لتغيير نمط العرض";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "بدء المكالمة";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "يُرجى اللمس هنا لبدء مكالمة جماعية";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "لقد بدأت مكالمة جماعية";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "بدأ العضو %@ مكالمة جماعية";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "الأعضاء %1$@ و %2$@ و 1 آخر موجودون في هذه مكالمة";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ و %2$@ هما في هذه المكالمة";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "لقد قُطع اتصالك بهذه المكالمة. يُرجى التحقق من اتصالك بالشبكة ثم المحاولة مرة أخرى.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "أنت";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "إنك في مكالمة جماعية";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "أنت (في جهاز آخر)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "يُرجى فتح مجموعة جديدة لبدء مكالمة جماعية مجانية ومُعمَّاة";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "تقديم مكالمات المجموعة";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "لقد أنشأتَ مجموعة.";
@@ -1697,58 +1697,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "تم سحب الدعوات الغير صحيحة.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+"GROUP_INVITE_LINK_DISABLED" = "عُطلَت وصلة المجموعة.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "لقد عطلت وصلة المجموعة.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "عطل العضو %@ وصلة المجموعة.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "تم تشغيل وصلة المجموعة مع تفعيل موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "لقد قمت بتشغيل وصلة المجموعة مع إيقاف موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "فعَّل العضو %@ وصلة المجموعة مع تشغيل موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "تم تشغيل وصلة المجموعة مع إيقاف موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "لقد قمت بتفعيل وصلة المجموعة مع إلغاء موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "فعَّل العضو %@ وصلة المجموعة مع إيقاف موافقة المشرف.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "لقد أُعيد تعيين وصلة المجموعة.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "لقد أعدت تعيين وصلة المجموعة.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "أعاد العضو %@ تعيين وصلة المجموعة.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "لقد أوقفَت موافقة المشرف لوصلة المجموعة.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "لقد أوقفت موافقة المشرف لوصلة المجموعة.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "أوقف العضو %@ موافقة المشرف لوصلة المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "تم تشغيل موافقة المشرف لوصلة المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "لقد شغلت موافقة المشرف لوصلة المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "شغَّل العضو %@ موافقة المشرف لوصلة المجموعة.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "لا يمكنك إضافة %@ تلقائيا إلى هذه المجموعة. لقد دُعي للانضمام حقا، لكنه لن يرى أي رسالة في المجموعة حتى يقبل الانضمام إليها.";
@@ -1763,16 +1763,16 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "لا يمكنك إضافة هؤلاء المستخدمين تلقائيا إلى هذه المجموعة. لقد دُعوا للانضمام حقا، لكنهم لن يروا أي رسالة في المجموعة حتى يقبلوا الانضمام إليها.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "دعوات الأعضاء";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "لم تعد وصلة المجموعة هذه صالحة.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "لايمكنك الأنضمام إلي المجموعة";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "المجموعات";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "انضم";
@@ -1787,49 +1787,49 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "يُرجى التأكد من اتصالك بالانترنت ثم حاول مرة أخرى.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "يُرجى إعادة المحاولة.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "إن وصلة هذه المجموعة غير صحيحة. يُرجى التحقق من سلامة هذه الوصلة وتصحيح أي خطإ بها قبل محاولة الانضمام.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "وصلة غير صحيحة";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "يُرجى تحديث Signal على هذا الجهاز للانضمام إلى هذه المجموعة.";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "سيتمكن الأشخاص الذين يقومون بمسح هذا الرمز من الانضمام إلى مجموعتك. سيبقى على عاتق المشرفين الموافقة على الأعضاء الجدد إذا كان هذا الإعداد مُشغَّلا.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "مشاركة الرمز";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "كود QR";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "الموافقة على الأعضاء الجدد";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "نسخ الرابط";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "وصلة المجموعة";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "الإدارة والمشاركة";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "يتطلب هذا اﻹجراء موافقة المشرف لقبول انضمام أعضاء جدد عبر وصلة المجموعة.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "طلبات الأعضاء";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "إعادة التعيين الوصلة";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "أأنت على يقين من قيامك بإعادة تعيين وصلة المجموعة ؟ لن يتمكن الأشخاص بعد الآن من الانضمام إلى المجموعة باستخدام الوصلة الحالية.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "شارك";
@@ -1841,13 +1841,13 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "كود QR";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "مشاركة عبر Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "كل من يتوفر على هذه الوصلة قادر على الانضمام إلى هذه المجموعة أو إرسال طلب الانضمام إليها. يُرجى مشاركة تلك الوصلة مع اﻷفراد الذي لك ثقة بهم.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Group Link";
+"GROUP_LINK_VIEW_TITLE" = "وصلة المجموعة";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "أضافك %@.";
@@ -1886,7 +1886,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "لقد انضممت إلى المجموعة.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "لقد انضممت للمجموعة بواسطة وصلة المجموعة.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "أزالك %@.";
@@ -1895,13 +1895,13 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "أُزلتَ من المجموعة.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "وافق العضو %@ على طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "لقد ألغيت طلب انضمامك للمجموعة.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "رُفضَ طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "لقد أرسلت طلب للانضمام للمجموعة.";
@@ -1913,7 +1913,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "أبطل %@ امتيازات إشرافك على المجموعة.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "أضافك عضو  إلى المجموعة.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "مشرف";
@@ -2024,7 +2024,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "انضم %@ إلى المجموعة.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "انضم العضو %@ إلى المجموعة عن طريق وصلة المجموعة.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "غادر %@ المجموعة.";
@@ -2036,28 +2036,28 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "أزال %1$@ %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "لقد وافقت على طلب انضمام %@ إلى المجموعة.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لقد وافق العضو %2$@ على طلب انضمام %1$@ إلى المجموعة.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "تمت الموافقة على طلب انضمام %@ إلى المجموعة.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "ألغي طلب الانضمام للمجموعة من طرف %@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "رفضت طلب %@ للانضمام للمجموعة.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "رفض العضو %2$@ طلب %1$@ للانضمام إلى المجموعة.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "رُفضَ طلب انضمام %@ إلى المجموعة.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "طلب العضو %@ الانضمام للمجموعة بواسطة وصلة المجموعة.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "أُبطلَت امتيازات إشراف %@ على المجموعة.";
@@ -2069,13 +2069,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "أبطل %1$@ امتيازات إشراف %2$@ على المجموعة.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "طلبات الأعضاء";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "الدعوات مُعلَّقة";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "طلبات و دعوات اﻷعضاء";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "تم تحديث المجموعة.";
@@ -2123,25 +2123,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "اسم المجموعة هو \"%@\" الآن.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "تمت ترقية هذه المجموعة إلى مجموعة جديدة.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "تعذرت إضافة عضو إلى المجموعة الجديدة وقد أُزيل من المجموعة.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "تعذرت إضافتك  إلى المجموعة الجديدة وقد أُزِلت من المجموعة.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "تعذرت إضافة %@ عضو إلى المجموعات الجديدة وقد أُزِيلوا من المجموعة.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "تعذرت إضافة عضو إلى المجموعة الجديدة وقد دُعِي للانضمام.";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "تعذرت إضافتك إلى المجموعة الجديدة وقد تمت دعوتك للانضمام.";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "تعذرت إضافة %@ عضو إلى المجموعة الجديدة وقد دُعُوا للانضمام.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "لقد غادرت المجموعة";
@@ -2171,10 +2171,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "ماهي المجموعات من الطراز القديم؟";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "المجموعات من الطراز القديم لا يمكن ترقيتها حاليا إلى الطراز الجديد، ولكن يمكنك إنشاء مجموعة جديدة بنفس الأعضاء ولكن من الطراز الجديد، بشرط استخدام الجميع آخر إصدار لـ Signal.\n\nسيوفر Signal طريقة لترقية المجموعات القديمة في المستقبل.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "أيمكنني ترقية المجموعات من الطراز القديم ؟";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "عندما تنشئ مجموعة من الطراز الجديد، جميع الأعضاء يتوجب عليهم تحديث Signal لأحدث نسخة.";
@@ -2183,31 +2183,31 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "المجموعات من الطراز القديم مقارنة بالمجموعات من الطراز القديم";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "يجب ترقية هذه المجموعة لتفعيل ميزات جديدة مثل ‎@mentions والمشرفين عليها. ستتم دعوة اﻷعضاء الذين لم يشاركوا أسمائهم أو صورهم في هذه المجموعة للانضمام إليها. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "تعذرت الترقية إلى مجموعة جديدة";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة القديمة الطراز إلى مجموعة جديدة لأن فيها الكثير من اﻷعضاء. الحد الأقصى للمجموعة هو %@ لكي تتم ترقيتها.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "سوف تُرقى هذه المجموعة بعد استخدام كل اﻷعضاء الحاليين إصدار Signal قادر على الانضمام إلى مجموعة جديدة.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "ستُحتفَظ كل محفوظات الرسائل والوسائط قبل الترقية.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "ﻻ يمكن إنشاء هذه المجموعة ﻷن عضوا واحدا يستخدم نسخة قديمة من Signal. يمكنك إنشاء مجموعة من الطراز الجديد بعد أن يقوم ذلك العضو بتحديث Signal، أو يُرجى إزالته قبل إنشاء المجموعة.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "ﻻ يمكن إنشاء هذه المجموعة ﻷن %@ عضو يستخدمون نسخة قديمة من Signal. يمكنك إنشاء مجموعة من الطراز الجديد معهم بعد أن يقوموا بتحديث Signal، أو يُرجى إزالتهم قبل إنشاء المجموعة.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "ﻻ يمكن إنشاء هذه المجموعة ﻷن عضوا واحدا يستخدم نسخة قديمة من Signal. يمكنك إنشاء مجموعة من الطراز الجديد معه بعد أن يقوم ذلك العضو بتحديث Signal، أو يُرجى إزالته قبل إنشاء المجموعة. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "ﻻ يمكن إنشاء هذه المجموعة ﻷن %1$@ عضو يستخدمون نسخة قديمة من Signal. يمكنك إنشاء مجموعة من الطراز الجديد بعد أن يقوموا بتحديث Signal، أو يُرجى إزالتهم قبل إنشاء المجموعة. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "سيتم إنشاء مجموعة من الطراز القديم لأن عضو واحد يستخدم نسخة قديمة من Signal، يمكنك إنشاء مجموعة من الطراز الجديد بعد أن يقوم بتحديث Signal، أو قم بإزالته قبل إنشاء المجموعة.";
@@ -2222,106 +2222,106 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@أعضاء لا يدعمون المجموعات من الطراز الجديد، لذا ستكون المجموعة من الطراز القديم. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. إن الميزات مثل خاصية المشرفين على المجموعة، متاحة فقط في المجموعات الجديدة. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "هذه المجموعة من الطراز القديم ليست جاهزة بعد للترقية إلى مجموعة جديدة. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة القديمة الطراز إلى مجموعة جديدة لأنها كبيرة جدا. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "هذه مجموعة من الطراز القديم. للوصول إلى ميزات مثل ‎@mentions‏ والمشرفين، %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "تعذرت إضافة عضو واحد للمرة ثانية إلى المجموعة الجديدة. ألديك نية ﻹضافة الشخص الآن ؟";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "تعذرت إضافة %@ عضو للمرة ثانية إلى المجموعة الجديدة. ألديك نية ﻹضافتهم الآن ؟";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "مجموعة من الطراز القديم";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "قبول دعوة الانضمام إلى هذه المجموعة مرة أخرى ضروري، ولن تصلك أي رسائل من المجموعة إلى حين موافقتك علي الانضمام إليها.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ترقية المجموعة";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "للوصول إلى الميزات الجديدة مثل ‎@mentions والمشرفين، قم بترقية هذه المجموعة.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "ما هي المجموعات الجديدة ؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "تم الاحتفاظ بكل محفوظات الرسائل والوسائط قبل الترقية.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "تحوي المجموعات الجديدة ميزات كـ ‎@mentions‎ ومشرفين على المجموعة، كما ستدعم مستقبلا المزيد من الميزات.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "المجموعات الجديدة";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "إضافة أعضاء";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "إضافة عضو ؟";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "إضافة أعضاء ؟";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "إضافة أعضاء";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "لا يمكن إضافة هؤلاء الأعضاء تلقائيا إلى المجموعة الجديدة عندما تمت ترقيتها :";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "لا يمكن إضافة هؤلاء الأعضاء تلقائيا إلى المجموعة الجديدة عندما تمت ترقيتها :";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "تم الاحتفاظ بكل محفوظات الرسائل والوسائط قبل الترقية.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "تمت إزالة هذا العضو من المجموعة ولن يتمكن من الانضمام إليها مرة أخرى حتى يقوم بالترقية :";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "تمت إزالة هذا العضو من المجموعة ولن يتمكن من إعادة الانضمام إليها مرة أخرى حتى يقوم بالترقية :";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "يحتاج هذا العضو قبول دعوة الانضمام إلى هذه المجموعة مرة أخرى، ولن تصله أي رسائل من المجموعة إلى حين موافقته على الانضمام إليها.";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "يحتاج هؤﻻء اﻷعضاء قبول دعوة الانضمام إلى هذه المجموعة مرة أخرى، ولن تصلهم أي رسائل من المجموعة إلى حين موافقتهم على الانضمام إليها.";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "لم يتمكن هذا العضو من الانضمام إلى المجموعات الجديدة، لذا سوف تتم إزالته من المجموعة :";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "لم يتمكن هؤﻻء اﻷعضاء من اﻹ";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "قم بالترقية إلى مجموعة جديدة";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ترقية هذه المجموعة";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "تعذرت اﻵن ترقية هذه المجموعة إلى مجموعة جديدة.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "لا يمكن ترقية هذه المجموعة القديمة الطراز إلى مجموعة جديدة لأنك على غير اتصال بالانترنت. يُرجى المحاولة ﻻحقا.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "تعذر إتمام الترقية";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "رُقّيَت إلى المجموعة المجموعة.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ترقية هذه المجموعة";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "قبل أن تغادر، اختر مشرفا جديدا لهذه المجموعة.";
@@ -2333,19 +2333,19 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "اختر مشرفا جديدا";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "تعمل مجموعات Signal بشكل أفضل مع %@ عضوا أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى ظهور تأخر في إرسال الرسائل واستلامها.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تم وصول الأعضاء إلى الحد المُوصى به";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "إضافة عضو في كل اﻷحوال ؟";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "إظهار الطلب";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "إظهار الطلبات";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "وسائل الأتصال";
@@ -2354,7 +2354,7 @@
 "HELP_SUPPORT_CENTER" = "مركز الدعم";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "المحادثات المؤرشفة";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "تم الحظر";
@@ -2375,7 +2375,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "تستخدم إحدى جهات اتصالك Signal، بما فيهم %@ و %@ و%@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "يُرجى بدء أول محادثتك من هنا.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "أضافك %@ إلى المجموعة";
@@ -2405,13 +2405,13 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "لا يمكنك مشاركة أكثر من %@ عنصر.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "تغيير الصور";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "منح حق الوصول الكامل في الإعدادات أو تغيير الصور التي يحق لـ Signal الوصول إليها.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "ﻻ تظهر صورك ؟";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "فشل تحديد المرفق.";
@@ -2447,7 +2447,7 @@
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إن هذه المحادثات مؤرشفة و سوف تظهر فقط في علبة البريد الوارد إذا استلمت رسائل جديدة.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "ابدأ محادثة مع أصدقائك.";
@@ -2456,7 +2456,7 @@
 "INCOMING_CALL_FORMAT" = "قام %@ بالاتصال بك";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "يمكنك تلقي الرسائل المتزامنة عبر هاتفك أو جهاز iPad. ↵إن محادثاتك السابقة لا يُعاد توجيهها إلى الأجهزة الحديثة المرتبطة، وذلك لأجل أمانك.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "يستخدم %@ Signal !";
@@ -2501,13 +2501,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "اذهب إلى كل الوسائط";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "أرشفة المحادثة";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "أظهر المرفقات";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "ذهاب إلى معلومات المحادثة";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "التركيز على شريط الإدخال";
@@ -2522,10 +2522,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "رسالة جديدة";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "الذهاب إلى المحادثة التالية";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "الذهاب إلى المحادثة السابقة";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "بحث";
@@ -2537,7 +2537,7 @@
 "KEY_COMMAND_STICKERS" = "أظهر الملصقات";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "إلغاء الأرشفة المحادثة";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "أعرف أكثر";
@@ -2558,7 +2558,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "فشل ربط الجهاز";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "سوف يتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، وكذا الوصول إلى محادثاتك، و إرسال الرسائل باسمك.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ربط هذا الجهاز؟";
@@ -2585,31 +2585,31 @@
 "LINKING_DEVICE_FAILED_TITLE" = "فشل ربط الجهاز";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "لن تُولَّد معاينة الوصلات في كل المواقع.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "تعطيل";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "معاينة كل الوصلات";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "من أجل نقل حساب Signal الخاص بك، يجب عليك تفعيل الوصول إلى الشبكة المحلية في كلا الجهازين.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "أتريد مساعدة ؟";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "يُرجى فتح الإعدادات، في كل جهاز";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "تشغيل \"الشبكة المحلية\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "الذهاب إلى Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "تشغيل الوصول إلى الشبكة المحلية";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ابحث بالاسم أو العنوان";
@@ -2660,7 +2660,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "احذف للجميع";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "سوف تُحذَف هذه الرسالة لأي كان في هذه المحادثة إن كان أحد يستخدم إصدار Signal حديث. لن يكون بإمكان أحد رؤية الرسالة التي قمت بحذفها.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "من هم الأشخاص الذين تريد حذف هذه الرسالة عندهم؟";
@@ -2762,7 +2762,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف  ";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه المحادثة من كل أجهزتك.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "حذف المحادثة ؟";
@@ -2798,10 +2798,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "أحذف  ";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "أأنت بحاجة إلى متابعة محادثتك مع %@ ومشاركة اسمك وصورتك مع هذا الفرد ؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "أأنت بحاجة إلى متابعة محادثتك مع هذه المجموعة ومشاركة اسمك وصورتك مع أعضائها ؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "مشاركة اسمك وصورة حسابك مع %@ والسماح لهم بمراسلتك؟ لن يعلموا أنك شاهدت رسائلهم حتى تقبل دعوة المحادثة.";
@@ -2816,13 +2816,13 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "رفع الحظر";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "إلغاء الطلب";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "إلغاء طلب انضمامك لهذه المجموعة ؟";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "تم إرسال طلبك للانضمام إلى المشرفين على المجموعة. سيتم تنبيهك عند اتخاذهم الإجراء المناسب لهم.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "تم الاستلام";
@@ -2906,7 +2906,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "لقد وصلت للحد الأقصى المسموح به لعدد الأجهزة المرتبطة بحسابك. يُرجى إزالة أحد الأجهزة ثم حاول مرة أخرى.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "لن يتم تسليمك تنبيهات من المحادثات التي تم كتمها.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "مكتوم";
@@ -2936,7 +2936,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "لا يمكن إنشاء مجموعة جديدة. تحقق من اتصالك بالانترنت ثم حاول مرة أخرى.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "ﻻ يدعم المجموعات الجديدة";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "اسم المجموعة مطلوب.";
@@ -3035,7 +3035,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "اﻷصوات";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة رنة مخصصة…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم والمحتوى والإجراءات";
@@ -3113,16 +3113,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "فعّل الأذونات";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "إن الإشعارات تمكنك من رؤية لحظات وصول الرسائل والحصول على تحديثات نشاط أي محادثة جديدة.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "احصل على الرسالة";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "يُرجى اختيار من يمكنه العثور عليك بواسطة رقم هاتفك %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "من يمكنه العثور عليك بواسطة رقم هاتفك هذا ؟";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "أدخل رقم هاتفك للبدء";
@@ -3221,13 +3221,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "أضف إلى مجموعة";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "إضافة \"%@\" إلى المجموعة ؟";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "رفض الطلب";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض طلب \"%@\" ؟";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "دعا %@ شخصا واحدا";
@@ -3236,22 +3236,22 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "دعا %1$@ %2$@ شخصا";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "ﻻ يوجد أي طلب انضمام.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا وجود لأي دعوات.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "تمت إضافة \"%@\".";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ طلب العضوية معلقة.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "إظهار الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "تم رفض \"%@\".";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "سحب دعوة غير صحيحة";
@@ -3278,7 +3278,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا تظهر تفاصيل الأشخاص المدعوين من قبل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مشاركة معلوماتهم مع المجموعة. لن يروا أي رسائل في المجموعة حتى ينضموا.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "يحاول الأشخاص الموجودون في هذه القائمة الانضمام إلى \"%@\" عبر وصلة المجموعة.‏";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صحيحة";
@@ -3287,7 +3287,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوات من أعضاء المجموعة الآخرين";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "طلبات الأعضاء المُعلَّقة";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "الأشخاص الذين دعوتهم";
@@ -3317,37 +3317,37 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "تمت المشاهدة";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "الكل";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "كل شخص لديه رقم هاتفك في جهات اتصاله سيراك في جهات اتصال Signal. سيتمكن الآخرون من العثور عليك في البحث.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "ﻻ يمكن لأحد في Signal العثور عليك بواسطة رقم هاتفك. لن يكون للأفراد الذين لديهم رقم هاتفك في جهات اتصالهم القدرة على رؤيتك في جهات اتصال Signal، كما أن آخرين لن يتمكنوا من العثور عليك بواسطة رقم هاتفك في البحث.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "مثال: %@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "جهات اتصالي فقط";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "جهات اتصالك فقط هي التي سترى رقم هاتفك في Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "الكل";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "سيكون رقم هاتفك مرئيا لجميع الأشخاص والمجموعات التي يجري تراسلك معها. سوف يراك أيضا اﻷشخاص الذين يجدونك في جهات اتصالهم بـ Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "لن يرى أحد رقم هاتفك في Signal.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3398,7 +3398,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "ألبوم غير مُسمى";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "تثبيت";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "يجب أن يحوي الرقم التعريفي الشخصي أربعة حروف على الأقل";
@@ -3503,7 +3503,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "سوف نذكرك مرة أخرى غدا.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "سوف نذكرك لاحقا خلال الأسابيع القادمة.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "سوف نذكرك لاحقا خلال أسبوع.";
@@ -3518,7 +3518,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "الرقم الشخصي يجب أن يتكون من 4 خانات على الأقل.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "يمكنك فقط تثبيت 4 محادثات على اﻷكثر.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "مثبّت";
@@ -3563,7 +3563,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم اﻷمان الخاص بك مع %@. هل تتحقق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "الرقم الذي في حافظتك لا يبدو كرقم اﻷمان الخاص بهذه المحادثة.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يمكن Signal من إيجاد أي رقم أمان في حافظتك. هل نسخه بشكل صحيح؟";
@@ -3632,7 +3632,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "يمكن تحديث الحساب فقط إذا كان متصلا بالانترنت.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "صفحة حسابك الشخصي مُعمَّاة من طرف لطرف. إن أي تغيير سيكون ظاهرا لجهات اتصالك، بعد قبولك طلب محادثتهم أو بعد انضمامك لمجموعة جديدة.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "حفظ";
@@ -3845,31 +3845,31 @@
 "REREGISTER_FOR_PUSH" = "إعادة الإشتراك في خدمة الإشعارات اللحظية";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "لجعل Signal أفضل تطبيق للتراسُل على هذا الكوكب، يسعدنا سماع ملاحظاتك.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tell Signal what you think";
+"RESEARCH_MEGAPHONE_TITLE" = "أخبر Signal ما يجول ببالك";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "تستضيف Surveygizmo استطلاع الرأي في الموقع الآمن surveys.signalusers.org";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "لا شكرا";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>نؤمن بالخصوصية.</bold>\nﻻ يتعقبك Signal ولا يجمع عنك البيانات. لتحسين Signal للجميع، فنحن نعتمد على ملاحظات المستخدمين، <bold>إذ أننا نتوق لتعليقاتك</bold>.\n\nلذلك، فنحن نجري استطلاعا لفهم كيفية استخدامك Signal. هذا الاستطلاع ﻻ يجمع أي بيانات تمكّن من تحديد هويتك. إن كان لديك اهتمام بمشاركتنا ملاحظات إضافية، فإن لك الاختيار بتزويدنا بمعلومات الاتصال بك.\n\nسنكون ممتنين لك إذا منحت لنا بضع دقائق من وقتك لإخبارنا عن آرائك.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "يُرجى المشاركة في الاستطلاع";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
+"RESEARCH_MODAL_TITLE" = "أبحاث Signal";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "إعادة المحاولة";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "العودة";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "اضف إلى المجموعة على كل حال";
@@ -4298,7 +4298,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "أضف مستخدما محظورا";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "قائمة جهات الاتصال والمجموعات التي قمت بحظرها.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "جهات الاتصال الخاصة بك غير موجودة على Signal.";
@@ -4316,7 +4316,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "ترحيل كل المكالمات عبر خوادم Signal لتفادي الكشف عن عنوان IP  لديك لجهات اتصالك. سوف يخفض تشغيل هذه الميزة من جودة المكالمة.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "محو محفوظات الرسائل";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "‫مِرسال Signal‬. جميع الحقوق محفوظة\nمرخص بموجب رخصة جْنُو العمومية، الإصدار الثالث";
@@ -4340,7 +4340,7 @@
 "SETTINGS_HELP" = "مساعدة";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "محو محفوظات الرسائل";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "معلومات";
@@ -4358,19 +4358,19 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "الشروط وسياسة الخصوصية";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "توليد معاينة الوصلات";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "جلب استعراض للروابط للرسائل التي ترسلها من المواقع مباشرةً.";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "التراسُل";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "الإعدادات";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "عدد المحادثات المصمتة";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "عدد الشارة";
@@ -4391,16 +4391,16 @@
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "اعثروا عليّ برقم الهاتف";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "اعثروا عليّ برقم الهاتف";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "رؤية رقم هاتفي";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "رؤية رقم هاتفي";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "أطفيء التذكيرات";
@@ -4442,7 +4442,7 @@
 "SETTINGS_READ_RECEIPT" = "تقارير القراءة";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "مشاهدة ومشاركة وقت قراءة الرسائل. هذا اﻹعداد اختياري ويُطبَّق على كل المحادثات.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "أطفيء";
@@ -4502,7 +4502,7 @@
 "SETTINGS_TYPING_INDICATORS" = "مؤشرات الكتابة";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "مشاهدة ومشاركة وقت كتابة الرسائل. هذا اﻹعداد اختياري ويُطبَّق على كل المحادثات.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "الراسل المغلق";
@@ -4523,7 +4523,7 @@
 "SETTINGS_VERSION" = "النسخة";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "من يمكنه...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "البريد";
@@ -4568,7 +4568,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "عرض رقم الأمان";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "إظهار المحادثة";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "أنا ادعُك لتثبيت تطبيق Signal، ها هو الرابط:";
@@ -4577,7 +4577,7 @@
 "SOUNDS_NONE" = "لا شيء ";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "ستحصل تلقائيا المجموعات الحالية على هذه الميزات خلال اﻷسابيع القادمة.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "مجموعة جديدة";
@@ -4586,10 +4586,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "المجموعات الجديد هنا !";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "تحوي المجموعات الجديدة ميزات كـ ‎@mentions‎ ومشرفين على المجموعة، وأشياء أخرى. يُرجى تجربتها بلمس :";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "رسالة تحتوي ملصق";
@@ -4685,7 +4685,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %@، %@، و %lu مجموعات أخرى";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يمكنك إضافة ملاحظات لنفسك في هذه المحادثة . ستتم مزامنتها مع باقي الأجهزة المرتبطة بنفس الحساب.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %@";
@@ -4820,7 +4820,7 @@
 "UNNAMED_DEVICE" = "جهاز غير مسمّى";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "نزع التثبيت";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "دردشة";

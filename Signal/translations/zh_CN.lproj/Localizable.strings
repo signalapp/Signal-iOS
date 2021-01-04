@@ -1565,7 +1565,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "这可能是因为他们还没验证过你的安全码发生的变更，或是因为他们的设备有问题，又或者是因为他们已经屏蔽了你。";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
@@ -1604,13 +1604,13 @@
 "GROUP_CALL_RECONNECTING" = "重连中";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "有人用变更过的安全码加入了这次通话";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "有人发起了群通话";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "上滑改变显示";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "发起通话";

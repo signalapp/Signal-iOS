@@ -5,5 +5,5 @@ NSFaceIDUsageDescription = "Kunci Layar Signal menggunakan Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal perlu mengakses lokasi Anda untuk membagikan lokasi terkini Anda.";
 NSMicrophoneUsageDescription = "Signal perlu mengakses mikrofon Anda untuk membuat dan menerima panggilan telepon dan merekam pesan suara.";
 NSPhotoLibraryAddUsageDescription = "Signal akan menyimpan foto-foto ke galeri Anda.";
-NSPhotoLibraryUsageDescription = "Signal will let you choose which photos from your library to send.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSPhotoLibraryUsageDescription = "Signal akan memilih foto mana dari galeri Anda untuk dikirimkan.";
+NSLocalNetworkUsageDescription = "Signal menggunakan jaringan lokal untuk memungkinkan Anda mentransfer secara langsung akun Anda ke ponsel baru. Fitur ini tidak akan digunakan kecuali Anda memilih untuk mentransfer ke sebuah perangkat baru.";

@@ -68,28 +68,28 @@
 "ADD_TO_CONTACTS_OFFER" = "Apakah Anda ingin menambahkan penguna ini menjadi kontak Anda?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "Tambahkan ke Grup Lain";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Tambahkan ke Grup";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Tambahkan %@ ke dalam grup?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Tambahkan ke %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ sudah menjadi anggota dari %@";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ditambahkan ke %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "Tambahkan ke Grup Lain";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda kepada pengguna ini?";
@@ -428,7 +428,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Pengguna yang diblokir tidak dapat melakukan panggilan atau mengirimkan pesan kepada Anda.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "Baru: Kaburkan wajah atau gambar di manapun untuk mengaburkan.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Telusuri";
@@ -467,10 +467,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Telepon lagi";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞Panggilan suara masuk...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Panggilan suara tidak terjawab";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Anda dapat mengaktifkan akses mikrofon pada Pengaturan iOS untuk membuat panggilan dan merekam pesan suara di Signal.";
@@ -482,7 +482,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Panggilan tidak terjawab karena nomor keamanan penelepon berubah.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "Kembali ke Panggilan";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Tidak Ada Jawaban";
@@ -500,13 +500,13 @@
 "CALL_USER_ALERT_TITLE" = "Panggil?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹Panggilan video masuk...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Panggilan video tidak terjawab";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Jawab tanpa video";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Jawab";
@@ -524,7 +524,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Bisu";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ akan mendapatkan permintaan pesan dari Anda. Anda dapat memanggil saat permintaan pesan Anda telah diterima.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Ganti arah kamera";
@@ -539,7 +539,7 @@
 "CALLBACK_BUTTON_TITLE" = "Panggil Ulang";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Kamera Anda mati";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Penguna jaringan";
@@ -581,19 +581,19 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Akses Signal untuk mencadangkan ke akun iCloud Anda ditolak. Berikan akses Signal ke Akun iCloud Anda pada pengaturan iOS untuk mencadangkan data Signal Anda.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Pilih warna dari pesan keluar dalam percakapan ini.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Hanya Anda yang akan melihat warna yang Anda pilih.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
+"COLOR_PICKER_SHEET_TITLE" = "Warna Percakapan";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Bandingkan dengan papan klip";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "Pilih atau cari pengguna Signal untuk memulai bertukar pesan.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Tulis pesan";
@@ -695,16 +695,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organisasi";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Untuk melihat nama kontak dan fotonya pada percakapan Anda:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Pergi ke Pengaturan\" di bawah";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Nyalakan \"Kontak\"";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Nyalakan Kontak";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Tidak Sekarang";
@@ -713,10 +713,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Nyalakan";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your chats.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Lihat nama kontak dan fotonya pada percakapan Anda.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Nyalakan Kontak?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telpon";
@@ -773,16 +773,16 @@
 "CONTACT_WITHOUT_NAME" = "Kontak tak bernama";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Percakapan ini akan dihapus dari perangkat ini.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Hapus Pesan?";
 
 /* Indicates that the user can tap to download this image. */
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Unduh";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Anda tidak dapat memilih lebih dari %@ percakapan.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grup";
@@ -806,7 +806,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d dari %d cocok";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "Pengaturan Percakapan";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tambahkan anggota";
@@ -827,10 +827,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Ternonaktifkan";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat menyunting nama grup, foto, dan pengatur waktu penghilangan pesan.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Anda tidak lagi dapat menerima pesan atau pembaruan dari pengguna ini.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Anda tidak akan lagi menerima pesan dan pembaruan dari grup ini.";
@@ -845,7 +845,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info Kontak ";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Warna Percakapan";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Pemilik Akses Untuk Mengubah Informasi Grup";
@@ -854,7 +854,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Hanya Admin";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Pilih siapa yang dapat mengubah nama grup, foto, dan penghilangan pesan:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Anggota";
@@ -863,31 +863,31 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Sunting";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Siapa yang Dapat Menambahkan Anggota";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Hanya Admin";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Pilih siapa yang bisa menambahkan anggota ke grup ini:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Anggota";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Tautan Grup";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Jadikan Admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ akan mampu menyunting grup ini dan anggotanya.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Undang Anggota";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Permintaan Anggota & Undangan";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Anggota-anggota";
@@ -896,16 +896,16 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Anggota";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Selalu Beritahu";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Matikan Pemberitahuan Jika Dalam Mode Senyap";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Terima pemberitahuan saat Anda disebut dalam percakapan senyap?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menyebut";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Senyap";
@@ -950,7 +950,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Cabut akses %@ sebagai admin grup?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
+"CONVERSATION_SETTINGS_SEARCH" = "Cari Obrolan";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Buka Blokir Grup";
@@ -962,7 +962,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Tidak Senyap";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Apa Anda ingin menyimpan perubahan yang Anda buat di percakapan ini?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Perubahan Tak Tersimpan";
@@ -992,7 +992,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Memuat Lebih Banyak Pesan...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Baca Lebih Lanjut";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Mengatur ulang sesi Anda akan mengizinkan Anda untuk menerima pesan di masa depan dari 1%@, tapi itu tidak akan memulihkan pesan yang sudah rusak.";
@@ -1067,10 +1067,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Pengalihan ke GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "Informasi tentang catatan awakutu";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Hapus semua pesan dalam obrolan ini?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Hapus Semua Pesan";
@@ -1202,10 +1202,10 @@
 "DISAPPEARING_MESSAGES" = "Pesan Menghilang";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Pesan dalam percakapan ini akan menghilang setelah %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Saat diaktifkan, pesan yang terkirim dan diterima dalam percakapan ini akan menghilang setelah dilihat.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Saat ini pesan hilang setelah %@";
@@ -1226,7 +1226,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Butuh Akses Kontak untuk Mengubah Informasi Kontak";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Hapus Foto";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Ubah Grup";
@@ -1235,10 +1235,10 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Pengguna ini tidak dapat ditambahkan ke dalam grup sampai dia memperbarui Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Batas maksimum ukuran grup %@ anggota sudah terpenuhi.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Foto salah.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Nama Grup";
@@ -1256,28 +1256,28 @@
 "EDIT_ITEM_COPY_ACTION" = "Salin";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Hai,\n\nBelakangan ini saya menggunakan Signal untuk menjaga percakapan di iPhone saya tetap privat. Saya ingin Anda memasangnya juga, sehingga kita bisa percaya diri bahwa hanya Anda dan saya yang dapat melihat pesan atau mendengar panggilan kita.\n\nSignal tersedia untuk iPhone dan Android. Dapatkan di sini:%@\n\nSignal bekerja seperti aplikasi olah pesan Anda yang ada. Kami dapat mengirim gambar dan video, melakukan panggilan, dan membuat obrolan grup. Bagian terbaiknya adalah, tidak ada orang lain yang dapat melihatnya, bahkan orang-orang yang membuat Signal\n\nAnda dapat membaca lebih lanjut tentang Open Whisper Systems, orang-orang yang membuat Signal, di sini: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Pindah ke Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Perangkat Anda tidak dikonfigurasikan untuk mengirim surel. Untuk mengirimkan permintaan dukungan, pasang surel di perangkat Anda atau kirimkan surel ke support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "Surel tidak tersedia";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktivitas";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Binatang & Alam";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "Bendera";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "Makanan & Minuman";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Obyek";
@@ -1286,13 +1286,13 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smiley & Orang";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Simbol";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Perjalanan & Tempat";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Tak satupun kontak Anda memiliki Signal";
@@ -1319,13 +1319,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Gagal mengirim pesan.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Gagal membuka aplikasi surel";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Tidak dapat membuat permintaan dukungan";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Gagal mengunggah catatan.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Tidak dapat mengirim karena data kunci sementara telah usang.";
@@ -1409,7 +1409,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Pengguna tidak terdaftar: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Versi Signal Anda telah kedaluwarsa! Ketuk untuk pembaruan ke versi terbaru.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Versi Signal Anda akan berakhir dalam %d hari. Ketuk untuk memperbarui versi terbaru.";
@@ -1442,7 +1442,7 @@
 "FORWARD_MESSAGE" = "Teruskan pesan";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Anda tidak memiliki media apapun dalam percakapan ini.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Memuat Media Baru...";
@@ -1478,7 +1478,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Masukkan pencarian Anda";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Pergi ke Pengaturan";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Versi Signal ini memiliki optimisasi basis data dan peningkatan performa. Anda diharuskan membuka aplikasi Signal untuk menyelesaikan proses pembaruan.";
@@ -1520,133 +1520,133 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Keanggotaan grup dapat diubah oleh \"%@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Hanya admin yang dapat mengubah opsi ini.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Anda tidak akan menerima panggilan suara dan video dari Anda dan mereka tidak akan menerima yang Anda kirimkan.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ diblokir";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ diblokir";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "Lanjutkan Panggilan";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "Panggilan grup telah berakhir";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Info lebih lanjut";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Jumlah peserta %ld telah mencapai angka maksimum untuk panggilan ini, Coba lagi nanti.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Jumlah pesert telah mencapai angka maksimum untuk panggilan ini, Coba lagi nanti.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "Panggilan Penuh";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Bergabung Panggilan";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "Tinggalkan Panggilan";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dalam panggilan ini · %ld orang";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, dan %3$@ yang lainnya sedang dalam panggilan ini";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Tidak dapat menerima audio dan video dari %@\n";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ini mungkin terjadi karena mereka belum memverifikasi pergantian nomor keamanan, ada masalah dengan perangkat, atau mereka memblokir Anda.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Tidak dapat menerima audio dan video dari %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Tidak ada orang lain di sini";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Belum ada orang dalam panggilan ini.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@,%@, dan %ld lainnya bergabung dalam panggilan";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@,%@,dan %ld lainnya meninggalkan panggilan";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ bergabung dalam panggilan";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ meninggalkan panggilan";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ dan %@ bergabung dalam panggilan";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ dan %@ meninggalkan panggilan";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "Dalam panggilan ini · 1 orang";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ sedang dalam panggilan ini";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "Menyambungkan ulang";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Seseorang telah bergabung dalam panggilan ini dengan nomor keamanan yang berubah.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Seseorang memulai panggilan grup";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Usap ke atas untuk mengubah tampilan";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "Mulai Panggilan";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Ketuk di sini untuk memulai panggilan grup";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Anda memulai panggilan grup";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ memulai panggilan grup";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@,%2$@, dan 1 lainnya sedang dalam panggilan ini";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ dan %2$@ sedang dalam panggilan ini";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Kamu terputus dari panggilan. Periksa koneksi internet Anda dan coba lagi.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Anda";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "Anda berada dalam panggilan grup";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Anda (di perangkat lain)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Buka sebuah Grup Baru untuk memulai panggilan grup gratis yang terenkripsi.";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Memperkenalkan Panggilan Grup";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Grup telah dibuat.";
@@ -1661,94 +1661,94 @@
 "GROUP_CREATION_FAILED" = "Tidak semua anggota dapat ditambahkan ke dalam grup. Ketuk untuk mencoba lagi.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "Sebuah undangan tidak valid ditambahkan.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Anda menambahkan sebuah undangan tidak valid.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Anda menambahkan undangan tidak valid.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ menambahkan sebuah undangan tidak valid.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ menambahkan undangan tidak valid.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Undangan tidak valid ditambahkan.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Sebuah undangan tidak valid ditolak.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Anda menolak sebuah undangan tidak valid.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Anda menolak undangan tidak valid.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ menolak sebuah undangan tidak valid.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ menolak undangan tidak valid.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Undangan tidak valid telah ditolak.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+"GROUP_INVITE_LINK_DISABLED" = "Tautan grup dinonaktifkan.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Anda menonaktifkan tautan grup.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ menonaktifkan tautan grup.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Tautan grup dinyalakan dengan persetujuan admin.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Anda menyalakan tautan grup dengan persetujuan admin.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ menyalakan tautan grup dengan persetujuan admin.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Tautan grup dinyalakan tanpa persetujuan admin.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Anda menyalakan tautan grup tanpa persetujuan admin.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ menyalakan tautan grup tanpa persetujuan admin.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "Tautan grup diatur ulang.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Anda mengatur ulang tautan grup.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ mengatur ulang tautan grup.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Persetujuan admin dinonaktifkan untuk tautan grup.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Anda mematikan persetujuan admin untuk tautan grup.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ menonaktifkan persetujuan admin untuk tautan grup. ";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Persetujuan admin dinyalakan untuk tautan grup.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Anda menyalakan persetujuan admin untuk tautan grup.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ menyalakan persetujuan admin untuk tautan grup.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ Tidak dapat secara otomatis Anda tambahkan ke dalam grup. Mereka telah mendapatkan undangan, dan tidak dapat melihat pesan di dalam grup sampai mereka menerimanya.";
@@ -1763,73 +1763,73 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Pengguna ini tidak dapat secara otomatis Anda tambahkan ke dalam grup. Mereka telah mendapatkan undangan, dan tidak dapat melihat pesan di dalam grup sampai mereka menerimanya.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "Undang Anggota";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Tautan grup ini tidak lagi valid.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Tidak dapat bergabung dengan grup";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Grup";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Bergabung";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Memuat...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Apakah Anda ingin bergabung dengan grup ini dan membagikan nama dan foto Anda dengan anggota grup?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Mohon cek apakah anda tersambung dalam jaringan dan coba lagi.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Mohon coba lagi.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ini bukan tautan grup yang valid. Pastikan seluruh tautan utuh dan benar sebelum mencoba untuk bergabung.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Tautan Tidak Valid";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Perbarui Signal pada perangkat ini untuk bergabung dengan grup.";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Orang yang memindai kode ini akan dapat bergabung dengan grup Anda. Admin akan tetap membutuhkan persetujuan untuk menerima anggota baru jika Anda telah menyalakan pengaturannya.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Bagikan Kode";
 
 /* The title for the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "Kode QR";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Terima Anggota Baru";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "Salin Tautan";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Tautan Grup";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Kelola dan Bagikan";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Dibutuhkan persetujuan admin untuk menerima anggota baru yang bergabung melalui tautan grup.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Permintaan Anggota";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "Atur ulang Tautan";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Apakah Anda yakin untuk mengatur ulang tautan grup? Orang-orang tidak akan bisa bergabung ke dalam grup menggunakan tautan saat ini.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Bagikan";
@@ -1838,16 +1838,16 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Bagikan";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "Kode QR";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Bagikan melalui Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Siapapun dengan tautan ini dapat bergabung ke grup, atau mengirimkan permintaan untuk bergabung. Bagikan dengan orang yang Anda percaya.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Group Link";
+"GROUP_LINK_VIEW_TITLE" = "Tautan Grup";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ menambahkan Anda.";
@@ -1886,7 +1886,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Anda bergabung ke dalam grup.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Anda bergabung ke dalam grup melalui tautan grup.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ mengeluarkan Anda.";
@@ -1895,16 +1895,16 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Anda dikeluarkan dari grup.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ menerima permintaan Anda untuk bergabung ke grup.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Anda membatalkan permintaan bergabung ke grup.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Permintaan Anda untuk bergabung ke grup ditolak.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Anda mengirimkan permintaan untuk bergabung ke grup.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Akses admin Anda telah dibatalkan.";
@@ -2069,13 +2069,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ membatalkan akses admin dari %2$@.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Permintaan Anggota";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Permintaan Anggota & Undangan";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group dimutakhirkan";
@@ -2195,7 +2195,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Setiap riwayat pesan dan media disimpan sebelum pembaruan.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -2240,22 +2240,22 @@
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Grup Warisan";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Anda perlu menerima undangan untuk bergabung ke grup ini lagi, dan tidak akan menerima pesan grup sampai Anda menerimanya.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Untuk mengakses fitur-fitur baru seperti @mention dan admin, perbarui grup ini.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Apakah Grup Baru?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Setiap riwayat pesan dan media disimpang sebelum pembaruan.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
@@ -2282,7 +2282,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Setiap riwayat pesan dan media disimpang sebelum pembaruan.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
@@ -2303,7 +2303,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Perbarui ke Grup Baru";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
@@ -2489,7 +2489,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Mengundang beberapa pengguna pada saat yang bersamaan akan memulai sebuah pesan grup dan para penerimanya akan dapat melihat satu sama lain.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "Bergabung";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Pesan hilang setelah%@.";
@@ -2765,7 +2765,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Chat?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Hapus Pesan?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Hapus dan Tinggalkan";
@@ -2786,7 +2786,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Buka blokir grup ini dan bagikan nama dan foto Anda dengan anggotanya? Anda tidak akan menerima pesan apapun sampai Anda membuka blokirnya.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
@@ -2807,7 +2807,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Gabung ke grup ini dan bagikan nama dan foto Anda dengan anggota? Mereka tidak akan mengetahui Anda telah melihat pesannya sampai Anda menerimanya.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
@@ -2816,7 +2816,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Buka blokir";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Batalkan Permintaan";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2999,7 +2999,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Pergi ke Pengaturan\" di bawah";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
@@ -3218,7 +3218,7 @@
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Add to Group";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Tambahkan ke Grup";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
@@ -3602,7 +3602,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Hapus Foto";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Buat Nama Pengguna";
@@ -3881,13 +3881,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Kirimkan saja";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Orang-orang berikut mungkin telah memasang ulang atau mengganti perangkat. Verifikasi nomor keamanan Anda dengan mereka untuk memastikan privasi.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Nomor Keamanan Berubah";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Lihat";
@@ -4334,7 +4334,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Hapus Semuanya";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Berdonasi ke Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Bantuan";

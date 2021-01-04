@@ -2348,7 +2348,7 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "Makipag-ugnayan sa Amin";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Support Center";
@@ -4646,7 +4646,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Magtugma ang Numerong Pangkaligtasan!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "Makipag-ugnayan sa Amin";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Sabihin sa amin kung ano ang nangyayari";

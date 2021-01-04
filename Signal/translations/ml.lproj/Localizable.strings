@@ -2123,7 +2123,7 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ഗ്രൂപ്പിന്റെ പേര് ഇപ്പോൾ \"%@\" ആണ്.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "ഈ ഗ്രൂപ്പ് ഒരു പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഡേറ്റുചെയ്‌തു.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";

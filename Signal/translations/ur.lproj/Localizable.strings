@@ -506,7 +506,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ویڈیو کے بغیر جواب دیں";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "جواب دیں";
@@ -515,7 +515,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "آڈیو";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "مسترد";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "کال ختم کریں";
@@ -902,10 +902,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "خاموش چیٹس میں آپ کا ذکر ہونے پر اطلاعات موصول کریں؟";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ذکر";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "خاموش ";
@@ -1268,19 +1268,19 @@
 "EMAIL_SIGNAL_TITLE" = "Email unavailable";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "سرگرمیاں";
 
 /* The name for the emoji category 'Animals & Nature' */
 "EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "جھنڈے";
 
 /* The name for the emoji category 'Food & Drink' */
 "EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "چیزیں";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -1289,7 +1289,7 @@
 "EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "علامتیں";
 
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
@@ -1550,7 +1550,7 @@
 "GROUP_CALL_IS_FULL" = "Call is Full";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "کال میں شامل ہوں";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
@@ -1565,13 +1565,13 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "اس کی وجہ یہ ہوسکتی ہے کہ انہوں نے آپ کے حفاظتی نمبر میں تبدیلی کی توثیق نہیں کی ہے ، ان کے آلے میں کوئی مسئلہ ہے یا انہوں نے آپ کو مسدود کردیا ہے۔";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "یہاں کوئی اور نہیں ہے";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
@@ -1604,19 +1604,19 @@
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "کسی نے حفاظتی نمبر کے ساتھ اس کال میں شمولیت اختیار کی ہے جو بدل گیا ہے۔";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "ڈسپلے کو تبدیل کرنے کیلئے سوائپ اپ کریں";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "کال شروع کریں";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "گروپ کال شروع کرنے کے لئے یہاں ٹیپ کریں";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
@@ -1637,16 +1637,16 @@
 "GROUP_CALL_YOU" = "آپ";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "آپ گروپ کال میں ہیں";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "آپ (دوسرے آلے پر)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "مفت خفیہ کردہ گروپ کال شروع کرنے کے لئے نیا گروپ کھولیں";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "گروپ کال متعارف کروانا";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "آپ نے گروپ بنایا ہے۔";
@@ -1700,7 +1700,7 @@
 "GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "آپ نے گروپ لنک آف کردیا۔";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
@@ -1709,7 +1709,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "آپ نے منتظم کی منظوری کے ساتھ گروپ لنک آن کردیا۔";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
@@ -1718,7 +1718,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "آپ نے منتظم کی منظوری کے ساتھ گروپ لنک آن کردیا۔";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
@@ -1727,7 +1727,7 @@
 "GROUP_INVITE_LINK_RESET" = " The group link was reset.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "آپ گروپ لنک کو دوبارہ ترتیب دیں۔";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
@@ -1736,7 +1736,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "آپ نے گروپ لنک کیلئے منتظم کی منظوری کو آف کر دیا۔";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
@@ -1745,7 +1745,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "آپ نے گروپ لنک کیلئے منتظم کی منظوری دے دی۔";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
@@ -1775,13 +1775,13 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "شامل ہوں";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "لوڈ ہو رہا ہے۔۔۔";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "کیا آپ اس گروپ میں شامل ہوکر اس کے ممبروں کے ساتھ اپنا نام اور تصویر بانٹنا چاہتے ہیں؟";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "براہ کرم اگر آپ آن لائن ہیں تو چیک کریں اور دوبارہ کوشش کریں۔";
@@ -1799,13 +1799,13 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "جو لوگ اس کوڈ کو اسکین کرتے ہیں وہ آپ کے گروپ میں شامل ہوسکیں گے۔ اگر آپ نے یہ ترتیب آن کر رکھی ہے تو منتظمین کو ابھی بھی نئے ممبروں کی منظوری کی ضرورت ہوگی۔";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
 
 /* The title for the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR کوڈ";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1820,7 +1820,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "کسی گروپ کے ذریعے نئے ممبروں کی شمولیت کی منظوری کے لیئے کسی منتظم کی ضرورت ہے۔";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
@@ -1829,7 +1829,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "کیا آپ واقعی گروپ لنک کو دوبارہ ترتیب دینا چاہتے ہیں؟ موجودہ لنک کا استعمال کرکے لوگ اب گروپ میں شامل نہیں ہوسکیں گے۔";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "اشتراک کریں";
@@ -1838,10 +1838,10 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "اشتراک کریں";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR کوڈ";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal کے ذریعے شیئر کریں";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
@@ -1886,7 +1886,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "آپ گروپ میں شامل ہوئے۔";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "آپ گروپ لنک کے ذریعے گروپ میں شامل ہوگئے۔";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ نے آپ کو ہٹا دیا۔";
@@ -1898,13 +1898,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "آپ نے گروپ میں شامل ہونے کی اپنی درخواست منسوخ کردی۔";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "آپ نے گروپ میں شامل ہونے کی درخواست بھیجی ہے۔";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "آپ کے ایڈمنسٹریٹو مراعات کو کالعدم کردیا گیا۔";
@@ -2165,22 +2165,22 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "بلاک %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "لیگیسی گروپس ایسے گروپس ہیں جو منتظمین اور زیادہ وضاحتی گروپ اپ ڈیٹ جیسے نیو گروپ خصوصیات کے ساتھ مطابقت نہیں رکھتے ہیں۔";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "لیگیسی گروپس کیا ہیں؟";
 
 /* Body text for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "کیا میں لیگیسی گروپ کو اپ گریڈ کرسکتا ہوں؟";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "لیگیسی بمقابلہ نیا گروپ";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
@@ -2195,7 +2195,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "اپ گریڈ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا جائے گا۔";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -2240,25 +2240,25 @@
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "لیگیسی گروپ";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "آپ کو دوبارہ اس گروپ میں شامل ہونے کے لئے دعوت نامہ قبول کرنے کی ضرورت ہوگی ، اور جب تک آپ قبول نہ کریں گروپ پیغامات موصول نہیں ہوں گے۔";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@ذکر, خصوصیات اور منتظمین جیسی نئی خصوصیات تک رسائی حاصل کرنے کے لیئے اس گروپ کو اپ گریڈ کریں۔";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "نئے گروپس کیا ہیں؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "اپ ڈیٹ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا گیا ہے۔";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "نئے گروپس میں @ ذکر اور گروپ منتظمین کی طرح کی خصوصیات ہیں ، اور آئندہ وہ مزید خصوصیات کی حمایت کریں گی۔";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
@@ -2282,7 +2282,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "اپ ڈیٹ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا گیا ہے۔";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
@@ -2303,7 +2303,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "نئے گروپ میں اپ گریڈ کریں";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
@@ -2336,7 +2336,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تجویز کردہ ممبر کی حد ہوگئی";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
@@ -2393,13 +2393,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "دھندلاپن کے لئے کہیں بھی خاکہ کھینچیں";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "دھندلا چہرے";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "اضافی چہروں یا علاقوں کو دھندلا کرنے کے لئے ڈرا کریں";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "آپ %@سے زیادہ آئٹمز کا اشتراک نہیں کر سکتے۔";
@@ -2489,7 +2489,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "گروپ پیغام شروع کرنے کیلئے ایک وقت میں بہت سے صارفین کو مدعو کریں اور وصول کنندگان کو دیکھنے کے قابل ہوں گے۔";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "شامل ہوں";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "%@کے بعد پیغامات غائب ہوں";
@@ -2786,7 +2786,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "اس گروپ کو غیر مسدود کریں اور اس کے ممبروں کے ساتھ اپنا نام اور تصویر شئیر کریں؟ آپ کو کوئی پیغامات موصول نہیں ہوگا جب تک کہ آپ ان کو بلاک نہیں کردیں گے۔";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
@@ -2810,13 +2810,13 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "اس گروپ میں شامل ہوں؟ جب تک آپ ان کو قبول نہ کریں تب تک وہ نہیں جانیں گے کہ آپ نے ان کے پیغامات دیکھے ہیں۔";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ان بلاک";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "درخواست منسوخ";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2837,7 +2837,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "ناکام ہونا";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "جزوی طور پر بھیجا گیا ، تفصیلات کے لئے ٹیپ کریں";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "پڑھیں";
@@ -3323,7 +3323,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nobody";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "کوئی نہیں";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
@@ -3335,7 +3335,7 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Signal پر صرف آپ کے رابطے آپ کا فون نمبر دیکھیں گے۔";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
@@ -3344,7 +3344,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY" = "Nobody";
+"PHONE_NUMBER_SHARING_NOBODY" = "کوئی نہیں";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
@@ -3419,13 +3419,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "عددی پن بنائیں";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN کو غیر فعال کریں";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "انتباہ";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "آپ کا PIN محفوظ نہیں ہوا تھا۔ ہم آپ کو بعد میں ایک پن بنانے کا اشارہ کریں گے۔";
@@ -3434,7 +3434,7 @@
 "PIN_CREATION_ERROR_TITLE" = "پن تخلیق ناکام";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PINs Signal کے ساتھ ذخیرہ شدہ معلومات کو خفیہ شدہ رکھتا ہے لہذا صرف آپ ہی اس تک رسائی حاصل کرسکتے ہیں۔ جب آپ دوبارہ انسٹال کریں گے تو آپ کا پروفائل ، ترتیبات اور رابطے بحال ہوں گے۔ ایپ کو کھولنے کے لیئے آپ کو اپنے PIN کی ضرورت نہیں ہوگی۔";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -3467,7 +3467,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "رجسٹریشن لاک آف کریں؟";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "PIN کو غیر فعال کریں";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "اپنا پن بنائیں";
@@ -3521,7 +3521,7 @@
 "PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Pinned";
+"PINNED_SECTION_TITLE" = "پن لگا ہوا";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "پن بنائیں";
@@ -3848,7 +3848,7 @@
 "RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tell Signal what you think";
+"RESEARCH_MEGAPHONE_TITLE" = "Signal کو بتائیں ، آپ کا کیا خیال ہے؟";
 
 /* Text for the research modal footer */
 "RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
@@ -3860,10 +3860,10 @@
 "RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "سروے کریں";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
+"RESEARCH_MODAL_TITLE" = "Signal ریسرچ";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "دوبارہ کوشش کریں";
@@ -3881,13 +3881,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "بہر حال بھیجیں ";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "مندرجہ ذیل لوگوں نے انسٹال یا ان میں تبدیلیاں کی ہیں۔ رازداری کو یقینی بنانے کے لیئے ان کے ساتھ اپنے حفاظتی نمبر کی تصدیق کریں۔";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "حفاظت نمبر میں تبدیلیاں";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "دیکھیں";
@@ -4220,10 +4220,10 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN کو غیر فعال کریں";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN کو فعال کریں";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signal پن";
@@ -4334,7 +4334,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ہر چیز حذف کریں";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Signal کے لئے عطیہ کریں";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "مدد کریں";
@@ -4361,7 +4361,7 @@
 "SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "اپنے بھیجے ہوئے پیغامات کیلئے براہ راست ویب سائٹس سے لنک پیش نظارہ بازیافت کریں۔";
 
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Messaging";
@@ -4649,7 +4649,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "ہم سے رابطہ کریں";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "کیا ہو رہا ہے ہمیں بتائیں";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
@@ -4658,10 +4658,10 @@
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
+"SUPPORT_EMOJI_PROMPT" = "اپ کیسا محسوس کر رہے ہیں؟ (اختیاری)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Have you read our FAQ yet?";
+"SUPPORT_FAQ_PROMPT" = "کیا آپ نے ابھی تک ہمارے عمومی سوالنامہ پڑھے ہیں؟";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
@@ -4676,7 +4676,7 @@
 "SWITCH_ON" = "چلائیں";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "تصدیق کریں";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "یہ پیغام حذف کردیا گیا تھا۔";
@@ -4853,13 +4853,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs Signal کے ساتھ ذخیرہ شدہ معلومات کو خفیہ شدہ رکھتا ہے لہذا صرف آپ ہی اس تک رسائی حاصل کرسکتے ہیں۔ جب آپ دوبارہ انسٹال کریں گے تو آپ کا پروفائل ، ترتیبات اور رابطے بحال ہوں گے۔ ایپ کو کھولنے کے لیئے آپ کو اپنے PIN کی ضرورت نہیں ہوگی۔";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "پن ز متعارف ہو رہے ہیں";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN کو غیر فعال کریں";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal کے لئے جلد ہی iOS 11 یا بعد میں کی ضرورت ہوگی۔ براہ کرم ترتیبات ایپ >> عمومی >> سافٹ ویئر اپ ڈیٹ میں اپ گریڈ کریں۔";
@@ -4961,7 +4961,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop سیٹ اپ مکمل ہو گیا۔";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "آپ نے یہ پیغام حذف کردیا۔";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ نے نظروں سے اوجھل پیغامات غیر فعال کیے ہیں۔";

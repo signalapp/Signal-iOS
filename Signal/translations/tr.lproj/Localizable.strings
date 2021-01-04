@@ -419,7 +419,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Hata";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ engeli kaldırıldı.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ kişisinin engeli kaldırıldı.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bu grubun üyeleri artık sizi gruba tekrar ekleyebilir.";
@@ -2237,7 +2237,7 @@
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 üye yeni gruba yeniden eklenemedi. Şimdi eklemek ister misiniz?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ üyeleri Yeni Gruba yeniden eklenemedi. Şimdi eklemek ister misin?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Eski Grup";
@@ -2246,10 +2246,10 @@
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Bu gruba tekrar katılmak için bir daveti kabul etmeniz gerekecek ve kabul edene kadar grup mesajlarını almayacaksınız.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Grubu yükselt";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@Bahsedilmeler ve yöneticiler gibi yeni özelliklere erişmek için bu grubu yükseltin.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Yeni Gruplar nedir?";
@@ -2261,34 +2261,34 @@
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Yeni Gruplar @bahsetmeler ve grup yöneticileri gibi özellikleri içeriyor ve gelecekte daha fazla özellik destekleyecektir.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Yeni Gruplar";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Üye Ekle";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Üye Ekle?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Üye Ekle?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Üye Ekle";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Bu üye, grup yükseltildiğinde Yeni Gruba otomatik olarak eklenemedi:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Bu üyeler, grup yükseltildiğinde Yeni Gruba otomatik olarak eklenemedi:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Yükseltme öncesi tüm ileti geçmişi ve içerik saklandı.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Bu üye gruptan çıkarıldı ve grup yükseltilene kadar kadar gruba yeniden katılamayacak:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Bu üyeler gruptan çıkarıldı ve grup yükseltilene kadar kadar gruba yeniden katılamayacaklar:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Bu üye gruba katılmak için daveti kabul etmelidir, bu daveti kabul edene kadar grup iletilerini almayacaktır:";
@@ -2306,22 +2306,22 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Yeni Gruba Yükselt";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Bu Grubu yükseltin";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Bu grup şu anda Yeni Grup olarak yükseltilemez.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "İnternete bağlı olmadığınız için bu grup Yeni Gruba yükseltilemez. Daha sonra tekrar deneyin.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Yükseltme Tamamlanamadı";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Yeni Gruba Yükseltildi.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "bu grubu yükseltin";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Ayrılmadan önce, bu grubun yeni yöneticisini seçin.";
@@ -2333,13 +2333,13 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Yeni yönetici seç";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal grupları en iyi %@ veya daha az üyeyle çalışır. Daha fazla üye eklenmesi iletilerin alımı ve gönderiminde gecikmelere yol açabilir.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Önerilen üye sınırına ulaşıldı.";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Yine de üye eklensin mi?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "İsteği Görüntüle";
@@ -2936,7 +2936,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Yeni grup oluşturulamadı. İnternet bağlantınızı kontrol edin ve tekrar deneyin.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Yeni Grupları desteklemiyor";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Bir grup adı gereklidir.";
@@ -3869,7 +3869,7 @@
 "RETRY_BUTTON_TEXT" = "Tekrar dene";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Geri Dön";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Yine de Gruba Ekle";
@@ -4577,7 +4577,7 @@
 "SOUNDS_NONE" = "Hiçbiri";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Mevcut gruplar bu özellikleri önümüzdeki haftalarda otomatik olarak alacak.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Yeni Grup";
