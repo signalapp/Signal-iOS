@@ -540,7 +540,6 @@ static NSTimeInterval launchStartedAt;
                  TSThreadOutgoingMessageDatabaseViewExtensionName,
                  TSUnreadDatabaseViewExtensionName,
                  TSUnseenDatabaseViewExtensionName,
-                 TSThreadSpecialMessagesDatabaseViewExtensionName,
              ]) {
             YapDatabaseViewTransaction *databaseView = [transaction ext:viewName];
             OWSAssertDebug([databaseView isKindOfClass:[YapDatabaseViewTransaction class]]);
