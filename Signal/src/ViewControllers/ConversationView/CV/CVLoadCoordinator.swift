@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -426,7 +426,7 @@ public class CVLoadCoordinator: NSObject {
             owsFailDebug("isLoading not set.")
             return
         }
-        let lastRenderState = renderState
+        let prevRenderState = renderState
 
         if loadRequest.loadType == .loadOlder {
             lastLoadOlderDate = Date()
@@ -441,7 +441,7 @@ public class CVLoadCoordinator: NSObject {
         let loader = CVLoader(threadUniqueId: threadUniqueId,
                               loadRequest: loadRequest,
                               viewStateSnapshot: viewStateSnapshot,
-                              lastRenderState: lastRenderState,
+                              prevRenderState: prevRenderState,
                               messageMapping: messageMapping)
 
         firstly { () -> Promise<CVUpdate> in

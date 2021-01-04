@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -592,6 +592,11 @@ class ThreadMapping: NSObject {
             logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
             logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
             logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
+            logThreadIds(insertedThreadIds, name: "insertedThreadIds")
+            logThreadIds(deletedThreadIds, name: "deletedThreadIds")
+            logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
+            logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
+            logThreadIds(movedThreadIds, name: "movedThreadIds")
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
@@ -604,6 +609,11 @@ class ThreadMapping: NSObject {
             logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
             logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
             logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
+            logThreadIds(insertedThreadIds, name: "insertedThreadIds")
+            logThreadIds(deletedThreadIds, name: "deletedThreadIds")
+            logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
+            logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
+            logThreadIds(movedThreadIds, name: "movedThreadIds")
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 

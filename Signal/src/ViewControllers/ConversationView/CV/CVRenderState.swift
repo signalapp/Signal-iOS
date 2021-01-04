@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,9 +14,9 @@ class CVRenderState {
 
     let threadViewModel: ThreadViewModel
 
-    let lastThreadViewModel: ThreadViewModel?
+    let prevThreadViewModel: ThreadViewModel?
     var isEmptyInitialState: Bool {
-        lastThreadViewModel == nil
+        prevThreadViewModel == nil
     }
     var isFirstLoad: Bool {
         if let loadType = self.loadType,
@@ -50,7 +50,7 @@ class CVRenderState {
     }
 
     init(threadViewModel: ThreadViewModel,
-         lastThreadViewModel: ThreadViewModel?,
+         prevThreadViewModel: ThreadViewModel?,
          items: [CVRenderItem],
          canLoadOlderItems: Bool,
          canLoadNewerItems: Bool,
@@ -58,7 +58,7 @@ class CVRenderState {
          loadType: CVLoadType?) {
 
         self.threadViewModel = threadViewModel
-        self.lastThreadViewModel = lastThreadViewModel
+        self.prevThreadViewModel = prevThreadViewModel
         self.items = items
         self.canLoadOlderItems = canLoadOlderItems
         self.canLoadNewerItems = canLoadNewerItems
@@ -71,7 +71,7 @@ class CVRenderState {
     static func defaultRenderState(threadViewModel: ThreadViewModel,
                                    viewStateSnapshot: CVViewStateSnapshot) -> CVRenderState {
         CVRenderState(threadViewModel: threadViewModel,
-                      lastThreadViewModel: nil,
+                      prevThreadViewModel: nil,
                       items: [],
                       canLoadOlderItems: false,
                       canLoadNewerItems: false,

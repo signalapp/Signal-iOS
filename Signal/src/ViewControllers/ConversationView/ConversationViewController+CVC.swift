@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -127,7 +127,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // Capture old group model before we update threadViewModel.
         // This will be nil for non-group threads.
-        let oldGroupModel = renderState.lastThreadViewModel?.threadRecord.groupModelIfGroupThread
+        let oldGroupModel = renderState.prevThreadViewModel?.threadRecord.groupModelIfGroupThread
 
         benchSteps.step("1")
 
@@ -149,7 +149,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             updateNavigationTitle()
         }
 
-        Logger.verbose("Landing load: \(update.type.debugName), load: \(update.loadType), isFirstLoad: \(isFirstLoad), renderItems: \(update.lastRenderState.items.count) -> \(renderItems.count), scrollAction: \(scrollAction.description)")
+        Logger.verbose("Landing load: \(update.type.debugName), load: \(update.loadType), isFirstLoad: \(isFirstLoad), renderItems: \(update.prevRenderState.items.count) -> \(renderItems.count), scrollAction: \(scrollAction.description)")
 
         benchSteps.step("2")
 
@@ -584,7 +584,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             if !finished {
                 Logger.warn("performBatchUpdates did not finish")
                 Logger.warn("Layout: \(self.layout.debugDescription)")
-                Logger.warn("lastRenderState: \(update.lastRenderState.debugDescription)")
+                Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
                 Logger.warn("renderState: \(update.renderState.debugDescription)")
 
                 // If animations were interrupted, reset to get back to a known good state.

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 extension ConversationViewController {
@@ -15,7 +15,6 @@ extension ConversationViewController {
 
     var renderState: CVRenderState {
         AssertIsOnMainThread()
-        owsAssertDebug(loadCoordinator != nil)
 
         return loadCoordinator.renderState
     }
