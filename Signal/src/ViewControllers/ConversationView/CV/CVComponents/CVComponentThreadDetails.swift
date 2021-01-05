@@ -268,6 +268,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             transaction: SDSAnyReadTransaction,
                                             avatarBuilder: CVAvatarBuilder) -> CVComponentState.ThreadDetails {
 
+        // If we need to reload this cell to reflect changes to any of the
+        // state captured here, we need update the didThreadDetailsChange().        
+
         let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameter: avatarDiameter)
 
         let titleText = groupThread.groupNameOrDefault

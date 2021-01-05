@@ -151,6 +151,10 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(localProfileDidChange),
                                                name: .localProfileDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(otherUsersProfileDidChange(notification:)),
+                                               name: .otherUsersProfileDidChange,
+                                               object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
@@ -196,6 +200,25 @@ public class CVLoadCoordinator: NSObject {
         //        self.conversationProfileState = nil;
         enqueueReload(canReuseInteractionModels: true,
                       canReuseComponentStates: false)
+    }
+
+    @objc
+    func otherUsersProfileDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
+        if let contactThread = thread as? TSContactThread {
+            guard let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+                  address.isValid else {
+                owsFailDebug("Missing or invalid address.")
+                return
+            }
+            if contactThread.contactAddress == address {
+                enqueueReloadWithoutCaches()
+            }
+        } else {
+            // TODO: In groups, we could reload if any group member's profile changed.
+            //       Ideally we would only reload cells that use that member's profile state.            
+        }
     }
 
     @objc
