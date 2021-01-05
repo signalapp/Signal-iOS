@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -551,7 +551,9 @@ private extension GroupMigrationActionSheet {
                                                         firstly {
                                                             self.reAddDroppedMembersPromise(members: members)
                                                         }.done { (_) in
-                                                            modalActivityIndicator.dismiss {}
+                                                            modalActivityIndicator.dismiss {
+                                                                self.dismissActionSheet()
+                                                            }
                                                         }.catch { error in
                                                             owsFailDebug("Error: \(error)")
 
@@ -602,6 +604,12 @@ private extension GroupMigrationActionSheet {
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
+    }
+
+    private func dismissActionSheet() {
+        AssertIsOnMainThread()
+
+        actionSheetController?.dismiss(animated: true)
     }
 
     private func showUpgradeFailedAlert(error: Error) {
