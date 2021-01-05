@@ -680,6 +680,7 @@ NS_ASSUME_NONNULL_BEGIN
                              NSURL *destURL = [groupDir URLByAppendingPathComponent:@"dbPayload.txt"];
                              [payloadData writeToURL:destURL atomically:YES];
                          }];
+}
 
 + (void)logStickerSuggestions
 {
