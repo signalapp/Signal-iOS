@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -414,10 +414,10 @@ struct CVItemModelBuilder: CVItemBuilding {
     }
     private var componentStateCache = ComponentStateCache()
 
-    mutating func reuseComponentStates(lastRenderState: CVRenderState,
+    mutating func reuseComponentStates(prevRenderState: CVRenderState,
                                        updatedInteractionIds: Set<String>) {
 
-        for renderItem in lastRenderState.items {
+        for renderItem in prevRenderState.items {
             guard !updatedInteractionIds.contains(renderItem.interactionUniqueId) else {
                 continue
             }

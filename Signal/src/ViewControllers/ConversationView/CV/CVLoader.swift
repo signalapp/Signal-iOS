@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ public class CVLoader: NSObject {
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot
-    private let lastRenderState: CVRenderState
+    private let prevRenderState: CVRenderState
     private let messageMapping: CVMessageMapping
 
     private let benchSteps = BenchSteps(title: "CVLoader")
@@ -28,12 +28,12 @@ public class CVLoader: NSObject {
     required init(threadUniqueId: String,
                   loadRequest: CVLoadRequest,
                   viewStateSnapshot: CVViewStateSnapshot,
-                  lastRenderState: CVRenderState,
+                  prevRenderState: CVRenderState,
                   messageMapping: CVMessageMapping) {
         self.threadUniqueId = threadUniqueId
         self.loadRequest = loadRequest
         self.viewStateSnapshot = viewStateSnapshot
-        self.lastRenderState = lastRenderState
+        self.prevRenderState = prevRenderState
         self.messageMapping = messageMapping
     }
 
@@ -42,7 +42,7 @@ public class CVLoader: NSObject {
         let threadUniqueId = self.threadUniqueId
         let loadRequest = self.loadRequest
         let viewStateSnapshot = self.viewStateSnapshot
-        let lastRenderState = self.lastRenderState
+        let prevRenderState = self.prevRenderState
         let messageMapping = self.messageMapping
 
         Logger.verbose("LoadType: \(loadRequest.loadType)")
@@ -61,7 +61,7 @@ public class CVLoader: NSObject {
                 let loadThreadViewModel = { () -> ThreadViewModel in
                     guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
                         // If thread has been deleted from the database, use last known model.
-                        return lastRenderState.threadViewModel
+                        return prevRenderState.threadViewModel
                     }
                     return ThreadViewModel(thread: thread, transaction: transaction)
                 }
@@ -71,7 +71,7 @@ public class CVLoader: NSObject {
                                                 threadViewModel: threadViewModel,
                                                 viewStateSnapshot: viewStateSnapshot,
                                                 messageMapping: messageMapping,
-                                                lastRenderState: lastRenderState,
+                                                prevRenderState: prevRenderState,
                                                 transaction: transaction)
 
                 self.benchSteps.step("threadViewModel")
@@ -82,11 +82,34 @@ public class CVLoader: NSObject {
 
                 // Don't cache in the reset() case.
                 let canReuseInteractions = loadRequest.canReuseInteractionModels && !loadRequest.didReset
-                let updatedInteractionIds = loadRequest.updatedInteractionIds
+                var updatedInteractionIds = loadRequest.updatedInteractionIds
                 let deletedInteractionIds: Set<String>? = loadRequest.didReset ? loadRequest.deletedInteractionIds : nil
+
+                let didThreadDetailsChange: Bool = {
+                    let prevThreadViewModel = prevRenderState.threadViewModel
+                    guard let groupModel = threadViewModel.threadRecord.groupModelIfGroupThread else {
+                        return false
+                    }
+                    guard let prevGroupModel = prevThreadViewModel.threadRecord.groupModelIfGroupThread else {
+                        owsFailDebug("Missing groupModel.")
+                        return false
+                    }
+                    return (groupModel.groupName != prevGroupModel.groupName ||
+                                groupModel.groupAvatarData != prevGroupModel.groupAvatarData ||
+                                groupModel.groupMembership.fullMembers.count != prevGroupModel.groupMembership.fullMembers.count)
+                }()
+
+                // If the thread details did change, reload the thread details
+                // item if one is in the load window.
+                if didThreadDetailsChange,
+                   let prevFirstRenderItem = prevRenderState.items.first,
+                   prevFirstRenderItem.interactionType == .threadDetails {
+                    updatedInteractionIds.insert(prevFirstRenderItem.interactionUniqueId)
+                }
+
                 var reusableInteractions = [String: TSInteraction]()
                 if canReuseInteractions {
-                    for renderItem in lastRenderState.items {
+                    for renderItem in prevRenderState.items {
                         let interaction = renderItem.interaction
                         let interactionId = interaction.uniqueId
                         if !updatedInteractionIds.contains(interactionId) {
@@ -140,7 +163,8 @@ public class CVLoader: NSObject {
 
                 self.benchSteps.step("threadInteractionCount")
 
-                let items: [CVRenderItem] = self.buildRenderItems(loadContext: loadContext)
+                let items: [CVRenderItem] = self.buildRenderItems(loadContext: loadContext,
+                                                                  updatedInteractionIds: updatedInteractionIds)
 
                 self.benchSteps.step("buildRenderItems")
 
@@ -152,7 +176,7 @@ public class CVLoader: NSObject {
             let items = loadState.items
             let threadViewModel = loadState.threadViewModel
             let renderState = CVRenderState(threadViewModel: threadViewModel,
-                                            lastThreadViewModel: lastRenderState.threadViewModel,
+                                            prevThreadViewModel: prevRenderState.threadViewModel,
                                             items: items,
                                             canLoadOlderItems: messageMapping.canLoadOlder,
                                             canLoadNewerItems: messageMapping.canLoadNewer,
@@ -163,7 +187,7 @@ public class CVLoader: NSObject {
 
             let threadInteractionCount = loadState.threadInteractionCount
             let update = CVUpdate.build(renderState: renderState,
-                                        lastRenderState: lastRenderState,
+                                        prevRenderState: prevRenderState,
                                         loadRequest: loadRequest,
                                         threadInteractionCount: threadInteractionCount)
 
@@ -177,13 +201,14 @@ public class CVLoader: NSObject {
 
     // MARK: -
 
-    private func buildRenderItems(loadContext: CVLoadContext) -> [CVRenderItem] {
+    private func buildRenderItems(loadContext: CVLoadContext,
+                                  updatedInteractionIds: Set<String>) -> [CVRenderItem] {
 
         let conversationStyle = loadContext.conversationStyle
 
         // Don't cache in the reset() case.
         let canReuseState = (loadRequest.canReuseComponentStates &&
-                                conversationStyle.isEqualForCellRendering(lastRenderState.conversationStyle))
+                                conversationStyle.isEqualForCellRendering(prevRenderState.conversationStyle))
 
         var itemModelBuilder = CVItemModelBuilder(loadContext: loadContext)
 
@@ -194,8 +219,8 @@ public class CVLoader: NSObject {
         // * We're do a "reset" reload where we deliberately reload everything, e.g.
         //   in response to an error or a cross-process write, etc.
         if canReuseState {
-            itemModelBuilder.reuseComponentStates(lastRenderState: lastRenderState,
-                                                  updatedInteractionIds: loadRequest.updatedInteractionIds)
+            itemModelBuilder.reuseComponentStates(prevRenderState: prevRenderState,
+                                                  updatedInteractionIds: updatedInteractionIds)
         }
         let itemModels: [CVItemModel] = itemModelBuilder.buildItems()
 
