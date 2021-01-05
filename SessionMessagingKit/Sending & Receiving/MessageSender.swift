@@ -175,7 +175,14 @@ public final class MessageSender : NSObject {
         do {
             switch destination {
             case .contact(let publicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
-            case .closedGroup(let groupPublicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: groupPublicKey)
+            case .closedGroup(let groupPublicKey):
+                
+                /*
+                ciphertext = try encryptWithSessionProtocol(plaintext, for: groupPublicKey)
+                 */
+            
+                guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { throw Error.noKeyPair }
+                ciphertext = try encryptWithSessionProtocol(plaintext, for: encryptionKeyPair.hexEncodedPublicKey)
             case .openGroup(_, _): preconditionFailure()
             }
         } catch {

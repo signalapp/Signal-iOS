@@ -72,17 +72,17 @@ public enum MessageReceiver {
             case .closedGroupCiphertext:
                 guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }
                 do {
-                    var keyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
-                    guard !keyPairs.isEmpty else { throw Error.noGroupKeyPair }
+                    var encryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
+                    guard !encryptionKeyPairs.isEmpty else { throw Error.noGroupKeyPair }
                     // Loop through all known group key pairs in reverse order (i.e. try the latest key pair first (which'll more than
                     // likely be the one we want) but try older ones in case that didn't work)
-                    var keyPair = keyPairs.removeLast()
+                    var encryptionKeyPair = encryptionKeyPairs.removeLast()
                     func decrypt() throws {
                         do {
-                            (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: keyPair)
+                            (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: encryptionKeyPair)
                         } catch {
-                            if !keyPairs.isEmpty {
-                                keyPair = keyPairs.removeLast()
+                            if !encryptionKeyPairs.isEmpty {
+                                encryptionKeyPair = encryptionKeyPairs.removeLast()
                                 try decrypt()
                             } else {
                                 throw error
