@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +15,7 @@ struct CVLoadContext: CVItemBuildingContext {
     let threadViewModel: ThreadViewModel
     let viewStateSnapshot: CVViewStateSnapshot
     let messageMapping: CVMessageMapping
-    let lastRenderState: CVRenderState
+    let prevRenderState: CVRenderState
     let transaction: SDSAnyReadTransaction
     let avatarBuilder: CVAvatarBuilder
 
@@ -23,14 +23,14 @@ struct CVLoadContext: CVItemBuildingContext {
          threadViewModel: ThreadViewModel,
          viewStateSnapshot: CVViewStateSnapshot,
          messageMapping: CVMessageMapping,
-         lastRenderState: CVRenderState,
+         prevRenderState: CVRenderState,
          transaction: SDSAnyReadTransaction) {
 
         self.loadRequest = loadRequest
         self.threadViewModel = threadViewModel
         self.viewStateSnapshot = viewStateSnapshot
         self.messageMapping = messageMapping
-        self.lastRenderState = lastRenderState
+        self.prevRenderState = prevRenderState
         self.transaction = transaction
         self.avatarBuilder = CVAvatarBuilder(transaction: transaction)
     }

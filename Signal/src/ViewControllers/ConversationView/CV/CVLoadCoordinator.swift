@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -151,6 +151,10 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(localProfileDidChange),
                                                name: .localProfileDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(otherUsersProfileDidChange(notification:)),
+                                               name: .otherUsersProfileDidChange,
+                                               object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
@@ -196,6 +200,25 @@ public class CVLoadCoordinator: NSObject {
         //        self.conversationProfileState = nil;
         enqueueReload(canReuseInteractionModels: true,
                       canReuseComponentStates: false)
+    }
+
+    @objc
+    func otherUsersProfileDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
+        if let contactThread = thread as? TSContactThread {
+            guard let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+                  address.isValid else {
+                owsFailDebug("Missing or invalid address.")
+                return
+            }
+            if contactThread.contactAddress == address {
+                enqueueReloadWithoutCaches()
+            }
+        } else {
+            // TODO: In groups, we could reload if any group member's profile changed.
+            //       Ideally we would only reload cells that use that member's profile state.            
+        }
     }
 
     @objc
@@ -426,7 +449,7 @@ public class CVLoadCoordinator: NSObject {
             owsFailDebug("isLoading not set.")
             return
         }
-        let lastRenderState = renderState
+        let prevRenderState = renderState
 
         if loadRequest.loadType == .loadOlder {
             lastLoadOlderDate = Date()
@@ -441,7 +464,7 @@ public class CVLoadCoordinator: NSObject {
         let loader = CVLoader(threadUniqueId: threadUniqueId,
                               loadRequest: loadRequest,
                               viewStateSnapshot: viewStateSnapshot,
-                              lastRenderState: lastRenderState,
+                              prevRenderState: prevRenderState,
                               messageMapping: messageMapping)
 
         firstly { () -> Promise<CVUpdate> in
@@ -624,11 +647,7 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
     var allIndexPaths: [IndexPath] {
         AssertIsOnMainThread()
 
-        var indexPaths = [IndexPath]()
-        for row in 0..<renderItems.count {
-            indexPaths.append(IndexPath(row: row, section: Self.messageSection))
-        }
-        return indexPaths
+        return renderState.allIndexPaths
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
@@ -715,21 +734,11 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
     }
 
     public var indexPathOfUnreadIndicator: IndexPath? {
-        for (index, item) in renderItems.enumerated() {
-            if item.interactionType == .unreadIndicator {
-                return IndexPath(row: index, section: Self.messageSection)
-            }
-        }
-        return nil
+        renderState.indexPathOfUnreadIndicator
     }
 
     public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
-        for (index, item) in renderItems.enumerated() {
-            if item.interaction.uniqueId == interactionUniqueId {
-                return IndexPath(row: index, section: Self.messageSection)
-            }
-        }
-        return nil
+        renderState.indexPath(forInteractionUniqueId: interactionUniqueId)
     }
 }
 

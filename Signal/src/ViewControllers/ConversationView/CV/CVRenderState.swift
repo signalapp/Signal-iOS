@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,9 +14,9 @@ class CVRenderState {
 
     let threadViewModel: ThreadViewModel
 
-    let lastThreadViewModel: ThreadViewModel?
+    let prevThreadViewModel: ThreadViewModel?
     var isEmptyInitialState: Bool {
-        lastThreadViewModel == nil
+        prevThreadViewModel == nil
     }
     var isFirstLoad: Bool {
         if let loadType = self.loadType,
@@ -49,8 +49,14 @@ class CVRenderState {
         threadViewModel.disappearingMessagesConfiguration
     }
 
+    public let indexPathOfUnreadIndicator: IndexPath?
+
+    private let interactionIdToIndexPathMap: [String: IndexPath]
+
+    public let allIndexPaths: [IndexPath]
+
     init(threadViewModel: ThreadViewModel,
-         lastThreadViewModel: ThreadViewModel?,
+         prevThreadViewModel: ThreadViewModel?,
          items: [CVRenderItem],
          canLoadOlderItems: Bool,
          canLoadNewerItems: Bool,
@@ -58,7 +64,7 @@ class CVRenderState {
          loadType: CVLoadType?) {
 
         self.threadViewModel = threadViewModel
-        self.lastThreadViewModel = lastThreadViewModel
+        self.prevThreadViewModel = prevThreadViewModel
         self.items = items
         self.canLoadOlderItems = canLoadOlderItems
         self.canLoadNewerItems = canLoadNewerItems
@@ -66,17 +72,38 @@ class CVRenderState {
         self.loadType = loadType
 
         self.renderStateId = Self.idCounter.increment()
+
+        let messageSection = CVLoadCoordinator.messageSection
+        var indexPathOfUnreadIndicator: IndexPath?
+        var interactionIdToIndexPathMap = [String: IndexPath]()
+        var allIndexPaths = [IndexPath]()
+        for (index, item) in items.enumerated() {
+            let indexPath = IndexPath(row: index, section: messageSection)
+            interactionIdToIndexPathMap[item.interaction.uniqueId] = indexPath
+            allIndexPaths.append(indexPath)
+
+            if item.interactionType == .unreadIndicator {
+                indexPathOfUnreadIndicator = indexPath
+            }
+        }
+        self.indexPathOfUnreadIndicator = indexPathOfUnreadIndicator
+        self.interactionIdToIndexPathMap = interactionIdToIndexPathMap
+        self.allIndexPaths = allIndexPaths
     }
 
     static func defaultRenderState(threadViewModel: ThreadViewModel,
                                    viewStateSnapshot: CVViewStateSnapshot) -> CVRenderState {
         CVRenderState(threadViewModel: threadViewModel,
-                      lastThreadViewModel: nil,
+                      prevThreadViewModel: nil,
                       items: [],
                       canLoadOlderItems: false,
                       canLoadNewerItems: false,
                       viewStateSnapshot: viewStateSnapshot,
                       loadType: nil)
+    }
+
+    public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
+        interactionIdToIndexPathMap[interactionUniqueId]
     }
 
     public var debugDescription: String {

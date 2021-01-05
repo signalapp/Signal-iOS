@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1104,7 +1104,7 @@ fileprivate extension GroupsV2Migration {
             }
             guard groupThread.groupModel.groupsVersion == .V1 else {
                 // This can happen due to races, but should be very rare.
-                throw OWSAssertionError("Unexpected groupsVersion.")
+                throw OWSGenericError("Unexpected groupsVersion.")
             }
             let disappearingMessagesConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
             let migrationMetadata = try Self.calculateMigrationMetadata(for: groupThread.groupModel)

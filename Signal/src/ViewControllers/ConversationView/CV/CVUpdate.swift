@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ struct CVUpdate {
     let type: CVUpdateType
 
     let renderState: CVRenderState
-    let lastRenderState: CVRenderState
+    let prevRenderState: CVRenderState
 
     let loadRequest: CVLoadRequest
     var loadType: CVLoadType { loadRequest.loadType }
@@ -76,19 +76,19 @@ extension CVUpdate {
     }
 
     static func build(renderState: CVRenderState,
-                      lastRenderState: CVRenderState,
+                      prevRenderState: CVRenderState,
                       loadRequest: CVLoadRequest,
                       threadInteractionCount: UInt) -> CVUpdate {
 
         func buildUpdate(type: CVUpdateType) -> CVUpdate {
             CVUpdate(type: type,
                      renderState: renderState,
-                     lastRenderState: lastRenderState,
+                     prevRenderState: prevRenderState,
                      loadRequest: loadRequest)
         }
 
         let loadType = loadRequest.loadType
-        let oldStyle = lastRenderState.conversationStyle
+        let oldStyle = prevRenderState.conversationStyle
         let newStyle = renderState.conversationStyle
         let didStyleChange = !newStyle.isEqualForCellRendering(oldStyle)
 
@@ -98,7 +98,7 @@ extension CVUpdate {
         }
 
         let newItems = renderState.items
-        let oldItems = lastRenderState.items
+        let oldItems = prevRenderState.items
 
         func buildItemMap(items: [CVRenderItem]) -> [ItemId: CVRenderItem] {
             var itemMap = [ItemId: CVRenderItem]()

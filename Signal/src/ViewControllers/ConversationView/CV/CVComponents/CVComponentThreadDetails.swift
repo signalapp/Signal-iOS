@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -268,6 +268,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             transaction: SDSAnyReadTransaction,
                                             avatarBuilder: CVAvatarBuilder) -> CVComponentState.ThreadDetails {
 
+        // If we need to reload this cell to reflect changes to any of the
+        // state captured here, we need update the didThreadDetailsChange().        
+
         let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameter: avatarDiameter)
 
         let titleText = groupThread.groupNameOrDefault
@@ -279,7 +282,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 return nil
             }
 
-            let memberCount = groupThread.groupModel.groupMembers.count
+            let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
             return GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         }()
 

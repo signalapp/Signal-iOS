@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -287,7 +287,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.beta))
 
     @objc
-    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(false)
+    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(build.includes(.qa))
 
     @objc
     public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false)
