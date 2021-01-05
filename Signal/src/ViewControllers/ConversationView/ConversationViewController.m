@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -433,7 +433,6 @@ typedef enum : NSUInteger {
     [self createContents];
     [self createConversationScrollButtons];
     [self createHeaderViews];
-    [self updateLeftBarItem];
     [self addNotificationListeners];
     [self.loadCoordinator viewDidLoad];
 
@@ -1161,21 +1160,6 @@ typedef enum : NSUInteger {
 - (CGFloat)unreadCountViewDiameter
 {
     return 16;
-}
-
-- (void)updateLeftBarItem
-{
-    // No left button when the view is not collapsed, there's nowhere to go.
-    if (!self.conversationSplitViewController.isCollapsed) {
-        self.navigationItem.leftBarButtonItem = nil;
-        return;
-    }
-
-    // Otherwise, show the back button.
-
-    // We use the default back button from conversation list, which animates nicely with interactive transitions
-    // like the interactive pop gesture and the "slide left" for info.
-    self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification

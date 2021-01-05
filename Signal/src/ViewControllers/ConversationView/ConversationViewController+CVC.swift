@@ -213,7 +213,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         self.scrollContinuity = .bottom
         self.updateLastKnownDistanceFromBottom()
         self.updateInputToolbarLayout()
-        self.updateLeftBarItem()
         self.ensureSelectionViewState()
         self.showMessageRequestDialogIfRequired()
         self.configureScrollDownButtons()
