@@ -165,6 +165,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return SSKEnvironment.shared.messageSender;
 }
 
+- (MessageProcessing *)messageProcessing
+{
+    return SSKEnvironment.shared.messageProcessing;
+}
+
 #pragma mark - Blocking
 
 - (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
@@ -178,6 +183,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 - (void)messageDecryptJobQueueDidFlush
 {
+    // We don't want to send additional resets until we
+    // have received the "empty" response from the WebSocket
+    // or finished at least one REST fetch.
+    if (!self.messageProcessing.hasCompletedInitialFetch) {
+        return;
+    }
+
     // We clear all recently reset sender ids any time the
     // decryption queue has drained, so that any new messages
     // that fail to decrypt will reset the session again.

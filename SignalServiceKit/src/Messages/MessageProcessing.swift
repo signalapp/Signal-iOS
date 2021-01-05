@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -487,17 +487,8 @@ public class MessageProcessing: NSObject {
         }
     }
 
-    private var isMessageFetchingComplete: Bool {
-        guard tsAccountManager.isRegisteredAndReady else {
-            return false
-        }
-        // In the share extension, don't block on latest
-        // groups v2 state when sending messages.
-        guard CurrentAppContext().shouldProcessIncomingMessages else {
-            owsFailDebug("Should not process incoming messages.")
-            return false
-        }
-
+    @objc
+    public var hasCompletedInitialFetch: Bool {
         if MessageFetcherJob.shouldUseWebSocket {
             let isWebsocketDrained = (self.socketManager.socketState() == .open &&
                 self.socketManager.hasEmptiedInitialQueue())
@@ -515,6 +506,22 @@ public class MessageProcessing: NSObject {
                 return false
             }
         }
+
+        return true
+    }
+
+    private var isMessageFetchingComplete: Bool {
+        guard tsAccountManager.isRegisteredAndReady else {
+            return false
+        }
+        // In the share extension, don't block on latest
+        // groups v2 state when sending messages.
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
+            owsFailDebug("Should not process incoming messages.")
+            return false
+        }
+
+        guard hasCompletedInitialFetch else { return false }
 
         guard messageFetcherJob.areAllFetchCyclesComplete else {
             if DebugFlags.isMessageProcessingVerbose {
