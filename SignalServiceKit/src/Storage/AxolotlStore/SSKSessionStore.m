@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKSessionStore.h"
@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
+@end
+
+@interface SSKSessionStore (ImplementedInSwift)
+- (NSDictionary<NSNumber *, SessionRecord *> *)archiveSessions:(NSDictionary<NSNumber *, SessionRecord *> *)sessions;
 @end
 
 #pragma mark -
@@ -310,41 +314,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.keyValueStore removeValueForKey:accountId transaction:transaction];
 }
 
-- (void)archiveSessionForAddress:(SignalServiceAddress *)address
-                        deviceId:(int)deviceId
-                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug(deviceId >= 0);
-
-    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
-    OWSAssertDebug(accountId.length > 0);
-
-    [self archiveSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
-}
-
-- (void)archiveSessionForAccountId:(NSString *)accountId
-                          deviceId:(int)deviceId
-                       transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(accountId.length > 0);
-
-    OWSLogInfo(@"Archiving session for contact: %@ device: %d", accountId, deviceId);
-
-    SessionRecord *sessionRecord = [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
-    [sessionRecord archiveCurrentState];
-    [self storeSessionForAccountId:accountId deviceId:deviceId session:sessionRecord transaction:transaction];
-}
-
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
-                     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
-{
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
-
-    [self archiveAllSessionsForAccountId:contactIdentifier transaction:transaction];
-}
-
 - (void)archiveAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -361,21 +330,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"archiving all sessions for contact: %@", accountId);
 
-    __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords =
-        [self.keyValueStore getObjectForKey:accountId transaction:transaction];
-
-    for (id deviceId in sessionRecords) {
-        id object = sessionRecords[deviceId];
-        if (![object isKindOfClass:[SessionRecord class]]) {
-            OWSFailDebug(@"Unexpected object in session dict: %@", [object class]);
-            continue;
-        }
-
-        SessionRecord *sessionRecord = (SessionRecord *)object;
-        [sessionRecord archiveCurrentState];
-    }
-
-    [self.keyValueStore setObject:sessionRecords key:accountId transaction:transaction];
+    NSDictionary<NSNumber *, SessionRecord *> *sessionRecords = [self.keyValueStore getObjectForKey:accountId
+                                                                                        transaction:transaction];
+    NSDictionary<NSNumber *, SessionRecord *> *result = [self archiveSessions:sessionRecords];
+    [self.keyValueStore setObject:result key:accountId transaction:transaction];
 }
 
 #pragma mark - debug

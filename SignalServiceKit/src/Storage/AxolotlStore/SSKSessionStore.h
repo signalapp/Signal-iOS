@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <AxolotlKit/SessionStore.h>
@@ -41,10 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)deleteAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)archiveSessionForAddress:(SignalServiceAddress *)address
-                        deviceId:(int)deviceId
-                     transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (void)archiveAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)archiveAllSessionsForAccountId:(NSString *)accountId transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -83,10 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
                     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
-                     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 @end
