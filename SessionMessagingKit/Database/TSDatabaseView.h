@@ -63,8 +63,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 // Instances of OWSReadTracking for wasRead is NO.
 + (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
-
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 
 @end

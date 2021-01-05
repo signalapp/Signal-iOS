@@ -35,9 +35,6 @@ import SignalUtilitiesKit
     public var pushRegistrationManager: PushRegistrationManager
 
     @objc
-    public var sessionResetJobQueue: SessionResetJobQueue
-
-    @objc
     public var backup: OWSBackup
 
     private var _legacyNotificationActionHandler: LegacyNotificationActionHandler
@@ -71,7 +68,6 @@ import SignalUtilitiesKit
         self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
-        self.sessionResetJobQueue = SessionResetJobQueue()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
         if #available(iOS 10.0, *) {

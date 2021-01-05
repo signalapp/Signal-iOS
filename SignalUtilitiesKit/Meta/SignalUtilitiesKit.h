@@ -24,12 +24,8 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSOperation.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+PreKeyStore.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+SignedPreKeyStore.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/OWSSearchBar.h>
-#import <SignalUtilitiesKit/OWSSyncManagerProtocol.h>
 #import <SignalUtilitiesKit/OWSTextField.h>
 #import <SignalUtilitiesKit/OWSTextView.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
@@ -38,12 +34,10 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SelectRecipientViewController.h>
 #import <SignalUtilitiesKit/SharingThreadPickerViewController.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
-#import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/Theme.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SignalUtilitiesKit/TSConstants.h>
-#import <SignalUtilitiesKit/TSPreKeyManager.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>

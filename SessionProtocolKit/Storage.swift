@@ -1,3 +1,4 @@
+import Curve25519Kit
 
 public enum ClosedGroupRatchetCollectionType {
     case old, current

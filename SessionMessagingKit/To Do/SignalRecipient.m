@@ -27,11 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.profileManager;
 }
 
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
 - (TSAccountManager *)tsAccountManager
 {
     return SSKEnvironment.shared.tsAccountManager;

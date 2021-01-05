@@ -29,7 +29,6 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
-#import <SignalUtilitiesKit/TSPreKeyManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
 
@@ -70,13 +69,6 @@ static NSTimeInterval launchStartedAt;
 - (OWSReadReceiptManager *)readReceiptManager
 {
     return [OWSReadReceiptManager sharedManager];
-}
-
-- (id<OWSUDManager>)udManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.udManager);
-
-    return SSKEnvironment.shared.udManager;
 }
 
 - (OWSPrimaryStorage *)primaryStorage
@@ -377,9 +369,6 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    // Always check prekeys after app launches, and sometimes check on app activation.
-    [TSPreKeyManager checkPreKeysIfNecessary];
-
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         RTCInitializeSSL();
@@ -525,8 +514,6 @@ static NSTimeInterval launchStartedAt;
 
     [self ensureRootViewController];
 
-    [self.udManager setup];
-
     [self preheatDatabaseViews];
 
     [self.primaryStorage touchDbAsync];
@@ -553,7 +540,6 @@ static NSTimeInterval launchStartedAt;
                  TSThreadOutgoingMessageDatabaseViewExtensionName,
                  TSUnreadDatabaseViewExtensionName,
                  TSUnseenDatabaseViewExtensionName,
-                 TSThreadSpecialMessagesDatabaseViewExtensionName,
              ]) {
             YapDatabaseViewTransaction *databaseView = [transaction ext:viewName];
             OWSAssertDebug([databaseView isKindOfClass:[YapDatabaseViewTransaction class]]);

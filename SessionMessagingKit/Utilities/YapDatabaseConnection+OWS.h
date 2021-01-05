@@ -23,9 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)stringForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection;
-- (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
-- (nullable PreKeyBundle *)preKeyBundleForKey:(NSString *)key inCollection:(NSString *)collection;
-- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 
 - (NSUInteger)numberOfKeysInCollection:(NSString *)collection;
 

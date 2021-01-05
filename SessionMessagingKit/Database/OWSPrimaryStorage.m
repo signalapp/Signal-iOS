@@ -173,7 +173,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
 
     [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
     [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];

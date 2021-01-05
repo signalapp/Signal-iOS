@@ -16,7 +16,7 @@ public final class MessageSender : NSObject {
         case encryptionFailed
         // Closed groups
         case noThread
-        case noPrivateKey
+        case noKeyPair
         case invalidClosedGroupUpdate
 
         internal var isRetryable: Bool {
@@ -37,7 +37,7 @@ public final class MessageSender : NSObject {
             case .encryptionFailed: return "Couldn't encrypt message."
             // Closed groups
             case .noThread: return "Couldn't find a thread associated with the given group public key."
-            case .noPrivateKey: return "Couldn't find a private key associated with the given group public key."
+            case .noKeyPair: return "Couldn't find a private key associated with the given group public key."
             case .invalidClosedGroupUpdate: return "Invalid group update."
             }
         }
@@ -174,8 +174,15 @@ public final class MessageSender : NSObject {
         let ciphertext: Data
         do {
             switch destination {
-            case .contact(let publicKey): ciphertext = try encryptWithSignalProtocol(plaintext, associatedWith: message, for: publicKey, using: transaction)
-            case .closedGroup(let groupPublicKey): ciphertext = try encryptWithSharedSenderKeys(plaintext, for: groupPublicKey, using: transaction)
+            case .contact(let publicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
+            case .closedGroup(let groupPublicKey):
+                
+                /*
+                ciphertext = try encryptWithSessionProtocol(plaintext, for: groupPublicKey)
+                 */
+            
+                guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { throw Error.noKeyPair }
+                ciphertext = try encryptWithSessionProtocol(plaintext, for: encryptionKeyPair.hexEncodedPublicKey)
             case .openGroup(_, _): preconditionFailure()
             }
         } catch {
@@ -212,7 +219,7 @@ public final class MessageSender : NSObject {
         }
         let recipient = message.recipient!
         let base64EncodedData = wrappedMessage.base64EncodedString()
-        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: type(of: message).ttl, publicKey: recipient, data: base64EncodedData) else {
+        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: message.ttl, publicKey: recipient, data: base64EncodedData) else {
             SNLog("Proof of work calculation failed.")
             handleFailure(with: Error.proofOfWorkCalculationFailed, using: transaction)
             return promise
@@ -223,7 +230,7 @@ public final class MessageSender : NSObject {
                 NotificationCenter.default.post(name: .messageSending, object: NSNumber(value: message.sentTimestamp!))
             }
         }
-        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: type(of: message).ttl, timestamp: timestamp, nonce: nonce)
+        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp, nonce: nonce)
         SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
             let promiseCount = promises.count

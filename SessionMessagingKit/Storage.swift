@@ -24,7 +24,6 @@ public protocol SessionMessagingKitStorageProtocol {
     // MARK: - Signal Protocol
 
     func getOrGenerateRegistrationID(using transaction: Any) -> UInt32
-    func getSenderCertificate(for publicKey: String) -> SMKSenderCertificate
 
     // MARK: - Shared Sender Keys
 

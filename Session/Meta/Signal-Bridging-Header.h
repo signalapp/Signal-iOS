@@ -31,14 +31,12 @@
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"
-#import "OWSSessionResetJobRecord.h"
 #import "OWSWindowManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "RemoteVideoView.h"
 #import "OWSQRCodeScanningViewController.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
-#import <SessionProtocolKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -74,7 +72,6 @@
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/OWSIdentityManager.h>
 #import <SessionMessagingKit/OWSMediaGalleryFinder.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+SessionStore.h>
 #import <SessionMessagingKit/OWSRecipientIdentity.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SessionMessagingKit/SignalRecipient.h>
@@ -88,7 +85,6 @@
 #import <SessionMessagingKit/TSIncomingMessage.h>
 #import <SessionMessagingKit/TSInfoMessage.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
-#import <SignalUtilitiesKit/TSPreKeyManager.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionUtilitiesKit/LKGroupUtilities.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>

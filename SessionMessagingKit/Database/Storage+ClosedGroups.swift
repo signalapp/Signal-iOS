@@ -2,6 +2,47 @@ import SessionProtocolKit
 
 extension Storage {
     
+    // MARK: - V2
+    
+    private static func getClosedGroupEncryptionKeyPairCollection(for groupPublicKey: String) -> String {
+        return "SNClosedGroupEncryptionKeyPairCollection-\(groupPublicKey)"
+    }
+
+    private static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
+
+    public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {
+        let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
+        var timestampsAndKeyPairs: [(timestamp: Double, keyPair: ECKeyPair)] = []
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: collection) { key, object, _ in
+                guard let timestamp = Double(key), let keyPair = object as? ECKeyPair else { return }
+                timestampsAndKeyPairs.append((timestamp, keyPair))
+            }
+        }
+        return timestampsAndKeyPairs.sorted { $0.timestamp < $1.timestamp }.map { $0.keyPair }
+    }
+
+    public func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String) -> ECKeyPair? {
+        return getClosedGroupEncryptionKeyPairs(for: groupPublicKey).last
+    }
+
+    public func addClosedGroupEncryptionKeyPair(_ keyPair: ECKeyPair, for groupPublicKey: String, using transaction: Any) {
+        let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
+        let timestamp = String(Date().timeIntervalSince1970)
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(keyPair, forKey: timestamp, inCollection: collection)
+    }
+
+    public func removeAllClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: Any) {
+        let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
+        (transaction as! YapDatabaseReadWriteTransaction).removeAllObjects(inCollection: collection)
+    }
+
+    public func addClosedGroupPublicKey(_ groupPublicKey: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(groupPublicKey, forKey: groupPublicKey, inCollection: Storage.closedGroupPublicKeyCollection)
+    }
+    
+    
+    
     // MARK: - Ratchets
     
     private static func getClosedGroupRatchetCollection(_ collection: ClosedGroupRatchetCollectionType, for groupPublicKey: String) -> String {
@@ -76,7 +117,8 @@ extension Storage {
     public func getUserClosedGroupPublicKeys() -> Set<String> {
         var result: Set<String> = []
         Storage.read { transaction in
-            result = Set(transaction.allKeys(inCollection: Storage.closedGroupPrivateKeyCollection))
+            result = result.union(Set(transaction.allKeys(inCollection: Storage.closedGroupPublicKeyCollection)))
+            result = result.union(Set(transaction.allKeys(inCollection: Storage.closedGroupPrivateKeyCollection)))
         }
         return result
     }

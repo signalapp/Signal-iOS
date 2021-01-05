@@ -56,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
-        id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
@@ -82,7 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   primaryStorage:primaryStorage
                                                                  blockingManager:blockingManager
                                                                  identityManager:identityManager
-                                                                       udManager:udManager
                                                                 tsAccountManager:tsAccountManager
                                                          disappearingMessagesJob:disappearingMessagesJob
                                                               readReceiptManager:readReceiptManager

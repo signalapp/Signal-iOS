@@ -60,14 +60,6 @@ BOOL IsNoteToSelfEnabled(void);
  */
 - (NSUInteger)numberOfInteractions;
 
-/**
- * Get all messages in the thread we weren't able to decrypt
- */
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
-#pragma clang diagnostic pop
-
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
 

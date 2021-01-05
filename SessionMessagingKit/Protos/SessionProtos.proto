@@ -246,7 +246,40 @@ message DataMessage {
     optional string profilePicture = 2;
   }
 
-  message ClosedGroupUpdate { // Loki
+  message ClosedGroupUpdateV2 {
+
+    enum Type {
+      NEW                 = 1; // publicKey, name, encryptionKeyPair, members, admins
+      UPDATE              = 2; // name, members
+      ENCRYPTION_KEY_PAIR = 3; // wrappers
+    }
+
+    message KeyPair {
+      // @required
+      required bytes publicKey  = 1;
+      // @required
+      required bytes privateKey = 2;
+    }
+
+    message KeyPairWrapper {
+      // @required
+      required bytes publicKey        = 1; // The public key of the user the key pair is meant for
+      // @required
+      required bytes encryptedKeyPair = 2; // The encrypted key pair
+    }
+
+    // @required
+    required Type           type              = 1;
+    optional bytes          publicKey         = 2;
+    optional string         name              = 3;
+    optional KeyPair        encryptionKeyPair = 4;
+    repeated bytes          members           = 5;
+    repeated bytes          admins            = 6;
+    repeated KeyPairWrapper wrappers          = 7;
+  }
+
+  message ClosedGroupUpdate {
+
     enum Type {
       NEW                = 0; // groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
       INFO               = 1; // groupPublicKey, name, senderKeys, members, admins
@@ -274,19 +307,20 @@ message DataMessage {
     optional Type      type            = 7;
   }
 
-  optional string            body              = 1;
-  repeated AttachmentPointer attachments       = 2;
-  optional GroupContext      group             = 3;
-  optional uint32            flags             = 4;
-  optional uint32            expireTimer       = 5;
-  optional bytes             profileKey        = 6;
-  optional uint64            timestamp         = 7;
-  optional Quote             quote             = 8;
-  repeated Contact           contact           = 9;
-  repeated Preview           preview           = 10;
-  optional LokiProfile       profile           = 101; // Loki: The current user's profile
-  optional ClosedGroupUpdate closedGroupUpdate = 103; // Loki
-  optional PublicChatInfo    publicChatInfo    = 999; // Loki: Internal public chat info
+  optional string              body                = 1;
+  repeated AttachmentPointer   attachments         = 2;
+  optional GroupContext        group               = 3;
+  optional uint32              flags               = 4;
+  optional uint32              expireTimer         = 5;
+  optional bytes               profileKey          = 6;
+  optional uint64              timestamp           = 7;
+  optional Quote               quote               = 8;
+  repeated Contact             contact             = 9;
+  repeated Preview             preview             = 10;
+  optional LokiProfile         profile             = 101; // Loki: The current user's profile
+  optional ClosedGroupUpdate   closedGroupUpdate   = 103; // Loki
+  optional ClosedGroupUpdateV2 closedGroupUpdateV2 = 104; // Loki
+  optional PublicChatInfo      publicChatInfo      = 999; // Loki: Internal public chat info
 }
 
 message NullMessage {

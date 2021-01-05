@@ -6,16 +6,6 @@ extension Storage {
         SSKEnvironment.shared.tsAccountManager.getOrGenerateRegistrationId(transaction as! YapDatabaseReadWriteTransaction)
     }
 
-    public func getSenderCertificate(for publicKey: String) -> SMKSenderCertificate {
-        let (promise, seal) = Promise<SMKSenderCertificate>.pending()
-        SSKEnvironment.shared.udManager.ensureSenderCertificate { senderCertificate in
-            seal.fulfill(senderCertificate)
-        } failure: { error in
-            // Should never fail
-        }
-        return try! promise.wait()
-    }
-
     /// Returns the ID of the thread.
     public func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction

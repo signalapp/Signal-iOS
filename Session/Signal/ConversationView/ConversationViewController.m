@@ -24,7 +24,6 @@
 #import "OWSSystemMessageCell.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import "Session-Swift.h"
-#import <SignalUtilitiesKit/SignalKeyingStorage.h>
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
@@ -32,7 +31,6 @@
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
-#import <SessionMessagingKit/TSInvalidIdentityKeyErrorMessage.h>
 #import "UIFont+OWS.h"
 #import "UIViewController+Permissions.h"
 #import <AVFoundation/AVFoundation.h>
@@ -63,7 +61,6 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSGroupModel.h>
-#import <SessionMessagingKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SessionMessagingKit/TSQuotedMessage.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -246,11 +243,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Dependencies
-
-- (OWSSessionResetJobQueue *)sessionResetJobQueue
-{
-    return AppEnvironment.shared.sessionResetJobQueue;
-}
 
 - (OWSAudioSession *)audioSession
 {
@@ -1524,23 +1516,6 @@ typedef enum : NSUInteger {
                                                             preferredStyle:UIAlertControllerStyleAlert];
 
     [alert addAction:[OWSAlerts cancelAction]];
-
-    UIAlertAction *resetSessionAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reset_session")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
-                            if (![self.thread isKindOfClass:[TSContactThread class]]) {
-                                // Corrupt Message errors only appear in contact threads.
-                                OWSLogError(@"Unexpected request to reset session in group thread. Refusing");
-                                return;
-                            }
-                            TSContactThread *contactThread = (TSContactThread *)self.thread;
-                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
-                            }];
-                        }];
-    [alert addAction:resetSessionAction];
 
     [self dismissKeyBoard];
     [self presentAlert:alert];

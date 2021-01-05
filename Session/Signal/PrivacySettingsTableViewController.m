@@ -56,11 +56,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 #pragma mark - Dependencies
 
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
 - (OWSPreferences *)preferences
 {
     return Environment.shared.preferences;
@@ -291,8 +286,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender
 {
-    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.udManager setShouldAllowUnrestrictedAccessLocal:sender.isOn];
+    
 }
 
 - (void)didToggleUDShowIndicatorsSwitch:(UISwitch *)sender

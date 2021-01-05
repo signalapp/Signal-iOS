@@ -14,7 +14,6 @@
 #import <SessionMessagingKit/TSContactThread.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
 #import <SessionMessagingKit/TSIncomingMessage.h>
-#import <SessionMessagingKit/TSInvalidIdentityKeyErrorMessage.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
@@ -86,15 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
         // Find any "dynamic" interactions and safety number changes.
         //
         // We use different views for performance reasons.
-        NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
         NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
         [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
             enumerateKeysAndObjectsInGroup:thread.uniqueId
                                 usingBlock:^(
                                     NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                    if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                        [blockingSafetyNumberChanges addObject:object];
-                                    } else if ([object isKindOfClass:[TSErrorMessage class]]) {
+                                    if ([object isKindOfClass:[TSErrorMessage class]]) {
                                         TSErrorMessage *errorMessage = (TSErrorMessage *)object;
                                         OWSAssertDebug(
                                             errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
@@ -126,7 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     thread:thread
                                transaction:transaction
                               maxRangeSize:maxRangeSize
-               blockingSafetyNumberChanges:blockingSafetyNumberChanges
             nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
                hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
                          firstUnseenSortId:firstUnseenSortId];
@@ -146,7 +141,6 @@ NS_ASSUME_NONNULL_BEGIN
                             thread:(TSThread *)thread
                        transaction:(YapDatabaseReadTransaction *)transaction
                       maxRangeSize:(int)maxRangeSize
-       blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
     nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
        hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                  firstUnseenSortId:(nullable NSNumber *)firstUnseenSortId
@@ -154,7 +148,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(dynamicInteractions);
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(blockingSafetyNumberChanges);
     OWSAssertDebug(nonBlockingSafetyNumberChanges);
 
     if (hideUnreadMessagesIndicator) {
@@ -223,45 +216,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(visibleUnseenMessageCount > 0);
 
-    NSUInteger missingUnseenSafetyNumberChangeCount = 0;
-    if (hasMoreUnseenMessages) {
-        NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
-        for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
-            BOOL isUnseen = safetyNumberChange.sortId >= firstUnseenSortId.unsignedLongLongValue;
-            if (!isUnseen) {
-                continue;
-            }
-
-            BOOL isMissing = safetyNumberChange.sortId < interactionAfterUnreadIndicator.sortId;
-            if (!isMissing) {
-                continue;
-            }
-
-            @try {
-                NSData *_Nullable newIdentityKey = [safetyNumberChange throws_newIdentityKey];
-                if (newIdentityKey == nil) {
-                    OWSFailDebug(@"Safety number change was missing it's new identity key.");
-                    continue;
-                }
-
-                [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
-            } @catch (NSException *exception) {
-                OWSFailDebug(@"exception: %@", exception);
-            }
-        }
-
-        // Count the de-duplicated "blocking" safety number changes and all
-        // of the "non-blocking" safety number changes.
-        missingUnseenSafetyNumberChangeCount
-            = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
-    }
-
     NSInteger unreadIndicatorPosition = visibleUnseenMessageCount;
 
     dynamicInteractions.unreadIndicator =
         [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:firstUnseenSortId.unsignedLongLongValue
                                         hasMoreUnseenMessages:hasMoreUnseenMessages
-                         missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
+                         missingUnseenSafetyNumberChangeCount:nonBlockingSafetyNumberChanges.count
                                       unreadIndicatorPosition:unreadIndicatorPosition];
     OWSLogInfo(@"Creating Unread Indicator: %llu", dynamicInteractions.unreadIndicator.firstUnseenSortId);
 }
