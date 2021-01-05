@@ -506,7 +506,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Vastamata videokõne";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vasta ilma videota";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vasta videota";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Vasta";
@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Kõik liikmed";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Grupi link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Grupilink";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Tee administraatoriks";
@@ -1112,7 +1112,7 @@
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Kui kasutasid varem Signal-it ühendatud iPadis, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Jätka ilma kontot ja sõnumeid üle kandmata";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Jätka kontot ja sõnumeid üle kandmata";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Lisa see iPad uue ühendatud seadmena sõnumite ajalugu üle kandmata";
@@ -1121,7 +1121,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Lisa uue seadmena";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registreeri ilma ülekandmiseta";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registreeri andmete ülekandmiseta";
 
 /* The title for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Kanna konto ja sõnumid üle";
@@ -1163,7 +1163,7 @@
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Teisalda Signal-i konto uude iOS seadmesse. Kontrolli, et uus seade oleks läheduses ja sisse lülitatud.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Teisalda konto";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Kanna konto üle";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Ava Signal vanas seadmes, too see lähedale ja kontrolli, et Wi-Fi ja Bluetooth oleks mõlemas seadmes lubatud.";
@@ -1550,7 +1550,7 @@
 "GROUP_CALL_IS_FULL" = "Kõne on täis";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Ühine kõnega";
+"GROUP_CALL_JOIN_BUTTON" = "Liitu kõnega";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Lahku kõnest";
@@ -1577,19 +1577,19 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Selles kõnes pole veel kedagi.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ ja %ld muud kasutajat ühinesid kõnega";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ ja %ld muud kasutajat liitusid kõnega";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ ja %ld muud kasutajat lahkusid kõnest";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ ühines kõnega";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ liitus kõnega";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ lahkus kõnest";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ ja %@ ühinesid kõnega";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ ja %@ liitusid kõnega";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ ja %@ lahkusid kõnest";
@@ -1616,7 +1616,7 @@
 "GROUP_CALL_START_BUTTON" = "Alusta kõnet";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Klõpsa siia grupikõne alustamiseks";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Sa alustasid grupikõne";
@@ -1631,7 +1631,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ ja %2$@ on selles kõnes";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Kaotasid ühenduse kõnega. Kontrolli internetiühendust ja proovi uuesti.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Sina";
@@ -1643,10 +1643,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Sina (teisest seadmest)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Uue krüptitud grupikõne alustamiseks vajuta \"Uus grupp\"";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Tutvustame grupikõnesid";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Sa lõid uue grupi.";
@@ -1697,58 +1697,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Vigased kutsed tühistati.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Grupi link on välja lülitatud.";
+"GROUP_INVITE_LINK_DISABLED" = "Grupilink on välja lülitatud.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Sa lülitasid grupi lingi välja.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Sa lülitasid grupilingi välja.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupi lingi välja.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupilingi välja.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Administraatori kinnitusega grupilink lülitati sisse.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid administraatori kinnitusega grupilingi sisse.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas administraatori kinnitusega grupilingi sisse.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Administraatori kinnituseta grupilink lülitati sisse.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid administraatori kinnituseta grupilingi sisse.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas administraatori kinnituseta grupilingi sisse.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Grupi link lähtestati.";
+"GROUP_INVITE_LINK_RESET" = "Grupilink lähtestati.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Sa lähtestasid grupi lingi.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Sa lähtestasid grupilingi.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ lähtestas grupi lingi.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ lähtestas grupilingi.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Grupilingi administraatori kinnitus lülitati välja.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid grupilingi administraatori kinnituse välja.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupilingi administraatori kinnituse sisse.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Grupilingi administraatori kinnitus lülitati sisse.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid grupilingi administraatori kinnituse sisse.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupilingi administraatori kinnituse sisse.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Sa ei saa kasutajat %@ automaatselt gruppi lisada. Nad on kutsutud grupiga liituma ja ei näe grupi sõnumeid enne kui on nõusoleku andnud.";
@@ -1790,7 +1790,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Palun proovi uuesti.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "See ei ole kehtiv grupi link. Kontrolli, kas link on korrektne ja vajadusel paranda enne liitumiskatset.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "See ei ole kehtiv grupilink. Kontrolli, kas link on korrektne ja vajadusel paranda enne liitumiskatset.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Vigane link";
@@ -1814,13 +1814,13 @@
 "GROUP_LINK_VIEW_COPY_LINK" = "Kopeeri link";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Grupi link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Grupilink";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Haldamine ja jagamine";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Nõua grupilingi kaudu liituvate uute liikmete administraatori poolt kinnitamist.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Nõua grupilingi kaudu liituvate uute liikmete kinnitamist administraatori poolt.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Liikmelisuse soovid";
@@ -1829,7 +1829,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Lähtesta link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Kas sa tõesti soovid vestluse linki lähtestada? Inimesed ei saa siis varasema lingi kaudu enam vestlusega liituda.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Kas sa tõesti soovid grupilinki lähtestada? Inimesed ei saa siis varasema lingi kaudu enam vestlusega liituda.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Jaga";
@@ -1847,7 +1847,7 @@
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Igaüks saab selle lingi kaudu vestlusega liituda või saata sooviavaldust liitumiseks. Jaga seda isikutega, keda usaldad.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Grupi link";
+"GROUP_LINK_VIEW_TITLE" = "Grupilink";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ lisas sind.";
@@ -1883,10 +1883,10 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Sind kutsuti gruppi.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Sa ühinesid grupiga.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Sa liitusid grupiga.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Sa ühinesid grupiga grupilingi kaudu.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Sa liitusid grupiga grupilingi kaudu.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ eemaldas sinu.";
@@ -1898,13 +1898,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ kinnitas sinu grupiga liitumise soovi.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Sa katkestasid enda grupiga liitumise soovi.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Sinu grupiga liitumise soovist keelduti.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Sa saatsid grupiga liitumise soovi.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Sinu administraatoriõigused tühistati.";
@@ -2021,10 +2021,10 @@
 "GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ isikut kutsuti gruppi.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ ühines grupiga.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ liitus grupiga.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ liitus grupiga grupilingi kaudu.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ lahkus grupist.";
@@ -2039,22 +2039,22 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Sa kinnitasid isiku %@ soovi grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ kinnitas isiku %1$@ grupiga liitumise soovi.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ kinnitas isiku %1$@ soovi grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Isiku %@ soov grupiga liituda kinnitati.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ loobus enda grupiga liitumise soovist.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Sa keeldusid kasutaja %@ soovist grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ tühistas kasutaja %1$@ grupiga liitumise soovi.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ tühistas kasutaja %1$@ soovi grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Grupiga liitumise soovist isikult %@ keelduti.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Kasutaja %@ soovist grupiga liituda keelduti.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ esitas grupilingi kaudu soovi grupiga liituda.";
@@ -2126,22 +2126,22 @@
 "GROUP_WAS_MIGRATED" = "See grupp uuendati uueks grupiks.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Liiget polnud võimalik uude gruppi lisada ja ta eemaldati grupist.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Sind polnud võimalik uude gruppi lisada ja seepärast eemaldati sind grupist.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ liiget polnud võimalik gruppi lisada ja nad eemaldati grupist.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Liiget polnud võimalik uude gruppi lisada ja teda kutsuti liituma";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Sind polnud võimalik uude gruppi lisada ja sind kutsuti liituma";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ liiget polnud võimalik uude gruppi lisada ja neid kutsuti liituma.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Sa lahkusid grupist.";
@@ -2171,7 +2171,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mis on vana tüüpi grupid?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vana tüüpi gruppe ei saa veel uut tüüpi gruppideks teisendada, aga sa saad luua samade liikmetega uue grupi, kui need liikmed kasutavad uusimat Signal-i versiooni.\n\nSignal pakub tulevikus vanade gruppide uuteks gruppideks uuendamise võimalust.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vana tüüpi gruppe ei saa veel uuteks gruppideks uuendada, aga sa saad luua samade liikmetega uue grupi, kui need liikmed kasutavad uusimat Signal-i versiooni.\n\nSignal pakub tulevikus vanade gruppide uuteks gruppideks uuendamise võimalust.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kas saan vana tüüpi gruppi uuendada?";
@@ -2183,7 +2183,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanad vs uued grupid";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uuenda seda gruppi, et aktiveerida uus funktsionaalsus nagu @mainimised ja administraatorid. Liikmed, kes pole selles grupis jaganud enda nime ja fotot kutsutakse liituma. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Uueks grupiks uuendamine ei õnnestunud";
@@ -2198,16 +2198,16 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Kogu sõnumite ajalugu ja meediafailid jäävad alles.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Seda gruppi pole võimalik luuga, kuna 1 liige kasutab Signal-i vana versiooni. Sul on võimalik luua temaga uus grupp pärast seda, kui ta uuendab enda Signal-it või eemaldada nad enne grupi loomist.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Seda gruppi pole võimalik luuga, kuna %@ liiget kasutavad Signal-i vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signal-it või eemaldada nad enne grupi loomist.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Seda gruppi pole võimalik luua, kuna 1 liige kasutab Signal-i vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signal-i või eemaldada nad enne grupi loomist. %@.";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Seda gruppi pole võimalik luua,  kuna %1$@  kuna 1 liige kasutab Signal-i vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signal-i või eemaldada nad enne grupi loomist. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Luuakse vana tüüpi grupp, sest 1 liige kasutab Signal-i vana versiooni. Selle kasutajaga on võimalik uut tüüpi grupp luua pärast seda, kui ta on Signal-it uuendanud või eemalda ta enne uue grupi loomist.";
@@ -2225,25 +2225,25 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "See on vana tüüpi grupp. Uued funktsioonid, nt grupi administraatorid on saadaval ainult uut tüüpi gruppidel. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "See vana grupp pole veel uueks grupiks uuendamiseks valmis. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Seda vana gruppi ei saa uueks grupiks uuendada, sest see on liiga suur. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "See on vana grupp. Uute funktsioonide, näiteks @mainimised ja administraatorid, kasutamiseks %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 liiget polnud võimalik uude gruppi uuesti lisada. Kas sa soovid teda nüüd lisada?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ liiget polnud võimalik uude gruppi uuesti lisada. Kas sa soovid neid nüüd lisada?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Vana tüüpi grupp";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Selle grupiga uuesti liitumiseks pead nõustuma kutsega ja sa ei saa grupi sõnumeid senikaua kuni oled nõustunud.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Uuenda gruppi";
@@ -2276,28 +2276,28 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Lisa liikmeid";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Seda liiget polnud võimalik uude gruppi automaatselt lisada, kui see uuendati:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Neid liikmeid polnud võimalik uude gruppi automaatselt lisada, kui seda uuendati:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Kogu täienduse-eelne sõnumiajalugu ja -meedia on alles.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "See liige eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signal-it uuendanud:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Need liikmed eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signal-it uuendanud:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "See liige peab selle grupiga liitumise kutse uuesti vastu võtma ning ei saa enne nõustumist grupi sõnumeid näha:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Need liikmed peavad selle grupiga liitumise kutse uuesti vastu võtma ning ei saa enne nõustumist grupi sõnumeid näha:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Need liikmed pole võimelised uute gruppidega liituma ja eemaldatakse grupist:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Need liikmed pole võimelised uute gruppidega liituma ja eemaldatakse grupist:";
@@ -3131,7 +3131,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Vigane number";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signal-i konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto ilma salvestatud profiiliteabe või säteteta.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signal-i konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto salvestatud profiiliteabe või säteteta.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
@@ -4382,7 +4382,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Märguande sisu";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt ühines Signal-iga";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt liitus Signal-iga";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Sündmused";
@@ -4868,7 +4868,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Kasutajanimed on Signal-is vabatahtlikud. Kui lood endale Signal-is kasutajanime, siis saavad teised Signal-i kasutajad leida sind kasutajanime järgi ja võtta ühendust ilma sinu telefoninumbrit teadmata.";
+"USERNAME_DESCRIPTION" = "Kasutajanimed on Signal-is vabatahtlikud. Kui lood endale Signal-is kasutajanime, siis saavad teised Signal-i kasutajad leida sind kasutajanime järgi ja võtta ühendust sinu telefoninumbrit teadmata.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Kasutajanimi";

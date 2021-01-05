@@ -2165,16 +2165,16 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokker %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy grupper er grupper som ikke er kompatible med nye gruppefunksjoner som administrator og mer beskrivende gruppeoppdateringer.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "\"Legacy\"-grupper er grupper som ikke er kompatible med nye gruppefunksjoner som administrator og mer beskrivende gruppeoppdateringer.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Hva er \"legacy\" grupper?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Hva er \"legacy\"-grupper?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "\"Legacy\" grupper kan ikke oppgraderes til \"nye\" grupper ennå, men du kan opprette en \"ny\" gruppe med de samme medlemmene dersom alle bruker siste versjon av Signal.\n\nSignal vil tilby en måte å oppgradere \"legacy\" grupper i fremtiden.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "\"Legacy\"-grupper kan ikke oppgraderes til \"nye\" grupper ennå, men du kan opprette en \"ny\" gruppe med de samme medlemmene dersom alle bruker siste versjon av Signal.\n\nSignal vil tilby en måte å oppgradere \"legacy\" grupper i fremtiden.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kan jeg oppgradere en \"Legacy\" gruppe?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kan jeg oppgradere en \"Legacy\"-gruppe?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "For å lage en ny gruppe, burde alle medlemmer oppdatere til den nyeste versjonen av Signal.";
@@ -2213,16 +2213,16 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "En \"legacy\"-gruppe vil ble opprettet fordi 1 medlem bruker en gammel versjon av Signal. Du kan opprette en \"ny\" gruppe med dem etter de har oppdatert Signal, eller fjerne vedkommende før gruppen opprettes.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "En \"legacy\" gruppe vil bli opprettet fordi %@ medlemmer bruker en gammel versjon av Signal. Du kan opprette en \"ny\" gruppe med dem etter de har oppdatert Signal, eller fjerne dem før gruppen opprettes.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "En \"legacy\"-gruppe vil bli opprettet fordi %@ medlemmer bruker en gammel versjon av Signal. Du kan opprette en \"ny\" gruppe med dem etter de har oppdatert Signal, eller fjerne dem før gruppen opprettes.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 medlem støtter ikke nye grupper, så dette vil bli en \"legacy\"-gruppe. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ medlemmer støtter ikke nye grupper, så dette vil bli en \"legacy\" gruppe. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ medlemmer støtter ikke nye grupper, så dette vil bli en \"legacy\"-gruppe. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dette er en \"legacy\" gruppe. Funksjoner som gruppeadministratorer er kun tilgjengelig for \"nye\" grupper. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dette er en \"legacy\"-gruppe. Funksjoner som gruppeadministratorer er kun tilgjengelig for \"nye\" grupper. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Denne \"Legacy\"-gruppen er ikke klar for å oppgraderes til en \"ny\" gruppe. %@.";
@@ -2231,7 +2231,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Denne gruppen kan ikke oppgraderes fordi den er for stor. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dette er en \"legacy\" gruppe. For å få tilgang til de nye funksjonene, som @-omtaler og gruppeadministratorer, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dette er en \"legacy\"-gruppe. For å få tilgang til de nye funksjonene, som @-omtaler og gruppeadministratorer, %@.";
 
 /* Title for the the 'dropped group member' banner. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 medlem kunne ikke legges til på nytt. Ønsker du å legge dem til nå?";

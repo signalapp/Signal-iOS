@@ -84,6 +84,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         let vStackView = componentView.vStackView
         let selectionView = componentView.selectionView
         let titleLabel = componentView.titleLabel
+        let backgroundView = componentView.backgroundView
+
+        backgroundView.backgroundColor = Theme.backgroundColor
+        backgroundView.isHidden = isShowingSelectionUI
 
         if isShowingSelectionUI {
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
@@ -221,6 +225,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let vStackView = OWSStackView(name: "systemMessage.vStackView")
         fileprivate let titleLabel = UILabel()
         fileprivate let selectionView = MessageSelectionView()
+        fileprivate lazy var backgroundView = outerStack.addBackgroundView(withBackgroundColor: .clear, cornerRadius: 8)
 
         fileprivate var button: OWSButton?
 
@@ -252,6 +257,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
             button?.removeFromSuperview()
             button = nil
+
+            backgroundView.backgroundColor = .clear
         }
     }
 }

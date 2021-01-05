@@ -1640,13 +1640,13 @@
 "GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Jy (op 'n ander toestel)";
 
 /* Body for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Ons stel groepsoproepe bekend";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Jy het die groep geskep.";
@@ -1775,7 +1775,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Sluit aan";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Laai tans...";
@@ -1841,7 +1841,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Deel via Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
@@ -2489,7 +2489,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "As jy meerdere gebruikers op ’n slag nooi, sal ’n groepboodskap begin en sal die ontvangers mekaar kan sien.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "Sluit aan";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Boodskappe verdwyn ná %@.";
@@ -3419,13 +3419,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Skep numeriese PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Deaktiveer PIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Waarskuwing";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Jou PIN is nie gestoor nie. Ons sal jou later vra om ’n PIN te skep.";
@@ -3467,7 +3467,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Skakel registrasieslot af?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "Deaktiveer PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Skep jou PIN";
@@ -4220,7 +4220,7 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Deaktiveer PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
@@ -4334,7 +4334,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Wis alles";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Skenk aan Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Hulp";
@@ -4661,7 +4661,7 @@
 "SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Have you read our FAQ yet?";
+"SUPPORT_FAQ_PROMPT" = "Het jy al ons FAQ gelees?";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
@@ -4859,7 +4859,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ons stel PIN’s voor";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiveer PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signaal vereis binnekort iOS 10 of jonger. Gradeer op via die Instellings-program >> Algemeen >> Sagtewareopdatering.";

@@ -4,6 +4,7 @@
 
 import Foundation
 @testable import Signal
+import BonMot
 
 class CVTextTest: SignalBaseTest {
     func testTextViewMeasurement() {
@@ -73,6 +74,48 @@ class CVTextTest: SignalBaseTest {
                 """,
                 font: .ows_dynamicTypeBody,
                 textColor: .black
+            ),
+            CVTextViewConfig(
+                attributedText: NSAttributedString(string: "short"),
+                font: .ows_dynamicTypeBody,
+                textColor: .black
+            ),
+            CVTextViewConfig(
+                attributedText: NSAttributedString(string: "one\ntwo\nthree"),
+                font: .ows_dynamicTypeBody,
+                textColor: .black
+            ),
+            CVTextViewConfig(
+                attributedText: NSAttributedString.composed(of: [
+                    #imageLiteral(resourceName: "video-solid-16"), "Some text", "\n", #imageLiteral(resourceName: "video-solid-16"), "Some text2"
+                ]),
+                font: .ows_dynamicTypeBody,
+                textColor: .black
+            ),
+            CVTextViewConfig(
+                attributedText: {
+                    let labelText = NSMutableAttributedString()
+
+                    labelText.appendTemplatedImage(named: "compose-outline-16",
+                                                   font: .ows_dynamicTypeFootnote,
+                                                   heightReference: .lineHeight)
+                    labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
+
+                    labelText.appendTemplatedImage(named: "photo-outline-16",
+                                                   font: .ows_dynamicTypeFootnote,
+                                                   heightReference: .lineHeight)
+                    labelText.append("  You updated the photo.", attributes: [:])
+
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.paragraphSpacing = 12
+                    paragraphStyle.alignment = .center
+                    labelText.addAttributeToEntireString(.paragraphStyle, value: paragraphStyle)
+
+                    return labelText
+                }(),
+                font: .ows_dynamicTypeFootnote,
+                textColor: .black,
+                textAlignment: .center
             )
         ]
 
@@ -158,6 +201,53 @@ class CVTextTest: SignalBaseTest {
                 textColor: .black,
                 numberOfLines: 5,
                 lineBreakMode: .byTruncatingMiddle
+            ),
+            CVLabelConfig(
+                attributedText: NSAttributedString(string: "short"),
+                font: .ows_dynamicTypeBody,
+                textColor: .black,
+                numberOfLines: 1
+            ),
+            CVLabelConfig(
+                attributedText: NSAttributedString(string: "one\ntwo\nthree"),
+                font: .ows_dynamicTypeBody,
+                textColor: .black,
+                numberOfLines: 0
+            ),
+            CVLabelConfig(
+                attributedText: NSAttributedString.composed(of: [
+                    #imageLiteral(resourceName: "video-solid-16"), "Some text", "\n", #imageLiteral(resourceName: "video-solid-16"), "Some text2"
+                ]),
+                font: .ows_dynamicTypeBody,
+                textColor: .black,
+                numberOfLines: 0
+            ),
+            CVLabelConfig(
+                attributedText: {
+                    let labelText = NSMutableAttributedString()
+
+                    labelText.appendTemplatedImage(named: "compose-outline-16",
+                                                   font: .ows_dynamicTypeFootnote,
+                                                   heightReference: .lineHeight)
+                    labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
+
+                    labelText.appendTemplatedImage(named: "photo-outline-16",
+                                                   font: .ows_dynamicTypeFootnote,
+                                                   heightReference: .lineHeight)
+                    labelText.append("  You updated the photo.", attributes: [:])
+
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.paragraphSpacing = 12
+                    paragraphStyle.alignment = .center
+                    labelText.addAttributeToEntireString(.paragraphStyle, value: paragraphStyle)
+
+                    return labelText
+                }(),
+                font: .ows_dynamicTypeFootnote,
+                textColor: .black,
+                numberOfLines: 0,
+                lineBreakMode: .byWordWrapping,
+                textAlignment: .center
             )
         ]
 

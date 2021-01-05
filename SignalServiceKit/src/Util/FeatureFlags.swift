@@ -163,7 +163,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2MigrationSetCapability = groupsV2Migrations
 
     @objc
-    public static let linkedPhones = build.includes(.internalPreview)
+    public static let linkedPhones = build.includes(.qa)
 
     @objc
     public static let isUsingProductionService = true

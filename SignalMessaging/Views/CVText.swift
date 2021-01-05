@@ -325,35 +325,7 @@ public class CVText {
         textContainer.maximumNumberOfLines = config.numberOfLines
         textContainer.lineBreakMode = config.lineBreakMode
         textContainer.lineFragmentPadding = 0
-
-        let layoutManager = NSLayoutManager()
-        layoutManager.addTextContainer(textContainer)
-
-        // NSTextStorage *must* be initialized with `NSOriginalFont` defined,
-        // otherwise measurement of character sets that San Francisco doesn't
-        // support (CJK, Arabic, etc.) will not measure correctly.
-        let textStorage: NSTextStorage
-        switch config.text {
-        case .attributedText(let text):
-            // In order for the `NSOriginalFont` attribute to be retained,
-            // the text must be assigned to the NSTextStorage *after* it
-            // has been associated with a layout manager.
-            textStorage = NSTextStorage(string: "", attributes: [.font: config.font, .originalFont: config.font])
-            textStorage.addLayoutManager(layoutManager)
-            textStorage.setAttributedString(text)
-        case .text(let text):
-            textStorage = NSTextStorage(string: text, attributes: [.font: config.font, .originalFont: config.font])
-            textStorage.addLayoutManager(layoutManager)
-        }
-
-        // The NSTextStorage object owns all the other layout components,
-        // so there are only weak references to it. In optimized builds,
-        // this can result in it being freed before we perform measurement.
-        // We can work around this by explicitly extending the lifetime of
-        // textStorage until measurement is completed.
-        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }
-
-        return size.ceil
+        return textContainer.size(for: config.text, font: config.font)
     }
 
     // MARK: - UITextView
@@ -425,35 +397,7 @@ public class CVText {
     private static func measureTextViewUsingLayoutManager(config: CVTextViewConfig, maxWidth: CGFloat) -> CGSize {
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
         textContainer.lineFragmentPadding = 0
-
-        let layoutManager = NSLayoutManager()
-        layoutManager.addTextContainer(textContainer)
-
-        // NSTextStorage *must* be initialized with `NSOriginalFont` defined,
-        // otherwise measurement of character sets that San Francisco doesn't
-        // support (CJK, Arabic, etc.) will not measure correctly.
-        let textStorage: NSTextStorage
-        switch config.text {
-        case .attributedText(let text):
-            // In order for the `NSOriginalFont` attribute to be retained,
-            // the text must be assigned to the NSTextStorage *after* it
-            // has been associated with a layout manager.
-            textStorage = NSTextStorage(string: "", attributes: [.font: config.font, .originalFont: config.font])
-            textStorage.addLayoutManager(layoutManager)
-            textStorage.setAttributedString(text)
-        case .text(let text):
-            textStorage = NSTextStorage(string: text, attributes: [.font: config.font, .originalFont: config.font])
-            textStorage.addLayoutManager(layoutManager)
-        }
-
-        // The NSTextStorage object owns all the other layout components,
-        // so there are only weak references to it. In optimized builds,
-        // this can result in it being freed before we perform measurement.
-        // We can work around this by explicitly extending the lifetime of
-        // textStorage until measurement is completed.
-        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }
-
-        return size.ceil
+        return textContainer.size(for: config.text, font: config.font)
     }
 
     public static func buildTextView() -> OWSMessageTextView {
@@ -472,6 +416,41 @@ public class CVText {
     }
 }
 
-private extension NSAttributedString.Key {
-    static var originalFont = Self("NSOriginalFont")
+private extension NSTextContainer {
+    func size(for textValue: CVTextValue, font: UIFont) -> CGSize {
+        let layoutManager = NSLayoutManager()
+        layoutManager.addTextContainer(self)
+
+        let attributedString: NSAttributedString
+        switch textValue {
+        case .attributedText(let text):
+            let mutableText = NSMutableAttributedString(attributedString: text)
+            // The original attributed string may not have an overall font
+            // assigned. Without it, measurement will not be correct. We
+            // assign a font here with "add" which will not override any
+            // ranges that already have a different font assigned.
+            mutableText.addAttributeToEntireString(.font, value: font)
+            attributedString = mutableText
+        case .text(let text):
+            attributedString = NSAttributedString(string: text, attributes: [.font: font])
+        }
+
+        // The string must be assigned to the NSTextStorage *after* it has
+        // an associated layout manager. Otherwise, the `NSOriginalFont`
+        // attribute will not be defined correctly resulting in incorrect
+        // measurement of character sets that font doesn't support natively
+        // (CJK, Arabic, Emoji, etc.)
+        let textStorage = NSTextStorage()
+        textStorage.addLayoutManager(layoutManager)
+        textStorage.setAttributedString(attributedString)
+
+        // The NSTextStorage object owns all the other layout components,
+        // so there are only weak references to it. In optimized builds,
+        // this can result in it being freed before we perform measurement.
+        // We can work around this by explicitly extending the lifetime of
+        // textStorage until measurement is completed.
+        let size = withExtendedLifetime(textStorage) { layoutManager.usedRect(for: self).size }
+
+        return size.ceil
+    }
 }

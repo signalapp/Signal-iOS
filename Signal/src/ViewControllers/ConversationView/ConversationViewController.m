@@ -3934,10 +3934,22 @@ typedef enum : NSUInteger {
     [self handleKeyboardStateChange:animationDuration animationCurve:animationCurve];
 }
 
+- (void)inputAccessoryPlaceholderKeyboardDidDismiss
+{
+    [self updateBottomBarPosition];
+    [self updateContentInsetsAnimated:NO];
+}
+
 - (void)inputAccessoryPlaceholderKeyboardIsPresentingWithAnimationDuration:(NSTimeInterval)animationDuration
                                                             animationCurve:(UIViewAnimationCurve)animationCurve
 {
     [self handleKeyboardStateChange:animationDuration animationCurve:animationCurve];
+}
+
+- (void)inputAccessoryPlaceholderKeyboardDidPresent
+{
+    [self updateBottomBarPosition];
+    [self updateContentInsetsAnimated:NO];
 }
 
 - (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration animationCurve:(UIViewAnimationCurve)animationCurve

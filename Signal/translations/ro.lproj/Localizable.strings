@@ -1565,7 +1565,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nu-l poți auzi sau vedea pe %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Acest lucru se poate datora faptului că nu au verificat modificarea numărului dvs. de siguranță, există o problemă cu dispozitivul lor sau v-au blocat.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
@@ -1604,7 +1604,7 @@
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Cineva s-a alăturat la apel cu un număr de siguranță care s-a schimbat.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Cineva a început un apel de grup";
@@ -1643,7 +1643,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Tu (pe alt dispozitiv)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Deschideți un grup nou pentru a începe un apel gratuit de grup criptat";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "Vă prezentăm apeluri de grup";
@@ -2243,7 +2243,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grup vechi";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Va trebui să acceptați o invitație pentru a vă alătura din nou acestui grup și nu veți primi mesaje de grup până când nu acceptați.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Actualizați grupul";

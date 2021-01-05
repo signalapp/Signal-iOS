@@ -1550,7 +1550,7 @@
 "GROUP_CALL_IS_FULL" = "A hívás betelt";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Belépés a hívásba";
+"GROUP_CALL_JOIN_BUTTON" = "Hívásba lépés";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Kilépés a hívásból";
@@ -2165,13 +2165,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ letiltása";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "A régi típusú csoportok olyan csoportok, amelyek nem kompatibilisek az új típusú csoportokban rendelkezésre álló újabb funkciókkal, mint amilyen pl. a csoport-adminok kijelölése vagy a részletesebb csoportfrissítések használata.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "A régi típusú csoportok nem kompatibilisek az új típusúakban elérhető újabb funkciókkal, mint pl. a csoport-adminok kijelölése vagy a részletesebb csoportfrissítések használata.";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mik azok a régi típusú csoportok?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "A régi típusú csoportokat nem lehet új típusúvá alakítani, viszont lehetőséged van egy új típusú csoport létrehozására a régivel megegyező csoporttagsággal.\n\nEgy jövőbeli Signal verzióban lesz majd mód a régi típusú csoportok újra alakítására.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "A régi típusú csoportokat nem lehet új típusúvá alakítani, viszont lehetőséged van egy új típusú csoport létrehozására a régivel megegyező csoporttagsággal.\n\nEgy jövőbeli Signal verzióban lesz mód a régiek újra alakítására.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Tudom frissíteni a régi csoport típusomat újra?";
@@ -2252,7 +2252,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Az újabb funkciók eléréséhez, mint az @említések, vagy admin szerep, frissítsd a csoportot.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Mik azok az új típusú csoportok?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Új csoportok";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Megtartottuk a frissítés előtti üzenet-előzményeket és médiafájlokat.";
@@ -3995,7 +3995,7 @@
 "SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Köszönöm ☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "A bölcsességed megmentett.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Bölcsességed megmentett.";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
 "SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Kösz! Jó ezt hallani :)";
@@ -4502,7 +4502,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Gépelés mutatása";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Ezzel az opcióval láthatod, ha a másik fél éppen gépel. A funkció bekapcsolásával a te gépelésed is láthatóvá válik a másik fél számára. Opcionális funkció, és az összes beszélgetésre érvényes lesz.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Ezzel az opcióval láthatod, ha a másik fél éppen gépel. A funkció bekapcsolásával a te gépelésed is láthatóvá válik a másik fél számára. Opcionális funkció és az összes beszélgetésre érvényes lesz.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Rejtett feladó";
