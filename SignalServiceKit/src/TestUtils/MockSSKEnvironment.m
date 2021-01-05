@@ -19,7 +19,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKPreKeyStore.h"
-#import "SSKSessionStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "StorageCoordinator.h"
 #import "TSAccountManager.h"

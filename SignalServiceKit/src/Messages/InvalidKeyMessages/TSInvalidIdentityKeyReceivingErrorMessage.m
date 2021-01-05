@@ -8,7 +8,6 @@
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSContactThread.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>

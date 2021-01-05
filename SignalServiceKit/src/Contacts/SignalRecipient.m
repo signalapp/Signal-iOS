@@ -6,7 +6,6 @@
 #import "OWSDevice.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

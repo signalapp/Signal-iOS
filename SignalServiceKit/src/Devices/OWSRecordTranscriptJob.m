@@ -8,7 +8,6 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"

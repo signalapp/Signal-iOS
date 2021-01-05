@@ -6,7 +6,6 @@
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
 #import "PreKeyBundle+jsonDict.h"
-#import "SSKSessionStore.h"
 #import "TSContactThread.h"
 #import "TSOutgoingMessage.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>

@@ -13,7 +13,6 @@
 #import "OWSOutgoingNullMessage.h"
 #import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
-#import "SSKSessionStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
