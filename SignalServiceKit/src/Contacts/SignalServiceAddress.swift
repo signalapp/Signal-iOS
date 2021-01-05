@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -299,6 +299,14 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             return "Invalid"
         }
         return serviceIdentifier
+    }
+
+    @objc
+    public static func stableSort(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
+        // Use an arbitrary sort to ensure the output is deterministic.
+        addresses.sorted { (left, right) in
+            left.sortKey < right.sortKey
+        }
     }
 
     @objc

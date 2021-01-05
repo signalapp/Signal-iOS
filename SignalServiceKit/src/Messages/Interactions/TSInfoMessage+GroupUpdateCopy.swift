@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -445,10 +445,7 @@ extension GroupUpdateCopy {
         var membershipCounts = MembershipCounts()
 
         let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
-        var allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
-            // Use an arbitrary sort to ensure the output is deterministic.
-            return left.sortKey > right.sortKey
-        }
+        var allUsersSorted = SignalServiceAddress.stableSort(Array(allUsersUnsorted))
         // If local user had a membership update, ensure it appears _first_.
         if allUsersSorted.contains(localAddress) {
             allUsersSorted = [localAddress] + allUsersSorted.filter { $0 != localAddress}

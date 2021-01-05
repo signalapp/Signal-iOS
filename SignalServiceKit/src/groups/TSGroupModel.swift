@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -128,7 +128,7 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.inviteLinkPassword == inviteLinkPassword else {
             return false
         }
-        guard other.droppedMembers == droppedMembers else {
+        guard SignalServiceAddress.stableSort(other.droppedMembers) == SignalServiceAddress.stableSort(droppedMembers) else {
             return false
         }
         // Ignore isPlaceholderModel & wasJustMigrated.
