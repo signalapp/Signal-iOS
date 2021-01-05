@@ -4,6 +4,13 @@ import SessionUtilitiesKit
 public final class ClosedGroupUpdateV2 : ControlMessage {
     public var kind: Kind?
 
+    public override var ttl: UInt64 {
+        switch kind {
+        case .encryptionKeyPair: return 4 * 24 * 60 * 60 * 1000
+        default: return 2 * 24 * 60 * 60 * 1000
+        }
+    }
+    
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
         case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data])

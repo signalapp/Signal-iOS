@@ -7,6 +7,7 @@ final class UserCell : UITableViewCell {
     // MARK: Accessory
     enum Accessory {
         case none
+        case lock
         case tick(isSelected: Bool)
     }
 
@@ -21,7 +22,7 @@ final class UserCell : UITableViewCell {
         return result
     }()
 
-    private lazy var tickImageView: UIImageView = {
+    private lazy var accessoryImageView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
         let size: CGFloat = 24
@@ -61,7 +62,7 @@ final class UserCell : UITableViewCell {
         profilePictureView.set(.height, to: profilePictureViewSize)
         profilePictureView.size = profilePictureViewSize
         // Set up the main stack view
-        let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel, tickImageView ])
+        let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel, accessoryImageView ])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Values.mediumSpacing
@@ -85,11 +86,14 @@ final class UserCell : UITableViewCell {
         profilePictureView.update()
         displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
         switch accessory {
-        case .none: tickImageView.isHidden = true
+        case .none: accessoryImageView.isHidden = true
+        case .lock:
+            accessoryImageView.isHidden = false
+            accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").asTintedImage(color: Colors.text.withAlphaComponent(Values.unimportantElementOpacity))!
         case .tick(let isSelected):
-            tickImageView.isHidden = false
+            accessoryImageView.isHidden = false
             let icon = isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
-            tickImageView.image = isDarkMode ? icon : icon.asTintedImage(color: Colors.text)!
+            accessoryImageView.image = isDarkMode ? icon : icon.asTintedImage(color: Colors.text)!
         }
     }
 }

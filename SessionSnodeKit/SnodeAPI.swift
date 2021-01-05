@@ -75,7 +75,9 @@ public final class SnodeAPI : NSObject {
     
     @objc public static func clearSnodePool() {
         snodePool.removeAll()
-        setSnodePool(to: [])
+        Threading.workQueue.async {
+            setSnodePool(to: [])
+        }
     }
     
     // MARK: Swarm Interaction

@@ -219,11 +219,7 @@ public final class MessageSender : NSObject {
         }
         let recipient = message.recipient!
         let base64EncodedData = wrappedMessage.base64EncodedString()
-        var ttl = type(of: message).ttl
-        if let closedGroupUpdate = message as? ClosedGroupUpdateV2, case .encryptionKeyPair = closedGroupUpdate.kind! {
-            ttl = 30 * 24 * 60 * 60 * 1000
-        }
-        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: ttl, publicKey: recipient, data: base64EncodedData) else {
+        guard let (timestamp, nonce) = ProofOfWork.calculate(ttl: message.ttl, publicKey: recipient, data: base64EncodedData) else {
             SNLog("Proof of work calculation failed.")
             handleFailure(with: Error.proofOfWorkCalculationFailed, using: transaction)
             return promise
@@ -234,7 +230,7 @@ public final class MessageSender : NSObject {
                 NotificationCenter.default.post(name: .messageSending, object: NSNumber(value: message.sentTimestamp!))
             }
         }
-        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: type(of: message).ttl, timestamp: timestamp, nonce: nonce)
+        let snodeMessage = SnodeMessage(recipient: recipient, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp, nonce: nonce)
         SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
             let promiseCount = promises.count

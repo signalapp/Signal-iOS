@@ -144,8 +144,6 @@ extension MessageSender : SharedSenderKeysDelegate {
         }
         // Generate the new encryption key pair
         let newKeyPair = Curve25519.generateKeyPair()
-        // Store it
-        Storage.shared.addClosedGroupEncryptionKeyPair(newKeyPair, for: groupPublicKey, using: transaction)
         // Distribute it
         let proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.builder(publicKey: newKeyPair.publicKey,
             privateKey: newKeyPair.privateKey).build()
@@ -155,7 +153,12 @@ extension MessageSender : SharedSenderKeysDelegate {
             return ClosedGroupUpdateV2.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
         }
         let closedGroupUpdate = ClosedGroupUpdateV2(kind: .encryptionKeyPair(wrappers))
-        MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
+        let _ = MessageSender.sendNonDurably(closedGroupUpdate, in: thread, using: transaction).done { // FIXME: It'd be great if we could make this a durable operation
+            // Store it * after * having sent out the message to the group
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
+                Storage.shared.addClosedGroupEncryptionKeyPair(newKeyPair, for: groupPublicKey, using: transaction)
+            }
+        }
     }
     
 
