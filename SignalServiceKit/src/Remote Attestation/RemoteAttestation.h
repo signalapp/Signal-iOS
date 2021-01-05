@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -10,6 +10,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, RemoteAttestationService) {
     RemoteAttestationServiceContactDiscovery = 1,
     RemoteAttestationServiceKeyBackup,
 };
+
+NSString *NSStringForRemoteAttestationService(RemoteAttestationService value);
 
 extern NSErrorUserInfoKey const RemoteAttestationErrorKey_Reason;
 extern NSErrorDomain const RemoteAttestationErrorDomain;

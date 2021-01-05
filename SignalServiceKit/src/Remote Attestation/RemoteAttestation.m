@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteAttestation.h"
@@ -28,6 +28,15 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     return [NSError errorWithDomain:RemoteAttestationErrorDomain
                                code:code
                            userInfo:@{ RemoteAttestationErrorKey_Reason : reason }];
+}
+
+NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
+    switch (value) {
+        case RemoteAttestationServiceContactDiscovery:
+            return @"ContactDiscovery";
+        case RemoteAttestationServiceKeyBackup:
+            return @"KeyBackup";
+    }
 }
 
 @interface RemoteAttestationAuth ()
@@ -275,10 +284,23 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
         return failureHandler(OWSErrorMakeGenericError(@"Not registered."));
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"service: %@", NSStringForRemoteAttestationService(service));
+    }
+
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequestForService:service];
     [[TSNetworkManager shared] makeRequest:request
       success:^(NSURLSessionDataTask *task, id responseDict) {
-          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+        if (SSKDebugFlags.internalLogging) {
+            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+            long statuscode = response.statusCode;
+            OWSLogInfo(@"statuscode: %lu", (unsigned long) statuscode);
+            
+            [TSNetworkManager logCurlForTask:task];
+        }
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
               RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];
               if (!auth) {
                   OWSLogError(@"remote attestation auth could not be parsed: %@", responseDict);
@@ -425,6 +447,10 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
 
     if (isExpired) {
+        if (SSKDebugFlags.internalLogging) {
+            OWSLogInfo(@"signatureBody: %@", signatureBody);
+            OWSLogInfo(@"signature: %@", signature);
+        }
         OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
         *error = RemoteAttestationErrorMakeWithReason(
             RemoteAttestationAssertionError, @"Signature is expired.");
