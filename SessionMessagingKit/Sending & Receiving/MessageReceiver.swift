@@ -71,24 +71,31 @@ public enum MessageReceiver {
                 (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
             case .closedGroupCiphertext:
                 guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }
-                var keyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
-                guard !keyPairs.isEmpty else { throw Error.noGroupKeyPair }
-                // Loop through all known group key pairs in reverse order (i.e. try the latest key pair first (which'll more than
-                // likely be the one we want) but try older ones in case that didn't work)
-                var keyPair = keyPairs.removeLast()
-                func decrypt() throws {
-                    do {
-                        (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: keyPair)
-                    } catch {
-                        if !keyPairs.isEmpty {
-                            keyPair = keyPairs.removeLast()
-                            try decrypt()
-                        } else {
-                            throw error
+                do {
+                    var keyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
+                    guard !keyPairs.isEmpty else { throw Error.noGroupKeyPair }
+                    // Loop through all known group key pairs in reverse order (i.e. try the latest key pair first (which'll more than
+                    // likely be the one we want) but try older ones in case that didn't work)
+                    var keyPair = keyPairs.removeLast()
+                    func decrypt() throws {
+                        do {
+                            (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: keyPair)
+                        } catch {
+                            if !keyPairs.isEmpty {
+                                keyPair = keyPairs.removeLast()
+                                try decrypt()
+                            } else {
+                                throw error
+                            }
                         }
                     }
+                    try decrypt()
+                } catch {
+                    // Fall back on the V1 method
+                    guard let privateKey = SNMessagingKitConfiguration.shared.storage.getClosedGroupPrivateKey(for: hexEncodedGroupPublicKey) else { throw Error.noGroupKeyPair }
+                    let keyPair = try ECKeyPair(publicKeyData: Data(hex: hexEncodedGroupPublicKey.removing05PrefixIfNeeded()), privateKeyData: Data(hex: privateKey))
+                    (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: keyPair)
                 }
-                try decrypt()
                 groupPublicKey = envelope.source
             default: throw Error.unknownEnvelopeType
             }
