@@ -251,6 +251,8 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
             return popToConversationVC(self)
         }
+
+        /*
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.writeSync { [weak self] transaction in
                 MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
@@ -264,6 +266,18 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
                 }
             }
         }
+         */
+
+        Storage.write(with: { [weak self] transaction in
+            do {
+                try MessageSender.updateV2(groupPublicKey, with: members, name: name, transaction: transaction)
+            } catch {
+                self?.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+            }
+        }, completion: { [weak self] in
+            guard let self = self else { return }
+            popToConversationVC(self)
+        })
     }
 
     // MARK: Convenience
