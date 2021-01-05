@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -298,5 +298,15 @@ public extension OWSTableSection {
                   header: header(),
                   items: items,
                   footer: footer())
+    }
+}
+
+public extension OWSTableItem {
+    convenience init(
+        customCell: UITableViewCell,
+        rowHeight: CGFloat = UITableView.automaticDimension,
+        actionBlock: OWSTableActionBlock? = nil) {
+
+        self.init(customCell: customCell, customRowHeight: rowHeight, actionBlock: actionBlock)
     }
 }

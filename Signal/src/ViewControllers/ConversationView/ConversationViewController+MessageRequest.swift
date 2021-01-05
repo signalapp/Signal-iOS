@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,48 +15,11 @@ extension ConversationViewController: MessageRequestDelegate {
         case .none:
             owsFailDebug("Invalid mode.")
         case .contactOrGroupRequest:
-            showBlockContactOrGroupActionSheet()
+            let blockSheet = createBlockActionSheet()
+            presentActionSheet(blockSheet)
         case .groupInviteRequest:
             showBlockInviteActionSheet()
         }
-    }
-
-    func showBlockContactOrGroupActionSheet() {
-        Logger.info("")
-
-        let actionSheetTitleFormat: String
-        let actionSheetMessage: String
-        if thread.isGroupThread {
-            actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
-                                                       comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
-            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
-                                                   comment: "Action sheet message to confirm blocking a group via a message request.")
-        } else {
-            actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
-                                                       comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
-            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
-                                                   comment: "Action sheet message to confirm blocking a conversation via a message request.")
-        }
-
-        let threadName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
-        let actionSheetTitle = String(format: actionSheetTitleFormat, threadName)
-        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
-
-        let blockAction = ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
-                                                                     comment: "Action sheet action to confirm blocking a thread via a message request.")) { [weak self] _ in
-            self?.blockThread()
-        }
-        actionSheet.addAction(blockAction)
-
-        let blockAndDeleteAction = ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
-                                                                              comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")) { [weak self] _ in
-            self?.blockThreadAndDelete()
-        }
-        actionSheet.addAction(blockAndDeleteAction)
-
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        presentActionSheet(actionSheet)
     }
 
     func showBlockInviteActionSheet() {
@@ -154,39 +117,8 @@ extension ConversationViewController: MessageRequestDelegate {
 
     func messageRequestViewDidTapDelete() {
         AssertIsOnMainThread()
-
-        let actionSheetTitle: String
-        let actionSheetMessage: String
-        let actionSheetAction: String
-
-        var isMemberOfGroup = false
-        if let groupThread = thread as? TSGroupThread {
-            isMemberOfGroup = groupThread.isLocalUserMemberOfAnyKind
-        }
-
-        if isMemberOfGroup {
-            actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
-                                                 comment: "Action sheet title to confirm deleting a group via a message request.")
-            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
-                                                   comment: "Action sheet message to confirm deleting a group via a message request.")
-            actionSheetAction = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
-                                                  comment: "Action sheet action to confirm deleting a group via a message request.")
-        } else { // either 1:1 thread, or a group of which I'm not a member
-            actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
-                                                 comment: "Action sheet title to confirm deleting a conversation via a message request.")
-            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
-                                                   comment: "Action sheet message to confirm deleting a conversation via a message request.")
-            actionSheetAction = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
-                                                  comment: "Action sheet action to confirm deleting a conversation via a message request.")
-        }
-
-        OWSActionSheets.showConfirmationAlert(title: actionSheetTitle,
-                                              message: actionSheetMessage,
-                                              proceedTitle: actionSheetAction) { _ in
-            self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                                   responseType: .delete)
-            self.leaveAndSoftDeleteThread()
-        }
+        let deleteSheet = createDeleteActionSheet()
+        presentActionSheet(deleteSheet)
     }
 
     func leaveAndSoftDeleteThread() {
@@ -294,5 +226,99 @@ extension ConversationViewController: MessageRequestDelegate {
         }
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)
+    }
+}
+
+extension ConversationViewController: MessageRequestNameCollisionDelegate {
+
+    func createBlockActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
+        Logger.info("")
+
+        let actionSheetTitleFormat: String
+        let actionSheetMessage: String
+        if thread.isGroupThread {
+            actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
+                comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
+            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
+                comment: "Action sheet message to confirm blocking a group via a message request.")
+        } else {
+            actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
+                comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
+            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
+                comment: "Action sheet message to confirm blocking a conversation via a message request.")
+        }
+
+        let threadName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+        let actionSheetTitle = String(format: actionSheetTitleFormat, threadName)
+        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
+
+        let blockActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
+            comment: "Action sheet action to confirm blocking a thread via a message request.")
+        let blockAndDeleteActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
+            comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")
+
+        actionSheet.addAction(ActionSheetAction(title: blockActionTitle) { [weak self] _ in
+            self?.blockThread()
+            sheetCompletion?(true)
+        })
+        actionSheet.addAction(ActionSheetAction(title: blockAndDeleteActionTitle) { [weak self] _ in
+            self?.blockThreadAndDelete()
+            sheetCompletion?(true)
+        })
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel, handler: { _ in
+            sheetCompletion?(false)
+        }))
+        return actionSheet
+    }
+
+    func createDeleteActionSheet(sheetCompletion: ((Bool) -> Void)? = nil) -> ActionSheetController {
+        let actionSheetTitle: String
+        let actionSheetMessage: String
+        let confirmationText: String
+
+        var isMemberOfGroup = false
+        if let groupThread = thread as? TSGroupThread {
+            isMemberOfGroup = groupThread.isLocalUserMemberOfAnyKind
+        }
+
+        if isMemberOfGroup {
+            actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
+                                                 comment: "Action sheet title to confirm deleting a group via a message request.")
+            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
+                                                   comment: "Action sheet message to confirm deleting a group via a message request.")
+            confirmationText = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
+                                                  comment: "Action sheet action to confirm deleting a group via a message request.")
+        } else { // either 1:1 thread, or a group of which I'm not a member
+            actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
+                                                 comment: "Action sheet title to confirm deleting a conversation via a message request.")
+            actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
+                                                   comment: "Action sheet message to confirm deleting a conversation via a message request.")
+            confirmationText = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
+                                                  comment: "Action sheet action to confirm deleting a conversation via a message request.")
+        }
+
+        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
+        actionSheet.addAction(ActionSheetAction(title: confirmationText, handler: { _ in
+            self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
+                                                                   responseType: .delete)
+            self.leaveAndSoftDeleteThread()
+            sheetCompletion?(true)
+        }))
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel, handler: { _ in
+            sheetCompletion?(false)
+        }))
+        return actionSheet
+    }
+
+    func nameCollisionController(_ controller: MessageRequestNameCollisionViewController, didResolveCollisionsSuccessfully success: Bool) {
+        if success {
+            ensureBannerState()
+        } else {
+            // This may have already been closed (e.g. if the user requested deletion), but
+            // it's not guaranteed (e.g. the user blocked the request). Let's close it just
+            // to be safe.
+            self.conversationSplitViewController?.closeSelectedConversation(animated: false)
+        }
+        controller.dismiss(animated: true, completion: nil)
     }
 }

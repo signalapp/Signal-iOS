@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactAvatarBuilder.h"
@@ -113,6 +113,18 @@ NS_ASSUME_NONNULL_BEGIN
                        colorName:ConversationColorNameDefault
                         diameter:diameter
                      transaction:transaction];
+}
+
++ (nullable UIImage *)buildImageForAddress:(SignalServiceAddress *)address
+                                  diameter:(NSUInteger)diameter
+                               transaction:(SDSAnyReadTransaction *)transaction
+{
+    ConversationColorName color = [self.contactsManager conversationColorNameForAddress:address
+                                                                            transaction:transaction];
+    return [[[self alloc] initWithAddress:address
+                                colorName:color
+                                 diameter:diameter
+                              transaction:transaction] build];
 }
 
 #pragma mark - Dependencies

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
+		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
 		328EF3DC25782A6A00D5C31D /* GroupCallSpeakerToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EF3DB25782A6A00D5C31D /* GroupCallSpeakerToastView.swift */; };
 		32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */; };
@@ -16,6 +17,7 @@
 		32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */; };
 		32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */; };
 		32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */; };
+		32CBF07D258C939800D56903 /* MessageRequestNameCollisionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CBF07C258C939800D56903 /* MessageRequestNameCollisionViewController.swift */; };
 		32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */; };
 		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
 		32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */; };
@@ -959,6 +961,7 @@
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionReviewCell.swift; sourceTree = "<group>"; };
 		323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewsMegaphone.swift; sourceTree = "<group>"; };
 		328EF3DB25782A6A00D5C31D /* GroupCallSpeakerToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSpeakerToastView.swift; sourceTree = "<group>"; };
 		32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMoodPickerView.swift; sourceTree = "<group>"; };
@@ -966,6 +969,7 @@
 		32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallUpdateMessageHandler.swift; sourceTree = "<group>"; };
 		32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallErrorView.swift; sourceTree = "<group>"; };
 		32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeSupportEmailOperation.swift; sourceTree = "<group>"; };
+		32CBF07C258C939800D56903 /* MessageRequestNameCollisionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestNameCollisionViewController.swift; sourceTree = "<group>"; };
 		32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
 		32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportRequestTextView.swift; sourceTree = "<group>"; };
@@ -2264,6 +2268,7 @@
 				34B14D8E24F41C4200CC3A9A /* GroupLinkQRCodeViewController.swift */,
 				34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */,
 				347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */,
+				32CBF07C258C939800D56903 /* MessageRequestNameCollisionViewController.swift */,
 				347B83F82436820C0019A52C /* GroupViewHelper.swift */,
 				347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
@@ -3300,6 +3305,7 @@
 				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				88A941982409A391000E9700 /* LottieToggleButton.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
+				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
 				34386A53207D271C009F5D9C /* NeverClearView.swift */,
 				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
 				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
@@ -5206,6 +5212,7 @@
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */,
+				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				347C3832252CE69400F3D941 /* CVCell.swift in Sources */,
 				88D1BCBE24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */,
@@ -5269,6 +5276,7 @@
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
 				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
+				32CBF07D258C939800D56903 /* MessageRequestNameCollisionViewController.swift in Sources */,
 				34DE9C02256575300080E4AF /* CVMessageMapping.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				347C382C252CE69400F3D941 /* CVStackView.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ public class ThreadViewModel: NSObject {
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     @objc public let groupCallInProgress: Bool
 
-    var isContactThread: Bool {
+    public var isContactThread: Bool {
         return !isGroupThread
     }
 

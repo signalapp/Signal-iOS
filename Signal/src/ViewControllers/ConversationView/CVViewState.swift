@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,6 +33,8 @@ public class CVViewState: NSObject {
     public var isMigrateGroupBannerHidden = false
     @objc
     public var isDroppedGroupMembersBannerHidden = false
+    @objc
+    public var isMessageRequestNameCollisionBannerHidden = false
     @objc
     public var hasTriedToMigrateGroup = false
 

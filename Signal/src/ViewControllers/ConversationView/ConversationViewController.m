@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -685,86 +685,93 @@ typedef enum : NSUInteger {
     [self.bannerView removeFromSuperview];
     self.bannerView = nil;
 
-    if (self.userHasScrolled) {
-        return;
-    }
-
     NSMutableArray<UIView *> *banners = [NSMutableArray new];
 
-    NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
+    // Most of these banners should hide themselves when the user scrolls
+    if (!self.userHasScrolled) {
+        NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
+        if (noLongerVerifiedAddresses.count > 0) {
+            NSString *message;
+            if (noLongerVerifiedAddresses.count > 1) {
+                message = NSLocalizedString(@"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
+                    @"Indicates that more than one member of this group conversation is no longer verified.");
+            } else {
+                SignalServiceAddress *address = [noLongerVerifiedAddresses firstObject];
+                NSString *displayName = [self.contactsManager displayNameForAddress:address];
+                NSString *format
+                    = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
+                           @"Indicates that one member of this group conversation is no longer "
+                           @"verified. Embeds {{user's name or phone number}}.")
+                                                : NSLocalizedString(@"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
+                                                    @"Indicates that this 1:1 conversation is no longer verified. Embeds "
+                                                    @"{{user's name or phone number}}."));
+                message = [NSString stringWithFormat:format, displayName];
+            }
 
-    if (noLongerVerifiedAddresses.count > 0) {
-        NSString *message;
-        if (noLongerVerifiedAddresses.count > 1) {
-            message = NSLocalizedString(@"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
-                @"Indicates that more than one member of this group conversation is no longer verified.");
-        } else {
-            SignalServiceAddress *address = [noLongerVerifiedAddresses firstObject];
-            NSString *displayName = [self.contactsManager displayNameForAddress:address];
-            NSString *format
-                = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
-                       @"Indicates that one member of this group conversation is no longer "
-                       @"verified. Embeds {{user's name or phone number}}.")
-                                            : NSLocalizedString(@"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
-                                                @"Indicates that this 1:1 conversation is no longer verified. Embeds "
-                                                @"{{user's name or phone number}}."));
-            message = [NSString stringWithFormat:format, displayName];
+            UIView *banner = [ConversationViewController
+                createBannerWithTitleWithTitle:message
+                                   bannerColor:UIColor.ows_accentRedColor
+                                      tapBlock:^{ [weakSelf noLongerVerifiedBannerViewWasTapped]; }];
+            [banners addObject:banner];
         }
 
-        UIView *banner = [ConversationViewController
-            createBannerWithTitleWithTitle:message
-                               bannerColor:UIColor.ows_accentRedColor
-                                  tapBlock:^{ [weakSelf noLongerVerifiedBannerViewWasTapped]; }];
-        [banners addObject:banner];
-    }
+        NSString *blockStateMessage = nil;
+        if (self.isGroupConversation) {
+            int blockedGroupMemberCount = [self blockedGroupMemberCount];
+            if (blockedGroupMemberCount == 1) {
+                blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
+                    @"Indicates that a single member of this group has been blocked.");
+            } else if (blockedGroupMemberCount > 1) {
+                blockStateMessage =
+                    [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
+                                                   @"Indicates that some members of this group has been blocked. Embeds "
+                                                   @"{{the number of blocked users in this group}}."),
+                              [OWSFormat formatInt:blockedGroupMemberCount]];
+            }
+        }
 
-    NSString *blockStateMessage = nil;
-    if (self.isGroupConversation) {
-        int blockedGroupMemberCount = [self blockedGroupMemberCount];
-        if (blockedGroupMemberCount == 1) {
-            blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
-                @"Indicates that a single member of this group has been blocked.");
-        } else if (blockedGroupMemberCount > 1) {
-            blockStateMessage =
-                [NSString stringWithFormat:NSLocalizedString(@"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
-                                               @"Indicates that some members of this group has been blocked. Embeds "
-                                               @"{{the number of blocked users in this group}}."),
-                          [OWSFormat formatInt:blockedGroupMemberCount]];
+        if (blockStateMessage) {
+            UIView *banner =
+                [ConversationViewController createBannerWithTitleWithTitle:blockStateMessage
+                                                               bannerColor:UIColor.ows_accentRedColor
+                                                                  tapBlock:^{ [weakSelf blockBannerViewWasTapped]; }];
+            [banners addObject:banner];
+        }
+
+        NSUInteger pendingMemberRequestCount = self.pendingMemberRequestCount;
+        if (pendingMemberRequestCount > 0 && self.canApprovePendingMemberRequests
+            && !self.viewState.isPendingMemberRequestsBannerHidden) {
+            UIView *banner = [self
+                createPendingJoinRequestBannerWithViewState:self.viewState
+                                                      count:pendingMemberRequestCount
+                                    viewMemberRequestsBlock:^{ [weakSelf showConversationSettingsAndShowMemberRequests]; }];
+            [banners addObject:banner];
+        }
+
+        GroupsV2MigrationInfo *_Nullable migrationInfo = [self manualMigrationInfoForGroup];
+        if (migrationInfo != nil && migrationInfo.canGroupBeMigrated && !self.viewState.isMigrateGroupBannerHidden
+            && !GroupManager.areMigrationsBlocking) {
+            UIView *banner = [self createMigrateGroupBannerWithViewState:self.viewState migrationInfo:migrationInfo];
+            [banners addObject:banner];
+        }
+
+        UIView *_Nullable droppedGroupMembersBanner;
+        droppedGroupMembersBanner = [self createDroppedGroupMembersBannerIfNecessaryWithViewState:self.viewState];
+        if (droppedGroupMembersBanner != nil) {
+            [banners addObject:droppedGroupMembersBanner];
         }
     }
 
-    if (blockStateMessage) {
-        UIView *banner =
-            [ConversationViewController createBannerWithTitleWithTitle:blockStateMessage
-                                                           bannerColor:UIColor.ows_accentRedColor
-                                                              tapBlock:^{ [weakSelf blockBannerViewWasTapped]; }];
-        [banners addObject:banner];
-    }
-
-    NSUInteger pendingMemberRequestCount = self.pendingMemberRequestCount;
-    if (pendingMemberRequestCount > 0 && self.canApprovePendingMemberRequests
-        && !self.viewState.isPendingMemberRequestsBannerHidden) {
-        UIView *banner = [self
-            createPendingJoinRequestBannerWithViewState:self.viewState
-                                                  count:pendingMemberRequestCount
-                                viewMemberRequestsBlock:^{ [weakSelf showConversationSettingsAndShowMemberRequests]; }];
-        [banners addObject:banner];
-    }
-
-    GroupsV2MigrationInfo *_Nullable migrationInfo = [self manualMigrationInfoForGroup];
-    if (migrationInfo != nil && migrationInfo.canGroupBeMigrated && !self.viewState.isMigrateGroupBannerHidden
-        && !GroupManager.areMigrationsBlocking) {
-        UIView *banner = [self createMigrateGroupBannerWithViewState:self.viewState migrationInfo:migrationInfo];
-        [banners addObject:banner];
-    }
-
-    UIView *_Nullable droppedGroupMembersBanner;
-    droppedGroupMembersBanner = [self createDroppedGroupMembersBannerIfNecessaryWithViewState:self.viewState];
-    if (droppedGroupMembersBanner != nil) {
-        [banners addObject:droppedGroupMembersBanner];
+    UIView *_Nullable messageRequestNameCollisionBanner;
+    messageRequestNameCollisionBanner = [self createMessageRequestNameCollisionBannerIfNecessaryWithViewState:self.viewState];
+    if (messageRequestNameCollisionBanner != nil) {
+        [banners addObject:messageRequestNameCollisionBanner];
     }
 
     if (banners.count < 1) {
+        if (self.hasViewDidAppearEverBegun) {
+            [self updateContentInsetsAnimated:NO];
+        }
         return;
     }
 
@@ -775,21 +782,12 @@ typedef enum : NSUInteger {
     [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-
-    UIView *bannerShadow = [UIView new];
-    bannerShadow.backgroundColor = Theme.backgroundColor;
-    // Use a shadow to "pop" the indicator above the other views.
-    bannerShadow.layer.shadowColor = [UIColor blackColor].CGColor;
-    bannerShadow.layer.shadowOffset = CGSizeMake(0, 4);
-    bannerShadow.layer.shadowRadius = 4.f;
-    bannerShadow.layer.shadowOpacity = 0.15f;
-    [bannerView addSubview:bannerShadow];
-    [bannerShadow autoPinEdgesToSuperviewEdges];
-    [bannerView sendSubviewToBack:bannerShadow];
-
     [self.view layoutSubviews];
 
     self.bannerView = bannerView;
+    if (self.hasViewDidAppearEverBegun) {
+        [self updateContentInsetsAnimated:NO];
+    }
 }
 
 - (NSUInteger)pendingMemberRequestCount
@@ -2990,6 +2988,7 @@ typedef enum : NSUInteger {
     [self updateInputToolbar];
     [self updateInputToolbarLayout];
     [self updateBarButtonItems];
+    [self ensureBannerState];
 
     // Re-styling the message actions is tricky,
     // since this happens rarely just dismiss
@@ -3998,7 +3997,7 @@ typedef enum : NSUInteger {
 
     newInsets.bottom = self.messageActionsExtraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
         + self.bottomBar.height - self.view.safeAreaInsets.bottom;
-    newInsets.top = self.messageActionsExtraContentInsetPadding;
+    newInsets.top = self.messageActionsExtraContentInsetPadding + self.bannerView.height;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
