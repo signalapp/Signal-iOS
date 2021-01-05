@@ -209,7 +209,11 @@ public class InputAccessoryViewPlaceholder: UIView {
         // We only want to do an animated presentation if either a) the height changed or b) the view is
         // starting from off the bottom of the screen (a full presentation). This provides the best experience
         // when canceling an interactive dismissal or changing orientations.
-        guard beginFrame.height != endFrame.height || beginFrame.minY == UIScreen.main.bounds.height else { return }
+        guard beginFrame.height != endFrame.height || beginFrame.minY == UIScreen.main.bounds.height else {
+            delegate?.inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: 0,
+                                                                    animationCurve: .linear)
+            return
+        }
 
         keyboardState = .presenting(frame: endFrame)
 

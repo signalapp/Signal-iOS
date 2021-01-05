@@ -91,7 +91,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 
 - (void)updateBarButtonItems;
 - (void)ensureBannerState;
-- (void)updateContentInsetsAnimated:(BOOL)animated;
 
 // TODO: Remove or rework method.
 - (void)reloadCollectionView;
