@@ -33,6 +33,7 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         updateModel()
+        tableView.separatorStyle = .none
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -43,6 +44,15 @@ class MessageRequestNameCollisionViewController: OWSTableViewController {
             barButtonSystemItem: .done,
             target: self,
             action: #selector(donePressed))
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            // Force tableview to recalculate self-sized cell height
+            self.tableView.beginUpdates()
+            self.tableView.endUpdates()
+        }
     }
 
     func updateModel() {

@@ -357,6 +357,8 @@ private class MessageRequestNameCollisionBanner: UIView {
         let button = OWSButton(
             imageName: "x-circle-16",
             tintColor: Theme.secondaryTextAndIconColor)
+        button.accessibilityLabel = NSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for banner close button")
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setCompressionResistanceHigh()
         button.setContentHuggingHigh()
@@ -364,8 +366,7 @@ private class MessageRequestNameCollisionBanner: UIView {
     }()
 
     private let reviewButton: OWSButton = {
-        let buttonText = NSLocalizedString(
-            "MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
+        let buttonText = NSLocalizedString("MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
             comment: "Button to allow user to review known name collisions with an incoming message request")
 
         let button = OWSButton(title: buttonText)
@@ -401,6 +402,8 @@ private class MessageRequestNameCollisionBanner: UIView {
         closeButton.imageView?.autoPinLeading(toTrailingEdgeOf: label, offset: 16)
         closeButton.imageView?.autoPinTrailing(toEdgeOf: self, offset: -16)
         reviewButton.titleLabel?.autoPinLeading(toEdgeOf: label)
+
+        accessibilityElements = [label, reviewButton, closeButton]
     }
 
     required init?(coder: NSCoder) {

@@ -782,18 +782,6 @@ typedef enum : NSUInteger {
     [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-
-    UIView *bannerShadow = [UIView new];
-    bannerShadow.backgroundColor = Theme.backgroundColor;
-    // Use a shadow to "pop" the indicator above the other views.
-    bannerShadow.layer.shadowColor = [UIColor blackColor].CGColor;
-    bannerShadow.layer.shadowOffset = CGSizeMake(0, 4);
-    bannerShadow.layer.shadowRadius = 4.f;
-    bannerShadow.layer.shadowOpacity = 0.15f;
-    [bannerView addSubview:bannerShadow];
-    [bannerShadow autoPinEdgesToSuperviewEdges];
-    [bannerView sendSubviewToBack:bannerShadow];
-
     [self.view layoutSubviews];
 
     self.bannerView = bannerView;
