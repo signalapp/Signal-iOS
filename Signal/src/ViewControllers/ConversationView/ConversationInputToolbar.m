@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -1545,6 +1545,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     if (self.suggestedStickerInfos.count < 1) {
         self.suggestedStickerView.hidden = YES;
+        [self layoutIfNeeded];
         return;
     }
     __weak __typeof(self) weakSelf = self;
@@ -1559,6 +1560,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
     self.suggestedStickerView.items = items;
     self.suggestedStickerView.hidden = NO;
+    [self layoutIfNeeded];
     if (shouldReset) {
         self.suggestedStickerView.contentOffset
             = CGPointMake(-self.suggestedStickerView.contentInset.left, -self.suggestedStickerView.contentInset.top);
