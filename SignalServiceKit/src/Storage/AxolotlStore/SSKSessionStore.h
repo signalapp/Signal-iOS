@@ -32,9 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
                            deviceId:(int)deviceId
                         transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSNumber *)maxSessionSenderChainKeyIndexForAccountId:(NSString *)accountId
-                                                     transaction:(SDSAnyReadTransaction *)transaction;
-
 - (void)deleteSessionForAddress:(SignalServiceAddress *)address
                        deviceId:(int)deviceId
                     transaction:(SDSAnyWriteTransaction *)transaction;

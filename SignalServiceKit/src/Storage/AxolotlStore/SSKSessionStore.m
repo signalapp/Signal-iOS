@@ -209,37 +209,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction].sessionState.hasSenderChain;
 }
 
-- (nullable NSNumber *)maxSessionSenderChainKeyIndexForAccountId:(NSString *)accountId
-                                                     transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(accountId.length > 0);
-    OWSAssertDebug([transaction isKindOfClass:[SDSAnyReadTransaction class]]);
-
-    NSNumber *_Nullable result = nil;
-    NSDictionary *_Nullable dictionary = [self.keyValueStore getObjectForKey:accountId transaction:transaction];
-    for (id value in dictionary.allValues) {
-        if (![value isKindOfClass:[SessionRecord class]]) {
-            OWSLogVerbose(@"Unexpected value: %@", value);
-            OWSFailDebug(@"Unexpected value.");
-            continue;
-        }
-        SessionRecord *record = (SessionRecord *)value;
-        if (SSKDebugFlags.verboseSignalRecipientLogging) {
-            OWSLogInfo(@"Record hasSenderChain: %d.", record.sessionState.hasSenderChain);
-        }
-        if (record.sessionState.hasSenderChain) {
-            int index = record.sessionState.senderChainKey.index;
-            if (SSKDebugFlags.verboseSignalRecipientLogging) {
-                OWSLogInfo(@"Record index: %d.", index);
-            }
-            if (result == nil || result.intValue < index) {
-                result = @(index);
-            }
-        }
-    }
-    return result;
-}
-
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
                        deviceId:(int)deviceId
                 protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
