@@ -14,41 +14,56 @@ public class SSKSessionStore: NSObject {
         return OWSAccountIdFinder()
     }
 
-    fileprivate func loadSession(for address: SignalServiceAddress,
-                                 deviceId: Int32,
-                                 transaction: SDSAnyWriteTransaction) -> AxolotlKit.SessionRecord {
+    fileprivate func loadSerializedSession(for address: SignalServiceAddress,
+                                           deviceId: Int32,
+                                           transaction: SDSAnyWriteTransaction) -> Data? {
         owsAssertDebug(address.isValid)
         let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-        return loadSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
+        return loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
     }
 
-    private func loadSession(forAccountId accountId: String,
-                             deviceId: Int32,
-                             transaction: SDSAnyReadTransaction) -> AxolotlKit.SessionRecord {
+    private func loadSerializedSession(forAccountId accountId: String,
+                                       deviceId: Int32,
+                                       transaction: SDSAnyReadTransaction) -> Data? {
         owsAssertDebug(!accountId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
         let dictionary = keyValueStore.getObject(forKey: accountId,
                                                  transaction: transaction) as! SessionsByDeviceDictionary?
 
-        return dictionary?[deviceId] ?? SessionRecord()
+        do {
+            return try dictionary?[deviceId]?.serializeProto()
+        } catch {
+            owsFailDebug("failed to serialize AxolotlKit session: \(error)")
+            return nil
+        }
     }
 
-    fileprivate func storeSession(_ session: AxolotlKit.SessionRecord,
-                                  for address: SignalServiceAddress,
-                                  deviceId: Int32,
-                                  transaction: SDSAnyWriteTransaction) {
+    fileprivate func storeSerializedSession(_ sessionData: Data,
+                                            for address: SignalServiceAddress,
+                                            deviceId: Int32,
+                                            transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(address.isValid)
         let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-        storeSession(forAccountId: accountId, deviceId: deviceId, session: session, transaction: transaction)
+        storeSerializedSession(forAccountId: accountId,
+                               deviceId: deviceId,
+                               sessionData: sessionData,
+                               transaction: transaction)
     }
 
-    private func storeSession(forAccountId accountId: String,
-                              deviceId: Int32,
-                              session: AxolotlKit.SessionRecord,
-                              transaction: SDSAnyWriteTransaction) {
+    private func storeSerializedSession(forAccountId accountId: String,
+                                        deviceId: Int32,
+                                        sessionData: Data,
+                                        transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!accountId.isEmpty)
         owsAssertDebug(deviceId > 0)
+
+        let session: AxolotlKit.SessionRecord
+        do {
+            session = try .init(serializedProto: sessionData)
+        } catch {
+            owsFail("trying to store data that isn't a valid session: \(error)")
+        }
 
         // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally
         // this  is achieved by marking things as "not fresh" at the point of deserialization - when we fetch a
@@ -77,8 +92,7 @@ public class SSKSessionStore: NSObject {
     public func containsSession(forAccountId accountId: String,
                                 deviceId: Int32,
                                 transaction: SDSAnyReadTransaction) -> Bool {
-        let session = loadSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
-        return session.sessionState()?.hasSenderChain() ?? false
+        return loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction) != nil
     }
 
     private func deleteSession(forAccountId accountId: String,
@@ -183,39 +197,35 @@ public class SSKSessionStore: NSObject {
 }
 
 extension SSKSessionStore {
-    fileprivate func loadSignalClientSession(
+    fileprivate func loadSession(
         for address: SignalServiceAddress,
         deviceId: Int32,
         transaction: SDSAnyWriteTransaction
     ) throws -> SignalClient.SessionRecord? {
-        let record = loadSession(for: address, deviceId: deviceId, transaction: transaction)
-        guard record.sessionState()?.rootKey != nil else {
+        guard let serializedData = loadSerializedSession(for: address,
+                                                         deviceId: deviceId,
+                                                         transaction: transaction) else {
             return nil
         }
-        return try SessionRecord(bytes: record.serializeProto())
+        return try SessionRecord(bytes: serializedData)
     }
 
-    fileprivate func storeSignalClientSession(_ record: SignalClient.SessionRecord,
-                                              for address: SignalServiceAddress,
-                                              deviceId: Int32,
-                                              transaction: SDSAnyWriteTransaction) throws {
-        storeSession(try AxolotlKit.SessionRecord(serializedProto: Data(record.serialize())),
-                     for: address,
-                     deviceId: deviceId,
-                     transaction: transaction)
+    fileprivate func storeSession(_ record: SignalClient.SessionRecord,
+                                  for address: SignalServiceAddress,
+                                  deviceId: Int32,
+                                  transaction: SDSAnyWriteTransaction) throws {
+        storeSerializedSession(Data(record.serialize()), for: address, deviceId: deviceId, transaction: transaction)
     }
 
     public func archiveSession(for address: SignalServiceAddress,
                                deviceId: Int32,
                                transaction: SDSAnyWriteTransaction) {
         do {
-            guard let session = try self.loadSignalClientSession(for: address,
-                                                                 deviceId: deviceId,
-                                                                 transaction: transaction) else {
+            guard let session = try self.loadSession(for: address, deviceId: deviceId, transaction: transaction) else {
                 return
             }
             session.archiveCurrentState()
-            try self.storeSignalClientSession(session, for: address, deviceId: deviceId, transaction: transaction)
+            try self.storeSession(session, for: address, deviceId: deviceId, transaction: transaction)
         } catch {
             owsFailDebug("\(error)")
         }
@@ -224,18 +234,18 @@ extension SSKSessionStore {
 
 extension SSKSessionStore: SignalClient.SessionStore {
     public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SignalClient.SessionRecord? {
-        return try loadSignalClientSession(for: SignalServiceAddress(from: address),
-                                           deviceId: Int32(bitPattern: address.deviceId),
-                                           transaction: context.asTransaction)
+        return try loadSession(for: SignalServiceAddress(from: address),
+                               deviceId: Int32(bitPattern: address.deviceId),
+                               transaction: context.asTransaction)
     }
 
     public func storeSession(_ record: SignalClient.SessionRecord,
                              for address: ProtocolAddress,
                              context: StoreContext) throws {
-        try storeSignalClientSession(record,
-                                     for: SignalServiceAddress(from: address),
-                                     deviceId: Int32(bitPattern: address.deviceId),
-                                     transaction: context.asTransaction)
+        try storeSession(record,
+                         for: SignalServiceAddress(from: address),
+                         deviceId: Int32(bitPattern: address.deviceId),
+                         transaction: context.asTransaction)
     }
 }
 
@@ -244,9 +254,17 @@ extension SSKSessionStore: AxolotlKit.SessionStore {
     public func loadSession(_ contactIdentifier: String,
                             deviceId: Int32,
                             protocolContext: SPKProtocolReadContext?) -> AxolotlKit.SessionRecord {
-        return loadSession(forAccountId: contactIdentifier,
-                           deviceId: deviceId,
-                           transaction: protocolContext as! SDSAnyReadTransaction)
+        guard let sessionData = loadSerializedSession(forAccountId: contactIdentifier,
+                                                      deviceId: deviceId,
+                                                      transaction: protocolContext as! SDSAnyReadTransaction) else {
+            return SessionRecord()
+        }
+        do {
+            return try AxolotlKit.SessionRecord(serializedProto: sessionData)
+        } catch {
+            owsFailDebug("serialized session data was not valid: \(error)")
+            return SessionRecord()
+        }
     }
 
     @available(*, deprecated, message: "use the strongly typed `transaction:` flavor instead")
@@ -259,10 +277,14 @@ extension SSKSessionStore: AxolotlKit.SessionStore {
                              deviceId: Int32,
                              session: AxolotlKit.SessionRecord,
                              protocolContext: SPKProtocolWriteContext?) {
-        storeSession(forAccountId: contactIdentifier,
-                     deviceId: deviceId,
-                     session: session,
-                     transaction: protocolContext as! SDSAnyWriteTransaction)
+        do {
+            storeSerializedSession(forAccountId: contactIdentifier,
+                                   deviceId: deviceId,
+                                   sessionData: try session.serializeProto(),
+                                   transaction: protocolContext as! SDSAnyWriteTransaction)
+        } catch {
+            owsFail("could not serialize session: \(error)")
+        }
     }
 
     @available(*, deprecated, message: "use the strongly typed `transaction:` flavor instead")
