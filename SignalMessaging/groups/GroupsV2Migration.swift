@@ -431,14 +431,19 @@ fileprivate extension GroupsV2Migration {
         case parallel
     }
 
-    private static func fetchProfiles(addresses: [SignalServiceAddress], profileFetchMode: ProfileFetchMode) -> Promise<Void> {
+    private static func fetchProfiles(addresses: [SignalServiceAddress],
+                                      profileFetchMode: ProfileFetchMode) -> Promise<Void> {
         func fetchProfilePromise(address: SignalServiceAddress) -> Promise<Void> {
             firstly {
-                ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
+                ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: true).asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
                 if case ProfileFetchError.throttled = error {
                     // Do not ignore throttling errors.
                     throw error
+                }
+                if case ProfileFetchError.missing = error {
+                    // If a user has no profile, ignore.
+                    return Promise.value(())
                 }
                 owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
