@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -163,7 +163,7 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
         permissionActionSheetController = nil
 
         ContactSupportAlert.presentStep2(
-            emailSubject: "Signal iOS Transfer",
+            emailSupportFilter: "Signal iOS Transfer",
             fromViewController: self
         )
     }
