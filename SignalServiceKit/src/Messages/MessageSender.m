@@ -1366,9 +1366,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     __block BOOL hasSession;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasSession = [self.sessionStore containsSessionForAccountId:accountId
-                                                           deviceId:[deviceId intValue]
-                                                        transaction:transaction];
+        hasSession = [self.sessionStore containsActiveSessionForAccountId:accountId
+                                                                 deviceId:[deviceId intValue]
+                                                              transaction:transaction];
     }];
     if (hasSession) {
         return;

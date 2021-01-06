@@ -162,7 +162,7 @@ extension MessageSender {
             }
 
             return deviceIds.filter { deviceId in
-                !self.sessionStore.containsSession(
+                !self.sessionStore.containsActiveSession(
                     forAccountId: recipient.accountId,
                     deviceId: Int32(deviceId),
                     transaction: transaction
@@ -333,7 +333,9 @@ public extension MessageSender {
 
         Logger.info("Creating session for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
-        guard !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) else {
+        guard !sessionStore.containsActiveSession(forAccountId: accountId,
+                                                  deviceId: deviceId.int32Value,
+                                                  transaction: transaction) else {
             Logger.warn("Session already exists.")
             return
         }
@@ -372,7 +374,9 @@ public extension MessageSender {
                                             preKeyBundle: preKeyBundle,
                                             transaction: transaction)
         }
-        if !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) {
+        if !sessionStore.containsActiveSession(forAccountId: accountId,
+                                               deviceId: deviceId.int32Value,
+                                               transaction: transaction) {
             owsFailDebug("Session does not exist.")
         }
     }
@@ -1169,9 +1173,9 @@ extension MessageSender {
         let recipientAddress = messageSend.address
         owsAssertDebug(recipientAddress.isValid)
 
-        guard Self.sessionStore.containsSession(for: recipientAddress,
-                                                deviceId: deviceId,
-                                                transaction: transaction) else {
+        guard Self.sessionStore.containsActiveSession(for: recipientAddress,
+                                                      deviceId: deviceId,
+                                                      transaction: transaction) else {
             throw EncryptionError.missingSession(recipientAddress: recipientAddress, deviceId: deviceId)
         }
 

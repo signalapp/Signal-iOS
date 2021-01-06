@@ -75,19 +75,19 @@ public class SSKSessionStore: NSObject {
         keyValueStore.setObject(dictionary, key: accountId, transaction: transaction)
     }
 
-    @objc(containsSessionForAddress:deviceId:transaction:)
-    public func containsSession(for address: SignalServiceAddress,
-                                deviceId: Int32,
-                                transaction: SDSAnyWriteTransaction) -> Bool {
+    @objc(containsActiveSessionForAddress:deviceId:transaction:)
+    public func containsActiveSession(for address: SignalServiceAddress,
+                                      deviceId: Int32,
+                                      transaction: SDSAnyWriteTransaction) -> Bool {
         owsAssertDebug(address.isValid)
         let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
-        return containsSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
+        return containsActiveSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
     }
 
     @objc
-    public func containsSession(forAccountId accountId: String,
-                                deviceId: Int32,
-                                transaction: SDSAnyReadTransaction) -> Bool {
+    public func containsActiveSession(forAccountId accountId: String,
+                                      deviceId: Int32,
+                                      transaction: SDSAnyReadTransaction) -> Bool {
         guard let serializedData = loadSerializedSession(forAccountId: accountId,
                                                          deviceId: deviceId,
                                                          transaction: transaction) else {
@@ -300,9 +300,9 @@ extension SSKSessionStore: AxolotlKit.SessionStore {
     public func containsSession(_ contactIdentifier: String,
                                 deviceId: Int32,
                                 protocolContext: SPKProtocolReadContext?) -> Bool {
-        return containsSession(forAccountId: contactIdentifier,
-                               deviceId: deviceId,
-                               transaction: protocolContext as! SDSAnyReadTransaction)
+        return containsActiveSession(forAccountId: contactIdentifier,
+                                     deviceId: deviceId,
+                                     transaction: protocolContext as! SDSAnyReadTransaction)
     }
 
     @available(*, deprecated, message: "use the strongly typed `transaction:` flavor instead")
