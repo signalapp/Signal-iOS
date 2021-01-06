@@ -203,10 +203,12 @@ extension AxolotlKit.SessionRecord {
     fileprivate func buildProto() -> SessionRecordProtos_RecordStructure {
         var result = SessionRecordProtos_RecordStructure()
 
-        guard let currentSessionProto = sessionState().buildProto() else {
-            fatalError("should not try to archive uninitialized sessions")
+        if let currentSessionProto = sessionState().buildProto() {
+            result.currentSession = currentSessionProto
+        } else {
+            let noPreviousSessions = previousSessionStates()?.isEmpty ?? true
+            owsAssertDebug(!noPreviousSessions, "should not try to archive uninitialized sessions")
         }
-        result.currentSession = currentSessionProto
 
         for previousSession in previousSessionStates() {
             if let sessionProto = previousSession.buildProto() {
@@ -230,6 +232,8 @@ extension AxolotlKit.SessionRecord {
             self.setState(SessionState(stateProto))
             self.archiveCurrentState()
         }
-        self.setState(SessionState(deserialized.currentSession))
+        if deserialized.hasCurrentSession {
+            self.setState(SessionState(deserialized.currentSession))
+        }
     }
 }
