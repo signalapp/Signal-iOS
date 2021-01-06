@@ -92,7 +92,20 @@ public class SSKSessionStore: NSObject {
     public func containsSession(forAccountId accountId: String,
                                 deviceId: Int32,
                                 transaction: SDSAnyReadTransaction) -> Bool {
-        return loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction) != nil
+        guard let serializedData = loadSerializedSession(forAccountId: accountId,
+                                                         deviceId: deviceId,
+                                                         transaction: transaction) else {
+            return false
+        }
+
+        do {
+            // FIXME: Expose a SignalClient version of this instead of poking at the protobuf.
+            let sessionStructure = try SessionRecordProtos_RecordStructure(serializedData: serializedData)
+            return sessionStructure.hasCurrentSession
+        } catch {
+            owsFailDebug("serialized session data was not valid: \(error)")
+            return false
+        }
     }
 
     private func deleteSession(forAccountId accountId: String,
