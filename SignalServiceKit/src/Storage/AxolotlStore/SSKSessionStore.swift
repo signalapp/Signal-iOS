@@ -95,9 +95,8 @@ public class SSKSessionStore: NSObject {
         }
 
         do {
-            // FIXME: Expose a SignalClient version of this instead of poking at the protobuf.
-            let sessionStructure = try SessionRecordProtos_RecordStructure(serializedData: serializedData)
-            return sessionStructure.hasCurrentSession
+            let session = try SignalClient.SessionRecord(bytes: serializedData)
+            return session.hasCurrentState
         } catch {
             owsFailDebug("serialized session data was not valid: \(error)")
             return false
