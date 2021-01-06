@@ -1083,9 +1083,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
                 """
-        let firstInteractionSql = interactionsSql + """
-                LIMIT 1
-                """
+        let firstInteractionSql = interactionsSql + " LIMIT 1"
         let arguments: StatementArguments = [threadUniqueId,
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
                                              TSInfoMessageType.verificationStateChange.rawValue,

@@ -293,9 +293,17 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
       success:^(NSURLSessionDataTask *task, id responseDict) {
 
         if (SSKDebugFlags.internalLogging) {
+            OWSAssertDebug([task.response isKindOfClass:NSHTTPURLResponse.class]);
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            long statuscode = response.statusCode;
-            OWSLogInfo(@"statuscode: %lu", (unsigned long) statuscode);
+            OWSLogInfo(@"statusCode: %lu", (unsigned long) response.statusCode);
+            for (NSString *header in response.allHeaderFields) {
+                if ([response respondsToSelector:@selector(valueForHTTPHeaderField:)]) {
+                    NSString *_Nullable headerValue = [response valueForHTTPHeaderField:header];
+                    OWSLogInfo(@"Header: %@ -> %@", header, headerValue);
+                } else {
+                    OWSLogInfo(@"Header: %@", header);
+                }
+            }
             
             [TSNetworkManager logCurlForTask:task];
         }
