@@ -435,11 +435,11 @@ fileprivate extension GroupsV2Migration {
                                       profileFetchMode: ProfileFetchMode) -> Promise<Void> {
         func fetchProfilePromise(address: SignalServiceAddress) -> Promise<Void> {
             firstly {
-                ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: true).asVoid()
+                ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
                 if case ProfileFetchError.throttled = error {
-                    // Do not ignore throttling errors.
-                    throw error
+                    // Ignore throttling errors.
+                    return Promise.value(())
                 }
                 if case ProfileFetchError.missing = error {
                     // If a user has no profile, ignore.
