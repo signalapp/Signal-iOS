@@ -10,15 +10,11 @@ public class SSKSessionStore: NSObject {
     @objc // Used by migration, exposed in <SignalMessaging/PrivateMethodsForMigration.h>
     private let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
 
-    private var accountIdFinder: OWSAccountIdFinder {
-        return OWSAccountIdFinder()
-    }
-
     fileprivate func loadSerializedSession(for address: SignalServiceAddress,
                                            deviceId: Int32,
                                            transaction: SDSAnyWriteTransaction) -> Data? {
         owsAssertDebug(address.isValid)
-        let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
         return loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
     }
 
@@ -44,7 +40,7 @@ public class SSKSessionStore: NSObject {
                                             deviceId: Int32,
                                             transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(address.isValid)
-        let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
         storeSerializedSession(forAccountId: accountId,
                                deviceId: deviceId,
                                sessionData: sessionData,
@@ -84,7 +80,7 @@ public class SSKSessionStore: NSObject {
                                 deviceId: Int32,
                                 transaction: SDSAnyWriteTransaction) -> Bool {
         owsAssertDebug(address.isValid)
-        let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
         return containsSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
     }
 
@@ -129,7 +125,7 @@ public class SSKSessionStore: NSObject {
     @objc(deleteAllSessionsForAddress:transaction:)
     public func deleteAllSessions(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(address.isValid)
-        let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
         return deleteAllSessions(forAccountId: accountId, transaction: transaction)
     }
 
@@ -143,7 +139,7 @@ public class SSKSessionStore: NSObject {
     @objc(archiveAllSessionsForAddress:transaction:)
     public func archiveAllSessions(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(address.isValid)
-        let accountId = accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        let accountId = OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
         return archiveAllSessions(forAccountId: accountId, transaction: transaction)
     }
 

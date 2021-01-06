@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,12 +17,14 @@ public extension SignalRecipient {
 @objc
 public class OWSAccountIdFinder: NSObject {
     @objc
-    public func accountId(forAddress address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> AccountId? {
+    public class func accountId(forAddress address: SignalServiceAddress,
+                                transaction: SDSAnyReadTransaction) -> AccountId? {
         return SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction)?.accountId
     }
 
     @objc
-    public func ensureAccountId(forAddress address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) -> AccountId {
+    public class func ensureAccountId(forAddress address: SignalServiceAddress,
+                                      transaction: SDSAnyWriteTransaction) -> AccountId {
         if let accountId = accountId(forAddress: address, transaction: transaction) {
             return accountId
         }
@@ -32,7 +34,8 @@ public class OWSAccountIdFinder: NSObject {
     }
 
     @objc
-    public func address(forAccountId accountId: AccountId, transaction: SDSAnyReadTransaction) -> SignalServiceAddress? {
+    public class func address(forAccountId accountId: AccountId,
+                              transaction: SDSAnyReadTransaction) -> SignalServiceAddress? {
         guard let recipient = SignalRecipient.anyFetch(uniqueId: accountId, transaction: transaction) else {
             return nil
         }

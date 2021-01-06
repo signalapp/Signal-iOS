@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,12 +11,10 @@ public struct TestProtocolRunner {
 
     public init() { }
 
-    let accountIdentifierFinder  = OWSAccountIdFinder()
-
     public func initialize(senderClient: TestSignalClient, recipientClient: TestSignalClient, transaction: SDSAnyWriteTransaction) throws {
 
-        let senderIdentifier = accountIdentifierFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
-        let recipientIdentifier = accountIdentifierFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
+        let senderIdentifier = OWSAccountIdFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
+        let recipientIdentifier = OWSAccountIdFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
 
         try SignalProtocolHelper.sessionInitialization(withAliceSessionStore: senderClient.sessionStore,
                                                        aliceIdentityKeyStore: senderClient.identityKeyStore,
@@ -85,12 +83,8 @@ public extension TestSignalClient {
                              deviceId: 1)
     }
 
-    var accountIdFinder: OWSAccountIdFinder {
-        return OWSAccountIdFinder()
-    }
-
     func accountId(transaction: SDSAnyWriteTransaction) -> String {
-        return accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        return OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
     }
 }
 

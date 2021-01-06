@@ -42,7 +42,7 @@ extension StorageServiceProtoContactRecord {
         unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoContactRecord {
-        guard let address = OWSAccountIdFinder().address(forAccountId: accountId, transaction: transaction) else {
+        guard let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction) else {
             throw StorageService.StorageError.accountMissing
         }
 
