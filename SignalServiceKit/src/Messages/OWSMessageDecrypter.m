@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageDecrypter.h"
@@ -10,6 +10,7 @@
 #import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
+#import "OWSOutgoingNullMessage.h"
 #import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSessionStore.h"
@@ -79,6 +80,12 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 #pragma mark -
 
+@interface OWSMessageDecrypter ()
+
+@property (atomic, readonly) NSMutableSet<NSString *> *recentlyResetSenderIds;
+
+@end
+
 @implementation OWSMessageDecrypter
 
 - (instancetype)init
@@ -90,6 +97,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     OWSSingletonAssert();
+
+    _recentlyResetSenderIds = [NSMutableSet new];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(messageDecryptJobQueueDidFlush)
+                                                 name:kNSNotificationNameMessageDecryptionDidFlushQueue
+                                               object:nil];
 
     return self;
 }
@@ -144,6 +158,18 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return SSKEnvironment.shared.signedPreKeyStore;
 }
 
+- (MessageSender *)messageSender
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageSender);
+
+    return SSKEnvironment.shared.messageSender;
+}
+
+- (MessageProcessing *)messageProcessing
+{
+    return SSKEnvironment.shared.messageProcessing;
+}
+
 #pragma mark - Blocking
 
 - (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
@@ -154,6 +180,21 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 }
 
 #pragma mark - Decryption
+
+- (void)messageDecryptJobQueueDidFlush
+{
+    // We don't want to send additional resets until we
+    // have received the "empty" response from the WebSocket
+    // or finished at least one REST fetch.
+    if (!self.messageProcessing.hasCompletedInitialFetch) {
+        return;
+    }
+
+    // We clear all recently reset sender ids any time the
+    // decryption queue has drained, so that any new messages
+    // that fail to decrypt will reset the session again.
+    [self.recentlyResetSenderIds removeAllObjects];
+}
 
 - (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
            envelopeData:(NSData *)envelopeData
@@ -650,11 +691,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                     exception.reason];
     if ([exception.name isEqualToString:DuplicateMessageException]) {
         OWSLogInfo(@"%@", logString);
+        // Duplicate messages are silently discarded.
+        return;
     } else {
         OWSLogError(@"%@", logString);
     }
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, (^(SDSAnyWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
 
         if (!envelope.sourceAddress.isValid) {
@@ -662,6 +705,47 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
             return;
+        }
+
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                                  transaction:transaction];
+
+        if (envelope.hasSourceUuid) {
+            // Since the message failed to decrypt, we want to reset our session
+            // with this device to ensure future messages we receive are decryptable.
+            // We achieve this by archiving our current session with this device.
+            // It's important we don't do this if we've already recently reset the
+            // session for a given device, for example if we're processing a backlog
+            // of 50 message from Alice that all fail to decrypt we don't want to
+            // reset the session 50 times. We acomplish this by tracking the UUID +
+            // device ID pair that we have recently reset, so we can skip subsequent
+            // resets. When the message decrypt queue is drained, the list of recently
+            // reset IDs is cleared.
+
+            NSString *senderId = [NSString stringWithFormat:@"%@.%d", envelope.sourceUuid, envelope.sourceDevice];
+            if (![self.recentlyResetSenderIds containsObject:senderId]) {
+                OWSLogWarn(@"Resetting session for undecryptable message from %@", senderId);
+                [self.recentlyResetSenderIds addObject:senderId];
+                [self.sessionStore archiveSessionForAddress:envelope.sourceAddress
+                                                   deviceId:envelope.sourceDevice
+                                                transaction:transaction];
+                OWSOutgoingNullMessage *nullMessage =
+                    [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread];
+                [self.messageSender sendMessage:nullMessage.asPreparer
+                    success:^{
+                        OWSLogInfo(
+                            @"Successfully sent null message after session reset for undecryptable message from %@",
+                            senderId);
+                    }
+                    failure:^(NSError *error) {
+                        OWSFailDebug(
+                            @"Failed to send null message after session reset for undecryptable message from %@ (%@)",
+                            senderId,
+                            error.localizedDescription);
+                    }];
+            }
+        } else {
+            OWSFailDebug(@"Received envelope missing UUID %@.%d", envelope.sourceAddress, envelope.sourceDevice);
         }
 
         if ([exception.name isEqualToString:NoSessionException]) {
@@ -673,9 +757,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
             errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
-        } else if ([exception.name isEqualToString:DuplicateMessageException]) {
-            // Duplicate messages are silently discarded.
-            return;
         } else if ([exception.name isEqualToString:InvalidVersionException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
             errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
@@ -692,17 +773,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage anyInsertWithTransaction:transaction];
-            [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
+            [self notifyUserForErrorMessage:errorMessage contactThread:contactThread transaction:transaction];
         }
-    });
+    }));
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
-                         envelope:(SSKProtoEnvelope *)envelope
+                    contactThread:(TSContactThread *)contactThread
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
-                                                                       transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];
