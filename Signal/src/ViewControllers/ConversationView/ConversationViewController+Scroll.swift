@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -129,10 +129,8 @@ extension ConversationViewController {
 
     @objc
     func scrollToBottomOfLoadWindow(animated: Bool) {
-        guard let interactionId = renderItems.last?.interactionUniqueId else {
-            return
-        }
-        scrollToInteraction(uniqueId: interactionId, alignment: .bottom, animated: animated)
+        let newContentOffset = CGPoint(x: 0, y: maxContentOffsetY)
+        collectionView.setContentOffset(newContentOffset, animated: animated)
     }
 
     @objc(scrollToInitialPositionAnimated:)

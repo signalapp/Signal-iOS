@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -141,9 +141,19 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         owsAssertDebug(maxWidth > 0)
         owsAssertDebug(items.count > 0)
 
+        // We may need to reserve space for a footer overlay.
+        var minWidth: CGFloat = 0
+        if let footerOverlay = self.footerOverlay {
+            let maxFooterWidth = max(0, maxWidth - conversationStyle.textInsets.totalWidth)
+            let footerSize = footerOverlay.measure(maxWidth: maxFooterWidth,
+                                                   measurementBuilder: measurementBuilder)
+            minWidth = min(maxWidth, footerSize.width + conversationStyle.textInsets.totalWidth)
+        }
+
         let maxWidth = min(maxWidth, maxMediaMessageWidth)
 
         return CVMediaAlbumView.layoutSize(maxWidth: maxWidth,
+                                           minWidth: minWidth,
                                            items: self.items,
                                            measurementBuilder: measurementBuilder).ceil
     }

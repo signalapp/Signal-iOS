@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -243,6 +243,7 @@ public class CVMediaAlbumView: UIStackView {
     }
 
     public class func layoutSize(maxWidth: CGFloat,
+                                 minWidth: CGFloat,
                                  items: [CVMediaAlbumItem],
                                  measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
 
@@ -293,6 +294,10 @@ public class CVMediaAlbumView: UIStackView {
                 let maxMediaWidth: CGFloat = maxWidth
                 let maxMediaHeight: CGFloat = maxWidth
                 var mediaWidth: CGFloat = maxMediaHeight * contentAspectRatio
+
+                // We may need to reserve space for a footer overlay.
+                mediaWidth = max(mediaWidth, minWidth)
+
                 var mediaHeight: CGFloat = maxMediaHeight
                 if mediaWidth > maxMediaWidth {
                     mediaWidth = maxMediaWidth
@@ -300,11 +305,11 @@ public class CVMediaAlbumView: UIStackView {
                 }
 
                 // We don't want to blow up small images unnecessarily.
-                let kMinimumSize: CGFloat = 150
+                let minimumSize: CGFloat = max(150, minWidth)
                 let shortSrcDimension: CGFloat = min(mediaSize.width, mediaSize.height)
                 let shortDstDimension: CGFloat = min(mediaWidth, mediaHeight)
-                if shortDstDimension > kMinimumSize && shortDstDimension > shortSrcDimension {
-                    let factor: CGFloat = kMinimumSize / shortDstDimension
+                if shortDstDimension > minimumSize && shortDstDimension > shortSrcDimension {
+                    let factor: CGFloat = minimumSize / shortDstDimension
                     mediaWidth *= factor
                     mediaHeight *= factor
                 }

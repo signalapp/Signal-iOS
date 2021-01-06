@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -91,7 +91,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 
 - (void)updateBarButtonItems;
 - (void)ensureBannerState;
-- (void)updateContentInsetsAnimated:(BOOL)animated;
 
 // TODO: Remove or rework method.
 - (void)reloadCollectionView;
@@ -107,7 +106,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
                  completion:(void (^_Nonnull)(BOOL))completion
             logFailureBlock:(void (^_Nonnull)(void))logFailureBlock
        shouldAnimateUpdates:(BOOL)shouldAnimateUpdates;
-- (void)updateLeftBarItem;
 - (BOOL)autoLoadMoreIfNecessary;
 
 #pragma mark - Search

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 // Represents which interactions are currently selected during multi-select.
@@ -362,6 +362,7 @@ extension ConversationViewController {
 
     @objc
     func didTapDeleteAll() {
+        let thread = self.thread
         let alert = ActionSheetController(title: nil, message: NSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))
         alert.addAction(OWSActionSheets.cancelAction)
         let deleteTitle = NSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON", comment: "button text")
@@ -370,7 +371,7 @@ extension ConversationViewController {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
                 self.databaseStorage.write {
-                    self.thread.removeAllThreadInteractions(transaction: $0)
+                    thread.removeAllThreadInteractions(transaction: $0)
                 }
                 DispatchQueue.main.async {
                     self.clearSelection()
