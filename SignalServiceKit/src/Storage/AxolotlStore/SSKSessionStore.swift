@@ -5,7 +5,7 @@
 import SignalClient
 
 public class SSKSessionStore: NSObject {
-    fileprivate typealias SessionsByDeviceDictionary = [Int32: AxolotlKit.SessionRecord]
+    fileprivate typealias SessionsByDeviceDictionary = [Int32: AnyObject]
 
     @objc // Used by migration, exposed in <SignalMessaging/PrivateMethodsForMigration.h>
     private let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
@@ -18,6 +18,23 @@ public class SSKSessionStore: NSObject {
         return loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: transaction)
     }
 
+    fileprivate func serializedSession(fromDatabaseRepresentation entry: Any) -> Data? {
+        switch entry {
+        case let data as Data:
+            return data
+        case let record as AxolotlKit.SessionRecord:
+            do {
+                return try record.serializeProto()
+            } catch {
+                owsFailDebug("failed to serialize AxolotlKit session: \(error)")
+                return nil
+            }
+        default:
+            owsFailDebug("unexpected entry in session store: \(entry)")
+            return nil
+        }
+    }
+
     private func loadSerializedSession(forAccountId accountId: String,
                                        deviceId: Int32,
                                        transaction: SDSAnyReadTransaction) -> Data? {
@@ -26,13 +43,10 @@ public class SSKSessionStore: NSObject {
 
         let dictionary = keyValueStore.getObject(forKey: accountId,
                                                  transaction: transaction) as! SessionsByDeviceDictionary?
-
-        do {
-            return try dictionary?[deviceId]?.serializeProto()
-        } catch {
-            owsFailDebug("failed to serialize AxolotlKit session: \(error)")
+        guard let entry = dictionary?[deviceId] else {
             return nil
         }
+        return serializedSession(fromDatabaseRepresentation: entry)
     }
 
     fileprivate func storeSerializedSession(_ sessionData: Data,
@@ -54,24 +68,9 @@ public class SSKSessionStore: NSObject {
         owsAssertDebug(!accountId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        let session: AxolotlKit.SessionRecord
-        do {
-            session = try .init(serializedProto: sessionData)
-        } catch {
-            owsFail("trying to store data that isn't a valid session: \(error)")
-        }
-
-        // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally
-        // this  is achieved by marking things as "not fresh" at the point of deserialization - when we fetch a
-        // SessionRecord from YapDB (initWithCoder:). However, because YapDB has an object cache, rather than
-        // fetching/deserializing, it's possible we'd get back *this* exact instance of the object (which, at this
-        // point, is still potentially "fresh"), thus we explicitly mark this instance as "unfresh", any time we save.
-        // NOTE: this may no longer be necessary now that we have a non-caching session db connection.
-        session.markAsUnFresh()
-
         var dictionary = (keyValueStore.getObject(forKey: accountId,
                                                   transaction: transaction) as! SessionsByDeviceDictionary?) ?? [:]
-        dictionary[deviceId] = session
+        dictionary[deviceId] = sessionData as NSData
         keyValueStore.setObject(dictionary, key: accountId, transaction: transaction)
     }
 
@@ -155,13 +154,15 @@ public class SSKSessionStore: NSObject {
         }
 
         let newDictionary: SessionsByDeviceDictionary = dictionary.mapValues { record in
+            guard let data = serializedSession(fromDatabaseRepresentation: record) else {
+                // We've already logged an error; skip this session.
+                return record
+            }
+
             do {
-                guard record.sessionState()?.rootKey != nil else {
-                    return record
-                }
-                let session = try SignalClient.SessionRecord(bytes: record.serializeProto())
+                let session = try SignalClient.SessionRecord(bytes: data)
                 session.archiveCurrentState()
-                return try AxolotlKit.SessionRecord(serializedProto: Data(session.serialize()))
+                return Data(session.serialize()) as NSData
             } catch {
                 owsFailDebug("\(error)")
                 return record
@@ -188,17 +189,16 @@ public class SSKSessionStore: NSObject {
 
             OWSLogger.debug("     Sessions for recipient: \(key)")
             deviceSessions.enumerateKeysAndObjects { key, value, _ in
-                guard let sessionRecord = value as? AxolotlKit.SessionRecord else {
-                    owsFailDebug("Unexpected type: \(type(of: value)) in collection")
+                guard let data = self.serializedSession(fromDatabaseRepresentation: value) else {
+                    // We've already logged an error here, just move on.
                     return
                 }
-                // FIXME: This won't be super useful with SignalClient, which won't have persistent objects to poke at.
-                let activeState = sessionRecord.sessionState().map { String(describing: $0) } ?? "(none)"
-                let previousStates = sessionRecord.previousSessionStates() ?? []
-                OWSLogger.debug("         Device: \(key)" +
-                                    " SessionRecord: \(sessionRecord)" +
-                                    " activeSessionState: \(activeState)" +
-                                    " previousSessionStates: \(previousStates)")
+                do {
+                    let sessionRecord = try SignalClient.SessionRecord(bytes: data)
+                    OWSLogger.debug("         Device: \(key) hasCurrentState: \(sessionRecord.hasCurrentState)")
+                } catch {
+                    owsFailDebug("invalid session record: \(error)")
+                }
             }
         }
     }
