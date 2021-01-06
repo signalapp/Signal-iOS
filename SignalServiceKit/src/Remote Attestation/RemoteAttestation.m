@@ -305,7 +305,9 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
                 }
             }
             
+#if TESTABLE_BUILD
             [TSNetworkManager logCurlForTask:task];
+#endif
         }
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -459,10 +461,12 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
             OWSLogInfo(@"signatureBody: %@", signatureBody);
             OWSLogInfo(@"signature: %@", signature);
         }
-        OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
-        *error = RemoteAttestationErrorMakeWithReason(
-            RemoteAttestationAssertionError, @"Signature is expired.");
-        return NO;
+        if (SSKFeatureFlags.isUsingProductionService) {
+            OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
+            *error = RemoteAttestationErrorMakeWithReason(
+                                                          RemoteAttestationAssertionError, @"Signature is expired.");
+            return NO;
+        }
     }
 
     return YES;
