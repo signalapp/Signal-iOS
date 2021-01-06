@@ -96,15 +96,13 @@ extension MessageSender : SharedSenderKeysDelegate {
                 try generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members.subtracting(newMembers), using: transaction)
             }
             // Send closed group update messages to any new members individually
-            if !newMembers.isEmpty {
-                for member in newMembers {
-                    let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
-                    thread.save(with: transaction)
-                    let closedGroupUpdateKind = ClosedGroupUpdateV2.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
-                        encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
-                    let closedGroupUpdate = ClosedGroupUpdateV2(kind: closedGroupUpdateKind)
-                    MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
-                }
+            for member in newMembers {
+                let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+                thread.save(with: transaction)
+                let closedGroupUpdateKind = ClosedGroupUpdateV2.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
+                    encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
+                let closedGroupUpdate = ClosedGroupUpdateV2(kind: closedGroupUpdateKind)
+                MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
             }
         }
         // Update the group
