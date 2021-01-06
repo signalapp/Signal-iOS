@@ -71,6 +71,7 @@ public class CVMediaAlbumView: UIStackView {
                                 maxMessageWidth: CGFloat) {
 
         if let measuredSize = cellMeasurement.size(key: Self.measurementKey) {
+            Logger.verbose("---- measuredSize.1: \(measuredSize), aspect: \(measuredSize.aspectRatio)")
             layoutConstraints.append(self.autoSetDimension(.height, toSize: measuredSize.height))
         } else {
             owsFailDebug("Missing measuredSize.")
@@ -78,11 +79,24 @@ public class CVMediaAlbumView: UIStackView {
 
         for (index, itemView) in itemViews.enumerated() {
             if let measuredSize = cellMeasurement.size(key: Self.measurementKey(imageIndex: index)) {
-                layoutConstraints.append(contentsOf: itemView.autoSetDimensions(to: measuredSize))
+                Logger.verbose("---- measuredSize.2: \(measuredSize), aspect: \(measuredSize.aspectRatio)")
+                itemView.logFrameLater(withLabel: "---- itemView")
+                // The item heights should always exactly match the layout.
+                layoutConstraints.append(itemView.autoSetDimension(.height, toSize: measuredSize.height))
+                // The media album view's width might be larger than
+                // expected due to other components in the message.
+                //
+                // Therefore item widths might need to adjust and
+                // should not be required.
+                NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
+                    layoutConstraints.append(itemView.autoSetDimension(.width, toSize: measuredSize.width))
+                }
             } else {
                 owsFailDebug("Missing measuredSize for image.")
             }
         }
+
+        logFrameLater(withLabel: "---- media album view")
 
         switch itemViews.count {
         case 0:
@@ -279,9 +293,12 @@ public class CVMediaAlbumView: UIStackView {
 
                 let mediaSize = mediaAlbumItem.mediaSize
                 guard mediaSize.width > 0 && mediaSize.height > 0 else {
-                    owsFailDebug("Invalid mediaSize.")
+//                    owsFailDebug("Invalid mediaSize.")
                     return nil
                 }
+                Logger.verbose("---- maxWidth: \(maxWidth)")
+                Logger.verbose("---- mediaSize: \(mediaSize), aspect: \(mediaSize.width / mediaSize.height)")
+
                 // Honor the content aspect ratio for single media.
                 var contentAspectRatio = mediaSize.width / mediaSize.height
                 // Clamp the aspect ratio so that very thin/wide content is presented
@@ -318,6 +335,9 @@ public class CVMediaAlbumView: UIStackView {
             }
 
             let size = buildSingleMediaSize() ?? CGSize(square: maxWidth)
+
+            Logger.verbose("---- size: \(size), aspect: \(size.aspectRatio)")
+
             measurementBuilder.setSize(key: measurementKey(imageIndex: 0),
                                        size: size)
             measurementBuilder.setSize(key: measurementKey, size: size)
