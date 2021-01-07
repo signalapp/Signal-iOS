@@ -26,10 +26,10 @@
 "ACCESSIBILITY_LABEL_STICKER" = "Kleebis";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal-i kõne";
+"ACTION_AUDIO_CALL" = "Signali kõne";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Kutsu Signal-isse";
+"ACTION_INVITE" = "Kutsu Signalisse";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Saada sõnum";
@@ -125,13 +125,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Andmebaasi laadimine ei õnnestunud";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Palun uuenda uusimale Signal-i versioonile.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Palun uuenda uusimale Signali versioonile.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Tundmatu andmebaasi versioon.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Sinu vanast seadmest ülekantud andmeid ei saanud taastada. Palun saada silumislogi aadressile support@signal.org, et saaksime seda olukorda uurida. Pärast Signal-i uuesti paigaldamist võib sõnumite ajalugu kaduda.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Sinu vanast seadmest ülekantud andmeid ei saanud taastada. Palun saada silumislogi aadressile support@signal.org, et saaksime seda olukorda uurida. Pärast Signali uuesti paigaldamist võib sõnumite ajalugu kaduda.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Andmete ülekandmine ei õnnestunud";
@@ -146,7 +146,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versioon %@ on nüüd App Store'is saadaval.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Signal-i uus versioon on saadaval";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signali uus versioon on saadaval";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Uuenda";
@@ -473,7 +473,7 @@
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Vastamata häälkõne";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signal-ile juurdepääs mikrofonile.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signalile juurdepääs mikrofonile.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Juurdepääs mikrofonile on vajalik";
@@ -542,7 +542,7 @@
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Sinu kaamera on väljas";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-i kasutaja";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signali kasutaja";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Pildista foto ja siis saada see";
@@ -572,13 +572,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Taasta";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal-il ei õnnestunud tuvastada sinu iCloudi konto olekut. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signalil ei õnnestunud tuvastada sinu iCloudi konto olekut. Signali andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloudi konto puudub. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloudi konto puudub. Signali andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal-ile ei antud juurdepääsu sinu iCloudi kontole varukoopiate tegemiseks. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes andma Signal-ile juurdepääs oma iCloudi kontole.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalile ei antud juurdepääsu sinu iCloudi kontole varukoopiate tegemiseks. Signali andmetest varukoopia tegemiseks pead iOSi sätetes andma Signalile juurdepääs oma iCloudi kontole.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Vali selle vestluse sõnumite värv.";
@@ -593,7 +593,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Võrdle lõikepuhvriga";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Vestluse alustamiseks otsi või vali Signal-i kasutaja.";
+"COMPOSE_BUTTON_HINT" = "Vestluse alustamiseks otsi või vali Signali kasutaja.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Koosta";
@@ -611,7 +611,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Kasutajanime otsing";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et näha, kes sinu kontaktidest on Signal-i kasutajad.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et näha, kes sinu kontaktidest on Signali kasutajad.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "See toiming lähtestab rakenduse, kustutades kõik sõnumid ja eemaldades serverist sinu registreerimise. Rakendus sulgub pärast andmete kustutamist.";
@@ -746,7 +746,7 @@
 "CONTACT_SUPPORT" = "Võta ühendust kasutajatoega";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal-il ei õnnestunud su kasutajatoesoovi täita.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signalil ei õnnestunud su kasutajatoesoovi täita.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Proovi uuesti";
@@ -1057,9 +1057,6 @@
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Üks samm veel";
 
-/* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "E-posti rakenduse käivitamine ei õnnestunud.";
-
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist link kopeeriti lõikepuhvrisse. Nüüd suunatakse sind edasi GitHubi ülesannete loendisse.";
 
@@ -1085,7 +1082,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registreeri see telefoninumber uuesti";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Signal-is mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
+"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Signalis mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimati aktiivne: %@";
@@ -1109,7 +1106,7 @@
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Kui sul on vana iOS seade alles, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Kui kasutasid varem Signal-it ühendatud iPadis, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Kui kasutasid varem Signalit ühendatud iPadis, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Jätka kontot ja sõnumeid üle kandmata";
@@ -1157,10 +1154,10 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Ülekandmise lõpetamiseks pole piisavalt vaba ruumi";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Uuenda uusimale Signal-i versioonile ja proovi uuesti";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Uuenda uusimale Signali versioonile ja proovi uuesti";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Teisalda Signal-i konto uude iOS seadmesse. Kontrolli, et uus seade oleks läheduses ja sisse lülitatud.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Teisalda Signali konto uude iOS seadmesse. Kontrolli, et uus seade oleks läheduses ja sisse lülitatud.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Kanna konto üle";
@@ -1232,7 +1229,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Muuda gruppi";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Seda kasutajat ei saa enne gruppi lisada, kui ta on uuendanud oma Signal-it.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Seda kasutajat ei saa enne gruppi lisada, kui ta on uuendanud oma Signalit.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maksimaalne grupi liikmete arv %@ on täidetud.";
@@ -1256,10 +1253,10 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopeeri";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Tervist!\n\nOlen viimasel ajal kasutanud vestluste iPhone'is privaatsena hoidmiseks rakendust Signal. Soovin, et sinagi paigaldaks selle, et saaksime kindlad olla, et ainult sina ja mina saame meie sõnumeid lugeda ning kõnesid kuulda.\n\nSignal on saadaval nii iOS kui Android seadmetele. Paigalda saab siit: %@\n\nSignal töötab nagu teisedki sõnumirakendused: saame saata pilte ja videosid, teha kõnesid ja alustada grupivestlusi. Parim seejuures on, et mitte keegi teine ei saa seda näha, isegi mitte Signal-i loojad!\n\nLoe täpsemalt Signal-i looja Open Whisper Systemsi kohta siit: %@";
+"EMAIL_INVITE_BODY" = "Tervist!\n\nOlen viimasel ajal kasutanud vestluste iPhone'is privaatsena hoidmiseks rakendust Signal. Soovin, et sinagi paigaldaks selle, et saaksime kindlad olla, et ainult sina ja mina saame meie sõnumeid lugeda ning kõnesid kuulda.\n\nSignal on saadaval nii iOS kui Android seadmetele. Paigaldada saab siit: %@\n\nSignal töötab nagu teisedki sõnumirakendused: saame saata pilte ja videosid, teha kõnesid ja alustada grupivestlusi. Parim seejuures on, et mitte keegi teine ei saa seda näha, isegi mitte Signali loojad!\n\nLoe täpsemalt Signali looja Open Whisper Systemsi kohta siit: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Lülitume Signal-ile";
+"EMAIL_INVITE_SUBJECT" = "Lülitume Signalile";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "Sinu seade pole seadistatud e-kirjasid saatma. Kasutajatoesoovi saatmiseks seadista oma seadmes e-kirjade saatmine või saada kiri aadressile support@signal.org";
@@ -1295,7 +1292,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Reisimine ja kohad";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Signal-it.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Signalit.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Miks mitte neid kutsuda?";
@@ -1334,7 +1331,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kasutajale sõnumi saatmine ei õnnestunud, sest oled ta blokeerinud.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal-il ei õnnestunud internetti ühenduda. Palun proovi uuesti.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signalil ei õnnestunud internetti ühenduda. Palun proovi uuesti.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
@@ -1358,13 +1355,13 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ilmnes tundmatu tõrge.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Signal-i kasutaja.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Signali kasutaja.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Manuse allalaadimine ei õnnestunud.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Manuse tõrge: palu sellel kontaktil saata see sõnum pärast Signal-i uusimale versioonile uuendamist uuesti.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Manuse tõrge: palu sellel kontaktil saata see sõnum pärast Signali uusimale versioonile uuendamist uuesti.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Saabus duplikaatsõnum.";
@@ -1403,19 +1400,19 @@
 "ERROR_SENDING_DEREGISTERED" = "Sinu seade ei ole enam registreeritud. Sõnumite saatmise jätkamiseks palun registreeri uuesti.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Sinu Signal-i versioon on aegunud. Sõnumite saatmise jätkamiseks palun uuenda rakendust.";
+"ERROR_SENDING_EXPIRED" = "Sinu Signali versioon on aegunud. Palun uuenda rakendust sõnumite saatmise jätkamiseks.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Registreerimata kasutaja: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Sinu Signal-i versioon on aegunud! Klõpsa uusimale versioonile uuendamiseks.";
+"EXPIRATION_ERROR" = "Sinu Signali versioon on aegunud! Klõpsa uusimale versioonile uuendamiseks.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Sinu Signal-i versioon aegub %d päeva pärast. Koputa, et uuendada uusimale versioonile.";
+"EXPIRATION_WARNING_SOON" = "Sinu Signali versioon aegub %d päeva pärast. Koputa, et uuendada kõige uuemale versioonile.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Sinu Signal-i versioon aegub täna. Koputa, et uuendada uusimale versioonile.";
+"EXPIRATION_WARNING_TODAY" = "Sinu Signali versioon aegub täna. Koputa, et uuendada kõige uuemale versioonile.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Liiga palju ebaõnnestumisi selle kontaktiga. Palun proovi hiljem uuesti.";
@@ -1481,7 +1478,7 @@
 "GO_TO_SETTINGS_BUTTON" = "Mine sätetesse";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "See Signal-i versioon sisaldab andmebaasi täiendusi ja töökiiruse parendusi. Protsessi lõpetamiseks pead äpi uuesti avama.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "See Signali versioon sisaldab andmebaasi täiendusi ja töökiiruse parendusi. Protsessi lõpetamiseks pead äpi uuesti avama.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Andmebaasi optimeerimine";
@@ -1541,10 +1538,10 @@
 "GROUP_CALL_ERROR_DETAILS" = "Rohkem infot";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Selle kõne maksimaalne osavõtjate arv %ld on täidetud. Proovi hiljem uuesti.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Selle kõne maksimaalne osavõtjate arv %ld on täitunud. Proovi hiljem uuesti.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Selle kõne maksimaalne osavõtjate arv on täidetud. Proovi hiljem uuesti.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Selle kõne maksimaalne osavõtjate arv on täitunud. Proovi hiljem uuesti.";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Kõne on täis";
@@ -1796,7 +1793,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Vigane link";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Selle grupiga liitumiseks pead selles seadmes Signal-it uuendama.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Selle grupiga liitumiseks pead selles seadmes Signalit uuendama.";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Seda koodi skaneerivad isikud saavad grupiga liituda. Administraatorid peavad uued liikmed ikkagi kinnitama, kui see säte on sisse lülitatud.";
@@ -1841,7 +1838,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR-kood";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Jaga Signal-i kaudu";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Jaga Signali kaudu";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Igaüks saab selle lingi kaudu vestlusega liituda või saata sooviavaldust liitumiseks. Jaga seda isikutega, keda usaldad.";
@@ -2165,19 +2162,19 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokeeri %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vana tüüpi grupid on need grupid, mis pole ühilduvad uut tüüpi gruppide funktsionaalsustega, nt administraatorid ja rohkem kirjeldavad grupi muudatused.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vanad grupid on need grupid, mis pole ühilduvad uute gruppide funktsionaalsustega, nt administraatorid ja rohkem kirjeldavad grupi muudatused.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mis on vana tüüpi grupid?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mis on vanad grupid?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vana tüüpi gruppe ei saa veel uuteks gruppideks uuendada, aga sa saad luua samade liikmetega uue grupi, kui need liikmed kasutavad uusimat Signal-i versiooni.\n\nSignal pakub tulevikus vanade gruppide uuteks gruppideks uuendamise võimalust.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vanu gruppe ei saa veel uuteks gruppideks uuendada, aga sa saad luua samade liikmetega uue grupi, kui need liikmed kasutavad uusimat Signali versiooni.\n\nSignal pakub tulevikus vanade gruppide uuteks gruppideks uuendamise võimalust.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kas saan vana tüüpi gruppi uuendada?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kas saan vana gruppi uuendada?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uue grupi loomiseks peavad kõik liikmed uuendama enda Signal-i uusimale versioonile.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uue grupi loomiseks peavad kõik liikmed uuendama enda Signali uusimale versioonile.";
 
 /* Title for the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanad vs uued grupid";
@@ -2192,37 +2189,37 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Seda gruppi ei saa uueks grupiks uuendada, sest sellel on liiga palju liikmeid. Maksimaalne grupi suurus, mida saab uuendada on %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kui kõik praegused grupi liikmed kasutavad Signal-i versiooni, mis on võimeline uue grupiga liituma, siis uuendatakse seda gruppi.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kui kõik praegused grupi liikmed kasutavad Signali versiooni, mis on võimeline uue grupiga liituma, siis uuendatakse seda gruppi.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Kogu sõnumite ajalugu ja meediafailid jäävad alles.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Seda gruppi pole võimalik luuga, kuna 1 liige kasutab Signal-i vana versiooni. Sul on võimalik luua temaga uus grupp pärast seda, kui ta uuendab enda Signal-it või eemaldada nad enne grupi loomist.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Seda gruppi pole võimalik luuga, kuna 1 liige kasutab Signali vana versiooni. Sul on võimalik luua temaga uus grupp pärast seda, kui ta uuendab enda Signalit või eemaldada nad enne grupi loomist.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Seda gruppi pole võimalik luuga, kuna %@ liiget kasutavad Signal-i vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signal-it või eemaldada nad enne grupi loomist.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Seda gruppi pole võimalik luuga, kuna %@ liiget kasutavad Signali vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signalit või eemaldada nad enne grupi loomist.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Seda gruppi pole võimalik luua, kuna 1 liige kasutab Signal-i vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signal-i või eemaldada nad enne grupi loomist. %@.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Seda gruppi pole võimalik luua, kuna 1 liige kasutab Signali vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signali või eemaldada nad enne grupi loomist. %@.";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Seda gruppi pole võimalik luua,  kuna %1$@  kuna 1 liige kasutab Signal-i vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signal-i või eemaldada nad enne grupi loomist. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Seda gruppi pole võimalik luua,  kuna %1$@  kuna 1 liige kasutab Signali vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signali või eemaldada nad enne grupi loomist. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Luuakse vana tüüpi grupp, sest 1 liige kasutab Signal-i vana versiooni. Selle kasutajaga on võimalik uut tüüpi grupp luua pärast seda, kui ta on Signal-it uuendanud või eemalda ta enne uue grupi loomist.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Luuakse vana grupp, sest 1 liige kasutab Signali vana versiooni. Selle kasutajaga on võimalik uus grupp luua pärast seda, kui ta on Signali uuendanud või eemalda ta enne uue grupi loomist.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Luuakse vana tüüpi grupp, sest %@ liige kasutab Signal-i vana versiooni. Nende kasutajatega on võimalik uut tüüpi grupp luua pärast seda, kui nad on Signal-it uuendanud või eemalda ta enne uue grupi loomist.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Luuakse vana grupp, sest %@ liiget kasutavad Signali vana versiooni. Nende kasutajatega on võimalik uus grupp luua pärast seda, kui nad on Signali uuendanud või eemalda nad enne uue grupi loomist.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 liige ei toeta uut tüüpi gruppe, seega luuakse vana tüüpi grupp. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 liige ei toeta uusi gruppe, seega luuakse vana grupp. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ liiget ei toeta uut tüüpi gruppe, seega luuakse vana tüüpi grupp. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ liiget ei toeta uusi gruppe, seega luuakse vana grupp. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "See on vana tüüpi grupp. Uued funktsioonid, nt grupi administraatorid on saadaval ainult uut tüüpi gruppidel. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "See on vana grupp. Uued funktsioonid, nt grupi administraatorid on saadaval ainult uutes gruppides. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "See vana grupp pole veel uueks grupiks uuendamiseks valmis. %@.";
@@ -2240,7 +2237,7 @@
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ liiget polnud võimalik uude gruppi uuesti lisada. Kas sa soovid neid nüüd lisada?";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Vana tüüpi grupp";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Vana grupp";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Selle grupiga uuesti liitumiseks pead nõustuma kutsega ja sa ei saa grupi sõnumeid senikaua kuni oled nõustunud.";
@@ -2285,10 +2282,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Kogu täienduse-eelne sõnumiajalugu ja -meedia on alles.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "See liige eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signal-it uuendanud:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "See liige eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signalit uuendanud:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Need liikmed eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signal-it uuendanud:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Need liikmed eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signalit uuendanud:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "See liige peab selle grupiga liitumise kutse uuesti vastu võtma ning ei saa enne nõustumist grupi sõnumeid näha:";
@@ -2333,7 +2330,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Vali uus administraator";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal-i grupid toimivad kõige paremini %@ või vähema liikmega. Rohkem liikmete lisamine võib põhjustada viivitusi sõnumite saamises ja saatmises.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signali grupid toimivad kõige paremini %@ või vähema liikmega. Rohkem liikmete lisamine võib põhjustada viivitusi sõnumite saamises ja saatmises.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Jõuti soovitatava liikmete arvu piirini";
@@ -2366,13 +2363,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Mustand:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Mõned su kontaktidest kasutavad juba Signal-it, kaasaarvatud %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Mõned su kontaktidest kasutavad juba Signalit, kaasaarvatud %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signal-it, kaasaarvatud %@ ja %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signalit, kaasaarvatud %@ ja %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signal-it, kaasaarvatud %@, %@ ja %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signalit, kaasaarvatud %@, %@ ja %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Alusta siin enda esimest vestlust.";
@@ -2408,7 +2405,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Muuda fotosid";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Luba sätetes täielik ligipääs või muuda, millistele fotodele on Signal-il ligipääs.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Luba sätetes täielik ligipääs või muuda, millistele fotodele on Signalil ligipääs.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Kas sa ei näe enda fotosid?";
@@ -2459,7 +2456,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Sul on võimalik saata ja saada enda telefonist või iPadist sünkroonitud sõnumeid. ↵Sinu turvalisuse huvides ei kanta vestluste ajalugu uutesse ühendatud seadmetesse üle.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ kasutab Signal-it!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ kasutab Signalit!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Kleebised";
@@ -2471,13 +2468,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Vigane audiofail.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signal-it kasutama.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signalit kasutama.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Juurdepääs kontaktidele";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Signal-isse";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Signalisse";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Otsi";
@@ -2594,7 +2591,7 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Iga lingi eelvaade";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Sinu Signal-i konto ülekandmiseks pead mõlemas seadmes lubama ligipääsu kohalikule võrgule.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Sinu Signali konto ülekandmiseks pead mõlemas seadmes lubama ligipääsu kohalikule võrgule.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Kas vajad abi?";
@@ -2606,7 +2603,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Lülita sisse \"Kohalik võrk\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Liigu Signal-isse";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Liigu Signalisse";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Lülita sisse Ligipääs kohalikule võrgule";
@@ -2660,7 +2657,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Kustuta kõigi jaoks";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "See sõnum kustutatakse kõigilt vestluse liikmetelt, kui nad kasutavad Signal-i värsket versiooni. Nad näevad, et sa kustutasid sõnumi.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "See sõnum kustutatakse kõigilt vestluse liikmetelt, kui nad kasutavad Signali värsket versiooni. Nad näevad, et sa kustutasid sõnumi.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Kelle jaoks soovid seda sõnumit kustutada?";
@@ -2801,7 +2798,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Kas jätkata seda vestlust isikuga %@ ja jagada talle sinu nime ja fotot?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kas jätkata vestlust selle grupiga ja jagada sinu nime ja fotot selle liikmetele?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kas jätkata vestlust selle grupiga ja jagada sinu nime ning fotot grupi liikmetele?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Kas lubad kasutajal %@ sulle sõnumeid saata ja jagad enda nime ning fotot temaga? Ta ei tea, et oled tema sõnumit näinud kuni sa lubad.";
@@ -2882,7 +2879,7 @@
 "MISSED_CALL" = "Vastamata kõne";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal-iga videokõnede tegemiseks on võimalik iOSi sätetes lubada juurdepääs kaamerale.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signaliga videokõnede tegemiseks on võimalik iOSi sätetes lubada juurdepääs kaamerale.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab juurdepääsu sinu kaamerale.";
@@ -2981,7 +2978,7 @@
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Vestluse alustamiseks vali kontakt või grupp.";
 
 /* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Tere tulemast Signal-it kasutama";
+"NO_SELECTED_CONVERSATION_TITLE" = "Tere tulemast Signalit kasutama";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Uus sõnum kasutajale:";
@@ -3092,7 +3089,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Ühenda iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Klõpsmine nupul \"Registreeri iPad\" võimaldab luua uue Signal-i konto või teisaldada olemasolev konto sellesse iPadi. See keelab Signal-i kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Klõpsmine nupul \"Registreeri iPad\" võimaldab luua uue Signali konto või teisaldada olemasolev konto sellesse iPadi. See keelab Signali kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Klõpsamine nupul \"Ühenda iPhone\" võimaldab sul ühendada enda telefon olemasoleva kontoga. Telefoni ühendamine üldiselt ei ole soovitatud ja limiteerib osasid funktsioone, näiteks helistamine.";
@@ -3104,7 +3101,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Ühenda see iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Selle iPadi registreerimine keelab Signal-i kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Selle iPadi registreerimine keelab Signali kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "iPhone'i ühendamine ei ole soovitatud ja limiteerib põhifunktsionaalsust.";
@@ -3119,10 +3116,10 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Hangi sõnum";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Vali, kes saavad sind Signal-is otsida sinu telefoninumbri %@ kaudu.";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Vali, kes saavad sind Signalis otsida telefoninumbri %@ järgi.";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kes saab sind sinu numbri abil leida?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kes saavad sind sinu numbri järgi leida?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Alustamiseks sisesta oma telefoninumber";
@@ -3131,7 +3128,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Vigane number";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signal-i konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto salvestatud profiiliteabe või säteteta.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signali konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto salvestatud profiiliteabe või säteteta.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
@@ -3167,7 +3164,7 @@
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Ma ei saanud koodi (saadaval %@ pärast)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Võta ühendust Signal-i kasutajatoega";
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Võta ühendust Signali kasutajatoega";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "See kood ei ole õige";
@@ -3206,7 +3203,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ määras kaduvate sõnumite ajaks %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal-il on hetkel tehnilisi raskusi. Tegeleme teenuse taastamisega tõsiselt nii kiiresti kui võimalik.";
+"OUTAGE_WARNING" = "Signalil on hetkel tehnilisi raskusi. Tegeleme teenuse taastamisega tõsiselt nii kiiresti kui võimalik.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Sa helistasid isikule %@";
@@ -3320,13 +3317,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Igaüks";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Igaüks, kellel on sinu telefoninumber kontaktides näeb sind ka kontaktina Signal-is. Teised saavad sind otsida otsingu kaudu.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Igaüks, kellel on sinu telefoninumber kontaktides näeb sind ka kontaktina Signalis. Teised saavad sind leida otsingu kaudu.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Mitte keegi";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Mitte keegi ei saa sind leida Signal-ist sinu telefoninumbri kaudu. Sa pole kontaktina nähtav isikutele, kellel on sinu telefoninumber nende kontaktides ja teistel pole võimalik sind leida telefoninumbri järgi otsides.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Mitte keegi ei saa sind leida Signalist sinu telefoninumbri kaudu. Sa pole kontaktina nähtav isikutele, kellel on sinu telefoninumber nende kontaktides ja teistel pole võimalik sind leida telefoninumbri järgi otsides.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Näide: %@";
@@ -3335,19 +3332,19 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Minu kontaktid";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Ainult sinu kontaktid näevad Signal-is sinu telefoninumbrit.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Ainult sinu kontaktid näevad Signalis sinu telefoninumbrit.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Igaüks";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Sinu telefoninumber on nähtav isikutele ja gruppidele, millega suhtled. Isikud, kellel on sinu telefoninumber nende telefonikontaktides, näevad seda ka Signal-is.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Sinu telefoninumber on nähtav isikutele ja gruppidele, millega suhtled. Isikud, kellel on sinu telefoninumber nende telefonikontaktides, näevad seda ka Signalis.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Mitte keegi";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Mitte keegi ei näe Signal-is sinu telefoninumbrit.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Mitte keegi ei näe Signalis sinu telefoninumbrit.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3434,7 +3431,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN-koodi loomine ei õnnestunud";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
+"PIN_CREATION_EXPLANATION" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signali uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
@@ -3497,7 +3494,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Tuletame paari päeva pärast uuesti meelde.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Kinnita Signal-i PIN-kood";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Kinnita Signali PIN-kood";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Tuletame homme jälle meelde.";
@@ -3512,7 +3509,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "Lubamatu PIN-kood, proovi uuesti.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Sisesta Signal-i PIN-kood";
+"PIN_REMINDER_TITLE" = "Sisesta Signali PIN-kood";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-kood peab olema vähemalt 4 numbri pikkune.";
@@ -3527,7 +3524,7 @@
 "PINS_MEGAPHONE_ACTION" = "Loo PIN-kood";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna";
+"PINS_MEGAPHONE_BODY" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Tuletame sulle hiljem meelde. PIN-koodi loomine muutub %ld päeva pärast kohustuslikuks.";
@@ -3569,16 +3566,16 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ei leidnud sinu lõikepuhvrist ühtegi turvanumbrit. Kas sa kopeerisid selle korrektselt?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Iga Signal-i kasutajate paar omab eraldi turvanumbrit. Kontrolli üle, kas %@ näitab *sinu* turvanumbrit.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Iga Signali kasutajate paar omab eraldi turvanumbrit. Kontrolli üle, kas %@ näitab *sinu* turvanumbrit.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sa kasutad Signal-i vana versiooni. Kinnitamiseks pead kõigepealt rakendust uuendama.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sa kasutad Signali vana versiooni. Kinnitamiseks pead kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Signal-i vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Signali vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signal-i versiooni?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signali versiooni?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Otspunktkrüptimise turvalisuse kinnitamiseks kasutajaga %@ võrdle ülaltoodud numbreid tema seadmes näidatavate numbritega.\n\nTeise võimalusena saad skannida koodi tema telefonist või paluda tal sinu koodi skannida.";
@@ -3848,7 +3845,7 @@
 "RESEARCH_MEGAPHONE_BODY" = "Tahame kuulda sinult tagasisidet, et teha Signal planeedi parimaks suhtlusrakenduseks.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Räägi Signal-ile, mida sa arvad";
+"RESEARCH_MEGAPHONE_TITLE" = "Räägi Signalile, mida sa arvad";
 
 /* Text for the research modal footer */
 "RESEARCH_MODAL_FOOTER" = "Seda küsitlust teostab Surveygizmo turvalises domeenis surveys.signalusers.org";
@@ -3857,7 +3854,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Tänan, ei";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Me usume privaatsusesse.</bold>\n\nSignal ei jälita sind ega kogu sinu andmeid. Signal-i täiustamisel kõigi jaoks sõltume kasutaja tagasisidest <bold>ja ootame seda ka sinult </bold>.\n\nTeostame küsitlust, et saada aru, kuidas sa Signal-it kasutad. Meie küsitlus ei kogu sind identifitseerivaid andmeid. Kui oled huvitatud lisaks tagasiside andmisest, siis on sul võimalus sisestada kontaktinfo.\n\nKui sul on paar minutit aega ja tagasisidet, mida jagada, siis sooviksime seda sinult kuulda.";
+"RESEARCH_MODAL_PLEA" = "<bold>Me usume privaatsusesse.</bold>\n\nSignal ei jälita sind ega kogu sinu andmeid. Signali täiustamisel kõigi jaoks sõltume kasutaja tagasisidest <bold>ja ootame seda ka sinult </bold>.\n\nTeostame küsitlust, et saada aru, kuidas sa Signalit kasutad. Meie küsitlus ei kogu sind identifitseerivaid andmeid. Kui oled huvitatud lisaks tagasiside andmisest, siis on sul võimalus sisestada kontaktinfo.\n\nKui sul on paar minutit aega ja tagasisidet, mida jagada, siis sooviksime seda sinult kuulda.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Osale küsitluses";
@@ -4091,13 +4088,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Ühendamiskoodi hankimine ei õnnestunud";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Telefoniga ühendamiseks pead selles seadmes Signal-it uuendama.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Telefoniga ühendamiseks pead selles seadmes Signalit uuendama.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versioon pole toetatud";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Sinu muu seadme kasutab aegunud Signal-i versiooni, mis ei toeta iPadi QR-koodide skannimist. Palun paigalda Signal-i uusi versioon ja proovi uuesti.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Sinu muu seade kasutab aegunud Signali versiooni, mis ei toeta iPadi QR-koodide skannimist. Palun paigalda Signali uusi versioon ja proovi uuesti.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Uuenda skannivat seadet";
@@ -4121,7 +4118,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Käivita Signal oma telefonis, et ühendada see iPad oma kontoga";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Mul ei ole telefonis Signal-it...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Mul ei ole telefonis Signalit...";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Mine telefonis rakendustepoodi, paigalda Signal, täida registreerumisprotsess ja siis saad ühendada enda iPadi sama konto külge.";
@@ -4130,7 +4127,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Paigalda Signal enda telefoni";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Klõpsa enda profiilipildil, et avada telefonis Signal-i sätted. Seejärel vali \"Ühendatud seadmed\" ja \"Ühenda uus seade\", et skannida see kood oma telefoniga:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Klõpsa enda profiilipildil, et avada telefonis Signali sätted. Seejärel vali \"Ühendatud seadmed\" ja \"Ühenda uus seade\", et skannida see kood oma telefoniga:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Siit saad abi iPadi ühendamise osas";
@@ -4163,7 +4160,7 @@
 "SEND_INVITE_FAILURE" = "Kutse saatmine ei õnnestunud, palun proovi hiljem uuesti.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Signal-it kasutama!";
+"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Signalit kasutama!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Unusta meediafailid";
@@ -4226,7 +4223,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Luba PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal-i PIN-kood";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signali PIN-kood";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Postita silumislogi";
@@ -4313,7 +4310,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alati edastada kõned";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõik kõned läbi Signal-i serveri, et hoiduda enda IP-aadressi paljastamisest oma kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõik kõned läbi Signali serveri, et hoiduda enda IP-aadressi paljastamisest oma kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Tühjenda vestluse ajalugu";
@@ -4334,7 +4331,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Kustuta kõik";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Anneta Signal-ile";
+"SETTINGS_DONATE" = "Anneta Signalile";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Abi";
@@ -4382,7 +4379,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Märguande sisu";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt liitus Signal-iga";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt liitus Signaliga";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Sündmused";
@@ -4406,10 +4403,10 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Lülita meeldetuletused välja";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Jäta kindlasti meelde või salvesta PIN-kood turvaliselt, kuna seda pole võimalik taastada. Kui unustad PIN-koodi, võid Signal-i kontot uuesti registreerides enda andmed kaotada.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Jäta kindlasti meelde või salvesta PIN-kood turvaliselt, kuna seda pole võimalik taastada. Kui unustad PIN-koodi, võid Signali kontot uuesti registreerides enda andmed kaotada.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Kinnita Signal-i PIN-kood";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Kinnita Signali PIN-kood";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_PIN_REMINDER_FOOTER" = "Meeldetuletused aitavad sul PIN-koodi meelde jätta, kuna seda pole võimalik taastada. Aja möödudes küsitakse sult seda harvemini.";
@@ -4418,7 +4415,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN-koodi meeldetuletused";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse.";
+"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signali uuesti, siis sinu profiil, sätted ja kontaktid taastatakse.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Muuda enda PIN-koodi";
@@ -4454,7 +4451,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Lülita sisse";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Kui unustad Signal-iga uuesti registreerumisel oma Signal PIN-koodi, lukustatakse sind 7 päevaks oma kontolt.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Kui unustad Signaliga uuesti registreerumisel oma Signal PIN-koodi, lukustatakse sind 7 päevaks oma kontolt.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Kas lülitada registreerimislukk sisse?";
@@ -4469,7 +4466,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekraaniluku aegumine";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signal-i ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada märguandeid sõnumite kohta. Signal-i teavituste sätted võimaldavad kuvatavat teavet kohandada.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signali ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada märguandeid sõnumite kohta. Signali teavituste sätted võimaldavad kuvatavat teavet kohandada.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekraanilukk";
@@ -4496,7 +4493,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreerimislukk";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Lisaturvalisuse huvides lülita sisse registreerimislukk, mis nõuab sinu telefoninumbri Signal-isse uuesti registreerimiseks Signal-i PIN-koodi .";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Lisaturvalisuse huvides lülita sisse registreerimislukk, mis nõuab sinu telefoninumbri Signalisse uuesti registreerimiseks Signali PIN-koodi .";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Sisestamisindikaatorid";
@@ -4651,11 +4648,38 @@
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Räägi meile, mis toimub";
 
+/* Default prompt for user description in support email requests */
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Palun saada kasutajatoesoov aadressile support@signal.org";
 
+/* Localized label for support request email filter string. Embeds {{filter text}}. */
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
+
+/* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %@";
+
+/* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
+
+/* Localized divider for support request emails internal information */
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
+
+/* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
+
+/* Localized label for support request email locale string. Embeds {{locale}}. */
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+
+/* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+
+/* Localized label for support request email signal version string. Embeds {{signal version}}. */
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal-i IOS versiooni kasutajatoesoov";
+"SUPPORT_EMAIL_SUBJECT" = "Signali IOS versiooni kasutajatoesoov";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Kuidas sa end tunned? (valikuline)";
@@ -4769,25 +4793,25 @@
 "UNKNOWN_COUNTRY_NAME" = "Tundmatu riik";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Üks sinu seadmetest saatis sõnumi, mida ei saa töödelda või siin kuvada, sest see kasutab Signal-i uut funktsionaalsust.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Üks sinu seadmetest saatis sõnumi, mida ei saa töödelda või siin kuvada, sest see kasutab Signali uut funktsionaalsust.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ saatis sulle sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signal-i funktsionaalsust.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ saatis sulle sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signali funktsionaalsust.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Sa said sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signal-i funktsionaalsust.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Sa said sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signali funktsionaalsust.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Uuenda Signal-it nüüd";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Uuenda Signaliit nüüd";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal uuendatud värskeimale versioonile. Nüüd saad seda sõnumit oma seadmes vastu võtta.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Nüüd kui kasutad uuendatud Signal-it, saad paluda kontaktil %@ see sõnum uuesti saata.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Nüüd kui kasutad uuendatud Signalit, saad paluda kontaktil %@ see sõnum uuesti saata.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Nüüd kui kasutad uuendatud Signal-it, saad paluda saatjal see sõnum uuesti saata.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Nüüd kui kasutad uuendatud Signalit, saad paluda saatjal see sõnum uuesti saata.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Tundmatu";
@@ -4853,7 +4877,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signali uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Tutvustame PIN-koode";
@@ -4868,7 +4892,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Kasutajanimed on Signal-is vabatahtlikud. Kui lood endale Signal-is kasutajanime, siis saavad teised Signal-i kasutajad leida sind kasutajanime järgi ja võtta ühendust sinu telefoninumbrit teadmata.";
+"USERNAME_DESCRIPTION" = "Kasutajanimed on Signalis vabatahtlikud. Kui otsustad endale Signalis kasutajanime luua, siis saavad teised Signali kasutajad leida sind kasutajanime järgi ja võtta ühendust sinu telefoninumbrit teadmata.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Kasutajanimi";
@@ -4880,7 +4904,7 @@
 "USERNAME_LOOKUP_ERROR" = "Kasutajanime otsimisel tekkis tõrge. Palun proovi hiljem uuesti.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ ei ole Signal-i kasutaja. Tee kindlaks, et sisestasid kasutajanime õigesti.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ ei ole Signali kasutaja. Tee kindlaks, et sisestasid kasutajanime õigesti.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Kasutajat ei leitud";
