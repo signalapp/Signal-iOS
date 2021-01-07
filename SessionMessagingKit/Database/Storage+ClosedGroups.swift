@@ -41,6 +41,10 @@ extension Storage {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(groupPublicKey, forKey: groupPublicKey, inCollection: Storage.closedGroupPublicKeyCollection)
     }
     
+    public func removeClosedGroupPublicKey(_ groupPublicKey: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: groupPublicKey, inCollection: Storage.closedGroupPublicKeyCollection)
+    }
+    
     
     
     // MARK: - Ratchets

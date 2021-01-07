@@ -290,6 +290,7 @@ extension MessageReceiver {
         let wasCurrentUserRemoved = !members.contains(userPublicKey)
         if wasCurrentUserRemoved {
             Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
+            Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
             // Notify the PN server
             let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
         }

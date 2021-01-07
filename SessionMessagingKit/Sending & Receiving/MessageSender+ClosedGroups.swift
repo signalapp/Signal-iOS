@@ -84,6 +84,7 @@ extension MessageSender : SharedSenderKeysDelegate {
                 SNMessagingKitConfiguration.shared.storage.write { transaction in
                     // Remove the group private key and unsubscribe from PNs
                     Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
+                    Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
                     let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
                 }
             }
