@@ -65,6 +65,87 @@ extension ConversationViewController {
         }
         return true
     }
+
+    // MARK: -
+
+    @objc(updateContentInsetsAnimated:)
+    public func updateContentInsets(animated: Bool) {
+        AssertIsOnMainThread()
+
+        guard !isMeasuringKeyboardHeight else {
+            return
+        }
+
+        // Don't update the content insets if an interactive pop is in progress
+        guard let navigationController = self.navigationController else {
+            return
+        }
+        if let interactivePopGestureRecognizer = navigationController.interactivePopGestureRecognizer {
+            switch interactivePopGestureRecognizer.state {
+            case .possible, .failed:
+                break
+            default:
+                return
+            }
+        }
+
+        view.layoutIfNeeded()
+
+        let oldInsets = collectionView.contentInset
+        var newInsets = oldInsets
+
+        let keyboardOverlap = inputAccessoryPlaceholder.keyboardOverlap
+        newInsets.bottom = (messageActionsExtraContentInsetPadding +
+                                keyboardOverlap +
+                                bottomBar.height -
+                                view.safeAreaInsets.bottom)
+        newInsets.top = messageActionsExtraContentInsetPadding + bannerView.height
+
+        let wasScrolledToBottom = self.isScrolledToBottom
+
+        // Changing the contentInset can change the contentOffset, so make sure we
+        // stash the current value before making any changes.
+        let oldYOffset = collectionView.contentOffset.y
+
+        let didChangeInsets = oldInsets != newInsets
+
+        UIView.performWithoutAnimation {
+            if didChangeInsets {
+                self.collectionView.contentInset = newInsets
+            }
+            self.collectionView.scrollIndicatorInsets = newInsets
+        }
+
+        // Adjust content offset to prevent the presented keyboard from obscuring content.
+        if !didChangeInsets {
+            // Do nothing.
+            //
+            // If content inset didn't change, no need to update content offset.
+        } else if !hasAppearedAndHasAppliedFirstLoad {
+            // Do nothing.
+        } else if wasScrolledToBottom {
+            // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
+            scrollToBottomOfLoadWindow(animated: false)
+        } else if isViewCompletelyAppeared {
+            // If we were scrolled away from the bottom, shift the content in lockstep with the
+            // keyboard, up to the limits of the content bounds.
+            let insetChange = newInsets.bottom - oldInsets.bottom
+
+            // Only update the content offset if the inset has changed.
+            if insetChange != 0 {
+                // The content offset can go negative, up to the size of the top layout guide.
+                // This accounts for the extended layout under the navigation bar.
+                owsAssertDebug(topLayoutGuide.length == view.safeAreaInsets.top)
+                let minYOffset = -view.safeAreaInsets.top
+                let newYOffset = (oldYOffset + insetChange).clamp(minYOffset, safeContentHeight)
+                let newOffset = CGPoint(x: 0, y: newYOffset)
+
+                UIView.performWithoutAnimation {
+                    collectionView.setContentOffset(newOffset, animated: false)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - ForwardMessageDelegate

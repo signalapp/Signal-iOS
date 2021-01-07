@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+Image.h"
@@ -653,6 +653,8 @@ typedef struct {
         case ImageFormat_Gif:
             // TODO: We currently treat all GIFs as animated.
             // We could reflect the actual image content.
+            isAnimated = YES;
+            break;
         case ImageFormat_LottieSticker:
             isAnimated = YES;
             break;

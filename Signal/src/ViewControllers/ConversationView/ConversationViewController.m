@@ -433,7 +433,6 @@ typedef enum : NSUInteger {
     [self createContents];
     [self createConversationScrollButtons];
     [self createHeaderViews];
-    [self updateLeftBarItem];
     [self addNotificationListeners];
     [self.loadCoordinator viewDidLoad];
 
@@ -1159,21 +1158,6 @@ typedef enum : NSUInteger {
 - (CGFloat)unreadCountViewDiameter
 {
     return 16;
-}
-
-- (void)updateLeftBarItem
-{
-    // No left button when the view is not collapsed, there's nowhere to go.
-    if (!self.conversationSplitViewController.isCollapsed) {
-        self.navigationItem.leftBarButtonItem = nil;
-        return;
-    }
-
-    // Otherwise, show the back button.
-
-    // We use the default back button from conversation list, which animates nicely with interactive transitions
-    // like the interactive pop gesture and the "slide left" for info.
-    self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification
@@ -3243,33 +3227,36 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    NSDate *startDate = [NSDate new];
-    self.scrollingAnimationStartDate = startDate;
-
     // scrollingAnimationStartDate blocks landing of loads, so we must ensure
     // that it is always cleared in a timely way, even if the animation
     // is cancelled. Wait no more than N seconds.
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)5.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        ConversationViewController *_Nullable strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
+    [self.scrollingAnimationCompletionTimer invalidate];
+    self.scrollingAnimationCompletionTimer =
+        [NSTimer weakScheduledTimerWithTimeInterval:5
+                                             target:self
+                                           selector:@selector(scrollingAnimationCompletionTimerDidFire:)
+                                           userInfo:nil
+                                            repeats:NO];
+}
 
-        // scrollingAnimationStartDate should already have been cleared,
-        // but we need to ensure that it is cleared in a timely way.
-        if ([NSObject isNullableObject:strongSelf.scrollingAnimationStartDate equalTo:startDate]) {
-            OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
-            [strongSelf scrollingAnimationDidComplete];
-        }
-    });
+- (void)scrollingAnimationCompletionTimerDidFire:(NSTimer *)timer
+{
+    OWSAssertIsOnMainThread();
+
+    OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
+
+    // scrollingAnimationCompletionTimer should already have been cleared,
+    // but we need to ensure that it is cleared in a timely way.
+    [self scrollingAnimationDidComplete];
 }
 
 - (void)scrollingAnimationDidComplete
 {
     OWSAssertIsOnMainThread();
 
-    self.scrollingAnimationStartDate = nil;
+    [self.scrollingAnimationCompletionTimer invalidate];
+    self.scrollingAnimationCompletionTimer = nil;
+
     [self autoLoadMoreIfNecessary];
 }
 
@@ -3968,79 +3955,6 @@ typedef enum : NSUInteger {
     } else {
         [self updateBottomBarPosition];
         [self updateContentInsetsAnimated:NO];
-    }
-}
-
-// MARK: -
-
-- (void)updateContentInsetsAnimated:(BOOL)animated
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.isMeasuringKeyboardHeight) {
-        return;
-    }
-
-    // Don't update the content insets if an interactive pop is in progress
-    switch (self.navigationController.interactivePopGestureRecognizer.state) {
-        case UIGestureRecognizerStatePossible:
-        case UIGestureRecognizerStateFailed:
-            break;
-        default:
-            return;
-    }
-
-    [self.view layoutIfNeeded];
-
-    UIEdgeInsets oldInsets = self.collectionView.contentInset;
-    UIEdgeInsets newInsets = oldInsets;
-
-    newInsets.bottom = self.messageActionsExtraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
-        + self.bottomBar.height - self.view.safeAreaInsets.bottom;
-    newInsets.top = self.messageActionsExtraContentInsetPadding + self.bannerView.height;
-
-    BOOL wasScrolledToBottom = [self isScrolledToBottom];
-
-    // Changing the contentInset can change the contentOffset, so make sure we
-    // stash the current value before making any changes.
-    CGFloat oldYOffset = self.collectionView.contentOffset.y;
-
-    BOOL didChangeInsets = !UIEdgeInsetsEqualToEdgeInsets(oldInsets, newInsets);
-
-    [UIView performWithoutAnimation:^{
-        if (didChangeInsets) {
-            self.collectionView.contentInset = newInsets;
-        }
-        self.collectionView.scrollIndicatorInsets = newInsets;
-    }];
-
-    // Adjust content offset to prevent the presented keyboard from obscuring content.
-    if (!didChangeInsets) {
-        // Do nothing.
-        //
-        // If content inset didn't change, no need to update content offset.
-    } else if (!self.hasAppearedAndHasAppliedFirstLoad) {
-        // Do nothing.
-    } else if (wasScrolledToBottom) {
-        // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
-        [self scrollToBottomOfLoadWindowWithAnimated:NO];
-    } else if (self.isViewCompletelyAppeared) {
-        // If we were scrolled away from the bottom, shift the content in lockstep with the
-        // keyboard, up to the limits of the content bounds.
-        CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-
-        // Only update the content offset if the inset has changed.
-        if (insetChange != 0) {
-            // The content offset can go negative, up to the size of the top layout guide.
-            // This accounts for the extended layout under the navigation bar.
-            OWSAssertDebug(self.topLayoutGuide.length == self.view.safeAreaInsets.top);
-            CGFloat minYOffset = -self.view.safeAreaInsets.top;
-
-            CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
-            CGPoint newOffset = CGPointMake(0, newYOffset);
-
-            [UIView performWithoutAnimation:^{ [self.collectionView setContentOffset:newOffset animated:NO]; }];
-        }
     }
 }
 

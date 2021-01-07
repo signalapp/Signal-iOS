@@ -1,25 +1,25 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
 public class ContactSupportAlert {
-    public class func presentAlert(title: String, message: String, emailSubject: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = []) {
-        presentStep1(title: title, message: message, emailSubject: emailSubject, fromViewController: fromViewController, additionalActions: additionalActions)
+    public class func presentAlert(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = []) {
+        presentStep1(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController, additionalActions: additionalActions)
     }
 
     // MARK: -
 
-    private class func presentStep1(title: String, message: String, emailSubject: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction]) {
+    private class func presentStep1(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction]) {
         let actionSheet = ActionSheetController(title: title, message: message)
 
         additionalActions.forEach { actionSheet.addAction($0) }
 
         let proceedAction = ActionSheetAction(title: CommonStrings.contactSupport, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
-            self.presentStep2(emailSubject: emailSubject, fromViewController: fromViewController)
+            self.presentStep2(emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
         }
         actionSheet.addAction(proceedAction)
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -27,27 +27,29 @@ public class ContactSupportAlert {
         fromViewController.present(actionSheet, animated: true)
     }
 
-    public class func presentStep2(emailSubject: String, fromViewController: UIViewController) {
+    public class func presentStep2(emailSupportFilter: String, fromViewController: UIViewController) {
         let submitWithLogTitle = NSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITH_LOG", comment: "Button text")
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
-            ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                         canCancel: true) { modal in
+            var emailRequest = SupportEmailModel()
+            emailRequest.supportFilter = emailSupportFilter
+            emailRequest.debugLogPolicy = .requireUpload
+            let operation = ComposeSupportEmailOperation(model: emailRequest)
+
+            ModalActivityIndicatorViewController.present(
+                fromViewController: fromViewController,
+                canCancel: true
+            ) { modal in
+                _ = modal.wasCancelledPromise.done { operation.cancel() }
+
                 firstly {
-                    Pastelog.uploadLog()
-                }.done { logUrl in
-                    guard !modal.wasCancelled else { return }
-                    modal.dismiss {
-                        do {
-                            try Pastelog.submitEmail(subject: emailSubject, logUrl: logUrl)
-                        } catch {
-                            showError(error, emailSubject: emailSubject, fromViewController: fromViewController)
-                        }
-                    }
+                    operation.perform(on: .sharedUserInitiated)
+                }.done {
+                    modal.dismiss {}
                 }.catch { error in
                     guard !modal.wasCancelled else { return }
-                    showError(error, emailSubject: emailSubject, fromViewController: fromViewController)
+                    showError(error, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
                 }
             }
         }
@@ -56,10 +58,8 @@ public class ContactSupportAlert {
         let submitWithoutLogAction = ActionSheetAction(title: submitWithoutLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
-            do {
-                try Pastelog.submitEmail(subject: emailSubject, logUrl: nil)
-            } catch {
-                showError(error, emailSubject: emailSubject, fromViewController: fromViewController)
+            ComposeSupportEmailOperation.sendEmail(supportFilter: emailSupportFilter).catch { error in
+                showError(error, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
             }
         }
 
@@ -73,12 +73,12 @@ public class ContactSupportAlert {
         fromViewController.present(actionSheet, animated: true)
     }
 
-    private class func showError(_ error: Error, emailSubject: String, fromViewController: UIViewController) {
+    private class func showError(_ error: Error, emailSupportFilter: String, fromViewController: UIViewController) {
         let retryTitle = NSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN", comment: "button text")
         let retryAction = ActionSheetAction(title: retryTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
-            presentStep2(emailSubject: emailSubject, fromViewController: fromViewController)
+            presentStep2(emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
         }
 
         let message = NSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY", comment: "Alert body")

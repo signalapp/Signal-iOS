@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteAttestation.h"
@@ -28,6 +28,15 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     return [NSError errorWithDomain:RemoteAttestationErrorDomain
                                code:code
                            userInfo:@{ RemoteAttestationErrorKey_Reason : reason }];
+}
+
+NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
+    switch (value) {
+        case RemoteAttestationServiceContactDiscovery:
+            return @"ContactDiscovery";
+        case RemoteAttestationServiceKeyBackup:
+            return @"KeyBackup";
+    }
 }
 
 @interface RemoteAttestationAuth ()
@@ -275,10 +284,33 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
         return failureHandler(OWSErrorMakeGenericError(@"Not registered."));
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"service: %@", NSStringForRemoteAttestationService(service));
+    }
+
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequestForService:service];
     [[TSNetworkManager shared] makeRequest:request
       success:^(NSURLSessionDataTask *task, id responseDict) {
-          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+        if (SSKDebugFlags.internalLogging) {
+            OWSAssertDebug([task.response isKindOfClass:NSHTTPURLResponse.class]);
+            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+            OWSLogInfo(@"statusCode: %lu", (unsigned long) response.statusCode);
+            for (NSString *header in response.allHeaderFields) {
+                if ([response respondsToSelector:@selector(valueForHTTPHeaderField:)]) {
+                    NSString *_Nullable headerValue = [response valueForHTTPHeaderField:header];
+                    OWSLogInfo(@"Header: %@ -> %@", header, headerValue);
+                } else {
+                    OWSLogInfo(@"Header: %@", header);
+                }
+            }
+            
+#if TESTABLE_BUILD
+            [TSNetworkManager logCurlForTask:task];
+#endif
+        }
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
               RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];
               if (!auth) {
                   OWSLogError(@"remote attestation auth could not be parsed: %@", responseDict);
@@ -425,10 +457,16 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
 
     if (isExpired) {
-        OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
-        *error = RemoteAttestationErrorMakeWithReason(
-            RemoteAttestationAssertionError, @"Signature is expired.");
-        return NO;
+        if (SSKDebugFlags.internalLogging) {
+            OWSLogInfo(@"signatureBody: %@", signatureBody);
+            OWSLogInfo(@"signature: %@", signature);
+        }
+        if (SSKFeatureFlags.isUsingProductionService) {
+            OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
+            *error = RemoteAttestationErrorMakeWithReason(
+                                                          RemoteAttestationAssertionError, @"Signature is expired.");
+            return NO;
+        }
     }
 
     return YES;

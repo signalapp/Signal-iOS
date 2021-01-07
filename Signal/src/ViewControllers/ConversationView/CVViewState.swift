@@ -66,9 +66,9 @@ public class CVViewState: NSObject {
     @objc
     public var isUserScrolling = false
     @objc
-    public var scrollingAnimationStartDate: Date?
+    public var scrollingAnimationCompletionTimer: Timer?
     @objc
-    public var hasScrollingAnimation: Bool { scrollingAnimationStartDate != nil }
+    public var hasScrollingAnimation: Bool { scrollingAnimationCompletionTimer != nil }
     @objc
     public var scrollContinuity: ScrollContinuity = .bottom
     public var scrollContinuityMap: CVScrollContinuityMap?
@@ -206,9 +206,9 @@ public extension ConversationViewController {
         set { viewState.isUserScrolling = newValue }
     }
 
-    var scrollingAnimationStartDate: Date? {
-        get { viewState.scrollingAnimationStartDate }
-        set { viewState.scrollingAnimationStartDate = newValue }
+    var scrollingAnimationCompletionTimer: Timer? {
+        get { viewState.scrollingAnimationCompletionTimer }
+        set { viewState.scrollingAnimationCompletionTimer = newValue }
     }
 
     var hasScrollingAnimation: Bool { viewState.hasScrollingAnimation }

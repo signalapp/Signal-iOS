@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -23,22 +23,29 @@ struct SupportEmailModel {
         case link(URL)
     }
 
-    /// Should be the unlocalized English string localizedSubject
-    var subject: String = "Signal iOS Support Request"
-    var localizedSubject: String = NSLocalizedString("SUPPORT_EMAIL_SUBJECT",
-                                                     comment: "Localized subject for support request emails")
-    var device: String = AppVersion.hardwareInfoString
-    var osBuild: String = AppVersion.iOSVersionString
-    var signalBuild: String = AppVersion.shared().currentAppVersion
+    /// An unlocalized string used for filtering by support
+    var supportFilter: String = "Signal iOS Support Request"
+    var localizedSubject: String = NSLocalizedString(
+        "SUPPORT_EMAIL_SUBJECT",
+        comment: "Localized subject for support request emails"
+    )
+    var deviceType: String = UIDevice.current.model
+    var deviceIdentifier: String = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
+    var iosVersion: String = AppVersion.iOSVersionString
+    var signalVersion: String = AppVersion.shared().currentAppVersionLong
     var locale: String = NSLocale.current.identifier
 
-    var userDescription: String?
+    var userDescription: String? = NSLocalizedString(
+        "SUPPORT_EMAIL_DEFAULT_DESCRIPTION",
+        comment: "Default prompt for user description in support email requests"
+    )
     var emojiMood: EmojiMoodPickerView.Mood?
     var debugLogPolicy: LogPolicy = .none
     fileprivate var resolvedDebugString: String?
 }
 
-class ComposeSupportEmailOperation {
+@objc
+final class ComposeSupportEmailOperation: NSObject {
 
     enum EmailError: LocalizedError {
         case logUploadTimedOut
@@ -66,14 +73,34 @@ class ComposeSupportEmailOperation {
     }
 
     static var canSendEmails: Bool {
-        return MFMailComposeViewController.canSendMail()
+        return UIApplication.shared.canOpenURL(MailtoLink(to: "", subject: "", body: "").url!)
     }
 
     private var model: SupportEmailModel
     private var isCancelled: Bool = false
 
+    @objc
+    class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL? = nil) {
+        sendEmail(supportFilter: supportFilter, logUrl: logUrl).catch { error in
+            OWSActionSheets.showErrorAlert(message: error.localizedDescription)
+        }
+    }
+
+    class func sendEmail(supportFilter: String, logUrl: URL? = nil) -> Promise<Void> {
+        var model = SupportEmailModel()
+        model.supportFilter = supportFilter
+        if let logUrl = logUrl { model.debugLogPolicy = .link(logUrl) }
+        return sendEmail(model: model)
+    }
+
+    class func sendEmail(model: SupportEmailModel) -> Promise<Void> {
+        let operation = ComposeSupportEmailOperation(model: model)
+        return operation.perform(on: .sharedUserInitiated)
+    }
+
     init(model: SupportEmailModel) {
         self.model = model
+        super.init()
     }
 
     func perform(on workQueue: DispatchQueue = .sharedUtility) -> Promise<Void> {
@@ -160,17 +187,55 @@ class ComposeSupportEmailOperation {
         let bodyComponents: [String?] = [
             model.userDescription,
             "",
-            "--- Support Info ---",
-            "Subject: \(model.subject)",
-            "Device info: \(model.device)",
-            "iOS version: \(model.osBuild)",
-            "Signal version: \(model.signalBuild)",
-            "Locale: \(model.locale)",
-            {
+            NSLocalizedString(
+                "SUPPORT_EMAIL_INFO_DIVIDER",
+                comment: "Localized divider for support request emails internal information"
+            ),
+            String(
+                format: NSLocalizedString(
+                    "SUPPORT_EMAIL_FILTER_LABEL_FORMAT",
+                    comment: "Localized label for support request email filter string. Embeds {{filter text}}."
+                ), model.supportFilter
+            ),
+            String(
+                format: NSLocalizedString(
+                    "SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT",
+                    comment: "Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}."
+                ), model.deviceType
+            ),
+            String(
+                format: NSLocalizedString(
+                    "SUPPORT_EMAIL_HID_LABEL_FORMAT",
+                    comment: "Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}."
+                ), model.deviceIdentifier
+            ),
+            String(
+                format: NSLocalizedString(
+                    "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT",
+                    comment: "Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}."
+                ), model.iosVersion
+            ),
+            String(
+                format: NSLocalizedString(
+                    "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT",
+                    comment: "Localized label for support request email signal version string. Embeds {{signal version}}."
+                ), model.signalVersion
+            ), {
                 if let debugURLString = model.resolvedDebugString {
-                    return "Debug log: \(debugURLString)"
+                    return String(
+                        format: NSLocalizedString(
+                            "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT",
+                            comment: "Localized label for support request email debug log URL. Embeds {{debug log url}}."
+                        ), debugURLString
+                    )
                 } else { return nil }
             }(),
+            String(
+                format: NSLocalizedString(
+                    "SUPPORT_EMAIL_LOCALE_LABEL_FORMAT",
+                    comment: "Localized label for support request email locale string. Embeds {{locale}}."
+                ), model.locale
+            ),
             "",
             model.emojiMood?.stringRepresentation,
             model.emojiMood?.emojiRepresentation
@@ -178,6 +243,6 @@ class ComposeSupportEmailOperation {
 
         return bodyComponents
             .compactMap { $0 }
-            .joined(separator: "\n")
+            .joined(separator: "\r\n")
     }
 }

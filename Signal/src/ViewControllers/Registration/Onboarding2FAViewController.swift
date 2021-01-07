@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -177,13 +177,13 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                                       comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'.")
 
         let message: String
-        let emailSubject: String
+        let emailSupportFilter: String
         var additionalActions = [ActionSheetAction]()
         if isUsingKBS {
             if hasPendingRestoration {
                 message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
                                             comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock")
-                emailSubject = "Signal PIN - iOS (V2 PIN without RegLock)"
+                emailSupportFilter = "Signal PIN - iOS (V2 PIN without RegLock)"
 
                 let createNewPinAction = ActionSheetAction(
                     title: NSLocalizedString("ONBOARDING_2FA_CREATE_NEW_PIN",
@@ -210,15 +210,15 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             } else {
                 message = NSLocalizedString("REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
                                             comment: "Alert body for a forgotten SVR (V2) PIN")
-                emailSubject = "Signal PIN - iOS (V2 PIN)"
+                emailSupportFilter = "Signal PIN - iOS (V2 PIN)"
             }
         } else {
             message = NSLocalizedString("REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE",
                                         comment: "Alert body for a forgotten V1 PIN")
-            emailSubject = "Signal PIN - iOS (V1 PIN)"
+            emailSupportFilter = "Signal PIN - iOS (V1 PIN)"
         }
 
-        ContactSupportAlert.presentAlert(title: title, message: message, emailSubject: emailSubject, fromViewController: self, additionalActions: additionalActions)
+        ContactSupportAlert.presentAlert(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: self, additionalActions: additionalActions)
     }
 
     @objc func nextPressed() {
