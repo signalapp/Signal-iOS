@@ -46,6 +46,8 @@ public class CVViewState: NSObject {
     public var bottomBarBottomConstraint: NSLayoutConstraint?
     @objc
     public var requestView: UIView?
+    @objc
+    public var bannerView: UIView?
 
     @objc
     public var isDismissingInteractively = false
@@ -184,6 +186,11 @@ public extension ConversationViewController {
     var requestView: UIView? {
         get { viewState.requestView }
         set { viewState.requestView = newValue }
+    }
+
+    var bannerView: UIView? {
+        get { viewState.bannerView }
+        set { viewState.bannerView = newValue }
     }
 
     var isDismissingInteractively: Bool {

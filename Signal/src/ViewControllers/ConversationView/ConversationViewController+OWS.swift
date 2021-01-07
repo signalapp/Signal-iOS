@@ -99,7 +99,7 @@ extension ConversationViewController {
                                 keyboardOverlap +
                                 bottomBar.height -
                                 view.safeAreaInsets.bottom)
-        newInsets.top = messageActionsExtraContentInsetPadding + bannerView.height
+        newInsets.top = messageActionsExtraContentInsetPadding + (bannerView?.height ?? 0)
 
         let wasScrolledToBottom = self.isScrolledToBottom
 

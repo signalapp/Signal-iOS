@@ -115,8 +115,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isMarkingAsRead;
 @property (nonatomic) ConversationHeaderView *headerView;
 
-@property (nonatomic, nullable) UIView *bannerView;
-
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
 @property (nonatomic) BOOL userHasScrolled;
