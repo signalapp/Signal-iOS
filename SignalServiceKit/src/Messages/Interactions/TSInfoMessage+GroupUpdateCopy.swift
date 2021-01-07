@@ -445,7 +445,7 @@ extension GroupUpdateCopy {
         var membershipCounts = MembershipCounts()
 
         let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
-        var allUsersSorted = SignalServiceAddress.stableSort(Array(allUsersUnsorted))
+        var allUsersSorted = Array(allUsersUnsorted).stableSort()
         // If local user had a membership update, ensure it appears _first_.
         if allUsersSorted.contains(localAddress) {
             allUsersSorted = [localAddress] + allUsersSorted.filter { $0 != localAddress}

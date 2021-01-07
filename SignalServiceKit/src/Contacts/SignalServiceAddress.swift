@@ -302,14 +302,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
-    public static func stableSort(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        // Use an arbitrary sort to ensure the output is deterministic.
-        addresses.sorted { (left, right) in
-            left.sortKey < right.sortKey
-        }
-    }
-
-    @objc
     override public var description: String {
         return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(uuid?.uuidString ?? "nil")>"
     }
@@ -395,6 +387,17 @@ extension SignalServiceAddress {
 }
 
 #endif
+
+// MARK: -
+
+public extension Array where Element == SignalServiceAddress {
+    func stableSort() -> [SignalServiceAddress] {
+        // Use an arbitrary sort to ensure the output is deterministic.
+        self.sorted { (left, right) in
+            left.sortKey < right.sortKey
+        }
+    }
+}
 
 // MARK: -
 

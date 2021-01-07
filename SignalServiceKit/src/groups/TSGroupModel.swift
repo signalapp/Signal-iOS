@@ -128,7 +128,7 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.inviteLinkPassword == inviteLinkPassword else {
             return false
         }
-        guard SignalServiceAddress.stableSort(other.droppedMembers) == SignalServiceAddress.stableSort(droppedMembers) else {
+        guard other.droppedMembers.stableSort() == droppedMembers.stableSort() else {
             return false
         }
         // Ignore isPlaceholderModel & wasJustMigrated.
