@@ -38,6 +38,7 @@ extension MessageSender : SharedSenderKeysDelegate {
         }
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
+        // Store the key pair
         Storage.shared.addClosedGroupEncryptionKeyPair(encryptionKeyPair, for: groupPublicKey, using: transaction)
         // Notify the PN server
         promises.append(PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: userPublicKey))

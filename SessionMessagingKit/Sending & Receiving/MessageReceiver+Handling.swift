@@ -258,6 +258,7 @@ extension MessageReceiver {
         }
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
+        // Store the key pair
         Storage.shared.addClosedGroupEncryptionKeyPair(encryptionKeyPair, for: groupPublicKey, using: transaction)
         // Notify the PN server
         let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
@@ -289,8 +290,9 @@ extension MessageReceiver {
         let userPublicKey = getUserHexEncodedPublicKey()
         let wasCurrentUserRemoved = !members.contains(userPublicKey)
         if wasCurrentUserRemoved {
-            Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
             Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
+            // Remove the key pairs
+            Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
             // Notify the PN server
             let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
         }
@@ -349,7 +351,7 @@ extension MessageReceiver {
         }
         let keyPair: ECKeyPair
         do {
-            keyPair = try ECKeyPair(publicKeyData: proto.publicKey, privateKeyData: proto.privateKey)
+            keyPair = try ECKeyPair(publicKeyData: proto.publicKey.removing05PrefixIfNeeded(), privateKeyData: proto.privateKey)
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }
