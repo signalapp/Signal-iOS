@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -515,6 +515,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
+        if let contentWidth = cellMeasurement.value(key: contentWidthKey) {
+            componentView.layoutConstraints.append(outerContentView.autoSetDimension(.width, toSize: contentWidth))
+        } else {
+            owsFailDebug("Missing contentWidth.")
+        }
+
         if let subview = outerAvatarView {
             subview.setContentHuggingHigh()
             subview.setCompressionResistanceHigh()
@@ -694,21 +700,41 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return CVStackView.measure(config: config, subviewSizes: subviewSizes)
     }
 
+    private let contentWidthKey = "contentWidthKey"
+
     public func measure(maxWidth maxWidthChatHistory: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidthChatHistory > 0)
 
-        let maxWidth = min(maxWidthChatHistory, conversationStyle.maxMessageWidth)
-        let outerStackViewMaxWidth = max(0, maxWidth - cellLayoutMargins.totalWidth)
+        let outerStackViewMaxWidth = max(0, maxWidthChatHistory - cellLayoutMargins.totalWidth)
         var cellHStackSize = CGSize.zero
         var outerStackViewSize: CGSize = .zero
 
+        if hasSenderAvatarLayout {
+            // Sender avatar in groups.
+            outerStackViewSize.width += ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing
+            outerStackViewSize.height = max(outerStackViewSize.height, ConversationStyle.groupMessageAvatarDiameter)
+        }
+        if isShowingSelectionUI {
+            outerStackViewSize.width += selectionViewWidth + selectionViewSpacing
+        }
+        if !isIncoming, hasSendFailureBadge {
+            outerStackViewSize.width += sendFailureBadgeSize + sendFailureBadgeSpacing
+        }
+        // The message cell's "outer" stack can contain many views:
+        // sender avatar, selection UI, send failure badge.
+        // The message cell's "content" stack must fit within the
+        // remaining space in the "outer" stack.
+        let contentMaxWidth = max(0,
+                                  min(conversationStyle.maxMessageWidth,
+                                      outerStackViewMaxWidth - outerStackViewSize.width))
+
         func measureStackView(config: CVStackViewConfig,
                               componentKeys keys: [CVComponentKey]) -> CGSize {
-            let contentMaxWidth = max(0, outerStackViewMaxWidth - outerStackViewSize.width)
+            let maxStackWidth = max(0, contentMaxWidth - config.layoutMargins.totalWidth)
             return self.measureStackView(config: config,
                                          measurementBuilder: measurementBuilder,
                                          componentKeys: keys,
-                                         maxWidth: contentMaxWidth)
+                                         maxWidth: maxStackWidth)
         }
 
         let topFullWidthSubcomponents = subcomponents(forKeys: topFullWidthCVComponentKeys)
@@ -720,6 +746,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         func applyContentMeasurement(_ size: CGSize) {
             outerStackViewSize.width += size.width
             outerStackViewSize.height = max(outerStackViewSize.height, size.height)
+
+            measurementBuilder.setValue(key: contentWidthKey, value: size.width)
         }
 
         if nil != stickerOverlaySubcomponent {
@@ -772,7 +800,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                      componentKeys: bottomNestedCVComponentKeys))
             }
             if let bottomButtons = bottomButtons {
-                let subviewSize = bottomButtons.measure(maxWidth: maxWidth,
+                let subviewSize = bottomButtons.measure(maxWidth: contentMaxWidth,
                                                         measurementBuilder: measurementBuilder)
 
                 // We store the measured size so that we can pin the
@@ -785,12 +813,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             applyContentMeasurement(CVStackView.measure(config: buildNoMarginsStackViewConfig(),
                                                         subviewSizes: subviewSizes))
-        }
-
-        if hasSenderAvatarLayout {
-            // Sender avatar in groups.
-            outerStackViewSize.width += ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing
-            outerStackViewSize.height = max(outerStackViewSize.height, ConversationStyle.groupMessageAvatarDiameter)
         }
 
         cellHStackSize.width += outerStackViewSize.width
@@ -1140,7 +1162,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-
             avatarView.autoSetDimensions(to: CGSize(square: ConversationStyle.groupMessageAvatarDiameter))
 
             bubbleView.layoutMargins = .zero

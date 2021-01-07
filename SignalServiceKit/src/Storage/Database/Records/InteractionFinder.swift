@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1074,23 +1074,54 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     // MARK: - instance methods
 
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
-        let sql = """
+        let interactionsSql = """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .errorType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
-                LIMIT 1
                 """
+        let firstInteractionSql = interactionsSql + " LIMIT 1"
         let arguments: StatementArguments = [threadUniqueId,
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
                                              TSInfoMessageType.verificationStateChange.rawValue,
-                                             TSInfoMessageType.profileUpdate.rawValue,
-                                             TSInfoMessageType.typeGroupUpdate.rawValue]
-        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+                                             TSInfoMessageType.profileUpdate.rawValue]
+        guard let firstInteraction = TSInteraction.grdbFetchOne(sql: firstInteractionSql,
+                                                                arguments: arguments,
+                                                                transaction: transaction) else {
+            return nil
+        }
+        func filterForInbox(_ interaction: TSInteraction) -> Bool {
+            guard let message = interaction as? TSMessage else {
+                return true
+            }
+            return !message.isGroupMigrationMessage
+        }
+        // We can't exclude group migration messages in the query.
+        // In the rare case that the most recent message is a
+        // group migration message, we iterate backward until we
+        // find an interaction that isn't a group migration.
+        // We should never have to iterate more than twice,
+        // since groups can only be migrated once.
+        if filterForInbox(firstInteraction) {
+            return firstInteraction
+        }
+        do {
+            let cursor = TSInteraction.grdbFetchCursor(sql: interactionsSql,
+                                                       arguments: arguments,
+                                                       transaction: transaction)
+            while let interaction = try cursor.next() {
+                if filterForInbox(interaction) {
+                    return interaction
+                }
+            }
+            return nil
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
     }
 
     func earliestKnownInteractionRowId(transaction: GRDBReadTransaction) -> Int? {

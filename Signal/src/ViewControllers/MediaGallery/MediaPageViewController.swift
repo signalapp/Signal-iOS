@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -101,7 +101,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         mediaGallery.ensureLoadedForDetailView(focusedItem: initialItem)
         mediaGallery.addDelegate(self)
 
-        guard let initialPage = buildGalleryPage(galleryItem: initialItem) else {
+        guard let initialPage = buildGalleryPage(galleryItem: initialItem,
+                                                 shouldAutoPlayVideo: true) else {
             owsFailDebug("unexpectedly unable to build initial gallery item")
             return
         }
@@ -590,7 +591,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return nextPage
     }
 
-    private func buildGalleryPage(galleryItem: MediaGalleryItem) -> MediaDetailViewController? {
+    private func buildGalleryPage(galleryItem: MediaGalleryItem,
+                                  shouldAutoPlayVideo: Bool = false) -> MediaDetailViewController? {
 
         if let cachedPage = cachedPages[galleryItem] {
             Logger.debug("cache hit.")
@@ -599,7 +601,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         Logger.debug("cache miss.")
 
-        let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem))
+        let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem),
+                                                       shouldAutoPlayVideo: shouldAutoPlayVideo)
         viewController.delegate = self
 
         cachedPages[galleryItem] = viewController

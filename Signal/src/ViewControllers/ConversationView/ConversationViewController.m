@@ -3228,33 +3228,36 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    NSDate *startDate = [NSDate new];
-    self.scrollingAnimationStartDate = startDate;
-
     // scrollingAnimationStartDate blocks landing of loads, so we must ensure
     // that it is always cleared in a timely way, even if the animation
     // is cancelled. Wait no more than N seconds.
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)5.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        ConversationViewController *_Nullable strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
+    [self.scrollingAnimationCompletionTimer invalidate];
+    self.scrollingAnimationCompletionTimer =
+        [NSTimer weakScheduledTimerWithTimeInterval:5
+                                             target:self
+                                           selector:@selector(scrollingAnimationCompletionTimerDidFire:)
+                                           userInfo:nil
+                                            repeats:NO];
+}
 
-        // scrollingAnimationStartDate should already have been cleared,
-        // but we need to ensure that it is cleared in a timely way.
-        if ([NSObject isNullableObject:strongSelf.scrollingAnimationStartDate equalTo:startDate]) {
-            OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
-            [strongSelf scrollingAnimationDidComplete];
-        }
-    });
+- (void)scrollingAnimationCompletionTimerDidFire:(NSTimer *)timer
+{
+    OWSAssertIsOnMainThread();
+
+    OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
+
+    // scrollingAnimationCompletionTimer should already have been cleared,
+    // but we need to ensure that it is cleared in a timely way.
+    [self scrollingAnimationDidComplete];
 }
 
 - (void)scrollingAnimationDidComplete
 {
     OWSAssertIsOnMainThread();
 
-    self.scrollingAnimationStartDate = nil;
+    [self.scrollingAnimationCompletionTimer invalidate];
+    self.scrollingAnimationCompletionTimer = nil;
+
     [self autoLoadMoreIfNecessary];
 }
 

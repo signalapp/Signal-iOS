@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -31,7 +31,7 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 @property (nonatomic, readonly) GalleryItemBox *galleryItemBox;
 
 // If viewItem is non-null, long press will show a menu controller.
-- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox;
+- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox shouldAutoPlayVideo:(BOOL)shouldAutoPlayVideo;
 
 #pragma mark - Actions
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMisc.h"
@@ -241,6 +241,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Discard All Profile Keys"
                                      actionBlock:^() { [DebugUIMisc discardAllProfileKeys]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Log all sticker suggestions"
+                                     actionBlock:^() { [DebugUIMisc logStickerSuggestions]; }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -677,6 +680,24 @@ NS_ASSUME_NONNULL_BEGIN
                              NSURL *destURL = [groupDir URLByAppendingPathComponent:@"dbPayload.txt"];
                              [payloadData writeToURL:destURL atomically:YES];
                          }];
+}
+
++ (void)logStickerSuggestions
+{
+    NSMutableSet<NSString *> *emojiSet = [NSMutableSet new];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        for (StickerPack *stickerPack in [StickerManager installedStickerPacksWithTransaction:transaction]) {
+            
+            for (StickerPackItem *item in stickerPack.items) {
+                if (item.emojiString.length > 0) {
+                    OWSLogVerbose(@"emojiString: %@", item.emojiString);
+                    [emojiSet addObject:item.emojiString];
+                }
+            }
+        }
+    }];
+    OWSLogVerbose(@"emoji: %@", [[emojiSet.allObjects sortedArrayUsingSelector:@selector(compare:)]
+                                                      componentsJoinedByString:@" "]);
 }
 
 @end

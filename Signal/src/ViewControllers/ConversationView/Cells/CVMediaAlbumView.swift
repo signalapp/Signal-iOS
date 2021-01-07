@@ -78,7 +78,16 @@ public class CVMediaAlbumView: UIStackView {
 
         for (index, itemView) in itemViews.enumerated() {
             if let measuredSize = cellMeasurement.size(key: Self.measurementKey(imageIndex: index)) {
-                layoutConstraints.append(contentsOf: itemView.autoSetDimensions(to: measuredSize))
+                // The item heights should always exactly match the layout.
+                layoutConstraints.append(itemView.autoSetDimension(.height, toSize: measuredSize.height))
+                // The media album view's width might be larger than
+                // expected due to other components in the message.
+                //
+                // Therefore item widths might need to adjust and
+                // should not be required.
+                NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
+                    layoutConstraints.append(itemView.autoSetDimension(.width, toSize: measuredSize.width))
+                }
             } else {
                 owsFailDebug("Missing measuredSize for image.")
             }

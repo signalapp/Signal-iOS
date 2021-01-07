@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MediaDetailViewController.h"
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIImage *image;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
-@property (nonatomic, nullable) UIButton *playVideoButton;
+@property (nonatomic, nullable) UIView *playVideoButton;
 @property (nonatomic, nullable) PlayerProgressBar *videoProgressBar;
 @property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
 @property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewLeadingConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTopConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTrailingConstraint;
+
+@property (nonatomic) BOOL shouldAutoPlayVideo;
+@property (nonatomic) BOOL hasAutoPlayedVideo;
 
 @end
 
@@ -55,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self stopAnyVideo];
 }
 
-- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
+- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox shouldAutoPlayVideo:(BOOL)shouldAutoPlayVideo
 {
     self = [super init];
     if (!self) {
@@ -63,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _galleryItemBox = galleryItemBox;
+    self.shouldAutoPlayVideo = shouldAutoPlayVideo;
 
     // We cache the image data in case the attachment stream is deleted.
     __weak MediaDetailViewController *weakSelf = self;
@@ -107,6 +111,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewWillAppear:animated];
     [self resetMediaFrame];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    if (self.shouldAutoPlayVideo && !self.hasAutoPlayedVideo) {
+
+        [self playVideo];
+        self.hasAutoPlayedVideo = YES;
+    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -244,19 +259,29 @@ NS_ASSUME_NONNULL_BEGIN
         [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:kVideoProgressBarHeight];
         [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
 
-        UIButton *playVideoButton = [UIButton new];
+        __weak MediaDetailViewController *weakSelf = self;
+        OWSButton *playVideoButton = [[OWSButton alloc] initWithBlock:^{ [weakSelf playVideo]; }];
         self.playVideoButton = playVideoButton;
-
-        [playVideoButton addTarget:self action:@selector(playVideo) forControlEvents:UIControlEventTouchUpInside];
-
-        UIImage *playImage = [UIImage imageNamed:@"play_button"];
-        [playVideoButton setBackgroundImage:playImage forState:UIControlStateNormal];
-        playVideoButton.contentMode = UIViewContentModeScaleAspectFill;
-
         [self.view addSubview:playVideoButton];
 
+        OWSLayerView *playVideoCircleView = [[OWSLayerView alloc]
+             initWithFrame:CGRectZero
+            layoutCallback:^(UIView *view) { view.layer.cornerRadius = MIN(view.width, view.height) * 0.5f; }];
+        playVideoCircleView.backgroundColor = [UIColor.ows_whiteColor colorWithAlphaComponent:0.75f];
+        playVideoCircleView.userInteractionEnabled = NO;
+        [playVideoButton addSubview:playVideoCircleView];
+
+        UIImageView *playVideoIconView = [UIImageView withTemplateImageName:@"play-solid-32"
+                                                                  tintColor:UIColor.ows_blackColor];
+        playVideoIconView.userInteractionEnabled = NO;
+        [playVideoButton addSubview:playVideoIconView];
+
         CGFloat playVideoButtonWidth = ScaleFromIPhone5(70);
+        CGFloat playVideoIconWidth = ScaleFromIPhone5(30);
         [playVideoButton autoSetDimensionsToSize:CGSizeMake(playVideoButtonWidth, playVideoButtonWidth)];
+        [playVideoIconView autoSetDimensionsToSize:CGSizeMake(playVideoIconWidth, playVideoIconWidth)];
+        [playVideoCircleView autoPinEdgesToSuperviewEdges];
+        [playVideoIconView autoCenterInSuperview];
         [playVideoButton autoCenterInSuperview];
     }
 }
