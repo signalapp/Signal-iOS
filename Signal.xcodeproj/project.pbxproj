@@ -276,6 +276,7 @@
 		B893063F2383961A005EAA8E /* ScanQRCodeWrapperVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */; };
 		B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B894D0742339EDCF00B4D94D /* NukeDataModal.swift */; };
 		B8A14D702589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A14D6F2589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift */; };
+		B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */; };
 		B8B26C8F234D629C004ED98C /* MentionCandidateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */; };
 		B8B32021258B1A650020074B /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32020258B1A650020074B /* Contact.swift */; };
 		B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32032258B235D0020074B /* Storage+Contacts.swift */; };
@@ -1262,6 +1263,7 @@
 		B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeWrapperVC.swift; sourceTree = "<group>"; };
 		B894D0742339EDCF00B4D94D /* NukeDataModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NukeDataModal.swift; sourceTree = "<group>"; };
 		B8A14D6F2589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairMigrationSuccessSheet.swift; sourceTree = "<group>"; };
+		B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Trimming.swift"; sourceTree = "<group>"; };
 		B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionCandidateSelectionView.swift; sourceTree = "<group>"; };
 		B8B32020258B1A650020074B /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		B8B32032258B235D0020074B /* Storage+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Contacts.swift"; sourceTree = "<group>"; };
@@ -2401,6 +2403,7 @@
 				C33FDB85255A581100E217F9 /* AppContext.m */,
 				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
 				C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */,
+				B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Description.swift */,
 				B8BC00BF257D90E30032E807 /* General.swift */,
 				C33FDB6B255A580F00E217F9 /* LKUserDefaults.swift */,
@@ -4694,6 +4697,7 @@
 				C32C5B48256DC211003C73A2 /* NSNotificationCenter+OWS.m in Sources */,
 				C3D9E3C925676AF30040E4F3 /* TSYapDatabaseObject.m in Sources */,
 				C352A3A62557B60D00338F3E /* TSRequest.m in Sources */,
+				B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */,
 				B8856DE6256F15F2001CE70E /* String+SSK.swift in Sources */,
 				C3471ED42555386B00297E91 /* AESGCM.swift in Sources */,
 				C32C5DDB256DD9FF003C73A2 /* ContentProxy.swift in Sources */,

@@ -139,7 +139,7 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
             guard let publicKey = closedGroupUpdateProto.publicKey, let name = closedGroupUpdateProto.name,
                 let encryptionKeyPairAsProto = closedGroupUpdateProto.encryptionKeyPair else { return nil }
             do {
-                let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey, privateKeyData: encryptionKeyPairAsProto.privateKey)
+                let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded(), privateKeyData: encryptionKeyPairAsProto.privateKey)
                 kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair,
                     members: closedGroupUpdateProto.members, admins: closedGroupUpdateProto.admins)
             } catch {
