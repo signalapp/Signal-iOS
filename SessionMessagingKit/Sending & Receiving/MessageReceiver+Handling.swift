@@ -286,6 +286,10 @@ extension MessageReceiver {
         guard Set(group.groupMemberIds).contains(message.sender!) else {
             return SNLog("Ignoring closed group update message from non-member.")
         }
+        // Check that the admin wasn't removed
+        guard members.contains(group.groupAdminIds.first!) else {
+            return SNLog("Ignoring invalid closed group update message.")
+        }
         // Remove the group from the user's set of public keys to poll for if the current user was removed
         let userPublicKey = getUserHexEncodedPublicKey()
         let wasCurrentUserRemoved = !members.contains(userPublicKey)
