@@ -335,30 +335,35 @@ public class VideoEditorView: UIView {
 
     private func saveVideoPromise() -> Promise<Void> {
         return firstly { () -> Promise<String> in
-            if model.isTrimmed {
-                return self.model.ensureCurrentRender().nonconsumingFilePromise()
-            } else {
-                return Promise.value(self.model.srcVideoPath)
-            }
-        }.then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
-            guard let fileExtension = videoFilePath.fileExtension else {
-                return Promise(error: OWSAssertionError("Missing fileExtension."))
-            }
-            let tempFilePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
-            do {
-                try FileManager.default.copyItem(atPath: videoFilePath, toPath: tempFilePath)
-            } catch {
-                return Promise(error: error)
+            // Copy the file so it won't be changed between now and the then block
+            // Then block is responsible for deleting the temp file
+            let makeCopy = { (srcPath: String) throws -> String in
+                guard let fileExtension = srcPath.fileExtension else {
+                    throw OWSAssertionError("Missing fileExtension.")
+                }
+                let dstPath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
+                try FileManager.default.copyItem(atPath: srcPath, toPath: dstPath)
+                return dstPath
             }
 
-            let videoUrl = URL(fileURLWithPath: tempFilePath)
+            if model.needsRender {
+                return self.model.ensureCurrentRender().result.map { result -> String in
+                    try makeCopy(result.getResultPath())
+                }
+            } else {
+                let copy = try makeCopy(self.model.srcVideoPath)
+                return .value(copy)
+            }
+
+        }.then(on: .sharedUtility) { (videoFilePath: String) -> Promise<Void> in
+            let videoUrl = URL(fileURLWithPath: videoFilePath)
 
             return Promise<Void> { resolver in
                 PHPhotoLibrary.shared().performChanges({
                     PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
                 }) { didSucceed, error in
 
-                    OWSFileSystem.deleteFileIfExists(tempFilePath)
+                    OWSFileSystem.deleteFileIfExists(videoFilePath)
 
                     if let error = error {
                         resolver.reject(error)
