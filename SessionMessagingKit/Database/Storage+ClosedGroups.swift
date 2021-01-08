@@ -122,6 +122,7 @@ extension Storage {
         var result: Set<String> = []
         Storage.read { transaction in
             result = result.union(Set(transaction.allKeys(inCollection: Storage.closedGroupPublicKeyCollection)))
+            result = result.union(Set(transaction.allKeys(inCollection: Storage.closedGroupPrivateKeyCollection)))
         }
         return result
     }
