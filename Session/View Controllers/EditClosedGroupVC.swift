@@ -252,28 +252,22 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
             return popToConversationVC(self)
         }
-
-        /*
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            Storage.writeSync { [weak self] transaction in
-                MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
-                    guard let self = self else { return }
-                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    popToConversationVC(self)
-                }.catch(on: DispatchQueue.main) { error in
-                    guard let self = self else { return }
-                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
-                }
+        if !members.contains(getUserHexEncodedPublicKey()) {
+            guard members.intersection(Set(thread.groupModel.groupMemberIds).subtracting([ getUserHexEncodedPublicKey() ])) == members else {
+                return showError(title: "Couldn't Update Group", message: "Can't leave while adding or removing other members.")
             }
         }
-         */
-
         Storage.write(with: { [weak self] transaction in
             do {
-                try MessageSender.updateV2(groupPublicKey, with: members, name: name, transaction: transaction)
+                if !members.contains(getUserHexEncodedPublicKey()) {
+                    try MessageSender.leaveV2(groupPublicKey, using: transaction)
+                } else {
+                    try MessageSender.updateV2(groupPublicKey, with: members, name: name, transaction: transaction)
+                }
             } catch {
-                self?.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+                DispatchQueue.main.async {
+                    self?.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+                }
             }
         }, completion: { [weak self] in
             guard let self = self else { return }
@@ -289,7 +283,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
     
     private func canBeRemoved(_ publicKey: String) -> Bool {
-        return !isAdmin(publicKey) && !isCurrentUser(publicKey)
+        return !isAdmin(publicKey) || isCurrentUser(publicKey)
     }
     
     private func isAdmin(_ publicKey: String) -> Bool {

@@ -80,8 +80,8 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins):
             return !publicKey.isEmpty && !name.isEmpty && !encryptionKeyPair.publicKey.isEmpty
                 && !encryptionKeyPair.privateKey.isEmpty && !members.isEmpty && !admins.isEmpty
-        case .update(let name, let members):
-            return !name.isEmpty && !members.isEmpty
+        case .update(let name, _):
+            return !name.isEmpty
         case .encryptionKeyPair: return true
         }
     }

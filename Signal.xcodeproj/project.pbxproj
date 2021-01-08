@@ -317,6 +317,11 @@
 		C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */; };
 		C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEEB24F7277900B1C64C /* LightModeSheet.swift */; };
 		C32A025A25A7FC55000ED5D4 /* ClosedGroupsV2Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32A025925A7FC55000ED5D4 /* ClosedGroupsV2Migration.swift */; };
+		C32A026325A801AA000ED5D4 /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4825589FF20043A11F /* NSData+messagePadding.m */; };
+		C32A026C25A801AF000ED5D4 /* NSData+messagePadding.h in Headers */ = {isa = PBXBuildFile; fileRef = C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C32A027D25A80423000ED5D4 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
+		C32A027E25A80428000ED5D4 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
+		C32A027F25A80432000ED5D4 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C32C598A256D0664003C73A2 /* SNProtoEnvelope+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */; };
 		C32C599E256DB02B003C73A2 /* TypingIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA87255A57FC00E217F9 /* TypingIndicators.swift */; };
 		C32C59C0256DB41F003C73A2 /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAD3255A580300E217F9 /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -453,7 +458,6 @@
 		C33FD9AF255A548A00E217F9 /* SignalUtilitiesKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FD9AD255A548A00E217F9 /* SignalUtilitiesKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FD9B3255A548A00E217F9 /* SignalUtilitiesKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C33FD9C2255A54EF00E217F9 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
-		C33FD9C3255A54EF00E217F9 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C33FD9C4255A54EF00E217F9 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C33FD9C5255A54EF00E217F9 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		C33FDC27255A581F00E217F9 /* YapDatabase+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA6D255A57FA00E217F9 /* YapDatabase+Promise.swift */; };
@@ -545,7 +549,6 @@
 		C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
-		C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C38D5E8D2575011E00B6A65C /* MessageSender+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38D5E8C2575011E00B6A65C /* MessageSender+ClosedGroups.swift */; };
 		C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
@@ -705,8 +708,6 @@
 		C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D0A2558989C0043A11F /* MessageWrapper.swift */; };
 		C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D1C25589AC30043A11F /* WebSocketProto.swift */; };
 		C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D1D25589AC30043A11F /* WebSocketResources.pb.swift */; };
-		C3A71D5425589FF30043A11F /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D4825589FF20043A11F /* NSData+messagePadding.m */; };
-		C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */ = {isa = PBXBuildFile; fileRef = C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3A71F892558BA9F0043A11F /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71F882558BA9F0043A11F /* Mnemonic.swift */; };
 		C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A71D662558A0170043A11F /* DiffieHellman.swift */; };
 		C3A721382558BDFA0043A11F /* OpenGroupMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A721342558BDF90043A11F /* OpenGroupMessage.swift */; };
@@ -758,7 +759,6 @@
 		C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7832553AAF300C340D1 /* SessionProtos.pb.swift */; };
 		C3C2A8662553B41A00C340D1 /* SessionProtocolKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C3C2A8642553B41A00C340D1 /* SessionProtocolKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3C2A86A2553B41A00C340D1 /* SessionProtocolKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2ABD12553C6C900C340D1 /* Data+SecureRandom.swift */; };
 		C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */; };
 		C3C2AC372553CCE600C340D1 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
@@ -1877,9 +1877,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C32A027E25A80428000ED5D4 /* SessionProtocolKit.framework in Frameworks */,
 				C38EF48A255B7E3F007E1867 /* SessionUIKit.framework in Frameworks */,
 				C33FD9C2255A54EF00E217F9 /* SessionMessagingKit.framework in Frameworks */,
-				C33FD9C3255A54EF00E217F9 /* SessionProtocolKit.framework in Frameworks */,
 				C33FD9C4255A54EF00E217F9 /* SessionSnodeKit.framework in Frameworks */,
 				C33FD9C5255A54EF00E217F9 /* SessionUtilitiesKit.framework in Frameworks */,
 				B3E0C9C6F1633B1ABCE5AD0B /* Pods_SignalUtilitiesKit.framework in Frameworks */,
@@ -1907,8 +1907,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C32A027D25A80423000ED5D4 /* SessionProtocolKit.framework in Frameworks */,
 				5DF9AB212C6DB1E8BE70EFF6 /* Pods_SessionMessagingKit.framework in Frameworks */,
-				C3C2AAC82553C25300C340D1 /* SessionProtocolKit.framework in Frameworks */,
 				C3C2A70B25539E1E00C340D1 /* SessionSnodeKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1926,8 +1926,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C32A027F25A80432000ED5D4 /* SessionProtocolKit.framework in Frameworks */,
 				C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */,
-				C37F54CB255BB53F002AEA92 /* SessionProtocolKit.framework in Frameworks */,
 				C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
@@ -3162,6 +3162,8 @@
 				C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */,
 				C33FDBC1255A581700E217F9 /* General.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
+				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
+				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
 				C38EF2F5255B6DBC007E1867 /* OWSAudioPlayer.h */,
 				C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */,
 				C38EF281255B6D84007E1867 /* OWSAudioSession.swift */,
@@ -3324,8 +3326,6 @@
 				B8CA010A25A293530091AF73 /* ClosedGroupRatchet.swift */,
 				B8CA010025A293260091AF73 /* ClosedGroupSenderKey.swift */,
 				B8CA011425A293800091AF73 /* Configuration.swift */,
-				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
-				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
 				B8CA011E25A2939F0091AF73 /* SharedSenderKeys.swift */,
 				B8CA014025A293EE0091AF73 /* Storage.swift */,
 			);
@@ -3669,6 +3669,7 @@
 				C32C5EF7256DF567003C73A2 /* TSDatabaseView.h in Headers */,
 				C3A3A0B3256E17F2004D228D /* SSKJobRecord.h in Headers */,
 				B8856ED7256F1EB4001CE70E /* OWSPreferences.h in Headers */,
+				C32A026C25A801AF000ED5D4 /* NSData+messagePadding.h in Headers */,
 				C32C5BE6256DC891003C73A2 /* OWSReadReceiptManager.h in Headers */,
 				C32C5EC3256DE133003C73A2 /* OWSQuotedReplyModel.h in Headers */,
 				C32C5BF8256DC8F6003C73A2 /* OWSDisappearingMessagesJob.h in Headers */,
@@ -3702,7 +3703,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3A71D5A25589FF30043A11F /* NSData+messagePadding.h in Headers */,
 				C3C2A8662553B41A00C340D1 /* SessionProtocolKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4740,6 +4740,7 @@
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C32C5AAD256DBE8F003C73A2 /* TSInfoMessage.m in Sources */,
 				C32C5A13256DB7A5003C73A2 /* PushNotificationAPI.swift in Sources */,
+				C32A026325A801AA000ED5D4 /* NSData+messagePadding.m in Sources */,
 				C352A3932557883D00338F3E /* JobDelegate.swift in Sources */,
 				C32C5B84256DC54F003C73A2 /* SSKEnvironment.m in Sources */,
 				C3A3A108256E1A5C004D228D /* OWSIncomingMessageFinder.m in Sources */,
@@ -4868,7 +4869,6 @@
 			files = (
 				B8CA010125A293260091AF73 /* ClosedGroupSenderKey.swift in Sources */,
 				B8CA011525A293800091AF73 /* Configuration.swift in Sources */,
-				C3A71D5425589FF30043A11F /* NSData+messagePadding.m in Sources */,
 				B8CA011F25A2939F0091AF73 /* SharedSenderKeys.swift in Sources */,
 				B8CA010B25A293530091AF73 /* ClosedGroupRatchet.swift in Sources */,
 				B8CA014125A293EE0091AF73 /* Storage.swift in Sources */,

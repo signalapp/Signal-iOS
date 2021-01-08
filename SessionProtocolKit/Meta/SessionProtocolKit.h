@@ -2,5 +2,3 @@
 
 FOUNDATION_EXPORT double SessionProtocolKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char SessionProtocolKitVersionString[];
-
-#import <SessionProtocolKit/NSData+messagePadding.h>
