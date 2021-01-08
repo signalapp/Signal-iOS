@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -121,10 +121,10 @@ class CVReactionCountsView: OWSStackView {
 
     private func configure(pillView: PillView, pillState: State.PillState?) {
         guard let pillState = pillState else {
-            pillView.isHidden = true
+            pillView.ows_isHidden = true
             return
         }
-        pillView.isHidden = false
+        pillView.ows_isHidden = false
         pillView.configure(pillState: pillState)
     }
 
@@ -232,17 +232,17 @@ class CVReactionCountsView: OWSStackView {
             }
 
             if let emojiLabelConfig = Self.emojiLabelConfig(pillState: pillState) {
-                emojiLabel.isHidden = false
+                emojiLabel.ows_isHidden = false
                 emojiLabelConfig.applyForRendering(label: emojiLabel)
             } else {
-                emojiLabel.isHidden = true
+                emojiLabel.ows_isHidden = true
             }
 
             if let countLabelConfig = Self.countLabelConfig(pillState: pillState) {
-                countLabel.isHidden = false
+                countLabel.ows_isHidden = false
                 countLabelConfig.applyForRendering(label: countLabel)
             } else {
-                countLabel.isHidden = true
+                countLabel.ows_isHidden = true
             }
         }
 
@@ -260,6 +260,20 @@ class CVReactionCountsView: OWSStackView {
             }
 
             return CVStackView.measure(config: stackConfig, subviewSizes: subviewSizes)
+        }
+    }
+}
+
+// MARK: -
+
+// This works around a UIStackView bug where hidden subviews
+// sometimes re-appear.
+extension UIView {
+    var ows_isHidden: Bool {
+        get { isHidden }
+        set {
+            isHidden = newValue
+            alpha = newValue ? 0 : 1
         }
     }
 }
