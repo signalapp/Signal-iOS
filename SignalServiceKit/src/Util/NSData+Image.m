@@ -625,11 +625,13 @@ typedef struct {
     ImageFormat imageFormat = [self ows_guessImageFormatWithCanBeLottieSticker:canBeLottieSticker];
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
+        OWSLogError(@"Image does not have valid format.");
         return ImageMetadata.invalid;
     }
 
     NSString *_Nullable mimeType = [self mimeTypeForImageFormat:imageFormat];
     if (mimeType.length < 1) {
+        OWSLogError(@"Image does not have MIME type.");
         return ImageMetadata.invalid;
     }
 
@@ -661,10 +663,12 @@ typedef struct {
         case ImageFormat_Webp: {
             WebpMetadata webpMetadata = self.metadataForWebpData;
             if (!webpMetadata.isValid) {
+                OWSLogError(@"Image does not have valid webpMetadata.");
                 return ImageMetadata.invalid;
             }
             isAnimated = webpMetadata.frameCount > 1;
             if (isAnimated && !SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
+                OWSLogError(@"Animated webp not permitted.");
                 return ImageMetadata.invalid;
             }
             break;
@@ -672,11 +676,13 @@ typedef struct {
         case ImageFormat_Png: {
             NSNumber *_Nullable isAnimatedPng = [self isAnimatedPngData];
             if (isAnimatedPng == nil) {
+                OWSLogError(@"Could not determine if png is animated.");
                 return ImageMetadata.invalid;
             } else if (isAnimatedPng.boolValue) {
                 if (SSKFeatureFlags.supportAnimatedStickers_Apng) {
                     isAnimated = YES;
                 } else {
+                    OWSLogError(@"Animated png not permitted.");
                     return ImageMetadata.invalid;
                 }
             } else {
@@ -690,6 +696,7 @@ typedef struct {
     }
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
+        OWSLogError(@"Image does not have valid format.");
         return ImageMetadata.invalid;
     }
 
@@ -709,6 +716,7 @@ typedef struct {
     if (imageFormat == ImageFormat_Webp) {
         CGSize imageSize = [self sizeForWebpData];
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:isAnimated]) {
+            OWSLogError(@"Image does not have valid dimensions: %@.", NSStringFromCGSize(imageSize));
             return ImageMetadata.invalid;
         }
         return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES isAnimated:isAnimated];
@@ -721,6 +729,7 @@ typedef struct {
         } else {
             imageSize = [self sizeForLottieStickerData];
             if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:isAnimated]) {
+                OWSLogError(@"Image does not have valid dimensions: %@.", NSStringFromCGSize(imageSize));
                 return ImageMetadata.invalid;
             }
         }
@@ -729,6 +738,7 @@ typedef struct {
 
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
     if (imageSource == NULL) {
+        OWSLogError(@"Could not build imageSource.");
         return ImageMetadata.invalid;
     }
     ImageMetadata *imageMetadata = [NSData imageMetadataWithImageSource:imageSource
@@ -752,6 +762,7 @@ typedef struct {
         imageSource, 0, (CFDictionaryRef)options);
 
     if (!imageProperties) {
+        OWSLogError(@"Missing imageProperties.");
         return ImageMetadata.invalid;
     }
 
@@ -806,6 +817,7 @@ typedef struct {
     }
 
     if (![self ows_isValidImageDimension:pixelSize depthBytes:depthBytes isAnimated:isAnimated]) {
+        OWSLogError(@"Image does not have valid dimensions: %@.", NSStringFromCGSize(pixelSize));
         return ImageMetadata.invalid;
     }
 
