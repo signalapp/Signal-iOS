@@ -6,6 +6,10 @@ import UIKit
 import AVFoundation
 import PromiseKit
 
+public enum VideoEditorError: Error {
+    case cancelled
+}
+
 @objc
 public protocol VideoEditorModelObserver: class {
     func videoEditorModelDidChange(_ model: VideoEditorModel)
@@ -180,10 +184,15 @@ public class VideoEditorModel: NSObject {
     // It can also be used to eagerly initiate a render (if
     // necessary) to reduce perceived render time.
     public func ensureCurrentRender() -> Render {
-        lock.withLock {
-            let render = self.currentRender ?? Render(model: self)
-            self.currentRender = render
-            return render
+        return lock.withLock {
+            if let render = self.currentRender {
+                return render
+            } else {
+                let render = Render(model: self)
+                self.currentRender = render
+                render.beginRender()
+                return render
+            }
         }
     }
 }
@@ -208,8 +217,8 @@ extension VideoEditorModel {
             private let lock = UnfairLock()
             private let path: String
 
-            /// If `true`, the `Result` is responsible for cleaning up the file at `path` in `deinit`
-            /// If `false`, the `Result` has either relinquished ownership or never had it to begin with. Nothing to do in `deinit`
+            // While the Result owns the resulting file, it is its responsibility to clean
+            // it up on deinit. Ownership can be relinquished to a caller of consumeResultPath()
             private var isOwned = false
 
             fileprivate init(path: String, owned: Bool = true) {
@@ -266,9 +275,12 @@ extension VideoEditorModel {
 
         lazy var result: Promise<Result> = {
             guard isTrimmed else {
-                // This is really just a failsafe. If we're not trimmed, there's no need to render.
-                // If someone accesses the underlying path in the Result, they'll fail debug, but we'll
-                // otherwise try and behave as correct as possible, copying the underlying file as necessary.
+                // Video editor has no changes.
+                owsFailDebug("calling no-op render. Instead copy the file.")
+
+                // Since we haven't trimmed, there's nothing to render. Callers shouldn't get here, but
+                // just in case we'll return an unowned Result. The implementation of Result ensures that
+                // a new copy of the srcVideoPath is made for any consume requests to maintain the ownership contract.
                 return .value(Result(path: srcVideoPath, owned: false))
             }
 
@@ -279,6 +291,7 @@ extension VideoEditorModel {
                 let session: AVAssetExportSession = try self.lock.withLock {
                     guard self.exportSession == nil else { throw OWSAssertionError("Duplicate session") }
 
+                    // AVAssetExportPresetPassthrough maintains the source quality.
                     guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
                         throw OWSAssertionError("Could not create export session.")
                     }
@@ -301,8 +314,12 @@ extension VideoEditorModel {
 
                 return session.exportPromise().map { path in
                     Result(path: path, owned: true)
-                }.recover(policy: .allErrorsExceptCancellation) { error -> Promise<Result> in
-                    owsFailDebug("Export failed: \(error)")
+                }.recover { error -> Promise<Result> in
+                    if case VideoEditorError.cancelled = error {
+                        // No big deal. Cancellations happen.
+                    } else {
+                        owsFailDebug("Export failed: \(error)")
+                    }
                     throw error
                 }
             }
@@ -323,6 +340,7 @@ extension VideoEditorModel {
         func cancel() {
             lock.withLock {
                 exportSession?.cancelExport()
+                exportSession = nil
             }
         }
     }
@@ -331,14 +349,19 @@ extension VideoEditorModel {
 fileprivate extension AVAssetExportSession {
     func exportPromise() -> Promise<String> {
         Promise { resolver in
+            guard self.status != .cancelled else {
+                resolver.reject(VideoEditorError.cancelled)
+                return
+            }
+
             exportAsynchronously {
                 switch (self.status, self.outputURL?.path) {
                 case (.completed, let path?):
                     resolver.fulfill(path)
                 case (.cancelled, _):
-                    resolver.reject(PMKError.cancelled)
+                    resolver.reject(VideoEditorError.cancelled)
                 default:
-                    resolver.reject(OWSAssertionError("Status \(self.status)"))
+                    resolver.reject(self.error ?? OWSAssertionError("Status \(self.status)"))
                 }
             }
         }

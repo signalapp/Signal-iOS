@@ -891,8 +891,20 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
                 }.catch { error in
                     AssertIsOnMainThread()
                     owsFailDebug("Error: \(error)")
+
                     modalVC.dismiss {
-                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported."))
+                        let actionSheet = ActionSheetController(
+                            title: CommonStrings.errorAlertTitle,
+                            message: NSLocalizedString(
+                                "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT",
+                                comment: "Error that outgoing attachments could not be exported."))
+                        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))
+
+                        self.present(actionSheet, animated: true) {
+                            // We optimistically hide the toolbar at the beginning of the function
+                            // Since we failed, show it again.
+                            self.updateContents(isApproved: false)
+                        }
                     }
                 }
         }
