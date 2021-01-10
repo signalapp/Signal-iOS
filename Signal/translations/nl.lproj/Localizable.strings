@@ -4352,7 +4352,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Informatie";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Nodig kenissen uit";
+"SETTINGS_INVITE_TITLE" = "Nodig kennissen uit";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Je kunt me bereiken met de @signalapp. Download de app nu: https://signal.org/download/";
