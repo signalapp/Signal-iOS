@@ -426,12 +426,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                         do {
                             try MessageSender.leaveV2(groupPublicKey, using: transaction)
-                            Storage.write { transaction in
-                                thread.removeAllThreadInteractions(with: transaction)
-                                thread.remove(with: transaction)
-                            }
                         } catch {
                             // TODO: Handle
+                        }
+                        Storage.write { transaction in
+                            thread.removeAllThreadInteractions(with: transaction)
+                            thread.remove(with: transaction)
                         }
                     } else {
                         thread.removeAllThreadInteractions(with: transaction)

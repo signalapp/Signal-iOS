@@ -253,7 +253,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             return popToConversationVC(self)
         }
         if !members.contains(getUserHexEncodedPublicKey()) {
-            guard members.intersection(Set(thread.groupModel.groupMemberIds).subtracting([ getUserHexEncodedPublicKey() ])) == members else {
+            guard Set(thread.groupModel.groupMemberIds).subtracting([ getUserHexEncodedPublicKey() ]) == members else {
                 return showError(title: "Couldn't Update Group", message: "Can't leave while adding or removing other members.")
             }
         }

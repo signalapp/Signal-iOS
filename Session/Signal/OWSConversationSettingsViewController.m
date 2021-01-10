@@ -896,9 +896,17 @@ static CGRect oldframe;
 
 - (void)didTapLeaveGroup
 {
+    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *message;
+    if ([((TSGroupThread *)self.thread).groupModel.groupAdminIds containsObject:userPublicKey]) {
+        message = @"Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
+    } else {
+        message = NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body");
+    }
+    
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
-                                            message:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body")
+                                            message:message
                                      preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *leaveAction = [UIAlertAction
