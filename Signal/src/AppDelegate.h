@@ -4,8 +4,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const AppDelegateStoryboardMain;
-
 extern NSString *const kURLSchemeSGNLKey;
 extern NSString *const kURLHostTransferPrefix;
 

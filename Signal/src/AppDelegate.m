@@ -44,8 +44,6 @@
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 
-NSString *const AppDelegateStoryboardMain = @"Main";
-
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 NSString *const kURLSchemeSGNLKey = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
