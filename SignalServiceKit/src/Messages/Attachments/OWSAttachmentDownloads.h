@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -56,6 +56,11 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
       bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                          failure:(void (^)(NSError *error))failure;
+
+- (void)enqueueJobForAttachmentId:(NSString *)attachmentId
+                          message:(nullable TSMessage *)message
+                          success:(void (^)(TSAttachmentStream *attachmentStream))success
                           failure:(void (^)(NSError *error))failure;
 
 @end

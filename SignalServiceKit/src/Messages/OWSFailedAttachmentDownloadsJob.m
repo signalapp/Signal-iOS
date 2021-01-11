@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
@@ -86,11 +86,8 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                         break;
                     case TSAttachmentPointerStateEnqueued:
                     case TSAttachmentPointerStateDownloading:
-                        [attachment anyUpdateAttachmentPointerWithTransaction:transaction
-                                                                        block:^(TSAttachmentPointer *attachment) {
-                                                                            attachment.state
-                                                                                = TSAttachmentPointerStateFailed;
-                                                                        }];
+                        [attachment updateWithAttachmentPointerState:TSAttachmentPointerStateFailed
+                                                         transaction:transaction];
                         count++;
                         return;
                 }

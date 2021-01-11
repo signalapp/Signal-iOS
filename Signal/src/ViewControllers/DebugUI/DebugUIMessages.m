@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessages.h"
@@ -3879,7 +3879,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                         mediaSize:CGSizeZero
                                                          blurHash:nil
                                                   uploadTimestamp:0];
-                pointer.state = TSAttachmentPointerStateFailed;
+                [pointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
                 [pointer anyInsertWithTransaction:transaction];
                 TSIncomingMessageBuilder *incomingMessageBuilder =
                     [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:nil];
@@ -4748,7 +4748,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                 mediaSize:CGSizeZero
                                                  blurHash:nil
                                           uploadTimestamp:0];
-        attachmentPointer.state = TSAttachmentPointerStateFailed;
+        [attachmentPointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
         [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;
     }

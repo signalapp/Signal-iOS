@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAttachmentDownloads.h"
@@ -309,103 +309,6 @@ NS_ASSUME_NONNULL_BEGIN
                                   failure:failure];
 }
 
-- (void)enqueueJobsForAttachmentStreams:(NSArray<TSAttachmentStream *> *)attachmentStreamsParam
-                     attachmentPointers:(NSArray<TSAttachmentPointer *> *)attachmentPointers
-                                message:(nullable TSMessage *)message
-            bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                                success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
-                                failure:(void (^)(NSError *error))failureHandler
-{
-    OWSAssertDebug(attachmentStreamsParam);
-
-    // To avoid deadlocks, synchronize on self outside of the transaction.
-    dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
-        if (attachmentPointers.count < 1) {
-            OWSAssertDebug(attachmentStreamsParam.count > 0);
-            successHandler(attachmentStreamsParam);
-            return;
-        }
-
-        NSMutableArray<TSAttachmentStream *> *attachmentStreams = [attachmentStreamsParam mutableCopy];
-        NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
-
-        __block BOOL hasPendingMessageRequest = NO;
-
-        if (!bypassPendingMessageRequest && ![message isKindOfClass:[TSOutgoingMessage class]]) {
-            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                TSThread *thread = [message threadWithTransaction:transaction];
-                // If the message that created this attachment was the first message in the
-                // thread, the thread may not yet be marked visible. In that case, just check
-                // if the thread is whitelisted. We know we just received a message.
-                if (!thread.shouldThreadBeVisible) {
-                    hasPendingMessageRequest = ![self.profileManager isThreadInProfileWhitelist:thread
-                                                                                    transaction:transaction];
-                } else {
-                    hasPendingMessageRequest =
-                        [GRDBThreadFinder hasPendingMessageRequestWithThread:thread
-                                                                 transaction:transaction.unwrapGrdbRead];
-                }
-            }];
-        }
-
-        for (TSAttachmentPointer *attachmentPointer in attachmentPointers) {
-            if (attachmentPointer.isVisualMedia && hasPendingMessageRequest && message.messageSticker == nil
-                && !message.isViewOnceMessage) {
-                OWSLogInfo(@"Not queueing visual media download for thread with pending message request");
-
-                DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    [attachmentPointer
-                        anyUpdateAttachmentPointerWithTransaction:transaction
-                                                            block:^(TSAttachmentPointer *pointer) {
-                                                                if (pointer.state == TSAttachmentPointerStateEnqueued) {
-                                                                    pointer.state
-                                                                        = TSAttachmentPointerStatePendingMessageRequest;
-                                                                }
-                                                            }];
-                });
-
-                continue;
-            }
-
-            AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                [self enqueueJobForAttachmentId:attachmentPointer.uniqueId
-                    message:message
-                    success:^(TSAttachmentStream *attachmentStream) {
-                        @synchronized(attachmentStreams) {
-                            [attachmentStreams addObject:attachmentStream];
-                        }
-
-                        resolve(@(1));
-                    }
-                    failure:^(NSError *error) {
-                        resolve(error);
-                    }];
-            }];
-            [promises addObject:promise];
-        }
-
-        // We use PMKJoin(), not PMKWhen(), because we don't want the
-        // completion promise to execute until _all_ promises
-        // have either succeeded or failed. PMKWhen() executes as
-        // soon as any of its input promises fail.
-        PMKJoin(promises)
-            .then(^(id value) {
-                NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
-                @synchronized(attachmentStreams) {
-                    attachmentStreamsCopy = [attachmentStreams copy];
-                }
-                OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
-
-                dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ successHandler(attachmentStreamsCopy); });
-            })
-            .catch(^(NSError *error) {
-                OWSLogError(@"Attachment downloads failed.");
-
-                dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ failureHandler(error); });
-            });
-    });
-}
-
 - (void)enqueueJobForAttachmentId:(NSString *)attachmentId
                           message:(nullable TSMessage *)message
                           success:(void (^)(TSAttachmentStream *attachmentStream))success
@@ -471,11 +374,8 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             attachmentPointer = (TSAttachmentPointer *)attachment;
-            [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
-                                                                   block:^(TSAttachmentPointer *attachment) {
-                                                                       attachment.state
-                                                                           = TSAttachmentPointerStateDownloading;
-                                                                   }];
+            [attachmentPointer updateWithAttachmentPointerState:TSAttachmentPointerStateDownloading
+                                                    transaction:transaction];
 
             if (job.message != nil) {
                 [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
@@ -532,11 +432,8 @@ NS_ASSUME_NONNULL_BEGIN
                         OWSLogWarn(@"Attachment no longer exists.");
                         return;
                     }
-                    [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
-                                                                           block:^(TSAttachmentPointer *attachment) {
-                                                                               attachment.state
-                                                                                   = TSAttachmentPointerStateFailed;
-                                                                           }];
+                    [attachmentPointer updateWithAttachmentPointerState:TSAttachmentPointerStateFailed
+                                                            transaction:transaction];
 
                     if (job.message != nil) {
                         [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];

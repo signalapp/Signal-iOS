@@ -6,6 +6,12 @@ import Foundation
 
 public extension TSMessage {
 
+    @objc
+    var isIncoming: Bool { self as? TSIncomingMessage != nil }
+
+    @objc
+    var isOutgoing: Bool { self as? TSOutgoingMessage != nil }
+
     // MARK: - Attachments
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,6 +15,101 @@ public extension OWSAttachmentDownloads {
 
     private class var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
+    }
+
+    private class var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+
+    // MARK: -
+
+    @objc
+    func enqueueJobs(forAttachmentStreams attachmentStreams: [TSAttachmentStream],
+                     attachmentPointers: [TSAttachmentPointer],
+                     message: TSMessage?,
+                     bypassPendingMessageRequest: Bool,
+                     success: @escaping ([TSAttachmentStream]) -> Void,
+                     failure: @escaping (Error) -> Void) {
+
+        Self.serialQueue.async {
+            // To avoid deadlocks, synchronize on self outside of the transaction.
+            guard !attachmentPointers.isEmpty else {
+                success(attachmentStreams)
+                return
+            }
+
+            let unfairLock = UnfairLock()
+            var attachmentStreams = attachmentStreams
+            var promises = [Promise<Void>]()
+            let hasPendingMessageRequest: Bool = {
+                guard !bypassPendingMessageRequest,
+                      let message = message,
+                      !message.isOutgoing else {
+                    return false
+                }
+                return Self.databaseStorage.read { transaction in
+                    let thread = message.thread(transaction: transaction)
+                    // If the message that created this attachment was the first message in the
+                    // thread, the thread may not yet be marked visible. In that case, just check
+                    // if the thread is whitelisted. We know we just received a message.
+                    if !thread.shouldThreadBeVisible {
+                        return !Self.profileManager.isThread(inProfileWhitelist: thread,
+                                                             transaction: transaction)
+                    } else {
+                        return GRDBThreadFinder.hasPendingMessageRequest(thread: thread,
+                                                                         transaction: transaction.unwrapGrdbRead)
+                    }
+                }
+            }()
+
+            for attachmentPointer in attachmentPointers {
+
+                if attachmentPointer.isVisualMedia,
+                   hasPendingMessageRequest,
+                   let message = message,
+                   message.messageSticker == nil,
+                   !message.isViewOnceMessage {
+                    Logger.info("Not queueing visual media download for thread with pending message request")
+
+                    Self.databaseStorage.asyncWrite { transaction in
+                        attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                       to: .pendingMessageRequest,
+                                                                       transaction: transaction)
+                    }
+
+                    continue
+                }
+
+                let (promise, resolver) = Promise<Void>.pending()
+                promises.append(promise)
+                self.enqueueJob(forAttachmentId: attachmentPointer.uniqueId,
+                                message: message,
+                                success: { attachmentStream in
+                                    unfairLock.withLock {
+                                        attachmentStreams.append(attachmentStream)
+                                    }
+                                    resolver.fulfill(())
+                                },
+                                failure: { error in
+                                    resolver.reject(error)
+                                })
+            }
+
+            // Block until _all_ promises have either succeeded or failed.
+            _ = firstly(on: .global()) {
+                when(fulfilled: promises)
+            }.done(on: Self.serialQueue) { _ in
+                let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
+                Logger.info("Attachment downloads succeeded: \(attachmentStreamsCopy.count).")
+
+                success(attachmentStreamsCopy)
+            }.catch(on: Self.serialQueue) { error in
+                Logger.warn("Attachment downloads failed.")
+                owsFailDebugUnlessNetworkFailure(error)
+
+                failure(error)
+            }
+        }
     }
 
     // MARK: -
