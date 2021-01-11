@@ -216,10 +216,10 @@ public class CVComponentState: Equatable {
     }
     let bottomButtons: BottomButtons?
 
-    struct FailedDownloads: Equatable {
+    struct FailedOrPendingDownloads: Equatable {
         let attachmentPointers: [TSAttachmentPointer]
     }
-    let failedDownloads: FailedDownloads?
+    let failedOrPendingDownloads: FailedOrPendingDownloads?
 
     struct SendFailureBadge: Equatable {
     }
@@ -244,7 +244,7 @@ public class CVComponentState: Equatable {
                      typingIndicator: TypingIndicator?,
                      threadDetails: ThreadDetails?,
                      bottomButtons: BottomButtons?,
-                     failedDownloads: FailedDownloads?,
+                     failedOrPendingDownloads: FailedOrPendingDownloads?,
                      sendFailureBadge: SendFailureBadge?) {
 
         self.messageCellType = messageCellType
@@ -266,7 +266,7 @@ public class CVComponentState: Equatable {
         self.typingIndicator = typingIndicator
         self.threadDetails = threadDetails
         self.bottomButtons = bottomButtons
-        self.failedDownloads = failedDownloads
+        self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
     }
 
@@ -292,7 +292,7 @@ public class CVComponentState: Equatable {
                     lhs.typingIndicator == rhs.typingIndicator &&
                     lhs.threadDetails == rhs.threadDetails &&
                     lhs.bottomButtons == rhs.bottomButtons &&
-                    lhs.failedDownloads == rhs.failedDownloads &&
+                    lhs.failedOrPendingDownloads == rhs.failedOrPendingDownloads &&
                     lhs.sendFailureBadge == rhs.sendFailureBadge)
     }
 
@@ -315,7 +315,7 @@ public class CVComponentState: Equatable {
         typealias UnreadIndicator = CVComponentState.UnreadIndicator
         typealias TypingIndicator = CVComponentState.TypingIndicator
         typealias ThreadDetails = CVComponentState.ThreadDetails
-        typealias FailedDownloads = CVComponentState.FailedDownloads
+        typealias FailedOrPendingDownloads = CVComponentState.FailedOrPendingDownloads
         typealias BottomButtons = CVComponentState.BottomButtons
         typealias SendFailureBadge = CVComponentState.SendFailureBadge
 
@@ -339,7 +339,7 @@ public class CVComponentState: Equatable {
         var typingIndicator: TypingIndicator?
         var threadDetails: ThreadDetails?
         var reactions: Reactions?
-        var failedDownloads: FailedDownloads?
+        var failedOrPendingDownloads: FailedOrPendingDownloads?
         var sendFailureBadge: SendFailureBadge?
 
         var bottomButtonsActions = [CVMessageAction]()
@@ -374,7 +374,7 @@ public class CVComponentState: Equatable {
                                     typingIndicator: typingIndicator,
                                     threadDetails: threadDetails,
                                     bottomButtons: bottomButtons,
-                                    failedDownloads: failedDownloads,
+                                    failedOrPendingDownloads: failedOrPendingDownloads,
                                     sendFailureBadge: sendFailureBadge)
         }
 
@@ -501,8 +501,8 @@ public class CVComponentState: Equatable {
         if bottomButtons != nil {
             result.insert(.bottomButtons)
         }
-        if failedDownloads != nil {
-            result.insert(.failedDownloads)
+        if failedOrPendingDownloads != nil {
+            result.insert(.failedOrPendingDownloads)
         }
         if sendFailureBadge != nil {
             result.insert(.sendFailureBadge)
@@ -610,7 +610,7 @@ fileprivate extension CVComponentState.Builder {
 
         self.senderAvatar = tryToBuildSenderAvatar()
 
-        self.failedDownloads = tryToBuildFailedDownloads()
+        self.failedOrPendingDownloads = tryToBuildFailedOrPendingDownloads()
 
         switch interaction.interactionType() {
         case .threadDetails:
@@ -668,15 +668,15 @@ fileprivate extension CVComponentState.Builder {
         return SenderAvatar(senderAvatar: avatar)
     }
 
-    private func tryToBuildFailedDownloads() -> FailedDownloads? {
+    private func tryToBuildFailedOrPendingDownloads() -> FailedOrPendingDownloads? {
         guard let message = interaction as? TSMessage else {
             return nil
         }
-        let failedAttachmentPointers = message.failedAttachments(transaction: transaction)
-        guard !failedAttachmentPointers.isEmpty else {
+        let attachmentPointers = message.failedOrPendingAttachments(transaction: transaction)
+        guard !attachmentPointers.isEmpty else {
             return nil
         }
-        return FailedDownloads(attachmentPointers: failedAttachmentPointers)
+        return FailedOrPendingDownloads(attachmentPointers: attachmentPointers)
     }
 
     mutating func populateAndBuild(message: TSMessage) throws -> CVComponentState {

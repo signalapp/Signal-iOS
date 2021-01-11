@@ -140,7 +140,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // We don't render sender avatars with a subcomponent.
         case .senderAvatar:
             return nil
-        case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedDownloads, .sendFailureBadge:
+        case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge:
             return nil
         }
     }
@@ -887,7 +887,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if let message = interaction as? TSMessage,
-           nil != componentState.failedDownloads {
+           nil != componentState.failedOrPendingDownloads {
             Logger.verbose("Retrying failed downloads.")
             componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
             return true
@@ -1116,7 +1116,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .senderAvatar:
                 owsFailDebug("Invalid component key: \(key)")
                 return nil
-            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedDownloads, .sendFailureBadge:
+            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge:
                 owsFailDebug("Invalid component key: \(key)")
                 return nil
             }
@@ -1154,7 +1154,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:
                 owsAssertDebug(subcomponentView == nil)
-            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedDownloads, .sendFailureBadge:
+            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge:
                 owsAssertDebug(subcomponentView == nil)
             }
         }

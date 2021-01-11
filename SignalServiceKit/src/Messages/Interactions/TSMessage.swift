@@ -16,20 +16,26 @@ public extension TSMessage {
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
-        let states = Set([TSAttachmentPointerState.failed])
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: states)
+        let states: [TSAttachmentPointerState] = [.failed]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+    }
+
+    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
-        let states = Set([TSAttachmentPointerState.failed])
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: states)
+        let states: [TSAttachmentPointerState] = [.failed]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
-        let states = Set([TSAttachmentPointerState.pendingMessageRequest, TSAttachmentPointerState.pendingManualDownload ])
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: states)
+        let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     private static func onlyAttachmentPointers(attachments: [TSAttachment],

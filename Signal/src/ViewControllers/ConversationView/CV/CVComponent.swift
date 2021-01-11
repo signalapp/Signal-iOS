@@ -525,7 +525,7 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     case unreadIndicator
     case typingIndicator
     case threadDetails
-    case failedDownloads
+    case failedOrPendingDownloads
 
     public var description: String {
         switch self {
@@ -567,8 +567,8 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
             return ".typingIndicator"
         case .threadDetails:
             return ".threadDetails"
-        case .failedDownloads:
-            return ".failedDownloads"
+        case .failedOrPendingDownloads:
+            return ".failedOrPendingDownloads"
         case .sendFailureBadge:
             return ".sendFailureBadge"
         }

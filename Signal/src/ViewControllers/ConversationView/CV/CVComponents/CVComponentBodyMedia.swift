@@ -18,6 +18,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         bodyMedia.mediaAlbumHasPendingAttachment
     }
 
+    var hasDownloadButton: Bool {
+        mediaAlbumHasFailedAttachment || mediaAlbumHasPendingAttachment
+    }
+
     private let footerOverlay: CVComponent?
 
     init(itemModel: CVItemModel, bodyMedia: CVComponentState.BodyMedia, footerOverlay: CVComponent?) {
@@ -115,6 +119,18 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_MEDIA",
                                                          comment: "Accessibility label for media.")
         albumView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+
+        if hasDownloadButton {
+            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
+                                                             tintColor: UIColor.ows_white)
+            iconView.autoSetDimensions(to: CGSize.square(16))
+            let downloadButton = OWSLayerView.circleView(size: 44)
+            downloadButton.backgroundColor = UIColor.ows_black
+            downloadButton.addSubview(iconView)
+            iconView.autoCenterInSuperview()
+            componentView.rootView.addSubview(downloadButton)
+            downloadButton.autoCenterInSuperview()
+        }
     }
 
     public func bubbleViewPartner(componentView: CVComponentView) -> OWSBubbleViewPartner? {
@@ -174,7 +190,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             owsFailDebug("Invalid interaction.")
             return false
         }
-        if mediaAlbumHasPendingAttachment {
+        if hasDownloadButton {
             componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
             return true
         }
