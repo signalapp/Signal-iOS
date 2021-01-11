@@ -2258,7 +2258,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Media Libary
 
-- (void)takePictureOrVideoWithPhotoCapture:(nullable PhotoCapture *)photoCapture
+- (void)takePictureOrVideo
 {
     [BenchManager startEventWithTitle:@"Show-Camera" eventId:@"Show-Camera"];
     [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
@@ -2273,8 +2273,7 @@ typedef enum : NSUInteger {
                 // be silent.
             }
 
-            SendMediaNavigationController *pickerModal =
-                [SendMediaNavigationController showingCameraFirstWithPhotoCapture:photoCapture];
+            SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingCameraFirst];
             pickerModal.sendMediaNavDelegate = self;
             pickerModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
@@ -2654,14 +2653,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self takePictureOrVideoWithPhotoCapture:nil];
-}
-
-- (void)cameraButtonPressedWithPhotoCapture:(nullable PhotoCapture *)photoCapture
-{
-    OWSAssertIsOnMainThread();
-
-    [self takePictureOrVideoWithPhotoCapture:photoCapture];
+    [self takePictureOrVideo];
 }
 
 - (void)galleryButtonPressed

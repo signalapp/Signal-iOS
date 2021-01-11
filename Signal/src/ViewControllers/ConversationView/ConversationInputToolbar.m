@@ -1680,9 +1680,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.inputToolbarDelegate galleryButtonPressed];
 }
 
-- (void)didTapCameraWithPhotoCapture:(nullable PhotoCapture *)photoCapture
+- (void)didTapCamera
 {
-    [self.inputToolbarDelegate cameraButtonPressedWithPhotoCapture:photoCapture];
+    [self.inputToolbarDelegate cameraButtonPressed];
 }
 
 - (void)didTapGif
