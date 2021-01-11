@@ -13,6 +13,16 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^AttachmentDownloadSuccess)(TSAttachmentStream *attachmentStream);
 typedef void (^AttachmentDownloadFailure)(NSError *error);
 
+typedef NS_CLOSED_ENUM(NSUInteger, OWSAttachmentDownloadType) {
+    OWSAttachmentDownloadTypeDefault,
+    OWSAttachmentDownloadTypeBodyImage,
+    OWSAttachmentDownloadTypeBodyVideo,
+    OWSAttachmentDownloadTypeBodyAudio,
+    OWSAttachmentDownloadTypeBodyFile
+};
+
+#pragma mark -
+
 @interface OWSAttachmentDownloadJob : NSObject
 
 @property (nonatomic, readonly) NSString *attachmentId;
@@ -34,29 +44,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 @interface OWSAttachmentDownloads : NSObject
 
 - (nullable NSNumber *)downloadProgressForAttachmentId:(NSString *)attachmentId;
-
-- (void)downloadAttachmentsForMessage:(TSMessage *)message
-          bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          attachments:(NSArray<TSAttachment *> *)attachments
-                              success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                              failure:(void (^)(NSError *error))failure;
-
-// This will try to download a single attachment.
-//
-// success/failure are always called on a worker queue.
-- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                          message:(TSMessage *)message
-      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                          failure:(void (^)(NSError *error))failure;
-
-// This will try to download a single attachment.
-//
-// success/failure are always called on a worker queue.
-- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                          failure:(void (^)(NSError *error))failure;
 
 - (void)enqueueJobForAttachmentId:(NSString *)attachmentId
                           message:(nullable TSMessage *)message

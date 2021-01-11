@@ -1612,16 +1612,13 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSArray<TSAttachment *> *attachments = [message allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
-        [self.attachmentDownloads downloadAttachmentsForMessage:message
-            bypassPendingMessageRequest:NO
-            attachments:attachments
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
-            }
-            failure:^(NSError *error) { OWSLogWarn(@"Failed to redownload message with error: %@", error); }];
-    }];
+    [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+        attachmentGroup:AttachmentGroupAllAttachmentsIncoming
+        bypassPendingMessageRequest:NO
+        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+            OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
+        }
+        failure:^(NSError *error) { OWSLogWarn(@"Failed to redownload message with error: %@", error); }];
 }
 
 - (void)resendFailedOutgoingMessage:(TSOutgoingMessage *)message
@@ -4350,16 +4347,13 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     // Start downloads for message.
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSArray<TSAttachment *> *attachments = [message allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
-        [self.attachmentDownloads downloadAttachmentsForMessage:message
-            bypassPendingMessageRequest:YES
-            attachments:attachments
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
-            }
-            failure:^(NSError *error) { OWSLogWarn(@"Failed to download message with error: %@", error); }];
-    }];
+    [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+        attachmentGroup:AttachmentGroupAllAttachmentsIncoming
+        bypassPendingMessageRequest:YES
+        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+            OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
+        }
+        failure:^(NSError *error) { OWSLogWarn(@"Failed to download message with error: %@", error); }];
 }
 
 - (void)cvc_didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply

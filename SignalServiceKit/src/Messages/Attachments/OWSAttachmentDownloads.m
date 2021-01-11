@@ -131,15 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
         // If the thread was newly whitelisted, try and start any
         // downloads that were pending on a message request.
         if (whitelistedThread) {
-            [self downloadAllAttachmentsForThread:whitelistedThread
-                transaction:transaction
-                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    OWSLogDebug(
-                        @"Successfully downloaded %ld attachments for whitelisted thread.", attachmentStreams.count);
-                }
-                failure:^(NSError *error) {
-                    OWSFailDebug(@"Failed to download attachments for whitelisted thread: %@", error);
-                }];
+            [self downloadAllAttachmentsForThread:whitelistedThread transaction:transaction];
         }
     }];
 }
@@ -156,157 +148,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
         return @(job.progress);
     }
-}
-
-- (void)downloadAllAttachmentsForThread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
-                                success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
-                                failure:(void (^)(NSError *error))failureHandler
-{
-    NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-    NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
-
-    GRDBInteractionFinder *finder = [[GRDBInteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    [finder
-        enumerateMessagesWithAttachmentsWithTransaction:transaction.unwrapGrdbRead
-                                                  error:nil
-                                                  block:^(TSMessage *message, BOOL *stop) {
-                                                      AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(
-                                                          PMKResolver resolve) {
-                                                          [self downloadAttachmentsForMessage:message
-                                                              bypassPendingMessageRequest:NO
-                                                              attachments:[message allAttachmentsWithTransaction:
-                                                                                       transaction.unwrapGrdbRead]
-                                                              success:^(NSArray<TSAttachmentStream *> *streams) {
-                                                                  @synchronized(attachmentStreams) {
-                                                                      [attachmentStreams addObjectsFromArray:streams];
-                                                                  }
-
-                                                                  resolve(@(1));
-                                                              }
-                                                              failure:^(NSError *error) {
-                                                                  resolve(error);
-                                                              }];
-                                                      }];
-                                                      [promises addObject:promise];
-                                                  }];
-
-    // We use PMKJoin(), not PMKWhen(), because we don't want the
-    // completion promise to execute until _all_ promises
-    // have either succeeded or failed. PMKWhen() executes as
-    // soon as any of its input promises fail.
-    PMKJoin(promises)
-        .then(^(id value) {
-            NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
-            @synchronized(attachmentStreams) {
-                attachmentStreamsCopy = [attachmentStreams copy];
-            }
-            OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
-
-            dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ successHandler(attachmentStreamsCopy); });
-        })
-        .catch(^(NSError *error) {
-            OWSLogError(@"Attachment downloads failed.");
-
-            dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ failureHandler(error); });
-        });
-}
-
-- (void)downloadAttachmentsForMessage:(TSMessage *)message
-          bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          attachments:(NSArray<TSAttachment *> *)attachments
-                              success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                              failure:(void (^)(NSError *error))failure
-{
-    OWSAssertDebug(message);
-    OWSAssertDebug(attachments.count > 0);
-
-    if (CurrentAppContext().isRunningTests) {
-        dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
-            NSError *error = [OWSAttachmentDownloads buildError];
-            failure(error);
-        });
-        return;
-    }
-
-    NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray array];
-    NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
-
-    for (TSAttachment *attachment in attachments) {
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-            [attachmentStreams addObject:attachmentStream];
-        } else if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-            if (attachmentPointer.pointerType != TSAttachmentPointerTypeIncoming) {
-                OWSLogInfo(@"Ignoring restoring attachment.");
-                continue;
-            }
-            [attachmentPointers addObject:attachmentPointer];
-        } else {
-            OWSFailDebug(@"Unexpected attachment type: %@", attachment.class);
-        }
-    }
-
-    [self enqueueJobsForAttachmentStreams:attachmentStreams
-                       attachmentPointers:attachmentPointers
-                                  message:message
-              bypassPendingMessageRequest:bypassPendingMessageRequest
-                                  success:success
-                                  failure:failure];
-}
-
-- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                          failure:(void (^)(NSError *error))failure
-{
-    [self downloadAttachmentPointer:attachmentPointer
-                    nullableMessage:nil
-        bypassPendingMessageRequest:bypassPendingMessageRequest
-                            success:success
-                            failure:failure];
-}
-
-- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                          message:(TSMessage *)message
-      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                          failure:(void (^)(NSError *error))failure
-{
-    OWSAssertDebug(message);
-
-    [self downloadAttachmentPointer:attachmentPointer
-                    nullableMessage:message
-        bypassPendingMessageRequest:bypassPendingMessageRequest
-                            success:success
-                            failure:failure];
-}
-
-- (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                  nullableMessage:(nullable TSMessage *)message
-      bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                          success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                          failure:(void (^)(NSError *error))failure
-{
-    OWSAssertDebug(attachmentPointer);
-
-    if (CurrentAppContext().isRunningTests) {
-        dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
-            NSError *error = [OWSAttachmentDownloads buildError];
-            failure(error);
-        });
-        return;
-    }
-
-    [self enqueueJobsForAttachmentStreams:@[]
-                       attachmentPointers:@[
-                           attachmentPointer,
-                       ]
-                                  message:message
-              bypassPendingMessageRequest:bypassPendingMessageRequest
-                                  success:success
-                                  failure:failure];
 }
 
 - (void)enqueueJobForAttachmentId:(NSString *)attachmentId
@@ -376,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
             attachmentPointer = (TSAttachmentPointer *)attachment;
             [attachmentPointer updateWithAttachmentPointerState:TSAttachmentPointerStateDownloading
                                                     transaction:transaction];
-
+            
             if (job.message != nil) {
                 [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
             }
@@ -468,15 +309,6 @@ NS_ASSUME_NONNULL_BEGIN
         messageToNotify = latestMessage;
     }
     [self.databaseStorage touchInteraction:messageToNotify shouldReindex:YES transaction:transaction];
-}
-
-#pragma mark -
-
-+ (NSError *)buildError
-{
-    return OWSErrorWithCodeDescription(OWSErrorCodeAttachmentDownloadFailed,
-        NSLocalizedString(@"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED",
-            @"Error message indicating that attachment download(s) failed."));
 }
 
 @end

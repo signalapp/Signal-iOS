@@ -21,26 +21,388 @@ public extension OWSAttachmentDownloads {
         return SSKEnvironment.shared.profileManager
     }
 
-    // MARK: -
+    // MARK: - Enqueue
+
+    func downloadPromise(attachmentPointer: TSAttachmentPointer,
+                         category: AttachmentCategory,
+                         bypassPendingMessageRequest: Bool) -> Promise<TSAttachmentStream> {
+        return Promise { resolver in
+            self.download(attachmentPointer: attachmentPointer,
+                          category: category,
+                          bypassPendingMessageRequest: bypassPendingMessageRequest,
+                          success: resolver.fulfill,
+                          failure: resolver.reject)
+        }.map { attachments in
+            assert(attachments.count == 1)
+            guard let attachment = attachments.first else {
+                throw OWSAssertionError("Missing attachment.")
+            }
+            return attachment
+        }
+    }
+
+    @objc(downloadAttachmentPointer:category:bypassPendingMessageRequest:success:failure:)
+    func download(attachmentPointer: TSAttachmentPointer,
+                  category: AttachmentCategory,
+                  bypassPendingMessageRequest: Bool,
+                  success: @escaping ([TSAttachmentStream]) -> Void,
+                  failure: @escaping (Error) -> Void) {
+        download(attachmentPointer: attachmentPointer,
+                 nullableMessage: nil,
+                 category: category,
+                 bypassPendingMessageRequest: bypassPendingMessageRequest,
+                 success: success,
+                 failure: failure)
+    }
+
+    @objc(downloadAttachmentPointer:message:category:bypassPendingMessageRequest:success:failure:)
+    func download(attachmentPointer: TSAttachmentPointer,
+                  message: TSMessage,
+                  category: AttachmentCategory,
+                  bypassPendingMessageRequest: Bool,
+                  success: @escaping ([TSAttachmentStream]) -> Void,
+                  failure: @escaping (Error) -> Void) {
+        download(attachmentPointer: attachmentPointer,
+                 nullableMessage: message,
+                 category: category,
+                 bypassPendingMessageRequest: bypassPendingMessageRequest,
+                 success: success,
+                 failure: failure)
+    }
+
+    private func download(attachmentPointer: TSAttachmentPointer,
+                          nullableMessage message: TSMessage?,
+                          category: AttachmentCategory,
+                          bypassPendingMessageRequest: Bool,
+                          success: @escaping ([TSAttachmentStream]) -> Void,
+                          failure: @escaping (Error) -> Void) {
+
+        guard !CurrentAppContext().isRunningTests else {
+            Self.serialQueue.async {
+                failure(OWSAttachmentDownloads.buildError())
+            }
+            return
+        }
+
+        let attachmentReference = AttachmentReference.attachmentPointer(attachmentPointer: attachmentPointer,
+                                                                        category: category)
+        enqueueJobs(forAttachmentReferences: [attachmentReference],
+                    message: message,
+                    bypassPendingMessageRequest: bypassPendingMessageRequest,
+                    success: success,
+                    failure: failure)
+    }
 
     @objc
-    func enqueueJobs(forAttachmentStreams attachmentStreams: [TSAttachmentStream],
-                     attachmentPointers: [TSAttachmentPointer],
-                     message: TSMessage?,
-                     bypassPendingMessageRequest: Bool,
-                     success: @escaping ([TSAttachmentStream]) -> Void,
-                     failure: @escaping (Error) -> Void) {
+    func downloadAllAttachments(forThread thread: TSThread,
+                                transaction: SDSAnyReadTransaction) {
 
-        Self.serialQueue.async {
-            // To avoid deadlocks, synchronize on self outside of the transaction.
-            guard !attachmentPointers.isEmpty else {
-                success(attachmentStreams)
+        var promises = [Promise<Void>]()
+        let unfairLock = UnfairLock()
+        var attachmentStreams = [TSAttachmentStream]()
+
+        do {
+            let finder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
+            try finder.enumerateMessagesWithAttachments(transaction: transaction.unwrapGrdbRead) { (message, _) in
+                let (promise, resolver) = Promise<Void>.pending()
+                promises.append(promise)
+                self.downloadAttachments(forMessageId: message.uniqueId,
+                                         attachmentGroup: .allAttachmentsIncoming,
+                                         bypassPendingMessageRequest: false,
+                                         success: { downloadedAttachments in
+                                            unfairLock.withLock {
+                                                attachmentStreams.append(contentsOf: downloadedAttachments)
+                                            }
+                                            resolver.fulfill(())
+                                         },
+                                         failure: { error in
+                                            resolver.reject(error)
+                                         })
+            }
+
+            guard !promises.isEmpty else {
                 return
             }
 
-            let unfairLock = UnfairLock()
-            var attachmentStreams = attachmentStreams
-            var promises = [Promise<Void>]()
+            // Block until _all_ promises have either succeeded or failed.
+            _ = firstly(on: .global()) {
+                when(fulfilled: promises)
+            }.done(on: Self.serialQueue) { _ in
+                let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
+                Logger.info("Successfully downloaded attachments for whitelisted thread: \(attachmentStreamsCopy.count).")
+            }.catch(on: Self.serialQueue) { error in
+                Logger.warn("Failed to download attachments for whitelisted thread.")
+                owsFailDebugUnlessNetworkFailure(error)
+            }
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+//    @objc(downloadAllAttachmentsForMessageId:bypassPendingMessageRequest:success:failure:)
+//    func downloadAllAttachments(forMessageId messageId: String,
+//                                bypassPendingMessageRequest: Bool,
+//                                success: @escaping ([TSAttachmentStream]) -> Void,
+//                                failure: @escaping (Error) -> Void) {
+//        downloadAttachments(forMessageId: messageId,
+//                            attachmentGroup: .allAttachments,
+//                            bypassPendingMessageRequest: bypassPendingMessageRequest,
+//                            success: success,
+//                            failure: failure)
+//    }
+//
+//    @objc(downloadBodyAttachmentsForMessageId:bypassPendingMessageRequest:success:failure:)
+//    func downloadBodyAttachments(forMessageId messageId: String,
+//                                 bypassPendingMessageRequest: Bool,
+//                                 success: @escaping ([TSAttachmentStream]) -> Void,
+//                                 failure: @escaping (Error) -> Void) {
+//        downloadAttachments(forMessageId: messageId,
+//                            attachmentGroup: .bodyAttachments,
+//                            bypassPendingMessageRequest: bypassPendingMessageRequest,
+//                            success: success,
+//                            failure: failure)
+//    }
+
+    // TODO: Can we simplify this?
+    @objc
+    enum AttachmentGroup: UInt, Equatable {
+        case allAttachmentsIncoming
+        case bodyAttachmentsIncoming
+        case allAttachmentsOfAnyKind
+        case bodyAttachmentsOfAnyKind
+
+        var justIncomingAttachments: Bool {
+            switch self {
+            case .bodyAttachmentsOfAnyKind, .allAttachmentsOfAnyKind:
+                return false
+            case .bodyAttachmentsIncoming, .allAttachmentsIncoming:
+                return true
+            }
+        }
+
+        var justBodyAttachments: Bool {
+            switch self {
+            case .allAttachmentsIncoming, .allAttachmentsOfAnyKind:
+                return false
+            case .bodyAttachmentsIncoming, .bodyAttachmentsOfAnyKind:
+                return true
+            }
+        }
+    }
+
+    @objc
+    enum AttachmentCategory: UInt, Equatable {
+        case bodyMediaImage
+        case bodyMediaVideo
+        case bodyAudioVoiceMemo
+        case bodyAudioOther
+        case bodyFile
+        case stickerSmall
+        case stickerLarge
+        case quotedReplyThumbnail
+        case linkedPreviewThumbnail
+        case contactShareAvatar
+        case other
+    }
+
+    private enum AttachmentReference {
+        case attachmentStream(attachmentStream: TSAttachmentStream, category: AttachmentCategory)
+        case attachmentPointer(attachmentPointer: TSAttachmentPointer, category: AttachmentCategory)
+
+        var category: AttachmentCategory {
+            switch self {
+            case .attachmentPointer(_, let category):
+                return category
+            case .attachmentStream(_, let category):
+                return category
+            }
+        }
+    }
+
+    private class func loadAttachmentReferences(forMessage message: TSMessage,
+                                                attachmentGroup: AttachmentGroup,
+                                                transaction: SDSAnyReadTransaction) -> [AttachmentReference] {
+
+        var references = [AttachmentReference]()
+        var attachmentIds = Set<String>()
+
+        func addReference(attachment: TSAttachment, category: AttachmentCategory) {
+
+            if let attachmentPointer = attachment as? TSAttachmentPointer {
+                if attachmentPointer.pointerType == .restoring {
+                    Logger.warn("Ignoring restoring attachment.")
+                    return
+                }
+                if attachmentGroup.justIncomingAttachments,
+                   attachmentPointer.pointerType != .incoming {
+                    Logger.warn("Ignoring non-incoming attachment.")
+                    return
+                }
+            }
+
+            let attachmentId = attachment.uniqueId
+            guard !attachmentIds.contains(attachmentId) else {
+                // Ignoring duplicate
+                return
+            }
+            attachmentIds.insert(attachmentId)
+
+            if let attachmentStream = attachment as? TSAttachmentStream {
+                references.append(.attachmentStream(attachmentStream: attachmentStream, category: category))
+            } else if let attachmentPointer = attachment as? TSAttachmentPointer {
+                references.append(.attachmentPointer(attachmentPointer: attachmentPointer, category: category))
+            } else {
+                owsFailDebug("Invalid attachment: \(type(of: attachment))")
+            }
+        }
+
+        func addReference(attachmentId: String, category: AttachmentCategory) {
+            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+                                                         transaction: transaction) else {
+                owsFailDebug("Missing attachment: \(attachmentId)")
+                return
+            }
+            addReference(attachment: attachment, category: category)
+        }
+
+        for attachmentId in message.attachmentIds {
+            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+                                                         transaction: transaction) else {
+                owsFailDebug("Missing attachment: \(attachmentId)")
+                continue
+            }
+            let category: AttachmentCategory = {
+                if attachment.isImage {
+                    return .bodyMediaImage
+                } else if attachment.isVideo {
+                    return .bodyMediaVideo
+                } else if attachment.isVoiceMessage {
+                    return .bodyAudioVoiceMemo
+                } else if attachment.isAudio {
+                    return .bodyAudioOther
+                } else {
+                    return .bodyFile
+                }
+            }()
+            addReference(attachment: attachment, category: category)
+        }
+
+        guard !attachmentGroup.justBodyAttachments else {
+            return references
+        }
+
+        if let quotedMessage = message.quotedMessage {
+            for attachmentId in quotedMessage.thumbnailAttachmentStreamIds() {
+                addReference(attachmentId: attachmentId, category: .quotedReplyThumbnail)
+            }
+            if let attachmentId = quotedMessage.thumbnailAttachmentPointerId() {
+                addReference(attachmentId: attachmentId, category: .quotedReplyThumbnail)
+            }
+        }
+
+        if let attachmentId = message.contactShare?.avatarAttachmentId {
+            addReference(attachmentId: attachmentId, category: .contactShareAvatar)
+        }
+
+        if let attachmentId = message.linkPreview?.imageAttachmentId {
+            addReference(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
+        }
+
+        if let attachmentId = message.messageSticker?.attachmentId {
+            if let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+                                                      transaction: transaction) {
+                owsAssertDebug(attachment.byteCount > 0)
+                let autoDownloadSizeThreshold: UInt32 = 100 * 1024
+                if attachment.byteCount > autoDownloadSizeThreshold {
+                    addReference(attachmentId: attachmentId, category: .stickerLarge)
+                } else {
+                    addReference(attachmentId: attachmentId, category: .stickerSmall)
+                }
+            } else {
+                owsFailDebug("Missing attachment: \(attachmentId)")
+            }
+        }
+
+        return references
+    }
+
+    // TODO: This replaces downloadAttachmentsForMessage().
+    @objc
+    func downloadAttachments(forMessageId messageId: String,
+                             attachmentGroup: AttachmentGroup,
+                             bypassPendingMessageRequest: Bool,
+                             success: @escaping ([TSAttachmentStream]) -> Void,
+                             failure: @escaping (Error) -> Void) {
+
+        Self.serialQueue.async {
+            guard !CurrentAppContext().isRunningTests else {
+                failure(Self.buildError())
+                return
+            }
+            Self.databaseStorage.read { transaction in
+                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
+                    failure(Self.buildError())
+                    return
+                }
+                let attachmentReferences = Self.loadAttachmentReferences(forMessage: message,
+                                                                         attachmentGroup: attachmentGroup,
+                                                                         transaction: transaction)
+                guard !attachmentReferences.isEmpty else {
+                    success([])
+                    return
+                }
+                Self.serialQueue.async {
+                    self.enqueueJobs(forAttachmentReferences: attachmentReferences,
+                                     message: message,
+                                     bypassPendingMessageRequest: bypassPendingMessageRequest,
+                                     success: { attachmentStreams in
+                                        success(attachmentStreams)
+
+                                        Self.updateQuotedMessageThumbnail(messageId: messageId,
+                                                                          attachmentReferences: attachmentReferences,
+                                                                          attachmentStreams: attachmentStreams)
+                                     },
+                                     failure: failure)
+                }
+            }
+        }
+    }
+
+    private class func updateQuotedMessageThumbnail(messageId: String,
+                                                    attachmentReferences: [AttachmentReference],
+                                                    attachmentStreams: [TSAttachmentStream]) {
+        guard !attachmentStreams.isEmpty else {
+            // Don't bothe
+            return
+        }
+        let quotedMessageThumbnailDownloads = attachmentReferences.filter { $0.category == .quotedReplyThumbnail }
+        guard !quotedMessageThumbnailDownloads.isEmpty else {
+            return
+        }
+        Self.databaseStorage.write { transaction in
+            guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
+                Logger.warn("Missing message.")
+                return
+            }
+            guard let thumbnailAttachmentPointerId = message.quotedMessage?.thumbnailAttachmentPointerId(),
+                  !thumbnailAttachmentPointerId.isEmpty else {
+                return
+            }
+            guard let quotedMessageThumbnail = (attachmentStreams.filter { $0.uniqueId == thumbnailAttachmentPointerId }.first) else {
+                return
+            }
+            message.setQuotedMessageThumbnailAttachmentStream(quotedMessageThumbnail)
+        }
+    }
+
+    private func enqueueJobs(forAttachmentReferences attachmentReferences: [AttachmentReference],
+                             message: TSMessage?,
+                             bypassPendingMessageRequest: Bool,
+                             success: @escaping ([TSAttachmentStream]) -> Void,
+                             failure: @escaping (Error) -> Void) {
+
+        Self.serialQueue.async {
+
             let hasPendingMessageRequest: Bool = {
                 guard !bypassPendingMessageRequest,
                       let message = message,
@@ -62,37 +424,51 @@ public extension OWSAttachmentDownloads {
                 }
             }()
 
-            for attachmentPointer in attachmentPointers {
+            let unfairLock = UnfairLock()
+            var promises = [Promise<Void>]()
+            var attachmentStreams = [TSAttachmentStream]()
+            for attachmentReference in attachmentReferences {
+                switch attachmentReference {
+                case .attachmentStream(let attachmentStream, _):
+                    unfairLock.withLock {
+                        attachmentStreams.append(attachmentStream)
+                    }
+                case .attachmentPointer(let attachmentPointer, let category):
+                    if attachmentPointer.isVisualMedia,
+                       hasPendingMessageRequest,
+                       let message = message,
+                       message.messageSticker == nil,
+                       !message.isViewOnceMessage {
+                        Logger.info("Not queueing visual media download for thread with pending message request")
 
-                if attachmentPointer.isVisualMedia,
-                   hasPendingMessageRequest,
-                   let message = message,
-                   message.messageSticker == nil,
-                   !message.isViewOnceMessage {
-                    Logger.info("Not queueing visual media download for thread with pending message request")
+                        Self.databaseStorage.asyncWrite { transaction in
+                            attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                           to: .pendingMessageRequest,
+                                                                           transaction: transaction)
+                        }
 
-                    Self.databaseStorage.asyncWrite { transaction in
-                        attachmentPointer.updateAttachmentPointerState(from: .enqueued,
-                                                                       to: .pendingMessageRequest,
-                                                                       transaction: transaction)
+                        continue
                     }
 
-                    continue
+                    let (promise, resolver) = Promise<Void>.pending()
+                    promises.append(promise)
+                    self.enqueueJob(forAttachmentId: attachmentPointer.uniqueId,
+                                    message: message,
+                                    success: { attachmentStream in
+                                        unfairLock.withLock {
+                                            attachmentStreams.append(attachmentStream)
+                                        }
+                                        resolver.fulfill(())
+                                    },
+                                    failure: { error in
+                                        resolver.reject(error)
+                                    })
                 }
+            }
 
-                let (promise, resolver) = Promise<Void>.pending()
-                promises.append(promise)
-                self.enqueueJob(forAttachmentId: attachmentPointer.uniqueId,
-                                message: message,
-                                success: { attachmentStream in
-                                    unfairLock.withLock {
-                                        attachmentStreams.append(attachmentStream)
-                                    }
-                                    resolver.fulfill(())
-                                },
-                                failure: { error in
-                                    resolver.reject(error)
-                                })
+            guard !promises.isEmpty else {
+                success(attachmentStreams)
+                return
             }
 
             // Block until _all_ promises have either succeeded or failed.
@@ -112,6 +488,13 @@ public extension OWSAttachmentDownloads {
         }
     }
 
+    @objc
+    static func buildError() -> Error {
+        OWSErrorWithCodeDescription(.attachmentDownloadFailed,
+                                    NSLocalizedString("ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED",
+                                                      comment: "Error message indicating that attachment download(s) failed."))
+    }
+
     // MARK: -
 
     @objc
@@ -120,22 +503,6 @@ public extension OWSAttachmentDownloads {
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()
-
-    func downloadAttachmentPointer(_ attachmentPointer: TSAttachmentPointer,
-                                   bypassPendingMessageRequest: Bool) -> Promise<TSAttachmentStream> {
-        return Promise { resolver in
-            self.downloadAttachmentPointer(attachmentPointer,
-                                           bypassPendingMessageRequest: bypassPendingMessageRequest,
-                                           success: resolver.fulfill,
-                                           failure: resolver.reject)
-        }.map { attachments in
-            assert(attachments.count == 1)
-            guard let attachment = attachments.first else {
-                throw OWSAssertionError("missing attachment after download")
-            }
-            return attachment
-        }
-    }
 
     // We want to avoid large downloads from a compromised or buggy service.
     private static let maxDownloadSize = 150 * 1024 * 1024

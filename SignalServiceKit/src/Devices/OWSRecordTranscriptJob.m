@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecordTranscriptJob.h"
@@ -209,20 +209,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.earlyMessageManager applyPendingMessagesFor:outgoingMessage transaction:transaction];
 
     if (outgoingMessage.isViewOnceMessage) {
-        // To be extra-conservative, always mark
+        // To be extra-conservative, always mark as complete immediately.
         [ViewOnceMessages markAsCompleteWithMessage:outgoingMessage sendSyncMessages:NO transaction:transaction];
     } else if (outgoingMessage.allAttachmentIds.count > 0) {
-        // Don't download attachments for "view-once" messages.
-        NSArray<TSAttachment *> *attachments =
-            [outgoingMessage allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
-
+        // Don't download attachments for "view-once" messages from linked devices.
+        //
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
         // and not be able to find the attachment(s)/message/thread.
         [transaction addAsyncCompletionOffMain:^{
-            [self.attachmentDownloads downloadAttachmentsForMessage:outgoingMessage
+            [self.attachmentDownloads downloadAttachmentsForMessageId:outgoingMessage.uniqueId
+                attachmentGroup:AttachmentGroupAllAttachmentsIncoming
                 bypassPendingMessageRequest:YES
-                attachments:attachments
                 success:^(NSArray *attachmentStreams) {
                     NSString *_Nullable quotedThumbnailPointerId
                         = transcript.quotedMessage.thumbnailAttachmentPointerId;
