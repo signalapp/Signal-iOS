@@ -174,6 +174,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             owsFailDebug("Invalid interaction.")
             return false
         }
+        if mediaAlbumHasPendingAttachment {
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            return true
+        }
 
         let albumView = componentView.albumView
         let location = sender.location(in: albumView)
@@ -183,11 +187,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
         let isMoreItemsWithMediaView = albumView.isMoreItemsView(mediaView: mediaView)
 
-        if isMoreItemsWithMediaView {
-            if mediaAlbumHasFailedAttachment || mediaAlbumHasPendingAttachment {
-                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
-                return true
-            }
+        if isMoreItemsWithMediaView,
+           mediaAlbumHasFailedAttachment {
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            return true
         }
 
         let attachment = mediaView.attachment
