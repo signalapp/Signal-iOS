@@ -3425,7 +3425,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Створити цифровий PIN-код";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Вимкнити PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Вимкнути PIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Якщо ви вимкните PIN, ви втратите всі дані, коли ви знов зареєструєтесь в Signal, окрім того випадку, якщо ви зробите передачу Signal з іншого простою iOS. Ви не зможете ввімкнути Блокування Реєстрації, поки PIN вимкнено.";
