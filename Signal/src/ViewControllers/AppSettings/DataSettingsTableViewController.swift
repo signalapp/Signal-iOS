@@ -38,10 +38,10 @@ class DataSettingsTableViewController: OWSTableViewController {
         databaseStorage.read { transaction in
             var hasNonDefaultValue = false
             for mediaDownloadType in mediaDownloadTypes {
-                let name = Self.name(forMediaDownloadType: mediaDownloadType)
+                let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
                 let condition = OWSAttachmentDownloads.mediaDownloadCondition(forMediaDownloadType: mediaDownloadType,
                                                                                            transaction: transaction)
-                let conditionName = Self.name(forMediaDownloadCondition: condition)
+                let conditionName = MediaDownloadSettingsViewController.name(forMediaDownloadCondition: condition)
 
                 if condition != MediaDownloadCondition.defaultValue {
                     hasNonDefaultValue = true
@@ -59,7 +59,7 @@ class DataSettingsTableViewController: OWSTableViewController {
             let resetAccessibilityIdentifier = "reset-auto-download-settings"
             if hasNonDefaultValue {
                 autoDownloadSection.add(OWSTableItem.actionItem(withText: resetCopy,
-                                                                accessibilityIdentifier: resetAccessibilityIdentifier) { [weak self] in
+                                                                accessibilityIdentifier: resetAccessibilityIdentifier) {
                     Self.databaseStorage.asyncWrite { transaction in
                         OWSAttachmentDownloads.resetMediaDownloadConditions(transaction: transaction)
                     }
@@ -74,40 +74,11 @@ class DataSettingsTableViewController: OWSTableViewController {
         self.contents = contents
     }
 
-    private static func name(forMediaDownloadType value: MediaDownloadType) -> String {
-        switch value {
-        case .photo:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO",
-                                     comment: "Label for the 'photo' attachment type in the media download settings.")
-        case .video:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO",
-                                     comment: "Label for the 'video' attachment type in the media download settings.")
-        case .audio:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO",
-                                     comment: "Label for the 'audio' attachment type in the media download settings.")
-        case .document:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT",
-                                     comment: "Label for the 'document' attachment type in the media download settings.")
-        }
-    }
-
-    private static func name(forMediaDownloadCondition value: MediaDownloadCondition) -> String {
-        switch value {
-        case .never:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER",
-                                     comment: "Label for the 'never' media attachment download behavior in the media download settings.")
-        case .wifiOnly:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY",
-                                     comment: "Label for the 'wifi-only' media attachment download behavior in the media download settings.")
-        case .wifiAndCellular:
-            return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR",
-                                     comment: "Label for the 'wifi and cellular' media attachment download behavior in the media download settings.")
-        }
-    }
-
     // MARK: - Events
 
     private func showMediaDownloadView(forMediaDownloadType value: MediaDownloadType) {
+        let view = MediaDownloadSettingsViewController(mediaDownloadType: value)
+        navigationController?.pushViewController(view, animated: true)
     }
 
     @objc

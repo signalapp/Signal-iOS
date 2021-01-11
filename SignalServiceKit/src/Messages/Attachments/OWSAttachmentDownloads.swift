@@ -5,13 +5,45 @@
 import Foundation
 import PromiseKit
 
+public extension OWSAttachmentDownloads {
+
+    // MARK: - Dependencies
+
+    private class var signalService: OWSSignalService {
+        return .shared()
+    }
+
+    private class var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private class var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+}
+
+// MARK: - Settings
+
 public enum MediaDownloadCondition: UInt, Equatable, CaseIterable {
     case never
     case wifiOnly
     case wifiAndCellular
 
     public static var defaultValue: MediaDownloadCondition { .wifiAndCellular }
+
+    public var sortKey: UInt {
+        switch self {
+        case .never:
+            return 1
+        case .wifiOnly:
+            return 2
+        case .wifiAndCellular:
+            return 3
+        }
+    }
 }
+
+// MARK: -
 
 public enum MediaDownloadType: String, Equatable, CaseIterable {
     case photo
@@ -36,22 +68,6 @@ public enum MediaDownloadType: String, Equatable, CaseIterable {
 // MARK: -
 
 public extension OWSAttachmentDownloads {
-
-    // MARK: - Dependencies
-
-    private class var signalService: OWSSignalService {
-        return .shared()
-    }
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
-    }
-
-    // MARK: - Enqueue
 
     private static let keyValueStore = SDSKeyValueStore(collection: "OWSAttachmentDownloads")
 
@@ -94,8 +110,11 @@ public extension OWSAttachmentDownloads {
     }
 
     static let mediaDownloadConditionsDidChange = Notification.Name("PushTokensDidChange")
+}
 
-    // MARK: - Enqueue
+// MARK: - Enqueue
+
+public extension OWSAttachmentDownloads {
 
     func downloadPromise(attachmentPointer: TSAttachmentPointer,
                          category: AttachmentCategory,
