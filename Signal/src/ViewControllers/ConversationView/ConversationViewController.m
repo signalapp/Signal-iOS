@@ -4192,7 +4192,7 @@ typedef enum : NSUInteger {
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems
 {
     if (self.shouldHideCollectionViewContent) {
-        return 0;
+        return @[];
     }
 
     return self.viewItems;
