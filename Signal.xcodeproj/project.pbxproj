@@ -1905,6 +1905,7 @@
 		88E34F2622F269E900966CC2 /* StorageServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceManager.swift; sourceTree = "<group>"; };
 		88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageServiceProto+Sync.swift"; sourceTree = "<group>"; };
 		88EAD79123764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
+		88EFF4DD25AD0566000FAFBA /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = translations/is.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88F7EE92230253C5003ADF7D /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		88F819582383569A007914E8 /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
 		88F819592383569A007914E8 /* CNContactViewController+OWS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CNContactViewController+OWS.m"; sourceTree = "<group>"; };
@@ -4221,6 +4222,7 @@
 				kk,
 				eu,
 				cy,
+				is,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -5540,6 +5542,7 @@
 				884596F024B93E32002F66D3 /* cy */,
 				88238EB024EE29F400F28079 /* hr */,
 				88D1BCBC24F74991009A1738 /* fi */,
+				88EFF4DD25AD0566000FAFBA /* is */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

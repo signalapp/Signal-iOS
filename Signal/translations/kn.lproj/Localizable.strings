@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "ಅನಿರೀಕ್ಷಿತ ಬ್ಯಾಕಪ್ ದೋಷ";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ನೀವು ಈ ಗುಂಪಿನಿಂದ ಸಂದೇಶಗಳು ಅಥವಾ ನವೀಕರಣಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ.";
 
@@ -1449,6 +1452,15 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ಲಗತ್ತು";
+
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "ಪ್ರಾರಂಭಿಸಿ";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "ಹೊಸ ಗುಂಪು";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "ವಿನಂತಿಸಿದ GIF ಅನ್ನು ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದ್ದೀರಾ ಎಂದು ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ.";
@@ -2620,6 +2632,9 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "ಸಂದೇಶ";
 
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "ಎಲ್ಲಾ ಮೀಡಿಯಾ";
 
@@ -2772,6 +2787,27 @@
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ಅಳಿಸುವುದೇ ಮತ್ತು ಗುಂಪನ್ನು ಬಿಡುವುದೇ?";
+
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "ನಿಮ್ಮ ಸಂಪರ್ಕ";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "ಕೋರಿಕೆ";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "ಕೋರಿಕೆಯನ್ನು ಪರಿಶೀಲಿಸಿ";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "ನವೀಕರಿಸಿ ಸಂಪರ್ಕ";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "ಕೋರಿಕೆಯನ್ನು ಪರಿಶೀಲಿಸಿ";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ಒಪ್ಪಿಕೊಳ್ಳಿ";
@@ -2973,6 +3009,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ಫೋನ್ ಸಂಖ್ಯೆಯ ಮೂಲಕ ಸಂಪರ್ಕಗಳನ್ನು ಹುಡುಕಿ";
+
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "No groups in common";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "ಸಂವಾದ ಪ್ರಾರಂಭಿಸಲು ಸಂಪರ್ಕ ಅಥವಾ ಗುಂಪುನ್ನು ಆಯ್ಕೆಮಾಡಿಕೊಳ್ಳಿ.";

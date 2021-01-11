@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Gözlənilməz Arxivləşmə Xətası";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Bu qrupdan bir daha mesaj və yeniliklər almayacaqsan.";
 
@@ -1449,6 +1452,15 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Qoşma";
+
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Get started";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Dostlarını dəvət et";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Yeni qrup";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Tələb edilən GIF-i işlədə bilmədik. Zəhmət olmasa onlayn olduğunu yoxla.";
@@ -2620,6 +2632,9 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mesaj";
 
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Bütün Medialar";
 
@@ -2772,6 +2787,27 @@
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Qrupu silib çıxırsınız?";
+
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Your contact";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Request";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Update contact";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Qəbul et";
@@ -2973,6 +3009,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Əlaqələri Telefon Nömrələri ilə Tap";
+
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "No groups in common";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Söhbət üçün adam və ya qrup seçin.";
@@ -4223,7 +4262,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PİN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Düzəltmə girişini göndər";

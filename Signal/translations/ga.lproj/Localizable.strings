@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Tharla earráid leis an gcúltaca gan súil leis";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ní bhfaighidh tú teachtaireachtaí ón ghrúpa seo a thuilleadh.";
 
@@ -1450,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Ceangaltán";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Tosaigh";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Tabhair cuirí do chairde";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Baicle nua";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Níorbh fhéidir an GIF a fháil. Deimhnigh go bhfuil tú ar líne.";
 
@@ -1637,7 +1649,7 @@
 "GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Tú (ar ghléas eile)";
 
 /* Body for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
@@ -1772,7 +1784,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Téigh le";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Á lódáil...";
@@ -2300,7 +2312,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Uasghrádú go Grúpa Nua";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
@@ -2486,7 +2498,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Má thugann tú cuireadh do níos mó ná duine amháin san am céanna, tosófar teachtaireacht ghrúpa agus beidh na faighteoirí in ann na daoine eile a fheiceáil.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "Téigh le";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Imíonn teachtaireachtaí as radharc tar éis %@.";
@@ -2619,6 +2631,9 @@
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Teachtaireacht";
+
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Meáin";
@@ -2772,6 +2787,27 @@
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "An bhfuil fonn ort an grúpa a fhágáil agus a scriosadh?";
+
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Your contact";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Request";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Update contact";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Glac leis";
@@ -2973,6 +3009,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Aimsigh Teagmhálaí de réir Uimhreach Gutháin";
+
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "No groups in common";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Roghnaigh teagmhálaí nó grúpa chun comhrá a thosú.";

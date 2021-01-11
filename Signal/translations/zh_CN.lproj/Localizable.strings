@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "意外的备份错误";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "您将不再接收该群组的消息或更新。";
 
@@ -1450,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "附件";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "开始使用";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "邀请好友";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "新建群组";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "无法读取所请求的 GIF。请确认您是否处于在线状态。";
 
@@ -1520,7 +1532,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "只有管理员才能改变此选项。";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "您和他们将无法收到对方的音频或视频。";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "您与他们之间将无法收到对方的音频或视频。";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ 被屏蔽";
@@ -1559,13 +1571,13 @@
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@，%2$@及其他%3$@位用户在此通话中";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "无法收到来自 %@ 的音频和视频";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "无法接收来自 %@ 的音频和视频";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "这可能是因为他们还没验证过你的安全码发生的变更，或是因为他们的设备有问题，又或者是因为他们已经屏蔽了你。";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "无法收到来自 %@ 的音频和视频";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "无法接收来自 %@ 的音频和视频";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "没有人在这里";
@@ -2620,6 +2632,9 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "消息";
 
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒体";
 
@@ -2772,6 +2787,27 @@
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "删除并离开此群组？";
+
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "您的联系人";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "入群请求";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "审查请求";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "更新联系人";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "审查请求";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "接受";
@@ -2973,6 +3009,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
+
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "无共同群组";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "选择一个联系人或群组来开始聊天。";
@@ -4649,34 +4688,34 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "告诉我们发生了什么";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "请提供该问题的相关信息：";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "请发送您的支援请求邮件到 support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "筛选器：%@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "硬件：%@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
-"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID：%@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- 支持信息 ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS 版本：%@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "区域：%@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "日志 URL：%@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal 版本：%@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS 支援请求";

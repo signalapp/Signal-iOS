@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Ustekabeko babes-kopia";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ez dituzu talde honetatik mezu edo egunerapenik jasoko.";
 
@@ -482,7 +485,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Galdutako deia, deitu duen pertsonaren segurtasun zenbakia aldatu delako.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Return To Call";
+"CALL_RETURN_BUTTON" = "Deira itzuli";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Erantzunik ez";
@@ -1450,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Eranskina ";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Hasi";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Gonbidatu lagunak";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Talde berria";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Errorea eskatu den GIF eskuratzen. Mesedez, ziurta ezazu online zaudela.";
 
@@ -1520,58 +1532,58 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Bakarrik administratzaileek alda dezakete aukera hau.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Ez duzu bere audio edo bideorik jasoko eta ez dute zurerik jasoko.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ blokeatuta dago";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ blokeatuta dago";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "Deia jarraitu";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "Talde-deia amaitu egin da";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Informazio gehiago";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Dei hau gehienezko erabiltzaile kopurura, %ld, iritsi da. Saiatu beranduago.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Dei hau gehienezko erabiltzaile kopurura iritsi da. Saiatu beranduago.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Call is Full";
+"GROUP_CALL_IS_FULL" = "Deia beteta dago";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Deian Sartu";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "Deia utzi";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dei honetan - %ld pertsona";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ eta  beste %3$@ dei honetan daude.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Ezin da %@ erabiltzailearen audio eta bideorik jaso.";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Hau zure segurtasun-zenbakiaren aldaketa egiaztatu ez duzulako, euren gailuan arazoren bat dutelako edo blokeatu egin zaituztelako izan daiteke.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Ezin da %@ erabiltzailearen audio eta bideorik jaso.";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Beste inor ez dago hemen";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Inor ez dago dei honetan";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, eta beste %ld deian sartu dira";
@@ -1601,49 +1613,49 @@
 "GROUP_CALL_RECONNECTING" = "Birkonektatzen";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Dei honetara sartu den baten segurtasun zenbakia aldatu egin da.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Norbaitek talde-deia hasi du";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Egin gora bista aldatzeko";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Hasi Deia";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Sakatu hemen talde-deia hasteko";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Talde-deia hasi duzu";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ erabiltzaileak talde-deia hasi du";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ eta  beste 1 dei honetan daude.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ eta %2$@ dei honetan daude";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Deitik deskonektatu zara. Egiaztatu zure internet konexioa eta saiatu berriz.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Zu";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "Talde-deian zaude";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Zu (beste gailu batean)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Ireki Talde Berria zifratutako talde-dei bat egiteko";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Talde-deiei buruz";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Taldea sortu duzu.";
@@ -2189,22 +2201,22 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Talde Hau ezin da Talde Berrira eguneratu kide gehiegi dauzkalako. Eguneratu daiteken gehienezko taldearen tamaina %@ da.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Taldearen kide guztiak Talde Berriak sortzeko gai den Signal bertsioa erabiltzen dutenean, talde hau eguneratu egingo da.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Mezuen historiala eta multimedia eduki guztiak eguneraketa egin baino lehenagoko egoeran mantenduko dira.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Talde hau ezin izan da sortu kide bat Signal bertsio zahar bat erabiltzen ari delako. Talde Berria sortzeko Signal eguneratu beharko dute, edo bestela ezabatu taldekideen zerrendatik taldea sortu aurretik.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Talde hau ezin izan da sortu %@ kide Signal bertsio zahar bat erabiltzen ari delako. Talde Berria sortzeko Signal eguneratu beharko dute, edo bestela ezabatu taldekideen zerrendatik taldea sortu aurretik.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Talde hau ezin izan da sortu kide bat Signal bertsio zahar bat erabiltzen ari delako. Talde Berria sortzeko Signal eguneratu beharko dute, edo bestela ezabatu taldekideen zerrendatik taldea sortu aurretik. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Talde hau ezin izan da sortu %1$@ kide Signal bertsio zahar bat erabiltzen ari delako. Talde Berria sortzeko Signal eguneratu beharko dute, edo bestela ezabatu taldekideen zerrendatik taldea sortu aurretik. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Jarauntsitako talde bat sortuko da kide bat Signal-en bertsio zahar bat erabiltzen ari delako. Mota Berriko talde batu sortu dezakezu berarekin Signal eguneratu ondoren; beste aukera bat ondokoa da: taldea sortu aurretik, bera ezabatu.";
@@ -2222,7 +2234,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Hau Jarauntsitako Talde bat da. Talde administratzaile moduko ezaugarriak Talde Berrietan erabil daitezke bakarrik. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Jarauntsitako Talde Hau ezin izan da Talde Berrira eguneratu. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Jarauntsitako Talde Hau ezin izan da Talde Berrira eguneratu handiegia delako. %@.";
@@ -2240,7 +2252,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Jarauntsitako Taldea";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Talde honetara berriz sartzeko gonbidapena onartu beharko duzu, eta ez duzu taldeko mezurik jasoko gonbidapen hori onartu arte.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Eguneratu Taldea";
@@ -2276,19 +2288,19 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Kide hau ezin izan da modu automatikoan Talde Berrira gehitu egunerapena egin denean:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Kide hauek ezin izan dira modu automatikoan Talde Berrira gehitu eguneraketa egin denean:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Mezuen historiala eta multimedia eduki guztiak eguneraketa egin baino lehenagoko egoeran mantendu dira.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Kide hau taldetik ezabatu zen eta ezingo dira berriz sartu eguneratu arte:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Kide hauek taldetik ezabatu ziren eta ezingo dira berriz sartu eguneratu arte:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Talde honetan berriro sartzeko, kide hauek gonbidapena onartu beharko dute; ez dute talde mezurik jasoko gonbidapena onartu arte:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Talde honetan berriro sartzeko, kide hauek gonbidapena onartu beharko dute; ez dute talde mezurik jasoko gonbidapena onartu arte:";
@@ -2309,7 +2321,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Talde hau ezin izan da Talde Berria bilakatu oraintxe bertan.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Talde hau ezin izan da Talde Berria eguneratu ez zaudelako Internetera konektatuta. Saiatu berriz beranduago.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Ezin izan da Egunerapena Osatu";
@@ -2620,6 +2632,9 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mezua";
 
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Multimedia guztia";
 
@@ -2772,6 +2787,27 @@
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Ezabatu eta utzi taldea?";
+
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Zure kontaktua";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Eskaera";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Berrikusi Eskaera";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Eguneratu kontaktua";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Berrikusi Eskaera";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Onartu";
@@ -2933,7 +2969,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Talde berria ezin izan da sortu. Egiaztatu zure interneterako konexioa eta saia zaitez berriro.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ezin du Talde Berririk erabili";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Taldearen izena beharrezkoa da.";
@@ -2973,6 +3009,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Aurkitu kontaktuak telefono zenbakia erabiliz";
+
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "Ez dago zuen artean komuna den talderik";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Hautatu kontaktua edo taldea txateatzen hasteko.";
@@ -3866,7 +3905,7 @@
 "RETRY_BUTTON_TEXT" = "Berriro saiatu";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "Itzuli";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Gehitu taldera edonola ere";
@@ -4574,7 +4613,7 @@
 "SOUNDS_NONE" = "Bat ere ez";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Dagoeneko sortuta dauden taldeek automatikoki jasoko dituzte eguneraketa hauek datozen asteetan:";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Talde Berria";
@@ -4649,7 +4688,7 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Esaiguzu zer gertatzen ari den";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Esaiguzu izan duzun erroreari buruz:";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Mesedez, bidali zure laguntze eskaera ondoko helbidera: support@signal.org";

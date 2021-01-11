@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_RECENTS_TITLE" = "Kürzlich";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ wurde zu %@ hinzugefügt";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ wurde zu »%@« hinzugefügt";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Zu einer weiteren Gruppe hinzufügen";
@@ -357,6 +357,9 @@
 
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Unerwarteter Fehler bei der Datensicherung";
+
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du wirst von dieser Gruppe keine Nachrichten oder Aktualisierungen mehr erhalten.";
@@ -698,7 +701,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Um Kontaktnamen und -fotos in deinen Unterhaltungen anzuzeigen:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Zu Einstellungen gehen«";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Einstellungen öffnen«";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Schalte »Kontakte« ein";
@@ -869,7 +872,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Nur Admins";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Wähle, wer dieser Gruppe Mitglieder hinzufügen kann:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Wähle aus, wer dieser Gruppe Mitglieder hinzufügen kann:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle Mitglieder";
@@ -1450,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Anhang";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Leg los";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Freunde einladen";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Neue Gruppe";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Angefordertes GIF konnte nicht abgerufen werden. Bitte überprüfe, ob du online bist.";
 
@@ -1475,7 +1487,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Gib deine Suche ein";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Zu Einstellungen gehen";
+"GO_TO_SETTINGS_BUTTON" = "Einstellungen öffnen";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Diese Signal-Version beinhaltet Datenbankoptimierungen und Leistungsverbesserungen. Möglicherweise musst du die App öffnen, um den Vorgang abzuschließen.";
@@ -1520,7 +1532,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Nur Admins können diese Option ändern.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Weder wirst du Audio- oder Videodaten dieses Teilnehmers empfangen, noch wird er deine empfangen.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Weder du noch dieser Teilnehmer werden gegenseitig Audio- oder Videodaten empfangen.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ ist blockiert";
@@ -1643,7 +1655,7 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Öffne eine Gruppe neuen Typs, um einen kostenlosen und verschlüsselten Gruppenanruf zu starten";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Einführung von Gruppenanrufen";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Neu: Gruppenanrufe";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Du hast die Gruppe erstellt.";
@@ -1700,7 +1712,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Du hast den Gruppen-Link deaktiviert.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link deaktiviert.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ hat den Gruppen-Link deaktiviert.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Der Gruppen-Link wurde mit eingeschalteter Admin-Bestätigung aktiviert.";
@@ -1709,7 +1721,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Du hast den Gruppen-Link mit eingeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link mit eingeschalteter Admin-Bestätigung aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat den Gruppen-Link mit eingeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Der Gruppen-Link wurde mit ausgeschalteter Admin-Bestätigung aktiviert.";
@@ -1718,7 +1730,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Du hast den Gruppen-Link mit ausgeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link mit ausgeschalteter Admin-Bestätigung aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat den Gruppen-Link mit ausgeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "Der Gruppen-Link wurde zurückgesetzt.";
@@ -1727,7 +1739,7 @@
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Du hast den Gruppen-Link zurückgesetzt.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link zurückgesetzt.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ hat den Gruppen-Link zurückgesetzt.";
 
 /* Message indicating that the group invite link was set to not require approval. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Die Admin-Bestätigung für den Gruppen-Link wurde ausgeschaltet.";
@@ -1736,7 +1748,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Die Admin-Bestätigung für den Gruppen-Link wurde eingeschaltet.";
@@ -1745,7 +1757,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ hat die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Nutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
@@ -1892,7 +1904,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Du wurdest aus der Gruppe entfernt.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "»%@« hat deine Gruppenbeitrittsanfrage bestätigt.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ hat deine Gruppenbeitrittsanfrage bestätigt.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Du hast deine Gruppenbeitrittsanfrage abgebrochen.";
@@ -2021,7 +2033,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ ist der Gruppe beigetreten.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "»%@« ist der Gruppe über den Gruppen-Link beigetreten.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ ist der Gruppe über den Gruppen-Link beigetreten.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ hat die Gruppe verlassen.";
@@ -2033,28 +2045,28 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ hat %2$@ entfernt.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Du hast eine Gruppenbeitrittsanfrage von »%@« bestätigt.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Du hast eine Gruppenbeitrittsanfrage von %@ bestätigt.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "»%2$@« hat eine Gruppenbeitrittsanfrage von »%1$@« bestätigt.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ hat eine Gruppenbeitrittsanfrage von %1$@ bestätigt.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Eine Gruppenbeitrittsanfrage von »%@« wurde bestätigt.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Eine Gruppenbeitrittsanfrage von %@ wurde bestätigt.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "»%@« hat die Gruppenbeitrittsanfrage abgebrochen.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ hat die Gruppenbeitrittsanfrage abgebrochen.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Du hast eine Gruppenbeitrittsanfrage von »%@« abgelehnt.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Du hast eine Gruppenbeitrittsanfrage von %@ abgelehnt.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "»%2$@« hat eine Gruppenbeitrittsanfrage von »%1$@« abgelehnt.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ hat eine Gruppenbeitrittsanfrage von %1$@ abgelehnt.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Eine Gruppenbeitrittsanfrage von »%@« wurde abgelehnt.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Eine Gruppenbeitrittsanfrage von %@ wurde abgelehnt.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "»%@« hat eine Beitrittsanfrage über den Gruppen-Link gestellt.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ hat eine Beitrittsanfrage über den Gruppen-Link gestellt.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Die Adminrechte von %@ wurden widerrufen.";
@@ -2620,6 +2632,9 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Nachricht";
 
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alle Medieninhalte";
 
@@ -2772,6 +2787,27 @@
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Gruppe löschen und verlassen?";
+
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Dein Kontakt";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Anfrage";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Anfrage prüfen";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Kontakt aktualisieren";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Anfrage prüfen";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Annehmen";
@@ -2974,6 +3010,9 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontakte über Rufnummer suchen";
 
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "Keine gemeinsamen Gruppen";
+
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Wähle einen Kontakt oder eine Gruppe aus, um eine Unterhaltung zu beginnen.";
 
@@ -2996,7 +3035,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Um Mitteilungen über neue Nachrichten zu erhalten:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Zu Einstellungen gehen«";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Einstellungen öffnen«";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schalte »Mitteilungen erlauben« ein";
@@ -3218,13 +3257,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Zur Gruppe hinzufügen";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "»%@« zur Gruppe hinzufügen?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "%@ zur Gruppe hinzufügen?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Anfrage ablehnen";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Anfrage von »%@« ablehnen?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Anfrage von %@ ablehnen?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ hat 1 Person eingeladen";
@@ -3239,7 +3278,7 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Keine Einladungen.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "»%@« hinzugefügt.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "%@ hinzugefügt.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ ausstehende Beitrittsanfragen.";
@@ -3248,7 +3287,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Anfragen anzeigen";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "»%@« abgelehnt.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "%@ abgelehnt.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Ungültige Einladung widerrufen";
@@ -3260,16 +3299,16 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Einladung widerrufen";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Von »%@« versendete Gruppeneinladung widerrufen?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Von %@ versendete Gruppeneinladung widerrufen?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "%1$@ von »%2$@« versendete Einladungen widerrufen?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "%1$@ von %2$@ versendete Einladungen widerrufen?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Einladungen widerrufen";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Gruppeneinladung für »%@« widerrufen?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Gruppeneinladung für %@ widerrufen?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Du kannst keine Details zu von anderen Gruppenmitgliedern eingeladenen Personen ansehen. Erst wenn die Eingeladenen der Gruppe beitreten, sind ihre Details für dich und die anderen Gruppenmitglieder einsehbar. Bis zum Beitritt erhalten die Eingeladenen auch keine Gruppennachrichten.";
@@ -3851,7 +3890,7 @@
 "RESEARCH_MODAL_FOOTER" = "Diese Umfrage wird bei »Surveygizmo« auf der sicheren Domain »surveys.signalusers.org« gehostet.";
 
 /* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Nein, danke";
+"RESEARCH_MODAL_NO_THANKS" = "Nein danke";
 
 /* Text explaining why the user should take the survey */
 "RESEARCH_MODAL_PLEA" = "<bold>Wir glauben an Datenschutz.</bold>\n\nSignal verfolgt dich nicht und sammelt auch nicht deine Daten. Um Signal für alle zu verbessern, stützen wir uns auf Rückmeldungen der Nutzer, <bold>und wir wären sehr an deinen interessiert</bold>.\n\nZum besseren Verständnis darüber, wie du Signal nutzt, führen wir eine Umfrage durch. Unsere Umfrage sammelt keinerlei Daten, die Rückschlüsse auf deine Identität erlauben. Falls du weiteres Feedback geben möchtest,  kannst du optional deine Kontaktinformationen hinterlassen.\n\nWenn du einige Minuten erübrigen kannst, würden wir sehr gerne von dir hören.";
@@ -4649,7 +4688,7 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Sag uns, was los ist";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Beschreib das Problem:";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Bitte sende deine Supportanfrage per E-Mail an support@signal.org";
@@ -4664,19 +4703,19 @@
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "Supportinformationen";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS-Version: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Region: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Diagnoseprotokoll-URL: %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal-Version: %@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Supportanfrage Signal iOS";
@@ -4880,7 +4919,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs halten deine bei Signal gespeicherten Informationen verschlüsselt, sodass nur du auf sie zugreifen kannst. Falls du Signal erneut installierst, werden so dein Profil und deine Einstellungen und Kontakte wiederhergestellt. Für das Öffnen der App wirst du deine PIN nicht benötigen.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Einführung von PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Neu: PINs";
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN deaktivieren";
