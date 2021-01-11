@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
         [transaction addAsyncCompletionOffMain:^{
             [self.attachmentDownloads downloadAttachmentsForMessageId:outgoingMessage.uniqueId
                 attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-                downloadBehavior:OWSAttachmentDownloadBehaviorBypassAll
+                downloadBehavior:AttachmentDownloadBehaviorBypassAll
                 success:^(NSArray *attachmentStreams) {
                     NSString *_Nullable quotedThumbnailPointerId
                         = transcript.quotedMessage.thumbnailAttachmentPointerId;

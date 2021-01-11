@@ -13,25 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^AttachmentDownloadSuccess)(TSAttachmentStream *attachmentStream);
 typedef void (^AttachmentDownloadFailure)(NSError *error);
 
-typedef NS_CLOSED_ENUM(NSUInteger, OWSAttachmentDownloadType) {
-    OWSAttachmentDownloadTypeDefault,
-    OWSAttachmentDownloadTypeBodyImage,
-    OWSAttachmentDownloadTypeBodyVideo,
-    OWSAttachmentDownloadTypeBodyAudio,
-    OWSAttachmentDownloadTypeBodyFile
-};
-
-#pragma mark -
-
-typedef NS_CLOSED_ENUM(NSUInteger, OWSAttachmentDownloadBehavior) {
-    OWSAttachmentDownloadBehaviorDefault,
-    OWSAttachmentDownloadBehaviorBypassPendingMessageRequest,
-    OWSAttachmentDownloadBehaviorBypassPendingManualDownload,
-    OWSAttachmentDownloadBehaviorBypassAll
-};
-
-#pragma mark -
-
 @interface OWSAttachmentDownloadJob : NSObject
 
 @property (nonatomic, readonly) NSString *attachmentId;

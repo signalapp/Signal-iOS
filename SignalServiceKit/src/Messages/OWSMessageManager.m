@@ -1445,7 +1445,7 @@ NS_ASSUME_NONNULL_BEGIN
     [transaction addAsyncCompletionOffMain:^{
         [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
             category:AttachmentCategoryOther
-            downloadBehavior:OWSAttachmentDownloadBehaviorBypassAll
+            downloadBehavior:AttachmentDownloadBehaviorBypassAll
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -2265,7 +2265,7 @@ NS_ASSUME_NONNULL_BEGIN
     [transaction addAsyncCompletionOffMain:^{
         [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
             attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-            downloadBehavior:OWSAttachmentDownloadBehaviorDefault
+            downloadBehavior:AttachmentDownloadBehaviorDefault
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogDebug(@"Successfully fetched attachments: %lu for message: %@",
                     (unsigned long)attachmentStreams.count,

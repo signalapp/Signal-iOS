@@ -1614,7 +1614,7 @@ typedef enum : NSUInteger {
 
     [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
         attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-        downloadBehavior:OWSAttachmentDownloadBehaviorBypassAll
+        downloadBehavior:AttachmentDownloadBehaviorBypassAll
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
         }
@@ -4349,7 +4349,7 @@ typedef enum : NSUInteger {
     // Start downloads for message.
     [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
         attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-        downloadBehavior:OWSAttachmentDownloadBehaviorBypassAll
+        downloadBehavior:AttachmentDownloadBehaviorBypassAll
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
         }

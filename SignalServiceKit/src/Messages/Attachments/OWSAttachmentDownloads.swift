@@ -20,9 +20,43 @@ public extension OWSAttachmentDownloads {
     private class var profileManager: ProfileManagerProtocol {
         return SSKEnvironment.shared.profileManager
     }
+
+    private class var reachabilityManager: SSKReachabilityManager {
+        SSKEnvironment.shared.reachabilityManager
+    }
 }
 
 // MARK: - Settings
+
+@objc
+public enum AttachmentDownloadBehavior: UInt, Equatable {
+    case `default`
+    case bypassPendingMessageRequest
+    case bypassPendingManualDownload
+    case bypassAll
+
+    public static var defaultValue: MediaDownloadCondition { .wifiAndCellular }
+
+    public var bypassPendingMessageRequest: Bool {
+        switch self {
+        case .bypassPendingMessageRequest, .bypassAll:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var bypassPendingManualDownload: Bool {
+        switch self {
+        case .bypassPendingManualDownload, .bypassAll:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+// MARK: -
 
 public enum MediaDownloadCondition: UInt, Equatable, CaseIterable {
     case never
@@ -71,6 +105,8 @@ public extension OWSAttachmentDownloads {
 
     private static let keyValueStore = SDSKeyValueStore(collection: "OWSAttachmentDownloads")
 
+    static let mediaDownloadConditionsDidChange = Notification.Name("PushTokensDidChange")
+
     static func set(mediaDownloadCondition: MediaDownloadCondition,
                     forMediaDownloadType mediaDownloadType: MediaDownloadType,
                     transaction: SDSAnyWriteTransaction) {
@@ -93,6 +129,13 @@ public extension OWSAttachmentDownloads {
         return value
     }
 
+    static func resetMediaDownloadConditions(transaction: SDSAnyWriteTransaction) {
+        for mediaDownloadType in MediaDownloadType.allCases {
+            keyValueStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: transaction)
+        }
+        NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+    }
+
     static func loadMediaDownloadConditions(transaction: SDSAnyReadTransaction) -> [MediaDownloadType: MediaDownloadCondition] {
         var result = [MediaDownloadType: MediaDownloadCondition]()
         for mediaDownloadType in MediaDownloadType.allCases {
@@ -102,14 +145,24 @@ public extension OWSAttachmentDownloads {
         return result
     }
 
-    static func resetMediaDownloadConditions(transaction: SDSAnyWriteTransaction) {
-        for mediaDownloadType in MediaDownloadType.allCases {
-            keyValueStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: transaction)
+    static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
+        let conditionMap = loadMediaDownloadConditions(transaction: transaction)
+        let hasWifiConnection = reachabilityManager.isReachable(via: .wifi)
+        var result = Set<MediaDownloadType>()
+        for (mediaDownloadType, condition) in conditionMap {
+            switch condition {
+            case .never:
+                continue
+            case .wifiOnly:
+                if hasWifiConnection {
+                    result.insert(mediaDownloadType)
+                }
+            case .wifiAndCellular:
+                result.insert(mediaDownloadType)
+            }
         }
-        NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+        return result
     }
-
-    static let mediaDownloadConditionsDidChange = Notification.Name("PushTokensDidChange")
 }
 
 // MARK: - Enqueue
@@ -118,7 +171,7 @@ public extension OWSAttachmentDownloads {
 
     func downloadPromise(attachmentPointer: TSAttachmentPointer,
                          category: AttachmentCategory,
-                         downloadBehavior: OWSAttachmentDownloadBehavior) -> Promise<TSAttachmentStream> {
+                         downloadBehavior: AttachmentDownloadBehavior) -> Promise<TSAttachmentStream> {
         return Promise { resolver in
             self.download(attachmentPointer: attachmentPointer,
                           category: category,
@@ -137,7 +190,7 @@ public extension OWSAttachmentDownloads {
     @objc(downloadAttachmentPointer:category:downloadBehavior:success:failure:)
     func download(attachmentPointer: TSAttachmentPointer,
                   category: AttachmentCategory,
-                  downloadBehavior: OWSAttachmentDownloadBehavior,
+                  downloadBehavior: AttachmentDownloadBehavior,
                   success: @escaping ([TSAttachmentStream]) -> Void,
                   failure: @escaping (Error) -> Void) {
         download(attachmentPointer: attachmentPointer,
@@ -152,7 +205,7 @@ public extension OWSAttachmentDownloads {
     func download(attachmentPointer: TSAttachmentPointer,
                   message: TSMessage,
                   category: AttachmentCategory,
-                  downloadBehavior: OWSAttachmentDownloadBehavior,
+                  downloadBehavior: AttachmentDownloadBehavior,
                   success: @escaping ([TSAttachmentStream]) -> Void,
                   failure: @escaping (Error) -> Void) {
         download(attachmentPointer: attachmentPointer,
@@ -166,7 +219,7 @@ public extension OWSAttachmentDownloads {
     private func download(attachmentPointer: TSAttachmentPointer,
                           nullableMessage message: TSMessage?,
                           category: AttachmentCategory,
-                          downloadBehavior: OWSAttachmentDownloadBehavior,
+                          downloadBehavior: AttachmentDownloadBehavior,
                           success: @escaping ([TSAttachmentStream]) -> Void,
                           failure: @escaping (Error) -> Void) {
 
@@ -399,7 +452,7 @@ public extension OWSAttachmentDownloads {
     @objc
     func downloadAttachments(forMessageId messageId: String,
                              attachmentGroup: AttachmentGroup,
-                             downloadBehavior: OWSAttachmentDownloadBehavior,
+                             downloadBehavior: AttachmentDownloadBehavior,
                              success: @escaping ([TSAttachmentStream]) -> Void,
                              failure: @escaping (Error) -> Void) {
 
@@ -466,27 +519,20 @@ public extension OWSAttachmentDownloads {
 
     private func enqueueJobs(forAttachmentReferences attachmentReferences: [AttachmentReference],
                              message: TSMessage?,
-                             downloadBehavior: OWSAttachmentDownloadBehavior,
+                             downloadBehavior: AttachmentDownloadBehavior,
                              success: @escaping ([TSAttachmentStream]) -> Void,
                              failure: @escaping (Error) -> Void) {
 
-        let bypassPendingMessageRequest: Bool
-        switch downloadBehavior {
-        case .bypassPendingMessageRequest, .bypassAll:
-            bypassPendingMessageRequest = true
-        default:
-            bypassPendingMessageRequest = false
-        }
-
         Self.serialQueue.async {
-
-            let hasPendingMessageRequest: Bool = {
-                guard !bypassPendingMessageRequest,
-                      let message = message,
-                      !message.isOutgoing else {
-                    return false
-                }
-                return Self.databaseStorage.read { transaction in
+            var hasPendingMessageRequest: Bool = false
+            var autoDownloadableMediaTypes = Set<MediaDownloadType>()
+            Self.databaseStorage.read { transaction in
+                hasPendingMessageRequest = {
+                    guard !downloadBehavior.bypassPendingMessageRequest,
+                          let message = message,
+                          !message.isOutgoing else {
+                        return false
+                    }
                     let thread = message.thread(transaction: transaction)
                     // If the message that created this attachment was the first message in the
                     // thread, the thread may not yet be marked visible. In that case, just check
@@ -498,8 +544,47 @@ public extension OWSAttachmentDownloads {
                         return GRDBThreadFinder.hasPendingMessageRequest(thread: thread,
                                                                          transaction: transaction.unwrapGrdbRead)
                     }
+                }()
+                autoDownloadableMediaTypes = Self.autoDownloadableMediaTypes(transaction: transaction)
+            }
+
+            func isDownloadBlockedByPendingMessageRequest(_ attachmentPointer: TSAttachmentPointer) -> Bool {
+                guard attachmentPointer.isVisualMedia,
+                      hasPendingMessageRequest,
+                      let message = message,
+                      message.messageSticker == nil,
+                      !message.isViewOnceMessage else {
+                    return false
                 }
-            }()
+                return true
+            }
+
+            func isDownloadBlockedByAutoDownloadSettingsSettings(_ attachmentPointer: TSAttachmentPointer,
+                                                                 category: AttachmentCategory) -> Bool {
+                guard !downloadBehavior.bypassPendingManualDownload else {
+                    return false
+                }
+                switch category {
+                case .bodyMediaImage:
+                    return !autoDownloadableMediaTypes.contains(.photo)
+                case .bodyMediaVideo:
+                    return !autoDownloadableMediaTypes.contains(.video)
+                case .bodyAudioVoiceMemo:
+                    return false
+                case .bodyAudioOther:
+                    return !autoDownloadableMediaTypes.contains(.audio)
+                case .bodyFile:
+                    return !autoDownloadableMediaTypes.contains(.document)
+                case .stickerSmall:
+                    return false
+                case .stickerLarge:
+                    return autoDownloadableMediaTypes.contains(.photo)
+                case .quotedReplyThumbnail, .linkedPreviewThumbnail, .contactShareAvatar:
+                    return false
+                case .other:
+                    return false
+                }
+            }
 
             let unfairLock = UnfairLock()
             var promises = [Promise<Void>]()
@@ -511,19 +596,22 @@ public extension OWSAttachmentDownloads {
                         attachmentStreams.append(attachmentStream)
                     }
                 case .attachmentPointer(let attachmentPointer, let category):
-                    if attachmentPointer.isVisualMedia,
-                       hasPendingMessageRequest,
-                       let message = message,
-                       message.messageSticker == nil,
-                       !message.isViewOnceMessage {
-                        Logger.info("Not queueing visual media download for thread with pending message request")
-
-                        Self.databaseStorage.asyncWrite { transaction in
+                    if isDownloadBlockedByPendingMessageRequest(attachmentPointer) {
+                        Logger.info("Skipping media download for thread with pending message request.")
+                        Self.databaseStorage.write { transaction in
                             attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                            to: .pendingMessageRequest,
                                                                            transaction: transaction)
                         }
-
+                        continue
+                    }
+                    if isDownloadBlockedByAutoDownloadSettingsSettings(attachmentPointer, category: category) {
+                        Logger.info("Skipping media download for thread due to auto-download settings.")
+                        Self.databaseStorage.write { transaction in
+                            attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                           to: .pendingManualDownload,
+                                                                           transaction: transaction)
+                        }
                         continue
                     }
 
