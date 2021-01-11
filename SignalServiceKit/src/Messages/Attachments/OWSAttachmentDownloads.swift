@@ -139,30 +139,6 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-//    @objc(downloadAllAttachmentsForMessageId:bypassPendingMessageRequest:success:failure:)
-//    func downloadAllAttachments(forMessageId messageId: String,
-//                                bypassPendingMessageRequest: Bool,
-//                                success: @escaping ([TSAttachmentStream]) -> Void,
-//                                failure: @escaping (Error) -> Void) {
-//        downloadAttachments(forMessageId: messageId,
-//                            attachmentGroup: .allAttachments,
-//                            bypassPendingMessageRequest: bypassPendingMessageRequest,
-//                            success: success,
-//                            failure: failure)
-//    }
-//
-//    @objc(downloadBodyAttachmentsForMessageId:bypassPendingMessageRequest:success:failure:)
-//    func downloadBodyAttachments(forMessageId messageId: String,
-//                                 bypassPendingMessageRequest: Bool,
-//                                 success: @escaping ([TSAttachmentStream]) -> Void,
-//                                 failure: @escaping (Error) -> Void) {
-//        downloadAttachments(forMessageId: messageId,
-//                            attachmentGroup: .bodyAttachments,
-//                            bypassPendingMessageRequest: bypassPendingMessageRequest,
-//                            success: success,
-//                            failure: failure)
-//    }
-
     // TODO: Can we simplify this?
     @objc
     enum AttachmentGroup: UInt, Equatable {
