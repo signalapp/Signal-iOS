@@ -35,6 +35,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic) uint64_t openGroupServerMessageID;
+@property (nonatomic, readonly) BOOL isOpenGroupMessage;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 

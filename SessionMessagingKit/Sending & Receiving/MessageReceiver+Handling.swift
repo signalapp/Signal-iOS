@@ -241,7 +241,6 @@ extension MessageReceiver {
             thread.setGroupModel(group, with: transaction)
         } else {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
-            thread.usesSharedSenderKeys = true
             thread.save(with: transaction)
         }
         // Add the group to the user's set of public keys to poll for

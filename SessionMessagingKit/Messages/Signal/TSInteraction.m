@@ -199,7 +199,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // In open groups messages should be sorted by server timestamp. `sortId` represents the order in which messages
     // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
     // effectively the same as sorting by server timestamp.
-    if (self.isOpenGroupMessage) {
+    if ([self isKindOfClass:TSMessage.class] && ((TSMessage *)self).isOpenGroupMessage) {
         sortId1 = self.sortId;
         sortId2 = other.sortId;
     } else {

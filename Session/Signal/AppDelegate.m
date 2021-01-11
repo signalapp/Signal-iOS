@@ -389,10 +389,6 @@ static NSTimeInterval launchStartedAt;
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
-
-                if (CurrentAppContext().isMainApp) {
-                    [SNJobQueue.shared resumePendingJobs];
-                }
             });
         }
     }); // end dispatchOnce for first time we become active
@@ -432,6 +428,10 @@ static NSTimeInterval launchStartedAt;
                 __unused AnyPromise *promise =
                     [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                                     preferences:Environment.shared.preferences];
+            }
+            
+            if (CurrentAppContext().isMainApp) {
+                [SNJobQueue.shared resumePendingJobs];
             }
         });
     }
@@ -729,7 +729,7 @@ static NSTimeInterval launchStartedAt;
 - (void)startPollerIfNeeded
 {
     if (self.poller == nil) {
-        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
         if (userPublicKey != nil) {
             self.poller = [[LKPoller alloc] init];
         }
@@ -742,7 +742,7 @@ static NSTimeInterval launchStartedAt;
 - (void)startClosedGroupPollerIfNeeded
 {
     if (self.closedGroupPoller == nil) {
-        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
         if (userPublicKey != nil) {
             self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
         }

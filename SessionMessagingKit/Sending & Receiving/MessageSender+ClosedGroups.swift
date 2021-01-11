@@ -20,7 +20,6 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let group = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
-        thread.usesSharedSenderKeys = true // TODO: We should be able to safely deprecate this
         thread.save(with: transaction)
         // Send a closed group update message to all members individually
         var promises: [Promise<Void>] = []

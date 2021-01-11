@@ -192,7 +192,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
         }];
     innerBubbleView.layer.mask = maskLayer;
     if (self.isForPreview) {
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userHexEncodedPublicKey = [SNGeneralUtilities getUserPublicKey];
         BOOL wasSentByUser = [self.quotedMessage.authorId isEqual:userHexEncodedPublicKey];
         innerBubbleView.backgroundColor = [self.conversationStyle quotedReplyBubbleColorWithIsIncoming:wasSentByUser];
     } else {

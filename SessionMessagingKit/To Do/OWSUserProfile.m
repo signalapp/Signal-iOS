@@ -122,7 +122,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 - (NSString *)sessionID
 {
     if ([self.recipientId isEqual:kLocalProfileUniqueId]) {
-        return OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        return [SNGeneralUtilities getUserPublicKey];
     } else {
         return self.recipientId;
     }

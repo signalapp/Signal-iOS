@@ -179,7 +179,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
-    [SSKJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
 
     [self.database
         flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
@@ -265,14 +264,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.
-    NSArray<NSString *> *paths = @[
-        self.legacyDatabaseFilePath,
-        self.legacyDatabaseFilePath_SHM,
-        self.legacyDatabaseFilePath_WAL,
-        self.sharedDataDatabaseFilePath,
-        self.sharedDataDatabaseFilePath_SHM,
-        self.sharedDataDatabaseFilePath_WAL,
-    ];
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     // We protect the db files here, which is somewhat redundant with what will happen in

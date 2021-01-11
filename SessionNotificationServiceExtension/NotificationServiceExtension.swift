@@ -55,11 +55,11 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                             group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
                             senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
                         }
-                    case let closedGroupUpdate as ClosedGroupUpdate:
+                    case let closedGroupUpdate as ClosedGroupUpdateV2:
                         // TODO: We could consider actually handling the update here. Not sure if there's enough time though, seeing as though
                         // in some cases we need to send messages (e.g. our sender key) to a number of other users.
                         switch closedGroupUpdate.kind {
-                        case .new(_, let name, _, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
+                        case .new(_, let name, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
                         default: return self.handleFailure(for: notificationContent)
                         }
                     default: return self.handleFailure(for: notificationContent)

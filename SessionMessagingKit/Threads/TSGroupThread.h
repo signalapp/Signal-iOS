@@ -17,7 +17,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
 @property (nonatomic, readonly) BOOL isOpenGroup;
-@property (nonatomic) BOOL usesSharedSenderKeys;
+@property (nonatomic, readonly) BOOL isClosedGroup;
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel

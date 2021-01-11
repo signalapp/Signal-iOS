@@ -242,7 +242,7 @@ public final class MessageSender : NSObject {
                     storage.write(with: { transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                         var shouldNotify = (message is VisibleMessage)
-                        if let closedGroupUpdate = message as? ClosedGroupUpdate, case .new = closedGroupUpdate.kind {
+                        if let closedGroupUpdate = message as? ClosedGroupUpdateV2, case .new = closedGroupUpdate.kind {
                             shouldNotify = true
                         }
                         if shouldNotify {
@@ -342,10 +342,9 @@ public final class MessageSender : NSObject {
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
-        tsMessage.isOpenGroupMessage = tsMessage.openGroupServerMessageID != 0
         var recipients = [ message.recipient! ]
         if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
-            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction as! YapDatabaseReadTransaction), thread.usesSharedSenderKeys {
+            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction as! YapDatabaseReadTransaction), thread.isClosedGroup {
             recipients = thread.groupModel.groupMemberIds
         }
         recipients.forEach { recipient in

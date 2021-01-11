@@ -398,7 +398,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
             var message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: "")
-            if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
+            if let thread = thread as? TSGroupThread, thread.isClosedGroup, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
                 message = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone."
             }
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
@@ -416,7 +416,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                         let _ = OpenGroupAPI.leave(openGroup.channel, on: openGroup.server)
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
-                    } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {
+                    } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                         do {

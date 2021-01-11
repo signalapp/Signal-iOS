@@ -40,7 +40,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 @property (nonatomic, readonly) BOOL shouldUseServerTime;
-@property (nonatomic) BOOL isOpenGroupMessage;
 
 - (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp;
 

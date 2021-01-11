@@ -480,12 +480,12 @@ const CGFloat kIconViewLength = 24;
 
     __block BOOL isUserMember = NO;
     if (self.isGroupThread) {
-        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
         isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey];
     }
 
     if (self.isGroupThread && self.isClosedGroup && isUserMember) {
-        if (((TSGroupThread *)self.thread).usesSharedSenderKeys) {
+        if (((TSGroupThread *)self.thread).isClosedGroup) {
             [mainSection addItem:[OWSTableItem
                 itemWithCustomCellBlock:^{
                     UITableViewCell *cell =
@@ -896,7 +896,7 @@ static CGRect oldframe;
 
 - (void)didTapLeaveGroup
 {
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     NSString *message;
     if ([((TSGroupThread *)self.thread).groupModel.groupAdminIds containsObject:userPublicKey]) {
         message = @"Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
@@ -936,7 +936,7 @@ static CGRect oldframe;
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
 
-    if (gThread.usesSharedSenderKeys) {
+    if (gThread.isClosedGroup) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [SNMessageSender leaveClosedGroupWithPublicKey:groupPublicKey using:transaction error:nil];

@@ -156,6 +156,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return true;
 }
 
+- (BOOL)isClosedGroup
+{
+    return (self.groupModel.groupType == closedGroup);
+}
+
 - (BOOL)isOpenGroup
 {
     return (self.groupModel.groupType == openGroup);
@@ -163,7 +168,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (BOOL)isCurrentUserMemberInGroup
 {
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     return [self isUserMemberInGroup:userPublicKey];
 }
 
