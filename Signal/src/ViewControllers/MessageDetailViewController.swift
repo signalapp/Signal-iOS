@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import QuickLook
 import SignalServiceKit
 import SignalMessaging
 
@@ -835,12 +836,10 @@ extension MessageDetailViewController: CVComponentDelegate {
         present(mediaPageVC, animated: true)
     }
 
-    func cvc_didTapPdf(itemViewModel: CVItemViewModelImpl, attachmentStream: TSAttachmentStream) {
-        AssertIsOnMainThread()
-
-        let pdfView = PdfViewController(itemViewModel: itemViewModel, attachmentStream: attachmentStream)
-        let navigationController = OWSNavigationController(rootViewController: pdfView)
-        presentFullScreen(navigationController, animated: true)
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) {
+        let previewController = QLPreviewController()
+        previewController.dataSource = attachment
+        present(previewController, animated: true)
     }
 
     func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage) {}

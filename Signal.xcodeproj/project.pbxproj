@@ -368,7 +368,6 @@
 		34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */; };
 		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
 		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
-		34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BE2F5722A7371D002C94AC /* PdfViewController.swift */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
@@ -1371,7 +1370,6 @@
 		34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		34BBC85F220E883200857249 /* ImageEditorModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModelTest.swift; sourceTree = "<group>"; };
 		34BBC860220E883200857249 /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
-		34BE2F5722A7371D002C94AC /* PdfViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PdfViewController.swift; sourceTree = "<group>"; };
 		34BECE291F74C12700D7438D /* DebugUIStress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIStress.h; sourceTree = "<group>"; };
 		34BECE2A1F74C12700D7438D /* DebugUIStress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIStress.m; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
@@ -2768,7 +2766,6 @@
 				887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */,
 				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
 				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
-				34BE2F5722A7371D002C94AC /* PdfViewController.swift */,
 				34969558219B605E00DCFE74 /* Photos */,
 				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
 				34CE88E61F2FB9A10098030F /* ProfileViewController.m */,
@@ -5182,7 +5179,6 @@
 				880D902E2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				88F8195A2383569A007914E8 /* CNContactViewController+OWS.m in Sources */,
-				34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */,
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
 				32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
