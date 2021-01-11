@@ -117,19 +117,27 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private var bottomLabelConfig: CVLabelConfig {
-        var fileSize: UInt = 0
-        if let attachmentStream = attachmentStream,
-           let originalFilePath = attachmentStream.originalFilePath,
-           let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
-            fileSize = nsFileSize.uintValue
-        }
 
         // We don't want to show the file size while the attachment is downloading.
         // To avoid layout jitter when the download completes, we reserve space in
         // the layout using a whitespace string.
         var text = " "
-        if fileSize > 0 {
-            text = OWSFormat.formatFileSize(fileSize)
+
+        if let attachmentPointer = self.attachmentPointer {
+            text = NSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons.")
+            if attachmentPointer.byteCount > 0 {
+                text = OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)) + " • " + text
+            }
+        } else if let attachmentStream = attachmentStream {
+            if let originalFilePath = attachmentStream.originalFilePath,
+               let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
+                let fileSize = nsFileSize.uintValue
+                if fileSize > 0 {
+                    text = OWSFormat.formatFileSize(fileSize)
+                }
+            }
+        } else {
+            owsFailDebug("Invalid attachment")
         }
 
         return CVLabelConfig(text: text,
