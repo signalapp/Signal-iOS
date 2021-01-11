@@ -183,8 +183,8 @@ public class OWSFlatButton: UIView {
 
     @objc
     public func setBackgroundColors(upColor: UIColor ) {
-        setBackgroundColors(upColor: upColor,
-                            downColor: upColor.withAlphaComponent(0.7) )
+        let downColor = upColor == .clear ? upColor : upColor.withAlphaComponent(0.7)
+        setBackgroundColors(upColor: upColor, downColor: downColor)
     }
 
     @objc
