@@ -389,10 +389,6 @@ static NSTimeInterval launchStartedAt;
                 // sent before the app exited should be marked as failures.
                 [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
-
-                if (CurrentAppContext().isMainApp) {
-                    [SNJobQueue.shared resumePendingJobs];
-                }
             });
         }
     }); // end dispatchOnce for first time we become active
@@ -432,6 +428,10 @@ static NSTimeInterval launchStartedAt;
                 __unused AnyPromise *promise =
                     [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                                     preferences:Environment.shared.preferences];
+            }
+            
+            if (CurrentAppContext().isMainApp) {
+                [SNJobQueue.shared resumePendingJobs];
             }
         });
     }
