@@ -19,7 +19,7 @@ Build instructions can be found in [BUILDING.md](BUILDING.md).
 
 ## Translations
 
-Want to help us translate Session into your language? See [TRANSLATION.md](TRANSLATION.md) for instructions on how to do that!
+Want to help us translate Session into your language? You can do so at https://crowdin.com/project/session-ios!
 
 ## License
 
@@ -27,6 +27,6 @@ Copyright 2011 Whisper Systems
 
 Copyright 2013-2017 Open Whisper Systems
 
-Copyright 2019-2020 The Loki Project
+Copyright 2019-2021 The Loki Project
 
 Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html
