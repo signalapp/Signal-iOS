@@ -17,7 +17,7 @@
                BlueprintIdentifier = "C33FD9AA255A548A00E217F9"
                BuildableName = "SignalUtilitiesKit.framework"
                BlueprintName = "SignalUtilitiesKit"
-               ReferencedContainer = "container:Signal.xcodeproj">
+               ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -53,7 +53,7 @@
             BlueprintIdentifier = "C33FD9AA255A548A00E217F9"
             BuildableName = "SignalUtilitiesKit.framework"
             BlueprintName = "SignalUtilitiesKit"
-            ReferencedContainer = "container:Signal.xcodeproj">
+            ReferencedContainer = "container:Session.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

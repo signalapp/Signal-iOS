@@ -1180,7 +1180,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
-        return [SNOpenGroupAPI isUserModerator:self.userHexEncodedPublicKey forChannel:publicChat.channel onServer:publicChat.server];
+        return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:publicChat.channel onServer:publicChat.server];
     } else {
         return YES;
     }
