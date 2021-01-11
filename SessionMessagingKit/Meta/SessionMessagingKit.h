@@ -5,6 +5,7 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 
 #import <SessionMessagingKit/AppReadiness.h>
 #import <SessionMessagingKit/Environment.h>
+#import <SessionMessagingKit/GeneralUtilities.h>
 #import <SessionMessagingKit/NotificationsProtocol.h>
 #import <SessionMessagingKit/NSData+messagePadding.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>

@@ -277,6 +277,8 @@
 		B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B894D0742339EDCF00B4D94D /* NukeDataModal.swift */; };
 		B8A14D702589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A14D6F2589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift */; };
 		B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */; };
+		B8AE760B25ABFB5A001A84D2 /* GeneralUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */; };
+		B8AE761425ABFBB9001A84D2 /* GeneralUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8B26C8F234D629C004ED98C /* MentionCandidateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */; };
 		B8B32021258B1A650020074B /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32020258B1A650020074B /* Contact.swift */; };
 		B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32032258B235D0020074B /* Storage+Contacts.swift */; };
@@ -1260,6 +1262,8 @@
 		B894D0742339EDCF00B4D94D /* NukeDataModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NukeDataModal.swift; sourceTree = "<group>"; };
 		B8A14D6F2589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairMigrationSuccessSheet.swift; sourceTree = "<group>"; };
 		B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Trimming.swift"; sourceTree = "<group>"; };
+		B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneralUtilities.h; sourceTree = "<group>"; };
+		B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneralUtilities.m; sourceTree = "<group>"; };
 		B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionCandidateSelectionView.swift; sourceTree = "<group>"; };
 		B8B32020258B1A650020074B /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		B8B32032258B235D0020074B /* Storage+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Contacts.swift"; sourceTree = "<group>"; };
@@ -3149,6 +3153,8 @@
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
 				C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */,
 				C33FDBC1255A581700E217F9 /* General.swift */,
+				B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */,
+				B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
 				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
@@ -3659,6 +3665,7 @@
 				C32C5BF8256DC8F6003C73A2 /* OWSDisappearingMessagesJob.h in Headers */,
 				C32C5AAA256DBE8F003C73A2 /* TSIncomingMessage.h in Headers */,
 				B8856D72256F1421001CE70E /* OWSWindowManager.h in Headers */,
+				B8AE761425ABFBB9001A84D2 /* GeneralUtilities.h in Headers */,
 				C32C5B6B256DC357003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */,
 				C32C5F23256DFCC0003C73A2 /* TSErrorMessage_privateConstructor.h in Headers */,
 				C32C5BBA256DC7E3003C73A2 /* ProfileManagerProtocol.h in Headers */,
@@ -4774,6 +4781,7 @@
 				C32C5E5B256DDF45003C73A2 /* OWSStorage.m in Sources */,
 				C32C5E15256DDC78003C73A2 /* SSKPreferences.swift in Sources */,
 				C32C5D9C256DD6DC003C73A2 /* OWSOutgoingReceiptManager.m in Sources */,
+				B8AE760B25ABFB5A001A84D2 /* GeneralUtilities.m in Sources */,
 				C32C5C4F256DCC36003C73A2 /* Storage+OpenGroups.swift in Sources */,
 				B8B3207B258C22550020074B /* DisplayNameUtilities.swift in Sources */,
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,

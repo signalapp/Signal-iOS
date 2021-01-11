@@ -480,7 +480,7 @@ const CGFloat kIconViewLength = 24;
 
     __block BOOL isUserMember = NO;
     if (self.isGroupThread) {
-        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
         isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey];
     }
 
@@ -896,7 +896,7 @@ static CGRect oldframe;
 
 - (void)didTapLeaveGroup
 {
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     NSString *message;
     if ([((TSGroupThread *)self.thread).groupModel.groupAdminIds containsObject:userPublicKey]) {
         message = @"Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";

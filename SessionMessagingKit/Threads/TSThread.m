@@ -138,7 +138,7 @@ BOOL IsNoteToSelfEnabled(void)
 {
     if (!IsNoteToSelfEnabled()) { return NO; }
     if (![self isKindOfClass:TSContactThread.class]) { return NO; }
-    return [self.contactIdentifier isEqual:OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey];
+    return [self.contactIdentifier isEqual:[SNGeneralUtilities getUserPublicKey]];
 }
 
 #pragma mark - To be subclassed.

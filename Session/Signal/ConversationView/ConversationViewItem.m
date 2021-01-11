@@ -1159,10 +1159,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return NO;
 }
 
-- (NSString *)userHexEncodedPublicKey {
-    return OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-}
-
 - (BOOL)userCanDeleteGroupMessage
 {
     if (!self.isGroupThread) return false;
