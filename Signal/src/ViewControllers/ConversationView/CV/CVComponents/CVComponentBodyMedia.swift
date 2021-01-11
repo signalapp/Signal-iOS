@@ -124,10 +124,40 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: UIColor.ows_white)
             iconView.autoSetDimensions(to: CGSize.square(16))
-            let downloadButton = OWSLayerView.circleView(size: 44)
-            downloadButton.backgroundColor = UIColor.ows_black
-            downloadButton.addSubview(iconView)
-            iconView.autoCenterInSuperview()
+
+            let downloadButton: UIView
+            if albumView.itemViews.count > 1 {
+                let downloadStack = UIStackView()
+                downloadStack.axis = .horizontal
+                downloadStack.alignment = .center
+                downloadStack.spacing = 8
+                downloadStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
+                downloadStack.isLayoutMarginsRelativeArrangement = true
+
+                let pillView = OWSLayerView.pillView()
+                pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                downloadStack.addSubview(pillView)
+                pillView.autoPinEdgesToSuperviewEdges()
+
+                downloadStack.addArrangedSubview(iconView)
+
+                let downloadLabel = UILabel()
+                let downloadFormat = NSLocalizedString("MEDIA_GALLERY_ITEM_COUNT_FORMAT",
+                                                       comment: "Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
+                downloadLabel.text = String(format: downloadFormat, OWSFormat.formatInt(albumView.itemViews.count))
+                downloadLabel.textColor = UIColor.ows_white
+                downloadLabel.font = .ows_dynamicTypeCaption1
+                downloadStack.addArrangedSubview(downloadLabel)
+
+                downloadButton = downloadStack
+            } else {
+                let circleView = OWSLayerView.circleView(size: 44)
+                circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                circleView.addSubview(iconView)
+                iconView.autoCenterInSuperview()
+                downloadButton = circleView
+            }
+
             componentView.rootView.addSubview(downloadButton)
             downloadButton.autoCenterInSuperview()
         }

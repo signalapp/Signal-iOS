@@ -41,6 +41,11 @@ open class OWSLayerView: UIView {
         return result
     }
 
+    // Circle and pills are the same.
+    public static func pillView(size: CGFloat? = nil) -> OWSLayerView {
+        circleView(size: size)
+    }
+
     public override var bounds: CGRect {
         didSet {
             if oldValue != bounds {
