@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
@@ -143,8 +143,8 @@
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"notifications")
                                               actionBlock:^{
-                                                  [weakSelf showNotifications];
-                                              }]];
+        [weakSelf showNotifications];
+    }]];
 
     // There's actually nothing AFAIK preventing linking another linked device from an
     // existing linked device, but maybe it's not something we want to expose until
@@ -158,6 +158,12 @@
                                                  [weakSelf showLinkedDevices];
                                              }]];
     }
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_DATA",
+                                                                            @"Label for the 'data' section of the app settings.")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"data")
+                                              actionBlock:^{
+        [weakSelf showData];
+    }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
                                               actionBlock:^{
@@ -346,6 +352,12 @@
                                       [completedVC.navigationController popViewControllerAnimated:YES];
                                   }];
     [self.navigationController pushViewController:profileVC animated:YES];
+}
+
+- (void)showData
+{
+    DataSettingsTableViewController *vc = [[DataSettingsTableViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showAdvanced

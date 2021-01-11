@@ -5,6 +5,36 @@
 import Foundation
 import PromiseKit
 
+public enum MediaDownloadCondition: UInt, Equatable, CaseIterable {
+    case never
+    case wifiOnly
+    case wifiAndCellular
+
+    public static var defaultValue: MediaDownloadCondition { .wifiAndCellular }
+}
+
+public enum MediaDownloadType: String, Equatable, CaseIterable {
+    case photo
+    case video
+    case audio
+    case document
+
+    public var sortKey: UInt {
+        switch self {
+        case .photo:
+            return 1
+        case .video:
+            return 2
+        case .audio:
+            return 3
+        case .document:
+            return 4
+        }
+    }
+}
+
+// MARK: -
+
 public extension OWSAttachmentDownloads {
 
     // MARK: - Dependencies
@@ -20,6 +50,50 @@ public extension OWSAttachmentDownloads {
     private class var profileManager: ProfileManagerProtocol {
         return SSKEnvironment.shared.profileManager
     }
+
+    // MARK: - Enqueue
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "OWSAttachmentDownloads")
+
+    static func set(mediaDownloadCondition: MediaDownloadCondition,
+                    forMediaDownloadType mediaDownloadType: MediaDownloadType,
+                    transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setUInt(mediaDownloadCondition.rawValue,
+                              key: mediaDownloadType.rawValue,
+                              transaction: transaction)
+        NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+    }
+
+    static func mediaDownloadCondition(forMediaDownloadType mediaDownloadType: MediaDownloadType,
+                                       transaction: SDSAnyReadTransaction) -> MediaDownloadCondition {
+        guard let rawValue = keyValueStore.getUInt(mediaDownloadType.rawValue,
+                                                   transaction: transaction) else {
+            return MediaDownloadCondition.defaultValue
+        }
+        guard let value = MediaDownloadCondition(rawValue: rawValue) else {
+            owsFailDebug("Invalid value: \(rawValue)")
+            return MediaDownloadCondition.defaultValue
+        }
+        return value
+    }
+
+    static func loadMediaDownloadConditions(transaction: SDSAnyReadTransaction) -> [MediaDownloadType: MediaDownloadCondition] {
+        var result = [MediaDownloadType: MediaDownloadCondition]()
+        for mediaDownloadType in MediaDownloadType.allCases {
+            result[mediaDownloadType] = mediaDownloadCondition(forMediaDownloadType: mediaDownloadType,
+                                                               transaction: transaction)
+        }
+        return result
+    }
+
+    static func resetMediaDownloadConditions(transaction: SDSAnyWriteTransaction) {
+        for mediaDownloadType in MediaDownloadType.allCases {
+            keyValueStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: transaction)
+        }
+        NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+    }
+
+    static let mediaDownloadConditionsDidChange = Notification.Name("PushTokensDidChange")
 
     // MARK: - Enqueue
 
