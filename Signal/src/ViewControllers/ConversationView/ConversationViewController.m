@@ -33,6 +33,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <Photos/Photos.h>
 #import <PromiseKit/AnyPromise.h>
+#import <QuickLook/QuickLook.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Threading.h>
@@ -4325,15 +4326,13 @@ typedef enum : NSUInteger {
     [self presentViewController:pageVC animated:YES completion:nil];
 }
 
-- (void)cvc_didTapPdfWithItemViewModel:(CVItemViewModelImpl *_Nonnull)itemViewModel
-                      attachmentStream:(TSAttachmentStream *_Nonnull)attachmentStream
+- (void)cvc_didTapGenericAttachment:(CVComponentGenericAttachment *_Nonnull)attachment
 {
     OWSAssertIsOnMainThread();
 
-    PdfViewController *pdfView = [[PdfViewController alloc] initWithItemViewModel:itemViewModel
-                                                                 attachmentStream:attachmentStream];
-    UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
-    [self presentFullScreenViewController:navigationController animated:YES completion:nil];
+    QLPreviewController *previewController = [[QLPreviewController alloc] init];
+    previewController.dataSource = attachment;
+    [self presentViewController:previewController animated:YES completion:nil];
 }
 
 - (void)cvc_didTapPendingMessageRequestIncomingAttachment:(TSMessage *)message

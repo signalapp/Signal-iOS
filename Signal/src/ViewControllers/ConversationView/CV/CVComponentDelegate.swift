@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ public protocol CVComponentDelegate {
                              attachmentStream: TSAttachmentStream,
                              imageView: UIView)
 
-    func cvc_didTapPdf(itemViewModel: CVItemViewModelImpl, attachmentStream: TSAttachmentStream)
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment)
 
     func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage)
 

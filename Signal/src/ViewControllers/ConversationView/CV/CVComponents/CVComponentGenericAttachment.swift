@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import QuickLook
 
 @objc
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
@@ -223,17 +224,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        guard let attachmentStream = attachmentStream else {
+        guard attachmentStream != nil else {
             return false
         }
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        if attachmentStream.contentType == OWSMimeTypePdf {
-            componentDelegate.cvc_didTapPdf(itemViewModel: itemViewModel,
-                                            attachmentStream: attachmentStream)
-        } else {
-            // TODO: Ensure share UI is shown from correct location.
-            AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: componentView.rootView)
-        }
+        componentDelegate.cvc_didTapGenericAttachment(self)
         return true
     }
 
@@ -267,5 +261,20 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             fileTypeLabel.text = nil
             iconImageView.image = nil
         }
+    }
+}
+
+extension CVComponentGenericAttachment: QLPreviewControllerDataSource {
+    public func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return 1
+    }
+
+    public func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        owsAssertDebug(index == 0)
+        return (attachmentStream?.originalMediaURL as QLPreviewItem?) ?? UnavailableItem()
+    }
+
+    private class UnavailableItem: NSObject, QLPreviewItem {
+        var previewItemURL: URL? { nil }
     }
 }
