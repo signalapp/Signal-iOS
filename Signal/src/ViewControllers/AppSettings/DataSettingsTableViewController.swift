@@ -58,14 +58,17 @@ class DataSettingsTableViewController: OWSTableViewController {
                                               comment: "Label for for the 'reset media auto-download settings' button in the data settings.")
             let resetAccessibilityIdentifier = "reset-auto-download-settings"
             if hasNonDefaultValue {
-                autoDownloadSection.add(OWSTableItem.actionItem(withText: resetCopy,
-                                                                accessibilityIdentifier: resetAccessibilityIdentifier) {
+                autoDownloadSection.add(OWSTableItem.item(name: resetCopy,
+                                                          textColor: Theme.accentBlueColor,
+                                                          accessibilityIdentifier: resetAccessibilityIdentifier) {
                     Self.databaseStorage.asyncWrite { transaction in
                         OWSAttachmentDownloads.resetMediaDownloadConditions(transaction: transaction)
                     }
                 })
             } else {
-                autoDownloadSection.add(OWSTableItem.label(withText: resetCopy))
+                autoDownloadSection.add(OWSTableItem.item(name: resetCopy,
+                                                          textColor: Theme.secondaryTextAndIconColor,
+                                                          accessibilityIdentifier: resetAccessibilityIdentifier))
             }
         }
 
