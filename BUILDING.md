@@ -2,7 +2,7 @@
 
 We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's Xcode 11.5
+As of this writing, that's Xcode 12.3
 
 ## Prerequistes
 
@@ -41,14 +41,14 @@ pod install
 
 ## 3. Xcode
 
-Open the `Signal.xcworkspace` in Xcode.
+Open the `Session.xcworkspace` in Xcode.
 
 ```
-open Signal.xcworkspace
+open Session.xcworkspace
 ```
 
 In the TARGETS area of the General tab, change the Team dropdown to
-your own. You will need to do that for all the listed targets, for ex.
+your own. You will need to do that for all the listed targets, e.g.
 Session, SessionShareExtension, and SessionNotificationServiceExtension. You
 will need an Apple Developer account for this.
 
