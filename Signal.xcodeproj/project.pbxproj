@@ -489,7 +489,6 @@
 		C33FDD23255A582000E217F9 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB69255A580F00E217F9 /* FeatureFlags.swift */; };
 		C33FDD32255A582000E217F9 /* OWSOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB78255A581000E217F9 /* OWSOperation.m */; };
 		C33FDD3A255A582000E217F9 /* Notification+Loki.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB80255A581100E217F9 /* Notification+Loki.swift */; };
-		C33FDD41255A582000E217F9 /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB87255A581100E217F9 /* JobQueue.swift */; };
 		C33FDD45255A582000E217F9 /* Storage+SessionManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8B255A581200E217F9 /* Storage+SessionManagement.swift */; };
 		C33FDD49255A582000E217F9 /* ParamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB8F255A581200E217F9 /* ParamParser.swift */; };
 		C33FDD53255A582000E217F9 /* OWSPrimaryStorage+keyFromIntLong.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB99255A581300E217F9 /* OWSPrimaryStorage+keyFromIntLong.m */; };
@@ -686,9 +685,6 @@
 		C396DAF42518408B00FF6DC5 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAED2518408B00FF6DC5 /* Parser.swift */; };
 		C396DAF52518408B00FF6DC5 /* CSV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAEE2518408B00FF6DC5 /* CSV.swift */; };
 		C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */; };
-		C3A3A099256E17B2004D228D /* SSKJobRecordFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A3A098256E17B2004D228D /* SSKJobRecordFinder.swift */; };
-		C3A3A0AA256E17E6004D228D /* SSKJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDACD255A580200E217F9 /* SSKJobRecord.m */; };
-		C3A3A0B3256E17F2004D228D /* SSKJobRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB4F255A580D00E217F9 /* SSKJobRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3A3A0EC256E1949004D228D /* OWSRecipientIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBEC255A581B00E217F9 /* OWSRecipientIdentity.m */; };
 		C3A3A0F5256E194C004D228D /* OWSRecipientIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAA0255A57FF00E217F9 /* OWSRecipientIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3A3A0FE256E1A3C004D228D /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB20255A580900E217F9 /* TSDatabaseSecondaryIndexes.m */; };
@@ -1379,7 +1375,6 @@
 		C33FDAC2255A580200E217F9 /* TSAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachment.m; sourceTree = "<group>"; };
 		C33FDAC3255A580200E217F9 /* OWSDispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDispatch.m; sourceTree = "<group>"; };
 		C33FDAC4255A580200E217F9 /* TSAttachmentStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentStream.m; sourceTree = "<group>"; };
-		C33FDACD255A580200E217F9 /* SSKJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKJobRecord.m; sourceTree = "<group>"; };
 		C33FDACF255A580300E217F9 /* OWSAttachmentDownloads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAttachmentDownloads.h; sourceTree = "<group>"; };
 		C33FDAD3255A580300E217F9 /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
 		C33FDAD5255A580300E217F9 /* TSQuotedMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSQuotedMessage.h; sourceTree = "<group>"; };
@@ -1438,7 +1433,6 @@
 		C33FDB48255A580C00E217F9 /* TSOutgoingMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSOutgoingMessage.h; sourceTree = "<group>"; };
 		C33FDB49255A580C00E217F9 /* WeakTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakTimer.swift; sourceTree = "<group>"; };
 		C33FDB4C255A580D00E217F9 /* AppVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppVersion.h; sourceTree = "<group>"; };
-		C33FDB4F255A580D00E217F9 /* SSKJobRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKJobRecord.h; sourceTree = "<group>"; };
 		C33FDB51255A580D00E217F9 /* NSUserDefaults+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSUserDefaults+OWS.h"; sourceTree = "<group>"; };
 		C33FDB54255A580D00E217F9 /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		C33FDB56255A580D00E217F9 /* TSOutgoingMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSOutgoingMessage.m; sourceTree = "<group>"; };
@@ -1466,7 +1460,6 @@
 		C33FDB81255A581100E217F9 /* UIImage+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+OWS.m"; sourceTree = "<group>"; };
 		C33FDB83255A581100E217F9 /* TSQuotedMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSQuotedMessage.m; sourceTree = "<group>"; };
 		C33FDB85255A581100E217F9 /* AppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppContext.m; sourceTree = "<group>"; };
-		C33FDB87255A581100E217F9 /* JobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		C33FDB88255A581200E217F9 /* TSAccountManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAccountManager.m; sourceTree = "<group>"; };
 		C33FDB8A255A581200E217F9 /* AppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppContext.h; sourceTree = "<group>"; };
 		C33FDB8B255A581200E217F9 /* Storage+SessionManagement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Storage+SessionManagement.swift"; sourceTree = "<group>"; };
@@ -1721,7 +1714,6 @@
 		C396DAED2518408B00FF6DC5 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		C396DAEE2518408B00FF6DC5 /* CSV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSV.swift; sourceTree = "<group>"; };
 		C39DD28724F3318C008590FC /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		C3A3A098256E17B2004D228D /* SSKJobRecordFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKJobRecordFinder.swift; sourceTree = "<group>"; };
 		C3A3A170256E1D25004D228D /* SSKReachabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKReachabilityManager.swift; sourceTree = "<group>"; };
 		C3A71D0A2558989C0043A11F /* MessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageWrapper.swift; sourceTree = "<group>"; };
 		C3A71D1C25589AC30043A11F /* WebSocketProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketProto.swift; sourceTree = "<group>"; };
@@ -2875,7 +2867,6 @@
 				C38EF286255B6D85007E1867 /* VersionMigrations.m */,
 				C33FDA8B255A57FD00E217F9 /* AppVersion.m */,
 				C33FDB69255A580F00E217F9 /* FeatureFlags.swift */,
-				C33FDB87255A581100E217F9 /* JobQueue.swift */,
 				C33FDA99255A57FE00E217F9 /* OutageDetection.swift */,
 				C33FDACF255A580300E217F9 /* OWSAttachmentDownloads.h */,
 				C33FDC13255A581E00E217F9 /* OWSAttachmentDownloads.m */,
@@ -3189,9 +3180,6 @@
 				C33FDB31255A580A00E217F9 /* SSKEnvironment.h */,
 				C33FDAF4255A580600E217F9 /* SSKEnvironment.m */,
 				C33FDB32255A580A00E217F9 /* SSKIncrementingIdFinder.swift */,
-				C33FDB4F255A580D00E217F9 /* SSKJobRecord.h */,
-				C33FDACD255A580200E217F9 /* SSKJobRecord.m */,
-				C3A3A098256E17B2004D228D /* SSKJobRecordFinder.swift */,
 				C3A3A170256E1D25004D228D /* SSKReachabilityManager.swift */,
 				C3ECBF7A257056B700EA7FCE /* Threading.swift */,
 				C33FDB5F255A580E00E217F9 /* YapDatabaseConnection+OWS.h */,
@@ -3664,7 +3652,6 @@
 				C32C5ADF256DBFAA003C73A2 /* OWSReadTracking.h in Headers */,
 				C3D9E486256775D20040E4F3 /* TSAttachmentPointer.h in Headers */,
 				C32C5EF7256DF567003C73A2 /* TSDatabaseView.h in Headers */,
-				C3A3A0B3256E17F2004D228D /* SSKJobRecord.h in Headers */,
 				B8856ED7256F1EB4001CE70E /* OWSPreferences.h in Headers */,
 				C32A026C25A801AF000ED5D4 /* NSData+messagePadding.h in Headers */,
 				C32C5BE6256DC891003C73A2 /* OWSReadReceiptManager.h in Headers */,
@@ -4619,7 +4606,6 @@
 				C38EF3F9255B6DF7007E1867 /* OWSLayerView.swift in Sources */,
 				C33FDD03255A582000E217F9 /* WeakTimer.swift in Sources */,
 				B8B3204E258C15C80020074B /* ContactsMigration.swift in Sources */,
-				C33FDD41255A582000E217F9 /* JobQueue.swift in Sources */,
 				C32A025A25A7FC55000ED5D4 /* ClosedGroupsV2Migration.swift in Sources */,
 				C38EF3B9255B6DE7007E1867 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
 				C33FDC98255A582000E217F9 /* SwiftSingletons.swift in Sources */,
@@ -4790,7 +4776,6 @@
 				C32C5D9C256DD6DC003C73A2 /* OWSOutgoingReceiptManager.m in Sources */,
 				C32C5C4F256DCC36003C73A2 /* Storage+OpenGroups.swift in Sources */,
 				B8B3207B258C22550020074B /* DisplayNameUtilities.swift in Sources */,
-				C3A3A099256E17B2004D228D /* SSKJobRecordFinder.swift in Sources */,
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
@@ -4854,7 +4839,6 @@
 				C352A2F525574B4700338F3E /* Job.swift in Sources */,
 				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
-				C3A3A0AA256E17E6004D228D /* SSKJobRecord.m in Sources */,
 				C32C5AB0256DBE8F003C73A2 /* TSOutgoingMessage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

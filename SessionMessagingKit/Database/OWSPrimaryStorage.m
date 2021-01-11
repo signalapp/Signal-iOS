@@ -179,7 +179,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
-    [SSKJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
 
     [self.database
         flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
