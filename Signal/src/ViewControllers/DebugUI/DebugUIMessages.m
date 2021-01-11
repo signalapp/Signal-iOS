@@ -2019,11 +2019,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [prepareBlocks addObject:replyAssetLoader.prepareBlock];
     }
 
-    // We don't need to configure ConversationStyle's view width in this case.
-    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeDefault
-                                                                            thread:thread
-                                                                         viewWidth:0];
-
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {

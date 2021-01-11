@@ -356,7 +356,8 @@ extension CVComponentBase: CVNode {
             return addTapToRetryView(attachmentView: attachmentView)
         case .enqueued,
              .downloading,
-             .pendingMessageRequest:
+             .pendingMessageRequest,
+             .pendingManualDownload:
             break
         @unknown default:
             owsFailDebug("Invalid value.")

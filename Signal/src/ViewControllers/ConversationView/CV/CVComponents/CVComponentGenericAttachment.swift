@@ -158,17 +158,29 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private func tryToBuildDownloadView() -> UIView? {
+
         guard let attachmentPointer = self.attachmentPointer else {
             return nil
         }
 
+        let downloadViewSize = min(iconSize.width, iconSize.height)
         switch attachmentPointer.state {
         case .failed:
             // We don't need to handle the "tap to retry" state here,
             // only download progress.
             return nil
-        case .enqueued, .downloading, .pendingMessageRequest:
+        case .enqueued, .downloading:
             break
+        case .pendingMessageRequest, .pendingManualDownload:
+            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
+                                                             tintColor: Theme.accentBlueColor)
+            iconView.autoSetDimensions(to: CGSize.square(16))
+            let progressView = CircularProgressView(thickness: 0.1)
+            progressView.progress = 0.0
+            progressView.autoSetDimensions(to: CGSize(square: downloadViewSize))
+            progressView.addSubview(iconView)
+            iconView.autoCenterInSuperview()
+            return progressView
         @unknown default:
             owsFailDebug("Invalid value.")
             return nil
@@ -186,7 +198,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
         let attachmentId = attachmentPointer.uniqueId
 
-        let downloadViewSize = min(iconSize.width, iconSize.height)
         let radius = downloadViewSize * 0.5
         let downloadView = MediaDownloadView(attachmentId: attachmentId, radius: radius)
         downloadView.autoSetDimensions(to: CGSize(square: downloadViewSize))
@@ -224,10 +235,31 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        guard attachmentStream != nil else {
-            return false
+        if let attachmentStream = attachmentStream {
+            componentDelegate.cvc_didTapGenericAttachment(self)
+        } else if let attachmentPointer = attachmentPointer {
+            switch attachmentPointer.state {
+            case .failed:
+                guard let message = renderItem.interaction as? TSMessage else {
+                    owsFailDebug("Invalid interaction.")
+                    return true
+                }
+                componentDelegate.cvc_didTapFailedDownloads(message)
+            case .enqueued, .downloading:
+                break
+            case .pendingMessageRequest, .pendingManualDownload:
+                guard let message = renderItem.interaction as? TSMessage else {
+                    owsFailDebug("Invalid interaction.")
+                    return true
+                }
+                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
+            default:
+                break
+            }
+        } else {
+            owsFailDebug("Invalid attachment.")
         }
-        componentDelegate.cvc_didTapGenericAttachment(self)
+
         return true
     }
 

@@ -280,7 +280,7 @@ extension CVUpdate {
             }
 
             switch updateItem {
-            case .delete(let renderItem, let oldIndex):
+            case .delete(let renderItem, _):
                 if renderItem.interactionType != .unreadIndicator {
                     isOnlyModifyingLastMessage = false
                 }
@@ -295,7 +295,7 @@ extension CVUpdate {
                 default:
                     isOnlyModifyingLastMessage = false
                 }
-            case .update(let renderItem, let oldIndex, let newIndex):
+            case .update(let renderItem, _, let newIndex):
                 let itemId = Self.itemId(for: renderItem)
                 let didOnlyAppearanceChange = appearanceChangedItemIdSet.contains(itemId)
                 if didOnlyAppearanceChange {
