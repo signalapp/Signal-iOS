@@ -22,6 +22,14 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return self.displayName(for: signalAccount.recipientAddress)
     }
 
+    func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return self.displayName(for: address)
+    }
+
+    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ConversationColorName {
+        return .blue
+    }
+
     func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }

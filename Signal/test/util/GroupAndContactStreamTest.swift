@@ -323,6 +323,14 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         return signalAccount.recipientAddress.stringForDisplay
     }
 
+    func comparableName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return address.stringForDisplay
+    }
+
+    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ConversationColorName {
+        return .blue
+    }
+
     func displayName(for address: SignalServiceAddress) -> String {
         return address.stringForDisplay
     }
