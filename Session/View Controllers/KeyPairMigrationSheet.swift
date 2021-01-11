@@ -1,6 +1,8 @@
 
 final class KeyPairMigrationSheet : Sheet {
 
+    override class var isDismissable: Bool { false }
+    
     override func populateContentView() {
         // Image view
         let imageView = UIImageView(image: #imageLiteral(resourceName: "Shield").withTint(Colors.text))
@@ -12,6 +14,7 @@ final class KeyPairMigrationSheet : Sheet {
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "Session IDs Just Got Better"
+        titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Top stack view
@@ -25,9 +28,9 @@ final class KeyPairMigrationSheet : Sheet {
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.textAlignment = .center
         explanationLabel.text = """
-        We’ve upgraded Session IDs to make them even more private and secure. We recommend upgrading to a new Session ID now.
+        We’ve upgraded Session IDs to make them even more private and secure. To ensure your continued privacy you're now required to upgrade.
 
-        You will lose existing contacts and conversations, but you’ll gain even more privacy and security. You will need to upgrade your Session ID eventually, but you can choose to delay the upgrade if you need to save contacts or conversations.
+        Your existing contacts and conversations will be lost, but you’ll be able to use Session knowing you have the best privacy and security possible.
         """
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -36,18 +39,8 @@ final class KeyPairMigrationSheet : Sheet {
         upgradeNowButton.set(.width, to: 240)
         upgradeNowButton.setTitle("Upgrade Now", for: UIControl.State.normal)
         upgradeNowButton.addTarget(self, action: #selector(upgradeNow), for: UIControl.Event.touchUpInside)
-        // Upgrade later button
-        let upgradeLaterButton = Button(style: .prominentOutline, size: .large)
-        upgradeLaterButton.set(.width, to: 240)
-        upgradeLaterButton.setTitle("Upgrade Later", for: UIControl.State.normal)
-        upgradeLaterButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
-        // Button stack view
-        let buttonStackView = UIStackView(arrangedSubviews: [ upgradeNowButton, upgradeLaterButton ])
-        buttonStackView.axis = .vertical
-        buttonStackView.spacing = Values.mediumSpacing
-        buttonStackView.alignment = .center
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, explanationLabel, buttonStackView ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, explanationLabel, upgradeNowButton ])
         stackView.axis = .vertical
         stackView.spacing = Values.veryLargeSpacing
         stackView.alignment = .center
@@ -60,15 +53,6 @@ final class KeyPairMigrationSheet : Sheet {
     }
     
     @objc private func upgradeNow() {
-        guard let presentingVC = presentingViewController else { return }
-        let message = "You’re upgrading to a new Session ID. This will give you improved privacy and security, but it will clear ALL app data. Contacts and conversations will be lost. Proceed?"
-        let alert = UIAlertController(title: "Upgrade Session ID?", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in
-            Storage.prepareForV2KeyPairMigration()
-        })
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        presentingVC.dismiss(animated: true) { // Dismiss self first
-            presentingVC.present(alert, animated: true, completion: nil)
-        }
+        Storage.prepareForV2KeyPairMigration()
     }
 }

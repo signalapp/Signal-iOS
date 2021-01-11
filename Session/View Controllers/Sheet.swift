@@ -4,7 +4,8 @@ class Sheet : BaseVC {
 
     // MARK: Settings
     let overshoot: CGFloat = 40
-
+    class var isDismissable: Bool { true }
+    
     // MARK: Components
     lazy var contentView: UIView = {
         let result = UIView()
@@ -24,9 +25,11 @@ class Sheet : BaseVC {
         super.viewDidLoad()
         let alpha = isLightMode ? CGFloat(0.1) : Values.modalBackgroundOpacity
         view.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(alpha)
-        let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
-        swipeGestureRecognizer.direction = .down
-        view.addGestureRecognizer(swipeGestureRecognizer)
+        if type(of: self).isDismissable {
+            let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
+            swipeGestureRecognizer.direction = .down
+            view.addGestureRecognizer(swipeGestureRecognizer)
+        }
         setUpViewHierarchy()
     }
 
@@ -50,7 +53,9 @@ class Sheet : BaseVC {
         if contentView.frame.contains(location) {
             super.touchesBegan(touches, with: event)
         } else {
-            close()
+            if type(of: self).isDismissable {
+                close()
+            }
         }
     }
 
