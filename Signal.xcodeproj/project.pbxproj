@@ -303,7 +303,6 @@
 		C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
 		C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5BC2554B00D00555489 /* ReadReceipt.swift */; };
 		C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5D22554B05A00555489 /* TypingIndicator.swift */; };
-		C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */; };
 		C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */; };
 		C300A5F22554B09800555489 /* MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5F12554B09800555489 /* MessageSender.swift */; };
 		C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5FB2554B0A000555489 /* MessageReceiver.swift */; };
@@ -1311,7 +1310,6 @@
 		C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+Profile.swift"; sourceTree = "<group>"; };
 		C300A5BC2554B00D00555489 /* ReadReceipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadReceipt.swift; sourceTree = "<group>"; };
 		C300A5D22554B05A00555489 /* TypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicator.swift; sourceTree = "<group>"; };
-		C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClosedGroupUpdate.swift; sourceTree = "<group>"; };
 		C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationTimerUpdate.swift; sourceTree = "<group>"; };
 		C300A5F12554B09800555489 /* MessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSender.swift; sourceTree = "<group>"; };
 		C300A5FB2554B0A000555489 /* MessageReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReceiver.swift; sourceTree = "<group>"; };
@@ -2554,7 +2552,6 @@
 				C3C2A7702553A41E00C340D1 /* ControlMessage.swift */,
 				C300A5BC2554B00D00555489 /* ReadReceipt.swift */,
 				C300A5D22554B05A00555489 /* TypingIndicator.swift */,
-				C300A5DC2554B06600555489 /* ClosedGroupUpdate.swift */,
 				C34A977325A3E34A00852C71 /* ClosedGroupUpdateV2.swift */,
 				C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */,
 			);
@@ -4809,7 +4806,6 @@
 				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
 				C32C5D2E256DD4EA003C73A2 /* TSUnreadIndicatorInteraction.m in Sources */,
 				C32C599E256DB02B003C73A2 /* TypingIndicators.swift in Sources */,
-				C300A5DD2554B06600555489 /* ClosedGroupUpdate.swift in Sources */,
 				C3471FA42555439E00297E91 /* Notification+MessageSender.swift in Sources */,
 				C32C5BEF256DC8EE003C73A2 /* OWSDisappearingMessagesJob.m in Sources */,
 				C3A7222A2558C1E40043A11F /* DotNetAPI.swift in Sources */,
