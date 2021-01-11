@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -163,7 +163,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         }
 
         if viewOnceState == .incomingFailed {
-            componentDelegate.cvc_didTapFailedDownloads(message)
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
         } else if case .incomingAvailable = viewOnceState {
             componentDelegate.cvc_didTapViewOnceAttachment(message)
         } else if isExpired {

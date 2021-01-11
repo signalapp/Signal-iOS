@@ -184,11 +184,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let isMoreItemsWithMediaView = albumView.isMoreItemsView(mediaView: mediaView)
 
         if isMoreItemsWithMediaView {
-            if mediaAlbumHasFailedAttachment {
-                componentDelegate.cvc_didTapFailedDownloads(message)
-                return true
-            } else if mediaAlbumHasPendingAttachment {
-                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
+            if mediaAlbumHasFailedAttachment || mediaAlbumHasPendingAttachment {
+                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
                 return true
             }
         }
@@ -196,18 +193,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let attachment = mediaView.attachment
         if let attachmentPointer = attachment as? TSAttachmentPointer {
             switch attachmentPointer.state {
-            case .failed:
-                componentDelegate.cvc_didTapFailedDownloads(message)
-                return true
-            case .pendingMessageRequest:
-                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
                 return false
-            case .pendingManualDownload:
-                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
-                return true
             @unknown default:
                 owsFailDebug("Invalid attachment pointer state.")
                 return false

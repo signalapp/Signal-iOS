@@ -247,20 +247,14 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             componentDelegate.cvc_didTapGenericAttachment(self)
         } else if let attachmentPointer = attachmentPointer {
             switch attachmentPointer.state {
-            case .failed:
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
                 guard let message = renderItem.interaction as? TSMessage else {
                     owsFailDebug("Invalid interaction.")
                     return true
                 }
-                componentDelegate.cvc_didTapFailedDownloads(message)
+                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
             case .enqueued, .downloading:
                 break
-            case .pendingMessageRequest, .pendingManualDownload:
-                guard let message = renderItem.interaction as? TSMessage else {
-                    owsFailDebug("Invalid interaction.")
-                    return true
-                }
-                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
             default:
                 break
             }

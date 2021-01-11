@@ -1608,7 +1608,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Bubble User Actions
 
-- (void)handleFailedDownloadTapForMessage:(TSMessage *)message
+- (void)handleTapOnFailedOrPendingDownloads:(TSMessage *)message
 {
     OWSAssert(message);
 
@@ -4313,11 +4313,11 @@ typedef enum : NSUInteger {
     [self expandTruncatedTextOrPresentLongTextView:itemViewModel];
 }
 
-- (void)cvc_didTapFailedDownloads:(TSMessage *)message
+- (void)cvc_didTapFailedOrPendingDownloads:(TSMessage *)message
 {
     OWSAssertIsOnMainThread();
 
-    [self handleFailedDownloadTapForMessage:message];
+    [self handleTapOnFailedOrPendingDownloads:message];
 }
 
 - (void)cvc_didTapBodyMediaWithItemViewModel:(CVItemViewModelImpl *)itemViewModel
@@ -4340,20 +4340,6 @@ typedef enum : NSUInteger {
     QLPreviewController *previewController = [[QLPreviewController alloc] init];
     previewController.dataSource = attachment;
     [self presentViewController:previewController animated:YES completion:nil];
-}
-
-- (void)cvc_didTapPendingIncomingAttachment:(TSMessage *)message
-{
-    OWSAssertIsOnMainThread();
-
-    // Start downloads for message.
-    [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
-        attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-        downloadBehavior:AttachmentDownloadBehaviorBypassAll
-        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-            OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
-        }
-        failure:^(NSError *error) { OWSLogWarn(@"Failed to download message with error: %@", error); }];
 }
 
 - (void)cvc_didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply

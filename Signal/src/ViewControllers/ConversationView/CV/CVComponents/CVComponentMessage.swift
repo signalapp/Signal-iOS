@@ -889,7 +889,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let message = interaction as? TSMessage,
            nil != componentState.failedDownloads {
             Logger.verbose("Retrying failed downloads.")
-            componentDelegate.cvc_didTapFailedDownloads(message)
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
             return true
         }
 

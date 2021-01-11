@@ -442,7 +442,7 @@ extension ColorPickerView: CVComponentDelegate {
 
     var cvc_hasPendingMessageRequest: Bool { false }
 
-    func cvc_didTapFailedDownloads(_ message: TSMessage) {}
+    func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
     // MARK: - Messages
 
@@ -451,8 +451,6 @@ extension ColorPickerView: CVComponentDelegate {
                              imageView: UIView) {}
 
     func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) {}
-
-    func cvc_didTapPendingIncomingAttachment(_ message: TSMessage) {}
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
 
