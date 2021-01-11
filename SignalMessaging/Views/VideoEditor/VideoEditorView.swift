@@ -316,12 +316,8 @@ public class VideoEditorView: UIView {
             }
 
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                // Start the timer
-                let minimumDelay = after(seconds: 0.5)
                 firstly {
                     self.saveVideoPromise()
-                }.then {
-                    minimumDelay
                 }.done {
                     modalVC.dismiss {}
                 }.catch { error in
