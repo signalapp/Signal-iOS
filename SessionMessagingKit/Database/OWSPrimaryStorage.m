@@ -265,14 +265,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.
-    NSArray<NSString *> *paths = @[
-        self.legacyDatabaseFilePath,
-        self.legacyDatabaseFilePath_SHM,
-        self.legacyDatabaseFilePath_WAL,
-        self.sharedDataDatabaseFilePath,
-        self.sharedDataDatabaseFilePath_SHM,
-        self.sharedDataDatabaseFilePath_WAL,
-    ];
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     // We protect the db files here, which is somewhat redundant with what will happen in

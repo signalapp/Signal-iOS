@@ -554,7 +554,7 @@ typedef enum : NSUInteger {
     }
 
     if ([self.thread isKindOfClass:TSGroupThread.class] && !((TSGroupThread *)self.thread).isOpenGroup
-        && !((TSGroupThread *)self.thread).usesSharedSenderKeys) {
+        && !((TSGroupThread *)self.thread).isClosedGroup) {
         self.inputToolbar.hidden = YES;
     } else if (self.userLeftGroup) {
         self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
@@ -1190,7 +1190,7 @@ typedef enum : NSUInteger {
     [self ensureScrollDownButton];
 
     if ([self.thread isKindOfClass:TSGroupThread.class] && !((TSGroupThread *)self.thread).isOpenGroup
-        && !((TSGroupThread *)self.thread).usesSharedSenderKeys) {
+        && !((TSGroupThread *)self.thread).isClosedGroup) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Session"
             message:@"Legacy closed groups are no longer supported. Please create a new group to continue." preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];

@@ -31,7 +31,7 @@ import SessionUtilitiesKit
         result.threadID = tsMessage.uniqueThreadId
         result.sentTimestamp = tsMessage.timestamp
         result.recipient = tsMessage.recipientIds().first
-        if let thread = tsMessage.thread as? TSGroupThread, thread.usesSharedSenderKeys {
+        if let thread = tsMessage.thread as? TSGroupThread, thread.isClosedGroup {
             let groupID = thread.groupModel.groupId
             result.groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
         }

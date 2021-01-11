@@ -156,6 +156,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return true;
 }
 
+- (BOOL)isClosedGroup
+{
+    return (self.groupModel.groupType == closedGroup);
+}
+
 - (BOOL)isOpenGroup
 {
     return (self.groupModel.groupType == openGroup);

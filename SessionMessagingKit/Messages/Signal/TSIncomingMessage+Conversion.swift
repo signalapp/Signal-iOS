@@ -23,7 +23,6 @@ public extension TSIncomingMessage {
             wasReceivedByUD: true
         )
         result.openGroupServerMessageID = openGroupServerMessageID
-        result.isOpenGroupMessage = isOpenGroupMessage
         return result
     }
 }

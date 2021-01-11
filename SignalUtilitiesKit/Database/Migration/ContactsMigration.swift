@@ -36,7 +36,7 @@ public class ContactsMigration : OWSDatabaseMigration {
             }
             // Closed groups
             TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSGroupThread, thread.usesSharedSenderKeys else { return }
+                guard let thread = object as? TSGroupThread, thread.isClosedGroup else { return }
                 let memberSessionIDs = thread.groupModel.groupMemberIds
                 memberSessionIDs.forEach { memberSessionID in
                     guard !contacts.contains(where: { $0.sessionID == memberSessionID }) else { return }

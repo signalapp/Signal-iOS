@@ -392,6 +392,11 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     [self.quotedMessage setThumbnailAttachmentStream:attachmentStream];
 }
 
+- (BOOL)isOpenGroupMessage
+{
+    return (self.openGroupServerMessageID != 0);
+}
+
 #pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction

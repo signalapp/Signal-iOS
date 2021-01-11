@@ -485,7 +485,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.isGroupThread && self.isClosedGroup && isUserMember) {
-        if (((TSGroupThread *)self.thread).usesSharedSenderKeys) {
+        if (((TSGroupThread *)self.thread).isClosedGroup) {
             [mainSection addItem:[OWSTableItem
                 itemWithCustomCellBlock:^{
                     UITableViewCell *cell =
@@ -936,7 +936,7 @@ static CGRect oldframe;
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
 
-    if (gThread.usesSharedSenderKeys) {
+    if (gThread.isClosedGroup) {
         NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [SNMessageSender leaveClosedGroupWithPublicKey:groupPublicKey using:transaction error:nil];
