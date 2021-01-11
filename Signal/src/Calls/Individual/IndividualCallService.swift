@@ -267,6 +267,13 @@ import SignalMessaging
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
+        // opaque is required. sdp is obsolete, but it might still come with opaque.
+        guard let opaque = opaque else {
+            // TODO: Remove once the proto is updated to only support opaque and require it.
+            Logger.debug("opaque not received for offer, remote should update")
+            return;
+        }
+
         let newCall = callService.prepareIncomingIndividualCall(
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
@@ -413,7 +420,7 @@ import SignalMessaging
         let isPrimaryDevice = tsAccountManager.isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: newCall.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, messageAgeSec: messageAgeSec, callMediaType: newCall.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
@@ -426,6 +433,13 @@ import SignalMessaging
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
+        // opaque is required. sdp is obsolete, but it might still come with opaque.
+        guard let opaque = opaque else {
+            // TODO: Remove once the proto is updated to only support opaque and require it.
+            Logger.debug("opaque not received for answer, remote should update")
+            return;
+        }
+
         guard let identityKeys = getIdentityKeys(thread: thread) else {
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
                 handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"))
@@ -434,7 +448,7 @@ import SignalMessaging
         }
 
         do {
-            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
+            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, remoteSupportsMultiRing: supportsMultiRing, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
@@ -450,8 +464,11 @@ import SignalMessaging
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let iceCandidates = candidates.filter { $0.id == callId }.map { candidate in
-            CallManagerIceCandidate(opaque: candidate.opaque, sdp: candidate.sdp)
+        let iceCandidates = candidates.filter { $0.id == callId && $0.opaque != nil }.map { $0.opaque! }
+
+        guard iceCandidates.count > 0 else {
+            Logger.debug("no ice candidates in ice message, remote should update")
+            return
         }
 
         do {
@@ -825,7 +842,7 @@ import SignalMessaging
 
     // MARK: - Call Manager Signaling
 
-    public func callManager(_ callManager: CallService.CallManagerType, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data?, sdp: String?, callMediaType: CallMediaType) {
+    public func callManager(_ callManager: CallService.CallManagerType, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data, callMediaType: CallMediaType) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
 
@@ -833,8 +850,7 @@ import SignalMessaging
 
         firstly { () throws -> Promise<Void> in
             let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
-            if let opaque = opaque { offerBuilder.setOpaque(opaque) }
-            if let sdp = sdp { offerBuilder.setSdp(sdp) }
+            offerBuilder.setOpaque(opaque)
             switch callMediaType {
             case .audioCall: offerBuilder.setType(.offerAudioCall)
             case .videoCall: offerBuilder.setType(.offerVideoCall)
@@ -850,15 +866,14 @@ import SignalMessaging
         }
     }
 
-    public func callManager(_ callManager: CallService.CallManagerType, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data?, sdp: String?) {
+    public func callManager(_ callManager: CallService.CallManagerType, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendAnswer")
 
         firstly { () throws -> Promise<Void> in
             let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
-            if let opaque = opaque { answerBuilder.setOpaque(opaque) }
-            if let sdp = sdp { answerBuilder.setSdp(sdp) }
+            answerBuilder.setOpaque(opaque)
             let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, answerMessage: try answerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
@@ -870,7 +885,7 @@ import SignalMessaging
         }
     }
 
-    public func callManager(_ callManager: CallService.CallManagerType, shouldSendIceCandidates callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, candidates: [CallManagerIceCandidate]) {
+    public func callManager(_ callManager: CallService.CallManagerType, shouldSendIceCandidates callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, candidates: [Data]) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendIceCandidates")
@@ -881,12 +896,7 @@ import SignalMessaging
             for iceCandidate in candidates {
                 let iceUpdateProto: SSKProtoCallMessageIceUpdate
                 let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: callId)
-                if let opaque = iceCandidate.opaque { iceUpdateBuilder.setOpaque(opaque) }
-                if let sdp = iceCandidate.sdp { iceUpdateBuilder.setSdp(sdp) }
-
-                // Hardcode fields for older clients; remove after appropriate time period.
-                iceUpdateBuilder.setLine(0)
-                iceUpdateBuilder.setMid("audio")
+                iceUpdateBuilder.setOpaque(iceCandidate)
 
                 iceUpdateProto = try iceUpdateBuilder.build()
                 iceUpdateProtos.append(iceUpdateProto)

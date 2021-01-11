@@ -1031,8 +1031,7 @@ extension CallService: CallManagerDelegate {
         shouldSendOffer callId: UInt64,
         call: SignalCall,
         destinationDeviceId: UInt32?,
-        opaque: Data?,
-        sdp: String?,
+        opaque: Data,
         callMediaType: CallMediaType
     ) {
         AssertIsOnMainThread()
@@ -1044,7 +1043,6 @@ extension CallService: CallManagerDelegate {
             call: call,
             destinationDeviceId: destinationDeviceId,
             opaque: opaque,
-            sdp: sdp,
             callMediaType: callMediaType
         )
     }
@@ -1054,8 +1052,7 @@ extension CallService: CallManagerDelegate {
         shouldSendAnswer callId: UInt64,
         call: SignalCall,
         destinationDeviceId: UInt32?,
-        opaque: Data?,
-        sdp: String?
+        opaque: Data
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
@@ -1065,8 +1062,7 @@ extension CallService: CallManagerDelegate {
             shouldSendAnswer: callId,
             call: call,
             destinationDeviceId: destinationDeviceId,
-            opaque: opaque,
-            sdp: sdp
+            opaque: opaque
         )
     }
 
@@ -1075,7 +1071,7 @@ extension CallService: CallManagerDelegate {
         shouldSendIceCandidates callId: UInt64,
         call: SignalCall,
         destinationDeviceId: UInt32?,
-        candidates: [CallManagerIceCandidate]
+        candidates: [Data]
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
