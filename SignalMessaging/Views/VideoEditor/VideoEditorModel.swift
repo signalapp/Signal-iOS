@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -235,7 +235,6 @@ extension VideoEditorModel {
                     owsFailDebug("Error: \(error)")
                 }
             }
-
 
             /// Returns an unowned reference to the render output file. This path is valid as long as the `Result`
             /// is valid and file has not been consumed by `consumeResultPath()`. Caller should make a copy

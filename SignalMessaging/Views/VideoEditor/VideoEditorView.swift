@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -320,7 +320,7 @@ public class VideoEditorView: UIView {
                     self.saveVideoPromise()
                 }.done {
                     modalVC.dismiss {}
-                }.catch { error in
+                }.catch { _ in
                     modalVC.dismiss {
                         OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
                     }
