@@ -90,9 +90,10 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                                                          transaction:transaction];
                         count++;
                         return;
+                    case TSAttachmentPointerStatePendingManualDownload:
+                        // Do nothing. We don't want to mark this attachment as failed.
+                        break;
                 }
-
-
             }
                                                  transaction:transaction];
         });

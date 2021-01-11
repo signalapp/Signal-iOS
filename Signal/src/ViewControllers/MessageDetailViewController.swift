@@ -842,7 +842,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         present(previewController, animated: true)
     }
 
-    func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage) {}
+    func cvc_didTapPendingIncomingAttachment(_ message: TSMessage) {}
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
 

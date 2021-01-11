@@ -14,8 +14,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private var mediaAlbumHasFailedAttachment: Bool {
         bodyMedia.mediaAlbumHasFailedAttachment
     }
-    private var mediaAlbumHasPendingMessageRequestAttachment: Bool {
-        bodyMedia.mediaAlbumHasPendingMessageRequestAttachment
+    private var mediaAlbumHasPendingAttachment: Bool {
+        bodyMedia.mediaAlbumHasPendingAttachment
     }
 
     private let footerOverlay: CVComponent?
@@ -187,8 +187,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             if mediaAlbumHasFailedAttachment {
                 componentDelegate.cvc_didTapFailedDownloads(message)
                 return true
-            } else if mediaAlbumHasPendingMessageRequestAttachment {
-                componentDelegate.cvc_didTapPendingMessageRequestIncomingAttachment(message)
+            } else if mediaAlbumHasPendingAttachment {
+                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
                 return true
             }
         }
@@ -200,11 +200,14 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 componentDelegate.cvc_didTapFailedDownloads(message)
                 return true
             case .pendingMessageRequest:
-                componentDelegate.cvc_didTapPendingMessageRequestIncomingAttachment(message)
+                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
                 return false
+            case .pendingManualDownload:
+                componentDelegate.cvc_didTapPendingIncomingAttachment(message)
+                return true
             @unknown default:
                 owsFailDebug("Invalid attachment pointer state.")
                 return false

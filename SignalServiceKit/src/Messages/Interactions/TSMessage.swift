@@ -16,26 +16,29 @@ public extension TSMessage {
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
-        return Self.onlyAttachmentPointers(attachments: attachments, withState: .failed)
+        let states = Set([TSAttachmentPointerState.failed])
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: states)
     }
 
     func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
-        return Self.onlyAttachmentPointers(attachments: attachments, withState: .failed)
+        let states = Set([TSAttachmentPointerState.failed])
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: states)
     }
 
-    func bodyAttachmentsPendingMessageRequest(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+    func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
-        return Self.onlyAttachmentPointers(attachments: attachments, withState: .pendingMessageRequest)
+        let states = Set([TSAttachmentPointerState.pendingMessageRequest, TSAttachmentPointerState.pendingManualDownload ])
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: states)
     }
 
     private static func onlyAttachmentPointers(attachments: [TSAttachment],
-                                               withState state: TSAttachmentPointerState) -> [TSAttachmentPointer] {
+                                               withStateIn states: Set<TSAttachmentPointerState>) -> [TSAttachmentPointer] {
         return attachments.compactMap { attachment -> TSAttachmentPointer? in
             guard let attachmentPointer = attachment as? TSAttachmentPointer else {
                 return nil
             }
-            guard attachmentPointer.state == state else {
+            guard states.contains(attachmentPointer.state) else {
                 return nil
             }
             return attachmentPointer

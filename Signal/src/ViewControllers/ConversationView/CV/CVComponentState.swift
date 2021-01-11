@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,7 +66,7 @@ public class CVComponentState: Equatable {
     struct BodyMedia: Equatable {
         let items: [CVMediaAlbumItem]
         let mediaAlbumHasFailedAttachment: Bool
-        let mediaAlbumHasPendingMessageRequestAttachment: Bool
+        let mediaAlbumHasPendingAttachment: Bool
     }
     let bodyMedia: BodyMedia?
 
@@ -717,12 +717,12 @@ fileprivate extension CVComponentState.Builder {
             if mediaAlbumItems.count > 0 {
                 let failedAttachmentPointers = message.failedBodyAttachments(transaction: transaction)
                 let mediaAlbumHasFailedAttachment = !failedAttachmentPointers.isEmpty
-                let bodyAttachmentsPendingMessageRequest = message.bodyAttachmentsPendingMessageRequest(transaction: transaction)
-                let mediaAlbumHasPendingMessageRequestAttachment = !bodyAttachmentsPendingMessageRequest.isEmpty
+                let pendingBodyAttachments = message.pendingBodyAttachments(transaction: transaction)
+                let mediaAlbumHasPendingAttachment = !pendingBodyAttachments.isEmpty
 
                 self.bodyMedia = BodyMedia(items: mediaAlbumItems,
                                            mediaAlbumHasFailedAttachment: mediaAlbumHasFailedAttachment,
-                                           mediaAlbumHasPendingMessageRequestAttachment: mediaAlbumHasPendingMessageRequestAttachment)
+                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment)
                 return build()
             }
 

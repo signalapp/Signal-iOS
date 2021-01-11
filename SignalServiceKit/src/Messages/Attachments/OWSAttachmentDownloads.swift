@@ -25,11 +25,11 @@ public extension OWSAttachmentDownloads {
 
     func downloadPromise(attachmentPointer: TSAttachmentPointer,
                          category: AttachmentCategory,
-                         bypassPendingMessageRequest: Bool) -> Promise<TSAttachmentStream> {
+                         downloadBehavior: OWSAttachmentDownloadBehavior) -> Promise<TSAttachmentStream> {
         return Promise { resolver in
             self.download(attachmentPointer: attachmentPointer,
                           category: category,
-                          bypassPendingMessageRequest: bypassPendingMessageRequest,
+                          downloadBehavior: downloadBehavior,
                           success: resolver.fulfill,
                           failure: resolver.reject)
         }.map { attachments in
@@ -41,31 +41,31 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    @objc(downloadAttachmentPointer:category:bypassPendingMessageRequest:success:failure:)
+    @objc(downloadAttachmentPointer:category:downloadBehavior:success:failure:)
     func download(attachmentPointer: TSAttachmentPointer,
                   category: AttachmentCategory,
-                  bypassPendingMessageRequest: Bool,
+                  downloadBehavior: OWSAttachmentDownloadBehavior,
                   success: @escaping ([TSAttachmentStream]) -> Void,
                   failure: @escaping (Error) -> Void) {
         download(attachmentPointer: attachmentPointer,
                  nullableMessage: nil,
                  category: category,
-                 bypassPendingMessageRequest: bypassPendingMessageRequest,
+                 downloadBehavior: downloadBehavior,
                  success: success,
                  failure: failure)
     }
 
-    @objc(downloadAttachmentPointer:message:category:bypassPendingMessageRequest:success:failure:)
+    @objc(downloadAttachmentPointer:message:category:downloadBehavior:success:failure:)
     func download(attachmentPointer: TSAttachmentPointer,
                   message: TSMessage,
                   category: AttachmentCategory,
-                  bypassPendingMessageRequest: Bool,
+                  downloadBehavior: OWSAttachmentDownloadBehavior,
                   success: @escaping ([TSAttachmentStream]) -> Void,
                   failure: @escaping (Error) -> Void) {
         download(attachmentPointer: attachmentPointer,
                  nullableMessage: message,
                  category: category,
-                 bypassPendingMessageRequest: bypassPendingMessageRequest,
+                 downloadBehavior: downloadBehavior,
                  success: success,
                  failure: failure)
     }
@@ -73,7 +73,7 @@ public extension OWSAttachmentDownloads {
     private func download(attachmentPointer: TSAttachmentPointer,
                           nullableMessage message: TSMessage?,
                           category: AttachmentCategory,
-                          bypassPendingMessageRequest: Bool,
+                          downloadBehavior: OWSAttachmentDownloadBehavior,
                           success: @escaping ([TSAttachmentStream]) -> Void,
                           failure: @escaping (Error) -> Void) {
 
@@ -88,7 +88,7 @@ public extension OWSAttachmentDownloads {
                                                                         category: category)
         enqueueJobs(forAttachmentReferences: [attachmentReference],
                     message: message,
-                    bypassPendingMessageRequest: bypassPendingMessageRequest,
+                    downloadBehavior: downloadBehavior,
                     success: success,
                     failure: failure)
     }
@@ -108,7 +108,7 @@ public extension OWSAttachmentDownloads {
                 promises.append(promise)
                 self.downloadAttachments(forMessageId: message.uniqueId,
                                          attachmentGroup: .allAttachmentsIncoming,
-                                         bypassPendingMessageRequest: false,
+                                         downloadBehavior: .default,
                                          success: { downloadedAttachments in
                                             unfairLock.withLock {
                                                 attachmentStreams.append(contentsOf: downloadedAttachments)
@@ -306,7 +306,7 @@ public extension OWSAttachmentDownloads {
     @objc
     func downloadAttachments(forMessageId messageId: String,
                              attachmentGroup: AttachmentGroup,
-                             bypassPendingMessageRequest: Bool,
+                             downloadBehavior: OWSAttachmentDownloadBehavior,
                              success: @escaping ([TSAttachmentStream]) -> Void,
                              failure: @escaping (Error) -> Void) {
 
@@ -330,7 +330,7 @@ public extension OWSAttachmentDownloads {
                 Self.serialQueue.async {
                     self.enqueueJobs(forAttachmentReferences: attachmentReferences,
                                      message: message,
-                                     bypassPendingMessageRequest: bypassPendingMessageRequest,
+                                     downloadBehavior: downloadBehavior,
                                      success: { attachmentStreams in
                                         success(attachmentStreams)
 
@@ -373,9 +373,17 @@ public extension OWSAttachmentDownloads {
 
     private func enqueueJobs(forAttachmentReferences attachmentReferences: [AttachmentReference],
                              message: TSMessage?,
-                             bypassPendingMessageRequest: Bool,
+                             downloadBehavior: OWSAttachmentDownloadBehavior,
                              success: @escaping ([TSAttachmentStream]) -> Void,
                              failure: @escaping (Error) -> Void) {
+
+        let bypassPendingMessageRequest: Bool
+        switch downloadBehavior {
+        case .bypassPendingMessageRequest, .bypassAll:
+            bypassPendingMessageRequest = true
+        default:
+            bypassPendingMessageRequest = false
+        }
 
         Self.serialQueue.async {
 

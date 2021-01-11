@@ -75,7 +75,7 @@ public protocol CVComponentDelegate {
 
     func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment)
 
-    func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage)
+    func cvc_didTapPendingIncomingAttachment(_ message: TSMessage)
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel)
 

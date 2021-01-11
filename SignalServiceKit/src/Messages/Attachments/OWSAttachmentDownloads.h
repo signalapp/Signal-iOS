@@ -23,6 +23,15 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSAttachmentDownloadType) {
 
 #pragma mark -
 
+typedef NS_CLOSED_ENUM(NSUInteger, OWSAttachmentDownloadBehavior) {
+    OWSAttachmentDownloadBehaviorDefault,
+    OWSAttachmentDownloadBehaviorBypassPendingMessageRequest,
+    OWSAttachmentDownloadBehaviorBypassPendingManualDownload,
+    OWSAttachmentDownloadBehaviorBypassAll
+};
+
+#pragma mark -
+
 @interface OWSAttachmentDownloadJob : NSObject
 
 @property (nonatomic, readonly) NSString *attachmentId;

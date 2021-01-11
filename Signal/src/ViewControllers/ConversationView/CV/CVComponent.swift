@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -232,7 +232,7 @@ public class CVComponentBase: NSObject {
             switch attachmentPointer.state {
             case .failed:
                 return buildInfo()
-            case .enqueued, .downloading, .pendingMessageRequest:
+            case .enqueued, .downloading, .pendingMessageRequest, .pendingManualDownload:
                 switch attachmentPointer.pointerType {
                 case .restoring:
                     // TODO: Show "restoring" indicator and possibly progress.
