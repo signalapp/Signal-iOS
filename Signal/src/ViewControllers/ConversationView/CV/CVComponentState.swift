@@ -109,19 +109,13 @@ public class CVComponentState: Equatable {
         case available(stickerMetadata: StickerMetadata,
                        attachmentStream: TSAttachmentStream)
         case downloading(attachmentPointer: TSAttachmentPointer)
-        case failed
-        //        var stickerAttachment: TSAttachmentStream
-        //        // This should be non-nil if download is still in progress.
-        //        let attachmentPointer: TSAttachmentPointer? = nil
-        // TODO: If we want to render downloading stickers, we need to
-        // change this.
-        //        let attachment: TSAttachment
-        //
+        case failedOrPending(attachmentPointer: TSAttachmentPointer)
+
         public var stickerMetadata: StickerMetadata? {
             switch self {
             case .available(let stickerMetadata, _):
                 return stickerMetadata
-            case .downloading, .failed:
+            case .downloading, .failedOrPending:
                 return nil
             }
         }
@@ -131,7 +125,7 @@ public class CVComponentState: Equatable {
                 return attachmentStream
             case .downloading:
                 return nil
-            case .failed:
+            case .failedOrPending:
                 return nil
             }
         }
@@ -141,8 +135,8 @@ public class CVComponentState: Equatable {
                 return nil
             case .downloading(let attachmentPointer):
                 return attachmentPointer
-            case .failed:
-                return nil
+            case .failedOrPending(let attachmentPointer):
+                return attachmentPointer
             }
         }
     }
@@ -405,13 +399,7 @@ public class CVComponentState: Equatable {
                 return .systemMessage
             }
             if let sticker = self.sticker {
-                switch sticker {
-                case .available:
-                    return .stickerMessage
-                case .downloading, .failed:
-                    // TODO: Should we render downloading/failed stickers?
-                    return .unknown
-                }
+                return .stickerMessage
             }
             if viewOnce != nil {
                 return .viewOnce
@@ -879,22 +867,16 @@ fileprivate extension CVComponentState.Builder {
                                       attachmentStream: attachmentStream)
             return build()
         } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            // TODO: Should we render isFailedSticker?
-            //            self.isFailedSticker = stickerAttachmentPointer.state == TSAttachmentPointerStateFailed;
-            let isFailed = attachmentPointer.state == .failed
-            if isFailed {
-                Logger.warn("Sticker failed.")
-                self.sticker = .failed
-            } else {
+            switch attachmentPointer.state {
+            case .enqueued, .downloading:
                 Logger.verbose("Sticker downloading.")
                 self.sticker = .downloading(attachmentPointer: attachmentPointer)
+            case .failed, .pendingManualDownload, .pendingMessageRequest:
+                Logger.verbose("Sticker failed or pending.")
+                self.sticker = .failedOrPending(attachmentPointer: attachmentPointer)
+            @unknown default:
+                throw OWSAssertionError("Invalid sticker.")
             }
-            //            self.sticker = (isFailed
-            //                                ? Sticker(stickerMetadata: stickerMetadata,
-            //                                          state: .failed)
-            //                                : Sticker(stickerMetadata: stickerMetadata,
-            //                                          state: .downloading(attachmentPointer: attachmentPointer))
-            //            Logger.warn("Sticker not yet downloaded.")
             return build()
         } else {
             throw OWSAssertionError("Invalid sticker.")
