@@ -29,15 +29,15 @@ class GetStartedBannerCell: UICollectionViewCell {
 
     private let closeButton: OWSButton = {
         let button = OWSButton(imageName: "x-16", tintColor: .ows_white)
-        button.backgroundColor = .ows_gray60
+        button.backgroundColor = .ows_gray40
         return button
     }()
 
     private let actionButton: OWSButton = {
         let button = OWSButton()
-        button.backgroundColor = .ows_gray02
-        button.setTitleColor(.ows_accentBlue, for: .normal)
         button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+
         button.layer.cornerRadius = 16
         button.layer.masksToBounds = true
         return button
@@ -69,7 +69,6 @@ class GetStartedBannerCell: UICollectionViewCell {
         layer.shadowOffset = CGSize(square: 0)
         layer.masksToBounds = false
 
-        contentView.backgroundColor = .ows_white
         contentView.addSubview(actionButton)
         contentView.addSubview(imageView)
         contentView.addSubview(closeButton)
@@ -94,6 +93,14 @@ class GetStartedBannerCell: UICollectionViewCell {
             guard let self = self else { return }
             self.delegate?.didTapAction(self)
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applyTheme),
+            name: .ThemeDidChange,
+            object: nil)
+
+        applyTheme()
     }
 
     required init?(coder: NSCoder) {
@@ -108,6 +115,14 @@ class GetStartedBannerCell: UICollectionViewCell {
     func configure(model: GetStartedBannerEntry, delegate: GetStartedBannerCellDelegate) {
         self.model = model
         self.delegate = delegate
+    }
+
+    @objc func applyTheme() {
+        let titleColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_accentBlue
+        actionButton.setTitleColor(titleColor, for: .normal)
+
+        actionButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02
+        contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
     }
 }
 

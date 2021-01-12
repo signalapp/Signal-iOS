@@ -71,7 +71,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasEverAppeared;
-@property (nonatomic) OWSInviteFlow *inviteFlow;
+
+// Get Started banner
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
+@property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
 
 // Mark: Search
 
@@ -272,14 +275,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.tableView reloadData];
     }
 
-    [coordinator
-        animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            [self applyTheme];
-            if (!UIDevice.currentDevice.isIPad) {
-                [self.tableView reloadData];
-            }
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self applyTheme];
+        if (!UIDevice.currentDevice.isIPad) {
+            [self.tableView reloadData];
         }
-                        completion:nil];
+
+        // The Get Started banner will occupy most of the screen in landscape
+        // If we're transitioning to landscape, fade out the view (if it exists)
+        if (size.width > size.height) {
+            self.getStartedBanner.view.alpha = 0;
+        } else {
+            self.getStartedBanner.view.alpha = 1;
+        }
+
+    } completion:nil];
 }
 
 #pragma mark - View Life Cycle
@@ -704,13 +714,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (!self.hasEverAppeared && ![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
-
-        OWSGetStartedBannerViewController *getStartedVC = [[OWSGetStartedBannerViewController alloc] initWithDelegate:self];
-        if (getStartedVC.hasIncompleteCards) {
-            [self addChildViewController:getStartedVC];
-            [self.view addSubview:getStartedVC.view];
-            [getStartedVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
-        }
+        [self presentGetStartedBannerIfNecessary];
     }
 
     [self applyDefaultBackButton];
@@ -1092,13 +1096,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
-
-        OWSGetStartedBannerViewController *getStartedVC = [[OWSGetStartedBannerViewController alloc] initWithDelegate:self];
-        if (getStartedVC.hasIncompleteCards) {
-            [self addChildViewController:getStartedVC];
-            [self.view addSubview:getStartedVC.view];
-            [getStartedVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
-        }
+        [self presentGetStartedBannerIfNecessary];
     }
 }
 
@@ -2329,6 +2327,28 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - <OWSGetStartedBannerViewControllerDelegate>
 
+- (void)presentGetStartedBannerIfNecessary
+{
+    if (self.getStartedBanner) {
+        return;
+    }
+
+    OWSGetStartedBannerViewController *getStartedVC = [[OWSGetStartedBannerViewController alloc] initWithDelegate:self];
+    if (getStartedVC.hasIncompleteCards) {
+        self.getStartedBanner = getStartedVC;
+
+        [self addChildViewController:getStartedVC];
+        [self.view addSubview:getStartedVC.view];
+        [getStartedVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+
+        // If we're in landscape, the banner covers most of the screen
+        // Hide it until we transition to portrait
+        if (self.view.bounds.width > self.view.bounds.height) {
+            getStartedVC.view.alpha = 0
+        }
+    }
+}
+
 - (void)getStartedBannerDidTapCreateGroup:(OWSGetStartedBannerViewController *)banner
 {
     [self showNewGroupView];
@@ -2338,6 +2358,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     self.inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
     [self.inviteFlow presentWithIsAnimated:YES isModal:YES completion:nil];
+}
+
+- (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner
+{
+    [UIView animateWithDuration:0.5 animations:^{
+        self.getStartedBanner.view.alpha = 0;
+    } completion:^(BOOL finished) {
+        [self.getStartedBanner.view removeFromSuperview];
+        [self.getStartedBanner removeFromParentViewController];
+
+        self.getStartedBanner = nil;
+    }];
 }
 
 @end

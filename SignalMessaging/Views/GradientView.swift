@@ -5,6 +5,12 @@
 public class GradientView: UIView {
 
     let gradientLayer = CAGradientLayer()
+    public var colors: [(color: UIColor, location: Double)] {
+        didSet {
+            gradientLayer.colors = colors.map { $0.color.cgColor }
+            gradientLayer.locations = colors.map { NSNumber(value: $0.location) }
+        }
+    }
 
     public convenience init(from fromColor: UIColor, to toColor: UIColor) {
         self.init(colors: [
@@ -14,9 +20,7 @@ public class GradientView: UIView {
     }
 
     public required init(colors: [(color: UIColor, location: Double)]) {
-        gradientLayer.colors = colors.map { $0.color.cgColor }
-        gradientLayer.locations = colors.map { NSNumber(value: $0.location) }
-
+        self.colors = colors
         super.init(frame: .zero)
         layer.addSublayer(gradientLayer)
     }
