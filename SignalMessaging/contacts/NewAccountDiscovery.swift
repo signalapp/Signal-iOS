@@ -42,8 +42,7 @@ public class NewAccountDiscovery: NSObject {
         }
 
         databaseStorage.asyncWrite { transaction in
-            // Don't spam inbox with a ton of these
-            for recipient in newRecipients.prefix(3) {
+            for recipient in newRecipients {
 
                 guard !recipient.address.isLocalAddress else {
                     owsFailDebug("unexpectedly found localNumber")
