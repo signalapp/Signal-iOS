@@ -65,9 +65,9 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Session's Screen Lock feature uses Face ID.</string>
+	<string>Session&apos;s Screen Lock feature uses Face ID.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Session needs access to your microphone to record videos.</string>
+	<string>Session needs access to your microphone to record media.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Session needs access to your library to save photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

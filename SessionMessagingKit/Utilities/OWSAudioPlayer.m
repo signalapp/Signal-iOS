@@ -115,6 +115,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.delegate.audioPlaybackState = AudioPlaybackState_Playing;
 
+    [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error: nil];
+
     if (!self.audioPlayer) {
         NSError *error;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];

@@ -2,7 +2,6 @@ import SessionUtilitiesKit
 
 @objc(SNJobQueue)
 public final class JobQueue : NSObject, JobDelegate {
-    private var hasResumedPendingJobs = false // Just for debugging
 
     @objc public static let shared = JobQueue()
 
@@ -21,12 +20,6 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     @objc public func resumePendingJobs() {
-        if hasResumedPendingJobs {
-            #if DEBUG
-            preconditionFailure("resumePendingJobs() should only be called once.")
-            #endif
-        }
-        hasResumedPendingJobs = true
         let allJobTypes: [Job.Type] = [ AttachmentDownloadJob.self, AttachmentUploadJob.self, MessageReceiveJob.self, MessageSendJob.self, NotifyPNServerJob.self ]
         allJobTypes.forEach { type in
             let allPendingJobs = SNMessagingKitConfiguration.shared.storage.getAllPendingJobs(of: type)
