@@ -2471,7 +2471,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Give your inbox something to write home about. Get started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ called you";

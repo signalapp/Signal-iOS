@@ -365,7 +365,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.emptyInboxView = [self createEmptyInboxView];
     [self.view addSubview:self.emptyInboxView];
     [self.emptyInboxView autoPinWidthToSuperviewMargins];
-    [self.emptyInboxView autoVCenterInSuperview];
+    [self.emptyInboxView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.view withMultiplier:0.85];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _emptyInboxView);
 
     [self createFirstConversationCueView];
@@ -394,42 +394,16 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (UIView *)createEmptyInboxView
 {
-    NSArray<NSString *> *emptyInboxImageNames = @[
-        @"home_empty_splash_1",
-        @"home_empty_splash_2",
-        @"home_empty_splash_3",
-        @"home_empty_splash_4",
-        @"home_empty_splash_5",
-    ];
-    NSString *emptyInboxImageName = emptyInboxImageNames[arc4random_uniform((uint32_t)emptyInboxImageNames.count)];
-    UIImageView *emptyInboxImageView = [UIImageView new];
-    emptyInboxImageView.image = [UIImage imageNamed:emptyInboxImageName];
-    emptyInboxImageView.layer.minificationFilter = kCAFilterTrilinear;
-    emptyInboxImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    [emptyInboxImageView autoPinToAspectRatioWithSize:emptyInboxImageView.image.size];
-    CGSize navControllerSize = self.navigationController.view.frame.size;
-    CGFloat emptyInboxImageSize = MIN(navControllerSize.width, navControllerSize.height) * 0.65f;
-    [emptyInboxImageView autoSetDimension:ALDimensionWidth toSize:emptyInboxImageSize];
-
     UILabel *emptyInboxLabel = [UILabel new];
     emptyInboxLabel.text = NSLocalizedString(
         @"INBOX_VIEW_EMPTY_INBOX", @"Message shown in the conversation list when the inbox is empty.");
-    emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyClampedFont;
-    emptyInboxLabel.textColor = Theme.secondaryTextAndIconColor;
+    emptyInboxLabel.font = UIFont.ows_dynamicTypeSubheadlineClampedFont;
+    emptyInboxLabel.textColor = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45Color;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
     emptyInboxLabel.numberOfLines = 0;
     emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-    UIStackView *emptyInboxStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-        emptyInboxImageView,
-        emptyInboxLabel,
-    ]];
-    emptyInboxStack.axis = UILayoutConstraintAxisVertical;
-    emptyInboxStack.alignment = UIStackViewAlignmentCenter;
-    emptyInboxStack.spacing = 12;
-    emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
-    emptyInboxStack.layoutMarginsRelativeArrangement = YES;
-    return emptyInboxStack;
+    return emptyInboxLabel;
 }
 
 - (void)createFirstConversationCueView
