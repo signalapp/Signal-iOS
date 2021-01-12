@@ -101,6 +101,8 @@ public class CVViewState: NSObject {
 
     public var isDarkThemeEnabled: Bool = Theme.isDarkThemeEnabled
 
+    public weak var sendMessageDelegate: HeadlessSendMessageDelegate?
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -334,6 +336,11 @@ extension ConversationViewController {
     var lastKnownDistanceFromBottom: CGFloat? {
         get { viewState.lastKnownDistanceFromBottom }
         set { viewState.lastKnownDistanceFromBottom = newValue }
+    }
+
+    var sendMessageDelegate: HeadlessSendMessageDelegate? {
+        get { viewState.sendMessageDelegate }
+        set { viewState.sendMessageDelegate = newValue }
     }
 }
 

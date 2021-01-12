@@ -9,14 +9,18 @@ import PromiseKit
 @objc
 public class GroupLinkPromotionActionSheet: UIView {
 
+    private weak var conversationViewController: ConversationViewController?
+
     private let groupThread: TSGroupThread
 
     weak var actionSheetController: ActionSheetController?
 
     private let stackView = UIStackView()
 
-    required init(groupThread: TSGroupThread) {
+    required init(groupThread: TSGroupThread,
+                  conversationViewController: ConversationViewController) {
         self.groupThread = groupThread
+        self.conversationViewController = conversationViewController
 
         super.init(frame: .zero)
 
@@ -184,19 +188,25 @@ private extension GroupLinkPromotionActionSheet {
             owsFailDebug("Missing actionSheetController.")
             return
         }
-
         actionSheetController.dismiss(animated: true) {
-            Self.showShareLinkActionSheet()
+            self.showShareLinkActionSheet()
         }
     }
 
-    private static func showShareLinkActionSheet() {
-        guard let fromViewController = UIApplication.shared.frontmostViewController else {
-            owsFailDebug("Missing frontmostViewController.")
+    private func showShareLinkActionSheet() {
+        guard let conversationViewController = conversationViewController else {
+            owsFailDebug("Missing conversationViewController.")
+            return
+        }
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
             return
         }
 
-        let actionSheetController = ActionSheetController()
-        fromViewController.presentActionSheet(actionSheetController)
+        let sendMessageDelegate = HeadlessSendMessageDelegate(fromViewController: conversationViewController)
+        conversationViewController.sendMessageDelegate = sendMessageDelegate
+        GroupLinkViewUtils.showShareLinkAlert(groupModelV2: groupModelV2,
+                                              fromViewController: conversationViewController,
+                                              sendMessageDelegate: sendMessageDelegate)
     }
 }

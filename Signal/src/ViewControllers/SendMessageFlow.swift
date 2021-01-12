@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -606,5 +606,47 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
             case .group(let groupThread) = selectedConversations.first?.messageRecipient,
             Mention.threadAllowsMentionSend(groupThread) else { return [] }
         return groupThread.recipientAddresses
+    }
+}
+
+// MARK: -
+
+public class HeadlessSendMessageDelegate: SendMessageDelegate {
+
+    private weak var fromViewController: UIViewController?
+
+    let sendMessageFlow = AtomicOptional<SendMessageFlow>(nil)
+
+    public required init(fromViewController: UIViewController) {
+        self.fromViewController = fromViewController
+    }
+
+    public func sendMessageFlowDidComplete(threads: [TSThread]) {
+        AssertIsOnMainThread()
+
+        sendMessageFlow.set(nil)
+
+        guard let fromViewController = fromViewController else {
+            return
+        }
+
+        if threads.count == 1,
+           let thread = threads.first {
+            SignalApp.shared().presentConversation(for: thread, animated: true)
+        } else {
+            fromViewController.navigationController?.popToViewController(fromViewController, animated: true)
+        }
+    }
+
+    public func sendMessageFlowDidCancel() {
+        AssertIsOnMainThread()
+
+        sendMessageFlow.set(nil)
+
+        guard let fromViewController = fromViewController else {
+            return
+        }
+
+        fromViewController.navigationController?.popToViewController(fromViewController, animated: true)
     }
 }

@@ -447,7 +447,8 @@ public extension ConversationViewController {
         guard groupThread.isGroupV2Thread else {
             return
         }
-        let view = GroupLinkPromotionActionSheet(groupThread: groupThread)
+        let view = GroupLinkPromotionActionSheet(groupThread: groupThread,
+                                                 conversationViewController: self)
         view.present(fromViewController: self)
     }
 }

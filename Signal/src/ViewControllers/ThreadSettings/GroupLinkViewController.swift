@@ -222,86 +222,15 @@ public class GroupLinkViewController: OWSTableViewController {
         showResetLinkConfirmAlert()
     }
 
+    // We need to retain a link to this delegate during the send flow.
+    private weak var sendMessageDelegate: HeadlessSendMessageDelegate?
+
     private func showShareLinkAlert() {
-        let message = NSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
-                                      comment: "Message for the 'share group link' action sheet in the 'group link' view.")
-        let actionSheet = ActionSheetController(message: message)
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
-                                                                         comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
-                                                style: .default) { _ in
-                                                    self.shareLinkViaSignal()
-        })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
-                                                                         comment: "Label for the 'copy link' button in the 'group link' view."),
-                                                style: .default) { _ in
-                                                    self.copyLinkToPasteboard()
-        })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE",
-                                                                         comment: "Label for the 'share group link via QR code' button in the 'group link' view."),
-                                                style: .default) { _ in
-                                                    self.shareLinkViaQRCode()
-        })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING",
-                                                                         comment: "Label for the 'share group link via iOS sharing UI' button in the 'group link' view."),
-                                                style: .default) { _ in
-                                                    self.shareLinkViaSharingUI()
-        })
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-        presentActionSheet(actionSheet)
-    }
-
-    var sendMessageFlow: SendMessageFlow?
-
-    func shareLinkViaSignal() {
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("Missing navigationController.")
-            return
-        }
-
-        do {
-            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
-            let messageBody = MessageBody(text: inviteLinkUrl.absoluteString, ranges: .empty)
-            let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
-            let sendMessageFlow = SendMessageFlow(flowType: .`default`,
-                                                  unapprovedContent: unapprovedContent,
-                                                  useConversationComposeForSingleRecipient: true,
-                                                  navigationController: navigationController,
-                                                  delegate: self)
-            self.sendMessageFlow = sendMessageFlow
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    func copyLinkToPasteboard() {
-        guard groupModelV2.isGroupInviteLinkEnabled else {
-            owsFailDebug("Group link not enabled.")
-            return
-        }
-        do {
-            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
-            UIPasteboard.general.url = inviteLinkUrl
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    func shareLinkViaQRCode() {
-        let qrCodeView = GroupLinkQRCodeViewController(groupModelV2: groupModelV2)
-        navigationController?.pushViewController(qrCodeView, animated: true)
-    }
-
-    func shareLinkViaSharingUI() {
-        guard groupModelV2.isGroupInviteLinkEnabled else {
-            owsFailDebug("Group link not enabled.")
-            return
-        }
-        do {
-            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
-            AttachmentSharing.showShareUI(for: inviteLinkUrl, sender: self)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
+        let sendMessageDelegate = HeadlessSendMessageDelegate(fromViewController: self)
+        self.sendMessageDelegate = sendMessageDelegate
+        GroupLinkViewUtils.showShareLinkAlert(groupModelV2: groupModelV2,
+                                              fromViewController: self,
+                                              sendMessageDelegate: sendMessageDelegate)
     }
 
     private func showResetLinkConfirmAlert() {
@@ -360,6 +289,97 @@ public class GroupLinkViewUtils {
             return .disabled
         }
     }
+
+    // MARK: -
+
+    public static func showShareLinkAlert(groupModelV2: TSGroupModelV2,
+                                          fromViewController: UIViewController,
+                                          sendMessageDelegate: HeadlessSendMessageDelegate) {
+        let message = NSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
+                                        comment: "Message for the 'share group link' action sheet in the 'group link' view.")
+        let actionSheet = ActionSheetController(message: message)
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
+                                                                         comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
+                                                style: .default) { _ in
+            Self.shareLinkViaSignal(groupModelV2: groupModelV2,
+                                    fromViewController: fromViewController,
+                                    sendMessageDelegate: sendMessageDelegate)
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
+                                                                         comment: "Label for the 'copy link' button in the 'group link' view."),
+                                                style: .default) { _ in
+            Self.copyLinkToPasteboard(groupModelV2: groupModelV2)
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE",
+                                                                         comment: "Label for the 'share group link via QR code' button in the 'group link' view."),
+                                                style: .default) { _ in
+            Self.shareLinkViaQRCode(groupModelV2: groupModelV2,
+                                    fromViewController: fromViewController)
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING",
+                                                                         comment: "Label for the 'share group link via iOS sharing UI' button in the 'group link' view."),
+                                                style: .default) { _ in
+            Self.shareLinkViaSharingUI(groupModelV2: groupModelV2)
+        })
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        fromViewController.presentActionSheet(actionSheet)
+    }
+
+    private static func shareLinkViaSignal(groupModelV2: TSGroupModelV2,
+                                           fromViewController: UIViewController,
+                                           sendMessageDelegate: HeadlessSendMessageDelegate) {
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+
+        do {
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+            let messageBody = MessageBody(text: inviteLinkUrl.absoluteString, ranges: .empty)
+            let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+            let sendMessageFlow = SendMessageFlow(flowType: .`default`,
+                                                  unapprovedContent: unapprovedContent,
+                                                  useConversationComposeForSingleRecipient: true,
+                                                  navigationController: navigationController,
+                                                  delegate: sendMessageDelegate)
+            // Retain the flow until it is complete.
+            sendMessageDelegate.sendMessageFlow.set(sendMessageFlow)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    private static func copyLinkToPasteboard(groupModelV2: TSGroupModelV2) {
+        guard groupModelV2.isGroupInviteLinkEnabled else {
+            owsFailDebug("Group link not enabled.")
+            return
+        }
+        do {
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+            UIPasteboard.general.url = inviteLinkUrl
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    private static func shareLinkViaQRCode(groupModelV2: TSGroupModelV2,
+                                           fromViewController: UIViewController) {
+        let qrCodeView = GroupLinkQRCodeViewController(groupModelV2: groupModelV2)
+        fromViewController.navigationController?.pushViewController(qrCodeView, animated: true)
+    }
+
+    private static func shareLinkViaSharingUI(groupModelV2: TSGroupModelV2) {
+        guard groupModelV2.isGroupInviteLinkEnabled else {
+            owsFailDebug("Group link not enabled.")
+            return
+        }
+        do {
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+            AttachmentSharing.showShareUI(for: inviteLinkUrl, sender: self)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
 }
 
 // MARK: -
@@ -396,25 +416,5 @@ private extension GroupLinkViewController {
         }.then(on: .global()) { _ in
             GroupManager.resetLinkV2(groupModel: groupModelV2)
         }
-    }
-}
-
-// MARK: -
-
-extension GroupLinkViewController: SendMessageDelegate {
-    public func sendMessageFlowDidComplete(threads: [TSThread]) {
-        AssertIsOnMainThread()
-
-        if threads.count == 1,
-            let thread = threads.first {
-            SignalApp.shared().presentConversation(for: thread, animated: true)
-        } else {
-            navigationController?.popToViewController(self, animated: true)
-        }
-    }
-
-    public func sendMessageFlowDidCancel() {
-        AssertIsOnMainThread()
-        navigationController?.popToViewController(self, animated: true)
     }
 }
