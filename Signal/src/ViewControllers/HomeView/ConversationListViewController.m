@@ -275,21 +275,22 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.tableView reloadData];
     }
 
-    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self applyTheme];
-        if (!UIDevice.currentDevice.isIPad) {
-            [self.tableView reloadData];
-        }
+    [coordinator
+        animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            [self applyTheme];
+            if (!UIDevice.currentDevice.isIPad) {
+                [self.tableView reloadData];
+            }
 
-        // The Get Started banner will occupy most of the screen in landscape
-        // If we're transitioning to landscape, fade out the view (if it exists)
-        if (size.width > size.height) {
-            self.getStartedBanner.view.alpha = 0;
-        } else {
-            self.getStartedBanner.view.alpha = 1;
+            // The Get Started banner will occupy most of the screen in landscape
+            // If we're transitioning to landscape, fade out the view (if it exists)
+            if (size.width > size.height) {
+                self.getStartedBanner.view.alpha = 0;
+            } else {
+                self.getStartedBanner.view.alpha = 1;
+            }
         }
-
-    } completion:nil];
+                        completion:nil];
 }
 
 #pragma mark - View Life Cycle
@@ -2362,14 +2363,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner
 {
-    [UIView animateWithDuration:0.5 animations:^{
-        self.getStartedBanner.view.alpha = 0;
-    } completion:^(BOOL finished) {
-        [self.getStartedBanner.view removeFromSuperview];
-        [self.getStartedBanner removeFromParentViewController];
+    [UIView animateWithDuration:0.5
+        animations:^{ self.getStartedBanner.view.alpha = 0; }
+        completion:^(BOOL finished) {
+            [self.getStartedBanner.view removeFromSuperview];
+            [self.getStartedBanner removeFromParentViewController];
 
-        self.getStartedBanner = nil;
-    }];
+            self.getStartedBanner = nil;
+        }];
 }
 
 @end
