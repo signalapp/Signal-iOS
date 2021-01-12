@@ -104,7 +104,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
                 let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                                  tintColor: Theme.accentBlueColor)
-                iconView.autoSetDimensions(to: CGSize.square(16))
+                iconView.autoSetDimensions(to: CGSize.square(20))
                 downloadStack.addArrangedSubview(iconView)
 
                 let downloadLabel = UILabel()

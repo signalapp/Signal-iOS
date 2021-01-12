@@ -107,7 +107,7 @@ class AudioMessageView: OWSStackView {
         } else {
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: Theme.accentBlueColor)
-            iconView.autoSetDimensions(to: CGSize.square(16))
+            iconView.autoSetDimensions(to: CGSize.square(20))
             let progressView = CircularProgressView(thickness: 0.1)
             progressView.progress = 0.0
             progressView.autoSetDimensions(to: CGSize(square: Self.animationSize))

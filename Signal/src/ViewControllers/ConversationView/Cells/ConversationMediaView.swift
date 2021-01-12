@@ -170,7 +170,7 @@ public class CVMediaView: UIView {
         }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: 22, withCircle: true)
         self.addSubview(progressView)
         progressView.autoPinEdgesToSuperviewEdges()
     }
@@ -369,8 +369,8 @@ public class CVMediaView: UIView {
         stillImageView.autoPinEdgesToSuperviewEdges()
 
         if !addUploadProgressIfNecessary(stillImageView) {
-            let videoPlayIcon = UIImage(named: "play_button")
-            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            let videoPlayButton = Self.buildVideoPlayButton {}
+            videoPlayButton.isUserInteractionEnabled = false
             stillImageView.addSubview(videoPlayButton)
             videoPlayButton.autoCenterInSuperview()
         }
@@ -411,6 +411,32 @@ public class CVMediaView: UIView {
 
             stillImageView.image = nil
         }
+    }
+
+    @objc
+    public static func buildVideoPlayButton(block: @escaping () -> Void) -> UIView {
+        let playVideoButton = OWSButton(block: block)
+
+        let playVideoCircleView = OWSLayerView(frame: .zero) { view in
+            view.layer.cornerRadius = min(view.width, view.height) * 0.5
+        }
+        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+        playVideoCircleView.isUserInteractionEnabled = false
+        playVideoButton.addSubview(playVideoCircleView)
+
+        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
+                                                                  tintColor: UIColor.ows_white)
+        playVideoIconView.isUserInteractionEnabled = false
+        playVideoButton.addSubview(playVideoIconView)
+
+        let playVideoButtonWidth = ScaleFromIPhone5(44)
+        let playVideoIconWidth = ScaleFromIPhone5(20)
+        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
+        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
+        playVideoCircleView.autoPinEdgesToSuperviewEdges()
+        playVideoIconView.autoCenterInSuperview()
+
+        return playVideoButton
     }
 
     private var isPendingDownload: Bool {

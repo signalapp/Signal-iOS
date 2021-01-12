@@ -67,6 +67,7 @@ public class CVComponentState: Equatable {
         let items: [CVMediaAlbumItem]
         let mediaAlbumHasFailedAttachment: Bool
         let mediaAlbumHasPendingAttachment: Bool
+        let mediaAlbumHasPendingManualDownloadAttachment: Bool
     }
     let bodyMedia: BodyMedia?
 
@@ -703,14 +704,33 @@ fileprivate extension CVComponentState.Builder {
             let bodyAttachments = message.mediaAttachments(with: transaction.unwrapGrdbRead)
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
             if mediaAlbumItems.count > 0 {
-                let failedAttachmentPointers = message.failedBodyAttachments(transaction: transaction)
-                let mediaAlbumHasFailedAttachment = !failedAttachmentPointers.isEmpty
-                let pendingBodyAttachments = message.pendingBodyAttachments(transaction: transaction)
-                let mediaAlbumHasPendingAttachment = !pendingBodyAttachments.isEmpty
+                var mediaAlbumHasFailedAttachment = false
+                var mediaAlbumHasPendingAttachment = false
+                var mediaAlbumHasPendingManualDownloadAttachment = false
+                for attachment in bodyAttachments {
+                    guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+                        continue
+                    }
+                    switch attachmentPointer.state {
+                    case .downloading, .enqueued:
+                        continue
+                    case .failed:
+                        mediaAlbumHasFailedAttachment = true
+                    case .pendingMessageRequest:
+                        mediaAlbumHasPendingAttachment = true
+                    case .pendingManualDownload:
+                        mediaAlbumHasPendingAttachment = true
+                        mediaAlbumHasPendingManualDownloadAttachment = true
+                    @unknown default:
+                        owsFailDebug("Invalid attachment pointer state.")
+                        continue
+                    }
+                }
 
                 self.bodyMedia = BodyMedia(items: mediaAlbumItems,
                                            mediaAlbumHasFailedAttachment: mediaAlbumHasFailedAttachment,
-                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment)
+                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment,
+                                           mediaAlbumHasPendingManualDownloadAttachment: mediaAlbumHasPendingManualDownloadAttachment)
                 return build()
             }
 

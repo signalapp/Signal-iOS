@@ -522,14 +522,6 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    #if TESTABLE_BUILD
-    struct DevFlags {
-        static let forceFailure = false
-        static let forceBlockedByPendingMessageRequest = false
-        static let forceBlockedByAutoDownloadSettingsSettings = false
-    }
-    #endif
-
     private func enqueueJobs(forAttachmentReferences attachmentReferences: [AttachmentReference],
                              message: TSMessage?,
                              downloadBehavior: AttachmentDownloadBehavior,
@@ -563,11 +555,9 @@ public extension OWSAttachmentDownloads {
 
             func isDownloadBlockedByPendingMessageRequest(_ attachmentPointer: TSAttachmentPointer) -> Bool {
 
-                #if TESTABLE_BUILD
-                if DevFlags.forceBlockedByPendingMessageRequest {
+                if DebugFlags.forceAttachmentDownloadPendingMessageRequest.get() {
                     return true
                 }
-                #endif
 
                 guard attachmentPointer.isVisualMedia,
                       hasPendingMessageRequest,
@@ -582,11 +572,9 @@ public extension OWSAttachmentDownloads {
             func isDownloadBlockedByAutoDownloadSettingsSettings(_ attachmentPointer: TSAttachmentPointer,
                                                                  category: AttachmentCategory) -> Bool {
 
-                #if TESTABLE_BUILD
-                if DevFlags.forceBlockedByAutoDownloadSettingsSettings {
+                if DebugFlags.forceAttachmentDownloadPendingManualDownload.get() {
                     return true
                 }
-                #endif
 
                 guard !downloadBehavior.bypassPendingManualDownload else {
                     return false
@@ -624,8 +612,7 @@ public extension OWSAttachmentDownloads {
                     }
                 case .attachmentPointer(let attachmentPointer, let category):
 
-                    #if TESTABLE_BUILD
-                    if DevFlags.forceFailure {
+                    if DebugFlags.forceAttachmentDownloadFailures.get() {
                         Logger.info("Skipping media download for thread with pending message request.")
                         Self.databaseStorage.write { transaction in
                             attachmentPointer.updateAttachmentPointerState(from: .enqueued,
@@ -634,7 +621,6 @@ public extension OWSAttachmentDownloads {
                         }
                         continue
                     }
-                    #endif
 
                     if isDownloadBlockedByPendingMessageRequest(attachmentPointer) {
                         Logger.info("Skipping media download for thread with pending message request.")
