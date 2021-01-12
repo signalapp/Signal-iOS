@@ -37,6 +37,9 @@
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Kontakt teilen";
 
+/* A label for 'tap to download' buttons. */
+"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Videoanruf";
 
@@ -917,22 +920,22 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Stummschalten";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nicht stummgeschaltet";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nicht stumm";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Für einen Tag stummschalten";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Für einen Tag";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Für eine Stunde stummschalten";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Für eine Stunde";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Für eine Minute stummschalten";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Für eine Minute";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Für eine Woche stummschalten";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Für eine Woche";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Für ein Jahr stummschalten";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Für ein Jahr";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "bis %@";
@@ -998,7 +1001,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Weiterlesen";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Das Neustarten der Verschlüsselung ermöglicht dir, zukünftige Nachrichten von %@ zu erhalten, wird jedoch bereits fehlerhafte Nachrichten nicht wiederherstellen.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Das Neustarten der Verschlüsselung ermöglicht dir, zukünftig Nachrichten von %@ zu erhalten, wird jedoch bereits fehlerhafte Nachrichten nicht wiederherstellen.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Landesvorwahl auswählen";
@@ -1049,7 +1052,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Link kopieren";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Via E-Mail an Support senden";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-Mail an Support";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "An mich senden";
@@ -1058,7 +1061,7 @@
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Teilen";
 
 /* Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "Noch ein Schritt";
+"DEBUG_LOG_ALERT_TITLE" = "Ein letzter Schritt";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Der Gist-Link wurde in deine Zwischenablage kopiert. Du wirst nun zur Problemliste auf GitHub weitergeleitet.";
@@ -1453,6 +1456,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Anhang";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Leg los";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Freunde einladen";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Neue Gruppe";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Angefordertes GIF konnte nicht abgerufen werden. Bitte überprüfe, ob du online bist.";
 
@@ -1798,6 +1810,27 @@
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Aktualisiere Signal auf diesem Gerät, um dieser Gruppe beizutreten.";
 
+/* Explanation of the 'approve new group members' switch. */
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Für Beitrittsanfragen über den Gruppen-Link einen Admin zum Bestätigen erforderlich machen.";
+
+/* Label for the 'approve new group members' switch. */
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Neue Mitglieder bestätigen";
+
+/* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+
+/* Label for the 'share link' button in the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+
+/* Subtitle for the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+
+/* Title for the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Freunde einladen";
+
+/* Suggestion to invite more group members via the group invite link. */
+"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen, die diesen Code einscannen, können deiner Gruppe beitreten. Neue Mitglieder müssen jedoch von einem Admin bestätigt werden, falls du diese Einstellung eingeschaltet hast.";
 
@@ -1936,8 +1969,8 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Sprachanruf";
 
-/* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Keine Mitglieder.";
+/* Label indicating that a new group has no other members. */
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nachdem diese Gruppe erstellt wurde, kannst du Freunde hinzufügen oder einladen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Mitglieder";
@@ -2163,6 +2196,9 @@
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ blockieren";
+
+/* Label for 'invite friends to group' button. */
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Freunde einladen";
 
 /* Body text for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Gruppen alten Typs sind Gruppen, die nicht kompatibel sind mit Features von Gruppen neuen Typs, wie Admins oder anschaulicheren Gruppenaktualisierungen.";
@@ -2640,6 +2676,9 @@
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Nachricht löschen";
+
+/* Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_COUNT_FORMAT" = "%@ Photos";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3237,6 +3276,12 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Ausgehender Anruf an %@";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "PDF konnte nicht angezeigt werden";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Zur Gruppe hinzufügen";
@@ -4342,6 +4387,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Urheberrecht Signal Messenger \nLizensiert unter GPLv3";
 
+/* Label for the 'data' section of the app settings. */
+"SETTINGS_DATA" = "Data";
+
+/* Footer for the 'media auto-download' section in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+
+/* Header for the 'media auto-download' section in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+
+/* Label for for the 'reset media auto-download settings' button in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+
+/* The title for the data settings. */
+"SETTINGS_DATA_TITLE" = "Data";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Nutzerkonto löschen";
 
@@ -4383,6 +4443,27 @@
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Wenn deine Nachricht einen Link enthält, wird eine Vorschau der verlinkten Seite erstellt.";
+
+/* Label for the 'never' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nie";
+
+/* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+
+/* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+
+/* Label for the 'audio' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Audio";
+
+/* Label for the 'document' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Dokumente";
+
+/* Label for the 'photo' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Bilder";
+
+/* Label for the 'video' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
 
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Nachrichtenübermittlung";
