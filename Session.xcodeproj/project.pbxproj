@@ -537,6 +537,9 @@
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
 		C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C354E75923FE2A7600CE22E3 /* BaseVC.swift */; };
+		C35D0DA125AE582D00B6BF49 /* MultiDeviceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D0DA025AE582D00B6BF49 /* MultiDeviceVC.swift */; };
+		C35D0DAB25AE5BDE00B6BF49 /* SettingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D0DAA25AE5BDE00B6BF49 /* SettingRow.swift */; };
+		C35D0DB525AE5F1200B6BF49 /* UIEdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */; };
 		C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */; };
 		C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */; };
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
@@ -1537,6 +1540,9 @@
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
 		C354E75923FE2A7600CE22E3 /* BaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVC.swift; sourceTree = "<group>"; };
+		C35D0DA025AE582D00B6BF49 /* MultiDeviceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceVC.swift; sourceTree = "<group>"; };
+		C35D0DAA25AE5BDE00B6BF49 /* SettingRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingRow.swift; sourceTree = "<group>"; };
+		C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIEdgeInsets.swift; sourceTree = "<group>"; };
 		C35E8AA22485C72300ACB629 /* SwiftCSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCSV.framework; path = ThirdParty/Carthage/Build/iOS/SwiftCSV.framework; sourceTree = "<group>"; };
 		C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Locations-English.csv"; sourceTree = "<group>"; };
 		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
@@ -2271,6 +2277,7 @@
 				C33FDB3F255A580C00E217F9 /* String+SSK.swift */,
 				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
 				C38EF237255B6D65007E1867 /* UIDevice+featureSupport.swift */,
+				C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */,
 				C38EF23D255B6D66007E1867 /* UIView+OWS.h */,
 				C38EF23E255B6D66007E1867 /* UIView+OWS.m */,
 				C38EF2EF255B6DBB007E1867 /* Weak.swift */,
@@ -2319,6 +2326,7 @@
 				C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
 				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
+				C35D0DAA25AE5BDE00B6BF49 /* SettingRow.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -2742,6 +2750,7 @@
 				B886B4A62398B23E00211ABE /* QRCodeVC.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B8CCF6422397711F0091D419 /* SettingsVC.swift */,
+				C35D0DA025AE582D00B6BF49 /* MultiDeviceVC.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -4812,6 +4821,7 @@
 				C3D9E41F25676C870040E4F3 /* OWSPrimaryStorageProtocol.swift in Sources */,
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
 				B8856D7B256F14F4001CE70E /* UIView+OWS.m in Sources */,
+				C35D0DB525AE5F1200B6BF49 /* UIEdgeInsets.swift in Sources */,
 				C3D9E4F4256778AF0040E4F3 /* NSData+Image.m in Sources */,
 				C32C5E0C256DDAFA003C73A2 /* NSRegularExpression+SSK.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
@@ -5037,6 +5047,7 @@
 				B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
+				C35D0DA125AE582D00B6BF49 /* MultiDeviceVC.swift in Sources */,
 				B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
@@ -5045,6 +5056,7 @@
 				B82B408C239A068800A248E7 /* RegisterVC.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
+				C35D0DAB25AE5BDE00B6BF49 /* SettingRow.swift in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				C331FFFE2558FF3B00070591 /* ConversationCell.swift in Sources */,
 				C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */,
