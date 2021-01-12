@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationListViewController.h"
@@ -56,7 +56,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     ConversationSearchViewDelegate,
     UIDatabaseSnapshotDelegate,
     OWSBlockListCacheDelegate,
-    CameraFirstCaptureDelegate>
+    CameraFirstCaptureDelegate,
+    OWSGetStartedBannerViewControllerDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIView *emptyInboxView;
@@ -70,6 +71,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasEverAppeared;
+
+// Get Started banner
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
+@property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
 
 // Mark: Search
 
@@ -275,6 +280,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             [self applyTheme];
             if (!UIDevice.currentDevice.isIPad) {
                 [self.tableView reloadData];
+            }
+
+            // The Get Started banner will occupy most of the screen in landscape
+            // If we're transitioning to landscape, fade out the view (if it exists)
+            if (size.width > size.height) {
+                self.getStartedBanner.view.alpha = 0;
+            } else {
+                self.getStartedBanner.view.alpha = 1;
             }
         }
                         completion:nil];
@@ -702,6 +715,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (!self.hasEverAppeared && ![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
+        [self presentGetStartedBannerIfNecessary];
     }
 
     [self applyDefaultBackButton];
@@ -1083,6 +1097,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
+        [self presentGetStartedBannerIfNecessary];
     }
 }
 
@@ -2309,6 +2324,53 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)cameraFirstCaptureSendFlowDidCancel:(CameraFirstCaptureSendFlow *)cameraFirstCaptureSendFlow
 {
     [self dismissViewControllerAnimated:true completion:nil];
+}
+
+#pragma mark - <OWSGetStartedBannerViewControllerDelegate>
+
+- (void)presentGetStartedBannerIfNecessary
+{
+    if (self.getStartedBanner || self.conversationListMode != ConversationListMode_Inbox) {
+        return;
+    }
+
+    OWSGetStartedBannerViewController *getStartedVC = [[OWSGetStartedBannerViewController alloc] initWithDelegate:self];
+    if (getStartedVC.hasIncompleteCards) {
+        self.getStartedBanner = getStartedVC;
+
+        [self addChildViewController:getStartedVC];
+        [self.view addSubview:getStartedVC.view];
+        [getStartedVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+
+        // If we're in landscape, the banner covers most of the screen
+        // Hide it until we transition to portrait
+        if (self.view.bounds.size.width > self.view.bounds.size.height) {
+            getStartedVC.view.alpha = 0;
+        }
+    }
+}
+
+- (void)getStartedBannerDidTapCreateGroup:(OWSGetStartedBannerViewController *)banner
+{
+    [self showNewGroupView];
+}
+
+- (void)getStartedBannerDidTapInviteFriends:(OWSGetStartedBannerViewController *)banner
+{
+    self.inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+    [self.inviteFlow presentWithIsAnimated:YES isModal:YES completion:nil];
+}
+
+- (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner
+{
+    [UIView animateWithDuration:0.5
+        animations:^{ self.getStartedBanner.view.alpha = 0; }
+        completion:^(BOOL finished) {
+            [self.getStartedBanner.view removeFromSuperview];
+            [self.getStartedBanner removeFromParentViewController];
+
+            self.getStartedBanner = nil;
+        }];
 }
 
 @end
