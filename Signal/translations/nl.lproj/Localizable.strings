@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "Deel contactinformatie";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "Tik om te downloaden";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Video-oproep";
@@ -1817,19 +1817,19 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Beheerderstoestemming vereisen";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Groepsverwijzing inschakelen en delen";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Groepsverwijzing delen";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Deel de groepsverwijzing met kennissen om ze gemakkelijk aan deze groep te laten deelnemen.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Kennissen uitnodigen";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "Nodig vrienden en kennissen uit voor deze groep via een groepsverwijzing.";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Beheerders moeten deze personen nog steeds goedkeuren als deze instelling aan staat.";
@@ -2677,8 +2677,11 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Bericht wissen";
 
-/* Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_COUNT_FORMAT" = "%@ Photos";
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Afbeeldingen";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -4388,19 +4391,19 @@
 "SETTINGS_COPYRIGHT" = "Auteursrecht Signal-berichtenapp\n Gelicentieerd onder de GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data";
+"SETTINGS_DATA" = "Data Usage";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Spraakberichten, eenmaligeweergave-media en stickers (minder dan 100kb) worden altijd automatisch gedownload.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTOMATISCH DOWNLOADEN";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Herstel automatischedownload-instellingen";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data";
+"SETTINGS_DATA_TITLE" = "Data Usage";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Registratie opzeggen";
@@ -4448,10 +4451,10 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nooit";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wifi en mobielegegevensoverdracht";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wifi";
 
 /* Label for the 'audio' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Audio";

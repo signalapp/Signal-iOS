@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "Ndaje Kontaktin";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "Prekeni që të shkarkohet";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Thirrje Video";
@@ -1817,19 +1817,19 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Miratoni anëtarë të rinj";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Aktivizoni dhe Jepeni Lidhjen";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Jepeni Lidhjen";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Jepuani lidhjen shokëve, për t’i lënë të bëhen pjesë e grupit shpejt e shpejt.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Ftoni Shokë";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "Ftoni shokë te grupi juaj përmes lidhjes së grupit ";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Njerëzit që skanojnë këtë kod, do të jenë në gjendje të bëhen pjesë e grupit tuaj. Përgjegjësve prapë do t’ju duhet të miratojnë anëtarë të rinj, nëse e keni të aktivizuar këtë mundësi.";
@@ -2677,8 +2677,11 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Fshije Mesazhin";
 
-/* Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_COUNT_FORMAT" = "%@ Photos";
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Foto";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -4388,19 +4391,19 @@
 "SETTINGS_COPYRIGHT" = "Të drejta kopjimi: Signal Messenger \n Licencuar sipas termave të GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data";
+"SETTINGS_DATA" = "Data Usage";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Mesazhet zanore, media shiheni-vetëm-njëherë, dhe ngjitësit (nën 100kb) shkarkohen përherë vetvetiu.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "VETËSHKARKIM MEDIASH";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Rikthe te Parazgjedhjet Rregullimet për Vetëshkarkim";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data";
+"SETTINGS_DATA_TITLE" = "Data Usage";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Fshije Llogarinë";
@@ -4448,7 +4451,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Kurrë";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi d Celular";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";

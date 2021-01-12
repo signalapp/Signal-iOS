@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "Compartir contacto";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "Toca para descargar";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Vídeollamada";
@@ -1457,13 +1457,13 @@
 "GENERIC_ATTACHMENT_LABEL" = "Adjunto";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get started";
+"GET_STARTED_BANNER_TITLE" = "Comenzar";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Invitar amistades";
 
 /* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "New group";
+"GET_STARTED_CARD_NEW_GROUP" = "Nuevo grupo";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Fallo al descargar el GIF solicitado. Verifica que tienes conexión a internet.";
@@ -1499,10 +1499,10 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizando base de datos";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Has actualizado quién puede editar la descripción del grupo a «%@».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Has actualizado quien puede editar la descripción del grupo a «%@».";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha actualizado quién puede editar los detalles del grupo a «%2$@».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha actualizado quien puede editar los detalles del grupo a «%2$@».";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "La descripción del grupo puede ser editada por «%@».";
@@ -1523,10 +1523,10 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Desactivada";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has actualizado quién puede modificar l@s participantes del grupo a «%@».";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has actualizado quien puede modificar l@s participantes del grupo a «%@».";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha actualizado quién puede modificar l@s participantes del grupo a «%2$@».";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha actualizado quien puede modificar l@s participantes del grupo a «%2$@».";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "«%@» puede(n) modificar l@s participantes del grupo.";
@@ -1814,22 +1814,22 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Al seguir el enlace se genera una solicitud de acceso que debe ser aprobada.";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Approve new members";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Aprobar solicitudes";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Activar y compartir enlace";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Compartir enlace";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Comparte este enlace con tus amistades para que se unan rápidamente a este grupo.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Invitar amistades";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "Invita amistades a tu grupo vía enlace";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Quien escanee este código podrá unirse al grupo. L@s admins todavía pueden aprobar nuev@s participantes si la opción está activa.";
@@ -1970,7 +1970,7 @@
 "GROUP_MEMBERS_CALL" = "Llamar";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Puedes añadir o invitar amistades tras crear el grupo.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Participantes";
@@ -2198,7 +2198,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Bloquear a %@";
 
 /* Label for 'invite friends to group' button. */
-"GROUPS_INVITE_FRIENDS_BUTTON" = "Invite friends";
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Invitar amistades";
 
 /* Body text for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Los grupos antiguos no son compatibles con las funciones de los grupos nuevos como admins o actualizaciones más descriptivas.";
@@ -2677,8 +2677,11 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Eliminar mensajes";
 
-/* Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_COUNT_FORMAT" = "%@ Photos";
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ fotos";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
@@ -2825,7 +2828,7 @@
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Tu contacto";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si no sabes quién ha enviado esta solicitud, revisa tus contactos debajo y toma acciones.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si no sabes quién ha enviado esta solicitud, revisa la lista de personas debajo para tomar la decisión correcta.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Solicitud";
@@ -3185,7 +3188,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Entérate";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Selecciona quién puede saber que usas Signal si conoce tu número de teléfono %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Selecciona quien puede saber que usas Signal si conoce tu número de teléfono %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "¿Quién te puede encontrar por tu número?";
@@ -3308,7 +3311,7 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No hay invitaciones que mostrar.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "%@ ha sido añadid@.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Se ha sido añadido a %@.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ solicitudes pendientes.";
@@ -3407,7 +3410,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Cualquiera";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Tu número de teléfono será visible para la gente a quién envíes mensajes y para l@s participantes de tus grupos. La gente con tu número entre sus contactos también podrá ver que usas Signal. ";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Tu número de teléfono será visible para la gente a quien envíes mensajes y para l@s participantes de tus grupos. La gente con tu número entre sus contactos también podrá ver que usas Signal. ";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nadie";
@@ -4388,19 +4391,19 @@
 "SETTINGS_COPYRIGHT" = "Derechos de Signal Messenger\nLiberado bajo GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data";
+"SETTINGS_DATA" = "Data Usage";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Mensajes de voz, adjuntos de ver sólo una vez y cromos (más pequeños de 100kb) se descargarán automáticamente.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "AUTODESCARGA DE ADJUNTOS";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Restablecer ajustes de autodescarga";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data";
+"SETTINGS_DATA_TITLE" = "Data Usage";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Eliminar cuenta";
@@ -4445,10 +4448,10 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Esta opción trasmite la vista previa de los enlaces en los mensajes que envíes. La imagen de la vista previa se descarga directamente desde la página web correspondiente generando una visita (adicional) a esa página web desde tu dispositivo. ";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Never";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nunca";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi y datos móviles";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
@@ -4457,13 +4460,13 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Audio";
 
 /* Label for the 'document' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Documents";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Documentos";
 
 /* Label for the 'photo' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Photos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Fotos";
 
 /* Label for the 'video' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Vídeos";
 
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Mensajería";

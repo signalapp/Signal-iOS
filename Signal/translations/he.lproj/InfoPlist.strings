@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Signal צריך להשתמש ב־Apple Music כדי לנגן צרופות מדיה.";
-NSCameraUsageDescription = "Signal משתמש במצלמה שלך כדי לצלם תצלומים ועבור שיחות וידאו.";
+NSAppleMusicUsageDescription = "Signal צריך להשתמש ב־Apple Music כדי לנגן אודיו מצורף.";
+NSCameraUsageDescription = "Signal משתמש במצלמה שלך כדי לצילום תמונות ולשיחות וידאו.";
 NSContactsUsageDescription = "Signal משתמש באנשי הקשר שלך כדי למצוא משתמשים שאתה מכיר. אנחנו לא מאחסנים את אנשי הקשר שלך על השרת.";
 NSFaceIDUsageDescription = "נעילת המסך של Signal משתמשת ב־Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal צריך גישה אל המיקום שלך על מנת לשתף את המיקום הנוכחי שלך.";
 NSMicrophoneUsageDescription = "Signal צריך גישה אל המיקרופון שלך כדי לבצע ולקבל שיחות טלפון וכדי להקליט הודעות קוליות.";
 NSPhotoLibraryAddUsageDescription = "Signal ישמור תצלומים בסיפרייה שלך.";
-NSPhotoLibraryUsageDescription = "Signal ייתן לך לבחור אילו תמונות לשלוח מתוך הסיפרייה שלך.";
-NSLocalNetworkUsageDescription = "Signal משתמש ברשת המקומית כדי להתיר לך להעביר ישירות את חשבונך אל טלפון חדש. הרשת המקומית לא תהיה בשימוש אלא אם תבחר במפורש ליזום העברה אל מכשיר חדש.";
+NSPhotoLibraryUsageDescription = "Signal ייתן לך לבחור אילו תמונות יישלחו מתוך הסיפרייה שלך.";
+NSLocalNetworkUsageDescription = "Signal משתמש ברשת המקומית כדי לאפשר לך להעביר ישירות את חשבונך אל פלאפון חדש. הרשת המקומית לא תהיה בשימוש אלא אם תבחר במפורש ליזום העברה אל מכשיר חדש.";

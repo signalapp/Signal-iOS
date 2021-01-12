@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "Compartilhar contato";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "Toque para baixar";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Chamada de vídeo";
@@ -1817,13 +1817,13 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Aprovar novos membros";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Ativar e Compartilhar Link";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Compartilhar Link";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Compartilhe este link com amigos para que eles entrem nesse grupo rapidamente.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Convidar amigos e amigas";
@@ -2677,8 +2677,11 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Suprimir mensagem";
 
-/* Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_COUNT_FORMAT" = "%@ Photos";
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Fotos";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -4388,19 +4391,19 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licenciado nos termos da GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data";
+"SETTINGS_DATA" = "Data Usage";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Mensagens de voz,  mídia que só pode ser vista uma vez e figurinhas com menos de 100kb sempre serão baixadas automaticamente.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "DOWNLOAD AUTOMÁTICO DE MÍDIA";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data";
+"SETTINGS_DATA_TITLE" = "Data Usage";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Suprimir conta";

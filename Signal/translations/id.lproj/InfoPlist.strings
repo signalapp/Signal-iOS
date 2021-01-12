@@ -1,4 +1,4 @@
-NSAppleMusicUsageDescription = "Signal perliu menggunakan Apple Music untuk memainkan lampiran media.";
+NSAppleMusicUsageDescription = "Signal perlu menggunakan Apple Music untuk memainkan lampiran media.";
 NSCameraUsageDescription = "Signal menggunakan kamera Anda untuk mengambil foto dan untuk panggilan video.";
 NSContactsUsageDescription = "Signal menggunakan kontak Anda untuk mencari pengguna yang Anda ketahui. Kami tidak menyimpan kontak-kontak Anda pada peladen.";
 NSFaceIDUsageDescription = "Kunci Layar Signal menggunakan Face ID.";

@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "שתף איש קשר";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "הקש כדי להוריד";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "שיחת וידאו";
@@ -1817,19 +1817,19 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "אשר חברי קבוצה חדשים";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "אפשר ושתף קישור";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "שתף קישור";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "שתף קישור זה עם חברים כדי לתת להם להצטרף במהירות אל קבוצה זו.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "הזמן חברים";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "הזמן חברים אל הקבוצה שלך באמצעות קישור הקבוצה";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "אנשים שיסרקו קוד זה יוכלו להצטרף אל הקבוצה שלך. מנהלנים עדין יצטרכו לאשר חברי קבוצה חדשים אם הגדרה זו מופעלת.";
@@ -2677,8 +2677,11 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "מחק הודעה";
 
-/* Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_COUNT_FORMAT" = "%@ Photos";
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ תמונות";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -4388,19 +4391,19 @@
 "SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger \n ברישיון תחת GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data";
+"SETTINGS_DATA" = "Data Usage";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "הודעות קוליות, מדיה לצפייה חד־פעמית, ומדבקות (מתחת אל 100 ק״ב) תמיד מורדות באופן אוטומטי.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "הורדה אוטומטית של מדיה";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "אפס הגדרות הורדה אוטומטית";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data";
+"SETTINGS_DATA_TITLE" = "Data Usage";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "מחק חשבון";
@@ -4448,7 +4451,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "אף פעם";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi וסלולרי";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
