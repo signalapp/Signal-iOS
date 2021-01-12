@@ -7,13 +7,7 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
-//*
-// Copyright (C) 2014-2016 Open Whisper Systems
-//
-// Licensed according to the LICENSE file in this repository.
-
-/// iOS - since we use a modern proto-compiler, we must specify
-/// the legacy proto format.
+/// iOS - since we use a modern proto-compiler, we must specify the legacy proto format.
 
 import Foundation
 import SwiftProtobuf
@@ -35,7 +29,7 @@ struct SessionProtos_Envelope {
 
   /// @required
   var type: SessionProtos_Envelope.TypeEnum {
-    get {return _type ?? .unknown}
+    get {return _type ?? .unidentifiedSender}
     set {_type = newValue}
   }
   /// Returns true if `type` has been explicitly set.
@@ -61,15 +55,6 @@ struct SessionProtos_Envelope {
   /// Clears the value of `sourceDevice`. Subsequent reads from it will return its default value.
   mutating func clearSourceDevice() {self._sourceDevice = nil}
 
-  var relay: String {
-    get {return _relay ?? String()}
-    set {_relay = newValue}
-  }
-  /// Returns true if `relay` has been explicitly set.
-  var hasRelay: Bool {return self._relay != nil}
-  /// Clears the value of `relay`. Subsequent reads from it will return its default value.
-  mutating func clearRelay() {self._relay = nil}
-
   /// @required
   var timestamp: UInt64 {
     get {return _timestamp ?? 0}
@@ -80,17 +65,6 @@ struct SessionProtos_Envelope {
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
-  /// Contains an encrypted DataMessage
-  var legacyMessage: Data {
-    get {return _legacyMessage ?? SwiftProtobuf.Internal.emptyData}
-    set {_legacyMessage = newValue}
-  }
-  /// Returns true if `legacyMessage` has been explicitly set.
-  var hasLegacyMessage: Bool {return self._legacyMessage != nil}
-  /// Clears the value of `legacyMessage`. Subsequent reads from it will return its default value.
-  mutating func clearLegacyMessage() {self._legacyMessage = nil}
-
-  /// Contains an encrypted Content
   var content: Data {
     get {return _content ?? SwiftProtobuf.Internal.emptyData}
     set {_content = newValue}
@@ -100,17 +74,6 @@ struct SessionProtos_Envelope {
   /// Clears the value of `content`. Subsequent reads from it will return its default value.
   mutating func clearContent() {self._content = nil}
 
-  /// We may eventually want to make this required.
-  var serverGuid: String {
-    get {return _serverGuid ?? String()}
-    set {_serverGuid = newValue}
-  }
-  /// Returns true if `serverGuid` has been explicitly set.
-  var hasServerGuid: Bool {return self._serverGuid != nil}
-  /// Clears the value of `serverGuid`. Subsequent reads from it will return its default value.
-  mutating func clearServerGuid() {self._serverGuid = nil}
-
-  /// We may eventually want to make this required.
   var serverTimestamp: UInt64 {
     get {return _serverTimestamp ?? 0}
     set {_serverTimestamp = newValue}
@@ -124,47 +87,25 @@ struct SessionProtos_Envelope {
 
   enum TypeEnum: SwiftProtobuf.Enum {
     typealias RawValue = Int
-    case unknown // = 0
-    case ciphertext // = 1
-    case keyExchange // = 2
-    case prekeyBundle // = 3
-    case receipt // = 5
     case unidentifiedSender // = 6
-
-    /// Loki
     case closedGroupCiphertext // = 7
 
-    /// Loki: Encrypted using the fallback session cipher. Contains a pre key bundle if it's a session request.
-    case fallbackMessage // = 101
-
     init() {
-      self = .unknown
+      self = .unidentifiedSender
     }
 
     init?(rawValue: Int) {
       switch rawValue {
-      case 0: self = .unknown
-      case 1: self = .ciphertext
-      case 2: self = .keyExchange
-      case 3: self = .prekeyBundle
-      case 5: self = .receipt
       case 6: self = .unidentifiedSender
       case 7: self = .closedGroupCiphertext
-      case 101: self = .fallbackMessage
       default: return nil
       }
     }
 
     var rawValue: Int {
       switch self {
-      case .unknown: return 0
-      case .ciphertext: return 1
-      case .keyExchange: return 2
-      case .prekeyBundle: return 3
-      case .receipt: return 5
       case .unidentifiedSender: return 6
       case .closedGroupCiphertext: return 7
-      case .fallbackMessage: return 101
       }
     }
 
@@ -175,11 +116,8 @@ struct SessionProtos_Envelope {
   fileprivate var _type: SessionProtos_Envelope.TypeEnum? = nil
   fileprivate var _source: String? = nil
   fileprivate var _sourceDevice: UInt32? = nil
-  fileprivate var _relay: String? = nil
   fileprivate var _timestamp: UInt64? = nil
-  fileprivate var _legacyMessage: Data? = nil
   fileprivate var _content: Data? = nil
-  fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
 }
 
@@ -216,15 +154,6 @@ struct SessionProtos_TypingMessage {
   /// Clears the value of `action`. Subsequent reads from it will return its default value.
   mutating func clearAction() {self._action = nil}
 
-  var groupID: Data {
-    get {return _groupID ?? SwiftProtobuf.Internal.emptyData}
-    set {_groupID = newValue}
-  }
-  /// Returns true if `groupID` has been explicitly set.
-  var hasGroupID: Bool {return self._groupID != nil}
-  /// Clears the value of `groupID`. Subsequent reads from it will return its default value.
-  mutating func clearGroupID() {self._groupID = nil}
-
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Action: SwiftProtobuf.Enum {
@@ -257,7 +186,6 @@ struct SessionProtos_TypingMessage {
 
   fileprivate var _timestamp: UInt64? = nil
   fileprivate var _action: SessionProtos_TypingMessage.Action? = nil
-  fileprivate var _groupID: Data? = nil
 }
 
 #if swift(>=4.2)
@@ -291,24 +219,6 @@ struct SessionProtos_Content {
   /// Clears the value of `syncMessage`. Subsequent reads from it will return its default value.
   mutating func clearSyncMessage() {self._syncMessage = nil}
 
-  var callMessage: SessionProtos_CallMessage {
-    get {return _callMessage ?? SessionProtos_CallMessage()}
-    set {_callMessage = newValue}
-  }
-  /// Returns true if `callMessage` has been explicitly set.
-  var hasCallMessage: Bool {return self._callMessage != nil}
-  /// Clears the value of `callMessage`. Subsequent reads from it will return its default value.
-  mutating func clearCallMessage() {self._callMessage = nil}
-
-  var nullMessage: SessionProtos_NullMessage {
-    get {return _nullMessage ?? SessionProtos_NullMessage()}
-    set {_nullMessage = newValue}
-  }
-  /// Returns true if `nullMessage` has been explicitly set.
-  var hasNullMessage: Bool {return self._nullMessage != nil}
-  /// Clears the value of `nullMessage`. Subsequent reads from it will return its default value.
-  mutating func clearNullMessage() {self._nullMessage = nil}
-
   var receiptMessage: SessionProtos_ReceiptMessage {
     get {return _receiptMessage ?? SessionProtos_ReceiptMessage()}
     set {_receiptMessage = newValue}
@@ -327,406 +237,14 @@ struct SessionProtos_Content {
   /// Clears the value of `typingMessage`. Subsequent reads from it will return its default value.
   mutating func clearTypingMessage() {self._typingMessage = nil}
 
-  /// Loki
-  var prekeyBundleMessage: SessionProtos_PrekeyBundleMessage {
-    get {return _prekeyBundleMessage ?? SessionProtos_PrekeyBundleMessage()}
-    set {_prekeyBundleMessage = newValue}
-  }
-  /// Returns true if `prekeyBundleMessage` has been explicitly set.
-  var hasPrekeyBundleMessage: Bool {return self._prekeyBundleMessage != nil}
-  /// Clears the value of `prekeyBundleMessage`. Subsequent reads from it will return its default value.
-  mutating func clearPrekeyBundleMessage() {self._prekeyBundleMessage = nil}
-
-  /// Loki
-  var lokiDeviceLinkMessage: SessionProtos_LokiDeviceLinkMessage {
-    get {return _lokiDeviceLinkMessage ?? SessionProtos_LokiDeviceLinkMessage()}
-    set {_lokiDeviceLinkMessage = newValue}
-  }
-  /// Returns true if `lokiDeviceLinkMessage` has been explicitly set.
-  var hasLokiDeviceLinkMessage: Bool {return self._lokiDeviceLinkMessage != nil}
-  /// Clears the value of `lokiDeviceLinkMessage`. Subsequent reads from it will return its default value.
-  mutating func clearLokiDeviceLinkMessage() {self._lokiDeviceLinkMessage = nil}
-
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
   fileprivate var _dataMessage: SessionProtos_DataMessage? = nil
   fileprivate var _syncMessage: SessionProtos_SyncMessage? = nil
-  fileprivate var _callMessage: SessionProtos_CallMessage? = nil
-  fileprivate var _nullMessage: SessionProtos_NullMessage? = nil
   fileprivate var _receiptMessage: SessionProtos_ReceiptMessage? = nil
   fileprivate var _typingMessage: SessionProtos_TypingMessage? = nil
-  fileprivate var _prekeyBundleMessage: SessionProtos_PrekeyBundleMessage? = nil
-  fileprivate var _lokiDeviceLinkMessage: SessionProtos_LokiDeviceLinkMessage? = nil
-}
-
-/// Loki
-struct SessionProtos_PrekeyBundleMessage {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var identityKey: Data {
-    get {return _identityKey ?? SwiftProtobuf.Internal.emptyData}
-    set {_identityKey = newValue}
-  }
-  /// Returns true if `identityKey` has been explicitly set.
-  var hasIdentityKey: Bool {return self._identityKey != nil}
-  /// Clears the value of `identityKey`. Subsequent reads from it will return its default value.
-  mutating func clearIdentityKey() {self._identityKey = nil}
-
-  var deviceID: UInt32 {
-    get {return _deviceID ?? 0}
-    set {_deviceID = newValue}
-  }
-  /// Returns true if `deviceID` has been explicitly set.
-  var hasDeviceID: Bool {return self._deviceID != nil}
-  /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
-  mutating func clearDeviceID() {self._deviceID = nil}
-
-  var prekeyID: UInt32 {
-    get {return _prekeyID ?? 0}
-    set {_prekeyID = newValue}
-  }
-  /// Returns true if `prekeyID` has been explicitly set.
-  var hasPrekeyID: Bool {return self._prekeyID != nil}
-  /// Clears the value of `prekeyID`. Subsequent reads from it will return its default value.
-  mutating func clearPrekeyID() {self._prekeyID = nil}
-
-  var signedKeyID: UInt32 {
-    get {return _signedKeyID ?? 0}
-    set {_signedKeyID = newValue}
-  }
-  /// Returns true if `signedKeyID` has been explicitly set.
-  var hasSignedKeyID: Bool {return self._signedKeyID != nil}
-  /// Clears the value of `signedKeyID`. Subsequent reads from it will return its default value.
-  mutating func clearSignedKeyID() {self._signedKeyID = nil}
-
-  var prekey: Data {
-    get {return _prekey ?? SwiftProtobuf.Internal.emptyData}
-    set {_prekey = newValue}
-  }
-  /// Returns true if `prekey` has been explicitly set.
-  var hasPrekey: Bool {return self._prekey != nil}
-  /// Clears the value of `prekey`. Subsequent reads from it will return its default value.
-  mutating func clearPrekey() {self._prekey = nil}
-
-  var signedKey: Data {
-    get {return _signedKey ?? SwiftProtobuf.Internal.emptyData}
-    set {_signedKey = newValue}
-  }
-  /// Returns true if `signedKey` has been explicitly set.
-  var hasSignedKey: Bool {return self._signedKey != nil}
-  /// Clears the value of `signedKey`. Subsequent reads from it will return its default value.
-  mutating func clearSignedKey() {self._signedKey = nil}
-
-  var signature: Data {
-    get {return _signature ?? SwiftProtobuf.Internal.emptyData}
-    set {_signature = newValue}
-  }
-  /// Returns true if `signature` has been explicitly set.
-  var hasSignature: Bool {return self._signature != nil}
-  /// Clears the value of `signature`. Subsequent reads from it will return its default value.
-  mutating func clearSignature() {self._signature = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _identityKey: Data? = nil
-  fileprivate var _deviceID: UInt32? = nil
-  fileprivate var _prekeyID: UInt32? = nil
-  fileprivate var _signedKeyID: UInt32? = nil
-  fileprivate var _prekey: Data? = nil
-  fileprivate var _signedKey: Data? = nil
-  fileprivate var _signature: Data? = nil
-}
-
-/// Loki
-struct SessionProtos_LokiDeviceLinkMessage {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var masterPublicKey: String {
-    get {return _masterPublicKey ?? String()}
-    set {_masterPublicKey = newValue}
-  }
-  /// Returns true if `masterPublicKey` has been explicitly set.
-  var hasMasterPublicKey: Bool {return self._masterPublicKey != nil}
-  /// Clears the value of `masterPublicKey`. Subsequent reads from it will return its default value.
-  mutating func clearMasterPublicKey() {self._masterPublicKey = nil}
-
-  var slavePublicKey: String {
-    get {return _slavePublicKey ?? String()}
-    set {_slavePublicKey = newValue}
-  }
-  /// Returns true if `slavePublicKey` has been explicitly set.
-  var hasSlavePublicKey: Bool {return self._slavePublicKey != nil}
-  /// Clears the value of `slavePublicKey`. Subsequent reads from it will return its default value.
-  mutating func clearSlavePublicKey() {self._slavePublicKey = nil}
-
-  var slaveSignature: Data {
-    get {return _slaveSignature ?? SwiftProtobuf.Internal.emptyData}
-    set {_slaveSignature = newValue}
-  }
-  /// Returns true if `slaveSignature` has been explicitly set.
-  var hasSlaveSignature: Bool {return self._slaveSignature != nil}
-  /// Clears the value of `slaveSignature`. Subsequent reads from it will return its default value.
-  mutating func clearSlaveSignature() {self._slaveSignature = nil}
-
-  var masterSignature: Data {
-    get {return _masterSignature ?? SwiftProtobuf.Internal.emptyData}
-    set {_masterSignature = newValue}
-  }
-  /// Returns true if `masterSignature` has been explicitly set.
-  var hasMasterSignature: Bool {return self._masterSignature != nil}
-  /// Clears the value of `masterSignature`. Subsequent reads from it will return its default value.
-  mutating func clearMasterSignature() {self._masterSignature = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _masterPublicKey: String? = nil
-  fileprivate var _slavePublicKey: String? = nil
-  fileprivate var _slaveSignature: Data? = nil
-  fileprivate var _masterSignature: Data? = nil
-}
-
-struct SessionProtos_CallMessage {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var offer: SessionProtos_CallMessage.Offer {
-    get {return _offer ?? SessionProtos_CallMessage.Offer()}
-    set {_offer = newValue}
-  }
-  /// Returns true if `offer` has been explicitly set.
-  var hasOffer: Bool {return self._offer != nil}
-  /// Clears the value of `offer`. Subsequent reads from it will return its default value.
-  mutating func clearOffer() {self._offer = nil}
-
-  var answer: SessionProtos_CallMessage.Answer {
-    get {return _answer ?? SessionProtos_CallMessage.Answer()}
-    set {_answer = newValue}
-  }
-  /// Returns true if `answer` has been explicitly set.
-  var hasAnswer: Bool {return self._answer != nil}
-  /// Clears the value of `answer`. Subsequent reads from it will return its default value.
-  mutating func clearAnswer() {self._answer = nil}
-
-  var iceUpdate: [SessionProtos_CallMessage.IceUpdate] = []
-
-  var hangup: SessionProtos_CallMessage.Hangup {
-    get {return _hangup ?? SessionProtos_CallMessage.Hangup()}
-    set {_hangup = newValue}
-  }
-  /// Returns true if `hangup` has been explicitly set.
-  var hasHangup: Bool {return self._hangup != nil}
-  /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
-  mutating func clearHangup() {self._hangup = nil}
-
-  var busy: SessionProtos_CallMessage.Busy {
-    get {return _busy ?? SessionProtos_CallMessage.Busy()}
-    set {_busy = newValue}
-  }
-  /// Returns true if `busy` has been explicitly set.
-  var hasBusy: Bool {return self._busy != nil}
-  /// Clears the value of `busy`. Subsequent reads from it will return its default value.
-  mutating func clearBusy() {self._busy = nil}
-
-  /// Signal-iOS sends profile key with call messages
-  /// for earlier discovery
-  var profileKey: Data {
-    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
-    set {_profileKey = newValue}
-  }
-  /// Returns true if `profileKey` has been explicitly set.
-  var hasProfileKey: Bool {return self._profileKey != nil}
-  /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  mutating func clearProfileKey() {self._profileKey = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  struct Offer {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var id: UInt64 {
-      get {return _id ?? 0}
-      set {_id = newValue}
-    }
-    /// Returns true if `id` has been explicitly set.
-    var hasID: Bool {return self._id != nil}
-    /// Clears the value of `id`. Subsequent reads from it will return its default value.
-    mutating func clearID() {self._id = nil}
-
-    /// Signal-iOS renamed the description field to avoid
-    /// conflicts with [NSObject description].
-    /// @required
-    var sessionDescription: String {
-      get {return _sessionDescription ?? String()}
-      set {_sessionDescription = newValue}
-    }
-    /// Returns true if `sessionDescription` has been explicitly set.
-    var hasSessionDescription: Bool {return self._sessionDescription != nil}
-    /// Clears the value of `sessionDescription`. Subsequent reads from it will return its default value.
-    mutating func clearSessionDescription() {self._sessionDescription = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _id: UInt64? = nil
-    fileprivate var _sessionDescription: String? = nil
-  }
-
-  struct Answer {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var id: UInt64 {
-      get {return _id ?? 0}
-      set {_id = newValue}
-    }
-    /// Returns true if `id` has been explicitly set.
-    var hasID: Bool {return self._id != nil}
-    /// Clears the value of `id`. Subsequent reads from it will return its default value.
-    mutating func clearID() {self._id = nil}
-
-    /// Signal-iOS renamed the description field to avoid
-    /// conflicts with [NSObject description].
-    /// @required
-    var sessionDescription: String {
-      get {return _sessionDescription ?? String()}
-      set {_sessionDescription = newValue}
-    }
-    /// Returns true if `sessionDescription` has been explicitly set.
-    var hasSessionDescription: Bool {return self._sessionDescription != nil}
-    /// Clears the value of `sessionDescription`. Subsequent reads from it will return its default value.
-    mutating func clearSessionDescription() {self._sessionDescription = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _id: UInt64? = nil
-    fileprivate var _sessionDescription: String? = nil
-  }
-
-  struct IceUpdate {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var id: UInt64 {
-      get {return _id ?? 0}
-      set {_id = newValue}
-    }
-    /// Returns true if `id` has been explicitly set.
-    var hasID: Bool {return self._id != nil}
-    /// Clears the value of `id`. Subsequent reads from it will return its default value.
-    mutating func clearID() {self._id = nil}
-
-    /// @required
-    var sdpMid: String {
-      get {return _sdpMid ?? String()}
-      set {_sdpMid = newValue}
-    }
-    /// Returns true if `sdpMid` has been explicitly set.
-    var hasSdpMid: Bool {return self._sdpMid != nil}
-    /// Clears the value of `sdpMid`. Subsequent reads from it will return its default value.
-    mutating func clearSdpMid() {self._sdpMid = nil}
-
-    /// @required
-    var sdpMlineIndex: UInt32 {
-      get {return _sdpMlineIndex ?? 0}
-      set {_sdpMlineIndex = newValue}
-    }
-    /// Returns true if `sdpMlineIndex` has been explicitly set.
-    var hasSdpMlineIndex: Bool {return self._sdpMlineIndex != nil}
-    /// Clears the value of `sdpMlineIndex`. Subsequent reads from it will return its default value.
-    mutating func clearSdpMlineIndex() {self._sdpMlineIndex = nil}
-
-    /// @required
-    var sdp: String {
-      get {return _sdp ?? String()}
-      set {_sdp = newValue}
-    }
-    /// Returns true if `sdp` has been explicitly set.
-    var hasSdp: Bool {return self._sdp != nil}
-    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
-    mutating func clearSdp() {self._sdp = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _id: UInt64? = nil
-    fileprivate var _sdpMid: String? = nil
-    fileprivate var _sdpMlineIndex: UInt32? = nil
-    fileprivate var _sdp: String? = nil
-  }
-
-  struct Busy {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var id: UInt64 {
-      get {return _id ?? 0}
-      set {_id = newValue}
-    }
-    /// Returns true if `id` has been explicitly set.
-    var hasID: Bool {return self._id != nil}
-    /// Clears the value of `id`. Subsequent reads from it will return its default value.
-    mutating func clearID() {self._id = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _id: UInt64? = nil
-  }
-
-  struct Hangup {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var id: UInt64 {
-      get {return _id ?? 0}
-      set {_id = newValue}
-    }
-    /// Returns true if `id` has been explicitly set.
-    var hasID: Bool {return self._id != nil}
-    /// Clears the value of `id`. Subsequent reads from it will return its default value.
-    mutating func clearID() {self._id = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _id: UInt64? = nil
-  }
-
-  init() {}
-
-  fileprivate var _offer: SessionProtos_CallMessage.Offer? = nil
-  fileprivate var _answer: SessionProtos_CallMessage.Answer? = nil
-  fileprivate var _hangup: SessionProtos_CallMessage.Hangup? = nil
-  fileprivate var _busy: SessionProtos_CallMessage.Busy? = nil
-  fileprivate var _profileKey: Data? = nil
 }
 
 struct SessionProtos_ClosedGroupCiphertextMessageWrapper {
@@ -836,7 +354,6 @@ struct SessionProtos_DataMessage {
 
   var preview: [SessionProtos_DataMessage.Preview] = []
 
-  /// Loki: The current user's profile
   var profile: SessionProtos_DataMessage.LokiProfile {
     get {return _profile ?? SessionProtos_DataMessage.LokiProfile()}
     set {_profile = newValue}
@@ -846,17 +363,6 @@ struct SessionProtos_DataMessage {
   /// Clears the value of `profile`. Subsequent reads from it will return its default value.
   mutating func clearProfile() {self._profile = nil}
 
-  /// Loki
-  var closedGroupUpdate: SessionProtos_DataMessage.ClosedGroupUpdate {
-    get {return _closedGroupUpdate ?? SessionProtos_DataMessage.ClosedGroupUpdate()}
-    set {_closedGroupUpdate = newValue}
-  }
-  /// Returns true if `closedGroupUpdate` has been explicitly set.
-  var hasClosedGroupUpdate: Bool {return self._closedGroupUpdate != nil}
-  /// Clears the value of `closedGroupUpdate`. Subsequent reads from it will return its default value.
-  mutating func clearClosedGroupUpdate() {self._closedGroupUpdate = nil}
-
-  /// Loki
   var closedGroupUpdateV2: SessionProtos_DataMessage.ClosedGroupUpdateV2 {
     get {return _closedGroupUpdateV2 ?? SessionProtos_DataMessage.ClosedGroupUpdateV2()}
     set {_closedGroupUpdateV2 = newValue}
@@ -866,7 +372,6 @@ struct SessionProtos_DataMessage {
   /// Clears the value of `closedGroupUpdateV2`. Subsequent reads from it will return its default value.
   mutating func clearClosedGroupUpdateV2() {self._closedGroupUpdateV2 = nil}
 
-  /// Loki: Internal public chat info
   var publicChatInfo: SessionProtos_PublicChatInfo {
     get {return _publicChatInfo ?? SessionProtos_PublicChatInfo()}
     set {_publicChatInfo = newValue}
@@ -880,31 +385,22 @@ struct SessionProtos_DataMessage {
 
   enum Flags: SwiftProtobuf.Enum {
     typealias RawValue = Int
-    case endSession // = 1
     case expirationTimerUpdate // = 2
-    case profileKeyUpdate // = 4
-    case unlinkDevice // = 128
 
     init() {
-      self = .endSession
+      self = .expirationTimerUpdate
     }
 
     init?(rawValue: Int) {
       switch rawValue {
-      case 1: self = .endSession
       case 2: self = .expirationTimerUpdate
-      case 4: self = .profileKeyUpdate
-      case 128: self = .unlinkDevice
       default: return nil
       }
     }
 
     var rawValue: Int {
       switch self {
-      case .endSession: return 1
       case .expirationTimerUpdate: return 2
-      case .profileKeyUpdate: return 4
-      case .unlinkDevice: return 128
       }
     }
 
@@ -1496,7 +992,6 @@ struct SessionProtos_DataMessage {
     fileprivate var _image: SessionProtos_AttachmentPointer? = nil
   }
 
-  /// Loki
   struct LokiProfile {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1687,149 +1182,6 @@ struct SessionProtos_DataMessage {
     fileprivate var _encryptionKeyPair: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPair? = nil
   }
 
-  struct ClosedGroupUpdate {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var name: String {
-      get {return _name ?? String()}
-      set {_name = newValue}
-    }
-    /// Returns true if `name` has been explicitly set.
-    var hasName: Bool {return self._name != nil}
-    /// Clears the value of `name`. Subsequent reads from it will return its default value.
-    mutating func clearName() {self._name = nil}
-
-    /// @required
-    var groupPublicKey: Data {
-      get {return _groupPublicKey ?? SwiftProtobuf.Internal.emptyData}
-      set {_groupPublicKey = newValue}
-    }
-    /// Returns true if `groupPublicKey` has been explicitly set.
-    var hasGroupPublicKey: Bool {return self._groupPublicKey != nil}
-    /// Clears the value of `groupPublicKey`. Subsequent reads from it will return its default value.
-    mutating func clearGroupPublicKey() {self._groupPublicKey = nil}
-
-    var groupPrivateKey: Data {
-      get {return _groupPrivateKey ?? SwiftProtobuf.Internal.emptyData}
-      set {_groupPrivateKey = newValue}
-    }
-    /// Returns true if `groupPrivateKey` has been explicitly set.
-    var hasGroupPrivateKey: Bool {return self._groupPrivateKey != nil}
-    /// Clears the value of `groupPrivateKey`. Subsequent reads from it will return its default value.
-    mutating func clearGroupPrivateKey() {self._groupPrivateKey = nil}
-
-    var senderKeys: [SessionProtos_DataMessage.ClosedGroupUpdate.SenderKey] = []
-
-    var members: [Data] = []
-
-    var admins: [Data] = []
-
-    /// @required
-    var type: SessionProtos_DataMessage.ClosedGroupUpdate.TypeEnum {
-      get {return _type ?? .new}
-      set {_type = newValue}
-    }
-    /// Returns true if `type` has been explicitly set.
-    var hasType: Bool {return self._type != nil}
-    /// Clears the value of `type`. Subsequent reads from it will return its default value.
-    mutating func clearType() {self._type = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    enum TypeEnum: SwiftProtobuf.Enum {
-      typealias RawValue = Int
-
-      /// groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
-      case new // = 0
-
-      /// groupPublicKey, name, senderKeys, members, admins
-      case info // = 1
-
-      /// groupPublicKey
-      case senderKeyRequest // = 2
-
-      /// groupPublicKey, senderKeys
-      case senderKey // = 3
-
-      init() {
-        self = .new
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .new
-        case 1: self = .info
-        case 2: self = .senderKeyRequest
-        case 3: self = .senderKey
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .new: return 0
-        case .info: return 1
-        case .senderKeyRequest: return 2
-        case .senderKey: return 3
-        }
-      }
-
-    }
-
-    struct SenderKey {
-      // SwiftProtobuf.Message conformance is added in an extension below. See the
-      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-      // methods supported on all messages.
-
-      /// @required
-      var chainKey: Data {
-        get {return _chainKey ?? SwiftProtobuf.Internal.emptyData}
-        set {_chainKey = newValue}
-      }
-      /// Returns true if `chainKey` has been explicitly set.
-      var hasChainKey: Bool {return self._chainKey != nil}
-      /// Clears the value of `chainKey`. Subsequent reads from it will return its default value.
-      mutating func clearChainKey() {self._chainKey = nil}
-
-      /// @required
-      var keyIndex: UInt32 {
-        get {return _keyIndex ?? 0}
-        set {_keyIndex = newValue}
-      }
-      /// Returns true if `keyIndex` has been explicitly set.
-      var hasKeyIndex: Bool {return self._keyIndex != nil}
-      /// Clears the value of `keyIndex`. Subsequent reads from it will return its default value.
-      mutating func clearKeyIndex() {self._keyIndex = nil}
-
-      /// @required
-      var publicKey: Data {
-        get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
-        set {_publicKey = newValue}
-      }
-      /// Returns true if `publicKey` has been explicitly set.
-      var hasPublicKey: Bool {return self._publicKey != nil}
-      /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
-      mutating func clearPublicKey() {self._publicKey = nil}
-
-      var unknownFields = SwiftProtobuf.UnknownStorage()
-
-      init() {}
-
-      fileprivate var _chainKey: Data? = nil
-      fileprivate var _keyIndex: UInt32? = nil
-      fileprivate var _publicKey: Data? = nil
-    }
-
-    init() {}
-
-    fileprivate var _name: String? = nil
-    fileprivate var _groupPublicKey: Data? = nil
-    fileprivate var _groupPrivateKey: Data? = nil
-    fileprivate var _type: SessionProtos_DataMessage.ClosedGroupUpdate.TypeEnum? = nil
-  }
-
   init() {}
 
   fileprivate var _body: String? = nil
@@ -1840,7 +1192,6 @@ struct SessionProtos_DataMessage {
   fileprivate var _timestamp: UInt64? = nil
   fileprivate var _quote: SessionProtos_DataMessage.Quote? = nil
   fileprivate var _profile: SessionProtos_DataMessage.LokiProfile? = nil
-  fileprivate var _closedGroupUpdate: SessionProtos_DataMessage.ClosedGroupUpdate? = nil
   fileprivate var _closedGroupUpdateV2: SessionProtos_DataMessage.ClosedGroupUpdateV2? = nil
   fileprivate var _publicChatInfo: SessionProtos_PublicChatInfo? = nil
 }
@@ -1871,32 +1222,7 @@ extension SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
-extension SessionProtos_DataMessage.ClosedGroupUpdate.TypeEnum: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
 #endif  // swift(>=4.2)
-
-struct SessionProtos_NullMessage {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var padding: Data {
-    get {return _padding ?? SwiftProtobuf.Internal.emptyData}
-    set {_padding = newValue}
-  }
-  /// Returns true if `padding` has been explicitly set.
-  var hasPadding: Bool {return self._padding != nil}
-  /// Clears the value of `padding`. Subsequent reads from it will return its default value.
-  mutating func clearPadding() {self._padding = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _padding: Data? = nil
-}
 
 struct SessionProtos_ReceiptMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1956,95 +1282,6 @@ extension SessionProtos_ReceiptMessage.TypeEnum: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-struct SessionProtos_Verified {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  /// @required
-  var destination: String {
-    get {return _destination ?? String()}
-    set {_destination = newValue}
-  }
-  /// Returns true if `destination` has been explicitly set.
-  var hasDestination: Bool {return self._destination != nil}
-  /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-  mutating func clearDestination() {self._destination = nil}
-
-  var identityKey: Data {
-    get {return _identityKey ?? SwiftProtobuf.Internal.emptyData}
-    set {_identityKey = newValue}
-  }
-  /// Returns true if `identityKey` has been explicitly set.
-  var hasIdentityKey: Bool {return self._identityKey != nil}
-  /// Clears the value of `identityKey`. Subsequent reads from it will return its default value.
-  mutating func clearIdentityKey() {self._identityKey = nil}
-
-  var state: SessionProtos_Verified.State {
-    get {return _state ?? .default}
-    set {_state = newValue}
-  }
-  /// Returns true if `state` has been explicitly set.
-  var hasState: Bool {return self._state != nil}
-  /// Clears the value of `state`. Subsequent reads from it will return its default value.
-  mutating func clearState() {self._state = nil}
-
-  var nullMessage: Data {
-    get {return _nullMessage ?? SwiftProtobuf.Internal.emptyData}
-    set {_nullMessage = newValue}
-  }
-  /// Returns true if `nullMessage` has been explicitly set.
-  var hasNullMessage: Bool {return self._nullMessage != nil}
-  /// Clears the value of `nullMessage`. Subsequent reads from it will return its default value.
-  mutating func clearNullMessage() {self._nullMessage = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  enum State: SwiftProtobuf.Enum {
-    typealias RawValue = Int
-    case `default` // = 0
-    case verified // = 1
-    case unverified // = 2
-
-    init() {
-      self = .default
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .default
-      case 1: self = .verified
-      case 2: self = .unverified
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .default: return 0
-      case .verified: return 1
-      case .unverified: return 2
-      }
-    }
-
-  }
-
-  init() {}
-
-  fileprivate var _destination: String? = nil
-  fileprivate var _identityKey: Data? = nil
-  fileprivate var _state: SessionProtos_Verified.State? = nil
-  fileprivate var _nullMessage: Data? = nil
-}
-
-#if swift(>=4.2)
-
-extension SessionProtos_Verified.State: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
-
 struct SessionProtos_SyncMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2059,62 +1296,6 @@ struct SessionProtos_SyncMessage {
   /// Clears the value of `sent`. Subsequent reads from it will return its default value.
   mutating func clearSent() {self._sent = nil}
 
-  var contacts: SessionProtos_SyncMessage.Contacts {
-    get {return _contacts ?? SessionProtos_SyncMessage.Contacts()}
-    set {_contacts = newValue}
-  }
-  /// Returns true if `contacts` has been explicitly set.
-  var hasContacts: Bool {return self._contacts != nil}
-  /// Clears the value of `contacts`. Subsequent reads from it will return its default value.
-  mutating func clearContacts() {self._contacts = nil}
-
-  var groups: SessionProtos_SyncMessage.Groups {
-    get {return _groups ?? SessionProtos_SyncMessage.Groups()}
-    set {_groups = newValue}
-  }
-  /// Returns true if `groups` has been explicitly set.
-  var hasGroups: Bool {return self._groups != nil}
-  /// Clears the value of `groups`. Subsequent reads from it will return its default value.
-  mutating func clearGroups() {self._groups = nil}
-
-  var request: SessionProtos_SyncMessage.Request {
-    get {return _request ?? SessionProtos_SyncMessage.Request()}
-    set {_request = newValue}
-  }
-  /// Returns true if `request` has been explicitly set.
-  var hasRequest: Bool {return self._request != nil}
-  /// Clears the value of `request`. Subsequent reads from it will return its default value.
-  mutating func clearRequest() {self._request = nil}
-
-  var read: [SessionProtos_SyncMessage.Read] = []
-
-  var blocked: SessionProtos_SyncMessage.Blocked {
-    get {return _blocked ?? SessionProtos_SyncMessage.Blocked()}
-    set {_blocked = newValue}
-  }
-  /// Returns true if `blocked` has been explicitly set.
-  var hasBlocked: Bool {return self._blocked != nil}
-  /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
-  mutating func clearBlocked() {self._blocked = nil}
-
-  var verified: SessionProtos_Verified {
-    get {return _verified ?? SessionProtos_Verified()}
-    set {_verified = newValue}
-  }
-  /// Returns true if `verified` has been explicitly set.
-  var hasVerified: Bool {return self._verified != nil}
-  /// Clears the value of `verified`. Subsequent reads from it will return its default value.
-  mutating func clearVerified() {self._verified = nil}
-
-  var configuration: SessionProtos_SyncMessage.Configuration {
-    get {return _configuration ?? SessionProtos_SyncMessage.Configuration()}
-    set {_configuration = newValue}
-  }
-  /// Returns true if `configuration` has been explicitly set.
-  var hasConfiguration: Bool {return self._configuration != nil}
-  /// Clears the value of `configuration`. Subsequent reads from it will return its default value.
-  mutating func clearConfiguration() {self._configuration = nil}
-
   var padding: Data {
     get {return _padding ?? SwiftProtobuf.Internal.emptyData}
     set {_padding = newValue}
@@ -2123,8 +1304,6 @@ struct SessionProtos_SyncMessage {
   var hasPadding: Bool {return self._padding != nil}
   /// Clears the value of `padding`. Subsequent reads from it will return its default value.
   mutating func clearPadding() {self._padding = nil}
-
-  var openGroups: [SessionProtos_SyncMessage.OpenGroupDetails] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2169,8 +1348,6 @@ struct SessionProtos_SyncMessage {
     /// Clears the value of `expirationStartTimestamp`. Subsequent reads from it will return its default value.
     mutating func clearExpirationStartTimestamp() {self._expirationStartTimestamp = nil}
 
-    var unidentifiedStatus: [SessionProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus] = []
-
     var isRecipientUpdate: Bool {
       get {return _isRecipientUpdate ?? false}
       set {_isRecipientUpdate = newValue}
@@ -2182,37 +1359,6 @@ struct SessionProtos_SyncMessage {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    struct UnidentifiedDeliveryStatus {
-      // SwiftProtobuf.Message conformance is added in an extension below. See the
-      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-      // methods supported on all messages.
-
-      var destination: String {
-        get {return _destination ?? String()}
-        set {_destination = newValue}
-      }
-      /// Returns true if `destination` has been explicitly set.
-      var hasDestination: Bool {return self._destination != nil}
-      /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-      mutating func clearDestination() {self._destination = nil}
-
-      var unidentified: Bool {
-        get {return _unidentified ?? false}
-        set {_unidentified = newValue}
-      }
-      /// Returns true if `unidentified` has been explicitly set.
-      var hasUnidentified: Bool {return self._unidentified != nil}
-      /// Clears the value of `unidentified`. Subsequent reads from it will return its default value.
-      mutating func clearUnidentified() {self._unidentified = nil}
-
-      var unknownFields = SwiftProtobuf.UnknownStorage()
-
-      init() {}
-
-      fileprivate var _destination: String? = nil
-      fileprivate var _unidentified: Bool? = nil
-    }
-
     init() {}
 
     fileprivate var _destination: String? = nil
@@ -2222,289 +1368,11 @@ struct SessionProtos_SyncMessage {
     fileprivate var _isRecipientUpdate: Bool? = nil
   }
 
-  struct Contacts {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var blob: SessionProtos_AttachmentPointer {
-      get {return _blob ?? SessionProtos_AttachmentPointer()}
-      set {_blob = newValue}
-    }
-    /// Returns true if `blob` has been explicitly set.
-    var hasBlob: Bool {return self._blob != nil}
-    /// Clears the value of `blob`. Subsequent reads from it will return its default value.
-    mutating func clearBlob() {self._blob = nil}
-
-    /// Signal-iOS renamed this property.
-    var isComplete: Bool {
-      get {return _isComplete ?? false}
-      set {_isComplete = newValue}
-    }
-    /// Returns true if `isComplete` has been explicitly set.
-    var hasIsComplete: Bool {return self._isComplete != nil}
-    /// Clears the value of `isComplete`. Subsequent reads from it will return its default value.
-    mutating func clearIsComplete() {self._isComplete = nil}
-
-    /// Loki
-    var data: Data {
-      get {return _data ?? SwiftProtobuf.Internal.emptyData}
-      set {_data = newValue}
-    }
-    /// Returns true if `data` has been explicitly set.
-    var hasData: Bool {return self._data != nil}
-    /// Clears the value of `data`. Subsequent reads from it will return its default value.
-    mutating func clearData() {self._data = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _blob: SessionProtos_AttachmentPointer? = nil
-    fileprivate var _isComplete: Bool? = nil
-    fileprivate var _data: Data? = nil
-  }
-
-  struct Groups {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var blob: SessionProtos_AttachmentPointer {
-      get {return _blob ?? SessionProtos_AttachmentPointer()}
-      set {_blob = newValue}
-    }
-    /// Returns true if `blob` has been explicitly set.
-    var hasBlob: Bool {return self._blob != nil}
-    /// Clears the value of `blob`. Subsequent reads from it will return its default value.
-    mutating func clearBlob() {self._blob = nil}
-
-    /// Loki
-    var data: Data {
-      get {return _data ?? SwiftProtobuf.Internal.emptyData}
-      set {_data = newValue}
-    }
-    /// Returns true if `data` has been explicitly set.
-    var hasData: Bool {return self._data != nil}
-    /// Clears the value of `data`. Subsequent reads from it will return its default value.
-    mutating func clearData() {self._data = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _blob: SessionProtos_AttachmentPointer? = nil
-    fileprivate var _data: Data? = nil
-  }
-
-  /// Loki
-  struct OpenGroupDetails {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var url: String {
-      get {return _url ?? String()}
-      set {_url = newValue}
-    }
-    /// Returns true if `url` has been explicitly set.
-    var hasURL: Bool {return self._url != nil}
-    /// Clears the value of `url`. Subsequent reads from it will return its default value.
-    mutating func clearURL() {self._url = nil}
-
-    /// @required
-    var channelID: UInt64 {
-      get {return _channelID ?? 0}
-      set {_channelID = newValue}
-    }
-    /// Returns true if `channelID` has been explicitly set.
-    var hasChannelID: Bool {return self._channelID != nil}
-    /// Clears the value of `channelID`. Subsequent reads from it will return its default value.
-    mutating func clearChannelID() {self._channelID = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _url: String? = nil
-    fileprivate var _channelID: UInt64? = nil
-  }
-
-  struct Blocked {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var numbers: [String] = []
-
-    var groupIds: [Data] = []
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-  }
-
-  struct Request {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var type: SessionProtos_SyncMessage.Request.TypeEnum {
-      get {return _type ?? .unknown}
-      set {_type = newValue}
-    }
-    /// Returns true if `type` has been explicitly set.
-    var hasType: Bool {return self._type != nil}
-    /// Clears the value of `type`. Subsequent reads from it will return its default value.
-    mutating func clearType() {self._type = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    enum TypeEnum: SwiftProtobuf.Enum {
-      typealias RawValue = Int
-      case unknown // = 0
-      case contacts // = 1
-      case groups // = 2
-      case blocked // = 3
-      case configuration // = 4
-
-      init() {
-        self = .unknown
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 0: self = .unknown
-        case 1: self = .contacts
-        case 2: self = .groups
-        case 3: self = .blocked
-        case 4: self = .configuration
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .unknown: return 0
-        case .contacts: return 1
-        case .groups: return 2
-        case .blocked: return 3
-        case .configuration: return 4
-        }
-      }
-
-    }
-
-    init() {}
-
-    fileprivate var _type: SessionProtos_SyncMessage.Request.TypeEnum? = nil
-  }
-
-  struct Read {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var sender: String {
-      get {return _sender ?? String()}
-      set {_sender = newValue}
-    }
-    /// Returns true if `sender` has been explicitly set.
-    var hasSender: Bool {return self._sender != nil}
-    /// Clears the value of `sender`. Subsequent reads from it will return its default value.
-    mutating func clearSender() {self._sender = nil}
-
-    /// @required
-    var timestamp: UInt64 {
-      get {return _timestamp ?? 0}
-      set {_timestamp = newValue}
-    }
-    /// Returns true if `timestamp` has been explicitly set.
-    var hasTimestamp: Bool {return self._timestamp != nil}
-    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
-    mutating func clearTimestamp() {self._timestamp = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _sender: String? = nil
-    fileprivate var _timestamp: UInt64? = nil
-  }
-
-  struct Configuration {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var readReceipts: Bool {
-      get {return _readReceipts ?? false}
-      set {_readReceipts = newValue}
-    }
-    /// Returns true if `readReceipts` has been explicitly set.
-    var hasReadReceipts: Bool {return self._readReceipts != nil}
-    /// Clears the value of `readReceipts`. Subsequent reads from it will return its default value.
-    mutating func clearReadReceipts() {self._readReceipts = nil}
-
-    var unidentifiedDeliveryIndicators: Bool {
-      get {return _unidentifiedDeliveryIndicators ?? false}
-      set {_unidentifiedDeliveryIndicators = newValue}
-    }
-    /// Returns true if `unidentifiedDeliveryIndicators` has been explicitly set.
-    var hasUnidentifiedDeliveryIndicators: Bool {return self._unidentifiedDeliveryIndicators != nil}
-    /// Clears the value of `unidentifiedDeliveryIndicators`. Subsequent reads from it will return its default value.
-    mutating func clearUnidentifiedDeliveryIndicators() {self._unidentifiedDeliveryIndicators = nil}
-
-    var typingIndicators: Bool {
-      get {return _typingIndicators ?? false}
-      set {_typingIndicators = newValue}
-    }
-    /// Returns true if `typingIndicators` has been explicitly set.
-    var hasTypingIndicators: Bool {return self._typingIndicators != nil}
-    /// Clears the value of `typingIndicators`. Subsequent reads from it will return its default value.
-    mutating func clearTypingIndicators() {self._typingIndicators = nil}
-
-    var linkPreviews: Bool {
-      get {return _linkPreviews ?? false}
-      set {_linkPreviews = newValue}
-    }
-    /// Returns true if `linkPreviews` has been explicitly set.
-    var hasLinkPreviews: Bool {return self._linkPreviews != nil}
-    /// Clears the value of `linkPreviews`. Subsequent reads from it will return its default value.
-    mutating func clearLinkPreviews() {self._linkPreviews = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _readReceipts: Bool? = nil
-    fileprivate var _unidentifiedDeliveryIndicators: Bool? = nil
-    fileprivate var _typingIndicators: Bool? = nil
-    fileprivate var _linkPreviews: Bool? = nil
-  }
-
   init() {}
 
   fileprivate var _sent: SessionProtos_SyncMessage.Sent? = nil
-  fileprivate var _contacts: SessionProtos_SyncMessage.Contacts? = nil
-  fileprivate var _groups: SessionProtos_SyncMessage.Groups? = nil
-  fileprivate var _request: SessionProtos_SyncMessage.Request? = nil
-  fileprivate var _blocked: SessionProtos_SyncMessage.Blocked? = nil
-  fileprivate var _verified: SessionProtos_Verified? = nil
-  fileprivate var _configuration: SessionProtos_SyncMessage.Configuration? = nil
   fileprivate var _padding: Data? = nil
 }
-
-#if swift(>=4.2)
-
-extension SessionProtos_SyncMessage.Request.TypeEnum: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
 
 struct SessionProtos_AttachmentPointer {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -2611,7 +1479,6 @@ struct SessionProtos_AttachmentPointer {
   /// Clears the value of `caption`. Subsequent reads from it will return its default value.
   mutating func clearCaption() {self._caption = nil}
 
-  /// Loki
   var url: String {
     get {return _url ?? String()}
     set {_url = newValue}
@@ -2715,7 +1582,6 @@ struct SessionProtos_GroupContext {
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {self._avatar = nil}
 
-  /// Loki
   var admins: [String] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2813,15 +1679,6 @@ struct SessionProtos_ContactDetails {
   /// Clears the value of `color`. Subsequent reads from it will return its default value.
   mutating func clearColor() {self._color = nil}
 
-  var verified: SessionProtos_Verified {
-    get {return _verified ?? SessionProtos_Verified()}
-    set {_verified = newValue}
-  }
-  /// Returns true if `verified` has been explicitly set.
-  var hasVerified: Bool {return self._verified != nil}
-  /// Clears the value of `verified`. Subsequent reads from it will return its default value.
-  mutating func clearVerified() {self._verified = nil}
-
   var profileKey: Data {
     get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
     set {_profileKey = newValue}
@@ -2849,7 +1706,6 @@ struct SessionProtos_ContactDetails {
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
   mutating func clearExpireTimer() {self._expireTimer = nil}
 
-  /// Loki
   var nickname: String {
     get {return _nickname ?? String()}
     set {_nickname = newValue}
@@ -2898,7 +1754,6 @@ struct SessionProtos_ContactDetails {
   fileprivate var _name: String? = nil
   fileprivate var _avatar: SessionProtos_ContactDetails.Avatar? = nil
   fileprivate var _color: String? = nil
-  fileprivate var _verified: SessionProtos_Verified? = nil
   fileprivate var _profileKey: Data? = nil
   fileprivate var _blocked: Bool? = nil
   fileprivate var _expireTimer: UInt32? = nil
@@ -2976,7 +1831,6 @@ struct SessionProtos_GroupDetails {
   /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
   mutating func clearBlocked() {self._blocked = nil}
 
-  /// Loki
   var admins: [String] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -3023,7 +1877,7 @@ struct SessionProtos_GroupDetails {
   fileprivate var _blocked: Bool? = nil
 }
 
-/// Internal - DO NOT SEND
+/// Intended for internal use only
 struct SessionProtos_PublicChatInfo {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3055,25 +1909,24 @@ extension SessionProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     1: .same(proto: "type"),
     2: .same(proto: "source"),
     7: .same(proto: "sourceDevice"),
-    3: .same(proto: "relay"),
     5: .same(proto: "timestamp"),
-    6: .same(proto: "legacyMessage"),
     8: .same(proto: "content"),
-    9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
   ]
+
+  public var isInitialized: Bool {
+    if self._type == nil {return false}
+    return true
+  }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularEnumField(value: &self._type)
       case 2: try decoder.decodeSingularStringField(value: &self._source)
-      case 3: try decoder.decodeSingularStringField(value: &self._relay)
       case 5: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
-      case 6: try decoder.decodeSingularBytesField(value: &self._legacyMessage)
       case 7: try decoder.decodeSingularUInt32Field(value: &self._sourceDevice)
       case 8: try decoder.decodeSingularBytesField(value: &self._content)
-      case 9: try decoder.decodeSingularStringField(value: &self._serverGuid)
       case 10: try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp)
       default: break
       }
@@ -3087,23 +1940,14 @@ extension SessionProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if let v = self._source {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
-    if let v = self._relay {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    }
     if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
-    }
-    if let v = self._legacyMessage {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
     }
     if let v = self._sourceDevice {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 7)
     }
     if let v = self._content {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
-    }
-    if let v = self._serverGuid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
     }
     if let v = self._serverTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 10)
@@ -3115,11 +1959,8 @@ extension SessionProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     if lhs._type != rhs._type {return false}
     if lhs._source != rhs._source {return false}
     if lhs._sourceDevice != rhs._sourceDevice {return false}
-    if lhs._relay != rhs._relay {return false}
     if lhs._timestamp != rhs._timestamp {return false}
-    if lhs._legacyMessage != rhs._legacyMessage {return false}
     if lhs._content != rhs._content {return false}
-    if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -3128,14 +1969,8 @@ extension SessionProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension SessionProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "CIPHERTEXT"),
-    2: .same(proto: "KEY_EXCHANGE"),
-    3: .same(proto: "PREKEY_BUNDLE"),
-    5: .same(proto: "RECEIPT"),
     6: .same(proto: "UNIDENTIFIED_SENDER"),
     7: .same(proto: "CLOSED_GROUP_CIPHERTEXT"),
-    101: .same(proto: "FALLBACK_MESSAGE"),
   ]
 }
 
@@ -3144,7 +1979,6 @@ extension SessionProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "timestamp"),
     2: .same(proto: "action"),
-    3: .same(proto: "groupId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3152,7 +1986,6 @@ extension SessionProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
       case 2: try decoder.decodeSingularEnumField(value: &self._action)
-      case 3: try decoder.decodeSingularBytesField(value: &self._groupID)
       default: break
       }
     }
@@ -3165,16 +1998,12 @@ extension SessionProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if let v = self._action {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
     }
-    if let v = self._groupID {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
-    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_TypingMessage, rhs: SessionProtos_TypingMessage) -> Bool {
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs._action != rhs._action {return false}
-    if lhs._groupID != rhs._groupID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3192,12 +2021,8 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "dataMessage"),
     2: .same(proto: "syncMessage"),
-    3: .same(proto: "callMessage"),
-    4: .same(proto: "nullMessage"),
     5: .same(proto: "receiptMessage"),
     6: .same(proto: "typingMessage"),
-    101: .same(proto: "prekeyBundleMessage"),
-    103: .same(proto: "lokiDeviceLinkMessage"),
   ]
 
   public var isInitialized: Bool {
@@ -3211,12 +2036,8 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       switch fieldNumber {
       case 1: try decoder.decodeSingularMessageField(value: &self._dataMessage)
       case 2: try decoder.decodeSingularMessageField(value: &self._syncMessage)
-      case 3: try decoder.decodeSingularMessageField(value: &self._callMessage)
-      case 4: try decoder.decodeSingularMessageField(value: &self._nullMessage)
       case 5: try decoder.decodeSingularMessageField(value: &self._receiptMessage)
       case 6: try decoder.decodeSingularMessageField(value: &self._typingMessage)
-      case 101: try decoder.decodeSingularMessageField(value: &self._prekeyBundleMessage)
-      case 103: try decoder.decodeSingularMessageField(value: &self._lokiDeviceLinkMessage)
       default: break
       }
     }
@@ -3229,23 +2050,11 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if let v = self._syncMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
     }
-    if let v = self._callMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
-    if let v = self._nullMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    }
     if let v = self._receiptMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }
     if let v = self._typingMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    }
-    if let v = self._prekeyBundleMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
-    }
-    if let v = self._lokiDeviceLinkMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 103)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3253,358 +2062,8 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   static func ==(lhs: SessionProtos_Content, rhs: SessionProtos_Content) -> Bool {
     if lhs._dataMessage != rhs._dataMessage {return false}
     if lhs._syncMessage != rhs._syncMessage {return false}
-    if lhs._callMessage != rhs._callMessage {return false}
-    if lhs._nullMessage != rhs._nullMessage {return false}
     if lhs._receiptMessage != rhs._receiptMessage {return false}
     if lhs._typingMessage != rhs._typingMessage {return false}
-    if lhs._prekeyBundleMessage != rhs._prekeyBundleMessage {return false}
-    if lhs._lokiDeviceLinkMessage != rhs._lokiDeviceLinkMessage {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_PrekeyBundleMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".PrekeyBundleMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "identityKey"),
-    2: .same(proto: "deviceID"),
-    3: .same(proto: "prekeyID"),
-    4: .same(proto: "signedKeyID"),
-    5: .same(proto: "prekey"),
-    6: .same(proto: "signedKey"),
-    7: .same(proto: "signature"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._identityKey)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self._deviceID)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self._prekeyID)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self._signedKeyID)
-      case 5: try decoder.decodeSingularBytesField(value: &self._prekey)
-      case 6: try decoder.decodeSingularBytesField(value: &self._signedKey)
-      case 7: try decoder.decodeSingularBytesField(value: &self._signature)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._identityKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    if let v = self._deviceID {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
-    }
-    if let v = self._prekeyID {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
-    }
-    if let v = self._signedKeyID {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
-    }
-    if let v = self._prekey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
-    }
-    if let v = self._signedKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    }
-    if let v = self._signature {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_PrekeyBundleMessage, rhs: SessionProtos_PrekeyBundleMessage) -> Bool {
-    if lhs._identityKey != rhs._identityKey {return false}
-    if lhs._deviceID != rhs._deviceID {return false}
-    if lhs._prekeyID != rhs._prekeyID {return false}
-    if lhs._signedKeyID != rhs._signedKeyID {return false}
-    if lhs._prekey != rhs._prekey {return false}
-    if lhs._signedKey != rhs._signedKey {return false}
-    if lhs._signature != rhs._signature {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_LokiDeviceLinkMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".LokiDeviceLinkMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "masterPublicKey"),
-    2: .same(proto: "slavePublicKey"),
-    3: .same(proto: "slaveSignature"),
-    4: .same(proto: "masterSignature"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._masterPublicKey)
-      case 2: try decoder.decodeSingularStringField(value: &self._slavePublicKey)
-      case 3: try decoder.decodeSingularBytesField(value: &self._slaveSignature)
-      case 4: try decoder.decodeSingularBytesField(value: &self._masterSignature)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._masterPublicKey {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if let v = self._slavePublicKey {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    }
-    if let v = self._slaveSignature {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
-    }
-    if let v = self._masterSignature {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_LokiDeviceLinkMessage, rhs: SessionProtos_LokiDeviceLinkMessage) -> Bool {
-    if lhs._masterPublicKey != rhs._masterPublicKey {return false}
-    if lhs._slavePublicKey != rhs._slavePublicKey {return false}
-    if lhs._slaveSignature != rhs._slaveSignature {return false}
-    if lhs._masterSignature != rhs._masterSignature {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".CallMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "offer"),
-    2: .same(proto: "answer"),
-    3: .same(proto: "iceUpdate"),
-    4: .same(proto: "hangup"),
-    5: .same(proto: "busy"),
-    6: .same(proto: "profileKey"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._offer)
-      case 2: try decoder.decodeSingularMessageField(value: &self._answer)
-      case 3: try decoder.decodeRepeatedMessageField(value: &self.iceUpdate)
-      case 4: try decoder.decodeSingularMessageField(value: &self._hangup)
-      case 5: try decoder.decodeSingularMessageField(value: &self._busy)
-      case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._offer {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._answer {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if !self.iceUpdate.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.iceUpdate, fieldNumber: 3)
-    }
-    if let v = self._hangup {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    }
-    if let v = self._busy {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    }
-    if let v = self._profileKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_CallMessage, rhs: SessionProtos_CallMessage) -> Bool {
-    if lhs._offer != rhs._offer {return false}
-    if lhs._answer != rhs._answer {return false}
-    if lhs.iceUpdate != rhs.iceUpdate {return false}
-    if lhs._hangup != rhs._hangup {return false}
-    if lhs._busy != rhs._busy {return false}
-    if lhs._profileKey != rhs._profileKey {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Offer"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "sessionDescription"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._sessionDescription)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
-    }
-    if let v = self._sessionDescription {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_CallMessage.Offer, rhs: SessionProtos_CallMessage.Offer) -> Bool {
-    if lhs._id != rhs._id {return false}
-    if lhs._sessionDescription != rhs._sessionDescription {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Answer"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "sessionDescription"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._sessionDescription)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
-    }
-    if let v = self._sessionDescription {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_CallMessage.Answer, rhs: SessionProtos_CallMessage.Answer) -> Bool {
-    if lhs._id != rhs._id {return false}
-    if lhs._sessionDescription != rhs._sessionDescription {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".IceUpdate"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "sdpMid"),
-    3: .same(proto: "sdpMLineIndex"),
-    4: .same(proto: "sdp"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._sdpMid)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self._sdpMlineIndex)
-      case 4: try decoder.decodeSingularStringField(value: &self._sdp)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
-    }
-    if let v = self._sdpMid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    }
-    if let v = self._sdpMlineIndex {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
-    }
-    if let v = self._sdp {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_CallMessage.IceUpdate, rhs: SessionProtos_CallMessage.IceUpdate) -> Bool {
-    if lhs._id != rhs._id {return false}
-    if lhs._sdpMid != rhs._sdpMid {return false}
-    if lhs._sdpMlineIndex != rhs._sdpMlineIndex {return false}
-    if lhs._sdp != rhs._sdp {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Busy"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_CallMessage.Busy, rhs: SessionProtos_CallMessage.Busy) -> Bool {
-    if lhs._id != rhs._id {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Hangup"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_CallMessage.Hangup, rhs: SessionProtos_CallMessage.Hangup) -> Bool {
-    if lhs._id != rhs._id {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3659,7 +2118,6 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
     101: .same(proto: "profile"),
-    103: .same(proto: "closedGroupUpdate"),
     104: .same(proto: "closedGroupUpdateV2"),
     999: .same(proto: "publicChatInfo"),
   ]
@@ -3683,7 +2141,6 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 9: try decoder.decodeRepeatedMessageField(value: &self.contact)
       case 10: try decoder.decodeRepeatedMessageField(value: &self.preview)
       case 101: try decoder.decodeSingularMessageField(value: &self._profile)
-      case 103: try decoder.decodeSingularMessageField(value: &self._closedGroupUpdate)
       case 104: try decoder.decodeSingularMessageField(value: &self._closedGroupUpdateV2)
       case 999: try decoder.decodeSingularMessageField(value: &self._publicChatInfo)
       default: break
@@ -3725,9 +2182,6 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if let v = self._profile {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
     }
-    if let v = self._closedGroupUpdate {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 103)
-    }
     if let v = self._closedGroupUpdateV2 {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 104)
     }
@@ -3749,7 +2203,6 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs.contact != rhs.contact {return false}
     if lhs.preview != rhs.preview {return false}
     if lhs._profile != rhs._profile {return false}
-    if lhs._closedGroupUpdate != rhs._closedGroupUpdate {return false}
     if lhs._closedGroupUpdateV2 != rhs._closedGroupUpdateV2 {return false}
     if lhs._publicChatInfo != rhs._publicChatInfo {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -3759,10 +2212,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension SessionProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "END_SESSION"),
     2: .same(proto: "EXPIRATION_TIMER_UPDATE"),
-    4: .same(proto: "PROFILE_KEY_UPDATE"),
-    128: .same(proto: "UNLINK_DEVICE"),
   ]
 }
 
@@ -4442,150 +2892,6 @@ extension SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper: SwiftPro
   }
 }
 
-extension SessionProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".ClosedGroupUpdate"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "name"),
-    2: .same(proto: "groupPublicKey"),
-    3: .same(proto: "groupPrivateKey"),
-    4: .same(proto: "senderKeys"),
-    5: .same(proto: "members"),
-    6: .same(proto: "admins"),
-    7: .same(proto: "type"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._name)
-      case 2: try decoder.decodeSingularBytesField(value: &self._groupPublicKey)
-      case 3: try decoder.decodeSingularBytesField(value: &self._groupPrivateKey)
-      case 4: try decoder.decodeRepeatedMessageField(value: &self.senderKeys)
-      case 5: try decoder.decodeRepeatedBytesField(value: &self.members)
-      case 6: try decoder.decodeRepeatedBytesField(value: &self.admins)
-      case 7: try decoder.decodeSingularEnumField(value: &self._type)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._name {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if let v = self._groupPublicKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    }
-    if let v = self._groupPrivateKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
-    }
-    if !self.senderKeys.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.senderKeys, fieldNumber: 4)
-    }
-    if !self.members.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.members, fieldNumber: 5)
-    }
-    if !self.admins.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.admins, fieldNumber: 6)
-    }
-    if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 7)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdate, rhs: SessionProtos_DataMessage.ClosedGroupUpdate) -> Bool {
-    if lhs._name != rhs._name {return false}
-    if lhs._groupPublicKey != rhs._groupPublicKey {return false}
-    if lhs._groupPrivateKey != rhs._groupPrivateKey {return false}
-    if lhs.senderKeys != rhs.senderKeys {return false}
-    if lhs.members != rhs.members {return false}
-    if lhs.admins != rhs.admins {return false}
-    if lhs._type != rhs._type {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_DataMessage.ClosedGroupUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "NEW"),
-    1: .same(proto: "INFO"),
-    2: .same(proto: "SENDER_KEY_REQUEST"),
-    3: .same(proto: "SENDER_KEY"),
-  ]
-}
-
-extension SessionProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_DataMessage.ClosedGroupUpdate.protoMessageName + ".SenderKey"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "chainKey"),
-    2: .same(proto: "keyIndex"),
-    3: .same(proto: "publicKey"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._chainKey)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
-      case 3: try decoder.decodeSingularBytesField(value: &self._publicKey)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._chainKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    if let v = self._keyIndex {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
-    }
-    if let v = self._publicKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdate.SenderKey, rhs: SessionProtos_DataMessage.ClosedGroupUpdate.SenderKey) -> Bool {
-    if lhs._chainKey != rhs._chainKey {return false}
-    if lhs._keyIndex != rhs._keyIndex {return false}
-    if lhs._publicKey != rhs._publicKey {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".NullMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "padding"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._padding)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._padding {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_NullMessage, rhs: SessionProtos_NullMessage) -> Bool {
-    if lhs._padding != rhs._padding {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
 extension SessionProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReceiptMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -4628,74 +2934,11 @@ extension SessionProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameProvidi
   ]
 }
 
-extension SessionProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Verified"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
-    2: .same(proto: "identityKey"),
-    3: .same(proto: "state"),
-    4: .same(proto: "nullMessage"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._destination)
-      case 2: try decoder.decodeSingularBytesField(value: &self._identityKey)
-      case 3: try decoder.decodeSingularEnumField(value: &self._state)
-      case 4: try decoder.decodeSingularBytesField(value: &self._nullMessage)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._destination {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if let v = self._identityKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    }
-    if let v = self._state {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
-    }
-    if let v = self._nullMessage {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_Verified, rhs: SessionProtos_Verified) -> Bool {
-    if lhs._destination != rhs._destination {return false}
-    if lhs._identityKey != rhs._identityKey {return false}
-    if lhs._state != rhs._state {return false}
-    if lhs._nullMessage != rhs._nullMessage {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_Verified.State: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "DEFAULT"),
-    1: .same(proto: "VERIFIED"),
-    2: .same(proto: "UNVERIFIED"),
-  ]
-}
-
 extension SessionProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SyncMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "sent"),
-    2: .same(proto: "contacts"),
-    3: .same(proto: "groups"),
-    4: .same(proto: "request"),
-    5: .same(proto: "read"),
-    6: .same(proto: "blocked"),
-    7: .same(proto: "verified"),
-    9: .same(proto: "configuration"),
     8: .same(proto: "padding"),
-    100: .same(proto: "openGroups"),
   ]
 
   public var isInitialized: Bool {
@@ -4707,15 +2950,7 @@ extension SessionProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularMessageField(value: &self._sent)
-      case 2: try decoder.decodeSingularMessageField(value: &self._contacts)
-      case 3: try decoder.decodeSingularMessageField(value: &self._groups)
-      case 4: try decoder.decodeSingularMessageField(value: &self._request)
-      case 5: try decoder.decodeRepeatedMessageField(value: &self.read)
-      case 6: try decoder.decodeSingularMessageField(value: &self._blocked)
-      case 7: try decoder.decodeSingularMessageField(value: &self._verified)
       case 8: try decoder.decodeSingularBytesField(value: &self._padding)
-      case 9: try decoder.decodeSingularMessageField(value: &self._configuration)
-      case 100: try decoder.decodeRepeatedMessageField(value: &self.openGroups)
       default: break
       }
     }
@@ -4725,47 +2960,15 @@ extension SessionProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if let v = self._sent {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     }
-    if let v = self._contacts {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if let v = self._groups {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
-    if let v = self._request {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
-    }
-    if !self.read.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.read, fieldNumber: 5)
-    }
-    if let v = self._blocked {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-    }
-    if let v = self._verified {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    }
     if let v = self._padding {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
-    }
-    if let v = self._configuration {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-    }
-    if !self.openGroups.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.openGroups, fieldNumber: 100)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_SyncMessage, rhs: SessionProtos_SyncMessage) -> Bool {
     if lhs._sent != rhs._sent {return false}
-    if lhs._contacts != rhs._contacts {return false}
-    if lhs._groups != rhs._groups {return false}
-    if lhs._request != rhs._request {return false}
-    if lhs.read != rhs.read {return false}
-    if lhs._blocked != rhs._blocked {return false}
-    if lhs._verified != rhs._verified {return false}
-    if lhs._configuration != rhs._configuration {return false}
     if lhs._padding != rhs._padding {return false}
-    if lhs.openGroups != rhs.openGroups {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4778,7 +2981,6 @@ extension SessionProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._
     2: .same(proto: "timestamp"),
     3: .same(proto: "message"),
     4: .same(proto: "expirationStartTimestamp"),
-    5: .same(proto: "unidentifiedStatus"),
     6: .same(proto: "isRecipientUpdate"),
   ]
 
@@ -4794,7 +2996,6 @@ extension SessionProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._
       case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
       case 3: try decoder.decodeSingularMessageField(value: &self._message)
       case 4: try decoder.decodeSingularUInt64Field(value: &self._expirationStartTimestamp)
-      case 5: try decoder.decodeRepeatedMessageField(value: &self.unidentifiedStatus)
       case 6: try decoder.decodeSingularBoolField(value: &self._isRecipientUpdate)
       default: break
       }
@@ -4814,9 +3015,6 @@ extension SessionProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._
     if let v = self._expirationStartTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
     }
-    if !self.unidentifiedStatus.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.unidentifiedStatus, fieldNumber: 5)
-    }
     if let v = self._isRecipientUpdate {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
     }
@@ -4828,310 +3026,7 @@ extension SessionProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs._message != rhs._message {return false}
     if lhs._expirationStartTimestamp != rhs._expirationStartTimestamp {return false}
-    if lhs.unidentifiedStatus != rhs.unidentifiedStatus {return false}
     if lhs._isRecipientUpdate != rhs._isRecipientUpdate {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.Sent.protoMessageName + ".UnidentifiedDeliveryStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
-    2: .same(proto: "unidentified"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._destination)
-      case 2: try decoder.decodeSingularBoolField(value: &self._unidentified)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._destination {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if let v = self._unidentified {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus, rhs: SessionProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) -> Bool {
-    if lhs._destination != rhs._destination {return false}
-    if lhs._unidentified != rhs._unidentified {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Contacts: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Contacts"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "blob"),
-    2: .same(proto: "isComplete"),
-    101: .same(proto: "data"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._blob)
-      case 2: try decoder.decodeSingularBoolField(value: &self._isComplete)
-      case 101: try decoder.decodeSingularBytesField(value: &self._data)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._blob {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._isComplete {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
-    }
-    if let v = self._data {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 101)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Contacts, rhs: SessionProtos_SyncMessage.Contacts) -> Bool {
-    if lhs._blob != rhs._blob {return false}
-    if lhs._isComplete != rhs._isComplete {return false}
-    if lhs._data != rhs._data {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Groups"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "blob"),
-    101: .same(proto: "data"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._blob)
-      case 101: try decoder.decodeSingularBytesField(value: &self._data)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._blob {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._data {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 101)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Groups, rhs: SessionProtos_SyncMessage.Groups) -> Bool {
-    if lhs._blob != rhs._blob {return false}
-    if lhs._data != rhs._data {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.OpenGroupDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".OpenGroupDetails"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "url"),
-    2: .same(proto: "channelID"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._url)
-      case 2: try decoder.decodeSingularUInt64Field(value: &self._channelID)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._url {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if let v = self._channelID {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.OpenGroupDetails, rhs: SessionProtos_SyncMessage.OpenGroupDetails) -> Bool {
-    if lhs._url != rhs._url {return false}
-    if lhs._channelID != rhs._channelID {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Blocked"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "numbers"),
-    2: .same(proto: "groupIds"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeRepeatedStringField(value: &self.numbers)
-      case 2: try decoder.decodeRepeatedBytesField(value: &self.groupIds)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.numbers.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.numbers, fieldNumber: 1)
-    }
-    if !self.groupIds.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.groupIds, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Blocked, rhs: SessionProtos_SyncMessage.Blocked) -> Bool {
-    if lhs.numbers != rhs.numbers {return false}
-    if lhs.groupIds != rhs.groupIds {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Request"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Request, rhs: SessionProtos_SyncMessage.Request) -> Bool {
-    if lhs._type != rhs._type {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "CONTACTS"),
-    2: .same(proto: "GROUPS"),
-    3: .same(proto: "BLOCKED"),
-    4: .same(proto: "CONFIGURATION"),
-  ]
-}
-
-extension SessionProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Read"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sender"),
-    2: .same(proto: "timestamp"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._sender)
-      case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._sender {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if let v = self._timestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Read, rhs: SessionProtos_SyncMessage.Read) -> Bool {
-    if lhs._sender != rhs._sender {return false}
-    if lhs._timestamp != rhs._timestamp {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Configuration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Configuration"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "readReceipts"),
-    2: .same(proto: "unidentifiedDeliveryIndicators"),
-    3: .same(proto: "typingIndicators"),
-    4: .same(proto: "linkPreviews"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBoolField(value: &self._readReceipts)
-      case 2: try decoder.decodeSingularBoolField(value: &self._unidentifiedDeliveryIndicators)
-      case 3: try decoder.decodeSingularBoolField(value: &self._typingIndicators)
-      case 4: try decoder.decodeSingularBoolField(value: &self._linkPreviews)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._readReceipts {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 1)
-    }
-    if let v = self._unidentifiedDeliveryIndicators {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
-    }
-    if let v = self._typingIndicators {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
-    }
-    if let v = self._linkPreviews {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 4)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Configuration, rhs: SessionProtos_SyncMessage.Configuration) -> Bool {
-    if lhs._readReceipts != rhs._readReceipts {return false}
-    if lhs._unidentifiedDeliveryIndicators != rhs._unidentifiedDeliveryIndicators {return false}
-    if lhs._typingIndicators != rhs._typingIndicators {return false}
-    if lhs._linkPreviews != rhs._linkPreviews {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5314,7 +3209,6 @@ extension SessionProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._Me
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
     4: .same(proto: "color"),
-    5: .same(proto: "verified"),
     6: .same(proto: "profileKey"),
     7: .same(proto: "blocked"),
     8: .same(proto: "expireTimer"),
@@ -5328,7 +3222,6 @@ extension SessionProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 2: try decoder.decodeSingularStringField(value: &self._name)
       case 3: try decoder.decodeSingularMessageField(value: &self._avatar)
       case 4: try decoder.decodeSingularStringField(value: &self._color)
-      case 5: try decoder.decodeSingularMessageField(value: &self._verified)
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
       case 7: try decoder.decodeSingularBoolField(value: &self._blocked)
       case 8: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
@@ -5351,9 +3244,6 @@ extension SessionProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._color {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     }
-    if let v = self._verified {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    }
     if let v = self._profileKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
     }
@@ -5374,7 +3264,6 @@ extension SessionProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
     if lhs._color != rhs._color {return false}
-    if lhs._verified != rhs._verified {return false}
     if lhs._profileKey != rhs._profileKey {return false}
     if lhs._blocked != rhs._blocked {return false}
     if lhs._expireTimer != rhs._expireTimer {return false}

@@ -14,9 +14,11 @@ message Envelope {
   // @required
   required Type   type            = 1;
   optional string source          = 2;
+  optional uint32 sourceDevice    = 7;
   // @required
   optional uint64 timestamp       = 5;
   optional bytes  content         = 8;
+  optional uint64 serverTimestamp = 10;
 }
 
 message TypingMessage {
@@ -34,6 +36,7 @@ message TypingMessage {
 
 message Content {
   optional DataMessage              dataMessage           = 1;
+  optional SyncMessage              syncMessage           = 2;
   optional ReceiptMessage           receiptMessage        = 5;
   optional TypingMessage            typingMessage         = 6;
 }
@@ -214,6 +217,20 @@ message ReceiptMessage {
   optional Type   type      = 1;
   repeated uint64 timestamp = 2;
 }
+
+message SyncMessage {
+
+   message Sent {
+     optional string                     destination              = 1;
+     optional uint64                     timestamp                = 2;
+     optional DataMessage                message                  = 3;
+     optional uint64                     expirationStartTimestamp = 4;
+     optional bool                       isRecipientUpdate        = 6 [default = false];
+   }
+
+   optional Sent             sent          = 1;
+   optional bytes            padding       = 8;
+ }
 
 message AttachmentPointer {
 
