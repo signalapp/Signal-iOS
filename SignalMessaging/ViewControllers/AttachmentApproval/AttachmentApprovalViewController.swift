@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -658,9 +658,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return editedAttachmentPromise(imageEditorModel: imageEditorModel,
                                            attachmentApprovalItem: attachmentApprovalItem)
         }
-        if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.isTrimmed {
-            return trimmedAttachmentPromise(videoEditorModel: videoEditorModel,
-                                            attachmentApprovalItem: attachmentApprovalItem)
+        if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.needsRender {
+            return renderedAttachmentPromise(videoEditorModel: videoEditorModel,
+                                             attachmentApprovalItem: attachmentApprovalItem)
         }
         // No editor applies. Use original, un-edited attachment.
         return Promise.value(attachmentApprovalItem.attachment)
@@ -726,33 +726,33 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // If any errors occurs in the export process, we fail over to
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
-    func trimmedAttachmentPromise(videoEditorModel: VideoEditorModel,
+    func renderedAttachmentPromise(videoEditorModel: VideoEditorModel,
                                   attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
-        assert(videoEditorModel.isTrimmed)
-        return videoEditorModel.ensureCurrentRender().consumingFilePromise()
-            .map(on: DispatchQueue.global()) { filePath in
-                guard let fileExtension = filePath.fileExtension else {
-                    throw OWSAssertionError("Missing fileExtension.")
-                }
-                guard let dataUTI = MIMETypeUtil.utiType(forFileExtension: fileExtension) else {
-                    throw OWSAssertionError("Missing dataUTI.")
-                }
-                let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)
-                // Rewrite the filename's extension to reflect the output file format.
-                var filename: String? = attachmentApprovalItem.attachment.sourceFilename
-                if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-                    filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
-                }
-                dataSource.sourceFilename = filename
+        assert(videoEditorModel.needsRender)
+        return videoEditorModel.ensureCurrentRender().result.map(on: .sharedUserInitiated) { result in
+            let filePath = try result.consumeResultPath()
+            guard let fileExtension = filePath.fileExtension else {
+                throw OWSAssertionError("Missing fileExtension.")
+            }
+            guard let dataUTI = MIMETypeUtil.utiType(forFileExtension: fileExtension) else {
+                throw OWSAssertionError("Missing dataUTI.")
+            }
+            let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)
+            // Rewrite the filename's extension to reflect the output file format.
+            var filename: String? = attachmentApprovalItem.attachment.sourceFilename
+            if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+                filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+            }
+            dataSource.sourceFilename = filename
 
-                let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
-                if let attachmentError = dstAttachment.error {
-                    throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
-                }
-                // Preserve caption text.
-                dstAttachment.captionText = attachmentApprovalItem.captionText
-                dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
-                return dstAttachment
+            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+            if let attachmentError = dstAttachment.error {
+                throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
+            }
+            // Preserve caption text.
+            dstAttachment.captionText = attachmentApprovalItem.captionText
+            dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
+            return dstAttachment
         }
     }
 
@@ -891,8 +891,20 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
                 }.catch { error in
                     AssertIsOnMainThread()
                     owsFailDebug("Error: \(error)")
+
                     modalVC.dismiss {
-                        OWSActionSheets.showErrorAlert(message: NSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported."))
+                        let actionSheet = ActionSheetController(
+                            title: CommonStrings.errorAlertTitle,
+                            message: NSLocalizedString(
+                                "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT",
+                                comment: "Error that outgoing attachments could not be exported."))
+                        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))
+
+                        self.present(actionSheet, animated: true) {
+                            // We optimistically hide the toolbar at the beginning of the function
+                            // Since we failed, show it again.
+                            self.updateContents(isApproved: false)
+                        }
                     }
                 }
         }

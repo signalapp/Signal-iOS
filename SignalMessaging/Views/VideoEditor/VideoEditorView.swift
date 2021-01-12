@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -316,15 +316,11 @@ public class VideoEditorView: UIView {
             }
 
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                DispatchQueue.global().async(.promise) {
-                    return self.saveVideoPromise()
-                }.done { _ in
-                    modalVC.dismiss {
-                        // Do nothing.
-                    }
-                }.catch { error in
-                    owsFailDebug("Error: \(error)")
-
+                firstly {
+                    self.saveVideoPromise()
+                }.done {
+                    modalVC.dismiss {}
+                }.catch { _ in
                     modalVC.dismiss {
                         OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
                     }
@@ -334,31 +330,37 @@ public class VideoEditorView: UIView {
     }
 
     private func saveVideoPromise() -> Promise<Void> {
-        return firstly { () -> Promise<String> in
-            if model.isTrimmed {
-                return self.model.ensureCurrentRender().nonconsumingFilePromise()
-            } else {
-                return Promise.value(self.model.srcVideoPath)
+        // Creates a copy of a file in a new temporary path
+        // The file path returned in a Result is guaranteed valid for the Result's lifetime
+        // Making a copy protects us from any modifications to a file we don't own
+        func createCopyOfFile(_ path: String) throws -> String {
+            guard let fileExtension = path.fileExtension else {
+                throw OWSAssertionError("Missing fileExtension.")
             }
-        }.then(on: .global()) { (videoFilePath: String) -> Promise<Void> in
-            guard let fileExtension = videoFilePath.fileExtension else {
-                return Promise(error: OWSAssertionError("Missing fileExtension."))
-            }
-            let tempFilePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
-            do {
-                try FileManager.default.copyItem(atPath: videoFilePath, toPath: tempFilePath)
-            } catch {
-                return Promise(error: error)
+            let dstPath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
+            try FileManager.default.copyItem(atPath: path, toPath: dstPath)
+            return dstPath
+        }
+
+        return firstly(on: .sharedUtility) { () -> Promise<String> in
+            guard self.model.needsRender else {
+                // Nothing to render, just use the original file
+                let copy = try createCopyOfFile(self.model.srcVideoPath)
+                return Promise.value(copy)
             }
 
-            let videoUrl = URL(fileURLWithPath: tempFilePath)
+            return self.model.ensureCurrentRender().result.map(on: .sharedUtility) { result in
+                try createCopyOfFile(result.getResultPath())
+            }
 
-            return Promise<Void> { resolver in
-                PHPhotoLibrary.shared().performChanges({
+        }.then(on: .sharedUtility) { (videoFilePath: String) -> Promise<Void> in
+            Promise { resolver in
+                let videoUrl = URL(fileURLWithPath: videoFilePath)
+
+                PHPhotoLibrary.shared().performChanges {
                     PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
-                }) { didSucceed, error in
-
-                    OWSFileSystem.deleteFileIfExists(tempFilePath)
+                } completionHandler: { (didSucceed, error) in
+                    OWSFileSystem.deleteFileIfExists(videoFilePath)
 
                     if let error = error {
                         resolver.reject(error)
@@ -433,7 +435,9 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
 
         updateNavigationBar()
 
-        _ = model.ensureCurrentRender()
+        if model.needsRender {
+            _ = model.ensureCurrentRender()
+        }
     }
 
     func pauseIfPlaying() {
