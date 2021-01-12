@@ -145,6 +145,8 @@ class PhotoCollectionContents {
 
             let options: PHImageRequestOptions = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
+            options.version = .current
+            options.deliveryMode = .highQualityFormat
 
             _ = imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, _, _ in
 
@@ -173,6 +175,7 @@ class PhotoCollectionContents {
 
             let options: PHVideoRequestOptions = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
+            options.version = .current
 
             _ = imageManager.requestAVAsset(forVideo: asset, options: options) { video, _, info in
                 guard let video = video else {
