@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,6 +30,9 @@ import Foundation
 
     @objc
     static public let nextButton = NSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
+
+    @objc
+    static public let skipButton = NSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view.")
 
     @objc
     static public let deleteButton = NSLocalizedString("TXT_DELETE_TITLE", comment: "Label for the delete button in an alert or action sheet.")

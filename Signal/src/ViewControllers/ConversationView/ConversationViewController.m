@@ -1006,6 +1006,9 @@ typedef enum : NSUInteger {
         case ConversationViewActionGroupCallLobby:
             [self showGroupLobbyOrActiveCall];
             break;
+        case ConversationViewActionNewGroupActionSheet:
+            dispatch_async(dispatch_get_main_queue(), ^{ [self showGroupLinkPromotionActionSheet]; });
+            break;
     }
 
     // Clear the "on open" state after the view has been presented.
@@ -4034,6 +4037,13 @@ typedef enum : NSUInteger {
                                                                 oldGroupModel:oldGroupModel
                                                                 newGroupModel:newGroupModel];
     [actionSheet presentFromViewController:self];
+}
+
+- (void)cvc_didTapGroupInviteLinkPromotionWithGroupModel:(TSGroupModel *)groupModel
+{
+    OWSAssertIsOnMainThread();
+
+    [self showGroupLinkPromotionActionSheet];
 }
 
 - (void)cvc_didTapShowUpgradeAppUI

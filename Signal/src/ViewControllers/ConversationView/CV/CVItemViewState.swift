@@ -520,7 +520,8 @@ struct CVItemModelBuilder: CVItemBuilding {
             }
             previousItem.itemViewState.shouldCollapseSystemMessageAction
                 = (previousInfoMessage.messageType == infoMessage.messageType
-                    && !previousInfoMessage.isGroupMigrationMessage)
+                    && !previousInfoMessage.isGroupMigrationMessage
+                    && !previousInfoMessage.isGroupWasJustCreatedByLocalUserMessage)
         case .call:
             previousItem.itemViewState.shouldCollapseSystemMessageAction = true
         default:

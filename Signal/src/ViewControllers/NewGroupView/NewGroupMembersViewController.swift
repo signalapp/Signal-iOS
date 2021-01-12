@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,15 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
         title = NSLocalizedString("NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE",
                                   comment: "The title for the 'select members for new group' view.")
 
-        let rightBarButtonItem = UIBarButtonItem(title: CommonStrings.nextButton,
+        updateBarButtons()
+    }
+
+    private func updateBarButtons() {
+        let hasMembers = !newGroupState.recipientSet.isEmpty
+        let buttonTitle = (hasMembers
+                            ? CommonStrings.nextButton
+                            : CommonStrings.skipButton)
+        let rightBarButtonItem = UIBarButtonItem(title: buttonTitle,
                                                  style: .plain,
                                                  target: self,
                                                  action: #selector(nextButtonPressed),
@@ -65,10 +73,12 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
 
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newGroupState.recipientSet.remove(recipient)
+        updateBarButtons()
     }
 
     func groupMemberViewAddRecipient(_ recipient: PickedRecipient) {
         newGroupState.recipientSet.append(recipient)
+        updateBarButtons()
     }
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {

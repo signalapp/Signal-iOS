@@ -12,7 +12,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
     ConversationViewActionCompose,
     ConversationViewActionAudioCall,
     ConversationViewActionVideoCall,
-    ConversationViewActionGroupCallLobby
+    ConversationViewActionGroupCallLobby,
+    ConversationViewActionNewGroupActionSheet
 };
 
 @class CVLoadCoordinator;

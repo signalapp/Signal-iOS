@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -397,8 +397,9 @@ public class GroupManager: NSObject {
                 self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
                 let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModel in
-                    let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                    var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                              transaction: transaction)
+                    builder.wasJustCreatedByLocalUser = true
                     return try builder.build(transaction: transaction)
                 }
                 if proposedGroupModel != createdGroupModel {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -214,9 +214,19 @@ public class NewGroupConfirmViewController: OWSViewController {
                 }))
             }
         } else {
-            section.add(OWSTableItem.softCenterLabel(withText: NSLocalizedString("GROUP_MEMBERS_NO_OTHER_MEMBERS",
-                                                                                 comment: "Label indicating that a group has no other members."),
-                                                     customRowHeight: UITableView.automaticDimension))
+            section.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                let cell = OWSTableItem.newCell()
+
+                if let textLabel = cell.textLabel {
+                    textLabel.text = NSLocalizedString("GROUP_MEMBERS_NO_OTHER_MEMBERS",
+                                                       comment: "Label indicating that a new group has no other members.")
+                    textLabel.font = UIFont.ows_dynamicTypeBody2
+                    textLabel.textColor = Theme.secondaryTextAndIconColor
+                    textLabel.numberOfLines = 0
+                    textLabel.lineBreakMode = .byWordWrapping
+                }
+                return cell
+            }, actionBlock: nil))
         }
 
         let contents = OWSTableContents()
@@ -310,7 +320,7 @@ public class NewGroupConfirmViewController: OWSViewController {
 
         let navigateToNewGroup = { (completion: (() -> Void)?) in
             SignalApp.shared().presentConversation(for: groupThread,
-                                                   action: .compose,
+                                                   action: .newGroupActionSheet,
                                                    animated: false)
             self.presentingViewController?.dismiss(animated: true, completion: completion)
         }

@@ -438,6 +438,19 @@ public extension ConversationViewController {
         let view = GroupMigrationActionSheet(groupThread: groupThread, mode: mode)
         view.present(fromViewController: self)
     }
+
+    func showGroupLinkPromotionActionSheet() {
+        guard let groupThread = thread as? TSGroupThread else {
+            owsFailDebug("Invalid thread.")
+            return
+        }
+        guard groupThread.isGroupV2Thread else {
+            return
+        }
+        let view = GroupLinkPromotionActionSheet(groupThread: groupThread,
+                                                 conversationViewController: self)
+        view.present(fromViewController: self)
+    }
 }
 
 // MARK: -

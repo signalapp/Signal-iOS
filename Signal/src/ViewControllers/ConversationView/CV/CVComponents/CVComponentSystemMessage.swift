@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -514,7 +514,8 @@ extension CVComponentSystemMessage {
              .userMembershipState,
              .userMembershipState_invalidInvitesRemoved,
              .userMembershipState_invalidInvitesAdded,
-             .groupInviteLink:
+             .groupInviteLink,
+             .groupGroupLinkPromotion:
             return Theme.iconName(.group16)
         case .userMembershipState_invitesDeclined,
              .userMembershipState_invitesRevoked:
@@ -634,8 +635,16 @@ extension CVComponentSystemMessage {
             owsFailDebug("TSInfoMessageAddGroupToProfileWhitelistOffer")
             return nil
         case .typeGroupUpdate:
-            guard let oldGroupModel = infoMessage.oldGroupModel,
-                  let newGroupModel = infoMessage.newGroupModel else {
+            guard let newGroupModel = infoMessage.newGroupModel else {
+                return nil
+            }
+            if newGroupModel.wasJustCreatedByLocalUserV2 {
+                return Action(title: NSLocalizedString("GROUPS_INVITE_FRIENDS_BUTTON",
+                                                       comment: "Label for 'invite friends to group' button."),
+                              accessibilityIdentifier: "group_invite_friends",
+                              action: .cvc_didTapGroupInviteLinkPromotion(groupModel: newGroupModel))
+            }
+            guard let oldGroupModel = infoMessage.oldGroupModel else {
                 return nil
             }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -724,10 +724,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let snapshot = firstGroupChange.snapshot else {
                 throw OWSAssertionError("Missing snapshot.")
             }
-            let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
-                                                                     transaction: transaction)
-            let newGroupModel = try builder.build(transaction: transaction)
-
             // Many change actions have author info, e.g. addedByUserID. But we can
             // safely assume that all actions in the "change actions" have the same author.
             guard let changeAuthorUuidData = firstGroupChange.diff.changeActionsProto.sourceUuid else {
@@ -736,6 +732,17 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+
+            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
+                                                                     transaction: transaction)
+            if snapshot.revision == 0,
+               let localUuid = tsAccountManager.localUuid,
+               localUuid == changeAuthorUuid {
+                builder.wasJustCreatedByLocalUser = true
+            }
+
+            let newGroupModel = try builder.build(transaction: transaction)
+
             let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
             let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(groupChange: firstGroupChange,
