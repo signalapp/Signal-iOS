@@ -627,7 +627,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                                       attachmentView: attachmentView,
                                                                       hostView: outerContentView,
                                                                       shouldShowDownloadProgress: shouldShowDownloadProgress) else {
-                owsFailDebug("Could not add progress view(s).")
+                Logger.warn("Could not add progress view(s).")
                 continue
             }
             componentView.progressViewTokens.append(progressViewToken)
