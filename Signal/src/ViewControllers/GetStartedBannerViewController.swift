@@ -226,18 +226,21 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
 
 extension GetStartedBannerViewController {
     private static let keyValueStore = SDSKeyValueStore(collection: "GetStartedBannerViewController")
-    private static let completePrefix = "CompletedCard."
+    private static let completePrefix = "ActiveCard."
 
-    @objc(resetAllCardsWithTransaction:)
-    static func resetAllCards(writeTx: SDSAnyWriteTransaction) {
-        keyValueStore.removeAll(transaction: writeTx)
+    @objc(enableAllCardsWithTransaction:)
+    static func enableAllCards(writeTx: SDSAnyWriteTransaction) {
+        GetStartedBannerEntry.allCases.forEach { entry in
+            let key = completePrefix + entry.identifier
+            Self.keyValueStore.setBool(true, key: key, transaction: writeTx)
+        }
     }
 
     static private func getActiveCards(readTx: SDSAnyReadTransaction) -> [GetStartedBannerEntry] {
         return GetStartedBannerEntry.allCases.filter { entry in
             let key = completePrefix + entry.identifier
-            let isComplete = keyValueStore.getBool(key, defaultValue: false, transaction: readTx)
-            return !isComplete
+            let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: readTx)
+            return isActive
         }
     }
 
@@ -249,7 +252,7 @@ extension GetStartedBannerViewController {
 
     static private func completeCard(_ model: GetStartedBannerEntry, writeTx: SDSAnyWriteTransaction) {
         let key = Self.completePrefix + model.identifier
-        Self.keyValueStore.setBool(true, key: key, transaction: writeTx)
+        Self.keyValueStore.removeValue(forKey: key, transaction: writeTx)
     }
 }
 

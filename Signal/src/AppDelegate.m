@@ -1176,7 +1176,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [ExperienceUpgradeFinder markAllCompleteForNewUserWithTransaction:transaction.unwrapGrdbWrite];
-                [OWSGetStartedBannerViewController resetAllCardsWithTransaction:transaction];
             });
 
             // Start running the disappearing messages job in case the newly registered user
