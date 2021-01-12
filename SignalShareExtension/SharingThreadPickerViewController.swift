@@ -233,7 +233,7 @@ extension SharingThreadPickerViewController {
         presentActionSheet(actionSheet)
 
         let progressFormat = NSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
-                                               comment: "Send progress for share extension. Embeds {{ %1$d number of attachments uploaded, %2$d total number of attachments}}")
+                                               comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
         var seenAttachmentIds = Set<String>()
         let observer = NotificationCenter.default.addObserver(
@@ -261,7 +261,11 @@ extension SharingThreadPickerViewController {
             // Attachments upload one at a time, so we can infer that
             // the number of attachments we've seen progress updates
             // for is which attachment we're uploading.
-            progressLabel.text = String(format: progressFormat, seenAttachmentIds.count, attachmentIds.count)
+            progressLabel.text = String(
+                format: progressFormat,
+                OWSFormat.formatInt(seenAttachmentIds.count),
+                OWSFormat.formatInt(attachmentIds.count)
+            )
             progressView.progress = progress.floatValue
         }
 
@@ -353,13 +357,8 @@ extension SharingThreadPickerViewController {
             guard let self = self else { return }
             self.databaseStorage.write { transaction in
                 for message in self.outgoingMessages {
-                    if message.wasSentToAnyRecipient {
-                        // If we sent the message to anyone, mark it as failed
-                        message.updateWithAllSendingRecipientsMarkedAsFailed(withTansaction: transaction)
-                    } else {
-                        // Otherwise, delete it, the user has cancelled sending
-                        message.anyRemove(transaction: transaction)
-                    }
+                    // If we sent the message to anyone, mark it as failed
+                    message.updateWithAllSendingRecipientsMarkedAsFailed(withTansaction: transaction)
                 }
             }
             self.shareViewDelegate?.shareViewWasCancelled()
