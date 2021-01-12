@@ -188,7 +188,7 @@ class PhotoCollectionContents {
                     dataUTI = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) ?? kUTTypeVideo as String
 
                     if let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) {
-                        if !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: dataUTI) {
+                        if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
                             resolver.fulfill(SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
                             return
                         }

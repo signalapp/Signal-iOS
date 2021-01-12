@@ -1157,18 +1157,13 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public class func isInvalidVideo(dataSource: DataSource, dataUTI: String) -> Bool {
+    public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
         guard videoUTISet.contains(dataUTI) else {
             // not a video
             return false
         }
 
-        guard isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) else {
-            // found a video which needs to be converted
-            return true
-        }
-
-        // It is a video, but it's not invalid
+        // Today we re-encode all videos for the most consistent experience.
         return true
     }
 
