@@ -1096,7 +1096,7 @@ public class SignalAttachment: NSObject {
 
     public class func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
         Logger.debug("")
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
             return (Promise.value(attachment), nil)
@@ -1169,7 +1169,7 @@ public class SignalAttachment: NSObject {
         }
 
         // It is a video, but it's not invalid
-        return false
+        return true
     }
 
     private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
