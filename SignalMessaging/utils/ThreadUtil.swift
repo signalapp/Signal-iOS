@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -163,5 +163,9 @@ public extension ThreadUtil {
 
         }
         return promise
+    }
+
+    class func sendMessageNonDurablyPromise(message: TSOutgoingMessage) -> Promise<Void> {
+        return messageSender.sendMessage(.promise, message.asPreparer)
     }
 }

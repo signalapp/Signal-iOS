@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSetup.h"
@@ -123,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSMessagePipelineSupervisor createStandardSupervisor];
         ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
         AppExpiry *appExpiry = [AppExpiry new];
+        BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -132,7 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds
                                                            windowManager:windowManager
-                                                      contactsViewHelper:contactsViewHelper]];
+                                                      contactsViewHelper:contactsViewHelper
+                                           broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue]];
 
         [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
 

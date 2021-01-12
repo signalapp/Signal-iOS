@@ -4660,6 +4660,9 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
 
+/* Send progress for share extension. Embeds {{number of attachments uploaded, total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$d of %2$d…";
+
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
 

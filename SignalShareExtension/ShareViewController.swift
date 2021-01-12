@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -479,7 +479,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     public func shareViewFailed(error: Error) {
-        Logger.info("")
+        owsFailDebug("Error: \(error)")
 
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
@@ -535,8 +535,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             self.progressPoller = nil
             self.loadViewController = nil
 
-            let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
-            conversationPicker.attachments = attachments
+            let conversationPicker = SharingThreadPickerViewController(attachments: attachments, shareViewDelegate: self)
             self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachments: \(attachments)")
         }.catch { [weak self] error in
