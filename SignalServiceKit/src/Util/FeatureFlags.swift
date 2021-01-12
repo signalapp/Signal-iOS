@@ -373,6 +373,15 @@ public class DebugFlags: BaseFlags {
     public static let dontSendContactOrGroupSyncMessages = TestableFlag(false)
 
     @objc
+    public static let forceAttachmentDownloadFailures = TestableFlag(false)
+
+    @objc
+    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(false)
+
+    @objc
+    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(false)
+
+    @objc
     public static let fastPerfTests = false
 
     @objc

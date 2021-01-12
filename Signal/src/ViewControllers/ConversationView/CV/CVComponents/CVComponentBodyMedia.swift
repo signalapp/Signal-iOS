@@ -17,6 +17,21 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private var mediaAlbumHasPendingAttachment: Bool {
         bodyMedia.mediaAlbumHasPendingAttachment
     }
+    private var mediaAlbumHasPendingManualDownloadAttachment: Bool {
+        bodyMedia.mediaAlbumHasPendingManualDownloadAttachment
+    }
+
+    private var areAllItemsImages: Bool {
+        for item in items {
+            if item.attachment.isAnimated {
+                return false
+            }
+            if !item.attachment.isImage {
+                return false
+            }
+        }
+        return true
+    }
 
     var hasDownloadButton: Bool {
         mediaAlbumHasPendingAttachment
@@ -123,8 +138,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         if hasDownloadButton {
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: UIColor.ows_white)
-            iconView.autoSetDimensions(to: CGSize.square(16))
-
             let downloadButton: UIView
             if albumView.itemViews.count > 1 {
                 let downloadStack = UIStackView()
@@ -139,20 +152,25 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 downloadStack.addSubview(pillView)
                 pillView.autoPinEdgesToSuperviewEdges()
 
+                iconView.autoSetDimensions(to: CGSize.square(20))
                 downloadStack.addArrangedSubview(iconView)
 
                 let downloadLabel = UILabel()
-                let downloadFormat = NSLocalizedString("MEDIA_GALLERY_ITEM_COUNT_FORMAT",
-                                                       comment: "Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
+                let downloadFormat = (areAllItemsImages
+                                        ? NSLocalizedString("MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT",
+                                        comment: "Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
+                                        : NSLocalizedString("MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT",
+                                        comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
                 downloadLabel.text = String(format: downloadFormat, OWSFormat.formatInt(albumView.itemViews.count))
                 downloadLabel.textColor = UIColor.ows_white
-                downloadLabel.font = .ows_dynamicTypeCaption1
+                downloadLabel.font = .ows_dynamicTypeSubheadline
                 downloadStack.addArrangedSubview(downloadLabel)
 
                 downloadButton = downloadStack
             } else {
                 let circleView = OWSLayerView.circleView(size: 44)
                 circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                iconView.autoSetDimensions(to: CGSize.square(24))
                 circleView.addSubview(iconView)
                 iconView.autoCenterInSuperview()
                 downloadButton = circleView
@@ -160,6 +178,42 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
             componentView.rootView.addSubview(downloadButton)
             downloadButton.autoCenterInSuperview()
+
+            if mediaAlbumHasPendingManualDownloadAttachment {
+                let attachmentPointers = items.compactMap { $0.attachment as? TSAttachmentPointer }
+                let pendingManualDownloadAttachments = attachmentPointers.filter { $0.isPendingManualDownload }
+                let totalSize = pendingManualDownloadAttachments.map { $0.byteCount}.reduce(0, +)
+
+                if totalSize > 0 {
+                    let downloadSizeView = OWSLayerView.pillView()
+                    downloadSizeView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                    downloadSizeView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 1)
+
+                    var downloadSizeText = [OWSFormat.formatFileSize(UInt(totalSize))]
+
+                    if pendingManualDownloadAttachments.count == 1,
+                       let firstAttachmentPointer = pendingManualDownloadAttachments.first {
+                        if firstAttachmentPointer.isAnimated {
+                            // Do nothing.
+                        } else if firstAttachmentPointer.isImage {
+                            downloadSizeText.append(CommonStrings.attachmentTypePhoto)
+                        } else if firstAttachmentPointer.isVideo {
+                            downloadSizeText.append(CommonStrings.attachmentTypeVideo)
+                        }
+                    }
+
+                    let downloadSizeLabel = UILabel()
+                    downloadSizeLabel.text = downloadSizeText.joined(separator: " • ")
+                    downloadSizeLabel.textColor = UIColor.ows_white
+                    downloadSizeLabel.font = .ows_dynamicTypeCaption1
+                    downloadSizeView.addSubview(downloadSizeLabel)
+                    downloadSizeLabel.autoPinEdgesToSuperviewMargins()
+
+                    componentView.rootView.addSubview(downloadSizeView)
+                    downloadSizeView.autoPinEdge(toSuperviewEdge: .top, withInset: 9)
+                    downloadSizeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
+                }
+            }
         }
     }
 

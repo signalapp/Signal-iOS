@@ -108,6 +108,14 @@ import Foundation
 
     @objc
     static public let genericError = NSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")
+
+    @objc
+    static public let attachmentTypePhoto = NSLocalizedString("ATTACHMENT_TYPE_PHOTO",
+                                                       comment: "Short text label for a photo attachment, used for thread preview and on the lock screen")
+
+    @objc
+    static public let attachmentTypeVideo = NSLocalizedString("ATTACHMENT_TYPE_VIDEO",
+                                          comment: "Short text label for a video attachment, used for thread preview and on the lock screen")
 }
 
 @objc
