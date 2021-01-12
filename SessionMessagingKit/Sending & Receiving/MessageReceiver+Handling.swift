@@ -270,7 +270,7 @@ extension MessageReceiver {
         let group = thread.groupModel
         let oldMembers = group.groupMemberIds
         // Check that the message isn't from before the group was created
-        guard Double(message.sentTimestamp!) > thread.creationDate.timeIntervalSince1970 else {
+        guard Double(message.sentTimestamp!) > thread.creationDate.timeIntervalSince1970 * 1000 else {
             return SNLog("Ignoring closed group update from before thread was created.")
         }
         // Check that the sender is a member of the group (before the update)
