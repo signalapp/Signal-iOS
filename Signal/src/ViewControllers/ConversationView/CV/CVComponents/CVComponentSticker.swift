@@ -180,7 +180,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                                         comment: "Accessibility label for stickers.")
             return view
         }()
-        fileprivate let placeholderView = UIView()
 
         fileprivate var isAnimated = false
 
