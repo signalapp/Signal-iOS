@@ -127,7 +127,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             var textComponents = [String]()
 
             if attachmentPointer.byteCount > 0 {
-                textComponents.append(OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)) + " • " + text)
+                textComponents.append(OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)))
             }
 
             switch attachmentPointer.state {
