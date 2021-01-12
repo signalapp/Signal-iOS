@@ -186,7 +186,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - Notifications
 
-- (void)updateAvatars {
+- (void)updateAvatars
+{
     [self.tableView reloadData];
 }
 
