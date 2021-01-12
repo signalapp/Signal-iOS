@@ -63,8 +63,6 @@ public enum MediaBandwidthPreference: UInt, Equatable, CaseIterable {
     case wifiOnly
     case wifiAndCellular
 
-    public static var defaultValue: MediaBandwidthPreference { .wifiAndCellular }
-
     public var sortKey: UInt {
         switch self {
         case .never:
@@ -85,6 +83,19 @@ public enum MediaDownloadType: String, Equatable, CaseIterable {
     case audio
     case document
 
+    var defaultPreference: MediaBandwidthPreference {
+        switch self {
+        case .photo:
+            return .wifiAndCellular
+        case .video:
+            return .wifiOnly
+        case .audio:
+            return .wifiAndCellular
+        case .document:
+            return .wifiOnly
+        }
+    }
+
     public var sortKey: UInt {
         switch self {
         case .photo:
@@ -103,7 +114,7 @@ public enum MediaDownloadType: String, Equatable, CaseIterable {
 
 public extension OWSAttachmentDownloads {
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "OWSAttachmentDownloads")
+    private static let keyValueStore = SDSKeyValueStore(collection: "MediaBandwidthPreferences")
 
     static let mediaBandwidthPreferencesDidChange = Notification.Name("PushTokensDidChange")
 
@@ -123,11 +134,11 @@ public extension OWSAttachmentDownloads {
                                          transaction: SDSAnyReadTransaction) -> MediaBandwidthPreference {
         guard let rawValue = keyValueStore.getUInt(mediaDownloadType.rawValue,
                                                    transaction: transaction) else {
-            return MediaBandwidthPreference.defaultValue
+            return mediaDownloadType.defaultPreference
         }
         guard let value = MediaBandwidthPreference(rawValue: rawValue) else {
             owsFailDebug("Invalid value: \(rawValue)")
-            return MediaBandwidthPreference.defaultValue
+            return mediaDownloadType.defaultPreference
         }
         return value
     }
