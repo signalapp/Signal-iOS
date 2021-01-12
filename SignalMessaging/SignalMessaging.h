@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -54,7 +54,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSWindowManager.h>
 #import <SignalMessaging/PrivateMethodsForMigration.h>
 #import <SignalMessaging/ScreenLockViewController.h>
-#import <SignalMessaging/SharingThreadPickerViewController.h>
+#import <SignalMessaging/SelectThreadViewController.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/ThreadViewHelper.h>

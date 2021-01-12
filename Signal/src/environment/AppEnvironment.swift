@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -48,9 +48,6 @@ public class AppEnvironment: NSObject {
     public var sessionResetJobQueue: SessionResetJobQueue
 
     @objc
-    public var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue
-
-    @objc
     public var backup: OWSBackup
 
     @objc
@@ -73,7 +70,6 @@ public class AppEnvironment: NSObject {
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
-        self.broadcastMediaMessageJobQueue = BroadcastMediaMessageJobQueue()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
         self.userNotificationActionHandler = UserNotificationActionHandler()

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -69,23 +69,23 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 }
 
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
-    var selectedConversationsForConversationPicker: [ConversationItem] {
+    public var selectedConversationsForConversationPicker: [ConversationItem] {
         return selectedConversations
     }
 
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
+    public func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
                             didSelectConversation conversation: ConversationItem) {
         self.selectedConversations.append(conversation)
     }
 
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
+    public func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
                             didDeselectConversation conversation: ConversationItem) {
         self.selectedConversations = self.selectedConversations.filter {
             $0.messageRecipient != conversation.messageRecipient
         }
     }
 
-    func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
+    public func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
         guard let approvedAttachments = self.approvedAttachments else {
             owsFailDebug("approvedAttachments was unexpectedly nil")
             delegate?.cameraFirstCaptureSendFlowDidCancel(self)
@@ -104,15 +104,15 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         }
     }
 
-    func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
+    public func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
         return false
     }
 
-    func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
+    public func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
         owsFailDebug("Camera-first capture flow should never cancel conversation picker.")
     }
 
-    func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
+    public func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return .send
     }
 }

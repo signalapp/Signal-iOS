@@ -1,15 +1,15 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-enum MessageRecipient: Equatable {
+public enum MessageRecipient: Equatable {
     case contact(_ address: SignalServiceAddress)
     case group(_ groupThread: TSGroupThread)
 }
 
-protocol ConversationItem {
+public protocol ConversationItem {
     var messageRecipient: MessageRecipient { get }
     var title: String { get }
     var image: UIImage? { get }

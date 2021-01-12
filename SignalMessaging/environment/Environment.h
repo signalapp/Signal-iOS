@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
+@class BroadcastMediaMessageJobQueue;
 @class ContactsViewHelper;
 @class LaunchJobs;
 @class OWSAudioSession;
@@ -37,7 +38,8 @@
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
-                  contactsViewHelper:(ContactsViewHelper *)contactsViewHelper;
+                  contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
+       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -49,6 +51,7 @@
 @property (nonatomic, readonly) OWSSounds *sounds;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+@property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue;
 
 @property (class, nonatomic) Environment *shared;
 

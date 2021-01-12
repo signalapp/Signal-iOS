@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
-protocol ConversationPickerDelegate: AnyObject {
+public protocol ConversationPickerDelegate: AnyObject {
     var selectedConversationsForConversationPicker: [ConversationItem] { get }
 
     func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
@@ -24,9 +24,9 @@ protocol ConversationPickerDelegate: AnyObject {
 }
 
 @objc
-class ConversationPickerViewController: OWSViewController {
+open class ConversationPickerViewController: OWSViewController {
 
-    weak var delegate: ConversationPickerDelegate?
+    public weak var delegate: ConversationPickerDelegate?
 
     enum Section: Int, CaseIterable {
         case recents, signalContacts, groups
@@ -46,7 +46,7 @@ class ConversationPickerViewController: OWSViewController {
 
     // MARK: - UIViewController
 
-    override var canBecomeFirstResponder: Bool {
+    public override var canBecomeFirstResponder: Bool {
         return true
     }
 
@@ -60,7 +60,7 @@ class ConversationPickerViewController: OWSViewController {
         }
     }
 
-    override var inputAccessoryView: UIView? {
+    public override var inputAccessoryView: UIView? {
         return currentInputAcccessoryView
     }
 
@@ -71,7 +71,7 @@ class ConversationPickerViewController: OWSViewController {
         return delegate.approvalMode(self)
     }
 
-    override func loadView() {
+    public override func loadView() {
         self.view = UIView()
         view.backgroundColor = Theme.backgroundColor
         view.addSubview(tableView)
@@ -89,7 +89,7 @@ class ConversationPickerViewController: OWSViewController {
         }
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
         title = Strings.title
@@ -337,7 +337,7 @@ class ConversationPickerViewController: OWSViewController {
 // MARK: -
 
 extension ConversationPickerViewController: BlockListCacheDelegate {
-    func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
+    public func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
         Logger.debug("")
         self.conversationCollection = buildConversationCollection()
     }
@@ -346,11 +346,11 @@ extension ConversationPickerViewController: BlockListCacheDelegate {
 // MARK: -
 
 extension ConversationPickerViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
+    public func numberOfSections(in tableView: UITableView) -> Int {
         return Section.allCases.count
     }
 
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard !Theme.isDarkThemeEnabled else {
             // we build a custom header for dark theme
             return nil
@@ -379,7 +379,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
         }
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let section = Section(rawValue: section) else {
             owsFailDebug("section was unexpectedly nil")
             return 0
@@ -388,7 +388,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
         return conversationCollection.conversations(section: section).count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let conversationItem = conversation(for: indexPath) else {
             owsFail("conversation was unexpectedly nil")
         }
@@ -404,7 +404,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
         return cell
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard Theme.isDarkThemeEnabled else {
             return nil
         }
@@ -426,7 +426,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
         return sectionHeader
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard titleForHeader(inSection: section) != nil else {
             // empty sections will have no title - don't show a header.
             return 0
@@ -439,7 +439,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
 // MARK: -
 
 extension ConversationPickerViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let delegate = delegate else { return nil }
 
         guard let item = conversation(for: indexPath) else {
@@ -489,7 +489,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
         return indexPath
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let conversation = conversation(for: indexPath) else {
             owsFailDebug("conversation was unexpectedly nil")
             return
@@ -498,7 +498,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
         updateUIForCurrentSelection(animated: true)
     }
 
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         guard let conversation = conversation(for: indexPath) else {
             owsFailDebug("conversation was unexpectedly nil")
             return
@@ -540,7 +540,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
 // MARK: -
 
 extension ConversationPickerViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         firstly {
             buildSearchResults(searchText: searchText)
         }.then { [weak self] searchResults -> Promise<ConversationCollection> in
@@ -560,15 +560,15 @@ extension ConversationPickerViewController: UISearchBarDelegate {
         }
     }
 
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
     }
 
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
     }
 
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.resignFirstResponder()
     }
