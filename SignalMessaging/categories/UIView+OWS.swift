@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -791,6 +791,20 @@ public extension UIStackView {
         }
         for subview in subviews {
             addArrangedSubview(subview)
+        }
+    }
+}
+
+// MARK: -
+
+// This works around a UIStackView bug where hidden subviews
+// sometimes re-appear.
+public extension UIView {
+    var isHiddenInStackView: Bool {
+        get { isHidden }
+        set {
+            isHidden = newValue
+            alpha = newValue ? 0 : 1
         }
     }
 }
