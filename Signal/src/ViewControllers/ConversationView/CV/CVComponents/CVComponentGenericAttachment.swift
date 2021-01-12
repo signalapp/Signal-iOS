@@ -254,7 +254,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        if let attachmentStream = attachmentStream {
+        if attachmentStream != nil {
             componentDelegate.cvc_didTapGenericAttachment(self)
         } else if let attachmentPointer = attachmentPointer {
             switch attachmentPointer.state {
