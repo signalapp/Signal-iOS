@@ -1007,7 +1007,7 @@ typedef enum : NSUInteger {
             [self showGroupLobbyOrActiveCall];
             break;
         case ConversationViewActionNewGroupActionSheet:
-            [self showGroupLinkPromotionActionSheet];
+            dispatch_async(dispatch_get_main_queue(), ^{ [self showGroupLinkPromotionActionSheet]; });
             break;
     }
 
