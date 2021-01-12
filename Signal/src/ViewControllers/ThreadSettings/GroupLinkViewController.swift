@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -183,8 +183,8 @@ public class GroupLinkViewController: OWSTableViewController {
         // Whenever we activate the group link, default to _not_ requiring admin approval.
         let approveNewMembers = groupModelV2.access.addFromInviteLink == .administrator
 
-        let linkMode = self.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
-                                     approveNewMembers: approveNewMembers)
+        let linkMode = GroupLinkViewUtils.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
+                                                   approveNewMembers: approveNewMembers)
         updateLinkMode(linkMode: linkMode)
     }
 
@@ -203,8 +203,8 @@ public class GroupLinkViewController: OWSTableViewController {
         }
 
         let isGroupInviteLinkEnabled = groupModelV2.isGroupInviteLinkEnabled
-        let linkMode = self.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
-                                     approveNewMembers: sender.isOn)
+        let linkMode = GroupLinkViewUtils.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
+                                                   approveNewMembers: sender.isOn)
         updateLinkMode(linkMode: linkMode)
     }
 
@@ -321,36 +321,57 @@ public class GroupLinkViewController: OWSTableViewController {
 
 // MARK: -
 
-private extension GroupLinkViewController {
+public class GroupLinkViewUtils {
 
-    func updateLinkMode(linkMode: GroupsV2LinkMode) {
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+    static func updateLinkMode(groupModelV2: TSGroupModelV2,
+                               linkMode: GroupsV2LinkMode,
+                               description: String,
+                               fromViewController: UIViewController,
+                               completion: @escaping (TSGroupThread) -> Void) {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: fromViewController,
                                                         updatePromiseBlock: { () -> Promise<TSGroupThread> in
-                                                            self.updateLinkModePromise(linkMode: linkMode)
-        },
-                                                        completion: { [weak self] (groupThread: TSGroupThread?) in
+                                                            self.updateLinkModePromise(groupModelV2: groupModelV2,
+                                                                                       linkMode: linkMode,
+                                                                                       description: description)
+                                                        },
+                                                        completion: { (groupThread: TSGroupThread?) in
                                                             guard let groupThread = groupThread else {
                                                                 owsFailDebug("Missing groupThread.")
                                                                 return
                                                             }
-                                                            self?.updateView(groupThread: groupThread)
-        })
+                                                            completion(groupThread)
+                                                        })
     }
 
-    func updateLinkModePromise(linkMode: GroupsV2LinkMode) -> Promise<TSGroupThread> {
-        let groupModelV2 = self.groupModelV2
+    static func updateLinkModePromise(groupModelV2: TSGroupModelV2,
+                                      linkMode: GroupsV2LinkMode,
+                                      description: String) -> Promise<TSGroupThread> {
         return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModelV2, description: self.logTag)
+            return GroupManager.messageProcessingPromise(for: groupModelV2, description: description)
         }.then(on: .global()) { _ in
             GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
         }
     }
 
-    private func linkMode(isGroupInviteLinkEnabled: Bool, approveNewMembers: Bool) -> GroupsV2LinkMode {
+    static func linkMode(isGroupInviteLinkEnabled: Bool, approveNewMembers: Bool) -> GroupsV2LinkMode {
         if isGroupInviteLinkEnabled {
             return (approveNewMembers ? .enabledWithApproval : .enabledWithoutApproval)
         } else {
             return .disabled
+        }
+    }
+}
+
+// MARK: -
+
+private extension GroupLinkViewController {
+
+    func updateLinkMode(linkMode: GroupsV2LinkMode) {
+        GroupLinkViewUtils.updateLinkMode(groupModelV2: groupModelV2,
+                                          linkMode: linkMode,
+                                          description: self.logTag,
+                                          fromViewController: self) { [weak self] groupThread in
+            self?.updateView(groupThread: groupThread)
         }
     }
 

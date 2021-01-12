@@ -1006,6 +1006,9 @@ typedef enum : NSUInteger {
         case ConversationViewActionGroupCallLobby:
             [self showGroupLobbyOrActiveCall];
             break;
+        case ConversationViewActionNewGroupActionSheet:
+            [self showGroupLinkPromotionActionSheet];
+            break;
     }
 
     // Clear the "on open" state after the view has been presented.
