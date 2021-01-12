@@ -113,7 +113,10 @@ public extension OWSAttachmentDownloads {
         keyValueStore.setUInt(mediaDownloadCondition.rawValue,
                               key: mediaDownloadType.rawValue,
                               transaction: transaction)
-        NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+
+        transaction.addAsyncCompletionOffMain {
+            NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+        }
     }
 
     static func mediaDownloadCondition(forMediaDownloadType mediaDownloadType: MediaDownloadType,
@@ -133,7 +136,9 @@ public extension OWSAttachmentDownloads {
         for mediaDownloadType in MediaDownloadType.allCases {
             keyValueStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: transaction)
         }
-        NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+        transaction.addAsyncCompletionOffMain {
+            NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+        }
     }
 
     static func loadMediaDownloadConditions(transaction: SDSAnyReadTransaction) -> [MediaDownloadType: MediaDownloadCondition] {
