@@ -223,14 +223,14 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     // We need to retain a link to this delegate during the send flow.
-    private weak var sendMessageDelegate: HeadlessSendMessageDelegate?
+    private var sendMessageController: SendMessageController?
 
     private func showShareLinkAlert() {
-        let sendMessageDelegate = HeadlessSendMessageDelegate(fromViewController: self)
-        self.sendMessageDelegate = sendMessageDelegate
+        let sendMessageController = SendMessageController(fromViewController: self)
+        self.sendMessageController = sendMessageController
         GroupLinkViewUtils.showShareLinkAlert(groupModelV2: groupModelV2,
                                               fromViewController: self,
-                                              sendMessageDelegate: sendMessageDelegate)
+                                              sendMessageController: sendMessageController)
     }
 
     private func showResetLinkConfirmAlert() {
@@ -294,7 +294,7 @@ public class GroupLinkViewUtils {
 
     public static func showShareLinkAlert(groupModelV2: TSGroupModelV2,
                                           fromViewController: UIViewController,
-                                          sendMessageDelegate: HeadlessSendMessageDelegate) {
+                                          sendMessageController: SendMessageController) {
         let message = NSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
                                         comment: "Message for the 'share group link' action sheet in the 'group link' view.")
         let actionSheet = ActionSheetController(message: message)
@@ -303,7 +303,7 @@ public class GroupLinkViewUtils {
                                                 style: .default) { _ in
             Self.shareLinkViaSignal(groupModelV2: groupModelV2,
                                     fromViewController: fromViewController,
-                                    sendMessageDelegate: sendMessageDelegate)
+                                    sendMessageController: sendMessageController)
         })
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
                                                                          comment: "Label for the 'copy link' button in the 'group link' view."),
@@ -327,7 +327,7 @@ public class GroupLinkViewUtils {
 
     private static func shareLinkViaSignal(groupModelV2: TSGroupModelV2,
                                            fromViewController: UIViewController,
-                                           sendMessageDelegate: HeadlessSendMessageDelegate) {
+                                           sendMessageController: SendMessageController) {
         guard let navigationController = fromViewController.navigationController else {
             owsFailDebug("Missing navigationController.")
             return
@@ -341,9 +341,9 @@ public class GroupLinkViewUtils {
                                                   unapprovedContent: unapprovedContent,
                                                   useConversationComposeForSingleRecipient: true,
                                                   navigationController: navigationController,
-                                                  delegate: sendMessageDelegate)
+                                                  delegate: sendMessageController)
             // Retain the flow until it is complete.
-            sendMessageDelegate.sendMessageFlow.set(sendMessageFlow)
+            sendMessageController.sendMessageFlow.set(sendMessageFlow)
         } catch {
             owsFailDebug("Error: \(error)")
         }

@@ -611,7 +611,7 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
 
 // MARK: -
 
-public class HeadlessSendMessageDelegate: SendMessageDelegate {
+public class SendMessageController: SendMessageDelegate {
 
     private weak var fromViewController: UIViewController?
 

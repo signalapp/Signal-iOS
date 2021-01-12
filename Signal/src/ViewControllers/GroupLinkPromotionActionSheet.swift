@@ -213,10 +213,10 @@ private extension GroupLinkPromotionActionSheet {
             owsFailDebug("Missing conversationViewController.")
             return
         }
-        let sendMessageDelegate = HeadlessSendMessageDelegate(fromViewController: conversationViewController)
-        conversationViewController.sendMessageDelegate = sendMessageDelegate
+        let sendMessageController = SendMessageController(fromViewController: conversationViewController)
+        conversationViewController.sendMessageController = sendMessageController
         GroupLinkViewUtils.showShareLinkAlert(groupModelV2: groupModelV2,
                                               fromViewController: conversationViewController,
-                                              sendMessageDelegate: sendMessageDelegate)
+                                              sendMessageController: sendMessageController)
     }
 }
