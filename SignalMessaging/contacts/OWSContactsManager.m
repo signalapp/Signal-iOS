@@ -402,7 +402,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
                 const NSUInteger contactCount = phoneNumbersForIntersection.count;
 
-                NSDate *nextFullIntersectionDate = [NSDate dateWithTimeIntervalSinceNow:kDayInterval];
+                NSDate *nextFullIntersectionDate = [NSDate dateWithTimeIntervalSinceNow:RemoteConfig.cdsSyncInterval];
                 OWSLogDebug(@"contactCount: %lu, currentDate: %@, nextFullIntersectionDate: %@",
                     (unsigned long)contactCount,
                     [NSDate new],
