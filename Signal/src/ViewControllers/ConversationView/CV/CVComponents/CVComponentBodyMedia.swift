@@ -19,7 +19,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     }
 
     var hasDownloadButton: Bool {
-        mediaAlbumHasFailedAttachment || mediaAlbumHasPendingAttachment
+        mediaAlbumHasPendingAttachment
     }
 
     private let footerOverlay: CVComponent?

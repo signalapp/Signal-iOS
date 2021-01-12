@@ -124,9 +124,24 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         var text = " "
 
         if let attachmentPointer = self.attachmentPointer {
-            text = NSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons.")
+            var textComponents = [String]()
+
             if attachmentPointer.byteCount > 0 {
-                text = OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)) + " • " + text
+                textComponents.append(OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)) + " • " + text)
+            }
+
+            switch attachmentPointer.state {
+            case .enqueued, .downloading:
+                break
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                textComponents.append(NSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
+            @unknown default:
+                owsFailDebug("Invalid value.")
+                break
+            }
+
+            if !textComponents.isEmpty {
+                text = textComponents.joined(separator: " • ")
             }
         } else if let attachmentStream = attachmentStream {
             if let originalFilePath = attachmentStream.originalFilePath,
@@ -173,13 +188,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         let downloadViewSize = min(iconSize.width, iconSize.height)
         switch attachmentPointer.state {
-        case .failed:
-            // We don't need to handle the "tap to retry" state here,
-            // only download progress.
-            return nil
         case .enqueued, .downloading:
             break
-        case .pendingMessageRequest, .pendingManualDownload:
+        case .failed, .pendingMessageRequest, .pendingManualDownload:
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: Theme.accentBlueColor)
             iconView.autoSetDimensions(to: CGSize.square(16))

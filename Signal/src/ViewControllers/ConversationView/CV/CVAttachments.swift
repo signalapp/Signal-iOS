@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,6 +22,7 @@ public class AudioAttachment: NSObject {
             return attachmentPointer
         }
     }
+
     @objc
     public var attachmentStream: TSAttachmentStream? {
         switch state {
@@ -31,6 +32,17 @@ public class AudioAttachment: NSObject {
             return nil
         }
     }
+
+    @objc
+    public var attachmentPointer: TSAttachmentPointer? {
+        switch state {
+        case .attachmentStream:
+            return nil
+        case .attachmentPointer(let attachmentPointer):
+            return attachmentPointer
+        }
+    }
+
     @objc
     public var durationSeconds: TimeInterval {
         switch state {

@@ -345,19 +345,15 @@ extension CVComponentBase: CVNode {
         })
     }
 
-    // TODO: Make sure we're applying everywhere that we need to.
     func addDownloadViewIfNecessary(attachmentPointer: TSAttachmentPointer,
                                     attachmentView: UIView,
                                     hostView: UIView,
                                     shouldShowDownloadProgress: Bool) -> ProgressViewToken? {
 
         switch attachmentPointer.state {
-        case .failed:
-            return addTapToRetryView(attachmentView: attachmentView)
-        case .enqueued,
-             .downloading,
-             .pendingMessageRequest,
-             .pendingManualDownload:
+        case .failed, .pendingMessageRequest, .pendingManualDownload:
+            return nil
+        case .enqueued, .downloading:
             break
         @unknown default:
             owsFailDebug("Invalid value.")
@@ -417,44 +413,6 @@ extension CVComponentBase: CVNode {
         }
         return conversationStyle.bubbleColor(message: message)
     }
-
-    // TODO: Make sure we're applying everywhere that we need to.
-    func addTapToRetryView(attachmentView: UIView) -> ProgressViewToken {
-
-        // Hide the body media view, replace with "tap to retry" indicator.
-
-        let label = UILabel()
-        label.text = NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_FAILED",
-                                       comment: "Status label when an attachment download has failed.")
-        label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.textAlignment = .center
-        label.backgroundColor = bubbleColorForMessage
-        attachmentView.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
-        label.setContentHuggingLow()
-        label.setCompressionResistanceLow()
-
-        return ProgressViewToken {
-            label.removeFromSuperview()
-        }
-    }
-
-    // TODO: Do we need to do this?
-    // TODO: Make sure we're applying everywhere that we need to.
-    //    - (void)showAttachmentErrorViewWithMediaView:(UIView *)mediaView
-    //    {
-    //    OWSAssertDebug(mediaView);
-    //
-    //    // TODO: We could do a better job of indicating that the media could not be loaded.
-    //    UIView *errorView = [UIView new];
-    //    errorView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
-    //    errorView.userInteractionEnabled = NO;
-    //    [mediaView addSubview:errorView];
-    //    [errorView autoPinEdgesToSuperviewEdges];
-    //    }
 }
 
 // MARK: -
