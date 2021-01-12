@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageManager.h"
@@ -1444,7 +1444,8 @@ NS_ASSUME_NONNULL_BEGIN
     // and not be able to find the attachment(s)/message/thread.
     [transaction addAsyncCompletionOffMain:^{
         [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
-            bypassPendingMessageRequest:YES
+            category:AttachmentCategoryOther
+            downloadBehavior:AttachmentDownloadBehaviorBypassAll
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -1538,25 +1539,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([TSMessage anyFetchWithUniqueId:message.uniqueId transaction:transaction] != nil);
 
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
-
-    NSArray<TSAttachment *> *bodyAttachments = [message bodyAttachmentsWithTransaction:transaction.unwrapGrdbRead];
-
-    // Don't enqueue the attachment downloads until the write
-    // transaction is committed or attachmentDownloads might race
-    // and not be able to find the attachment(s)/message/thread.
-    [transaction addAsyncCompletionOffMain:^{
-        [self.attachmentDownloads downloadAttachmentsForMessage:message
-            bypassPendingMessageRequest:NO
-            attachments:bodyAttachments
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
-                    (unsigned long)attachmentStreams.count,
-                    message);
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", message, error);
-            }];
-    }];
 }
 
 - (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -2232,23 +2214,23 @@ NS_ASSUME_NONNULL_BEGIN
                             serverDeliveryTimestamp:serverDeliveryTimestamp
                                     wasReceivedByUD:wasReceivedByUD
                                   isViewOnceMessage:isViewOnceMessage];
-    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
-    if (!incomingMessage) {
+    TSIncomingMessage *message = [incomingMessageBuilder build];
+    if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");
         return nil;
     }
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
-        [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
+        [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:message];
 
-    NSMutableArray<NSString *> *attachmentIds = [incomingMessage.attachmentIds mutableCopy];
+    NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
         [pointer anyInsertWithTransaction:transaction];
         [attachmentIds addObject:pointer.uniqueId];
     }
-    incomingMessage.attachmentIds = [attachmentIds copy];
+    message.attachmentIds = [attachmentIds copy];
 
-    if (!incomingMessage.hasRenderableContent) {
+    if (!message.hasRenderableContent) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
         if (SSKDebugFlags.internalLogging) {
             OWSLogInfo(@"Ignoring empty: %@", envelope.debugDescription);
@@ -2256,83 +2238,45 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [incomingMessage anyInsertWithTransaction:transaction];
+    [message anyInsertWithTransaction:transaction];
 
-    OWSAssertDebug(incomingMessage.sortId == 0);
-    [incomingMessage fillInMissingSortIdForJustInsertedInteractionWithTransaction:transaction];
-    OWSAssertDebug(incomingMessage.sortId > 0);
+    OWSAssertDebug(message.sortId == 0);
+    [message fillInMissingSortIdForJustInsertedInteractionWithTransaction:transaction];
+    OWSAssertDebug(message.sortId > 0);
 
-    [self.earlyMessageManager applyPendingMessagesFor:incomingMessage transaction:transaction];
+    [self.earlyMessageManager applyPendingMessagesFor:message transaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
         BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
         OWSFailDebug(@"Incoming messages from yourself are not supported.");
         // Don't send a read receipt for messages sent by ourselves.
-        [incomingMessage markAsReadAtTimestamp:envelope.timestamp
-                                        thread:thread
-                                  circumstance:hasPendingMessageRequest
-                                      ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
-                                      : OWSReadCircumstanceReadOnLinkedDevice
-                                   transaction:transaction];
+        [message markAsReadAtTimestamp:envelope.timestamp
+                                thread:thread
+                          circumstance:hasPendingMessageRequest
+                              ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
+                              : OWSReadCircumstanceReadOnLinkedDevice
+                           transaction:transaction];
     }
 
-    // Download the "non-message body" attachments.
-    NSMutableArray<NSString *> *otherAttachmentIds = [incomingMessage.allAttachmentIds mutableCopy];
-    if (incomingMessage.attachmentIds) {
-        [otherAttachmentIds removeObjectsInArray:incomingMessage.attachmentIds];
-    }
-    for (NSString *attachmentId in otherAttachmentIds) {
-        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-        if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSLogInfo(@"Skipping attachment stream.");
-            continue;
-        }
-        TSAttachmentPointer *_Nullable attachmentPointer = (TSAttachmentPointer *)attachment;
+    // Don't enqueue the attachment downloads until the write
+    // transaction is committed or attachmentDownloads might race
+    // and not be able to find the attachment(s)/message/thread.
+    [transaction addAsyncCompletionOffMain:^{
+        [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+            attachmentGroup:AttachmentGroupAllAttachmentsIncoming
+            downloadBehavior:AttachmentDownloadBehaviorDefault
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogDebug(@"Successfully fetched attachments: %lu for message: %@",
+                    (unsigned long)attachmentStreams.count,
+                    message);
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Failed to fetch attachments for message: %@ with error: %@", message, error);
+            }];
+    }];
 
-        OWSLogDebug(@"Downloading attachment for message: %llu", incomingMessage.timestamp);
-
-        // Use a separate download for each attachment so that:
-        //
-        // * We update the message as each comes in.
-        // * Failures don't interfere with successes.
-        //
-        // Don't enqueue the attachment downloads until the write
-        // transaction is committed or attachmentDownloads might race
-        // and not be able to find the attachment(s)/message/thread.
-        [transaction addAsyncCompletionOffMain:^{
-            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-                message:incomingMessage
-                bypassPendingMessageRequest:NO
-                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    if (attachmentStreams.count == 0) {
-                        // This is expected if there is a pending message request.
-                        return;
-                    }
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
-                        OWSAssertDebug(attachmentStream);
-                        if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
-                            [attachmentStream.uniqueId
-                                isEqualToString:incomingMessage.quotedMessage.thumbnailAttachmentPointerId]) {
-                            [incomingMessage
-                                anyUpdateMessageWithTransaction:transaction
-                                                          block:^(TSMessage *message) {
-                                                              [message setQuotedMessageThumbnailAttachmentStream:
-                                                                           attachmentStream];
-                                                          }];
-                        }
-                    });
-                }
-                failure:^(NSError *error) {
-                    OWSLogWarn(@"failed to download attachment for message: %llu with error: %@",
-                        incomingMessage.timestamp,
-                        error);
-                }];
-        }];
-    }
-
-    [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
+    [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:message
                                                                       thread:thread
                                                                  transaction:transaction];
 
@@ -2342,7 +2286,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         deviceId:envelope.sourceDevice];
     });
 
-    return incomingMessage;
+    return message;
 }
 
 - (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread

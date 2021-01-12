@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,7 @@ class LinkedDevicesTableViewController: OWSTableViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateSucceeded),
-        name: .deviceListUpdateSucceeded,
+                                               name: .deviceListUpdateSucceeded,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateFailed),

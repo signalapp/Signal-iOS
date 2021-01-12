@@ -117,19 +117,42 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private var bottomLabelConfig: CVLabelConfig {
-        var fileSize: UInt = 0
-        if let attachmentStream = attachmentStream,
-           let originalFilePath = attachmentStream.originalFilePath,
-           let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
-            fileSize = nsFileSize.uintValue
-        }
 
         // We don't want to show the file size while the attachment is downloading.
         // To avoid layout jitter when the download completes, we reserve space in
         // the layout using a whitespace string.
         var text = " "
-        if fileSize > 0 {
-            text = OWSFormat.formatFileSize(fileSize)
+
+        if let attachmentPointer = self.attachmentPointer {
+            var textComponents = [String]()
+
+            if attachmentPointer.byteCount > 0 {
+                textComponents.append(OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)))
+            }
+
+            switch attachmentPointer.state {
+            case .enqueued, .downloading:
+                break
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                textComponents.append(NSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
+            @unknown default:
+                owsFailDebug("Invalid value.")
+                break
+            }
+
+            if !textComponents.isEmpty {
+                text = textComponents.joined(separator: " • ")
+            }
+        } else if let attachmentStream = attachmentStream {
+            if let originalFilePath = attachmentStream.originalFilePath,
+               let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
+                let fileSize = nsFileSize.uintValue
+                if fileSize > 0 {
+                    text = OWSFormat.formatFileSize(fileSize)
+                }
+            }
+        } else {
+            owsFailDebug("Invalid attachment")
         }
 
         return CVLabelConfig(text: text,
@@ -158,17 +181,25 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private func tryToBuildDownloadView() -> UIView? {
+
         guard let attachmentPointer = self.attachmentPointer else {
             return nil
         }
 
+        let downloadViewSize = min(iconSize.width, iconSize.height)
         switch attachmentPointer.state {
-        case .failed:
-            // We don't need to handle the "tap to retry" state here,
-            // only download progress.
-            return nil
-        case .enqueued, .downloading, .pendingMessageRequest:
+        case .enqueued, .downloading:
             break
+        case .failed, .pendingMessageRequest, .pendingManualDownload:
+            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
+                                                             tintColor: Theme.accentBlueColor)
+            iconView.autoSetDimensions(to: CGSize.square(16))
+            let progressView = CircularProgressView(thickness: 0.1)
+            progressView.progress = 0.0
+            progressView.autoSetDimensions(to: CGSize(square: downloadViewSize))
+            progressView.addSubview(iconView)
+            iconView.autoCenterInSuperview()
+            return progressView
         @unknown default:
             owsFailDebug("Invalid value.")
             return nil
@@ -186,7 +217,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
         let attachmentId = attachmentPointer.uniqueId
 
-        let downloadViewSize = min(iconSize.width, iconSize.height)
         let radius = downloadViewSize * 0.5
         let downloadView = MediaDownloadView(attachmentId: attachmentId, radius: radius)
         downloadView.autoSetDimensions(to: CGSize(square: downloadViewSize))
@@ -224,10 +254,25 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        guard attachmentStream != nil else {
-            return false
+        if attachmentStream != nil {
+            componentDelegate.cvc_didTapGenericAttachment(self)
+        } else if let attachmentPointer = attachmentPointer {
+            switch attachmentPointer.state {
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                guard let message = renderItem.interaction as? TSMessage else {
+                    owsFailDebug("Invalid interaction.")
+                    return true
+                }
+                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            case .enqueued, .downloading:
+                break
+            default:
+                break
+            }
+        } else {
+            owsFailDebug("Invalid attachment.")
         }
-        componentDelegate.cvc_didTapGenericAttachment(self)
+
         return true
     }
 

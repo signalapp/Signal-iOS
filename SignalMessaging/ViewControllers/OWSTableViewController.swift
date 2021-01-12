@@ -98,7 +98,8 @@ public extension OWSTableItem {
              actionBlock: actionBlock)
     }
 
-    static func actionItem(icon: ThemeIcon,
+    @nonobjc
+    static func actionItem(icon: ThemeIcon? = nil,
                            tintColor: UIColor? = nil,
                            name: String,
                            textColor: UIColor? = nil,
@@ -110,55 +111,56 @@ public extension OWSTableItem {
              name: name,
              textColor: textColor,
              accessoryText: accessoryText,
-             accessoryType: .none,
              accessibilityIdentifier: accessibilityIdentifier,
              actionBlock: actionBlock)
     }
 
-    static func item(icon: ThemeIcon,
+    @nonobjc
+    static func item(icon: ThemeIcon? = nil,
                      tintColor: UIColor? = nil,
                      name: String,
                      textColor: UIColor? = nil,
                      accessoryText: String? = nil,
                      accessoryType: UITableViewCell.AccessoryType = .none,
                      accessibilityIdentifier: String,
-                     actionBlock: (() -> Void)?) -> OWSTableItem {
+                     actionBlock: (() -> Void)? = nil) -> OWSTableItem {
 
         OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: icon,
-                                                                tintColor: tintColor,
-                                                                itemName: name,
-                                                                textColor: textColor,
-                                                                accessoryText: accessoryText)
-            cell.accessibilityIdentifier = accessibilityIdentifier
-            cell.accessoryType = accessoryType
-            return cell
+            OWSTableItem.buildCellWithAccessoryLabel(icon: icon,
+                                                     tintColor: tintColor,
+                                                     itemName: name,
+                                                     textColor: textColor,
+                                                     accessoryText: accessoryText,
+                                                     accessoryType: accessoryType,
+                                                     accessibilityIdentifier: accessibilityIdentifier)
             },
                      actionBlock: actionBlock)
     }
 
-    static func buildCellWithAccessoryLabel(icon: ThemeIcon,
+    @nonobjc
+    static func buildCellWithAccessoryLabel(icon: ThemeIcon? = nil,
                                             tintColor: UIColor? = nil,
                                             itemName: String,
                                             textColor: UIColor? = nil,
                                             accessoryText: String? = nil,
+                                            accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator,
                                             accessibilityIdentifier: String? = nil) -> UITableViewCell {
-        let cell = buildIconNameCell(icon: icon,
-                                     tintColor: tintColor,
-                                     itemName: itemName,
-                                     textColor: textColor,
-                                     accessoryText: accessoryText,
-                                     accessibilityIdentifier: accessibilityIdentifier)
-        cell.accessoryType = .disclosureIndicator
-        return cell
-
+        buildIconNameCell(icon: icon,
+                          tintColor: tintColor,
+                          itemName: itemName,
+                          textColor: textColor,
+                          accessoryText: accessoryText,
+                          accessoryType: accessoryType,
+                          accessibilityIdentifier: accessibilityIdentifier)
     }
 
-    static func buildIconNameCell(icon: ThemeIcon,
+    @nonobjc
+    static func buildIconNameCell(icon: ThemeIcon? = nil,
                                   tintColor: UIColor? = nil,
                                   itemName: String,
                                   textColor: UIColor? = nil,
                                   accessoryText: String? = nil,
+                                  accessoryType: UITableViewCell.AccessoryType = .none,
                                   customColor: UIColor? = nil,
                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
 
@@ -170,8 +172,16 @@ public extension OWSTableItem {
         cell.preservesSuperviewLayoutMargins = true
         cell.contentView.preservesSuperviewLayoutMargins = true
 
-        let iconView = self.imageView(forIcon: icon, tintColor: tintColor)
-        iconView.setCompressionResistanceHorizontalHigh()
+        var arrangedSubviews = [UIView]()
+
+        if let icon = icon {
+            let iconView = self.imageView(forIcon: icon, tintColor: tintColor)
+            iconView.setCompressionResistanceHorizontalHigh()
+            arrangedSubviews.append(iconView)
+            if let customColor = customColor {
+                iconView.tintColor = customColor
+            }
+        }
 
         let nameLabel = UILabel()
         nameLabel.text = itemName
@@ -183,13 +193,10 @@ public extension OWSTableItem {
         nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.setCompressionResistanceHorizontalLow()
-
+        arrangedSubviews.append(nameLabel)
         if let customColor = customColor {
-            iconView.tintColor = customColor
             nameLabel.textColor = customColor
         }
-
-        var arrangedSubviews = [ iconView, nameLabel ]
 
         if let accessoryText = accessoryText {
             let accessoryLabel = UILabel()
@@ -207,6 +214,7 @@ public extension OWSTableItem {
         contentRow.autoPinEdgesToSuperviewMargins()
 
         cell.accessibilityIdentifier = accessibilityIdentifier
+        cell.accessoryType = accessoryType
 
         return cell
     }

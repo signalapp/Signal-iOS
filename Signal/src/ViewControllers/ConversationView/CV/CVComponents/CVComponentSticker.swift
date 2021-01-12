@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,8 +11,11 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var stickerMetadata: StickerMetadata? {
         sticker.stickerMetadata
     }
-    private var stickerAttachment: TSAttachmentStream? {
+    private var attachmentStream: TSAttachmentStream? {
         sticker.attachmentStream
+    }
+    private var attachmentPointer: TSAttachmentPointer? {
+        sticker.attachmentPointer
     }
     private var stickerInfo: StickerInfo? {
         stickerMetadata?.stickerInfo
@@ -39,38 +42,86 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             return
         }
 
-        // TODO: Handle viewItem.isFailedSticker.
+        let containerView = componentView.containerView
 
-        guard let stickerAttachment = self.stickerAttachment else {
-            owsFailDebug("Missing stickerAttachment.")
-            return
-        }
-        let isAnimated = stickerAttachment.shouldBeRenderedByYY
-        componentView.isAnimated = isAnimated
-        if isAnimated {
-            componentView.loadBlock = {
-                guard let filePath = stickerAttachment.originalFilePath else {
-                    owsFailDebug("Missing filePath.")
-                    return
+        if let attachmentStream = self.attachmentStream {
+            containerView.backgroundColor = nil
+            containerView.layer.cornerRadius = 0
+
+            let isAnimated = attachmentStream.shouldBeRenderedByYY
+            componentView.isAnimated = isAnimated
+            if isAnimated {
+                containerView.addSubview(componentView.animatedImageView)
+                componentView.animatedImageView.autoPinEdgesToSuperviewEdges()
+
+                componentView.loadBlock = {
+                    guard let filePath = attachmentStream.originalFilePath else {
+                        owsFailDebug("Missing filePath.")
+                        return
+                    }
+                    guard let image = YYImage(contentsOfFile: filePath) else {
+                        owsFailDebug("Could not load image.")
+                        return
+                    }
+                    componentView.animatedImageView.image = image
                 }
-                guard let image = YYImage(contentsOfFile: filePath) else {
-                    owsFailDebug("Could not load image.")
-                    return
+            } else {
+                containerView.addSubview(componentView.stillmageView)
+                componentView.stillmageView.autoPinEdgesToSuperviewEdges()
+
+                componentView.loadBlock = {
+                    guard let filePath = attachmentStream.originalFilePath else {
+                        owsFailDebug("Missing filePath.")
+                        return
+                    }
+                    guard let image = UIImage(contentsOfFile: filePath) else {
+                        owsFailDebug("Could not load image.")
+                        return
+                    }
+                    componentView.stillmageView.image = image
                 }
-                componentView.animatedImageView.image = image
+            }
+        } else if let attachmentPointer = self.attachmentPointer {
+            componentView.loadBlock = {}
+            containerView.backgroundColor = Theme.secondaryBackgroundColor
+            containerView.layer.cornerRadius = 18
+
+            switch attachmentPointer.state {
+            case .enqueued, .downloading:
+                break
+            case .failed, .pendingManualDownload, .pendingMessageRequest:
+                let downloadStack = UIStackView()
+                downloadStack.axis = .horizontal
+                downloadStack.alignment = .center
+                downloadStack.spacing = 8
+                downloadStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
+                downloadStack.isLayoutMarginsRelativeArrangement = true
+
+                let pillView = OWSLayerView.pillView()
+                pillView.backgroundColor = Theme.washColor.withAlphaComponent(0.8)
+                downloadStack.addSubview(pillView)
+                pillView.autoPinEdgesToSuperviewEdges()
+
+                let iconView = UIImageView.withTemplateImageName("arrow-down-24",
+                                                                 tintColor: Theme.accentBlueColor)
+                iconView.autoSetDimensions(to: CGSize.square(16))
+                downloadStack.addArrangedSubview(iconView)
+
+                let downloadLabel = UILabel()
+                downloadLabel.text = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+                                                       comment: "Accessibility label for stickers.")
+                downloadLabel.textColor = Theme.accentBlueColor
+                downloadLabel.font = .ows_dynamicTypeCaption1
+                downloadStack.addArrangedSubview(downloadLabel)
+
+                containerView.addSubview(downloadStack)
+                downloadStack.autoCenterInSuperview()
+            @unknown default:
+                break
             }
         } else {
-            componentView.loadBlock = {
-                guard let filePath = stickerAttachment.originalFilePath else {
-                    owsFailDebug("Missing filePath.")
-                    return
-                }
-                guard let image = UIImage(contentsOfFile: filePath) else {
-                    owsFailDebug("Could not load image.")
-                    return
-                }
-                componentView.stillmageView.image = image
-            }
+            owsFailDebug("Invalid attachment.")
+            return
         }
 
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
@@ -92,9 +143,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        guard let stickerMetadata = stickerMetadata else {
+        guard let stickerMetadata = stickerMetadata,
+              attachmentStream != nil else {
             // Not yet downloaded.
-            return true
+            return false
         }
         componentDelegate.cvc_didTapStickerPack(stickerMetadata.packInfo)
         return true
@@ -106,6 +158,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     // It could be the entire item or some part thereof.
     @objc
     public class CVComponentViewSticker: NSObject, CVComponentView {
+
+        fileprivate let containerView = UIView()
 
         // TODO: We might want to:
         //
@@ -135,9 +189,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            // TODO: If we want to have a stable view hierarchy, we could wrap
-            // the image view in a stack view.
-            isAnimated ? animatedImageView : stillmageView
+            containerView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
@@ -154,6 +206,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         }
 
         public func reset() {
+            containerView.removeAllSubviews()
             animatedImageView.image = nil
             stillmageView.image = nil
             loadBlock = nil

@@ -65,7 +65,7 @@ public protocol CVComponentDelegate {
     func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl)
 
     @objc
-    func cvc_didTapFailedDownloads(_ message: TSMessage)
+    func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage)
 
     // MARK: - Messages
 
@@ -74,8 +74,6 @@ public protocol CVComponentDelegate {
                              imageView: UIView)
 
     func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment)
-
-    func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage)
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel)
 

@@ -820,7 +820,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     // TODO:
     var cvc_hasPendingMessageRequest: Bool { false }
 
-    func cvc_didTapFailedDownloads(_ message: TSMessage) {}
+    func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
     // MARK: - Messages
 
@@ -841,8 +841,6 @@ extension MessageDetailViewController: CVComponentDelegate {
         previewController.dataSource = attachment
         present(previewController, animated: true)
     }
-
-    func cvc_didTapPendingMessageRequestIncomingAttachment(_ message: TSMessage) {}
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
 

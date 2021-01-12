@@ -6,30 +6,45 @@ import Foundation
 
 public extension TSMessage {
 
+    @objc
+    var isIncoming: Bool { self as? TSIncomingMessage != nil }
+
+    @objc
+    var isOutgoing: Bool { self as? TSOutgoingMessage != nil }
+
     // MARK: - Attachments
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
-        return Self.onlyAttachmentPointers(attachments: attachments, withState: .failed)
+        let states: [TSAttachmentPointerState] = [.failed]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+    }
+
+    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
-        return Self.onlyAttachmentPointers(attachments: attachments, withState: .failed)
+        let states: [TSAttachmentPointerState] = [.failed]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
-    func bodyAttachmentsPendingMessageRequest(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+    func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
         let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
-        return Self.onlyAttachmentPointers(attachments: attachments, withState: .pendingMessageRequest)
+        let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
     }
 
     private static func onlyAttachmentPointers(attachments: [TSAttachment],
-                                               withState state: TSAttachmentPointerState) -> [TSAttachmentPointer] {
+                                               withStateIn states: Set<TSAttachmentPointerState>) -> [TSAttachmentPointer] {
         return attachments.compactMap { attachment -> TSAttachmentPointer? in
             guard let attachmentPointer = attachment as? TSAttachmentPointer else {
                 return nil
             }
-            guard attachmentPointer.state == state else {
+            guard states.contains(attachmentPointer.state) else {
                 return nil
             }
             return attachmentPointer

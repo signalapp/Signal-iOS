@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,21 @@ class AudioMessageView: OWSStackView {
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
     private var durationSeconds: TimeInterval { audioAttachment.durationSeconds }
+    private var isDownloaded: Bool { audioAttachment.attachmentStream != nil }
+    private var isDownloading: Bool {
+        guard let attachmentPointer = audioAttachment.attachmentPointer else {
+            return false
+        }
+        switch attachmentPointer.state {
+        case .failed, .pendingMessageRequest, .pendingManualDownload:
+            return false
+        case .enqueued, .downloading:
+            return true
+        @unknown default:
+            owsFailDebug("Invalid value.")
+            return false
+        }
+    }
 
     private let isIncoming: Bool
     private let conversationStyle: ConversationStyle
@@ -80,17 +95,31 @@ class AudioMessageView: OWSStackView {
         progressSlider.autoPinWidthToSuperview()
         progressSlider.autoSetDimension(.height, toSize: 12)
         progressSlider.autoVCenterInSuperview()
+        progressSlider.isEnabled = isDownloaded
 
         Self.playbackTimeLabelConfig(isIncoming: isIncoming,
                                      conversationStyle: conversationStyle).applyForRendering(label: playbackTimeLabel)
         playbackTimeLabel.setContentHuggingHigh()
 
+        let leftView: UIView
+        if isDownloaded {
+            leftView = playPauseAnimation
+        } else {
+            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
+                                                             tintColor: Theme.accentBlueColor)
+            iconView.autoSetDimensions(to: CGSize.square(16))
+            let progressView = CircularProgressView(thickness: 0.1)
+            progressView.progress = 0.0
+            progressView.autoSetDimensions(to: CGSize(square: Self.animationSize))
+            progressView.addSubview(iconView)
+            iconView.autoCenterInSuperview()
+            leftView = progressView
+        }
+
         let innerStack = OWSStackView(name: "playerStack",
-                                      arrangedSubviews: [playPauseAnimation, waveformContainer, playbackTimeLabel])
+                                      arrangedSubviews: [leftView, waveformContainer, playbackTimeLabel])
         innerStack.apply(config: Self.innerStackConfig)
         addArrangedSubview(innerStack)
-
-        waveformContainer.autoAlignAxis(.horizontal, toSameAxisOf: playPauseAnimation)
 
         updateContents(animated: false)
 

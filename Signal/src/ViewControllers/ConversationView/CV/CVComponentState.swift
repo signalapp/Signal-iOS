@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,7 +66,7 @@ public class CVComponentState: Equatable {
     struct BodyMedia: Equatable {
         let items: [CVMediaAlbumItem]
         let mediaAlbumHasFailedAttachment: Bool
-        let mediaAlbumHasPendingMessageRequestAttachment: Bool
+        let mediaAlbumHasPendingAttachment: Bool
     }
     let bodyMedia: BodyMedia?
 
@@ -109,19 +109,13 @@ public class CVComponentState: Equatable {
         case available(stickerMetadata: StickerMetadata,
                        attachmentStream: TSAttachmentStream)
         case downloading(attachmentPointer: TSAttachmentPointer)
-        case failed
-        //        var stickerAttachment: TSAttachmentStream
-        //        // This should be non-nil if download is still in progress.
-        //        let attachmentPointer: TSAttachmentPointer? = nil
-        // TODO: If we want to render downloading stickers, we need to
-        // change this.
-        //        let attachment: TSAttachment
-        //
+        case failedOrPending(attachmentPointer: TSAttachmentPointer)
+
         public var stickerMetadata: StickerMetadata? {
             switch self {
             case .available(let stickerMetadata, _):
                 return stickerMetadata
-            case .downloading, .failed:
+            case .downloading, .failedOrPending:
                 return nil
             }
         }
@@ -131,7 +125,7 @@ public class CVComponentState: Equatable {
                 return attachmentStream
             case .downloading:
                 return nil
-            case .failed:
+            case .failedOrPending:
                 return nil
             }
         }
@@ -141,8 +135,8 @@ public class CVComponentState: Equatable {
                 return nil
             case .downloading(let attachmentPointer):
                 return attachmentPointer
-            case .failed:
-                return nil
+            case .failedOrPending(let attachmentPointer):
+                return attachmentPointer
             }
         }
     }
@@ -216,10 +210,10 @@ public class CVComponentState: Equatable {
     }
     let bottomButtons: BottomButtons?
 
-    struct FailedDownloads: Equatable {
+    struct FailedOrPendingDownloads: Equatable {
         let attachmentPointers: [TSAttachmentPointer]
     }
-    let failedDownloads: FailedDownloads?
+    let failedOrPendingDownloads: FailedOrPendingDownloads?
 
     struct SendFailureBadge: Equatable {
     }
@@ -244,7 +238,7 @@ public class CVComponentState: Equatable {
                      typingIndicator: TypingIndicator?,
                      threadDetails: ThreadDetails?,
                      bottomButtons: BottomButtons?,
-                     failedDownloads: FailedDownloads?,
+                     failedOrPendingDownloads: FailedOrPendingDownloads?,
                      sendFailureBadge: SendFailureBadge?) {
 
         self.messageCellType = messageCellType
@@ -266,7 +260,7 @@ public class CVComponentState: Equatable {
         self.typingIndicator = typingIndicator
         self.threadDetails = threadDetails
         self.bottomButtons = bottomButtons
-        self.failedDownloads = failedDownloads
+        self.failedOrPendingDownloads = failedOrPendingDownloads
         self.sendFailureBadge = sendFailureBadge
     }
 
@@ -292,7 +286,7 @@ public class CVComponentState: Equatable {
                     lhs.typingIndicator == rhs.typingIndicator &&
                     lhs.threadDetails == rhs.threadDetails &&
                     lhs.bottomButtons == rhs.bottomButtons &&
-                    lhs.failedDownloads == rhs.failedDownloads &&
+                    lhs.failedOrPendingDownloads == rhs.failedOrPendingDownloads &&
                     lhs.sendFailureBadge == rhs.sendFailureBadge)
     }
 
@@ -315,7 +309,7 @@ public class CVComponentState: Equatable {
         typealias UnreadIndicator = CVComponentState.UnreadIndicator
         typealias TypingIndicator = CVComponentState.TypingIndicator
         typealias ThreadDetails = CVComponentState.ThreadDetails
-        typealias FailedDownloads = CVComponentState.FailedDownloads
+        typealias FailedOrPendingDownloads = CVComponentState.FailedOrPendingDownloads
         typealias BottomButtons = CVComponentState.BottomButtons
         typealias SendFailureBadge = CVComponentState.SendFailureBadge
 
@@ -339,7 +333,7 @@ public class CVComponentState: Equatable {
         var typingIndicator: TypingIndicator?
         var threadDetails: ThreadDetails?
         var reactions: Reactions?
-        var failedDownloads: FailedDownloads?
+        var failedOrPendingDownloads: FailedOrPendingDownloads?
         var sendFailureBadge: SendFailureBadge?
 
         var bottomButtonsActions = [CVMessageAction]()
@@ -374,7 +368,7 @@ public class CVComponentState: Equatable {
                                     typingIndicator: typingIndicator,
                                     threadDetails: threadDetails,
                                     bottomButtons: bottomButtons,
-                                    failedDownloads: failedDownloads,
+                                    failedOrPendingDownloads: failedOrPendingDownloads,
                                     sendFailureBadge: sendFailureBadge)
         }
 
@@ -405,13 +399,7 @@ public class CVComponentState: Equatable {
                 return .systemMessage
             }
             if let sticker = self.sticker {
-                switch sticker {
-                case .available:
-                    return .stickerMessage
-                case .downloading, .failed:
-                    // TODO: Should we render downloading/failed stickers?
-                    return .unknown
-                }
+                return .stickerMessage
             }
             if viewOnce != nil {
                 return .viewOnce
@@ -501,8 +489,8 @@ public class CVComponentState: Equatable {
         if bottomButtons != nil {
             result.insert(.bottomButtons)
         }
-        if failedDownloads != nil {
-            result.insert(.failedDownloads)
+        if failedOrPendingDownloads != nil {
+            result.insert(.failedOrPendingDownloads)
         }
         if sendFailureBadge != nil {
             result.insert(.sendFailureBadge)
@@ -610,7 +598,7 @@ fileprivate extension CVComponentState.Builder {
 
         self.senderAvatar = tryToBuildSenderAvatar()
 
-        self.failedDownloads = tryToBuildFailedDownloads()
+        self.failedOrPendingDownloads = tryToBuildFailedOrPendingDownloads()
 
         switch interaction.interactionType() {
         case .threadDetails:
@@ -668,15 +656,15 @@ fileprivate extension CVComponentState.Builder {
         return SenderAvatar(senderAvatar: avatar)
     }
 
-    private func tryToBuildFailedDownloads() -> FailedDownloads? {
+    private func tryToBuildFailedOrPendingDownloads() -> FailedOrPendingDownloads? {
         guard let message = interaction as? TSMessage else {
             return nil
         }
-        let failedAttachmentPointers = message.failedAttachments(transaction: transaction)
-        guard !failedAttachmentPointers.isEmpty else {
+        let attachmentPointers = message.failedOrPendingAttachments(transaction: transaction)
+        guard !attachmentPointers.isEmpty else {
             return nil
         }
-        return FailedDownloads(attachmentPointers: failedAttachmentPointers)
+        return FailedOrPendingDownloads(attachmentPointers: attachmentPointers)
     }
 
     mutating func populateAndBuild(message: TSMessage) throws -> CVComponentState {
@@ -717,12 +705,12 @@ fileprivate extension CVComponentState.Builder {
             if mediaAlbumItems.count > 0 {
                 let failedAttachmentPointers = message.failedBodyAttachments(transaction: transaction)
                 let mediaAlbumHasFailedAttachment = !failedAttachmentPointers.isEmpty
-                let bodyAttachmentsPendingMessageRequest = message.bodyAttachmentsPendingMessageRequest(transaction: transaction)
-                let mediaAlbumHasPendingMessageRequestAttachment = !bodyAttachmentsPendingMessageRequest.isEmpty
+                let pendingBodyAttachments = message.pendingBodyAttachments(transaction: transaction)
+                let mediaAlbumHasPendingAttachment = !pendingBodyAttachments.isEmpty
 
                 self.bodyMedia = BodyMedia(items: mediaAlbumItems,
                                            mediaAlbumHasFailedAttachment: mediaAlbumHasFailedAttachment,
-                                           mediaAlbumHasPendingMessageRequestAttachment: mediaAlbumHasPendingMessageRequestAttachment)
+                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment)
                 return build()
             }
 
@@ -879,22 +867,16 @@ fileprivate extension CVComponentState.Builder {
                                       attachmentStream: attachmentStream)
             return build()
         } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            // TODO: Should we render isFailedSticker?
-            //            self.isFailedSticker = stickerAttachmentPointer.state == TSAttachmentPointerStateFailed;
-            let isFailed = attachmentPointer.state == .failed
-            if isFailed {
-                Logger.warn("Sticker failed.")
-                self.sticker = .failed
-            } else {
+            switch attachmentPointer.state {
+            case .enqueued, .downloading:
                 Logger.verbose("Sticker downloading.")
                 self.sticker = .downloading(attachmentPointer: attachmentPointer)
+            case .failed, .pendingManualDownload, .pendingMessageRequest:
+                Logger.verbose("Sticker failed or pending.")
+                self.sticker = .failedOrPending(attachmentPointer: attachmentPointer)
+            @unknown default:
+                throw OWSAssertionError("Invalid sticker.")
             }
-            //            self.sticker = (isFailed
-            //                                ? Sticker(stickerMetadata: stickerMetadata,
-            //                                          state: .failed)
-            //                                : Sticker(stickerMetadata: stickerMetadata,
-            //                                          state: .downloading(attachmentPointer: attachmentPointer))
-            //            Logger.warn("Sticker not yet downloaded.")
             return build()
         } else {
             throw OWSAssertionError("Invalid sticker.")

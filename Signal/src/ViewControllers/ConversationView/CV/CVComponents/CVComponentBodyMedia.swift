@@ -14,8 +14,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private var mediaAlbumHasFailedAttachment: Bool {
         bodyMedia.mediaAlbumHasFailedAttachment
     }
-    private var mediaAlbumHasPendingMessageRequestAttachment: Bool {
-        bodyMedia.mediaAlbumHasPendingMessageRequestAttachment
+    private var mediaAlbumHasPendingAttachment: Bool {
+        bodyMedia.mediaAlbumHasPendingAttachment
+    }
+
+    var hasDownloadButton: Bool {
+        mediaAlbumHasPendingAttachment
     }
 
     private let footerOverlay: CVComponent?
@@ -115,6 +119,48 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_MEDIA",
                                                          comment: "Accessibility label for media.")
         albumView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+
+        if hasDownloadButton {
+            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
+                                                             tintColor: UIColor.ows_white)
+            iconView.autoSetDimensions(to: CGSize.square(16))
+
+            let downloadButton: UIView
+            if albumView.itemViews.count > 1 {
+                let downloadStack = UIStackView()
+                downloadStack.axis = .horizontal
+                downloadStack.alignment = .center
+                downloadStack.spacing = 8
+                downloadStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
+                downloadStack.isLayoutMarginsRelativeArrangement = true
+
+                let pillView = OWSLayerView.pillView()
+                pillView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                downloadStack.addSubview(pillView)
+                pillView.autoPinEdgesToSuperviewEdges()
+
+                downloadStack.addArrangedSubview(iconView)
+
+                let downloadLabel = UILabel()
+                let downloadFormat = NSLocalizedString("MEDIA_GALLERY_ITEM_COUNT_FORMAT",
+                                                       comment: "Format for an indicator of the number of items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
+                downloadLabel.text = String(format: downloadFormat, OWSFormat.formatInt(albumView.itemViews.count))
+                downloadLabel.textColor = UIColor.ows_white
+                downloadLabel.font = .ows_dynamicTypeCaption1
+                downloadStack.addArrangedSubview(downloadLabel)
+
+                downloadButton = downloadStack
+            } else {
+                let circleView = OWSLayerView.circleView(size: 44)
+                circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.8)
+                circleView.addSubview(iconView)
+                iconView.autoCenterInSuperview()
+                downloadButton = circleView
+            }
+
+            componentView.rootView.addSubview(downloadButton)
+            downloadButton.autoCenterInSuperview()
+        }
     }
 
     public func bubbleViewPartner(componentView: CVComponentView) -> OWSBubbleViewPartner? {
@@ -174,6 +220,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             owsFailDebug("Invalid interaction.")
             return false
         }
+        if hasDownloadButton {
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            return true
+        }
 
         let albumView = componentView.albumView
         let location = sender.location(in: albumView)
@@ -183,24 +233,17 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
         let isMoreItemsWithMediaView = albumView.isMoreItemsView(mediaView: mediaView)
 
-        if isMoreItemsWithMediaView {
-            if mediaAlbumHasFailedAttachment {
-                componentDelegate.cvc_didTapFailedDownloads(message)
-                return true
-            } else if mediaAlbumHasPendingMessageRequestAttachment {
-                componentDelegate.cvc_didTapPendingMessageRequestIncomingAttachment(message)
-                return true
-            }
+        if isMoreItemsWithMediaView,
+           mediaAlbumHasFailedAttachment {
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            return true
         }
 
         let attachment = mediaView.attachment
         if let attachmentPointer = attachment as? TSAttachmentPointer {
             switch attachmentPointer.state {
-            case .failed:
-                componentDelegate.cvc_didTapFailedDownloads(message)
-                return true
-            case .pendingMessageRequest:
-                componentDelegate.cvc_didTapPendingMessageRequestIncomingAttachment(message)
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")

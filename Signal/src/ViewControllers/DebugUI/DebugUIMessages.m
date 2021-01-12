@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessages.h"
@@ -2019,11 +2019,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [prepareBlocks addObject:replyAssetLoader.prepareBlock];
     }
 
-    // We don't need to configure ConversationStyle's view width in this case.
-    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeDefault
-                                                                            thread:thread
-                                                                         viewWidth:0];
-
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
@@ -3879,7 +3874,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                         mediaSize:CGSizeZero
                                                          blurHash:nil
                                                   uploadTimestamp:0];
-                pointer.state = TSAttachmentPointerStateFailed;
+                [pointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
                 [pointer anyInsertWithTransaction:transaction];
                 TSIncomingMessageBuilder *incomingMessageBuilder =
                     [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:nil];
@@ -4748,7 +4743,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                 mediaSize:CGSizeZero
                                                  blurHash:nil
                                           uploadTimestamp:0];
-        attachmentPointer.state = TSAttachmentPointerStateFailed;
+        [attachmentPointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
         [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;
     }
