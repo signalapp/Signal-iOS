@@ -268,7 +268,6 @@ message ContactDetails {
   optional string   name        = 2;
   optional Avatar   avatar      = 3;
   optional string   color       = 4;
-  optional Verified verified    = 5;
   optional bytes    profileKey  = 6;
   optional bool     blocked     = 7;
   optional uint32   expireTimer = 8;
