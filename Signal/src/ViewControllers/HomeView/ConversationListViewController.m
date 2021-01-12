@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationListViewController.h"
@@ -56,7 +56,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     ConversationSearchViewDelegate,
     UIDatabaseSnapshotDelegate,
     OWSBlockListCacheDelegate,
-    CameraFirstCaptureDelegate>
+    CameraFirstCaptureDelegate,
+    OWSGetStartedBannerViewControllerDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIView *emptyInboxView;
@@ -70,6 +71,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasEverAppeared;
+@property (nonatomic) OWSInviteFlow *inviteFlow;
 
 // Mark: Search
 
@@ -702,6 +704,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (!self.hasEverAppeared && ![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
+
+        OWSGetStartedBannerViewController *getStartedVC = [[OWSGetStartedBannerViewController alloc] initWithDelegate:self];
+        if (getStartedVC.hasIncompleteCards) {
+            [self addChildViewController:getStartedVC];
+            [self.view addSubview:getStartedVC.view];
+            [getStartedVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+        }
     }
 
     [self applyDefaultBackButton];
@@ -1083,6 +1092,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
+
+        OWSGetStartedBannerViewController *getStartedVC = [[OWSGetStartedBannerViewController alloc] initWithDelegate:self];
+        if (getStartedVC.hasIncompleteCards) {
+            [self addChildViewController:getStartedVC];
+            [self.view addSubview:getStartedVC.view];
+            [getStartedVC.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+        }
     }
 }
 
@@ -2309,6 +2325,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)cameraFirstCaptureSendFlowDidCancel:(CameraFirstCaptureSendFlow *)cameraFirstCaptureSendFlow
 {
     [self dismissViewControllerAnimated:true completion:nil];
+}
+
+#pragma mark - <OWSGetStartedBannerViewControllerDelegate>
+
+- (void)getStartedBannerDidTapCreateGroup:(OWSGetStartedBannerViewController *)banner
+{
+    [self showNewGroupView];
+}
+
+- (void)getStartedBannerDidTapInviteFriends:(OWSGetStartedBannerViewController *)banner
+{
+    self.inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+    [self.inviteFlow presentWithIsAnimated:YES isModal:YES completion:nil];
 }
 
 @end

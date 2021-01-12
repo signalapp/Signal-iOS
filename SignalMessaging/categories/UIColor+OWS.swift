@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -184,6 +184,11 @@ public extension UIColor {
     }
 
     // MARK: Masks
+
+    @objc(ows_whiteAlpha0Color)
+    class var ows_whiteAlpha0: UIColor {
+        return UIColor(white: 1.0, alpha: 0)
+    }
 
     @objc(ows_whiteAlpha20Color)
     class var ows_whiteAlpha20: UIColor {
