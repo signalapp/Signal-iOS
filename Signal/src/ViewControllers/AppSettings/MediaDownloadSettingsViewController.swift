@@ -30,25 +30,25 @@ class MediaDownloadSettingsViewController: OWSTableViewController {
         let section = OWSTableSection()
 
         let mediaDownloadType = self.mediaDownloadType
-        let currentCondition = databaseStorage.read { transaction in
-            OWSAttachmentDownloads.mediaDownloadCondition(forMediaDownloadType: mediaDownloadType,
+        let currentPreference = databaseStorage.read { transaction in
+            OWSAttachmentDownloads.mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
                                                           transaction: transaction)
         }
-        let mediaDownloadConditions = MediaDownloadCondition.allCases.sorted { (left, right) in
+        let mediaBandwidthPreferences = MediaBandwidthPreference.allCases.sorted { (left, right) in
             left.sortKey < right.sortKey
         }
-        for condition in mediaDownloadConditions {
-            let conditionName = Self.name(forMediaDownloadCondition: condition)
-            section.add(OWSTableItem(text: conditionName,
+        for preference in mediaBandwidthPreferences {
+            let preferenceName = Self.name(forMediaBandwidthPreference: preference)
+            section.add(OWSTableItem(text: preferenceName,
                         actionBlock: { [weak self] in
                             Self.databaseStorage.write { transaction in
-                                OWSAttachmentDownloads.set(mediaDownloadCondition: condition,
+                                OWSAttachmentDownloads.set(mediaBandwidthPreference: preference,
                                                            forMediaDownloadType: mediaDownloadType,
                                                            transaction: transaction)
                             }
                             self?.navigationController?.popViewController(animated: true)
                         },
-                        accessoryType: condition == currentCondition ? .checkmark : .none))
+                        accessoryType: preference == currentPreference ? .checkmark : .none))
         }
 
         contents.addSection(section)
@@ -73,7 +73,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController {
         }
     }
 
-    public static func name(forMediaDownloadCondition value: MediaDownloadCondition) -> String {
+    public static func name(forMediaBandwidthPreference value: MediaBandwidthPreference) -> String {
         switch value {
         case .never:
             return NSLocalizedString("SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER",

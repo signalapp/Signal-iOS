@@ -35,7 +35,7 @@ public enum AttachmentDownloadBehavior: UInt, Equatable {
     case bypassPendingManualDownload
     case bypassAll
 
-    public static var defaultValue: MediaDownloadCondition { .wifiAndCellular }
+    public static var defaultValue: MediaBandwidthPreference { .wifiAndCellular }
 
     public var bypassPendingMessageRequest: Bool {
         switch self {
@@ -58,12 +58,12 @@ public enum AttachmentDownloadBehavior: UInt, Equatable {
 
 // MARK: -
 
-public enum MediaDownloadCondition: UInt, Equatable, CaseIterable {
+public enum MediaBandwidthPreference: UInt, Equatable, CaseIterable {
     case never
     case wifiOnly
     case wifiAndCellular
 
-    public static var defaultValue: MediaDownloadCondition { .wifiAndCellular }
+    public static var defaultValue: MediaBandwidthPreference { .wifiAndCellular }
 
     public var sortKey: UInt {
         switch self {
@@ -105,57 +105,57 @@ public extension OWSAttachmentDownloads {
 
     private static let keyValueStore = SDSKeyValueStore(collection: "OWSAttachmentDownloads")
 
-    static let mediaDownloadConditionsDidChange = Notification.Name("PushTokensDidChange")
+    static let mediaBandwidthPreferencesDidChange = Notification.Name("PushTokensDidChange")
 
-    static func set(mediaDownloadCondition: MediaDownloadCondition,
+    static func set(mediaBandwidthPreference: MediaBandwidthPreference,
                     forMediaDownloadType mediaDownloadType: MediaDownloadType,
                     transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setUInt(mediaDownloadCondition.rawValue,
+        keyValueStore.setUInt(mediaBandwidthPreference.rawValue,
                               key: mediaDownloadType.rawValue,
                               transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(mediaBandwidthPreferencesDidChange, object: nil)
         }
     }
 
-    static func mediaDownloadCondition(forMediaDownloadType mediaDownloadType: MediaDownloadType,
-                                       transaction: SDSAnyReadTransaction) -> MediaDownloadCondition {
+    static func mediaBandwidthPreference(forMediaDownloadType mediaDownloadType: MediaDownloadType,
+                                         transaction: SDSAnyReadTransaction) -> MediaBandwidthPreference {
         guard let rawValue = keyValueStore.getUInt(mediaDownloadType.rawValue,
                                                    transaction: transaction) else {
-            return MediaDownloadCondition.defaultValue
+            return MediaBandwidthPreference.defaultValue
         }
-        guard let value = MediaDownloadCondition(rawValue: rawValue) else {
+        guard let value = MediaBandwidthPreference(rawValue: rawValue) else {
             owsFailDebug("Invalid value: \(rawValue)")
-            return MediaDownloadCondition.defaultValue
+            return MediaBandwidthPreference.defaultValue
         }
         return value
     }
 
-    static func resetMediaDownloadConditions(transaction: SDSAnyWriteTransaction) {
+    static func resetMediaBandwidthPreferences(transaction: SDSAnyWriteTransaction) {
         for mediaDownloadType in MediaDownloadType.allCases {
             keyValueStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: transaction)
         }
         transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(mediaDownloadConditionsDidChange, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(mediaBandwidthPreferencesDidChange, object: nil)
         }
     }
 
-    static func loadMediaDownloadConditions(transaction: SDSAnyReadTransaction) -> [MediaDownloadType: MediaDownloadCondition] {
-        var result = [MediaDownloadType: MediaDownloadCondition]()
+    static func loadMediaBandwidthPreferences(transaction: SDSAnyReadTransaction) -> [MediaDownloadType: MediaBandwidthPreference] {
+        var result = [MediaDownloadType: MediaBandwidthPreference]()
         for mediaDownloadType in MediaDownloadType.allCases {
-            result[mediaDownloadType] = mediaDownloadCondition(forMediaDownloadType: mediaDownloadType,
-                                                               transaction: transaction)
+            result[mediaDownloadType] = mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
+                                                                 transaction: transaction)
         }
         return result
     }
 
     static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
-        let conditionMap = loadMediaDownloadConditions(transaction: transaction)
+        let preferenceMap = loadMediaBandwidthPreferences(transaction: transaction)
         let hasWifiConnection = reachabilityManager.isReachable(via: .wifi)
         var result = Set<MediaDownloadType>()
-        for (mediaDownloadType, condition) in conditionMap {
-            switch condition {
+        for (mediaDownloadType, preference) in preferenceMap {
+            switch preference {
             case .never:
                 continue
             case .wifiOnly:
@@ -808,14 +808,14 @@ public extension OWSAttachmentDownloads {
 
             let maxAttemptCount = 16
             if IsNetworkConnectivityFailure(error),
-                attemptIndex < maxAttemptCount {
+               attemptIndex < maxAttemptCount {
 
                 return firstly {
                     // Wait briefly before retrying.
                     after(seconds: 0.25)
                 }.then { () -> Promise<URL> in
                     if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
-                        !resumeData.isEmpty {
+                       !resumeData.isEmpty {
                         return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
                     } else {
                         return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
@@ -851,15 +851,15 @@ public extension OWSAttachmentDownloads {
         }
 
         guard progress.totalUnitCount <= maxDownloadSize,
-            progress.completedUnitCount <= maxDownloadSize else {
-                // A malicious service might send a misleading content length header,
-                // so....
-                //
-                // If the current downloaded bytes or the expected total byes
-                // exceed the max download size, abort the download.
-                owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
-                task.cancel()
-                return
+              progress.completedUnitCount <= maxDownloadSize else {
+            // A malicious service might send a misleading content length header,
+            // so....
+            //
+            // If the current downloaded bytes or the expected total byes
+            // exceed the max download size, abort the download.
+            owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
+            task.cancel()
+            return
         }
 
         downloadState.job.progress = CGFloat(progress.fractionCompleted)
@@ -926,6 +926,6 @@ public extension OWSAttachmentDownloads {
                                                              userInfo: [
                                                                 attachmentDownloadProgressKey: NSNumber(value: progress),
                                                                 attachmentDownloadAttachmentIDKey: attachmentId
-        ])
+                                                             ])
     }
 }

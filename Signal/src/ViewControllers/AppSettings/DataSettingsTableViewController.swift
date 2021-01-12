@@ -17,8 +17,8 @@ class DataSettingsTableViewController: OWSTableViewController {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(mediaDownloadConditionsDidChange),
-            name: OWSAttachmentDownloads.mediaDownloadConditionsDidChange,
+            selector: #selector(mediaBandwidthPreferencesDidChange),
+            name: OWSAttachmentDownloads.mediaBandwidthPreferencesDidChange,
             object: nil
         )
     }
@@ -39,16 +39,16 @@ class DataSettingsTableViewController: OWSTableViewController {
             var hasNonDefaultValue = false
             for mediaDownloadType in mediaDownloadTypes {
                 let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
-                let condition = OWSAttachmentDownloads.mediaDownloadCondition(forMediaDownloadType: mediaDownloadType,
-                                                                                           transaction: transaction)
-                let conditionName = MediaDownloadSettingsViewController.name(forMediaDownloadCondition: condition)
+                let preference = OWSAttachmentDownloads.mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
+                                                                                 transaction: transaction)
+                let preferenceName = MediaDownloadSettingsViewController.name(forMediaBandwidthPreference: preference)
 
-                if condition != MediaDownloadCondition.defaultValue {
+                if preference != MediaBandwidthPreference.defaultValue {
                     hasNonDefaultValue = true
                 }
 
                 autoDownloadSection.add(OWSTableItem.disclosureItem(withText: name,
-                                                                    detailText: conditionName,
+                                                                    detailText: preferenceName,
                                                                     accessibilityIdentifier: mediaDownloadType.rawValue) { [weak self] in
                     self?.showMediaDownloadView(forMediaDownloadType: mediaDownloadType)
                 })
@@ -62,7 +62,7 @@ class DataSettingsTableViewController: OWSTableViewController {
                                                           textColor: Theme.accentBlueColor,
                                                           accessibilityIdentifier: resetAccessibilityIdentifier) {
                     Self.databaseStorage.asyncWrite { transaction in
-                        OWSAttachmentDownloads.resetMediaDownloadConditions(transaction: transaction)
+                        OWSAttachmentDownloads.resetMediaBandwidthPreferences(transaction: transaction)
                     }
                 })
             } else {
@@ -85,7 +85,7 @@ class DataSettingsTableViewController: OWSTableViewController {
     }
 
     @objc
-    func mediaDownloadConditionsDidChange() {
+    func mediaBandwidthPreferencesDidChange() {
         AssertIsOnMainThread()
 
         updateTableContents()
