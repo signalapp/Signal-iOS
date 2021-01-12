@@ -1453,15 +1453,6 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "இணைப்பு";
 
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "தொடங்குகள்";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "நண்பர்களை அழை";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "புதிய குழு";
-
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "கோரப்பட்ட GIF ஐப் பெறுவதில் தோல்வி. நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்க்கவும்.";
 
@@ -3246,12 +3237,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "நீங்கள் %@ அவர்களை அழைத்தீர்கள் ";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "பிடிஎப் ஐக் காட்ட முடியவில்லை";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "பிடிஎப்";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "குழுவில் சேர்";

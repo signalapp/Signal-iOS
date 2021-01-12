@@ -1453,15 +1453,6 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Priponka";
 
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Začnimo";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Vabilo prijateljem/icam";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "Nova skupina";
-
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Ne morem prenesti zahtevanega GIFa. Preverite, če ste povezani na internet.";
 
@@ -3246,12 +3237,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "You called %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "Datoteke PDF ni bilo mogoče prikazati";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Dodaj v skupino";
