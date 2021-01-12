@@ -50,6 +50,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     public var hasIncompleteCards: Bool { bannerContent.count > 0 }
 
     private weak var delegate: GetStartedBannerViewControllerDelegate?
+    private let threadFinder = AnyThreadFinder()
     private var bannerContent: [GetStartedBannerEntry] = [] {
         didSet {
             handleUpdatedContent(from: oldValue, to: bannerContent)
@@ -122,9 +123,19 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         bannerContent = SDSDatabaseStorage.shared.uiRead { readTx in
             let activeCards = Self.getActiveCards(readTx: readTx)
 
+            let visibleThreadCount: UInt
+            do {
+                let unarchivedThreadCount = try self.threadFinder.visibleThreadCount(isArchived: false, transaction: readTx)
+                let archivedThreadCount = try self.threadFinder.visibleThreadCount(isArchived: true, transaction: readTx)
+                visibleThreadCount = unarchivedThreadCount + archivedThreadCount
+            } catch {
+                owsFailDebug("Failed to fetch thread count")
+                return []
+            }
+
             // If we have five or more threads, dismiss all cards
-            if activeCards.count > 0, TSThread.anyCount(transaction: readTx) >= 5 {
-                Logger.info("User has five threads. Dismissing Get Started banner.")
+            if activeCards.count > 0, visibleThreadCount >= 5 {
+                Logger.info("User has more than five threads. Dismissing Get Started banner.")
                 SDSDatabaseStorage.shared.asyncWrite { writeTx in
                     Self.dismissAllCards(writeTx: writeTx)
                 }

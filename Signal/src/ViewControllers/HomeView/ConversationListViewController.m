@@ -2329,7 +2329,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)presentGetStartedBannerIfNecessary
 {
-    if (self.getStartedBanner) {
+    if (self.getStartedBanner || self.conversationListMode != ConversationListMode_Inbox) {
         return;
     }
 
@@ -2343,8 +2343,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
         // If we're in landscape, the banner covers most of the screen
         // Hide it until we transition to portrait
-        if (self.view.bounds.width > self.view.bounds.height) {
-            getStartedVC.view.alpha = 0
+        if (self.view.bounds.size.width > self.view.bounds.size.height) {
+            getStartedVC.view.alpha = 0;
         }
     }
 }
