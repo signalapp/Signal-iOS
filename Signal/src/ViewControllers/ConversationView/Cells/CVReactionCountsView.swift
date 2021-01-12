@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -121,10 +121,10 @@ class CVReactionCountsView: OWSStackView {
 
     private func configure(pillView: PillView, pillState: State.PillState?) {
         guard let pillState = pillState else {
-            pillView.isHidden = true
+            pillView.isHiddenInStackView = true
             return
         }
-        pillView.isHidden = false
+        pillView.isHiddenInStackView = false
         pillView.configure(pillState: pillState)
     }
 
@@ -232,17 +232,17 @@ class CVReactionCountsView: OWSStackView {
             }
 
             if let emojiLabelConfig = Self.emojiLabelConfig(pillState: pillState) {
-                emojiLabel.isHidden = false
+                emojiLabel.isHiddenInStackView = false
                 emojiLabelConfig.applyForRendering(label: emojiLabel)
             } else {
-                emojiLabel.isHidden = true
+                emojiLabel.isHiddenInStackView = true
             }
 
             if let countLabelConfig = Self.countLabelConfig(pillState: pillState) {
-                countLabel.isHidden = false
+                countLabel.isHiddenInStackView = false
                 countLabelConfig.applyForRendering(label: countLabel)
             } else {
-                countLabel.isHidden = true
+                countLabel.isHiddenInStackView = true
             }
         }
 
