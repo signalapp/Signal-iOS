@@ -112,13 +112,16 @@ public class GroupLinkPromotionActionSheet: UIView {
             memberApprovalStack.addSubview(borderView)
             borderView.autoPinEdgesToSuperviewEdges()
 
-            memberApprovalStack.addArrangedSubview(builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH",
-                                                                                              comment: "Label for the 'approve new group members' switch."),
-                                                                      font: .ows_dynamicTypeBody2))
+            let switchLabel = builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH",
+                                                                         comment: "Label for the 'approve new group members' switch."),
+                                                 font: .ows_dynamicTypeBody2)
+            memberApprovalStack.addArrangedSubview(switchLabel)
+            switchLabel.setCompressionResistanceHorizontalHigh()
 
             memberApprovalStack.addArrangedSubview(UIView.hStretchingSpacer())
 
             memberApprovalStack.addArrangedSubview(memberApprovalSwitch)
+            memberApprovalSwitch.setCompressionResistanceHorizontalHigh()
 
             builder.add(memberApprovalStack)
 
@@ -177,32 +180,39 @@ private extension GroupLinkPromotionActionSheet {
         GroupLinkViewUtils.updateLinkMode(groupModelV2: groupModelV2,
                                           linkMode: linkMode,
                                           description: self.logTag,
-                                          fromViewController: actionSheetController) { [weak self] _ in
-            self?.dismissAndShareLink()
+                                          fromViewController: actionSheetController) { [weak self] (groupThread) in
+            guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                owsFailDebug("Invalid groupModel.")
+                return
+            }
+            self?.dismissActionSheetAndShareLink(groupModelV2: groupModelV2)
         }
     }
 
     @objc
     func dismissAndShareLink() {
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
+            return
+        }
+        dismissActionSheetAndShareLink(groupModelV2: groupModelV2)
+    }
+
+    private func dismissActionSheetAndShareLink(groupModelV2: TSGroupModelV2) {
         guard let actionSheetController = actionSheetController else {
             owsFailDebug("Missing actionSheetController.")
             return
         }
         actionSheetController.dismiss(animated: true) {
-            self.showShareLinkActionSheet()
+            self.showShareLinkActionSheet(groupModelV2: groupModelV2)
         }
     }
 
-    private func showShareLinkActionSheet() {
+    private func showShareLinkActionSheet(groupModelV2: TSGroupModelV2) {
         guard let conversationViewController = conversationViewController else {
             owsFailDebug("Missing conversationViewController.")
             return
         }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("Invalid groupModel.")
-            return
-        }
-
         let sendMessageDelegate = HeadlessSendMessageDelegate(fromViewController: conversationViewController)
         conversationViewController.sendMessageDelegate = sendMessageDelegate
         GroupLinkViewUtils.showShareLinkAlert(groupModelV2: groupModelV2,
