@@ -6,6 +6,12 @@ import Foundation
 import UIKit
 import PromiseKit
 
+class CustomActionSheet: ActionSheetController {
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+}
+
 @objc
 public class GroupLinkPromotionActionSheet: UIView {
 
@@ -33,7 +39,7 @@ public class GroupLinkPromotionActionSheet: UIView {
 
     @objc
     public func present(fromViewController: UIViewController) {
-        let actionSheetController = ActionSheetController()
+        let actionSheetController = CustomActionSheet()
         actionSheetController.customHeader = self
         actionSheetController.isCancelable = true
         fromViewController.presentActionSheet(actionSheetController)
@@ -87,7 +93,7 @@ public class GroupLinkPromotionActionSheet: UIView {
         let isGroupLinkEnabled = self.isGroupLinkEnabled
 
         if isGroupLinkEnabled {
-            builder.addVerticalSpacer(height: 47)
+            builder.addVerticalSpacer(height: 70)
 
             builder.addBottomButton(title: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_SHARE_LINK",
                                                              comment: "Label for the 'share link' button in the 'group link promotion' alert view."),

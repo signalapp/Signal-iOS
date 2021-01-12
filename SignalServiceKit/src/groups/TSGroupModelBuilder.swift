@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,6 +28,7 @@ public struct TSGroupModelBuilder {
     public var isPlaceholderModel: Bool = false
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
+    public var wasJustCreatedByLocalUser: Bool = false
     public var droppedMembers = [SignalServiceAddress]()
 
     public init() {}
@@ -47,6 +48,7 @@ public struct TSGroupModelBuilder {
         self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
         self.isPlaceholderModel = false
         self.wasJustMigrated = false
+        self.wasJustCreatedByLocalUser = false
     }
 
     public
@@ -183,6 +185,7 @@ public struct TSGroupModelBuilder {
                                   inviteLinkPassword: inviteLinkPassword,
                                   isPlaceholderModel: isPlaceholderModel,
                                   wasJustMigrated: wasJustMigrated,
+                                  wasJustCreatedByLocalUser: wasJustCreatedByLocalUser,
                                   addedByAddress: addedByAddress,
                                   droppedMembers: droppedMembers)
         }
@@ -277,7 +280,7 @@ public extension TSGroupModel {
             builder.inviteLinkPassword = v2.inviteLinkPassword
             builder.droppedMembers = v2.droppedMembers
 
-            // Do not copy isPlaceholderModel or wasJustMigrated;
+            // Do not copy isPlaceholderModel or wasJustMigrated or wasJustCreatedByLocalUser;
             // We want to discard these values when updating group models.
         }
 

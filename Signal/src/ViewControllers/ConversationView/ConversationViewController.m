@@ -4039,6 +4039,13 @@ typedef enum : NSUInteger {
     [actionSheet presentFromViewController:self];
 }
 
+- (void)cvc_didTapGroupInviteLinkPromotionWithGroupModel:(TSGroupModel *)groupModel
+{
+    OWSAssertIsOnMainThread();
+
+    [self showGroupLinkPromotionActionSheet];
+}
+
 - (void)cvc_didTapShowUpgradeAppUI
 {
     OWSAssertIsOnMainThread();

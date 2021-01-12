@@ -504,6 +504,8 @@ extension ColorPickerView: CVComponentDelegate {
                                                           oldGroupModel: TSGroupModel,
                                                           newGroupModel: TSGroupModel) {}
 
+    func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
+
     func cvc_didTapShowConversationSettings() {}
 
     func cvc_didTapShowConversationSettingsAndShowMemberRequests() {}

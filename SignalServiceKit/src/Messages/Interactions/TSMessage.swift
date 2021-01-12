@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -203,5 +203,20 @@ public extension TSInteraction {
             return false
         }
         return newGroupModel.wasJustMigratedToV2
+    }
+
+    @objc
+    var isGroupWasJustCreatedByLocalUserMessage: Bool {
+        guard let message = self as? TSInfoMessage else {
+            return false
+        }
+        guard message.messageType == .typeGroupUpdate else {
+            return false
+        }
+        guard let newGroupModel = message.newGroupModel else {
+            owsFailDebug("Missing newGroupModel.")
+            return false
+        }
+        return newGroupModel.wasJustCreatedByLocalUserV2
     }
 }

@@ -41,6 +41,7 @@ public enum GroupUpdateType: Int {
     case groupMigrated
     case groupMigrated_usersDropped
     case groupMigrated_usersInvited
+    case groupGroupLinkPromotion
     case debug
 
     var typeForDeduplication: GroupUpdateType {
@@ -187,6 +188,10 @@ struct GroupUpdateCopy {
             // Include a description of current DM state, if necessary.
             addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
                                           newToken: newDisappearingMessageToken)
+
+            if newGroupModel.wasJustCreatedByLocalUserV2 {
+                addWasJustCreatedByLocalUserUpdates()
+            }
         }
 
         if itemList.count < 1 {
@@ -1657,7 +1662,7 @@ extension GroupUpdateCopy {
             }
         case .invited:
             if let localAddress = Self.tsAccountManager.localAddress,
-                let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
+               let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
                 let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
                 let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
@@ -1684,6 +1689,12 @@ extension GroupUpdateCopy {
                 addItem(.debug, copy: "Error: Learned of group without any membership status.")
             }
         }
+    }
+
+    mutating func addWasJustCreatedByLocalUserUpdates() {
+        addItem(.groupGroupLinkPromotion,
+                copy: NSLocalizedString("GROUP_LINK_PROMOTION_UPDATE",
+                                        comment: "Suggestion to invite more group members via the group invite link."))
     }
 
     // MARK: - Migration

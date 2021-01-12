@@ -142,6 +142,9 @@ public protocol CVComponentDelegate {
                                                           newGroupModel: TSGroupModel)
 
     @objc
+    func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel)
+
+    @objc
     func cvc_didTapShowConversationSettings()
 
     @objc
@@ -180,6 +183,7 @@ struct CVMessageAction: Equatable {
         case cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
                                                               oldGroupModel: TSGroupModel,
                                                               newGroupModel: TSGroupModel)
+        case cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel)
         case cvc_didTapShowConversationSettingsAndShowMemberRequests
         case cvc_didTapShowUpgradeAppUI
         case cvc_didTapUpdateSystemContact(address: SignalServiceAddress,
@@ -206,6 +210,8 @@ struct CVMessageAction: Equatable {
                 delegate.cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: infoMessage,
                                                                           oldGroupModel: oldGroupModel,
                                                                           newGroupModel: newGroupModel)
+            case .cvc_didTapGroupInviteLinkPromotion(let groupModel):
+                delegate.cvc_didTapGroupInviteLinkPromotion(groupModel: groupModel)
             case .cvc_didTapShowConversationSettingsAndShowMemberRequests:
                 delegate.cvc_didTapShowConversationSettingsAndShowMemberRequests()
             case .cvc_didTapShowUpgradeAppUI:
