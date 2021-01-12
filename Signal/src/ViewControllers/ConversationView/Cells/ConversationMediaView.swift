@@ -170,7 +170,7 @@ public class CVMediaView: UIView {
         }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: 22, withCircle: true)
         self.addSubview(progressView)
         progressView.autoPinEdgesToSuperviewEdges()
     }
