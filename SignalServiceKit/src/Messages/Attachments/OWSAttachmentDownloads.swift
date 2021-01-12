@@ -520,7 +520,7 @@ public extension OWSAttachmentDownloads {
     #if TESTABLE_BUILD
     struct DevFlags {
         static let forceFailure = false
-        static let forceBlockedByPendingMessageRequest = false
+        static let forceBlockedByPendingMessageRequest = true
         static let forceBlockedByAutoDownloadSettingsSettings = false
     }
     #endif
