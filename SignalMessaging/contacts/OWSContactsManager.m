@@ -1305,13 +1305,17 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address transaction:transaction];
-    if (image != nil) {
-        return image;
+    __block UIImage *_Nullable image = nil;
+    if ([SSKPreferences preferContactAvatarsWithTransaction:transaction]) {
+        // Grab the system contact avatar if available. Otherwise, profile avatar.
+        image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
+        image = image ?: [self.profileManager profileAvatarForAddress:address transaction:transaction];
+    } else {
+        // Grab the profile avatar if available. Otherwise, system contact avatar.
+        image = image ?: [self.profileManager profileAvatarForAddress:address transaction:transaction];
+        image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
     }
-
-    // Else try to use the image from their profile
-    return [self.profileManager profileAvatarForAddress:address transaction:transaction];
+    return image;
 }
 
 - (BOOL)shouldSortByGivenName

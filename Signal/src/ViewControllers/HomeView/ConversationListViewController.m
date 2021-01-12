@@ -173,6 +173,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(appExpiryDidChange:)
                                                  name:AppExpiry.AppExpiryDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateAvatars)
+                                                 name:SSKPreferences.preferContactAvatarsPreferenceDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -181,6 +185,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 }
 
 #pragma mark - Notifications
+
+- (void)updateAvatars {
+    [self.tableView reloadData];
+}
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {

@@ -4285,6 +4285,12 @@
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
 
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Theme";
 

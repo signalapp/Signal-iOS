@@ -162,6 +162,40 @@ public class SSKPreferences: NSObject {
         includeMutedThreadsInBadgeCountCached = value
     }
 
+    // MARK: - Profile avatar preference
+
+    @objc
+    private static let preferContactAvatarsPreferenceDidChange = Notification.Name("PreferContactAvatarsPreferenceDidChange")
+    private static let preferContactAvatarsKey = "preferContactAvatarsKey"
+    private static var preferContactAvatarsCached: Bool?
+
+    @objc
+    public static func preferContactAvatars(transaction: SDSAnyReadTransaction) -> Bool {
+        if let value = preferContactAvatarsCached { return value }
+        let value = store.getBool(preferContactAvatarsKey, defaultValue: false, transaction: transaction)
+        preferContactAvatarsCached = value
+        return value
+    }
+
+    @objc
+    public static func setPreferContactAvatars(
+        _ value: Bool,
+        updateStorageService: Bool = true,
+        transaction: SDSAnyWriteTransaction) {
+
+        let oldValue = store.getBool(preferContactAvatarsKey, transaction: transaction)
+        store.setBool(value, key: preferContactAvatarsKey, transaction: transaction)
+        preferContactAvatarsCached = value
+
+        if oldValue != value {
+            if updateStorageService {
+                SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
+
+            // TODO post a notification to get views to rebuild avatar
+        }
+    }
+
     // MARK: -
 
     public class var grdbSchemaVersionDefault: UInt {
