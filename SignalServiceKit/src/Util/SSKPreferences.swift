@@ -165,7 +165,7 @@ public class SSKPreferences: NSObject {
     // MARK: - Profile avatar preference
 
     @objc
-    private static let preferContactAvatarsPreferenceDidChange = Notification.Name("PreferContactAvatarsPreferenceDidChange")
+    public static let preferContactAvatarsPreferenceDidChange = Notification.Name("PreferContactAvatarsPreferenceDidChange")
     private static let preferContactAvatarsKey = "preferContactAvatarsKey"
     private static var preferContactAvatarsCached: Bool?
 
@@ -191,8 +191,7 @@ public class SSKPreferences: NSObject {
             if updateStorageService {
                 SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
             }
-
-            // TODO post a notification to get views to rebuild avatar
+            NotificationCenter.default.postNotificationNameAsync(Self.preferContactAvatarsPreferenceDidChange, object: nil)
         }
     }
 
