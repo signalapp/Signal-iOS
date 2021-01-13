@@ -53,9 +53,9 @@ public class GroupLinkPromotionActionSheet: UIView {
         let stackView = UIStackView(arrangedSubviews: subviews)
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 48, leading: 20, bottom: 38, trailing: 24)
+        stackView.layoutMargins = UIEdgeInsets(top: 24, leading: 24, bottom: 8, trailing: 24)
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        stackView.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
 
         layoutMargins = .zero
         addSubview(stackView)
@@ -84,7 +84,7 @@ public class GroupLinkPromotionActionSheet: UIView {
         builder.add(builder.buildTitleLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_TITLE",
                                                                     comment: "Title for the 'group link promotion' alert view.")))
 
-        builder.addVerticalSpacer(height: 8)
+        builder.addVerticalSpacer(height: 2)
 
         builder.add(builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_SUBTITLE",
                                                                comment: "Subtitle for the 'group link promotion' alert view."),
@@ -93,7 +93,7 @@ public class GroupLinkPromotionActionSheet: UIView {
         let isGroupLinkEnabled = self.isGroupLinkEnabled
 
         if isGroupLinkEnabled {
-            builder.addVerticalSpacer(height: 70)
+            builder.addVerticalSpacer(height: 88)
 
             builder.addBottomButton(title: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_SHARE_LINK",
                                                              comment: "Label for the 'share link' button in the 'group link promotion' alert view."),
@@ -102,25 +102,19 @@ public class GroupLinkPromotionActionSheet: UIView {
                                     target: self,
                                     selector: #selector(dismissAndShareLink))
         } else {
-            builder.addVerticalSpacer(height: 30)
+            builder.addVerticalSpacer(height: 32)
 
             let memberApprovalStack = UIStackView()
             memberApprovalStack.axis = .horizontal
             memberApprovalStack.alignment = .center
             memberApprovalStack.distribution = .fill
-            memberApprovalStack.layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 14)
+            memberApprovalStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
             memberApprovalStack.isLayoutMarginsRelativeArrangement = true
 
-            let borderView = UIView()
-            borderView.layer.cornerRadius = 8
-            borderView.layer.borderWidth = 1
-            borderView.layer.borderColor = Theme.hairlineColor.cgColor
-            memberApprovalStack.addSubview(borderView)
-            borderView.autoPinEdgesToSuperviewEdges()
+            memberApprovalStack.addBackgroundView(withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02, cornerRadius: 8)
 
             let switchLabel = builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH",
-                                                                         comment: "Label for the 'approve new group members' switch."),
-                                                 font: .ows_dynamicTypeBody2)
+                                                                         comment: "Label for the 'approve new group members' switch."))
             memberApprovalStack.addArrangedSubview(switchLabel)
             switchLabel.setCompressionResistanceHorizontalHigh()
 
@@ -133,12 +127,19 @@ public class GroupLinkPromotionActionSheet: UIView {
 
             builder.addVerticalSpacer(height: 8)
 
-            builder.add(builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION",
-                                                                   comment: "Explanation of the 'approve new group members' switch."),
-                                           textColor: Theme.secondaryTextAndIconColor,
-                                           font: .ows_dynamicTypeBody2))
+            let captionLabel = builder.buildLabel(text: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION",
+                                                                     comment: "Explanation of the 'approve new group members' switch."),
+                                             textColor: Theme.secondaryTextAndIconColor,
+                                             font: .ows_dynamicTypeCaption1)
 
-            builder.addVerticalSpacer(height: 47)
+            let captionContainer = UIView()
+            captionContainer.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 0)
+            captionContainer.addSubview(captionLabel)
+            captionLabel.autoPinEdgesToSuperviewMargins()
+
+            builder.add(captionContainer)
+
+            builder.addVerticalSpacer(height: 44)
 
             builder.addBottomButton(title: NSLocalizedString("GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK",
                                                              comment: "Label for the 'enable and share link' button in the 'group link promotion' alert view."),
@@ -150,8 +151,8 @@ public class GroupLinkPromotionActionSheet: UIView {
 
         builder.addVerticalSpacer(height: 5)
         builder.addBottomButton(title: CommonStrings.cancelButton,
-                                titleColor: .ows_accentBlue,
-                                backgroundColor: .white,
+                                titleColor: Theme.secondaryTextAndIconColor,
+                                backgroundColor: .clear,
                                 target: self,
                                 selector: #selector(dismissAlert))
 

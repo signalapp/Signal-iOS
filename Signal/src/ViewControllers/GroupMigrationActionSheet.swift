@@ -73,7 +73,7 @@ public class GroupMigrationActionSheet: UIView {
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 48, leading: 20, bottom: 38, trailing: 24)
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        stackView.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
 
         layoutMargins = .zero
         addSubview(stackView)

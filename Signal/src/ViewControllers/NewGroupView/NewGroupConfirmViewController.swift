@@ -318,9 +318,11 @@ public class NewGroupConfirmViewController: OWSViewController {
                          modalActivityIndicator: ModalActivityIndicatorViewController) {
         AssertIsOnMainThread()
 
+        let hasAnyRemoteMembers = groupThread.groupModel.groupMembership.allMembersOfAnyKind.count > 1
+
         let navigateToNewGroup = { (completion: (() -> Void)?) in
             SignalApp.shared().presentConversation(for: groupThread,
-                                                   action: .newGroupActionSheet,
+                                                   action: hasAnyRemoteMembers ? .none : .newGroupActionSheet,
                                                    animated: false)
             self.presentingViewController?.dismiss(animated: true, completion: completion)
         }
