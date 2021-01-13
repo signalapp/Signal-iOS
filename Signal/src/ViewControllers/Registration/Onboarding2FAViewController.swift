@@ -358,8 +358,10 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             KeyBackupService.clearPendingRestoration(transaction: transaction)
 
             // If we were successful, also mark the user as having a PIN
+            // They're a returning user, so we can skip the welcome banner
             if wasSuccessful {
                 OWS2FAManager.shared().markEnabled(pin: pinToUse, transaction: transaction)
+                GetStartedBannerViewController.dismissAllCards(writeTx: transaction)
             }
         }
 
