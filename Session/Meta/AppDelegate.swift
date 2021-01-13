@@ -13,6 +13,7 @@ extension AppDelegate {
             let job = MessageSendJob(message: configurationMessage, destination: destination)
             JobQueue.shared.add(job, using: transaction)
         }
+        userDefaults[.lastConfigurationSync] = Date()
     }
 
     func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {

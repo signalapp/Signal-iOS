@@ -53,6 +53,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getAllUserOpenGroups() -> [String:OpenGroup]
     func getOpenGroup(for threadID: String) -> OpenGroup?
     func getThreadID(for openGroupID: String) -> String?
+    func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
     
     // MARK: - Open Group Public Keys
 

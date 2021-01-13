@@ -295,6 +295,7 @@
 		B8CA011525A293800091AF73 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CA011425A293800091AF73 /* Configuration.swift */; };
 		B8CA011F25A2939F0091AF73 /* SharedSenderKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CA011E25A2939F0091AF73 /* SharedSenderKeys.swift */; };
 		B8CA014125A293EE0091AF73 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CA014025A293EE0091AF73 /* Storage.swift */; };
+		B8CADAE925AFADF400AAFA15 /* OpenGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */; };
 		B8CCF6352396005F0091D419 /* SpaceMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B8CCF6342396005F0091D419 /* SpaceMono-Regular.ttf */; };
 		B8CCF63723961D6D0091D419 /* NewPrivateChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */; };
 		B8CCF63F23975CFB0091D419 /* JoinPublicChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */; };
@@ -475,7 +476,6 @@
 		C33FDC95255A582000E217F9 /* OWSFailedMessagesJob.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDADB255A580400E217F9 /* OWSFailedMessagesJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC96255A582000E217F9 /* NSObject+Casting.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDADC255A580400E217F9 /* NSObject+Casting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC98255A582000E217F9 /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDADE255A580400E217F9 /* SwiftSingletons.swift */; };
-		C33FDC99255A582000E217F9 /* PublicChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDADF255A580400E217F9 /* PublicChatManager.swift */; };
 		C33FDC9A255A582000E217F9 /* ByteParser.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAE0255A580400E217F9 /* ByteParser.m */; };
 		C33FDCA2255A582000E217F9 /* OWSMessageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDCC7255A582000E217F9 /* NSArray+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB0D255A580800E217F9 /* NSArray+OWS.m */; };
@@ -718,7 +718,6 @@
 		C3A7229C2558E4310043A11F /* OpenGroupMessage+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3AAFFC225AE916D0089E6DD /* OpenGroupManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFC125AE916D0089E6DD /* OpenGroupManagerProtocol.swift */; };
-		C3AAFFD525AE92860089E6DD /* OpenGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */; };
 		C3AAFFE825AE975D0089E6DD /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */; };
 		C3AAFFF225AE99710089E6DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFF125AE99710089E6DD /* AppDelegate.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
@@ -1391,7 +1390,6 @@
 		C33FDADC255A580400E217F9 /* NSObject+Casting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Casting.h"; sourceTree = "<group>"; };
 		C33FDADD255A580400E217F9 /* TSInfoMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInfoMessage.h; sourceTree = "<group>"; };
 		C33FDADE255A580400E217F9 /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
-		C33FDADF255A580400E217F9 /* PublicChatManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicChatManager.swift; sourceTree = "<group>"; };
 		C33FDAE0255A580400E217F9 /* ByteParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ByteParser.m; sourceTree = "<group>"; };
 		C33FDAE1255A580400E217F9 /* OWSReadTracking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSReadTracking.h; sourceTree = "<group>"; };
 		C33FDAE4255A580400E217F9 /* TSAttachmentStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentStream.h; sourceTree = "<group>"; };
@@ -3118,8 +3116,6 @@
 			isa = PBXGroup;
 			children = (
 				C33FDB19255A580900E217F9 /* GroupUtilities.swift */,
-				C33FDADF255A580400E217F9 /* PublicChatManager.swift */,
-				C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */,
 				C38EF3E5255B6DF4007E1867 /* ContactCellView.h */,
 				C38EF3D6255B6DEF007E1867 /* ContactCellView.m */,
 				C38EF3E6255B6DF4007E1867 /* ContactTableViewCell.h */,
@@ -3197,6 +3193,7 @@
 				C3A721362558BDFA0043A11F /* OpenGroupInfo.swift */,
 				C3A721342558BDF90043A11F /* OpenGroupMessage.swift */,
 				C3A7229B2558E4310043A11F /* OpenGroupMessage+Conversion.swift */,
+				C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */,
 			);
 			path = "Open Groups";
 			sourceTree = "<group>";
@@ -4640,7 +4637,6 @@
 				C38EF3C3255B6DE7007E1867 /* ImageEditorTextItem.swift in Sources */,
 				C33FDC7D255A582000E217F9 /* OWSDispatch.m in Sources */,
 				C38EF247255B6D67007E1867 /* NSAttributedString+OWS.m in Sources */,
-				C33FDC99255A582000E217F9 /* PublicChatManager.swift in Sources */,
 				C33FDD49255A582000E217F9 /* ParamParser.swift in Sources */,
 				C38EF35F255B6DCC007E1867 /* SelectRecipientViewController.m in Sources */,
 				C38EF3C5255B6DE7007E1867 /* OWSViewController+ImageEditor.swift in Sources */,
@@ -4709,7 +4705,6 @@
 				C33FDCFA255A582000E217F9 /* SignalIOSProto.swift in Sources */,
 				C33FDD13255A582000E217F9 /* OWSFailedAttachmentDownloadsJob.m in Sources */,
 				C38EF24D255B6D67007E1867 /* UIView+OWS.swift in Sources */,
-				C3AAFFD525AE92860089E6DD /* OpenGroupManager.swift in Sources */,
 				C38EF408255B6DF7007E1867 /* OWSSearchBar.m in Sources */,
 				C38EF327255B6DBF007E1867 /* BlockListUIUtils.m in Sources */,
 				C38EF310255B6DBF007E1867 /* DebugLogger.m in Sources */,
@@ -4927,6 +4922,7 @@
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */,
+				B8CADAE925AFADF400AAFA15 /* OpenGroupManager.swift in Sources */,
 				B8856D69256F141F001CE70E /* OWSWindowManager.m in Sources */,
 				C3D9E3BE25676AD70040E4F3 /* TSAttachmentPointer.m in Sources */,
 				C3ECBF7B257056B700EA7FCE /* Threading.swift in Sources */,
