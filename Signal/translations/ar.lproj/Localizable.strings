@@ -5,7 +5,7 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "قبول رقم الأمان الجديد";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "مرفق";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "مُرفق";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "صوت";
@@ -1385,7 +1385,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "تم تغيير رقم الأمان الخاص بك و %@";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "تم إنعاش جلسة المحادثة";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "حدث خطأ غير معروف.";
@@ -2483,7 +2483,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إن هذه المحادثات مؤرشفة و سوف تظهر فقط في علبة البريد الوارد إذا استلمت رسائل جديدة.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "لا توجد أي مُحادثات حتى الآن.\nابدأ بمراسلة أحد الأصدقاء.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "قام %@ بالاتصال بك";
@@ -2678,7 +2678,7 @@
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ صورة";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ عنصر";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -4241,10 +4241,10 @@
 "SEND_SMS_INVITE_TITLE" = "هل ترغب في إرسال دعوة لتطبيق Signal إلى الرقم التالي:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal يستخدم تعمية الطرف-إلى-الطرف ومن الممكن أن يحتاج إلى إنعاش جلسة المحادثة بعض الأحيان. هذا لا يؤثر على أمان محادثاتك لكن من المحتمل أن تكون قد فوت رسالة من جهة الإتصال هذه ويمكنك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "تم إنعاش جلسة المحادثة";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "حول";
@@ -4304,10 +4304,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الخطأ";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "إظهار صور جهات إتصال النظام إذا كانت مُتاحة";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "إستخدم صور جهات إتصال النظام";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "السمة";
@@ -4394,7 +4394,7 @@
 "SETTINGS_COPYRIGHT" = "‫مِرسال Signal‬. جميع الحقوق محفوظة\nمرخص بموجب رخصة جْنُو العمومية، الإصدار الثالث";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "استخدام البيانات";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "تُنزَّل الرسائل الصوتية و الوسائط ذات العرض الواحد والملصقات (أقل من 100 كيلو بِتْ) تلقائيا.";
@@ -4406,7 +4406,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "إعادة التعيين إعدادات التنزيل التلقائي";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "استخدام البيانات";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "حذف حسابك";
@@ -4664,7 +4664,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "تعذر إرسال المرفق";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "جاري رفع %1$@ من %2$@...";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "جار التحميل ...";

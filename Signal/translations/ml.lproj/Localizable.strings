@@ -1208,7 +1208,7 @@
 "DISAPPEARING_MESSAGES_HINT" = "നിലവിൽ സന്ദേശങ്ങൾ %@ശേഷം അപ്രത്യക്ഷമാകും";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "സന്ദേശ സെറ്റിംഗ്സ് അപ്രത്യക്ഷമാകുന്നു";
+"DISAPPEARING_MESSAGES_LABEL" = "അപ്രത്യക്ഷമാകുന്ന സന്ദേശത്തിന്റെ സെറ്റിംഗ്സ് ";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "ഡിസ്‌മിസ് ചെയ്യുക";
