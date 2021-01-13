@@ -398,7 +398,7 @@ extension CVComponentSystemMessage {
                  .wrongTrustedIdentityKey:
                 return Theme.iconImage(.safetyNumber16)
             case .sessionRefresh:
-                return Theme.iconImage(.info16)
+                return Theme.iconImage(.refresh16)
             case .invalidKeyException,
                  .missingKeyId,
                  .noSession,
