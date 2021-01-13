@@ -16,7 +16,7 @@ public final class OpenGroupManager : OpenGroupManagerProtocol {
 
     private init() { }
 
-    public func addOpenGroup(with url: String) -> Promise<Void> {
+    public func addOpenGroup(with url: String, using transaction: Any) -> Promise<Void> {
         guard let url = URL(string: url), let scheme = url.scheme, scheme == "https", url.host != nil else {
             return Promise(error: Error.invalidURL)
         }
@@ -27,10 +27,9 @@ public final class OpenGroupManager : OpenGroupManagerProtocol {
         let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
         let profilePictureURL = profileManager.profilePictureURL()
         let profileKey = profileManager.localProfileKey().keyData
-        Storage.writeSync { transaction in
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastMessageServerIDCollection)
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastDeletionServerIDCollection)
-        }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastMessageServerIDCollection)
+        transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastDeletionServerIDCollection)
         return PublicChatManager.shared.addChat(server: urlAsString, channel: channelID).done(on: DispatchQueue.main) { _ in
             let _ = OpenGroupAPI.setDisplayName(to: displayName, on: urlAsString)
             let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)

@@ -132,20 +132,22 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         }
         isJoining = true
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            OpenGroupManager.shared.addOpenGroup(with: urlAsString)
-            .done(on: DispatchQueue.main) { [weak self] _ in
-                self?.presentingViewController!.dismiss(animated: true, completion: nil)
-            }
-            .catch(on: DispatchQueue.main) { [weak self] error in
-                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                var title = "Couldn't Join"
-                var message = ""
-                if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                    title = "Unauthorized"
-                    message = "Please ask the open group operator to add you to the group."
+            Storage.shared.write { transaction in
+                OpenGroupManager.shared.addOpenGroup(with: urlAsString, using: transaction)
+                .done(on: DispatchQueue.main) { [weak self] _ in
+                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
                 }
-                self?.isJoining = false
-                self?.showError(title: title, message: message)
+                .catch(on: DispatchQueue.main) { [weak self] error in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    var title = "Couldn't Join"
+                    var message = ""
+                    if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
+                        title = "Unauthorized"
+                        message = "Please ask the open group operator to add you to the group."
+                    }
+                    self?.isJoining = false
+                    self?.showError(title: title, message: message)
+                }
             }
         }
     }

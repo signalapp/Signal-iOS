@@ -51,7 +51,7 @@ final class NukeDataModal : Modal {
     @objc private func nuke() {
         func proceed() {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
                 appDelegate.forceSyncConfigurationNowIfNeeded().done(on: DispatchQueue.main) {
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                     UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later

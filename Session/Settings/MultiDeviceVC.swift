@@ -19,6 +19,7 @@ final class MultiDeviceVC : BaseVC {
     private lazy var toggle: UISwitch = {
         let result = UISwitch()
         result.onTintColor = Colors.accent
+        result.isOn = UserDefaults.standard[.isUsingMultiDevice]
         return result
     }()
 

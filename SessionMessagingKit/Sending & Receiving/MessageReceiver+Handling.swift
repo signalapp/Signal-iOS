@@ -104,7 +104,7 @@ extension MessageReceiver {
         let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
         for openGroupURL in message.openGroups {
             guard !allOpenGroups.contains(openGroupURL) else { continue }
-            SNMessagingKitConfiguration.shared.openGroupManager.addOpenGroup(with: openGroupURL).retainUntilComplete()
+            SNMessagingKitConfiguration.shared.openGroupManager.addOpenGroup(with: openGroupURL, using: transaction).retainUntilComplete()
         }
     }
 
