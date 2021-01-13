@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "अटैचमेंट";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "शुरू हो जाओ";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "मित्रों को आमंत्रित करें";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "नया समूह";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF लाने में असफल। कृपया जांच लें कि आप ऑनलाइन हैं कि नहीं।";
 

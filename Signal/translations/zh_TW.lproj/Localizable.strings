@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "附檔";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "開始使用";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "邀請好友";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "新增群組";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "無法讀取所要求的 GIF。請確認你是否在線上。";
 

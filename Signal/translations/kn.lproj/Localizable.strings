@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ಲಗತ್ತು";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "ಪ್ರಾರಂಭಿಸಿ";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "ಹೊಸ ಗುಂಪು";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "ವಿನಂತಿಸಿದ GIF ಅನ್ನು ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದ್ದೀರಾ ಎಂದು ದೃಢೀಕರಿಸಿಕೊಳ್ಳಿ.";
 

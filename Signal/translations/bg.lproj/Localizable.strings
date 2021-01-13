@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Прикачен файл";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Да започваме";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Покани приятели";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Нова група";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Грешка при опит за сваляне на GIF. Моля свържете се към интернет.";
 

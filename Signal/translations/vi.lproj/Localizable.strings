@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Tập tin đính kèm";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Bắt đầu";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Mời bạn bè";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Tạo nhóm mới";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Không thể tải ảnh GIF bạn yêu cầu. Vui lòng xác minh lại kết nối.";
 
@@ -1643,10 +1652,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Mở một Nhóm Mới để bắt đầu gọi nhóm được mã hoá";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Giới thiệu Cuộc gọi Nhóm";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Bạn đã tạo nhóm.";
@@ -2276,13 +2285,13 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Nhóm Mới là gì?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Tất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi cập nhật.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nhóm Mới có các tính năng như @nhắc và admin nhóm, và sẽ hỗ trợ nhiều tính năng trong tương lai.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
@@ -2306,7 +2315,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Tất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi cập nhật.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";

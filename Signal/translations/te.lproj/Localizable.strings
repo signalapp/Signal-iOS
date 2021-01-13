@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "అటాచ్మెంట్";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "ప్రారంభించడానికి";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "స్నేహితులను ఆహ్వానించండి";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "కొత్త సమూహం";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "అభ్యర్థించిన GIF ని పొందడంలో విఫలమైంది. దయచేసి మీరు ఆన్‌లైన్‌లో ఉన్నారని ధృవీకరించండి.";
 

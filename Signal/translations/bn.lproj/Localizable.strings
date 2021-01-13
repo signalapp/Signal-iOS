@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "সংযুক্তি";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "শুরু করা যাক";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "বন্ধুদের আমন্ত্রণ";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "নতুন গ্রুপ";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "অনুরোধ করা জিফ আনতে ব্যর্থ। আপনি অনলাইনে যুক্ত আছেন কিনা দয়া করে যাচাই করুন।";
 

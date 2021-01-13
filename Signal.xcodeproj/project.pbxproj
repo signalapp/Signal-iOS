@@ -1839,7 +1839,7 @@
 		888A280324B3E9820045D639 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = translations/eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A280424B3E9820045D639 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A280524B3E9820045D639 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		888B6D4025AE7E2200E2A662 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "translations/zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		888B6D4025AE7E2200E2A662 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = translations/zh_HK.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
@@ -4236,6 +4236,7 @@
 				cy,
 				is,
 				"zh-HK",
+				zh_HK,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;

@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "இணைப்பு";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "தொடங்குகள்";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "நண்பர்களை அழை";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "புதிய குழு";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "கோரப்பட்ட GIF ஐப் பெறுவதில் தோல்வி. நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்க்கவும்.";
 

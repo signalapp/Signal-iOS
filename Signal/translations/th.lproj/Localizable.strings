@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "แฟ้มแนบ";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "เริ่มต้น";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "เชิญเพื่อน";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "กลุ่มใหม่";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "ไม่สามารถดึงภาพ GIF ที่ต้องการ กรุณาตรวจสอบว่าคุณได้ออนไลน์อยู่";
 

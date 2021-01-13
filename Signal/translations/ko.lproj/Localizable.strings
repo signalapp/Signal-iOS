@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "첨부 파일";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "시작하기";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "친구 초대";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "새 그룹";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "요청한 GIF를 받아올 수 없습니다. 인터넷에 연결되어 있는지 확인하세요.";
 

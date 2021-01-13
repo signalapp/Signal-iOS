@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "അറ്റാച്ച്‌മെന്റ്";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "ആരംഭിക്കുക";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "സുഹൃത്തുക്കളെ ക്ഷണിക്കുക";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "പുതിയ ഗ്രൂപ്പ്";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "താൽപ്പര്യപ്പെട്ടതായ GIF പ്രാപ്യമാക്കുന്നതിൽ പരാജയപ്പെട്ടു.  നിങ്ങൾ ഓൺലൈൻ ആണെന്നത് ദയവായി വിലയിരുത്തുക.";
 

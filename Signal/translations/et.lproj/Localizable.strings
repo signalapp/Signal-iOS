@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Manus";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Alustamine";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Kutsu sõpru";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Uus grupp";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Soovitud GIF-i tõmbamine ei õnnestunud. Palun kontrolli, kas oled internetis.";
 

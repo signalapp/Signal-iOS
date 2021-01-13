@@ -1453,6 +1453,15 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Pielikums";
 
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Sāc";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Uzaicināt draugus";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Jauna grupa";
+
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Neizdevās ielādēt pieprasīto GIF. Pārbaudiet, vai atrodaties tiešsaistē.";
 
