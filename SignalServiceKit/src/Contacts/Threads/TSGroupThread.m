@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupThread.h"
@@ -139,7 +139,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                     block:^(TSThread *thread, BOOL *stop) {
                                         if ([thread isKindOfClass:[TSGroupThread class]]) {
                                             TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                            if ([groupThread.groupModel.groupMembers containsObject:address]) {
+                                            if ([groupThread.groupModel.groupMembership.fullMembers
+                                                    containsObject:address]
+                                                && groupThread.isLocalUserFullMember) {
                                                 [groupThreads addObject:groupThread];
                                             }
                                         }
