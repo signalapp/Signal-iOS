@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -2364,6 +2364,9 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
             builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
         }
         builder.setPinnedConversations(pinnedConversations)
+        if hasPreferContactAvatars {
+            builder.setPreferContactAvatars(preferContactAvatars)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2458,6 +2461,10 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
         public mutating func setPinnedConversations(_ wrappedItems: [StorageServiceProtoAccountRecordPinnedConversation]) {
             proto.pinnedConversations = wrappedItems.map { $0.proto }
+        }
+
+        public mutating func setPreferContactAvatars(_ valueParam: Bool) {
+            proto.preferContactAvatars = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2588,6 +2595,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return proto.notDiscoverableByPhoneNumber
     }
     public var hasNotDiscoverableByPhoneNumber: Bool {
+        return true
+    }
+
+    public var preferContactAvatars: Bool {
+        return proto.preferContactAvatars
+    }
+    public var hasPreferContactAvatars: Bool {
         return true
     }
 
