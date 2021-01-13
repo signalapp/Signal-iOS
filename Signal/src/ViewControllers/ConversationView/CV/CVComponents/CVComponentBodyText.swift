@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -275,13 +275,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let label = componentView.ensuredLabel
         labelConfig.applyForRendering(label: label)
 
-        label.isHidden = false
+        label.isHiddenInStackView = false
         if label.superview == nil {
             let hStackView = componentView.hStackView
             hStackView.addArrangedSubview(label)
             label.setCompressionResistanceVerticalHigh()
         }
-        componentView.possibleTextView?.isHidden = true
+        componentView.possibleTextView?.isHiddenInStackView = true
 
         return label
     }
@@ -310,12 +310,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
             textView.accessibilityLabel = accessibilityLabel(description: textViewConfig.stringValue)
 
-            textView.isHidden = false
+            textView.isHiddenInStackView = false
             if textView.superview == nil {
                 let hStackView = componentView.hStackView
                 hStackView.addArrangedSubview(textView)
             }
-            componentView.possibleLabel?.isHidden = true
+            componentView.possibleLabel?.isHiddenInStackView = true
         }
     }
 

@@ -301,7 +301,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         let bottomInset = reactions != nil ? reactionsVProtrusion : 0
         componentView.layoutConstraints.append(rootView.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomInset))
-        componentView.layoutConstraints.append(rootView.autoSetDimension(.width, toSize: cellMeasurement.cellSize.width))
 
         self.swipeToReplyReference = nil
         self.swipeToReplyProgress = swipeToReplyState.getProgress(interactionId: interaction.uniqueId)
@@ -726,7 +725,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // remaining space in the "outer" stack.
         let contentMaxWidth = max(0,
                                   min(conversationStyle.maxMessageWidth,
-                                      outerStackViewMaxWidth - outerStackViewSize.width))
+                                      outerStackViewMaxWidth - (outerStackViewSize.width +
+                                                                    ConversationStyle.messageDirectionSpacing)))
 
         func measureStackView(config: CVStackViewConfig,
                               componentKeys keys: [CVComponentKey]) -> CGSize {

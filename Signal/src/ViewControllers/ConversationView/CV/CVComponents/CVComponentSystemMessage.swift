@@ -92,7 +92,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         if isShowingSelectionUI {
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
         }
-        selectionView.isHidden = !isShowingSelectionUI
+        selectionView.isHiddenInStackView = !isShowingSelectionUI
 
         titleLabelConfig.applyForRendering(label: titleLabel)
 
