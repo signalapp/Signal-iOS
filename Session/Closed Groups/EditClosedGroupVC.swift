@@ -260,9 +260,9 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         Storage.write(with: { [weak self] transaction in
             do {
                 if !members.contains(getUserHexEncodedPublicKey()) {
-                    try MessageSender.leaveV2(groupPublicKey, using: transaction)
+                    try MessageSender.leave(groupPublicKey, using: transaction)
                 } else {
-                    try MessageSender.updateV2(groupPublicKey, with: members, name: name, transaction: transaction)
+                    try MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction)
                 }
             } catch {
                 DispatchQueue.main.async {

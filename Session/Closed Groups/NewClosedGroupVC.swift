@@ -170,9 +170,11 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             var promise: Promise<TSGroupThread>!
             Storage.writeSync { transaction in
-                promise = MessageSender.createV2ClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+                promise = MessageSender.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
             }
             let _ = promise.done(on: DispatchQueue.main) { thread in
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside createClosedGroup(...)
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             }

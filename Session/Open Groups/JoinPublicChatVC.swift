@@ -135,6 +135,8 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
             Storage.shared.write { transaction in
                 OpenGroupManager.shared.addOpenGroup(with: urlAsString, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     self?.presentingViewController!.dismiss(animated: true, completion: nil)
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in

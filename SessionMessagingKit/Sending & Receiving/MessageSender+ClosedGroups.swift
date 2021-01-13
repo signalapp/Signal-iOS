@@ -3,7 +3,7 @@ import SessionProtocolKit
 
 extension MessageSender {
 
-    public static func createV2ClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
+    public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
         var members = members
         let userPublicKey = getUserHexEncodedPublicKey()
@@ -46,7 +46,7 @@ extension MessageSender {
         return when(fulfilled: promises).map2 { thread }
     }
     
-    public static func updateV2(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
+    public static func update(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
         // Prepare
         let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -117,7 +117,7 @@ extension MessageSender {
     }
 
     @objc(leaveClosedGroupWithPublicKey:using:error:)
-    public static func leaveV2(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
+    public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
@@ -133,7 +133,7 @@ extension MessageSender {
         } else {
             newMembers = [] // If the admin leaves the group is destroyed
         }
-        return try updateV2(groupPublicKey, with: newMembers, name: group.groupName!, transaction: transaction)
+        return try update(groupPublicKey, with: newMembers, name: group.groupName!, transaction: transaction)
     }
 
     public static func generateAndSendNewEncryptionKeyPair(for groupPublicKey: String, to targetMembers: Set<String>, using transaction: Any) throws {
