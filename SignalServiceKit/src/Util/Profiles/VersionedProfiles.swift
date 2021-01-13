@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -47,6 +47,8 @@ public protocol VersionedProfiles: class {
 public protocol VersionedProfilesSwift: VersionedProfiles {
     func updateProfilePromise(profileGivenName: String?,
                               profileFamilyName: String?,
+                              profileBio: String?,
+                              profileBioEmoji: String?,
                               profileAvatarData: Data?) -> Promise<VersionedProfileUpdate>
 }
 
@@ -69,6 +71,8 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift {
 
     public func updateProfilePromise(profileGivenName: String?,
                                      profileFamilyName: String?,
+                                     profileBio: String?,
+                                     profileBioEmoji: String?,
                                      profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
         owsFail("Not implemented.")
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,10 +60,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
     @objc
     public func updateProfileOnService(profileGivenName: String?,
                                        profileFamilyName: String?,
+                                       profileBio: String?,
+                                       profileBioEmoji: String?,
                                        profileAvatarData: Data?) {
         firstly {
             updateProfilePromise(profileGivenName: profileGivenName,
                                  profileFamilyName: profileFamilyName,
+                                 profileBio: profileBio,
+                                 profileBioEmoji: profileBioEmoji,
                                  profileAvatarData: profileAvatarData)
         }.done { _ in
             Logger.verbose("success")
@@ -87,6 +91,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
     public func updateProfilePromise(profileGivenName: String?,
                                      profileFamilyName: String?,
+                                     profileBio: String?,
+                                     profileBioEmoji: String?,
                                      profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
 
         return DispatchQueue.global().async(.promise) {
@@ -101,22 +107,52 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             let commitment = try localProfileKey.getCommitment(uuid: zkgUuid)
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
-            var nameData: Data?
+
+            var nameValue: ProfileValue?
             if let profileGivenName = profileGivenName {
                 var nameComponents = PersonNameComponents()
                 nameComponents.givenName = profileGivenName
                 nameComponents.familyName = profileFamilyName
 
-                guard let encryptedPaddedProfileName = OWSUserProfile.encrypt(profileNameComponents: nameComponents,
-                                                                              profileKey: profileKey) else {
-                                                                                throw OWSAssertionError("Could not encrypt profile name.")
+                guard let encryptedValue = OWSUserProfile.encrypt(profileNameComponents: nameComponents,
+                                                                  profileKey: profileKey) else {
+                    throw OWSAssertionError("Could not encrypt profile name.")
                 }
-                nameData = encryptedPaddedProfileName
+                nameValue = encryptedValue
             }
+
+            func encryptOptionalValue(_ value: String?,
+                                      paddedLengths: [Int],
+                                      validBase64Lengths: [Int]) throws -> ProfileValue? {
+                guard let value = value,
+                      !value.isEmpty else {
+                    return nil
+                }
+                guard let encryptedValue = OWSUserProfile.encrypt(string: value,
+                                                                  profileKey: profileKey,
+                                                                  paddedLengths: paddedLengths,
+                                                                  validBase64Lengths: validBase64Lengths) else {
+                    throw OWSAssertionError("Could not encrypt profile value.")
+                }
+                return encryptedValue
+            }
+
+            let bioValue = try encryptOptionalValue(profileBio,
+                                                    paddedLengths: [128, 254, 512 ],
+                                                    validBase64Lengths: [208, 276, 720])
+
+            let bioEmojiValue = try encryptOptionalValue(profileBioEmoji,
+                                                         paddedLengths: [32 ],
+                                                         validBase64Lengths: [80])
 
             let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: zkgUuid)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
-            let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameData, hasAvatar: hasAvatar, version: profileKeyVersionString, commitment: commitmentData)
+            let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameValue,
+                                                                       bio: bioValue,
+                                                                       bioEmoji: bioEmojiValue,
+                                                                       hasAvatar: hasAvatar,
+                                                                       version: profileKeyVersionString,
+                                                                       commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
         }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {

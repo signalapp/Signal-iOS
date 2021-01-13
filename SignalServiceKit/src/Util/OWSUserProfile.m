@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUserProfile.h"
@@ -37,6 +37,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // Ultimately used as an alias of givenName, but sqlite doesn't support renaming columns
 @property (atomic, nullable) NSString *profileName;
 @property (atomic, nullable) NSString *familyName;
+@property (atomic, nullable) NSString *bio;
+@property (atomic, nullable) NSString *bioEmoji;
 @property (atomic, nullable) NSString *username;
 @property (atomic) BOOL isUuidCapable;
 @property (atomic, nullable) NSString *avatarUrlPath;

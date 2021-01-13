@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileManager.h"
@@ -45,6 +45,47 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 // This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *profileAvatarImageCache;
+
+@end
+
+#pragma mark -
+
+@implementation OWSProfileSnapshot
+
+- (instancetype)initWithGivenName:(nullable NSString *)givenName
+                       familyName:(nullable NSString *)familyName
+                         fullName:(nullable NSString *)fullName
+                              bio:(nullable NSString *)bio
+                         bioEmoji:(nullable NSString *)bioEmoji
+                         username:(nullable NSString *)username
+                       avatarData:(nullable NSData *)avatarData
+{
+
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _givenName = givenName;
+    _familyName = familyName;
+    _fullName = fullName;
+    _bio = bio;
+    _bioEmoji = bioEmoji;
+    _username = username;
+    _avatarData = avatarData;
+
+    return self;
+}
+
+- (nullable UIImage *)avatarImage
+{
+    if (self.avatarData == nil) {
+        return nil;
+    }
+    UIImage *image = [UIImage imageWithData:self.avatarData];
+    OWSAssertDebug(image);
+    return image;
+}
 
 @end
 
@@ -336,6 +377,22 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 - (nullable NSString *)localUsername
 {
     return self.localUserProfile.username;
+}
+
+- (OWSProfileSnapshot *)localProfileSnapshot
+{
+    OWSUserProfile *userProfile = self.localUserProfile;
+    NSData *_Nullable avatarData = nil;
+    if (userProfile.avatarFileName.length > 0) {
+        avatarData = [self loadProfileDataWithFilename:userProfile.avatarFileName];
+    }
+    return [[OWSProfileSnapshot alloc] initWithGivenName:userProfile.givenName
+                                              familyName:userProfile.familyName
+                                                fullName:userProfile.fullName
+                                                     bio:userProfile.bio
+                                                bioEmoji:userProfile.bioEmoji
+                                                username:userProfile.username
+                                              avatarData:avatarData];
 }
 
 - (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction
@@ -1849,7 +1906,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSAssertIsOnMainThread();
 
     NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
-    return nameData.length > OWSUserProfile.kNameDataLength;
+    return nameData.length > OWSUserProfile.kMaxNameLengthBytes;
 }
 
 #pragma mark - Avatar Disk Cache

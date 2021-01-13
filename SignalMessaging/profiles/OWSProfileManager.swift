@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,11 +25,19 @@ public extension OWSProfileManager {
     // The returned promise will fail if the service can't be updated
     // (or in the unlikely fact that another error occurs) but this
     // manager will continue to retry until the update succeeds.
-    class func updateLocalProfilePromise(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> Promise<Void> {
+    class func updateLocalProfilePromise(profileGivenName: String?,
+                                         profileFamilyName: String?,
+                                         profileBio: String?,
+                                         profileBioEmoji: String?,
+                                         profileAvatarData: Data?) -> Promise<Void> {
         assert(CurrentAppContext().isMainApp)
 
         return DispatchQueue.global().async(.promise) {
-            return enqueueProfileUpdate(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData)
+            return enqueueProfileUpdate(profileGivenName: profileGivenName,
+                                        profileFamilyName: profileFamilyName,
+                                        profileBio: profileBio,
+                                        profileBioEmoji: profileBioEmoji,
+                                        profileAvatarData: profileAvatarData)
         }.then { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
@@ -48,21 +56,30 @@ public extension OWSProfileManager {
 
         let profileGivenName: String?
         let profileFamilyName: String?
+        let profileBio: String?
+        let profileBioEmoji: String?
         let profileAvatarData: Data?
         if let pendingUpdate = (Self.databaseStorage.read { transaction in
             return Self.currentPendingProfileUpdate(transaction: transaction)
         }) {
             profileGivenName = pendingUpdate.profileGivenName
             profileFamilyName = pendingUpdate.profileFamilyName
+            profileBio = pendingUpdate.profileBio
+            profileBioEmoji = pendingUpdate.profileBioEmoji
             profileAvatarData = pendingUpdate.profileAvatarData
         } else {
-            profileGivenName = localGivenName()
-            profileFamilyName = localFamilyName()
-            profileAvatarData = localProfileAvatarData()
+            let profileSnapshot = localProfileSnapshot()
+            profileGivenName = profileSnapshot.givenName
+            profileFamilyName = profileSnapshot.familyName
+            profileBio = profileSnapshot.bio
+            profileBioEmoji = profileSnapshot.bioEmoji
+            profileAvatarData = profileSnapshot.avatarData
         }
         assert(profileGivenName != nil)
         return OWSProfileManager.updateLocalProfilePromise(profileGivenName: profileGivenName,
                                                            profileFamilyName: profileFamilyName,
+                                                           profileBio: profileBio,
+                                                           profileBioEmoji: profileBioEmoji,
                                                            profileAvatarData: profileAvatarData)
     }
 
@@ -87,8 +104,16 @@ public extension OWSProfileManager {
 @objc
 public extension OWSProfileManager {
     // See OWSProfileManager.updateProfilePromise().
-    class func updateLocalProfilePromiseObj(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> AnyPromise {
-        return AnyPromise(updateLocalProfilePromise(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData))
+    class func updateLocalProfilePromiseObj(profileGivenName: String?,
+                                            profileFamilyName: String?,
+                                            profileBio: String?,
+                                            profileBioEmoji: String?,
+                                            profileAvatarData: Data?) -> AnyPromise {
+        AnyPromise(updateLocalProfilePromise(profileGivenName: profileGivenName,
+                                             profileFamilyName: profileFamilyName,
+                                             profileBio: profileBio,
+                                             profileBioEmoji: profileBioEmoji,
+                                             profileAvatarData: profileAvatarData))
     }
 
     class func updateProfileOnServiceIfNecessaryObjc() {
@@ -197,7 +222,7 @@ extension OWSProfileManager {
             Logger.info("Versioned profile update.")
             return updateProfileOnServiceVersioned(attempt: attempt)
         }.done(on: DispatchQueue.global()) { _ in
-            _ = self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
+            self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
                 guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
                     return
                 }
@@ -297,11 +322,15 @@ extension OWSProfileManager {
 
     private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
         Logger.info("avatar?: \(attempt.update.profileAvatarData != nil), " +
-            "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
-            "profileFamilyName?: \(attempt.update.profileFamilyName != nil).")
+                        "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
+                        "profileFamilyName?: \(attempt.update.profileFamilyName != nil), " +
+                        "profileBio?: \(attempt.update.profileBio != nil), " +
+                        "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil).")
         return firstly(on: .global()) {
             versionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
                                                    profileFamilyName: attempt.update.profileFamilyName,
+                                                   profileBio: attempt.update.profileBio,
+                                                   profileBioEmoji: attempt.update.profileBioEmoji,
                                                    profileAvatarData: attempt.update.profileAvatarData)
         }.map(on: .global()) { versionedUpdate in
             attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
@@ -324,13 +353,21 @@ extension OWSProfileManager {
 
     private static let kPendingProfileUpdateKey = "kPendingProfileUpdateKey"
 
-    private class func enqueueProfileUpdate(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) -> PendingProfileUpdate {
+    private class func enqueueProfileUpdate(profileGivenName: String?,
+                                            profileFamilyName: String?,
+                                            profileBio: String?,
+                                            profileBioEmoji: String?,
+                                            profileAvatarData: Data?) -> PendingProfileUpdate {
         Logger.verbose("")
 
         // Note that this might overwrite a pending profile update.
         // That's desirable.  We only ever want to retain the
         // latest changes.
-        let update = PendingProfileUpdate(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData)
+        let update = PendingProfileUpdate(profileGivenName: profileGivenName,
+                                          profileFamilyName: profileFamilyName,
+                                          profileBio: profileBio,
+                                          profileBioEmoji: profileBioEmoji,
+                                          profileAvatarData: profileAvatarData)
         databaseStorage.write { transaction in
             self.settingsStore.setObject(update, key: kPendingProfileUpdateKey, transaction: transaction)
         }
@@ -378,6 +415,10 @@ class PendingProfileUpdate: NSObject, NSCoding {
     // If nil, we are clearing the profile family name.
     let profileFamilyName: String?
 
+    let profileBio: String?
+
+    let profileBioEmoji: String?
+
     // If nil, we are clearing the profile avatar.
     let profileAvatarData: Data?
 
@@ -395,10 +436,17 @@ class PendingProfileUpdate: NSObject, NSCoding {
         return !avatarData.isEmpty
     }
 
-    init(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) {
+    init(profileGivenName: String?,
+         profileFamilyName: String?,
+         profileBio: String?,
+         profileBioEmoji: String?,
+         profileAvatarData: Data?) {
+
         self.id = UUID()
         self.profileGivenName = profileGivenName
         self.profileFamilyName = profileFamilyName
+        self.profileBio = profileBio
+        self.profileBioEmoji = profileBioEmoji
         self.profileAvatarData = profileAvatarData
     }
 
@@ -413,6 +461,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
         aCoder.encode(id.uuidString, forKey: "id")
         aCoder.encode(profileGivenName, forKey: "profileGivenName")
         aCoder.encode(profileFamilyName, forKey: "profileFamilyName")
+        aCoder.encode(profileBio, forKey: "profileBio")
+        aCoder.encode(profileBioEmoji, forKey: "profileBioEmoji")
         aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
     }
 
@@ -426,6 +476,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.id = id
         self.profileGivenName = aDecoder.decodeObject(forKey: "profileGivenName") as? String
         self.profileFamilyName = aDecoder.decodeObject(forKey: "profileFamilyName") as? String
+        self.profileBio = aDecoder.decodeObject(forKey: "profileBio") as? String
+        self.profileBioEmoji = aDecoder.decodeObject(forKey: "profileBioEmoji") as? String
         self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
     }
 }

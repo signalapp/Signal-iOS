@@ -40,6 +40,9 @@ public class ProfileViewController: OWSTableViewController {
 
     private var saveButton: OWSFlatButton?
 
+    private var username: String?
+    private var profileBio: String?
+    private var profileBioEmoji: String?
     private var avatarData: Data?
 
     private var hasUnsavedChanges = false {
@@ -109,7 +112,13 @@ public class ProfileViewController: OWSTableViewController {
 
         avatarViewHelper.delegate = self
 
-        avatarData = profileManager.localProfileAvatarData()
+        let profileSnapshot = profileManager.localProfileSnapshot()
+        givenNameTextField.text = profileSnapshot.givenName
+        familyNameTextField.text = profileSnapshot.familyName
+        self.profileBio = profileSnapshot.bio
+        self.profileBioEmoji = profileSnapshot.bioEmoji
+        self.username = profileSnapshot.username
+        avatarData = profileSnapshot.avatarData
 
         createViews()
         updateNavigationItem()
@@ -190,8 +199,6 @@ public class ProfileViewController: OWSTableViewController {
         let avatarView = self.avatarView
         let profileNamePreviewLabel = self.profileNamePreviewLabel
 
-        givenNameTextField.text = Self.profileManager.localGivenName()
-        familyNameTextField.text = Self.profileManager.localFamilyName()
         updateAvatarView()
         updateProfileNamePreview()
 
@@ -494,6 +501,8 @@ public class ProfileViewController: OWSTableViewController {
 
         let normalizedGivenName = self.normalizedGivenName
         let normalizedFamilyName = self.normalizedFamilyName
+        let normalizedProfileBio = self.normalizedProfileBio
+        let normalizedProfileBioEmoji = self.normalizedProfileBioEmoji
 
         if normalizedGivenName.isEmpty {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
@@ -526,6 +535,8 @@ public class ProfileViewController: OWSTableViewController {
             firstly(on: .global()) { () -> Promise<Void> in
                 OWSProfileManager.updateLocalProfilePromise(profileGivenName: normalizedGivenName,
                                                             profileFamilyName: normalizedFamilyName,
+                                                            profileBio: normalizedProfileBio,
+                                                            profileBioEmoji: normalizedProfileBioEmoji,
                                                             profileAvatarData: avatarData)
             }.done { _ in
                 modalActivityIndicator.dismiss { [weak self] in
@@ -548,6 +559,14 @@ public class ProfileViewController: OWSTableViewController {
 
     private var normalizedFamilyName: String {
         (familyNameTextField.text ?? "").ows_stripped()
+    }
+
+    private var normalizedProfileBio: String {
+        (profileBio ?? "").ows_stripped()
+    }
+
+    private var normalizedProfileBioEmoji: String {
+        (profileBioEmoji ?? "").ows_stripped()
     }
 
     private func profileCompleted() {
@@ -597,7 +616,7 @@ public class ProfileViewController: OWSTableViewController {
     }
 
     private func updateUsername() {
-        if let username = profileManager.localUsername() {
+        if let username = username {
             usernameLabel.text = CommonFormats.formatUsername(username)
             usernameLabel.textColor = Theme.primaryTextColor
         } else {
@@ -687,7 +706,7 @@ extension ProfileViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
-            byteLimit: OWSUserProfile.kNameDataLength
+            byteLimit: OWSUserProfile.kMaxNameLengthBytes
         )
     }
 

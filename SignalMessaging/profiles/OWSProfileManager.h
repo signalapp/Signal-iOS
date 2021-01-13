@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/ProfileManagerProtocol.h>
@@ -23,6 +23,22 @@ extern const NSString *kNSNotificationKey_WasLocallyInitiated;
 @class TSThread;
 
 typedef void (^ProfileManagerFailureBlock)(NSError *error);
+
+@interface OWSProfileSnapshot : NSObject
+
+@property (nonatomic, readonly, nullable) NSString *givenName;
+@property (nonatomic, readonly, nullable) NSString *familyName;
+@property (nonatomic, readonly, nullable) NSString *fullName;
+@property (nonatomic, readonly, nullable) NSString *bio;
+@property (nonatomic, readonly, nullable) NSString *bioEmoji;
+@property (nonatomic, readonly, nullable) NSString *username;
+
+@property (nonatomic, readonly, nullable) NSData *avatarData;
+@property (nonatomic, readonly, nullable) UIImage *avatarImage;
+
+@end
+
+#pragma mark -
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
@@ -57,6 +73,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
+- (OWSProfileSnapshot *)localProfileSnapshot;
 
 - (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
 

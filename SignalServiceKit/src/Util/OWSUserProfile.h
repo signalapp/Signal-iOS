@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -33,6 +33,8 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
 @property (atomic, readonly, nullable) NSString *familyName;
 @property (atomic, readonly, nullable) NSPersonNameComponents *nameComponents;
 @property (atomic, readonly, nullable) NSString *fullName;
+@property (atomic, readonly, nullable) NSString *bio;
+@property (atomic, readonly, nullable) NSString *bioEmoji;
 @property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly) BOOL isUuidCapable;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
