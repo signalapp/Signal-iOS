@@ -729,6 +729,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewDidDisappear:animated];
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    BOOL isBannerVisible = self.getStartedBanner.view && !self.getStartedBanner.view.isHidden;
+
+    UIEdgeInsets newContentInset = UIEdgeInsetsZero;
+    newContentInset.bottom = isBannerVisible ? self.getStartedBanner.opaqueHeight : 0;
+
+    if (!UIEdgeInsetsEqualToEdgeInsets(self.tableView.contentInset, newContentInset)) {
+        [UIView animateWithDuration:0.25 animations:^{ self.tableView.contentInset = newContentInset; }];
+    }
+}
+
 - (void)updateBarButtonItems
 {
     if (self.conversationListMode != ConversationListMode_Inbox) {
