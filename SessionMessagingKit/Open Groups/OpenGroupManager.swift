@@ -81,10 +81,13 @@ public final class OpenGroupManager : NSObject {
             pollers[openGroup.id] = nil
         }
         var messageIDs: Set<String> = []
+        var messageTimestamps: Set<UInt64> = []
         thread.enumerateInteractions(with: transaction) { interaction, _ in
             messageIDs.insert(interaction.uniqueId!)
+            messageTimestamps.insert(interaction.timestamp)
         }
         SNMessagingKitConfiguration.shared.storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
+        Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
         Storage.shared.removeLastMessageServerID(for: openGroup.channel, on: openGroup.server, using: transaction)
         Storage.shared.removeLastDeletionServerID(for: openGroup.channel, on: openGroup.server, using: transaction)
         let _ = OpenGroupAPI.leave(openGroup.channel, on: openGroup.server)

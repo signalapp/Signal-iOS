@@ -78,6 +78,16 @@ extension Storage {
         }
         return result
     }
+    
+    public func removeReceivedMessageTimestamps(_ timestamps: Set<UInt64>, using transaction: Any) {
+        var receivedMessageTimestamps = getReceivedMessageTimestamps(using: transaction)
+        timestamps.forEach { timestamp in
+            guard let index = receivedMessageTimestamps.firstIndex(of: timestamp) else { return }
+            receivedMessageTimestamps.remove(at: index)
+        }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        transaction.setObject(receivedMessageTimestamps, forKey: "receivedMessageTimestamps", inCollection: Storage.receivedMessageTimestampsCollection)
+    }
 
     public func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any) {
         var receivedMessageTimestamps = getReceivedMessageTimestamps(using: transaction)
