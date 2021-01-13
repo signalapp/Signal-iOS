@@ -157,6 +157,9 @@ public class AccountManager: NSObject {
                     // For new users, read receipts are on by default.
                     self.readReceiptManager.setAreReadReceiptsEnabled(true,
                                                                       transaction: transaction)
+
+                    // New users also have the onboarding banner cards enabled
+                    GetStartedBannerViewController.enableAllCards(writeTx: transaction)
                 }
 
                 // If the user previously had a PIN, but we don't have record of it,
