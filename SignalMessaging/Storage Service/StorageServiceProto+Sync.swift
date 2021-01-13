@@ -777,8 +777,8 @@ extension StorageServiceProtoAccountRecord {
             mergeState = .needsUpdate
         }
 
-        let preferContactAvatarsEnabled = SSKPreferences.preferContactAvatars(transaction: transaction)
-        if preferContactAvatars != preferContactAvatarsEnabled {
+        let localPrefersContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
+        if preferContactAvatars != localPrefersContactAvatars {
             SSKPreferences.setPreferContactAvatars(
                 preferContactAvatars,
                 updateStorageService: false,
