@@ -77,16 +77,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return self;
 }
 
-- (nullable UIImage *)avatarImage
-{
-    if (self.avatarData == nil) {
-        return nil;
-    }
-    UIImage *image = [UIImage imageWithData:self.avatarData];
-    OWSAssertDebug(image);
-    return image;
-}
-
 @end
 
 #pragma mark -
@@ -1784,6 +1774,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 - (void)updateProfileForAddress:(SignalServiceAddress *)addressParam
                       givenName:(nullable NSString *)givenName
                      familyName:(nullable NSString *)familyName
+                            bio:(nullable NSString *)bio
+                       bioEmoji:(nullable NSString *)bioEmoji
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -1793,11 +1785,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
 
-    OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, avatar: %@, avatarData: %d",
+    OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, bio: %@, bioEmoji: %@, avatar: %@, "
+                @"avatarData: %d",
         addressParam,
         address,
         givenName,
         familyName,
+        bio,
+        bioEmoji,
         avatarUrlPath,
         optionalDecryptedAvatarData.length > 0);
 
@@ -1840,6 +1835,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
                 [userProfile updateWithGivenName:givenName
                                       familyName:familyName
+                                             bio:bio
+                                        bioEmoji:bioEmoji
                                         username:username
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath
@@ -1850,6 +1847,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             } else {
                 [userProfile updateWithGivenName:givenName
                                       familyName:familyName
+                                             bio:bio
+                                        bioEmoji:bioEmoji
                                         username:username
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath

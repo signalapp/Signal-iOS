@@ -581,6 +581,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
+                        bio:(nullable NSString *)bio
+                   bioEmoji:(nullable NSString *)bioEmoji
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -592,6 +594,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                applyChanges:^(OWSUserProfile *userProfile) {
                    [userProfile setGivenName:givenName];
                    [userProfile setFamilyName:familyName];
+                   [userProfile setBio:bio];
+                   [userProfile setBioEmoji:bioEmoji];
                    [userProfile setUsername:username];
                    [userProfile setIsUuidCapable:isUuidCapable];
                    [userProfile setAvatarUrlPath:avatarUrlPath];
@@ -605,6 +609,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
+                        bio:(nullable NSString *)bio
+                   bioEmoji:(nullable NSString *)bioEmoji
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -617,6 +623,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                applyChanges:^(OWSUserProfile *userProfile) {
                    [userProfile setGivenName:givenName];
                    [userProfile setFamilyName:familyName];
+                   [userProfile setBio:bio];
+                   [userProfile setBioEmoji:bioEmoji];
                    [userProfile setUsername:username];
                    [userProfile setIsUuidCapable:isUuidCapable];
                    // Update the avatar properties in lockstep.
@@ -853,6 +861,16 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     @synchronized(self) {
         _familyName = familyName;
     }
+}
+
+- (nullable NSString *)bioForDisplay
+{
+    return self.bio.filterStringForDisplay;
+}
+
+- (nullable NSString *)bioEmojiForDisplay
+{
+    return self.bioEmoji.filterStringForDisplay;
 }
 
 - (nullable NSPersonNameComponents *)nameComponents

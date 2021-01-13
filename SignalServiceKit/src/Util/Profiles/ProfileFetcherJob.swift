@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -551,12 +551,23 @@ public class ProfileFetcherJob: NSObject {
 
         var givenName: String?
         var familyName: String?
-        if let profileNameEncrypted = profile.profileNameEncrypted,
-            let profileKey = profileKey,
-            let profileNameComponents = OWSUserProfile.decrypt(profileNameData: profileNameEncrypted,
-                                                               profileKey: profileKey) {
-            givenName = profileNameComponents.givenName?.stripped
-            familyName = profileNameComponents.familyName?.stripped
+        var bio: String?
+        var bioEmoji: String?
+        if let profileKey = profileKey {
+            if let profileNameEncrypted = profile.profileNameEncrypted,
+               let profileNameComponents = OWSUserProfile.decrypt(profileNameData: profileNameEncrypted,
+                                                                  profileKey: profileKey) {
+                givenName = profileNameComponents.givenName?.stripped
+                familyName = profileNameComponents.familyName?.stripped
+            }
+            if let bioEncrypted = profile.bioEncrypted {
+                bio = OWSUserProfile.decrypt(profileStringData: bioEncrypted,
+                                             profileKey: profileKey)
+            }
+            if let bioEmojiEncrypted = profile.bioEmojiEncrypted {
+                bioEmoji = OWSUserProfile.decrypt(profileStringData: bioEmojiEncrypted,
+                                                  profileKey: profileKey)
+            }
         }
 
         if DebugFlags.internalLogging {
@@ -566,13 +577,17 @@ public class ProfileFetcherJob: NSObject {
             let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
             let hasGivenName = givenName?.count ?? 0 > 0
             let hasFamilyName = familyName?.count ?? 0 > 0
+            let hasBio = bio?.count ?? 0 > 0
+            let hasBioEmoji = bioEmoji?.count ?? 0 > 0
 
             Logger.info("address: \(address), " +
                 "isVersionedProfile: \(isVersionedProfile), " +
                 "hasAvatar: \(hasAvatar), " +
                 "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
-                "hasGivenName: \(hasGivenName), " +
-                "hasFamilyName: \(hasFamilyName), " +
+                            "hasGivenName: \(hasGivenName), " +
+                            "hasFamilyName: \(hasFamilyName), " +
+                            "hasBio: \(hasBio), " +
+                            "hasBioEmoji: \(hasBioEmoji), " +
                 "profileKey: \(profileKeyDescription)")
         }
 
@@ -583,6 +598,8 @@ public class ProfileFetcherJob: NSObject {
         profileManager.updateProfile(for: address,
                                      givenName: givenName,
                                      familyName: familyName,
+                                     bio: bio,
+                                     bioEmoji: bioEmoji,
                                      username: profile.username,
                                      isUuidCapable: true,
                                      avatarUrlPath: profile.avatarUrlPath,

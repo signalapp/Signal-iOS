@@ -41,9 +41,9 @@ public extension OWSUserProfile {
 
         // Given name is required
         guard nameSegments.count > 0,
-            let givenName = String(data: nameSegments[0], encoding: .utf8), !givenName.isEmpty else {
-                owsFailDebug("unexpectedly missing first name")
-                return nil
+              let givenName = String(data: nameSegments[0], encoding: .utf8), !givenName.isEmpty else {
+            owsFailDebug("unexpectedly missing first name")
+            return nil
         }
 
         // Family name is optional
@@ -58,6 +58,24 @@ public extension OWSUserProfile {
         nameComponents.givenName = givenName
         nameComponents.familyName = familyName
         return nameComponents
+    }
+
+    class func decrypt(profileStringData: Data, profileKey: OWSAES256Key) -> String? {
+        guard let decryptedData = decrypt(profileData: profileStringData, profileKey: profileKey) else {
+            return nil
+        }
+
+        // Remove padding.
+        let segments: [Data] = decryptedData.split(separator: 0x00)
+        guard let firstSegment = segments.first else {
+            Logger.warn("Empty profile string.")
+            return nil
+        }
+        guard let string = String(data: firstSegment, encoding: .utf8), !string.isEmpty else {
+            owsFailDebug("Empty profile string.")
+            return nil
+        }
+        return string
     }
 
     @objc(encryptProfileNameComponents:profileKey:)
