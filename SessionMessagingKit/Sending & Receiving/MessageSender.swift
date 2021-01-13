@@ -242,7 +242,7 @@ public final class MessageSender : NSObject {
                     storage.write(with: { transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                         var shouldNotify = (message is VisibleMessage)
-                        if let closedGroupUpdate = message as? ClosedGroupUpdateV2, case .new = closedGroupUpdate.kind {
+                        if let closedGroupUpdate = message as? ClosedGroupUpdate, case .new = closedGroupUpdate.kind {
                             shouldNotify = true
                         }
                         if shouldNotify {
@@ -340,6 +340,7 @@ public final class MessageSender : NSObject {
 
     // MARK: Success & Failure Handling
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
+        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction) // To later ignore self-sends in a multi device context
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
         var recipients = [ message.recipient! ]

@@ -1,13 +1,20 @@
 import SessionProtocolKit
 import SessionUtilitiesKit
 
-public final class ClosedGroupUpdateV2 : ControlMessage {
+public final class ClosedGroupUpdate : ControlMessage {
     public var kind: Kind?
 
     public override var ttl: UInt64 {
         switch kind {
         case .encryptionKeyPair: return 4 * 24 * 60 * 60 * 1000
         default: return 2 * 24 * 60 * 60 * 1000
+        }
+    }
+    
+    public override var isSelfSendValid: Bool {
+        switch kind {
+        case .update, .encryptionKeyPair: return true
+        default: return false
         }
     }
     
@@ -131,7 +138,7 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdateV2? {
+    public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdate? {
         guard let closedGroupUpdateProto = proto.dataMessage?.closedGroupUpdateV2 else { return nil }
         let kind: Kind
         switch closedGroupUpdateProto.type {
@@ -153,7 +160,7 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
             let wrappers = closedGroupUpdateProto.wrappers.compactMap { KeyPairWrapper.fromProto($0) }
             kind = .encryptionKeyPair(wrappers)
         }
-        return ClosedGroupUpdateV2(kind: kind)
+        return ClosedGroupUpdate(kind: kind)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {

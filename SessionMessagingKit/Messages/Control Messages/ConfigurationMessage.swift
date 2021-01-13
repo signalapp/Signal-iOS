@@ -5,6 +5,8 @@ public final class ConfigurationMessage : ControlMessage {
     public var closedGroups: Set<ClosedGroup> = []
     public var openGroups: Set<String> = []
 
+    public override var isSelfSendValid: Bool { true }
+    
     // MARK: Initialization
     public override init() { super.init() }
 

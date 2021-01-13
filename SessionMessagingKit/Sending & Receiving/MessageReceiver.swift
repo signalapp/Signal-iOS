@@ -107,7 +107,7 @@ public enum MessageReceiver {
         let message: Message? = {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
             if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
-            if let closedGroupUpdate = ClosedGroupUpdateV2.fromProto(proto) { return closedGroupUpdate }
+            if let closedGroupUpdate = ClosedGroupUpdate.fromProto(proto) { return closedGroupUpdate }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
             if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
@@ -115,7 +115,7 @@ public enum MessageReceiver {
         }()
         if let message = message {
             // Ignore self sends if needed
-            if !(message is ConfigurationMessage) {
+            if !message.isSelfSendValid {
                 guard sender != userPublicKey else { throw Error.selfSend }
             }
             // Guard against control messages in open groups
