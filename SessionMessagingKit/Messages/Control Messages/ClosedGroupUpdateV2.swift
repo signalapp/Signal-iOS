@@ -168,7 +168,7 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
                 closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .new)
                 closedGroupUpdate.setPublicKey(publicKey)
                 closedGroupUpdate.setName(name)
-                let encryptionKeyPairAsProto = SNProtoDataMessageClosedGroupUpdateV2KeyPair.builder(publicKey: encryptionKeyPair.publicKey, privateKey: encryptionKeyPair.privateKey)
+                let encryptionKeyPairAsProto = SNProtoKeyPair.builder(publicKey: encryptionKeyPair.publicKey, privateKey: encryptionKeyPair.privateKey)
                 do {
                     closedGroupUpdate.setEncryptionKeyPair(try encryptionKeyPairAsProto.build())
                 } catch {

@@ -338,9 +338,9 @@ extension MessageReceiver {
             return SNLog("Couldn't decrypt closed group encryption key pair.")
         }
         // Parse it
-        let proto: SNProtoDataMessageClosedGroupUpdateV2KeyPair
+        let proto: SNProtoKeyPair
         do {
-            proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.parseData(plaintext)
+            proto = try SNProtoKeyPair.parseData(plaintext)
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }

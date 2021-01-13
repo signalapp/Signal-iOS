@@ -152,7 +152,7 @@ extension MessageSender {
         // Generate the new encryption key pair
         let newKeyPair = Curve25519.generateKeyPair()
         // Distribute it
-        let proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.builder(publicKey: newKeyPair.publicKey,
+        let proto = try SNProtoKeyPair.builder(publicKey: newKeyPair.publicKey,
             privateKey: newKeyPair.privateKey).build()
         let plaintext = try proto.serializedData()
         let wrappers = try targetMembers.compactMap { publicKey -> ClosedGroupUpdateV2.KeyPairWrapper in

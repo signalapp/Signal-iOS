@@ -793,6 +793,7 @@
 		C3D9E4FD256778E30040E4F3 /* NSData+Image.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB29255A580A00E217F9 /* NSData+Image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3D9E50E25677A510040E4F3 /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB54255A580D00E217F9 /* DataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3D9E52725677DF20040E4F3 /* OWSThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAF1255A580500E217F9 /* OWSThumbnailService.swift */; };
+		C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DA9C0625AE7396008F7C7E /* ConfigurationMessage.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
@@ -1794,6 +1795,7 @@
 		C3D9E40B25676C100040E4F3 /* Storage+Conformances.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Conformances.swift"; sourceTree = "<group>"; };
 		C3D9E41E25676C870040E4F3 /* OWSPrimaryStorageProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPrimaryStorageProtocol.swift; sourceTree = "<group>"; };
 		C3D9E43025676D3D0040E4F3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		C3DA9C0625AE7396008F7C7E /* ConfigurationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationMessage.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditClosedGroupVC.swift; sourceTree = "<group>"; };
@@ -2364,6 +2366,7 @@
 				C300A5D22554B05A00555489 /* TypingIndicator.swift */,
 				C34A977325A3E34A00852C71 /* ClosedGroupUpdateV2.swift */,
 				C300A5E62554B07300555489 /* ExpirationTimerUpdate.swift */,
+				C3DA9C0625AE7396008F7C7E /* ConfigurationMessage.swift */,
 			);
 			path = "Control Messages";
 			sourceTree = "<group>";
@@ -4904,6 +4907,7 @@
 				B8AE760B25ABFB5A001A84D2 /* GeneralUtilities.m in Sources */,
 				C32C5C4F256DCC36003C73A2 /* Storage+OpenGroups.swift in Sources */,
 				B8B3207B258C22550020074B /* DisplayNameUtilities.swift in Sources */,
+				C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */,
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
