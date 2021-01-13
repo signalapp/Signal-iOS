@@ -1,7 +1,7 @@
 import PromiseKit
 
 @objc(SNOpenGroupManager)
-public final class OpenGroupManager : NSObject, OpenGroupManagerProtocol {
+public final class OpenGroupManager : NSObject {
     private var pollers: [String:OpenGroupPoller] = [:]
     private var isPolling = false
     
