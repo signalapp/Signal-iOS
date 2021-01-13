@@ -928,7 +928,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
             [error setIsFatal:YES];
             *errorHandle = error;
             return nil;
-        } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+        } else if ([MessageSender isUntrustedIdentityError:exception.userInfo[NSUnderlyingErrorKey]]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
@@ -1396,17 +1396,17 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderInvalidDeviceException
                                                     reason:@"Device not registered"
-                                                  userInfo:nil];
+                                                  userInfo:@{ NSUnderlyingErrorKey : error }];
             } else if ([MessageSender isPrekeyRateLimitError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
-                                                  userInfo:nil];
+                                                  userInfo:@{ NSUnderlyingErrorKey : error }];
             } else if ([MessageSender isUntrustedIdentityError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException
                                                     reason:@"Identity key is not valid"
-                                                  userInfo:@ {}];
+                                                  userInfo:@{ NSUnderlyingErrorKey : error }];
             } else if (IsNetworkConnectivityFailure(error)) {
                 OWSLogWarn(@"Network failure in prekey request.");
             } else {
@@ -1437,7 +1437,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                                                        error:&error];
     });
     if (!success) {
-        OWSRaiseException(@"sessionCreationException", @"Failed to create session: %@", error);
+        // NSUnderlyingErrorKey isn't a normal NSException user info key, but it's appropriate here.
+        OWSRaiseExceptionWithUserInfo(
+            @"sessionCreationException", @{ NSUnderlyingErrorKey : error }, @"Failed to create session: %@", error);
     }
 }
 

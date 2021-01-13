@@ -74,9 +74,9 @@ public extension MessageSender {
         }
     }
 
-    class func isUntrustedIdentityError(_ error: Error) -> Bool {
+    class func isUntrustedIdentityError(_ error: Error?) -> Bool {
         switch error {
-        case MessageSenderError.untrustedIdentity:
+        case MessageSenderError.untrustedIdentity?:
             return true
         default:
             return false
@@ -373,6 +373,7 @@ public extension MessageSender {
                                             recipientAddress: recipientAddress,
                                             preKeyBundle: preKeyBundle,
                                             transaction: transaction)
+            throw MessageSenderError.untrustedIdentity
         }
         if !sessionStore.containsActiveSession(forAccountId: accountId,
                                                deviceId: deviceId.int32Value,
