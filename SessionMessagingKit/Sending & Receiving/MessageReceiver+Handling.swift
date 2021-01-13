@@ -13,6 +13,7 @@ extension MessageReceiver {
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupUpdateV2: handleClosedGroupUpdateV2(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
+        case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
@@ -88,6 +89,22 @@ extension MessageReceiver {
             setExpirationTimer(to: message.duration!, for: message.sender!, groupPublicKey: message.groupPublicKey, using: transaction)
         } else {
             disableExpirationTimer(for: message.sender!, groupPublicKey: message.groupPublicKey, using: transaction)
+        }
+    }
+
+    private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
+        guard message.sender == getUserHexEncodedPublicKey() else { return }
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
+        for closedGroup in message.closedGroups {
+            guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
+            handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                members: [String](closedGroup.members), admins: [String](closedGroup.admins), using: transaction)
+        }
+        let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
+        for openGroupURL in message.openGroups {
+            guard !allOpenGroups.contains(openGroupURL) else { continue }
+            SNMessagingKitConfiguration.shared.openGroupManager.addOpenGroup(with: openGroupURL).retainUntilComplete()
         }
     }
 
@@ -218,20 +235,22 @@ extension MessageReceiver {
 
     private static func handleClosedGroupUpdateV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
         switch message.kind! {
-        case .new: handleNewGroupV2(message, using: transaction)
-        case .update: handleGroupUpdateV2(message, using: transaction)
-        case .encryptionKeyPair: handleGroupEncryptionKeyPair(message, using: transaction)
+        case .new: handleNewClosedGroup(message, using: transaction)
+        case .update: handleClosedGroupUpdate(message, using: transaction)
+        case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
         }
     }
     
-    private static func handleNewGroupV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
-        // Prepare
+    private static func handleNewClosedGroup(_ message: ClosedGroupUpdateV2, using transaction: Any) {
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        // Unwrap the message
         let groupPublicKey = publicKeyAsData.toHexString()
         let members = membersAsData.map { $0.toHexString() }
         let admins = adminsAsData.map { $0.toHexString() }
+        handleNewClosedGroup(groupPublicKey: groupPublicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, using: transaction)
+    }
+
+    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
@@ -254,7 +273,7 @@ extension MessageReceiver {
         infoMessage.save(with: transaction)
     }
     
-    private static func handleGroupUpdateV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleClosedGroupUpdate(_ message: ClosedGroupUpdateV2, using transaction: Any) {
         // Prepare
         guard case let .update(name, membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -313,7 +332,7 @@ extension MessageReceiver {
         }
     }
 
-    private static func handleGroupEncryptionKeyPair(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleClosedGroupEncryptionKeyPair(_ message: ClosedGroupUpdateV2, using transaction: Any) {
         // Prepare
         guard case let .encryptionKeyPair(wrappers) = message.kind, let groupPublicKey = message.groupPublicKey else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction

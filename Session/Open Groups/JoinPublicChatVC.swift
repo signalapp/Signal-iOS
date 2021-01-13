@@ -125,29 +125,15 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         joinPublicChatIfPossible(with: chatURL)
     }
     
-    fileprivate func joinPublicChatIfPossible(with chatURL: String) {
+    fileprivate func joinPublicChatIfPossible(with urlAsString: String) {
         guard !isJoining else { return }
-        guard let url = URL(string: chatURL), let scheme = url.scheme, scheme == "https", url.host != nil else {
+        guard let url = URL(string: urlAsString), let scheme = url.scheme, scheme == "https", url.host != nil else {
             return showError(title: NSLocalizedString("invalid_url", comment: ""), message: "Please check the URL you entered and try again")
         }
         isJoining = true
-        let channelID: UInt64 = 1
-        let urlAsString = url.absoluteString
-        let userPublicKey = getUserHexEncodedPublicKey()
-        let profileManager = OWSProfileManager.shared()
-        let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
-        let profilePictureURL = profileManager.profilePictureURL()
-        let profileKey = profileManager.localProfileKey().keyData
-        Storage.writeSync { transaction in
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastMessageServerIDCollection)
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastDeletionServerIDCollection)
-        }
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            PublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
+            OpenGroupManager.shared.addOpenGroup(with: urlAsString)
             .done(on: DispatchQueue.main) { [weak self] _ in
-                let _ = OpenGroupAPI.setDisplayName(to: displayName, on: urlAsString)
-                let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
-                let _ = OpenGroupAPI.join(channelID, on: urlAsString)
                 self?.presentingViewController!.dismiss(animated: true, completion: nil)
             }
             .catch(on: DispatchQueue.main) { [weak self] error in

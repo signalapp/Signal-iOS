@@ -28,6 +28,7 @@ public protocol SessionMessagingKitStorageProtocol {
     // MARK: - Shared Sender Keys
 
     func getClosedGroupPrivateKey(for publicKey: String) -> String?
+    func getUserClosedGroupPublicKeys() -> Set<String>
     func isClosedGroup(_ publicKey: String) -> Bool
 
     // MARK: - Jobs
@@ -48,7 +49,8 @@ public protocol SessionMessagingKitStorageProtocol {
     func removeAuthToken(for server: String, using transaction: Any)
 
     // MARK: - Open Groups
-    
+
+    func getAllUserOpenGroups() -> [String:OpenGroup]
     func getOpenGroup(for threadID: String) -> OpenGroup?
     func getThreadID(for openGroupID: String) -> String?
     

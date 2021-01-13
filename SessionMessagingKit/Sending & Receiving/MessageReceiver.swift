@@ -95,8 +95,6 @@ public enum MessageReceiver {
         }
         // Don't process the envelope any further if the sender is blocked
         guard !isBlocked(sender) else { throw Error.senderBlocked }
-        // Ignore self sends
-        guard sender != userPublicKey else { throw Error.selfSend }
         // Parse the proto
         let proto: SNProtoContent
         do {
@@ -111,24 +109,33 @@ public enum MessageReceiver {
             if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
             if let closedGroupUpdate = ClosedGroupUpdateV2.fromProto(proto) { return closedGroupUpdate }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
+            if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
             return nil
         }()
         if let message = message {
+            // Ignore self sends if needed
+            if !(message is ConfigurationMessage) {
+                guard sender != userPublicKey else { throw Error.selfSend }
+            }
+            // Guard against control messages in open groups
             if isOpenGroupMessage {
                 guard message is VisibleMessage else { throw Error.invalidMessage }
             }
+            // Finish parsing
             message.sender = sender
             message.recipient = userPublicKey
             message.sentTimestamp = envelope.timestamp
             message.receivedTimestamp = NSDate.millisecondTimestamp()
             message.groupPublicKey = groupPublicKey
             message.openGroupServerMessageID = openGroupMessageServerID
+            // Validate
             var isValid = message.isValid
             if message is VisibleMessage && !isValid && proto.dataMessage?.attachments.isEmpty == false {
                 isValid = true
             }
             guard isValid else { throw Error.invalidMessage }
+            // Return
             return (message, proto)
         } else {
             throw Error.unknownMessage
