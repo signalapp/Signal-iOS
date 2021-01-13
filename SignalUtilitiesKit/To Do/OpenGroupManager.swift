@@ -30,7 +30,7 @@ public final class OpenGroupManager : OpenGroupManagerProtocol {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastMessageServerIDCollection)
         transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastDeletionServerIDCollection)
-        return PublicChatManager.shared.addChat(server: urlAsString, channel: channelID).done(on: DispatchQueue.main) { _ in
+        return PublicChatManager.shared.addChat(server: urlAsString, channel: channelID, using: transaction).done(on: DispatchQueue.main) { _ in
             let _ = OpenGroupAPI.setDisplayName(to: displayName, on: urlAsString)
             let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
             let _ = OpenGroupAPI.join(channelID, on: urlAsString)

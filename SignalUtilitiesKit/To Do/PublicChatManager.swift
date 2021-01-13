@@ -48,43 +48,43 @@ public final class PublicChatManager : NSObject {
         isPolling = false
     }
     
-    public func addChat(server: String, channel: UInt64) -> Promise<OpenGroup> {
+    public func addChat(server: String, channel: UInt64, using transaction: YapDatabaseReadWriteTransaction) -> Promise<OpenGroup> {
         if let existingChat = getChat(server: server, channel: channel) {
-            if let newChat = self.addChat(server: server, channel: channel, name: existingChat.displayName) {
+            if let newChat = self.addChat(server: server, channel: channel, name: existingChat.displayName, using: transaction) {
                 return Promise.value(newChat)
             } else {
                 return Promise(error: Error.chatCreationFailed)
             }
         }
         return OpenGroupAPI.getInfo(for: channel, on: server).map2 { channelInfo -> OpenGroup in
-            guard let chat = self.addChat(server: server, channel: channel, name: channelInfo.displayName) else { throw Error.chatCreationFailed }
+            guard let chat = self.addChat(server: server, channel: channel, name: channelInfo.displayName, using: transaction) else { throw Error.chatCreationFailed }
             return chat
         }
     }
     
     @discardableResult
-    @objc(addChatWithServer:channel:name:)
-    public func addChat(server: String, channel: UInt64, name: String) -> OpenGroup? {
+    @objc(addChatWithServer:channel:name:using:)
+    public func addChat(server: String, channel: UInt64, name: String, using transaction: YapDatabaseReadWriteTransaction) -> OpenGroup? {
         guard let chat = OpenGroup(channel: channel, server: server, displayName: name, isDeletable: true) else { return nil }
         let model = TSGroupModel(title: chat.displayName, memberIds: [userHexEncodedPublicKey!, chat.server], image: nil, groupId: LKGroupUtilities.getEncodedOpenGroupIDAsData(chat.id), groupType: .openGroup, adminIds: [])
         
         // Store the group chat mapping
-        Storage.writeSync { transaction in
-            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-           
-            // Save the group chat
-            Storage.shared.setOpenGroup(chat, for: thread.uniqueId!, using: transaction)
-        }
-        
+        let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+
+        // Save the group chat
+        Storage.shared.setOpenGroup(chat, for: thread.uniqueId!, using: transaction)
+
         // Update chats and pollers
-        self.refreshChatsAndPollers()
+        transaction.addCompletionQueue(DispatchQueue.main) {
+            self.refreshChatsAndPollers()
+        }
         
         return chat
     }
     
-    @objc(addChatWithServer:channel:)
-    public func objc_addChat(server: String, channel: UInt64) -> AnyPromise {
-        return AnyPromise.from(addChat(server: server, channel: channel))
+    @objc(addChatWithServer:channel:using:)
+    public func objc_addChat(server: String, channel: UInt64, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        return AnyPromise.from(addChat(server: server, channel: channel, using: transaction))
     }
     
     @objc func refreshChatsAndPollers() {

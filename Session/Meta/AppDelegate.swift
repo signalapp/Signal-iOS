@@ -13,13 +13,14 @@ extension AppDelegate {
             let job = MessageSendJob(message: configurationMessage, destination: destination)
             JobQueue.shared.add(job, using: transaction)
         }
+        userDefaults[.lastConfigurationSync] = Date()
     }
 
     func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
         let configurationMessage = ConfigurationMessage.getCurrent()
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         let (promise, seal) = Promise<Void>.pending()
-        Storage.write { transaction in
+        Storage.writeSync { transaction in
             MessageSender.send(configurationMessage, to: destination, using: transaction).done {
                 seal.fulfill(())
             }.catch { _ in
