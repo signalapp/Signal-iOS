@@ -37,6 +37,7 @@ class GetStartedBannerCell: UICollectionViewCell {
         let button = OWSButton()
         button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         button.titleLabel?.adjustsFontForContentSizeCategory = true
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
 
         button.layer.cornerRadius = 16
         button.layer.masksToBounds = true

@@ -51,11 +51,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
 
     private weak var delegate: GetStartedBannerViewControllerDelegate?
     private let threadFinder = AnyThreadFinder()
-    private var bannerContent: [GetStartedBannerEntry] = [] {
-        didSet {
-            handleUpdatedContent(from: oldValue, to: bannerContent)
-        }
-    }
+    private var bannerContent: [GetStartedBannerEntry] = []
 
     // MARK: - Lifecycle
 
@@ -67,12 +63,19 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         collectionView.delegate = self
         collectionView.dataSource = self
         updateContent()
+        applyTheme()
 
         SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),
             name: .ThemeDidChange,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(activeCardsDidChange),
+            name: Self.activeCardsDidChange,
             object: nil)
     }
 
@@ -86,6 +89,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         view.addSubview(backdrop)
         view.addSubview(header)
         view.addSubview(collectionView)
+        view.layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 8, trailing: 8)
 
         backdrop.autoPinEdgesToSuperviewEdges()
 
@@ -119,8 +123,8 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         }
     }
 
-    func updateContent() {
-        bannerContent = SDSDatabaseStorage.shared.uiRead { readTx in
+    func fetchContent() -> [GetStartedBannerEntry] {
+        SDSDatabaseStorage.shared.uiRead { readTx in
             let activeCards = Self.getActiveCards(readTx: readTx)
 
             let visibleThreadCount: UInt
@@ -146,15 +150,15 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         }
     }
 
-    private func handleUpdatedContent(from oldValue: [GetStartedBannerEntry], to newValue: [GetStartedBannerEntry]) {
-        guard bannerContent.count > 0 else {
-            delegate?.getStartedBannerDidDismissAllCards(self)
-            return
-        }
+    func updateContent() {
+        let oldContent = bannerContent
+        let newContent = fetchContent()
 
         collectionView.performBatchUpdates {
-            let oldBannerIds = oldValue.map { $0.identifier }
-            let newBannerIds = bannerContent.map { $0.identifier }
+            bannerContent = newContent
+
+            let oldBannerIds = oldContent.map { $0.identifier }
+            let newBannerIds = newContent.map { $0.identifier }
 
             // Delete everything in oldBannerIds that's not in newBannerIds
             collectionView.deleteItems(
@@ -167,6 +171,10 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
                 at: newBannerIds.enumerated()
                     .filter { oldBannerIds.contains($0.element) == false }
                     .map { IndexPath(item: $0.offset, section: 0) })
+        }
+
+        if bannerContent.count == 0 {
+            delegate?.getStartedBannerDidDismissAllCards(self)
         }
     }
 }
@@ -205,8 +213,6 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
 
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
             Self.completeCard(model, writeTx: writeTx)
-        } completion: {
-            self.updateContent()
         }
     }
 
@@ -225,6 +231,7 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
 // MARK: - Storage
 
 extension GetStartedBannerViewController {
+    private static let activeCardsDidChange = NSNotification.Name("ActiveBannerCardsDidChange")
     private static let keyValueStore = SDSKeyValueStore(collection: "GetStartedBannerViewController")
     private static let completePrefix = "ActiveCard."
 
@@ -233,6 +240,10 @@ extension GetStartedBannerViewController {
         GetStartedBannerEntry.allCases.forEach { entry in
             let key = completePrefix + entry.identifier
             Self.keyValueStore.setBool(true, key: key, transaction: writeTx)
+        }
+
+        writeTx.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(activeCardsDidChange, object: nil)
         }
     }
 
@@ -246,13 +257,22 @@ extension GetStartedBannerViewController {
 
     static func dismissAllCards(writeTx: SDSAnyWriteTransaction) {
         GetStartedBannerEntry.allCases.forEach { entry in
-            completeCard(entry, writeTx: writeTx)
+            let key = Self.completePrefix + entry.identifier
+            Self.keyValueStore.removeValue(forKey: key, transaction: writeTx)
+        }
+
+        writeTx.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(activeCardsDidChange, object: nil)
         }
     }
 
     static private func completeCard(_ model: GetStartedBannerEntry, writeTx: SDSAnyWriteTransaction) {
         let key = Self.completePrefix + model.identifier
         Self.keyValueStore.removeValue(forKey: key, transaction: writeTx)
+
+        writeTx.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(activeCardsDidChange, object: nil)
+        }
     }
 }
 
@@ -276,6 +296,13 @@ extension GetStartedBannerViewController: UIDatabaseSnapshotDelegate {
     }
 
     public func uiDatabaseSnapshotDidReset() {
+        AssertIsOnMainThread()
+        owsAssertDebug(AppReadiness.isAppReady)
+        updateContent()
+    }
+
+    @objc
+    private func activeCardsDidChange() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         updateContent()
