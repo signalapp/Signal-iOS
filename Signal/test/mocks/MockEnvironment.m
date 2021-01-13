@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockEnvironment.h"
@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
     OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
     ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
+    BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
 
     self = [super initWithAudioSession:audioSession
            incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -42,7 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
             proximityMonitoringManager:proximityMonitoringManager
                                 sounds:sounds
                          windowManager:windowManager
-                    contactsViewHelper:contactsViewHelper];
+                    contactsViewHelper:contactsViewHelper
+         broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue];
 
     OWSAssertDebug(self);
     return self;
