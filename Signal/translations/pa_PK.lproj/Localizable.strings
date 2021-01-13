@@ -202,9 +202,6 @@
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "منسلکہ";
 
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ڈاؤن لوڈ ناکام۔ فیر کوشش دے لئی ٹیپ کرو۔";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "منسلکہ گھلن اچ نقص";
 
@@ -783,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "ڈاؤن لوڈ کرو";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
@@ -1390,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ دے نال تساں دا حفاظتی نمر تبدیل ہو گیا اے۔";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "اک نامعلوم نقص واقع ہویا۔";
 
@@ -1455,15 +1452,6 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "منسلکہ";
-
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get started";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "دوستاں نوں سدھو ";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "نواں گروپ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "مطلوبہ GIF حاصل کرن اچ ناکام۔ مہربانی کر کے توثیق کرو کہ تساں آن لائن او۔";
@@ -2384,7 +2372,7 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "ساڈے نال رابطہ کرو";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Support Center";
@@ -2486,7 +2474,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "اپنے انباکس نوں کجھ دیو۔ کسے دوست نوں سنیہا گھل کے شروعات کرو۔</mrk>";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ called you";
@@ -3279,12 +3267,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "You called %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF نوں ظاہر نئیں کر سکیا";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Add to Group";
@@ -4249,6 +4231,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "کی تساں ہیٹھاں دتے نمر نوں Signal اتے مدعو کرنا چاہو گے:";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "متعلق";
 
@@ -4305,6 +4293,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "نقص لاگز";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "تھیم";
@@ -4660,6 +4654,9 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "منسلکہ گھلن دے قابل نئیں";
 
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "اپ لوڈ کر رئیا اے…";
 
@@ -4751,7 +4748,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "حفاظتی نمر مماثل اے!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "ساڈے نال رابطہ کرو";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";

@@ -202,9 +202,6 @@
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "সংযুক্তি";
 
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ডাউনলোড ব্যার্থ। আবার চেষ্টা করতে আলতো চাপুন।";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "সংযুক্তি পাঠাতে ত্রুটি";
 
@@ -783,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "ডাউনলোড";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
@@ -1390,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@এর সাথে আপনার নিরাপত্তা নাম্বার পরিবর্তন হয়েছে।";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "একটি অজানা ত্রুটি ঘটেছে।";
 
@@ -1455,15 +1452,6 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "সংযুক্তি";
-
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "শুরু করা যাক";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "বন্ধুদের আমন্ত্রণ";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "নতুন গ্রুপ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "অনুরোধ করা জিফ আনতে ব্যর্থ। আপনি অনলাইনে যুক্ত আছেন কিনা দয়া করে যাচাই করুন।";
@@ -2486,7 +2474,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "আপনারহোমে ইনবক্স বিষয়ে কিছু লেখার জন্য কিছু দিন। একজন বন্ধুকে বার্তা দিয়ে শুরু করুন।";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ called you";
@@ -3279,12 +3267,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "You called %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "পিডিএফ প্রদর্শন করা যায়নি";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "পিডিএফ";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "গ্রুপে যোগ করো";
@@ -4249,6 +4231,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "আপনি কি নিম্নলিখিত নাম্বার সিগন্যালে আমন্ত্রণ জানাতে চান:";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "সম্বন্ধে";
 
@@ -4305,6 +4293,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "ত্রুটি লগসমূহ";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "থীম";
@@ -4659,6 +4653,9 @@
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "সংযুক্তি পাঠানো যায়নি";
+
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "আপলোড করা হচ্ছে";

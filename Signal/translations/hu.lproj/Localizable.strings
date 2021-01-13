@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "Kontakt megosztás";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "Koppints a letöltéshez";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Videóhívás";
@@ -201,9 +201,6 @@
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Csatolmány";
-
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Letöltés sikertelen. Kopp ide.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Hiba a csatolmány küldése közben";
@@ -783,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Törlöd a beszélgetést?";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Letöltés";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "A maximálisan kijelölhető beszélgetések száma %@.";
@@ -1390,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ biztonsági azonosítója megváltozott.";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ismeretlen hiba történt.";
 
@@ -1455,15 +1452,6 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Csatolmány";
-
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Kezdés";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Barátok meghívása";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "Új csoport";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF letöltése sikertelen, kérlek ellenőrizd az internetkapcsolatod.";
@@ -1817,19 +1805,19 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Új tagok jóváhagyása";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Hivatkozás engedélyezése és megosztása";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Link megosztása";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Ennek a hivatkozásnak a megosztásával barátaid gyorsan csatlakozhatnak ehhez a csoporthoz.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Barátok meghívása";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "Barátok meghívása ebbe a csoportba csoporthivatkozás használatával";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "A kódot beolvasó felhasználók beléphetnek a csoportba. Az adminok jóváhagyására továbbra is szükség lesz, amennyiben ez a beállítás be van kapcsolva.";
@@ -2486,7 +2474,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ezek a beszélgetések archiválva vannak, ezért csak akkor jelennek meg újra a bejövő beszélgetések közt, ha részükre újabb üzenet érkezik.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Dobj a postaládádba valamit, hogy ne legyen olyan magányos! Kezdésként mondjuk üzenj egy barátodnak!";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ hívott téged";
@@ -2678,10 +2666,10 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Üzenet törlése";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Photos";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ fotó";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ elem";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3279,12 +3267,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Hívtad: %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "A PDF nem megjeleníthető";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Hozzáadás a csoporthoz";
@@ -4249,6 +4231,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Szeretnél Signal meghívót küldeni az alábbi számok tulajdonosainak?";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "Az alkalmazásról";
 
@@ -4305,6 +4293,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Hibanaplók";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Téma";
@@ -4391,19 +4385,19 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenc típusa: GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Adathasználat";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Hangüzenetek, egyszeri média és a 100 KB alatti matricák mindig automatikusan letöltődnek.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MÉDIA AUTO-LETÖLTÉS";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Auto-letöltés alaphelyzetbe";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Adathasználat";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Fiók törlése";
@@ -4451,7 +4445,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Soha";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi és Mobiladat";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
@@ -4659,6 +4653,9 @@
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "A csatolmány küldése sikertelen";
+
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Feltöltés folyamatban...";

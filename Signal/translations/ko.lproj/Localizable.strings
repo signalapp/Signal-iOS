@@ -202,9 +202,6 @@
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "첨부 파일";
 
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "다운로드에 실패했습니다. 탭하면 다시 시도합니다.";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "첨부 파일 보내는 중 오류 발생";
 
@@ -783,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "대화를 삭제하시겠습니까?";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "다운로드";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "대화는 %@개 이상 선택할 수 없습니다.";
@@ -1390,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@ 님과의 안전 번호가 변경되었습니다.";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "알 수 없는 오류가 발생했습니다.";
 
@@ -1455,15 +1452,6 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "첨부 파일";
-
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "시작하기";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "친구 초대";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "새 그룹";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "요청한 GIF를 받아올 수 없습니다. 인터넷에 연결되어 있는지 확인하세요.";
@@ -2486,7 +2474,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "이 대화들은 보관 처리되었으며 새 메시지를 받을 때에만 받은 메시지에 표시됩니다.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "외로워 보이네요. 친구들과 이야기를 나눠보면 어떨까요?";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ 님의 전화";
@@ -3279,12 +3267,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "%@ 님에게 전화함";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF를 표시할 수 없음";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "그룹에 추가";
@@ -4249,6 +4231,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "다음과 같은 번호를 Signal로 초대하겠습니까:";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "정보";
 
@@ -4305,6 +4293,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "오류 로그";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "테마";
@@ -4659,6 +4653,9 @@
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "첨부 파일을 보낼 수 없음";
+
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "업로드 중…";

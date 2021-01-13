@@ -202,9 +202,6 @@
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Συνημμένο";
 
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Η λήψη απέτυχε. Πάτα για επανάληψη.";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Σφάλμα αποστολής συνημμένου";
 
@@ -632,7 +629,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Είσαι σίγουρος/η ότι θέλεις να διαγράψεις όλα τα δεδομένα;";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Δε θα μπορείς πια να στείλεις ή να λάεις μηνύματα σε αυτήν την ομάδα.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Δε θα μπορείς πια να στείλεις ή να λάβεις μηνύματα σε αυτήν την ομάδα.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Θέλεις όντως να αποχωρήσεις;";
@@ -784,9 +781,6 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Διαγραφή συνομιλίας;";
 
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Λήψη";
-
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Δεν μπορείς να επιλέξεις περισσότερες από %@ συνομιλίες.";
 
@@ -857,7 +851,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Ποιος μπορεί να διαχειρίζεται πληροφορίες της ομάδας";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Μόνο οι διαχειριστές/τριες";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Μόνο διαχειριστές";
 
 /* Description for the 'edit group attributes access' alert. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Διάλεξε ποιος θα μπορεί να αλλάξει το όνομα της ομάδας, τη φωτογραφία, και το χρόνο εξαφάνισης μηνυμάτων.";
@@ -872,7 +866,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Ποιοί μπορούν να προσθέσουν μέλη";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Μόνο οι διαχειριστές/τριες";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Μόνο διαχειριστές";
 
 /* Description for the 'edit group membership access' alert. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Διάλεξε ποιοί μπορούν να προσθέσουν μέλη σε αυτή την ομάδα:";
@@ -1390,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ο αριθμός ασφαλείας με τον/την %@ άλλαξε.";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Παρουσιάστηκε ένα άγνωστο σφάλμα.";
 
@@ -1456,15 +1453,6 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Συνημμένο";
 
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Ξεκινήστε";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Πρόσκληση φίλων";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "Νέα ομάδα";
-
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Αποτυχία λήψης του ζητούμενου GIF. Έλεγξε τη σύνδεση στο διαδίκτυο.";
 
@@ -1508,7 +1496,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Οι πληροφορίες της ομάδας μπορούν να αλλαχθούν από \"%@\".";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Μόνο διαχειριστές/τριες";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Μόνο διαχειριστές";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Οποιοσδήποτε χρήστης";
@@ -2486,7 +2474,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Αυτές οι συνομιλίες είναι αρχειοθετημένες και θα εμφανιστούν στα εισερχόμενα μόνο αν ληφθούν νέα μηνύματα.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Δώσε ζωή στα εισερχόμενά σου! Ξεκίνα στέλνοντας μήνυμα σε κάποιον/α φίλο/η σου.";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "Ο/Η %@ σε κάλεσε";
@@ -2681,7 +2669,7 @@
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Φωτογραφίες";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ αντικείμενα";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
@@ -3279,12 +3267,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Κάλεσες τον/-ην %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "Το PDF δεν μπορεί να προβληθεί";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Προσθήκη σε Ομάδα";
@@ -4249,6 +4231,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Θέλεις να προσκαλέσεις τον ακόλουθο αριθμό στο Signal:";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "Σχετικά";
 
@@ -4305,6 +4293,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Αρχεία καταγραφής σφαλμάτων";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Θέμα";
@@ -4391,7 +4385,7 @@
 "SETTINGS_COPYRIGHT" = "Πνευματική ιδιοκτησία Signal Messenger\nΥπό την άδεια GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Χρήση δεδομένων";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Τα μηνύματα φωνής, τα μέσα μιας μόνο προβολής και τα αυτοκόλλητα (κάτω από 100kb) πάντα κατεβαίνουν αυτόματα.";
@@ -4403,7 +4397,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Επαναφορά ρυθμίσεων αυτόματου κατεβάσματος";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Χρήση δεδομένων";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Διαγραφή λογαριασμού";
@@ -4660,6 +4654,9 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Αδυναμία αποστολής συνημμένου";
 
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Ανεβαίνει...";
 
@@ -4802,10 +4799,10 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Φορτώνει";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "Απενεργοποιημένο";
+"SWITCH_OFF" = "Ανενεργό";
 
 /* Label for 'on' state of a switch control. */
-"SWITCH_ON" = "Ενεργοποιημένο";
+"SWITCH_ON" = "Ενεργό";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Επιβεβαίωση";

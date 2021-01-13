@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "رابطہ کا اشتراک کریں";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "ڈاؤن لوڈ کرنے کیلئے دبائیں";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "ویڈیو کال";
@@ -202,9 +202,6 @@
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "منسلک شدہ مواد";
 
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ڈاؤن لوڈ ہونے میں ناکامی۔ دوبارہ کرنے کیلئے کلک کریں۔";
-
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "منسلک شدہ مواد بھیجنے میں غلطی ";
 
@@ -362,7 +359,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "بیک اپ میں غیر متوقع خرابی";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "بینر بند کریں";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "آپ کو مزید اس گروپ سے پیغامات اورتجادید وصول نہیں ہونگے۔";
@@ -783,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "چیٹ کو حذف کریں؟";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "ڈاؤن لوڈ کریں";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "آپ %@ سے زیادہ چیٹس منتخب نہیں کرسکتے ہیں۔";
@@ -1390,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@کیساتھ آپ کا حفاظتی نمبر تبدیل ہوگیا ہے۔";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "ایک نا معلوم غلطی واقع ہوئی۔";
 
@@ -1455,15 +1452,6 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "منسلک مواد";
-
-/* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "شروع کرتے ہیں";
-
-/* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "دوستوں کو مدعو کریں";
-
-/* 'Get Started' button directing users to create a group' */
-"GET_STARTED_CARD_NEW_GROUP" = "نیا گروپ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF کی درخواست حاصل کرنے میں ناکامی۔براہ کرم تصدیق کریں کہ آپ آن لائن ہیں۔";
@@ -1817,19 +1805,19 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "نئے ممبروں کو منظور کریں";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "لنک شروع کریں اور شیئر کریں";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "لنک شیئر کریں";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "دوستوں کے ساتھ ایک لنک شیئر کریں تاکہ وہ اس گروپ میں جلدی سے شامل ہوں۔";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "دوستوں کو دعوت دیں";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "گروپ لنک کے ذریعے دوستوں کو اس گروپ میں شامل کریں";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "جو لوگ اس کوڈ کو اسکین کرتے ہیں وہ آپ کے گروپ میں شامل ہوسکیں گے۔ اگر آپ نے یہ ترتیب آن کر رکھی ہے تو منتظمین کو ابھی بھی نئے ممبروں کی منظوری کی ضرورت ہوگی۔";
@@ -2486,7 +2474,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "یہ چیٹس آرکائو کی گئی ہیں اور صرف ان باکس میں آئیں گی جب نئے پیغامات موصول ہوں گے۔";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "ھوم کے بارے میں لکھنے کیلئے اپنے کچھ ان باکس دیں۔ دوست کو پیغام سے شروع کرتے ہیں۔";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ نے آپ کو فون کیا";
@@ -3279,12 +3267,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "آپ نے %@ کو فون کیا";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF ظاہر نہیں کیا جا سکا";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "گروپ میں شامل کریں";
@@ -4249,6 +4231,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "کیا آپ مندرجہ ذیل نمبر کو Signal پر مدعو کرنا چاہتے ہیں:";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "متعلق";
 
@@ -4305,6 +4293,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "لاگز میں غلطی";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "موضوع";
@@ -4659,6 +4653,9 @@
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "اٹیچمنٹ بھیجنے کے قابل نہیں";
+
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "اپ لوڈ ہو رہا ہے";
