@@ -346,12 +346,12 @@
 
 - (void)showProfile
 {
-    ProfileViewController *profileVC =
-        [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings
-                                  completionHandler:^(ProfileViewController *completedVC) {
-                                      [completedVC.navigationController popViewControllerAnimated:YES];
-                                  }];
-    [self.navigationController pushViewController:profileVC animated:YES];
+    UIViewController *vc =
+        [[ProfileViewController2 alloc] initWithMode:ProfileViewMode_AppSettings
+                                   completionHandler:^(ProfileViewController2 *completedVC) {
+                                       [completedVC.navigationController popViewControllerAnimated:YES];
+                                   }];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showData

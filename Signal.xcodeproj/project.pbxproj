@@ -221,6 +221,7 @@
 		347850691FD9B78A007B8332 /* AppSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = 347850651FD9B789007B8332 /* AppSetup.m */; };
 		3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850661FD9B789007B8332 /* AppSetup.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */; };
+		34798A8525AF370D00EC89B4 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34798A8425AF370D00EC89B4 /* ProfileViewController.swift */; };
 		347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */; };
 		347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F82436820C0019A52C /* GroupViewHelper.swift */; };
 		347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */; };
@@ -1217,6 +1218,7 @@
 		347850651FD9B789007B8332 /* AppSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSetup.m; sourceTree = "<group>"; };
 		347850661FD9B789007B8332 /* AppSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSetup.h; sourceTree = "<group>"; };
 		347850671FD9B78A007B8332 /* NoopCallMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopCallMessageHandler.swift; sourceTree = "<group>"; };
+		34798A8425AF370D00EC89B4 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupViewHelper+MemberActionSheet.swift"; sourceTree = "<group>"; };
 		347B83F82436820C0019A52C /* GroupViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupViewHelper.swift; sourceTree = "<group>"; };
 		347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMemberRequestsAndInvitesViewController.swift; sourceTree = "<group>"; };
@@ -2784,6 +2786,7 @@
 				34969558219B605E00DCFE74 /* Photos */,
 				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
 				34CE88E61F2FB9A10098030F /* ProfileViewController.m */,
+				34798A8425AF370D00EC89B4 /* ProfileViewController.swift */,
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
@@ -5315,6 +5318,7 @@
 				340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
+				34798A8525AF370D00EC89B4 /* ProfileViewController.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				88588D1B252D3DFF00405414 /* CallControls.swift in Sources */,

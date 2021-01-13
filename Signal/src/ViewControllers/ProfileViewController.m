@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProfileViewController.h"
@@ -550,27 +550,28 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:normalizedGivenName
-                                                                        profileFamilyName:normalizedFamilyName
-                                                                        profileAvatarData:weakSelf.avatarData]
-
-                          .then(^{
-                              OWSAssertIsOnMainThread();
-
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  [weakSelf updateProfileCompleted];
-                              }];
-                          })
-                          .catch(^(NSError *error) {
-                              OWSAssertIsOnMainThread();
-                              OWSFailDebug(@"Error: %@", error);
-
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  // Don't show an error alert; the profile update
-                                  // is enqueued and will be completed later.
-                                  [weakSelf updateProfileCompleted];
-                              }];
-                          });
+                      //                      [OWSProfileManager
+                      //                      updateLocalProfilePromiseObjWithProfileGivenName:normalizedGivenName
+                      //                                                                        profileFamilyName:normalizedFamilyName
+                      //                                                                        profileAvatarData:weakSelf.avatarData]
+                      //
+                      //                          .then(^{
+                      //                              OWSAssertIsOnMainThread();
+                      //
+                      //                              [modalActivityIndicator dismissWithCompletion:^{
+                      //                                  [weakSelf updateProfileCompleted];
+                      //                              }];
+                      //                          })
+                      //                          .catch(^(NSError *error) {
+                      //                              OWSAssertIsOnMainThread();
+                      //                              OWSFailDebug(@"Error: %@", error);
+                      //
+                      //                              [modalActivityIndicator dismissWithCompletion:^{
+                      //                                  // Don't show an error alert; the profile update
+                      //                                  // is enqueued and will be completed later.
+                      //                                  [weakSelf updateProfileCompleted];
+                      //                              }];
+                      //                          });
                   }];
 }
 
