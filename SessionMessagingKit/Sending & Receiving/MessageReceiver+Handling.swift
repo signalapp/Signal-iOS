@@ -92,22 +92,6 @@ extension MessageReceiver {
         }
     }
 
-    private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
-        guard message.sender == getUserHexEncodedPublicKey() else { return }
-        let storage = SNMessagingKitConfiguration.shared.storage
-        let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-        for closedGroup in message.closedGroups {
-            guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
-            handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
-                members: [String](closedGroup.members), admins: [String](closedGroup.admins), using: transaction)
-        }
-        let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
-        for openGroupURL in message.openGroups {
-            guard !allOpenGroups.contains(openGroupURL) else { continue }
-            SNMessagingKitConfiguration.shared.openGroupManager.addOpenGroup(with: openGroupURL, using: transaction).retainUntilComplete()
-        }
-    }
-
     public static func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, groupPublicKey: String?, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var isGroup = false
@@ -150,6 +134,22 @@ extension MessageReceiver {
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: isGroup)
         message.save(with: transaction)
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
+    }
+    
+    private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
+        guard message.sender == getUserHexEncodedPublicKey() else { return }
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
+        for closedGroup in message.closedGroups {
+            guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
+            handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                members: [String](closedGroup.members), admins: [String](closedGroup.admins), using: transaction)
+        }
+        let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
+        for openGroupURL in message.openGroups {
+            guard !allOpenGroups.contains(openGroupURL) else { continue }
+            SNMessagingKitConfiguration.shared.openGroupManager.add(with: openGroupURL, using: transaction).retainUntilComplete()
+        }
     }
 
     @discardableResult

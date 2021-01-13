@@ -116,16 +116,6 @@ extension Storage {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: Storage.openGroupPublicKeyCollection)
     }
     
-    
-    
-    // MARK: - Deletion
-    
-    public func clearAllData(for group: UInt64, on server: String, using transaction: Any) {
-        removeLastMessageServerID(for: group, on: server, using: transaction)
-        removeLastDeletionServerID(for: group, on: server, using: transaction)
-        removeOpenGroupPublicKey(for: server, using: transaction)
-    }
-    
 
 
     // MARK: - Last Message Server ID

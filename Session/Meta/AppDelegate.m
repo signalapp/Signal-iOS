@@ -756,10 +756,10 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startOpenGroupPollersIfNeeded
 {
-    [LKPublicChatManager.shared startPollersIfNeeded];
+    [SNOpenGroupManager.shared startPolling];
 }
 
-- (void)stopOpenGroupPollers { [LKPublicChatManager.shared stopPollers]; }
+- (void)stopOpenGroupPollers { [SNOpenGroupManager.shared stopPolling]; }
 
 # pragma mark - App Mode
 
@@ -813,7 +813,7 @@ static NSTimeInterval launchStartedAt;
     [self stopPoller];
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
-    [LKPublicChatManager.shared stopPollers];
+    [SNOpenGroupManager.shared stopPolling];
     BOOL wasUnlinked = [NSUserDefaults.standardUserDefaults boolForKey:@"wasUnlinked"];
     [SignalApp resetAppData:^{
         // Resetting the data clears the old user defaults. We need to restore the unlink default.

@@ -133,7 +133,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         isJoining = true
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.shared.write(with: { transaction in
-                OpenGroupManager.shared.addOpenGroup(with: urlAsString, using: transaction)
+                OpenGroupManager.shared.add(with: urlAsString, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
                     self?.presentingViewController!.dismiss(animated: true, completion: nil)
                 }
