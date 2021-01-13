@@ -744,30 +744,28 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                             error.localizedDescription);
                     }];
             }
+
+            errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope withTransaction:transaction];
         } else {
             OWSFailDebug(@"Received envelope missing UUID %@.%d", envelope.sourceAddress, envelope.sourceDevice);
+            errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
         }
 
+        // Log the error appropriately.
         if ([exception.name isEqualToString:NoSessionException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
-            errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:InvalidKeyException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
-            errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
-            errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:InvalidVersionException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
-            errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // Should no longer get here, since we now record the new identity for incoming messages.
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
             OWSFailDebug(@"Failed to trust identity on incoming message from: %@", envelopeAddress(envelope));
-            return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
-            errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
         }
 
         OWSAssertDebug(errorMessage);

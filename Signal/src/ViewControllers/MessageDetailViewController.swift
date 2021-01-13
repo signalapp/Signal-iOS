@@ -909,6 +909,9 @@ extension MessageDetailViewController: CVComponentDelegate {
     // TODO:
     func cvc_didTapCorruptedMessage(_ message: TSErrorMessage) {}
 
+    // TODO:
+    func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage) {}
+
     // See: resendGroupUpdate
     // TODO:
     func cvc_didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}

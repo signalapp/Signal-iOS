@@ -4567,6 +4567,35 @@ typedef enum : NSUInteger {
     [self presentActionSheet:alert];
 }
 
+- (void)cvc_didTapSessionRefreshMessage:(TSErrorMessage *)message
+{
+    [self dismissKeyBoard];
+
+    UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"chat-session-refresh"]];
+
+    UIView *headerView = [UIView new];
+    [headerView addSubview:headerImageView];
+    [headerImageView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:22];
+    [headerImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [headerImageView autoHCenterInSuperview];
+    [headerImageView autoSetDimension:ALDimensionWidth toSize:200];
+    [headerImageView autoSetDimension:ALDimensionHeight toSize:110];
+
+    [ContactSupportAlert
+        presentAlertWithTitle:NSLocalizedString(@"SESSION_REFRESH_ALERT_TITLE", @"Title for the session refresh alert")
+                      message:NSLocalizedString(
+                                  @"SESSION_REFRESH_ALERT_MESSAGE", @"Description for the session refresh alert")
+           emailSupportFilter:@"Signal iOS Session Refresh"
+           fromViewController:self
+            additionalActions:@[ [[ActionSheetAction alloc]
+                                            initWithTitle:CommonStrings.okayButton
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"okay")
+                                                    style:ActionSheetActionStyleDefault
+                                                  handler:^(ActionSheetAction *action) {}] ]
+                 customHeader:headerView
+                   showCancel:NO];
+}
+
 - (void)cvc_didTapResendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
     OWSAssertIsOnMainThread();

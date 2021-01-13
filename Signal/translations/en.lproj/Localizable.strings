@@ -1384,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Your safety number with %@ has changed.";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "An unknown error occurred.";
 
@@ -4227,6 +4230,12 @@
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Would you like to invite the following number to Signal: ";
+
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "About";

@@ -397,6 +397,8 @@ extension CVComponentSystemMessage {
             case .nonBlockingIdentityChange,
                  .wrongTrustedIdentityKey:
                 return Theme.iconImage(.safetyNumber16)
+            case .sessionRefresh:
+                return Theme.iconImage(.info16)
             case .invalidKeyException,
                  .missingKeyId,
                  .noSession,
@@ -596,6 +598,10 @@ extension CVComponentSystemMessage {
                                                    comment: "Label for button to reset a session."),
                           accessibilityIdentifier: "reset_session",
                           action: .cvc_didTapCorruptedMessage(errorMessage: message))
+        case .sessionRefresh:
+            return Action(title: CommonStrings.learnMore,
+                          accessibilityIdentifier: "learn_more",
+                          action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
         case .duplicateMessage,
              .invalidVersion:
             return nil

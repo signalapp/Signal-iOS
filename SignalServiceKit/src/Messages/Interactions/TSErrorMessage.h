@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
@@ -25,6 +25,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNonBlockingIdentityChange,
     TSErrorMessageUnknownContactBlockOffer,
     TSErrorMessageGroupCreationFailed,
+    TSErrorMessageSessionRefresh
 };
 
 @interface ThreadlessErrorMessage : NSObject <OWSPreviewText>
@@ -123,6 +124,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                                 withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
+                           withTransaction:(SDSAnyWriteTransaction *)transaction;
+
++ (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;

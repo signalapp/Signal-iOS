@@ -488,6 +488,8 @@ extension ColorPickerView: CVComponentDelegate {
 
     func cvc_didTapCorruptedMessage(_ message: TSErrorMessage) {}
 
+    func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage) {}
+
     func cvc_didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}
 
     func cvc_didTapShowFingerprint(_ address: SignalServiceAddress) {}

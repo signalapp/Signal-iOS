@@ -5,15 +5,18 @@
 import Foundation
 import PromiseKit
 
-public class ContactSupportAlert {
-    public class func presentAlert(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = []) {
-        presentStep1(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController, additionalActions: additionalActions)
+@objc
+public class ContactSupportAlert: NSObject {
+    @objc
+    public class func presentAlert(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = [], customHeader: UIView? = nil, showCancel: Bool = true) {
+        presentStep1(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController, additionalActions: additionalActions, customHeader: customHeader, showCancel: showCancel)
     }
 
     // MARK: -
 
-    private class func presentStep1(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction]) {
+    private class func presentStep1(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction], customHeader: UIView? = nil, showCancel: Bool = true) {
         let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.customHeader = customHeader
 
         additionalActions.forEach { actionSheet.addAction($0) }
 
@@ -22,7 +25,7 @@ public class ContactSupportAlert {
             self.presentStep2(emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
         }
         actionSheet.addAction(proceedAction)
-        actionSheet.addAction(OWSActionSheets.cancelAction)
+        if showCancel { actionSheet.addAction(OWSActionSheets.cancelAction) }
 
         fromViewController.present(actionSheet, animated: true)
     }

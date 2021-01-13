@@ -118,6 +118,9 @@ public protocol CVComponentDelegate {
     @objc
     func cvc_didTapCorruptedMessage(_ message: TSErrorMessage)
 
+    @objc
+    func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage)
+
     // See: resendGroupUpdate
     @objc
     func cvc_didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage)
@@ -177,6 +180,7 @@ struct CVMessageAction: Equatable {
         case cvc_didTapNonBlockingIdentityChange(address: SignalServiceAddress)
         case cvc_didTapInvalidIdentityKeyErrorMessage(errorMessage: TSInvalidIdentityKeyErrorMessage)
         case cvc_didTapCorruptedMessage(errorMessage: TSErrorMessage)
+        case cvc_didTapSessionRefreshMessage(errorMessage: TSErrorMessage)
         case cvc_didTapResendGroupUpdate(errorMessage: TSErrorMessage)
         case cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
                                                               oldGroupModel: TSGroupModel,
@@ -200,6 +204,8 @@ struct CVMessageAction: Equatable {
                 delegate.cvc_didTapInvalidIdentityKeyErrorMessage(errorMessage)
             case .cvc_didTapCorruptedMessage(let errorMessage):
                 delegate.cvc_didTapCorruptedMessage(errorMessage)
+            case .cvc_didTapSessionRefreshMessage(let errorMessage):
+                delegate.cvc_didTapSessionRefreshMessage(errorMessage)
             case .cvc_didTapResendGroupUpdate(let errorMessage):
                 delegate.cvc_didTapResendGroupUpdateForErrorMessage(errorMessage)
             case .cvc_didTapShowGroupMigrationLearnMoreActionSheet(let infoMessage,
