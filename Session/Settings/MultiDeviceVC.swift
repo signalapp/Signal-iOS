@@ -148,6 +148,9 @@ final class MultiDeviceVC : BaseVC {
     // MARK: Interaction
     @objc private func handleToggle() {
         stepsRow.isHidden = !toggle.isOn
+        UserDefaults.standard[.isUsingMultiDevice] = toggle.isOn
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
     }
 
     @objc private func copyMnemonic() {
