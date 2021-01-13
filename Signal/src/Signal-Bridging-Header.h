@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -47,7 +47,6 @@
 #import "Pastelog.h"
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
-#import "ProfileViewController.h"
 #import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"

@@ -6,17 +6,17 @@ import Foundation
 import SafariServices
 import PromiseKit
 
-//@objc
-//public enum ProfileViewMode: UInt {
-//    case appSettings
-//    case registration
-//    case experienceUpgrade
-//}
+@objc
+public enum ProfileViewMode: UInt {
+    case appSettings
+    case registration
+    case experienceUpgrade
+}
 
 // MARK: -
 
 @objc
-public class ProfileViewController2: OWSTableViewController {
+public class ProfileViewController: OWSTableViewController {
 
     private let avatarViewHelper = AvatarViewHelper()
 
@@ -50,11 +50,11 @@ public class ProfileViewController2: OWSTableViewController {
 
     private let mode: ProfileViewMode
 
-    private let completionHandler: (ProfileViewController2) -> Void
+    private let completionHandler: (ProfileViewController) -> Void
 
     @objc
     public required init(mode: ProfileViewMode,
-                         completionHandler: @escaping (ProfileViewController2) -> Void) {
+                         completionHandler: @escaping (ProfileViewController) -> Void) {
 
         self.mode = mode
         self.completionHandler = completionHandler
@@ -77,7 +77,7 @@ public class ProfileViewController2: OWSTableViewController {
 
     // MARK: -
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "kProfileView_Collection")
+    public static let keyValueStore = SDSKeyValueStore(collection: "kProfileView_Collection")
 
     private static let lastPresentedDateKey = "kProfileView_LastPresentedDate"
 
@@ -285,13 +285,13 @@ public class ProfileViewController2: OWSTableViewController {
             label.font = .ows_dynamicTypeCaption1Clamped
             let attributedText = NSMutableAttributedString()
             attributedText.append(NSLocalizedString("PROFILE_VIEW_PROFILE_DESCRIPTION",
-                                                      comment: "Description of the user profile."))
+                                                    comment: "Description of the user profile."))
             attributedText.append(" ")
             attributedText.append(NSAttributedString(string: CommonStrings.learnMore,
-                                                       attributes: [
+                                                     attributes: [
                                                         NSAttributedString.Key.foregroundColor: Theme.accentBlueColor,
                                                         NSAttributedString.Key.underlineStyle: 0
-                                                       ]))
+                                                     ]))
             label.attributedText = attributedText
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
@@ -319,12 +319,12 @@ public class ProfileViewController2: OWSTableViewController {
 
                 let buttonHeight: CGFloat = 47
                 let button = OWSFlatButton.button(title: NSLocalizedString("PROFILE_VIEW_SAVE_BUTTON",
-                                                                               comment: "Button to save the profile view in the profile view."),
-                                                      font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                      titleColor: UIColor.ows_white,
-                                                      backgroundColor: UIColor.ows_accentBlue,
-                                                      target: target,
-                                                      selector: selector)
+                                                                           comment: "Button to save the profile view in the profile view."),
+                                                  font: OWSFlatButton.fontForHeight(buttonHeight),
+                                                  titleColor: UIColor.ows_white,
+                                                  backgroundColor: UIColor.ows_accentBlue,
+                                                  target: target,
+                                                  selector: selector)
                 button.accessibilityIdentifier = "save_button"
                 button.autoSetDimension(.height, toSize: buttonHeight)
                 cell.contentView.addSubview(button)
@@ -333,7 +333,7 @@ public class ProfileViewController2: OWSTableViewController {
                 cell.backgroundColor = Theme.tableViewBackgroundColor
                 cell.contentView.backgroundColor = Theme.tableViewBackgroundColor
 
-                                            return cell
+                return cell
             },
             actionBlock: { [weak self] in
                 self?.updateProfile()
@@ -484,7 +484,7 @@ public class ProfileViewController2: OWSTableViewController {
             } else {
                 saveButton.setEnabled(false)
                 saveButton.setBackgroundColors(upColor: UIColor.ows_accentBlue.blended(with: Theme.backgroundColor,
-                                                                                        alpha: 0.5))
+                                                                                       alpha: 0.5))
             }
         }
     }
@@ -503,19 +503,19 @@ public class ProfileViewController2: OWSTableViewController {
 
         if profileManager.isProfileNameTooLong(normalizedGivenName) {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
-                                                             comment: "Error message shown when user tries to update profile with a given name that is too long."))
+                                                                      comment: "Error message shown when user tries to update profile with a given name that is too long."))
             return
         }
 
         if profileManager.isProfileNameTooLong(normalizedFamilyName) {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
-                                                             comment: "Error message shown when user tries to update profile with a family name that is too long."))
+                                                                      comment: "Error message shown when user tries to update profile with a family name that is too long."))
             return
         }
 
         if !self.reachabilityManager.isReachable {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
-                                                             comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
+                                                                      comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
             return
         }
 
@@ -641,7 +641,7 @@ public class ProfileViewController2: OWSTableViewController {
 
 // MARK: -
 
-extension ProfileViewController2: AvatarViewHelperDelegate {
+extension ProfileViewController: AvatarViewHelperDelegate {
 
     public func avatarActionSheetTitle() -> String? {
         NSLocalizedString("PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", comment: "Action Sheet title prompting the user for a profile avatar")
@@ -672,7 +672,7 @@ extension ProfileViewController2: AvatarViewHelperDelegate {
 
 // MARK: -
 
-extension ProfileViewController2: UITextFieldDelegate {
+extension ProfileViewController: UITextFieldDelegate {
 
     private var firstTextField: UITextField {
         NSLocale.current.isCJKV ? familyNameTextField : givenNameTextField
@@ -712,7 +712,7 @@ extension ProfileViewController2: UITextFieldDelegate {
 
 // MARK: -
 
-extension ProfileViewController2: OWSNavigationView {
+extension ProfileViewController: OWSNavigationView {
 
     public func shouldCancelNavigationBack() -> Bool {
         let result = hasUnsavedChanges

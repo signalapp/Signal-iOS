@@ -11,7 +11,6 @@
 #import "OWSBackupSettingsViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
-#import "ProfileViewController.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -347,10 +346,10 @@
 - (void)showProfile
 {
     UIViewController *vc =
-        [[ProfileViewController2 alloc] initWithMode:ProfileViewMode_AppSettings
-                                   completionHandler:^(ProfileViewController2 *completedVC) {
-                                       [completedVC.navigationController popViewControllerAnimated:YES];
-                                   }];
+        [[ProfileViewController alloc] initWithMode:ProfileViewModeAppSettings
+                                  completionHandler:^(ProfileViewController *completedVC) {
+                                      [completedVC.navigationController popViewControllerAnimated:YES];
+                                  }];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
