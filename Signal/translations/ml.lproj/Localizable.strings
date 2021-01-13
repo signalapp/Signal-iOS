@@ -527,7 +527,7 @@
 "CALL_VIEW_MUTE_LABEL" = "നിശബ്ദമാക്കുക";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@-ന് നിങ്ങളിൽ നിന്ന് ഒരു സന്ദേശ അഭ്യർത്ഥന ലഭിക്കും. നിങ്ങളുടെ സന്ദേശ അഭ്യർത്ഥന സ്വീകരിച്ചുകഴിഞ്ഞാൽ നിങ്ങൾക്ക് വിളിക്കാം.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "ക്യാമറയുടെ ഡയറക്ഷൻ മാറ്റുക";
@@ -827,7 +827,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "അപ്രാപ്‌തമാക്കി";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ആർക്കെല്ലാം ഗ്രൂപ്പിന്റെ പേര് , ഫോട്ടോ, അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങളുടെ ടൈമർ എന്നിവ മാറ്റാൻ കഴിയുക എന്ന് തിരഞ്ഞെടുക്കുക.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
@@ -854,7 +854,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "അഡ്‌മിൻ‌മാർക്ക് മാത്രം";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "ആർക്കെല്ലാം ഗ്രൂപ്പിന്റെ പേര് , ഫോട്ടോ, അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങളുടെ ടൈമർ എന്നിവ മാറ്റാൻ കഴിയുക എന്ന് തിരഞ്ഞെടുക്കുക.";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";

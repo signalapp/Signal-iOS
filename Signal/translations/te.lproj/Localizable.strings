@@ -1625,7 +1625,7 @@
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "గ్రూప్ కాల్ ప్రారంభించడానికి ఇక్కడ నొక్కండి";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
@@ -3485,7 +3485,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "హెచ్చరిక";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "మీ పిన్ సేవ్ చేయబడలేదు. పిన్ సృష్టించమని మేము మిమ్మల్ని అడుగుతాము.";
@@ -5099,7 +5099,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop యొక్క పూర్తి స్థాపన ";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "మీరు ఈ సందేశాన్ని తొలగించారు.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "మీరు అదృశ్యమవుతున్న సందేశాలను నిలిపివేసారు";
