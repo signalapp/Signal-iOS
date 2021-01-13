@@ -8,7 +8,7 @@ public final class ConfigurationMessage : ControlMessage {
     // MARK: Initialization
     public override init() { super.init() }
 
-    internal init(closedGroups: Set<ClosedGroup>, openGroups: Set<String>) {
+    public init(closedGroups: Set<ClosedGroup>, openGroups: Set<String>) {
         super.init()
         self.closedGroups = closedGroups
         self.openGroups = openGroups

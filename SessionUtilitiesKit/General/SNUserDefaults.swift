@@ -14,6 +14,7 @@ public enum SNUserDefaults {
     public enum Date : Swift.String {
         case lastProfilePictureUpload
         case lastKeyPairMigrationNudge
+        case lastConfigurationSync
     }
 
     public enum Double : Swift.String {
