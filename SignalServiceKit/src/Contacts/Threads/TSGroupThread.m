@@ -139,9 +139,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                     block:^(TSThread *thread, BOOL *stop) {
                                         if ([thread isKindOfClass:[TSGroupThread class]]) {
                                             TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                            if ([groupThread.groupModel.groupMembership.fullMembers
-                                                    containsObject:address]
-                                                && groupThread.isLocalUserFullMember) {
+                                            if ([groupThread.groupModel.groupMembers containsObject:address]) {
                                                 [groupThreads addObject:groupThread];
                                             }
                                         }
