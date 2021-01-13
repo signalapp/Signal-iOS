@@ -829,7 +829,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             dataSource.sourceFilename = url.lastPathComponent
             let utiType = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) ?? kUTTypeData as String
 
-            guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: utiType) else {
+            guard !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: utiType) else {
                 // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
 
                 let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: utiType)

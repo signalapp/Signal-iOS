@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1091,9 +1091,12 @@ public class SignalAttachment: NSObject {
             return (Promise.value(attachment), nil)
         }
 
-        let asset = AVAsset(url: url)
+        return compressVideoAsMp4(asset: AVAsset(url: url), baseFilename: dataSource.sourceFilename, dataUTI: dataUTI)
+    }
 
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
+    public class func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
+        Logger.debug("")
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
             return (Promise.value(attachment), nil)
@@ -1111,7 +1114,6 @@ public class SignalAttachment: NSObject {
         Logger.debug("starting video export")
         exportSession.exportAsynchronously {
             Logger.debug("Completed video export")
-            let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
             do {
@@ -1155,19 +1157,14 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public class func isInvalidVideo(dataSource: DataSource, dataUTI: String) -> Bool {
+    public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
         guard videoUTISet.contains(dataUTI) else {
             // not a video
             return false
         }
 
-        guard isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) else {
-            // found a video which needs to be converted
-            return true
-        }
-
-        // It is a video, but it's not invalid
-        return false
+        // Today we re-encode all videos for the most consistent experience.
+        return true
     }
 
     private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {

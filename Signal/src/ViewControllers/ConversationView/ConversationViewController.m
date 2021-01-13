@@ -2245,7 +2245,7 @@ typedef enum : NSUInteger {
 
     // Although we want to be able to send higher quality attachments through the document picker
     // it's more important that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
-    if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
+    if ([SignalAttachment isVideoThatNeedsCompressionWithDataSource:dataSource dataUTI:type]) {
         [self showApprovalDialogAfterProcessingVideoURL:url filename:filename];
         return;
     }
