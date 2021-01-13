@@ -83,7 +83,7 @@ public enum MediaDownloadType: String, Equatable, CaseIterable {
     case audio
     case document
 
-    var defaultPreference: MediaBandwidthPreference {
+    public var defaultPreference: MediaBandwidthPreference {
         switch self {
         case .photo:
             return .wifiAndCellular

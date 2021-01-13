@@ -43,7 +43,7 @@ class DataSettingsTableViewController: OWSTableViewController {
                                                                                  transaction: transaction)
                 let preferenceName = MediaDownloadSettingsViewController.name(forMediaBandwidthPreference: preference)
 
-                if preference != MediaBandwidthPreference.defaultValue {
+                if preference != mediaDownloadType.defaultPreference {
                     hasNonDefaultValue = true
                 }
 
