@@ -287,12 +287,27 @@ public class ProfileViewController: OWSTableViewController {
         let profileBio = self.normalizedProfileBio
         let profileBioEmoji = self.normalizedProfileBioEmoji
         if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
-            aboutSection.add(OWSTableItem.item(name: bioForDisplay,
-                                               textColor: Theme.primaryTextColor,
-                                               accessoryType: .disclosureIndicator,
-                                               accessibilityIdentifier: "profile_bio") { [weak self] in
+            aboutSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                let cell = OWSTableItem.newCell()
+
+                let label = UILabel()
+                label.text = bioForDisplay
+                label.textColor = Theme.primaryTextColor
+                label.font = .ows_dynamicTypeBodyClamped
+                label.numberOfLines = 0
+                label.lineBreakMode = .byWordWrapping
+                cell.contentView.addSubview(label)
+                label.autoPinEdgesToSuperviewMargins()
+
+                cell.accessoryType = .disclosureIndicator
+
+                cell.accessibilityIdentifier = "profile_bio"
+
+                return cell
+            },
+            actionBlock: { [weak self] in
                 self?.didTapBio()
-            })
+            }))
         } else {
             aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
                                                                        comment: "Button to add a 'bio' to the user's profile in the profile view."),
@@ -383,22 +398,16 @@ public class ProfileViewController: OWSTableViewController {
             let title = NSLocalizedString("PROFILE_VIEW_USERNAME_FIELD",
                                           comment: "Label for the username field of the profile view.")
 
-            let disclosureIconName = CurrentAppContext().isRTL ? "NavBarBack" : "NavBarBackRTL"
-            let disclosureImageView = UIImageView.withTemplateImageName(disclosureIconName,
-                                                                        tintColor: UIColor(rgbHex: 0xcccccc))
-
-            let disclosureContainer = UIView.container()
-            disclosureContainer.addSubview(disclosureImageView)
-            disclosureImageView.autoPinWidthToSuperview()
-            disclosureImageView.autoVCenterInSuperview()
-
             usernameLabel.font = .ows_dynamicTypeBodyClamped
             usernameLabel.textAlignment = .right
 
-            return Self.buildNameCell(title: title,
-                                      valueView: usernameLabel,
-                                      accessibilityIdentifier: "username",
-                                      accessoryView: disclosureContainer)
+            let cell = Self.buildNameCell(title: title,
+                                          valueView: usernameLabel,
+                                          accessibilityIdentifier: "username")
+
+            cell.accessoryType = .disclosureIndicator
+
+            return cell
         },
         actionBlock: { [weak self] in
             self?.didTapUsername()

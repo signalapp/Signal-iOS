@@ -303,7 +303,26 @@ class ProfileBioViewController: OWSTableViewController {
     }
 
     private func didTapEmoji() {
-        // TODO
+        showAnyEmojiPicker()
+    }
+
+    private var anyReactionPicker: EmojiPickerSheet?
+
+    private func showAnyEmojiPicker() {
+        let picker = EmojiPickerSheet(completionHandler: { [weak self] emoji in
+            guard let emoji = emoji else {
+                return
+            }
+            self?.didSelectEmoji(emoji.rawValue)
+        })
+        anyReactionPicker = picker
+
+        present(picker, animated: true)
+    }
+
+    private func didSelectEmoji(_ emoji: String?) {
+        setEmoji(emoji: emoji)
+        updateNavigation()
     }
 
     private func didTapDefaultBio(_ defaultBio: DefaultBio) {
