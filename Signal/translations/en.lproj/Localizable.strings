@@ -433,9 +433,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
 
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
-
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Add";
 
