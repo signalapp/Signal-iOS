@@ -5,12 +5,12 @@ contact_links:
     about: Search for any questions you have about Signal
   - name: 📖 Developer documentation
     url: https://signal.org/docs/
-    about: Official Signal deveoper documentation 
+    about: Official Signal developer documentation
   - name: 💬 Community support
-    url: https://community.signalusers.org/c/support/
+    url: https://community.signalusers.org/c/support/ios-support/
     about: Feel free to ask anything
   - name: ✨ Feature request
-    url: https://community.signalusers.org/c/feature-requests/
+    url: https://community.signalusers.org/c/feature-requests/ios-feature-requests/
     about: Missing something in Signal? Let us know.
   - name: 📚 Translation feedback
     url: https://community.signalusers.org/c/translation-feedback/
