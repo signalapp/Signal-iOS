@@ -69,6 +69,7 @@
 		34123C5E239AA3E900782788 /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5D239AA3E900782788 /* TooltipView.swift */; };
 		34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
+		3415217525B0CB31009F177F /* MediaTransferProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* MediaTransferProgressView.swift */; };
 		3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */; };
 		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
 		341D392925472F3B00996E7B /* CVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVViewState.swift */; };
@@ -1047,6 +1048,7 @@
 		34129B8521EF8779005457A8 /* LinkPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3415217425B0CB30009F177F /* MediaTransferProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaTransferProgressView.swift; sourceTree = "<group>"; };
 		3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
 		341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupsV2Impl+RestoreGroups.swift"; sourceTree = "<group>"; };
 		341D392825472F3B00996E7B /* CVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewState.swift; sourceTree = "<group>"; };
@@ -2932,6 +2934,7 @@
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 				34EA693F2194933900702471 /* MediaDownloadView.swift */,
+				3415217425B0CB30009F177F /* MediaTransferProgressView.swift */,
 				34EA69412194DE7F00702471 /* MediaUploadView.swift */,
 				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
 				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
@@ -5050,6 +5053,7 @@
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				88D1BCBB24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
+				3415217525B0CB31009F177F /* MediaTransferProgressView.swift in Sources */,
 				88ABB8B52534070400229EAA /* CallHeader.swift in Sources */,
 				347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */,
 				3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */,

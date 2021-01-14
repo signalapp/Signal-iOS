@@ -162,17 +162,13 @@ public class CVMediaView: UIView {
             configure(forError: .missing)
             return
         }
-        let attachmentId = attachmentPointer.uniqueId
-        guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
-            // Not being downloaded.
-            configure(forError: .missing)
-            return
-        }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: 22, withCircle: true)
+        let progressView = MediaTransferProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                     style: .withCircle,
+                                                     layout: .withoutContainer)
         self.addSubview(progressView)
-        progressView.autoPinEdgesToSuperviewEdges()
+        progressView.autoCenterInSuperview()
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
@@ -182,13 +178,14 @@ public class CVMediaView: UIView {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             return false
         }
-        let attachmentId = attachmentStream.uniqueId
         guard !attachmentStream.isUploaded else {
             return false
         }
-        let progressView = MediaUploadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        let progressView = MediaTransferProgressView(direction: .upload(attachmentStream: attachmentStream),
+                                                     style: .withCircle,
+                                                     layout: .withoutContainer)
         self.addSubview(progressView)
-        progressView.autoPinEdgesToSuperviewEdges()
+        progressView.autoCenterInSuperview()
         return true
     }
 

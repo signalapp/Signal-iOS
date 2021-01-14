@@ -1,0 +1,262 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+
+@objc
+public class MediaTransferProgressView: UIView {
+
+    public enum Direction {
+        case upload(attachmentStream: TSAttachmentStream)
+        case download(attachmentPointer: TSAttachmentPointer)
+
+        var attachmentId: String {
+            switch self {
+            case .upload(let attachmentStream):
+                return attachmentStream.uniqueId
+            case .download(let attachmentPointer):
+                return attachmentPointer.uniqueId
+            }
+        }
+    }
+
+    public enum Style {
+        case withCircle
+        case withoutCircle(diameter: CGFloat)
+
+        var outerDiameter: CGFloat {
+            switch self {
+            case .withCircle:
+                return 44
+            case .withoutCircle(let diameter):
+                return diameter
+            }
+        }
+    }
+
+    public enum Layout {
+        case withoutContainer
+        case withContainer
+    }
+
+    private let direction: Direction
+    private let style: Style
+    private let layout: Layout
+
+    private var attachmentId: String { direction.attachmentId }
+
+    private let stateView: StateView
+
+    public required init(direction: Direction, style: Style, layout: Layout) {
+        self.direction = direction
+        self.style = style
+        self.layout = layout
+        self.stateView = StateView(diameter: Self.innerDiameter(style: style))
+
+        super.init(frame: .zero)
+
+        createViews()
+
+        configureState()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private static func outerDiameter(style: Style) -> CGFloat {
+        switch style {
+        case .withCircle:
+            return 44
+        case .withoutCircle(let diameter):
+            return diameter
+        }
+    }
+
+    private static func innerDiameter(style: Style) -> CGFloat {
+        switch style {
+        case .withCircle:
+            return 32
+        case .withoutCircle(let diameter):
+            return diameter
+        }
+    }
+
+    private enum State: Equatable {
+        case none
+        case tapToDownload
+        case downloadFailed
+        case progress(progress: CGFloat)
+    }
+
+    private class StateView: UIView {
+        private let diameter: CGFloat
+        private let imageView = UIImageView()
+        private let progressView = CircularProgressView(thickness: 0.1)
+
+        private var layoutConstraints = [NSLayoutConstraint]()
+
+        var state: State = .none {
+            didSet {
+                applyState(oldState: oldValue, newState: state)
+            }
+        }
+
+        required init(diameter: CGFloat) {
+            self.diameter = diameter
+
+            super.init(frame: .zero)
+
+            applyState(oldState: .none, newState: .none)
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        private func applyState(oldState: State, newState: State) {
+            switch newState {
+            case .none:
+                reset()
+            case .tapToDownload:
+                if oldState != newState {
+                    presentIcon(templateName: "arrow-down-24", fractionalSize: 0.5)
+                }
+            case .downloadFailed:
+                if oldState != newState {
+                    presentIcon(templateName: "retry-alt-24", fractionalSize: 0.5)
+                }
+            case .progress(let progress):
+                switch oldState {
+                case .progress:
+                    updateProgress(progress: progress)
+                default:
+                    presentProgress(progress: progress)
+                }
+            }
+        }
+
+        private func presentIcon(templateName: String, fractionalSize: CGFloat) {
+            reset()
+
+            imageView.setTemplateImageName(templateName, tintColor: .ows_white)
+            addSubview(imageView)
+            let iconSize = diameter * fractionalSize
+            layoutConstraints.append(contentsOf: imageView.autoSetDimensions(to: .square(iconSize)))
+        }
+
+        private func presentProgress(progress: CGFloat) {
+            reset()
+
+            progressView.progress = progress
+            addSubview(progressView)
+            layoutConstraints.append(contentsOf: progressView.autoPinEdgesToSuperviewEdges())
+        }
+
+        private func updateProgress(progress: CGFloat) {
+            progressView.progress = progress
+        }
+
+        private func reset() {
+            removeAllSubviews()
+            NSLayoutConstraint.deactivate(layoutConstraints)
+            layoutConstraints.removeAll()
+        }
+    }
+
+    private func createViews() {
+        let innerContentView = self.stateView
+        innerContentView.autoSetDimensions(to: .square(Self.innerDiameter(style: style)))
+
+        let outerContentView: UIView
+        switch style {
+        case .withCircle:
+            let circleView = OWSLayerView.circleView()
+            circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+            circleView.autoSetDimensions(to: .square(Self.outerDiameter(style: style)))
+            circleView.addSubview(innerContentView)
+            innerContentView.autoCenterInSuperview()
+            outerContentView = circleView
+        case .withoutCircle:
+            outerContentView = innerContentView
+        }
+
+        addSubview(outerContentView)
+
+        switch layout {
+        case .withoutContainer:
+            outerContentView.autoPinEdgesToSuperviewEdges()
+        case .withContainer:
+            outerContentView.autoCenterInSuperview()
+        }
+    }
+
+    private func configureState() {
+        switch direction {
+        case .upload:
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(processUploadNotification),
+                                                   name: .attachmentUploadProgress,
+                                                   object: nil)
+
+        case .download(let attachmentPointer):
+            switch attachmentPointer.state {
+            case .failed:
+                stateView.state = .downloadFailed
+            case .pendingMessageRequest, .pendingManualDownload:
+                stateView.state = .tapToDownload
+            case .enqueued, .downloading:
+                updateDownloadProgress()
+
+                NotificationCenter.default.addObserver(self,
+                                                       selector: #selector(processDownloadNotification),
+                                                       name: OWSAttachmentDownloads.attachmentDownloadProgressNotification,
+                                                       object: nil)
+            @unknown default:
+                owsFailDebug("Invalid value.")
+            }
+        }
+    }
+
+    @objc
+    private func processDownloadNotification(notification: Notification) {
+        guard let attachmentId = notification.userInfo?[OWSAttachmentDownloads.attachmentDownloadAttachmentIDKey] as? String else {
+            return
+        }
+        guard attachmentId == self.attachmentId else {
+            return
+        }
+        updateDownloadProgress()
+    }
+
+    private func updateDownloadProgress() {
+        AssertIsOnMainThread()
+
+        guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
+            Logger.warn("No progress for attachment.")
+            return
+        }
+        stateView.state = .progress(progress: CGFloat(progress.floatValue))
+    }
+
+    @objc
+    private func processUploadNotification(notification: Notification) {
+        guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
+            owsFailDebug("Missing notificationAttachmentId.")
+            return
+        }
+        guard notificationAttachmentId == attachmentId else {
+            return
+        }
+        guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
+            owsFailDebug("Missing progress.")
+            return
+        }
+        stateView.state = .progress(progress: CGFloat(progress.floatValue))
+    }
+}
