@@ -2098,28 +2098,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - Attachment Picking: Documents
 
-- (void)showAttachmentDocumentPickerMenu
-{
-    ActionSheetController *actionSheet = [ActionSheetController new];
-
-    ActionSheetAction *mediaAction = [[ActionSheetAction alloc]
-        initWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
-                style:ActionSheetActionStyleDefault
-              handler:^(ActionSheetAction *action) { [self chooseFromLibraryAsDocument:YES]; }];
-    [actionSheet addAction:mediaAction];
-
-    ActionSheetAction *browseAction = [[ActionSheetAction alloc]
-        initWithTitle:NSLocalizedString(@"BROWSE_FILES_BUTTON", @"browse files option from file sharing menu")
-                style:ActionSheetActionStyleDefault
-              handler:^(ActionSheetAction *action) { [self showDocumentPicker]; }];
-    [actionSheet addAction:browseAction];
-
-    [actionSheet addAction:OWSActionSheets.cancelAction];
-
-    [self dismissKeyBoard];
-    [self presentActionSheet:actionSheet];
-}
-
 - (void)showDocumentPicker
 {
     NSString *allItems = (__bridge NSString *)kUTTypeItem;
@@ -2283,14 +2261,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)chooseFromLibraryAsMedia
-{
-    OWSAssertIsOnMainThread();
-
-    [self chooseFromLibraryAsDocument:NO];
-}
-
-- (void)chooseFromLibraryAsDocument:(BOOL)shouldTreatAsDocument
+- (void)chooseFromLibrary
 {
     OWSAssertIsOnMainThread();
 
@@ -2302,13 +2273,7 @@ typedef enum : NSUInteger {
             return;
         }
 
-        SendMediaNavigationController *pickerModal;
-        if (shouldTreatAsDocument) {
-            pickerModal = [SendMediaNavigationController asMediaDocumentPicker];
-        } else {
-            pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
-        }
-
+        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
@@ -2660,7 +2625,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self chooseFromLibraryAsMedia];
+    [self chooseFromLibrary];
 }
 
 - (void)gifButtonPressed
@@ -2674,7 +2639,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self showAttachmentDocumentPickerMenu];
+    [self showDocumentPicker];
 }
 
 - (void)contactButtonPressed
