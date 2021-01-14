@@ -39,6 +39,20 @@ extension String {
     }
 }
 
+extension CGImage {
+    fileprivate var hasAlpha: Bool {
+        switch self.alphaInfo {
+        case .none, .noneSkipFirst, .noneSkipLast:
+            return false
+        case .first, .last, .premultipliedFirst, .premultipliedLast, .alphaOnly:
+            return true
+        @unknown default:
+            // better safe than sorry
+            return true
+        }
+    }
+}
+
 extension SignalAttachmentError: LocalizedError {
     public var errorDescription: String? {
         switch self {
@@ -814,7 +828,7 @@ public class SignalAttachment: NSObject {
             let dataFileExtension: String
             let imageData: Data
 
-            if attachment.mimeType == OWSMimeTypeImageWebp {
+            if image.cgImage?.hasAlpha == true {
                 guard let pngImageData = dstImage.pngData() else {
                     attachment.error = .couldNotConvertImage
                     return attachment
