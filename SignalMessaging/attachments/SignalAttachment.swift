@@ -738,8 +738,6 @@ public class SignalAttachment: NSObject {
             }
             attachment.cachedImage = image
 
-            let isValidOutput = isValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality)
-
             if let sourceFilename = dataSource.sourceFilename,
                 let sourceFileExtension = sourceFilename.fileExtension,
                 ["heic", "heif"].contains(sourceFileExtension.lowercased()),
@@ -759,32 +757,32 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            if isValidOutput, canStripMetadata(for: attachment.mimeType) {
+            if isValidOutputImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
-                return removeImageMetadata(attachment: attachment)
-            } else {
-                let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
-                Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
-
-                return convertAndCompressImage(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
+                do {
+                    return try removeImageMetadata(attachment: attachment)
+                } catch {
+                    Logger.verbose("Failed to remove metadata directly: \(error)")
+                }
             }
+
+            let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
+            Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
+
+            return convertAndCompressImage(image: image,
+                                           attachment: attachment,
+                                           filename: dataSource.sourceFilename,
+                                           imageQuality: imageQuality)
         }
     }
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
-        guard image != nil else {
-            return false
-        }
-        guard let dataSource = dataSource else {
-            return false
-        }
+    private class func isValidOutputImage(dataSource: DataSource, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else {
             return false
         }
-        if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
-            dataSource.dataLength <= kMaxFileSizeImage {
+        if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
             return true
         }
         return false
@@ -792,15 +790,6 @@ public class SignalAttachment: NSObject {
 
     private class func convertAndCompressImage(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(attachment.error == nil)
-
-        if imageQuality == .original &&
-            attachment.dataLength < kMaxFileSizeGeneric &&
-            outputImageUTISet.contains(attachment.dataUTI) &&
-            canStripMetadata(for: attachment.dataUTI) {
-            // We should avoid resizing images attached "as documents" if possible.
-            // Just remove the metadata and return.
-            return removeImageMetadata(attachment: attachment)
-        }
 
         var imageUploadQuality = imageQuality.imageQualityTier()
 
@@ -935,7 +924,8 @@ public class SignalAttachment: NSObject {
     private class func doesImageHaveAcceptableFileSize(dataSource: DataSource, imageQuality: TSImageQuality) -> Bool {
         switch imageQuality {
         case .original:
-            return true
+            // This deliberately checks against "generic" rather than "image" for files attached as documents.
+            return dataSource.dataLength < kMaxFileSizeGeneric
         case .medium:
             return dataSource.dataLength < UInt(1024 * 1024)
         case .compact:
@@ -977,68 +967,63 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    private class func canStripMetadata(for typeIdentifier: String) -> Bool {
-        let cgSupportedTypes = CGImageDestinationCopyTypeIdentifiers() as NSArray
-        return cgSupportedTypes.contains(typeIdentifier)
-    }
-
-    private class func removeImageMetadata(attachment: SignalAttachment) -> SignalAttachment {
-        guard canStripMetadata(for: attachment.dataUTI) else {
-            owsFailDebug("CoreGraphics can't output \(attachment.dataUTI). Stripping unsupported.")
-            attachment.error = .couldNotRemoveMetadata
-            return attachment
-        }
-
+    private class func removeImageMetadata(attachment: SignalAttachment) throws -> SignalAttachment {
         guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
-            attachment.error = .missingData
-            return attachment
+            throw SignalAttachmentError.missingData
         }
 
         guard let type = CGImageSourceGetType(source) else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
-            attachment.error = .invalidFileFormat
-            return attachment
+            throw SignalAttachmentError.invalidFileFormat
         }
 
         let count = CGImageSourceGetCount(source)
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData as CFMutableData, type, count, nil) else {
-            attachment.error = .couldNotRemoveMetadata
-            return attachment
+            throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
-        let removeMetadataProperties: [String: AnyObject] =
-        [
-            kCGImagePropertyExifDictionary as String: kCFNull,
-            kCGImagePropertyExifAuxDictionary as String: kCFNull,
-            kCGImagePropertyGPSDictionary as String: kCFNull,
-            kCGImagePropertyTIFFDictionary as String: kCFNull,
-            kCGImagePropertyJFIFDictionary as String: kCFNull,
-            kCGImagePropertyPNGDictionary as String: kCFNull,
-            kCGImagePropertyIPTCDictionary as String: kCFNull,
-            kCGImagePropertyMakerAppleDictionary as String: kCFNull
-        ]
-
-        for index in 0...count-1 {
-            CGImageDestinationAddImageFromSource(destination, source, index, removeMetadataProperties as CFDictionary)
-        }
-
-        if CGImageDestinationFinalize(destination) {
-            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
-                attachment.error = .couldNotRemoveMetadata
-                return attachment
+        // Build up a metadata with CFNulls in the place of all tags present in the original metadata.
+        // (Unfortunately CGImageDestinationCopyImageSource can only merge metadata, not replace it.)
+        let metadata = CGImageMetadataCreateMutable()
+        let enumerateOptions: NSDictionary = [kCGImageMetadataEnumerateRecursively: false]
+        var hadError = false
+        for i in 0..<count {
+            guard let originalMetadata = CGImageSourceCopyMetadataAtIndex(source, i, nil) else {
+                throw SignalAttachmentError.couldNotRemoveMetadata
             }
-
-            let strippedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: attachment.dataUTI)
-            strippedAttachment.isBorderless = attachment.isBorderless
-            return strippedAttachment
-
-        } else {
-            Logger.verbose("CGImageDestinationFinalize failed")
-            attachment.error = .couldNotRemoveMetadata
-            return attachment
+            CGImageMetadataEnumerateTagsUsingBlock(originalMetadata, nil, enumerateOptions) { path, tag in
+                guard let namespace = CGImageMetadataTagCopyNamespace(tag),
+                      let prefix = CGImageMetadataTagCopyPrefix(tag),
+                      CGImageMetadataRegisterNamespaceForPrefix(metadata, namespace, prefix, nil),
+                      CGImageMetadataSetValueWithPath(metadata, nil, path, kCFNull) else {
+                    hadError = true
+                    return false // stop iteration
+                }
+                return true
+            }
+            if hadError {
+                throw SignalAttachmentError.couldNotRemoveMetadata
+            }
         }
+
+        var error: Unmanaged<CFError>?
+        let copyOptions: NSDictionary = [
+            kCGImageDestinationMergeMetadata: true,
+            kCGImageDestinationMetadata: metadata
+        ]
+        guard CGImageDestinationCopyImageSource(destination, source, copyOptions, &error) else {
+            let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
+            Logger.verbose("CGImageDestinationCopyImageSource failed for \(attachment.dataUTI): \(errorMessage)")
+            throw SignalAttachmentError.couldNotRemoveMetadata
+        }
+
+        guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
+            throw SignalAttachmentError.couldNotRemoveMetadata
+        }
+
+        let strippedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: attachment.dataUTI)
+        strippedAttachment.isBorderless = attachment.isBorderless
+        return strippedAttachment
     }
 
     // MARK: Video Attachments
