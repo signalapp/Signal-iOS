@@ -67,6 +67,8 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
                       uniqueId:(NSString *)uniqueId
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
+                             bio:(nullable NSString *)bio
+                        bioEmoji:(nullable NSString *)bioEmoji
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
@@ -76,7 +78,7 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 

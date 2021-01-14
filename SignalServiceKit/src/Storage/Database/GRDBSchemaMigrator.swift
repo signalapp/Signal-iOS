@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -92,6 +92,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateMarkedUnreadIndex
         case addGroupCallMessage2
         case addGroupCallEraIdIndex
+        case addProfileBio
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -127,7 +128,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 16
+    public static let grdbSchemaVersionLatest: UInt = 17
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -896,6 +897,17 @@ public class GRDBSchemaMigrator: NSObject {
                     on: "model_TSInteraction",
                     columns: ["uniqueThreadId", "eraId", "recordType"]
                 )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addProfileBio.rawValue) { db in
+            do {
+                try db.alter(table: "model_OWSUserProfile") { table in
+                    table.add(column: "bio", .text)
+                    table.add(column: "bioEmoji", .text)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }

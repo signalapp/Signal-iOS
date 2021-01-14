@@ -200,6 +200,8 @@
     "ThreadRecord.shouldThreadBeVisible": 7, 
     "UserProfileRecord.avatarFileName": 1, 
     "UserProfileRecord.avatarUrlPath": 2, 
+    "UserProfileRecord.bio": 12, 
+    "UserProfileRecord.bioEmoji": 13, 
     "UserProfileRecord.familyName": 8, 
     "UserProfileRecord.isUuidCapable": 9, 
     "UserProfileRecord.lastFetchDate": 10, 

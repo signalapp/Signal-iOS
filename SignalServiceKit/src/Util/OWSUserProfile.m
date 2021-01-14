@@ -110,6 +110,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                       uniqueId:(NSString *)uniqueId
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
+                             bio:(nullable NSString *)bio
+                        bioEmoji:(nullable NSString *)bioEmoji
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
@@ -129,6 +131,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     _avatarFileName = avatarFileName;
     _avatarUrlPath = avatarUrlPath;
+    _bio = bio;
+    _bioEmoji = bioEmoji;
     _familyName = familyName;
     _isUuidCapable = isUuidCapable;
     _lastFetchDate = lastFetchDate;
