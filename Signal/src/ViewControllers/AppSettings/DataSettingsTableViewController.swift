@@ -17,8 +17,14 @@ class DataSettingsTableViewController: OWSTableViewController {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(mediaBandwidthPreferencesDidChange),
+            selector: #selector(preferencesDidChange),
             name: OWSAttachmentDownloads.mediaBandwidthPreferencesDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(preferencesDidChange),
+            name: CallService.callServicePreferencesDidChange,
             object: nil
         )
     }
@@ -70,14 +76,58 @@ class DataSettingsTableViewController: OWSTableViewController {
                                                           textColor: Theme.secondaryTextAndIconColor,
                                                           accessibilityIdentifier: resetAccessibilityIdentifier))
             }
-        }
 
-        contents.addSection(autoDownloadSection)
+            let callsSection = OWSTableSection()
+            callsSection.headerTitle = NSLocalizedString(
+                "SETTINGS_DATA_CALL_SECTION_HEADER",
+                comment: "Section header for the call section in data settings")
+            callsSection.footerTitle = NSLocalizedString(
+                "SETTINGS_DATA_CALL_SECTION_FOOTER",
+                comment: "Section footer for the call section in data settings")
+
+            let currentPreference = CallService.highBandwidthNetworkInterfaces(readTx: transaction).inverted
+            let currentPreferenceString = NetworkInterfacePreferenceViewController.name(forInterfaceSet: currentPreference)
+
+            callsSection.add(
+                OWSTableItem.disclosureItem(
+                    withText: NSLocalizedString(
+                        "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
+                        comment: "Item title for the low bandwidth call setting"),
+                    detailText: currentPreferenceString ?? "",
+                    actionBlock: { [weak self] in
+                        self?.showCallBandwidthPreferences()
+                    }
+                ))
+
+            contents.addSection(autoDownloadSection)
+            contents.addSection(callsSection)
+        }
 
         self.contents = contents
     }
 
     // MARK: - Events
+
+    private func showCallBandwidthPreferences() {
+        let currentLowBandwidthPreference = databaseStorage.read { readTx in
+            CallService.highBandwidthNetworkInterfaces(readTx: readTx).inverted
+        }
+
+        let vc = NetworkInterfacePreferenceViewController(
+            selectedOption: currentLowBandwidthPreference,
+            availableOptions: [.none, .cellular, .wifiAndCellular],
+            updateHandler: { [weak self] newLowBandwidthPref in
+                self?.databaseStorage.write { writeTx in
+                    let newHighBandwidthPref = newLowBandwidthPref.inverted
+                    CallService.setHighBandwidthInterfaces(newHighBandwidthPref, writeTx: writeTx)
+                }
+            })
+
+        vc.title = NSLocalizedString(
+            "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
+            comment: "Item title for the low bandwidth call setting")
+        navigationController?.pushViewController(vc, animated: true)
+    }
 
     private func showMediaDownloadView(forMediaDownloadType value: MediaDownloadType) {
         let view = MediaDownloadSettingsViewController(mediaDownloadType: value)
@@ -85,7 +135,7 @@ class DataSettingsTableViewController: OWSTableViewController {
     }
 
     @objc
-    func mediaBandwidthPreferencesDidChange() {
+    func preferencesDidChange() {
         AssertIsOnMainThread()
 
         updateTableContents()
