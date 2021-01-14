@@ -200,7 +200,7 @@ class ProfileBioViewController: OWSTableViewController {
             bioTextField.setCompressionResistanceHorizontalLow()
 
             let cancelColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray45 : UIColor.ows_gray25
-            let cancelIcon = UIImageView.withTemplateImageName("x-circle-filled-28",
+            let cancelIcon = UIImageView.withTemplateImageName("x-circle-solid-16",
                                                                tintColor: cancelColor)
             let cancelButton = OWSButton {
                 self?.didTapResetButton()
