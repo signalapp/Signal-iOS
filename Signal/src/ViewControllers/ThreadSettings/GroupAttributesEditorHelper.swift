@@ -239,7 +239,7 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: replacementString.withoutBidiControlCharacters,
-            stringLengthLimit: .characterCount(maxCharacterCount: GroupManager.maxGroupNameCharactersCount)
+            maxCharacterCount: GroupManager.maxGroupNameCharactersCount
         )
     }
 }

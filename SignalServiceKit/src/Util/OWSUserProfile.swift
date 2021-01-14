@@ -9,13 +9,31 @@ public extension OWSUserProfile {
 
     // The max bytes for a user's profile name, encoded in UTF8.
     // Before encrypting and submitting we NULL pad the name data to this length.
-    static let kMaxNameLengthBytes: UInt = 128
+    static let kMaxNameLengthBytes: Int = 128
 
-    static let kMaxBioLengthChars: UInt = 100
-    static let kMaxBioLengthBytes: UInt = 512
+    static let kMaxBioLengthChars: Int = 100
+    static let kMaxBioLengthBytes: Int = 512
 
-    static let kMaxBioEmojiLengthChars: UInt = 1
-    static let kMaxBioEmojiLengthBytes: UInt = 32
+    static let kMaxBioEmojiLengthChars: Int = 1
+    static let kMaxBioEmojiLengthBytes: Int = 32
+
+    // MARK: - Bio
+
+    static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
+        var components = [String]()
+        if let component = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthChars).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
+           !component.isEmpty {
+            components.append(component)
+        }
+        if let component = bio?.filterStringForDisplay().trimToGlyphCount(kMaxBioLengthChars).trimToUtf8ByteCount(kMaxBioLengthBytes),
+           !component.isEmpty {
+            components.append(component)
+        }
+        guard !components.isEmpty else {
+            return nil
+        }
+        return components.joined(separator: " ")
+    }
 
     // MARK: - Encryption
 
@@ -88,9 +106,10 @@ public extension OWSUserProfile {
             paddedNameData.append(familyNameData)
         }
 
-        // Two names plus null separator.
+        // The Base 64 lengths reflect encryption + Base 64 encoding
+        // of the max-length padded value.
         //
-        // TODO: Padding constants?
+        // Two names plus null separator.
         let totalNameLength = Int(kMaxNameLengthBytes) * 2 + 1
         owsAssertDebug(totalNameLength == 257)
         let paddedLengths = [53, 257 ]

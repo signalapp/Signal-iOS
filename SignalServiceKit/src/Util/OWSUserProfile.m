@@ -863,16 +863,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     }
 }
 
-- (nullable NSString *)bioForDisplay
-{
-    return self.bio.filterStringForDisplay;
-}
-
-- (nullable NSString *)bioEmojiForDisplay
-{
-    return self.bioEmoji.filterStringForDisplay;
-}
-
 - (nullable NSPersonNameComponents *)nameComponents
 {
     if (self.givenName.length <= 0) {

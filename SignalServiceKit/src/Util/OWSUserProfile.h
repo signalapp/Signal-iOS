@@ -35,8 +35,6 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
 @property (atomic, readonly, nullable) NSString *fullName;
 @property (atomic, readonly, nullable) NSString *bio;
 @property (atomic, readonly, nullable) NSString *bioEmoji;
-@property (atomic, readonly, nullable) NSString *bioForDisplay;
-@property (atomic, readonly, nullable) NSString *bioEmojiForDisplay;
 @property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly) BOOL isUuidCapable;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;

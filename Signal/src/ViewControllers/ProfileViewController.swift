@@ -281,9 +281,33 @@ public class ProfileViewController: OWSTableViewController {
         }
         contents.addSection(namesSection)
 
-        let lastSection = namesSection
+        let aboutSection = OWSTableSection()
+        aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
+                                                     comment: "Header for the 'bio' section of the profile view.")
+        let profileBio = self.normalizedProfileBio
+        let profileBioEmoji = self.normalizedProfileBioEmoji
+        if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
+            aboutSection.add(OWSTableItem.item(name: bioForDisplay,
+                                               textColor: Theme.primaryTextColor,
+                                               accessoryType: .disclosureIndicator,
+                                               accessibilityIdentifier: "profile_bio") { [weak self] in
+                self?.didTapBio()
+            })
+        } else {
+            aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
+                                                                       comment: "Button to add a 'bio' to the user's profile in the profile view."),
+                                               textColor: Theme.accentBlueColor,
+                                               accessoryType: .disclosureIndicator,
+                                               accessibilityIdentifier: "profile_bio") { [weak self] in
+                self?.didTapBio()
+            })
+        }
+        contents.addSection(aboutSection)
 
-        // Information
+        let lastSection = aboutSection
+
+        // Information Footer
+
         lastSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
             let cell = OWSTableItem.newCell()
 
@@ -561,12 +585,12 @@ public class ProfileViewController: OWSTableViewController {
         (familyNameTextField.text ?? "").ows_stripped()
     }
 
-    private var normalizedProfileBio: String {
-        (profileBio ?? "").ows_stripped()
+    private var normalizedProfileBio: String? {
+        profileBio?.ows_stripped()
     }
 
-    private var normalizedProfileBioEmoji: String {
-        (profileBioEmoji ?? "").ows_stripped()
+    private var normalizedProfileBioEmoji: String? {
+        profileBioEmoji?.ows_stripped()
     }
 
     private func profileCompleted() {
@@ -636,6 +660,14 @@ public class ProfileViewController: OWSTableViewController {
         }
     }
 
+    private func didTapBio() {
+        let view = ProfileBioViewController(bio: profileBio, bioEmoji:
+                                                profileBioEmoji,
+                                            mode: mode,
+                                            profileDelegate: self)
+        navigationController?.pushViewController(view, animated: true)
+    }
+
     private var shouldShowUsernameRow: Bool {
         switch mode {
         case .experienceUpgrade, .registration:
@@ -701,12 +733,14 @@ extension ProfileViewController: UITextFieldDelegate {
         NSLocale.current.isCJKV ? givenNameTextField : familyNameTextField
     }
 
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField,
+                          shouldChangeCharactersIn range: NSRange,
+                          replacementString string: String) -> Bool {
         TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
-            byteLimit: OWSUserProfile.kMaxNameLengthBytes
+            maxByteCount: OWSUserProfile.kMaxNameLengthBytes
         )
     }
 
@@ -739,5 +773,18 @@ extension ProfileViewController: OWSNavigationView {
             leaveViewCheckingForUnsavedChanges()
         }
         return result
+    }
+}
+
+// MARK: -
+
+extension ProfileViewController: ProfileBioViewControllerDelegate {
+
+    public func profileBioViewDidComplete(bio: String?,
+                                          bioEmoji: String?) {
+        profileBio = bio
+        profileBioEmoji = bioEmoji
+        hasUnsavedChanges = true
+        updateTableContents()
     }
 }

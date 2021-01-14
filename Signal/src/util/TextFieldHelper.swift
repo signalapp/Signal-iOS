@@ -8,38 +8,40 @@ import UIKit
 @objc
 public class TextFieldHelper: NSObject {
 
-    public enum StringLengthLimit {
-        case byteCount(maxByteCount: Int)
-        case characterCount(maxCharacterCount: Int)
-    }
-
     // Used to implement the UITextFieldDelegate method: `textField:shouldChangeCharactersInRange:replacementString`
     // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
     @objc
     public class func textField(_ textField: UITextField,
                                 shouldChangeCharactersInRange editingRange: NSRange,
                                 replacementString: String,
-                                byteLimit: UInt) -> Bool {
+                                maxByteCount: Int) -> Bool {
         self.textField(textField,
                        shouldChangeCharactersInRange: editingRange,
                        replacementString: replacementString,
-                       stringLengthLimit: .byteCount(maxByteCount: Int(byteLimit)))
+                       maxByteCount: maxByteCount,
+                       maxCharacterCount: nil)
     }
 
     public class func textField(_ textField: UITextField,
                                 shouldChangeCharactersInRange editingRange: NSRange,
                                 replacementString: String,
-                                stringLengthLimit: StringLengthLimit) -> Bool {
+                                maxByteCount: Int? = nil,
+                                maxCharacterCount: Int? = nil) -> Bool {
 
         func hasValidLength(_ string: String) -> Bool {
-            switch stringLengthLimit {
-            case .byteCount(let maxByteCount):
+            if let maxByteCount = maxByteCount {
                 let byteCount = string.utf8.count
-                return byteCount <= maxByteCount
-            case .characterCount(let maxCharacterCount):
-                let characterCount = string.count
-                return characterCount <= maxCharacterCount
+                guard byteCount <= maxByteCount else {
+                    return false
+                }
             }
+            if let maxCharacterCount = maxCharacterCount {
+                let characterCount = string.glyphCount
+                guard characterCount <= maxCharacterCount else {
+                    return false
+                }
+            }
+            return true
         }
 
         let existingString = textField.text ?? ""

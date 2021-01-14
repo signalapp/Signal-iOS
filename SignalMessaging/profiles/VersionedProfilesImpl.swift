@@ -137,6 +137,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 return encryptedValue
             }
 
+            // The Base 64 lengths reflect encryption + Base 64 encoding
+            // of the max-length padded value.
             let bioValue = try encryptOptionalValue(profileBio,
                                                     paddedLengths: [128, 254, 512 ],
                                                     validBase64Lengths: [208, 276, 720])
