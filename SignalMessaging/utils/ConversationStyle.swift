@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -117,6 +117,15 @@ public class ConversationStyle: NSObject {
     @objc
     public let lastTextLineAxis: CGFloat
 
+    // Incoming and outgoing messages are visually distinguished
+    // by leading and trailing alignment, respectively.
+    //
+    // Reserve a space so that in the most compressed layouts
+    // (small form factor, group avatar, multi-select, etc.)
+    // there is space for them to align in these directions.
+    @objc
+    public static let messageDirectionSpacing: CGFloat = 12
+
     @objc
     public required init(type: ConversationStyleType,
                          thread: TSThread,
@@ -155,6 +164,9 @@ public class ConversationStyle: NSObject {
         contentWidth = viewWidth - (gutterLeading + gutterTrailing)
 
         var maxMessageWidth = contentWidth - (Self.selectionViewWidth + Self.messageStackSpacing)
+
+        maxMessageWidth -= Self.messageDirectionSpacing
+
         if thread.isGroupThread {
             maxMessageWidth -= (Self.groupMessageAvatarDiameter + Self.messageStackSpacing)
         }
