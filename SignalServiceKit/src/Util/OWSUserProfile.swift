@@ -19,6 +19,9 @@ public extension OWSUserProfile {
 
     // MARK: - Bio
 
+    // Joins the two bio components into a single string
+    // ready for display. It filters and enforces length
+    // limits on the components.
     static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
         var components = [String]()
         if let component = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthChars).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
