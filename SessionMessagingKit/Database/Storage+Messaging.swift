@@ -27,16 +27,21 @@ extension Storage {
     /// Returns the ID of the `TSIncomingMessage` that was constructed.
     public func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        guard let threadID = getOrCreateThread(for: message.sender!, groupPublicKey: groupPublicKey, openGroupID: openGroupID, using: transaction),
+        guard let threadID = getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: groupPublicKey, openGroupID: openGroupID, using: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
-        let message = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
-        message.save(with: transaction)
-        message.attachments(with: transaction).forEach { attachment in
-            attachment.albumMessageId = message.uniqueId!
+        let tsMessage: TSMessage
+        if message.sender == getUserPublicKey() {
+            tsMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
+        } else {
+            tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
+        }
+        tsMessage.save(with: transaction)
+        tsMessage.attachments(with: transaction).forEach { attachment in
+            attachment.albumMessageId = tsMessage.uniqueId!
             attachment.save(with: transaction)
         }
-        DispatchQueue.main.async { message.touch() } // FIXME: Hack for a thread updating issue
-        return message.uniqueId!
+        DispatchQueue.main.async { tsMessage.touch() } // FIXME: Hack for a thread updating issue
+        return tsMessage.uniqueId!
     }
 
     /// Returns the IDs of the saved attachments.
@@ -49,22 +54,22 @@ extension Storage {
     }
     
     /// Also touches the associated message.
-    public func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any) {
+    public func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsMessageID: String, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Workaround for some YapDatabase funkiness where pointer at this point can actually be a TSAttachmentStream
         guard pointer.responds(to: #selector(setter: TSAttachmentPointer.state)) else { return }
         pointer.state = state
         pointer.save(with: transaction)
-        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else { return }
-        tsIncomingMessage.touch(with: transaction)
+        guard let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) else { return }
+        tsMessage.touch(with: transaction)
     }
     
     /// Also touches the associated message.
-    public func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any) {
+    public func persist(_ stream: TSAttachmentStream, associatedWith tsMessageID: String, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         stream.save(with: transaction)
-        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else { return }
-        tsIncomingMessage.touch(with: transaction)
+        guard let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) else { return }
+        tsMessage.touch(with: transaction)
     }
 
     private static let receivedMessageTimestampsCollection = "ReceivedMessageTimestampsCollection"

@@ -4,7 +4,7 @@ import SignalCoreKit
 
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let attachmentID: String
-    public let tsIncomingMessageID: String
+    public let tsMessageID: String
     public var delegate: JobDelegate?
     public var id: String?
     public var failureCount: UInt = 0
@@ -24,25 +24,25 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     public static let maxFailureCount: UInt = 20
 
     // MARK: Initialization
-    public init(attachmentID: String, tsIncomingMessageID: String) {
+    public init(attachmentID: String, tsMessageID: String) {
         self.attachmentID = attachmentID
-        self.tsIncomingMessageID = tsIncomingMessageID
+        self.tsMessageID = tsMessageID
     }
 
     // MARK: Coding
     public init?(coder: NSCoder) {
         guard let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
-            let tsIncomingMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String?,
+            let tsMessageID = coder.decodeObject(forKey: "tsIncomingMessageID") as! String?,
             let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.attachmentID = attachmentID
-        self.tsIncomingMessageID = tsIncomingMessageID
+        self.tsMessageID = tsMessageID
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(attachmentID, forKey: "attachmentID")
-        coder.encode(tsIncomingMessageID, forKey: "tsIncomingMessageID")
+        coder.encode(tsMessageID, forKey: "tsIncomingMessageID")
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }
@@ -54,21 +54,21 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         }
         let storage = SNMessagingKitConfiguration.shared.storage
         storage.write(with: { transaction in
-            storage.setAttachmentState(to: .downloading, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+            storage.setAttachmentState(to: .downloading, for: pointer, associatedWith: self.tsMessageID, using: transaction)
         }, completion: { })
         let temporaryFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth() + UUID().uuidString)
         let handleFailure: (Swift.Error) -> Void = { error in // Intentionally capture self
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
             if let error = error as? Error, case .noAttachment = error {
                 storage.write(with: { transaction in
-                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
             } else if let error = error as? DotNetAPI.Error, case .parsingFailed = error {
                 // No need to retry if the response is invalid. Most likely this means we (incorrectly)
                 // got a "Cannot GET ..." error from the file server.
                 storage.write(with: { transaction in
-                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsIncomingMessageID, using: transaction)
+                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
             } else {
@@ -99,7 +99,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             }
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
             storage.write(with: { transaction in
-                storage.persist(stream, associatedWith: self.tsIncomingMessageID, using: transaction)
+                storage.persist(stream, associatedWith: self.tsMessageID, using: transaction)
             }, completion: { })
         }.catch(on: DispatchQueue.global()) { error in
             handleFailure(error)

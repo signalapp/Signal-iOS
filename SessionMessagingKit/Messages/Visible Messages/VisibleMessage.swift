@@ -2,6 +2,10 @@ import SessionUtilitiesKit
 
 @objc(SNVisibleMessage)
 public final class VisibleMessage : Message {
+    /// In the case of a sync message, the public key of the person the message was targeted at.
+    ///
+    /// - Note: `nil` if this isn't a sync message.
+    public var syncTarget: String?
     @objc public var text: String?
     @objc public var attachmentIDs: [String] = []
     @objc public var quote: Quote?
@@ -9,6 +13,8 @@ public final class VisibleMessage : Message {
     @objc public var contact: Contact?
     @objc public var profile: Profile?
 
+    public override var isSelfSendValid: Bool { true }
+    
     // MARK: Initialization
     public override init() { super.init() }
 
@@ -23,6 +29,7 @@ public final class VisibleMessage : Message {
     // MARK: Coding
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
+        if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
         if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
         if let attachmentIDs = coder.decodeObject(forKey: "attachments") as! [String]? { self.attachmentIDs = attachmentIDs }
         if let quote = coder.decodeObject(forKey: "quote") as! Quote? { self.quote = quote }
@@ -33,6 +40,7 @@ public final class VisibleMessage : Message {
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
+        coder.encode(syncTarget, forKey: "syncTarget")
         coder.encode(text, forKey: "body")
         coder.encode(attachmentIDs, forKey: "attachments")
         coder.encode(quote, forKey: "quote")
@@ -51,6 +59,7 @@ public final class VisibleMessage : Message {
         if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
         // TODO: Contact
         if let profile = Profile.fromProto(dataMessage) { result.profile = profile }
+        result.syncTarget = dataMessage.syncTarget
         return result
     }
 
@@ -100,6 +109,10 @@ public final class VisibleMessage : Message {
         } catch {
             SNLog("Couldn't construct visible message proto from: \(self).")
             return nil
+        }
+        // Sync target
+        if let syncTarget = syncTarget {
+            dataMessage.setSyncTarget(syncTarget)
         }
         // Build
         do {

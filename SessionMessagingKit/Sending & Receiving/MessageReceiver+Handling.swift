@@ -192,7 +192,7 @@ extension MessageReceiver {
             }
         }
         // Get or create thread
-        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
+        guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         // Parse quote if needed
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
@@ -210,12 +210,12 @@ extension MessageReceiver {
             }
         }
         // Persist the message
-        guard let tsIncomingMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
+        guard let tsMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
             groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Start attachment downloads if needed
         attachmentsToDownload.forEach { attachmentID in
-            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
+            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID)
             if isMainAppAndActive {
                 JobQueue.shared.add(downloadJob, using: transaction)
             } else {
@@ -227,10 +227,10 @@ extension MessageReceiver {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
         // Notify the user if needed
-        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
-            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsIncomingMessageID }
+        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
+            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
         SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
-        return tsIncomingMessageID
+        return tsMessageID
     }
 
     private static func handleClosedGroupUpdateV2(_ message: ClosedGroupUpdate, using transaction: Any) {

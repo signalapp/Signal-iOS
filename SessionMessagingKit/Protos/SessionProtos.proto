@@ -204,6 +204,7 @@ message DataMessage {
   repeated Preview             preview             = 10;
   optional LokiProfile         profile             = 101;
   optional ClosedGroupUpdateV2 closedGroupUpdateV2 = 104;
+  optional string              syncTarget          = 105;
   optional PublicChatInfo      publicChatInfo      = 999;
 }
 

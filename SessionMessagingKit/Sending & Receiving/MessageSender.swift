@@ -105,7 +105,7 @@ public final class MessageSender : NSObject {
     }
 
     // MARK: One-on-One Chats & Closed Groups
-    internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+    internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any, isSyncMessage: Bool = false) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -137,8 +137,8 @@ public final class MessageSender : NSObject {
         }
         // Validate the message
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-        // Stop here if this is a self-send (unless it's a configuration message)
-        guard !isSelfSend || message is ConfigurationMessage else {
+        // Stop here if this is a self-send (unless it's a configuration message or a sync message)
+        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage else {
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
@@ -352,6 +352,15 @@ public final class MessageSender : NSObject {
             tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
         }
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction as! YapDatabaseReadWriteTransaction)
+        // Sync the message if:
+        // • it wasn't a self-send
+        // • it was a visible message
+        let userPublicKey = getUserHexEncodedPublicKey()
+        if case .contact(let publicKey) = destination, publicKey != userPublicKey, let message = message as? VisibleMessage {
+            message.syncTarget = publicKey
+            // FIXME: Make this a job
+            sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()
+        }
     }
 
     public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {

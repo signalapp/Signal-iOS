@@ -2695,6 +2695,9 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
         if let _value = closedGroupUpdateV2 {
             builder.setClosedGroupUpdateV2(_value)
         }
+        if let _value = syncTarget {
+            builder.setSyncTarget(_value)
+        }
         if let _value = publicChatInfo {
             builder.setPublicChatInfo(_value)
         }
@@ -2773,6 +2776,10 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
             proto.closedGroupUpdateV2 = valueParam.proto
         }
 
+        @objc public func setSyncTarget(_ valueParam: String) {
+            proto.syncTarget = valueParam
+        }
+
         @objc public func setPublicChatInfo(_ valueParam: SNProtoPublicChatInfo) {
             proto.publicChatInfo = valueParam.proto
         }
@@ -2843,6 +2850,16 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
     }
     @objc public var hasTimestamp: Bool {
         return proto.hasTimestamp
+    }
+
+    @objc public var syncTarget: String? {
+        guard proto.hasSyncTarget else {
+            return nil
+        }
+        return proto.syncTarget
+    }
+    @objc public var hasSyncTarget: Bool {
+        return proto.hasSyncTarget
     }
 
     private init(proto: SessionProtos_DataMessage,
