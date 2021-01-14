@@ -450,7 +450,7 @@ extension ColorPickerView: CVComponentDelegate {
                              attachmentStream: TSAttachmentStream,
                              imageView: UIView) {}
 
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) {}
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment, in view: CVComponentView) {}
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
 

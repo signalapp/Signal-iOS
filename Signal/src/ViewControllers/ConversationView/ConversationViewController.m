@@ -4298,12 +4298,17 @@ typedef enum : NSUInteger {
 }
 
 - (void)cvc_didTapGenericAttachment:(CVComponentGenericAttachment *_Nonnull)attachment
+                    inComponentView:(id <CVComponentView> _Nonnull)componentView
 {
     OWSAssertIsOnMainThread();
 
-    QLPreviewController *previewController = [[QLPreviewController alloc] init];
-    previewController.dataSource = attachment;
-    [self presentViewController:previewController animated:YES completion:nil];
+    if (attachment.canQuickLook) {
+        QLPreviewController *previewController = [[QLPreviewController alloc] init];
+        previewController.dataSource = attachment;
+        [self presentViewController:previewController animated:YES completion:nil];
+    } else {
+        [attachment showShareUIFromView:componentView.rootView];
+    }
 }
 
 - (void)cvc_didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply

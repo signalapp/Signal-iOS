@@ -836,10 +836,14 @@ extension MessageDetailViewController: CVComponentDelegate {
         present(mediaPageVC, animated: true)
     }
 
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) {
-        let previewController = QLPreviewController()
-        previewController.dataSource = attachment
-        present(previewController, animated: true)
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment, in componentView: CVComponentView) {
+        if attachment.canQuickLook {
+            let previewController = QLPreviewController()
+            previewController.dataSource = attachment
+            present(previewController, animated: true)
+        } else {
+            attachment.showShareUI(from: componentView.rootView)
+        }
     }
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}

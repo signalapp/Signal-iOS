@@ -255,7 +255,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    renderItem: CVRenderItem) -> Bool {
 
         if attachmentStream != nil {
-            componentDelegate.cvc_didTapGenericAttachment(self)
+            componentDelegate.cvc_didTapGenericAttachment(self, in: componentView)
         } else if let attachmentPointer = attachmentPointer {
             switch attachmentPointer.state {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
@@ -274,6 +274,24 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
 
         return true
+    }
+
+    @objc
+    public var canQuickLook: Bool {
+        guard let url = attachmentStream?.originalMediaURL else {
+            return false
+        }
+        return QLPreviewController.canPreview(url as NSURL)
+    }
+
+    @objc(showShareUIFromView:)
+    public func showShareUI(from view: UIView) {
+        guard let attachmentStream = attachmentStream else {
+            owsFailDebug("should not show the share UI unless there's a downloaded attachment")
+            return
+        }
+        // TODO: Ensure share UI is shown from correct location.
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream, sender: view)
     }
 
     // MARK: -
