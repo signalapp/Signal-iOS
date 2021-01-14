@@ -756,7 +756,7 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            if isValidOutputImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
+            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
                     return try removeImageMetadata(attachment: attachment)
@@ -777,11 +777,16 @@ public class SignalAttachment: NSObject {
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isValidOutputImage(dataSource: DataSource, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
+    private class func isValidOutputOriginalImage(dataSource: DataSource,
+                                                  dataUTI: String,
+                                                  imageQuality: TSImageQuality) -> Bool {
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else {
             return false
         }
-        if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
+        if !doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
+            return false
+        }
+        if imageQuality == .original || dataSource.hasStickerLikeProperties {
             return true
         }
         return false
