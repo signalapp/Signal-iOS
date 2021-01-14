@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -566,8 +566,18 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             }
         }
 
+        func defaultSubtitle() -> NSAttributedString? {
+            Self.databaseStorage.read { transaction in
+                guard let bioForDisplay = Self.profileManager.profileBioForDisplay(for: address,
+                                                                                   transaction: transaction) else {
+                    return nil
+                }
+                return NSAttributedString(string: bioForDisplay)
+            }
+        }
+
         guard !items.isEmpty else {
-            return nil
+            return defaultSubtitle()
         }
         if GroupManager.areMigrationsBlocking {
             let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
@@ -575,7 +585,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return warning.attributedString()
        }
         guard DebugFlags.groupsV2memberStatusIndicators else {
-            return nil
+            return defaultSubtitle()
         }
         return NSAttributedString(string: items.joined(separator: ", "),
                                   attributes: [

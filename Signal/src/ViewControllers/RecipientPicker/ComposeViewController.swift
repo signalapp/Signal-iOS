@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -108,6 +108,21 @@ extension ComposeViewController: RecipientPickerDelegate {
         case .group(let thread):
             guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
+        switch recipient.identifier {
+        case .address(let address):
+            if let bioForDisplay = (Self.databaseStorage.read { transaction in
+                Self.profileManager.profileBioForDisplay(for: address, transaction: transaction)
+               }) {
+                return NSAttributedString(string: bioForDisplay)
+            }
+            return nil
+        case .group:
+            return nil
         }
     }
 

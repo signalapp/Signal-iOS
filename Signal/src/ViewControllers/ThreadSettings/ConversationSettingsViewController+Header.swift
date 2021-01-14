@@ -9,15 +9,21 @@ import UIKit
 extension ConversationSettingsViewController {
 
     private var subtitlePointSize: CGFloat {
-        return 12
+        UIFont.ows_dynamicTypeBody2.pointSize
     }
 
     private var threadName: String {
-        var threadName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+        databaseStorage.read { transaction in
+            self.threadName(transaction: transaction)
+        }
+    }
+
+    private func threadName(transaction: SDSAnyReadTransaction) -> String {
+        var threadName = contactsManager.displayName(for: thread, transaction: transaction)
 
         if let contactThread = thread as? TSContactThread {
             if let phoneNumber = contactThread.contactAddress.phoneNumber,
-                phoneNumber == threadName {
+               phoneNumber == threadName {
                 threadName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             }
         }
@@ -27,11 +33,15 @@ extension ConversationSettingsViewController {
 
     private struct HeaderBuilder {
         let viewController: ConversationSettingsViewController
+        let transaction: SDSAnyReadTransaction
 
         var subviews = [UIView]()
 
-        init(viewController: ConversationSettingsViewController) {
+        init(viewController: ConversationSettingsViewController,
+             transaction: SDSAnyReadTransaction) {
+
             self.viewController = viewController
+            self.transaction = transaction
 
             addFirstSubviews()
         }
@@ -60,7 +70,8 @@ extension ConversationSettingsViewController {
         func buildAvatarView() -> UIView {
             let avatarSize: UInt = kLargeAvatarSize
             let avatarImage = OWSAvatarBuilder.buildImage(thread: viewController.thread,
-                                                          diameter: avatarSize)
+                                                          diameter: avatarSize,
+                                                          transaction: transaction)
             let avatarView = AvatarImageView(image: avatarImage)
             avatarView.autoSetDimensions(to: CGSize(square: CGFloat(avatarSize)))
             // Track the most recent avatar view.
@@ -70,7 +81,7 @@ extension ConversationSettingsViewController {
 
         func buildThreadNameLabel() -> UILabel {
             let label = UILabel()
-            label.text = viewController.threadName
+            label.text = viewController.threadName(transaction: transaction)
             label.textColor = Theme.primaryTextColor
             label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
             label.lineBreakMode = .byTruncatingTail
@@ -82,7 +93,7 @@ extension ConversationSettingsViewController {
         }
 
         mutating func addSubtitleLabel(attributedText: NSAttributedString, font: UIFont? = nil) {
-            subviews.append(UIView.spacer(withHeight: 2))
+            subviews.append(UIView.spacer(withHeight: 8))
             subviews.append(buildHeaderSubtitleLabel(attributedText: attributedText, font: font))
         }
 
@@ -90,7 +101,8 @@ extension ConversationSettingsViewController {
                                          viewController: ConversationSettingsViewController) {
             subviews.append(UIView.spacer(withHeight: 12))
 
-            let migrationInfo = GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread)
+            let migrationInfo = GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread,
+                                                                                  transaction: transaction)
             let legacyGroupView = LegacyGroupView(groupThread: groupThread,
                                                   migrationInfo: migrationInfo,
                                                   viewController: viewController)
@@ -122,11 +134,8 @@ extension ConversationSettingsViewController {
             // display the thread whitelist state in settings. Eventually we can probably delete this.
             #if DEBUG
             let viewController = self.viewController
-            let isThreadInProfileWhitelist =
-                viewController.databaseStorage.uiRead { transaction in
-                    return UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
-                                                        transaction: transaction)
-            }
+            let isThreadInProfileWhitelist = UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
+                                                                            transaction: transaction)
             let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
             addSubtitleLabel(text: hasSharedProfile)
             #endif
@@ -151,7 +160,15 @@ extension ConversationSettingsViewController {
     }
 
     private func buildHeaderForGroup(groupThread: TSGroupThread) -> UIView {
-        var builder = HeaderBuilder(viewController: self)
+        databaseStorage.read { transaction in
+            self.buildHeaderForGroup(groupThread: groupThread, transaction: transaction)
+        }
+    }
+
+    private func buildHeaderForGroup(groupThread: TSGroupThread,
+                                     transaction: SDSAnyReadTransaction) -> UIView {
+        var builder = HeaderBuilder(viewController: self,
+                                    transaction: transaction)
 
         if !groupThread.groupModel.isPlaceholder {
             let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
@@ -199,7 +216,8 @@ extension ConversationSettingsViewController {
 
     private func buildHeaderForContact(contactThread: TSContactThread,
                                        transaction: SDSAnyReadTransaction) -> UIView {
-        var builder = HeaderBuilder(viewController: self)
+        var builder = HeaderBuilder(viewController: self,
+                                    transaction: transaction)
 
         if let bioText = profileManager.profileBioForDisplay(for: contactThread.contactAddress,
                                                              transaction: transaction) {

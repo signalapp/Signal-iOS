@@ -73,6 +73,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         titleLabelConfig.applyForRendering(label: titleLabel)
         stackView.addArrangedSubview(titleLabel)
 
+        if let bioText = self.bioText {
+            let bioLabel = componentView.bioLabel
+            bioLabelConfig(text: bioText).applyForRendering(label: bioLabel)
+            stackView.addArrangedSubview(bioLabel)
+        }
+
         if let detailsText = self.detailsText {
             let detailsLabel = componentView.detailsLabel
             detailsLabelConfig(text: detailsText).applyForRendering(label: detailsLabel)
@@ -364,6 +370,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate var avatarView: AvatarImageView?
 
         fileprivate let titleLabel = UILabel()
+        fileprivate let bioLabel = UILabel()
         fileprivate let detailsLabel = UILabel()
 
         fileprivate let mutualGroupsLabel = UILabel()
@@ -383,6 +390,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         public func reset() {
             stackView.reset()
             titleLabel.text = nil
+            bioLabel.text = nil
             detailsLabel.text = nil
             mutualGroupsLabel.text = nil
             avatarView = nil
