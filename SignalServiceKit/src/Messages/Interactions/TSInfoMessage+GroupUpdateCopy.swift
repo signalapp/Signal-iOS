@@ -13,6 +13,19 @@ public class GroupUpdateCopyItem: NSObject {
         self.type = type
         self.text = text
     }
+
+    var shouldShowInInbox: Bool {
+        switch type {
+        case .groupMigrated,
+             .groupMigrated_usersDropped,
+             .groupMigrated_usersInvited:
+            return false
+        case .userMembershipState_left:
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 @objc

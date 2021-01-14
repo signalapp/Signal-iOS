@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -465,7 +465,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 }
 
 // Returns YES IFF the interaction should show up in the inbox as the last message.
-+ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
++ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(interaction);
 
@@ -491,13 +491,22 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
-        if (infoMessage.messageType == TSInfoMessageVerificationStateChange
-            || infoMessage.messageType == TSInfoMessageProfileUpdate) {
-            return NO;
+        switch (infoMessage.messageType) {
+            case TSInfoMessageVerificationStateChange:
+            case TSInfoMessageProfileUpdate:
+                return NO;
+            case TSInfoMessageTypeGroupUpdate: {
+                NSArray<GroupUpdateCopyItem *> *updates = [infoMessage groupUpdateItemsWithTransaction:transaction];
+                if (!updates) {
+                    return YES;
+                }
+                return NSNotFound !=
+                    [updates indexOfObjectPassingTest:^(
+                        GroupUpdateCopyItem *update, NSUInteger idx, BOOL *stop) { return update.shouldShowInInbox; }];
+            }
+            default:
+                return YES;
         }
-    }
-    if (interaction.isGroupMigrationMessage) {
-        return NO;
     }
 
     return YES;
@@ -539,8 +548,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     BOOL hasLastVisibleInteraction = [self hasLastVisibleInteractionWithTransaction:transaction];
     BOOL needsToClearLastVisibleSortId = hasLastVisibleInteraction && wasMessageInserted;
 
-    if (![self.class shouldInteractionAppearInInbox:message]) {
-
+    if (![self.class shouldInteractionAppearInInbox:message transaction:transaction]) {
         // We want to clear the last visible sort ID on any new message,
         // even if the message doesn't appear in the inbox view.
         if (needsToClearLastVisibleSortId) {
