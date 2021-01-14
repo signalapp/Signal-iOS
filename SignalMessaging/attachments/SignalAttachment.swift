@@ -951,20 +951,9 @@ public class SignalAttachment: NSObject {
     }
 
     private class func jpegCompressionQuality(imageUploadQuality: TSImageQualityTier) -> CGFloat {
-        switch imageUploadQuality {
-        case .original:
-            return 1
-        case .high:
-            return 0.9
-        case .mediumHigh:
-            return 0.8
-        case .medium:
-            return 0.7
-        case .mediumLow:
-            return 0.6
-        case .low:
-            return 0.5
-        }
+        // 0.6 produces some artifacting but not a ton.
+        // We don't want to scale this level down across qualities because lower resolutions show artifacting more.
+        return 0.6
     }
 
     private class func removeImageMetadata(attachment: SignalAttachment) throws -> SignalAttachment {
