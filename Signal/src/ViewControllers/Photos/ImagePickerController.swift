@@ -211,10 +211,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     var imageQuality: TSImageQuality {
-        guard let delegate = delegate else {
-            return .medium
-        }
-
         return .medium
     }
 
