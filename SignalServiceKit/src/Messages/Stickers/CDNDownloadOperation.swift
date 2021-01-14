@@ -39,8 +39,8 @@ open class CDNDownloadOperation: OWSOperation {
         task?.cancel()
     }
 
-    let kMaxStickerDataDownloadSize: UInt = 300 * 1000
-    let kMaxStickerPackDownloadSize: UInt = 250 * 1000
+    let kMaxStickerDataDownloadSize: UInt = 1000 * 1000
+    let kMaxStickerPackDownloadSize: UInt = 1000 * 1000
 
     public func tryToDownload(urlPath: String, maxDownloadSize: UInt?) throws -> Promise<Data> {
         guard !isCorrupt(urlPath: urlPath) else {
