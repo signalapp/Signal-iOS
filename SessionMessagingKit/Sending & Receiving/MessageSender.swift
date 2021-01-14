@@ -159,7 +159,7 @@ public final class MessageSender : NSObject {
         // Serialize the protobuf
         let plaintext: Data
         do {
-            plaintext = try proto.serializedData()
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
         } catch {
             SNLog("Couldn't serialize proto due to error: \(error).")
             handleFailure(with: error, using: transaction)
