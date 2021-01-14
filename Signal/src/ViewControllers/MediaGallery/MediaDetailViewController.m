@@ -264,9 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.playVideoButton = playVideoButton;
         [self.view addSubview:playVideoButton];
 
-        OWSLayerView *playVideoCircleView = [[OWSLayerView alloc]
-             initWithFrame:CGRectZero
-            layoutCallback:^(UIView *view) { view.layer.cornerRadius = MIN(view.width, view.height) * 0.5f; }];
+        OWSLayerView *playVideoCircleView = [OWSLayerView circleView];
         playVideoCircleView.backgroundColor = [UIColor.ows_whiteColor colorWithAlphaComponent:0.75f];
         playVideoCircleView.userInteractionEnabled = NO;
         [playVideoButton addSubview:playVideoCircleView];

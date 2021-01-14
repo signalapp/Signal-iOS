@@ -919,11 +919,8 @@ class TrimVideoTimelineView: UIView {
             return
         }
 
-        let timeBubbleView = OWSLayerView()
+        let timeBubbleView = OWSLayerView.circleView()
         timeBubbleView.backgroundColor = UIColor(white: 0, alpha: 0.6)
-        timeBubbleView.layoutCallback = { view in
-            view.layer.cornerRadius = min(view.width, view.height) * 0.5
-        }
         addSubview(timeBubbleView)
         timeBubbleView.autoPinEdge(.top, to: .bottom, of: self, withOffset: 9)
 
