@@ -72,7 +72,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
-- (OWSProfileSnapshot *)localProfileSnapshot;
+
+- (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
+    NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
 
 - (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -137,6 +139,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Clean Up
 

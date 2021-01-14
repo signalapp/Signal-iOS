@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,9 +192,21 @@ extension ConversationSettingsViewController {
     }
 
     private func buildHeaderForContact(contactThread: TSContactThread) -> UIView {
+        databaseStorage.read { transaction in
+            self.buildHeaderForContact(contactThread: contactThread, transaction: transaction)
+        }
+    }
+
+    private func buildHeaderForContact(contactThread: TSContactThread,
+                                       transaction: SDSAnyReadTransaction) -> UIView {
         var builder = HeaderBuilder(viewController: self)
 
-        let threadName = contactsManager.displayNameWithSneakyTransaction(thread: contactThread)
+        if let bioText = profileManager.profileBioForDisplay(for: contactThread.contactAddress,
+                                                             transaction: transaction) {
+            builder.addSubtitleLabel(text: bioText)
+        }
+
+        let threadName = contactsManager.displayName(for: contactThread, transaction: transaction)
         let recipientAddress = contactThread.contactAddress
         if let phoneNumber = recipientAddress.phoneNumber {
             let formattedPhoneNumber =
@@ -204,9 +216,7 @@ extension ConversationSettingsViewController {
             }
         }
 
-        if let username = (databaseStorage.uiRead { transaction in
-            return self.profileManager.username(for: recipientAddress, transaction: transaction)
-        }),
+        if let username = profileManager.username(for: recipientAddress, transaction: transaction),
             username.count > 0 {
             if let formattedUsername = CommonFormats.formatUsername(username),
                 threadName != formattedUsername {
@@ -219,7 +229,8 @@ extension ConversationSettingsViewController {
             builder.addSubtitleLabel(text: uuidText)
         }
 
-        let isVerified = identityManager.verificationState(for: recipientAddress) == .verified
+        let isVerified = identityManager.verificationState(for: recipientAddress,
+                                                           transaction: transaction) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
             subtitle.appendTemplatedImage(named: "check-12", font: UIFont.ows_regularFont(withSize: builder.viewController.subtitlePointSize))
@@ -231,9 +242,7 @@ extension ConversationSettingsViewController {
 
         // This will not appear in public builds.
         if DebugFlags.showProfileKeyAndUuidsIndicator {
-            let profileKey = self.databaseStorage.uiRead { transaction in
-                self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction)
-            }
+            let profileKey = profileManager.profileKeyData(for: recipientAddress, transaction: transaction)
             let text = String(format: "Profile Key: %@", profileKey?.hexadecimalString ?? "Unknown")
             builder.addSubtitleLabel(attributedText: text.asAttributedString)
         }
@@ -241,15 +250,13 @@ extension ConversationSettingsViewController {
         // This will not appear in public builds.
         if DebugFlags.showCapabilityIndicators {
             var capabilities = [String]()
-            self.databaseStorage.uiRead { transaction in
-                if GroupManager.doesUserHaveGroupsV2Capability(address: recipientAddress,
-                                                               transaction: transaction) {
-                    capabilities.append("gv2")
-                }
-                if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: recipientAddress,
-                                                               transaction: transaction) {
-                    capabilities.append("migration")
-                }
+            if GroupManager.doesUserHaveGroupsV2Capability(address: recipientAddress,
+                                                           transaction: transaction) {
+                capabilities.append("gv2")
+            }
+            if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: recipientAddress,
+                                                                    transaction: transaction) {
+                capabilities.append("migration")
             }
             let text = String(format: "Capabilities: %@", capabilities.joined(separator: ", "))
             builder.addSubtitleLabel(attributedText: text.asAttributedString)

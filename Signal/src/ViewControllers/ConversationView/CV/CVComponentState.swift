@@ -201,6 +201,7 @@ public class CVComponentState: Equatable {
     struct ThreadDetails: Equatable {
         let avatar: UIImage?
         let titleText: String
+        let bioText: String?
         let detailsText: String?
         let mutualGroupsText: NSAttributedString?
     }
@@ -421,6 +422,7 @@ public class CVComponentState: Equatable {
                 return .textOnlyMessage
             }
 
+            Logger.verbose("interaction: \(interaction.debugDescription)")
             owsFailDebug("Unknown state.")
             return .unknown
         }()

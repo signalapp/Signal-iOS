@@ -17,6 +17,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private var avatarImage: UIImage? { threadDetails.avatar }
     private var titleText: String { threadDetails.titleText }
+    private var bioText: String? { threadDetails.bioText }
     private var detailsText: String? { threadDetails.detailsText }
     private var mutualGroupsText: NSAttributedString? { threadDetails.mutualGroupsText }
 
@@ -95,6 +96,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
+    private func bioLabelConfig(text: String) -> CVLabelConfig {
+        CVLabelConfig(text: text,
+                      font: .ows_dynamicTypeSubheadline,
+                      textColor: Theme.secondaryTextAndIconColor,
+                      numberOfLines: 2,
+                      lineBreakMode: .byWordWrapping,
+                      textAlignment: .center)
+    }
+
     private func detailsLabelConfig(text: String) -> CVLabelConfig {
         CVLabelConfig(text: text,
                       font: .ows_dynamicTypeSubheadline,
@@ -132,6 +142,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             owsFailDebug("Invalid thread.")
             return CVComponentState.ThreadDetails(avatar: nil,
                                                   titleText: TSGroupThread.defaultGroupName,
+                                                  bioText: nil,
                                                   detailsText: nil,
                                                   mutualGroupsText: nil)
         }
@@ -152,6 +163,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             } else {
                 return contactName
             }
+        }()
+
+        let bioText = { () -> String? in
+            if contactThread.isNoteToSelf {
+                return nil
+            }
+            return Self.profileManager.profileBioForDisplay(for: contactThread.contactAddress,
+                                                            transaction: transaction)
         }()
 
         let detailsText = { () -> String? in
@@ -260,6 +279,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         return CVComponentState.ThreadDetails(avatar: avatar,
                                               titleText: titleText,
+                                              bioText: bioText,
                                               detailsText: detailsText,
                                               mutualGroupsText: mutualGroupsText)
     }
@@ -288,6 +308,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         return CVComponentState.ThreadDetails(avatar: avatar,
                                               titleText: titleText,
+                                              bioText: nil,
                                               detailsText: detailsText,
                                               mutualGroupsText: nil)
     }
@@ -310,6 +331,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)
         subviewSizes.append(titleSize)
+
+        if let bioText = self.bioText {
+            let bioSize = CVText.measureLabel(config: bioLabelConfig(text: bioText),
+                                              maxWidth: maxContentWidth)
+            subviewSizes.append(bioSize)
+        }
 
         if let detailsText = self.detailsText {
             let detailsSize = CVText.measureLabel(config: detailsLabelConfig(text: detailsText),

@@ -68,7 +68,7 @@ public extension OWSProfileManager {
             profileBioEmoji = pendingUpdate.profileBioEmoji
             profileAvatarData = pendingUpdate.profileAvatarData
         } else {
-            let profileSnapshot = localProfileSnapshot()
+            let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
             profileGivenName = profileSnapshot.givenName
             profileFamilyName = profileSnapshot.familyName
             profileBio = profileSnapshot.bio

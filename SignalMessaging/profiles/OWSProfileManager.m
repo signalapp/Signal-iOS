@@ -369,11 +369,16 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return self.localUserProfile.username;
 }
 
-- (OWSProfileSnapshot *)localProfileSnapshot
+- (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
 {
-    OWSUserProfile *userProfile = self.localUserProfile;
+    return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
+}
+
+- (OWSProfileSnapshot *)profileSnapshotForUserProfile:(OWSUserProfile *)userProfile
+                                  shouldIncludeAvatar:(BOOL)shouldIncludeAvatar
+{
     NSData *_Nullable avatarData = nil;
-    if (userProfile.avatarFileName.length > 0) {
+    if (shouldIncludeAvatar && userProfile.avatarFileName.length > 0) {
         avatarData = [self loadProfileDataWithFilename:userProfile.avatarFileName];
     }
     return [[OWSProfileSnapshot alloc] initWithGivenName:userProfile.givenName
@@ -1652,6 +1657,16 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     }
 
     return nil;
+}
+
+- (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    return [OWSUserProfile bioForDisplayWithBio:userProfile.bio bioEmoji:userProfile.bioEmoji];
 }
 
 - (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam

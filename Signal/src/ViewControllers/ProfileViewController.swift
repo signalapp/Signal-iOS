@@ -112,13 +112,13 @@ public class ProfileViewController: OWSTableViewController {
 
         avatarViewHelper.delegate = self
 
-        let profileSnapshot = profileManager.localProfileSnapshot()
+        let profileSnapshot = profileManager.localProfileSnapshot(shouldIncludeAvatar: true)
         givenNameTextField.text = profileSnapshot.givenName
         familyNameTextField.text = profileSnapshot.familyName
         self.profileBio = profileSnapshot.bio
         self.profileBioEmoji = profileSnapshot.bioEmoji
         self.username = profileSnapshot.username
-        avatarData = profileSnapshot.avatarData
+        self.avatarData = profileSnapshot.avatarData
 
         createViews()
         updateNavigationItem()
