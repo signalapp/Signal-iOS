@@ -108,6 +108,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (UInt32)storedDeviceId;
+- (UInt32)storedDeviceIdWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /// Onboarding state
 - (BOOL)isOnboarded;

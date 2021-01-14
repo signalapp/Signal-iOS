@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,7 +41,7 @@ public extension ConversationViewController {
 
     // MARK: - Pending Join Requests Banner
 
-    func createPendingJoinRequestBanner(viewState: CVCViewState,
+    func createPendingJoinRequestBanner(viewState: CVViewState,
                                         count pendingMemberRequestCount: UInt,
                                         viewMemberRequestsBlock: @escaping () -> Void) -> UIView {
         owsAssertDebug(pendingMemberRequestCount > 0)
@@ -73,8 +73,8 @@ public extension ConversationViewController {
             return nil
         }
         guard let groupThread = thread as? TSGroupThread,
-            groupThread.isGroupV1Thread else {
-                return nil
+              groupThread.isGroupV1Thread else {
+            return nil
         }
         guard groupThread.isLocalUserFullMember else {
             return nil
@@ -85,7 +85,7 @@ public extension ConversationViewController {
         return GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread)
     }
 
-    func createMigrateGroupBanner(viewState: CVCViewState,
+    func createMigrateGroupBanner(viewState: CVViewState,
                                   migrationInfo: GroupsV2MigrationInfo) -> UIView {
 
         let title = NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER",
@@ -120,12 +120,44 @@ public extension ConversationViewController {
 
     // MARK: - Dropped Group Members Banner
 
-    func createDroppedGroupMembersBannerIfNecessary(viewState: CVCViewState) -> UIView? {
+    func createDroppedGroupMembersBannerIfNecessary(viewState: CVViewState) -> UIView? {
         guard let droppedMembersInfo = buildDroppedMembersInfo() else {
             return nil
         }
         return createDroppedGroupMembersBanner(viewState: viewState,
                                                droppedMembersInfo: droppedMembersInfo)
+    }
+
+    // MARK: - Name collision banners
+
+    func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
+        guard !viewState.isMessageRequestNameCollisionBannerHidden else { return nil }
+        guard viewState.threadViewModel.isContactThread else { return nil }
+
+        guard databaseStorage.uiRead(block: { readTx in
+            MessageRequestNameCollisionViewController.shouldShowBanner(
+                for: viewState.threadViewModel.threadRecord,
+                transaction: readTx)
+        }) else { return nil }
+
+        let banner = MessageRequestNameCollisionBanner()
+
+        banner.closeAction = { [weak self] in
+            viewState.isMessageRequestNameCollisionBannerHidden = true
+            self?.ensureBannerState()
+        }
+
+        banner.reviewAction = { [weak self] in
+            guard let self = self else { return }
+            guard let contactThread = self.thread as? TSContactThread else {
+                return owsFailDebug("Unexpected thread type")
+            }
+
+            let vc = MessageRequestNameCollisionViewController(thread: contactThread, collisionDelegate: self)
+            vc.present(from: self)
+        }
+
+        return banner
     }
 }
 
@@ -169,7 +201,7 @@ fileprivate extension ConversationViewController {
         return droppedMembersInfo
     }
 
-    func createDroppedGroupMembersBanner(viewState: CVCViewState,
+    func createDroppedGroupMembersBanner(viewState: CVViewState,
                                          droppedMembersInfo: DroppedMembersInfo) -> UIView {
 
         let title: String
@@ -284,5 +316,97 @@ public class GestureView: UIView {
             return
         }
         tapBlock()
+    }
+}
+
+private class MessageRequestNameCollisionBanner: UIView {
+
+    var reviewAction: () -> Void {
+        get { reviewButton.block }
+        set { reviewButton.block = newValue }
+    }
+
+    var closeAction: () -> Void {
+        get { closeButton.block }
+        set { closeButton.block = newValue }
+    }
+
+    private let label: UILabel = {
+        let labelText = NSLocalizedString(
+            "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL",
+            comment: "Banner label notifying user that a new message is from a user with the same name as an existing contact")
+
+        let label = UILabel()
+        label.text = labelText
+        label.numberOfLines = 0
+        label.font = UIFont.ows_dynamicTypeFootnote
+        label.textColor = Theme.secondaryTextAndIconColor
+        return label
+    }()
+
+    private let infoIcon: UIImageView = {
+        let icon = UIImageView.withTemplateImageName(
+            "info-outline-24",
+            tintColor: Theme.secondaryTextAndIconColor)
+        icon.setCompressionResistanceHigh()
+        icon.setContentHuggingHigh()
+        return icon
+    }()
+
+    private let closeButton: OWSButton = {
+        let button = OWSButton(
+            imageName: "x-circle-16",
+            tintColor: Theme.secondaryTextAndIconColor)
+        button.accessibilityLabel = NSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for banner close button")
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setCompressionResistanceHigh()
+        button.setContentHuggingHigh()
+        return button
+    }()
+
+    private let reviewButton: OWSButton = {
+        let buttonText = NSLocalizedString("MESSAGE_REQUEST_REVIEW_NAME_COLLISION",
+            comment: "Button to allow user to review known name collisions with an incoming message request")
+
+        let button = OWSButton(title: buttonText)
+        button.setTitleColor(Theme.accentBlueColor, for: .normal)
+        button.setTitleColor(Theme.accentBlueColor.withAlphaComponent(0.7), for: .highlighted)
+        button.titleLabel?.font = UIFont.ows_dynamicTypeFootnote
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = Theme.secondaryBackgroundColor
+
+        [infoIcon, label, closeButton, reviewButton]
+            .forEach { addSubview($0) }
+
+        // Note that UIButtons are being aligned based on their content subviews
+        // UIButtons this small will have an intrinsic size larger than their content
+        // That extra padding between the content and its frame messes up alignment
+        label.autoPinEdge(toSuperviewEdge: .top, withInset: 12)
+        infoIcon.autoPinEdge(.top, to: .top, of: label)
+        closeButton.imageView?.autoPinEdge(.top, to: .top, of: label)
+        reviewButton.titleLabel?.autoPinEdge(.top, to: .bottom, of: label, withOffset: 3)
+        reviewButton.titleLabel?.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: -12)
+
+        // Aligning things this way is useful, because we can also increase the tap target
+        // for the tiny close button without messing up the appearance.
+        closeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 8, vMargin: 8)
+
+        infoIcon.autoPinLeading(toEdgeOf: self, offset: 16)
+        label.autoPinLeading(toTrailingEdgeOf: infoIcon, offset: 16)
+        closeButton.imageView?.autoPinLeading(toTrailingEdgeOf: label, offset: 16)
+        closeButton.imageView?.autoPinTrailing(toEdgeOf: self, offset: -16)
+        reviewButton.titleLabel?.autoPinLeading(toEdgeOf: label)
+
+        accessibilityElements = [label, reviewButton, closeButton]
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

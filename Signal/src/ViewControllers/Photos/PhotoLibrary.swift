@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -79,6 +79,7 @@ class PhotoCollectionContents {
     enum PhotoLibraryError: Error {
         case assertionError(description: String)
         case unsupportedMediaType
+        case failedToExportAsset(underlyingError: Error?)
     }
 
     init(fetchResult: PHFetchResult<PHAsset>, localizedTitle: String?) {
@@ -144,6 +145,8 @@ class PhotoCollectionContents {
 
             let options: PHImageRequestOptions = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
+            options.version = .current
+            options.deliveryMode = .highQualityFormat
 
             _ = imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, _, _ in
 
@@ -167,37 +170,43 @@ class PhotoCollectionContents {
         }
     }
 
-    private func requestVideoDataSource(for asset: PHAsset) -> Promise<(dataSource: DataSource, dataUTI: String)> {
+    private func requestVideoDataSource(for asset: PHAsset) -> Promise<SignalAttachment> {
         return Promise { resolver in
 
             let options: PHVideoRequestOptions = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
+            options.version = .current
 
-            _ = imageManager.requestExportSession(forVideo: asset, options: options, exportPreset: AVAssetExportPresetMediumQuality) { exportSession, _ in
-
-                guard let exportSession = exportSession else {
-                    resolver.reject(PhotoLibraryError.assertionError(description: "exportSession was unexpectedly nil"))
+            _ = imageManager.requestAVAsset(forVideo: asset, options: options) { video, _, info in
+                guard let video = video else {
+                    let error = info?[PHImageErrorKey] as! Error?
+                    resolver.reject(PhotoLibraryError.failedToExportAsset(underlyingError: error))
                     return
                 }
 
-                exportSession.outputFileType = AVFileType.mp4
-                exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
+                let dataUTI: String
+                let baseFilename: String?
+                if let onDiskVideo = video as? AVURLAsset {
+                    let url = onDiskVideo.url
+                    dataUTI = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) ?? kUTTypeVideo as String
 
-                let exportPath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
-                let exportURL = URL(fileURLWithPath: exportPath)
-                exportSession.outputURL = exportURL
-
-                Logger.debug("starting video export")
-                exportSession.exportAsynchronously {
-                    Logger.debug("Completed video export")
-
-                    do {
-                        let dataSource = try DataSourcePath.dataSource(with: exportURL, shouldDeleteOnDeallocation: true)
-                        resolver.fulfill((dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String))
-                    } catch {
-                        resolver.reject(error)
+                    if let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) {
+                        if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
+                            resolver.fulfill(SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
+                            return
+                        }
                     }
+
+                    baseFilename = url.lastPathComponent
+                } else {
+                    dataUTI = kUTTypeVideo as String
+                    baseFilename = nil
                 }
+
+                let (compressPromise, _) = SignalAttachment.compressVideoAsMp4(asset: video,
+                                                                               baseFilename: baseFilename,
+                                                                               dataUTI: dataUTI)
+                compressPromise.pipe { resolver.resolve($0) }
             }
         }
     }
@@ -209,9 +218,7 @@ class PhotoCollectionContents {
                 return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality)
             }
         case .video:
-            return requestVideoDataSource(for: asset).map(on: .global()) { (dataSource: DataSource, dataUTI: String) in
-                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-            }
+            return requestVideoDataSource(for: asset)
         default:
             return Promise(error: PhotoLibraryError.unsupportedMediaType)
         }

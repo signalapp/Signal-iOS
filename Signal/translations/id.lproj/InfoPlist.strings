@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Signal perliu menggunakan Apple Music untuk memainkan lampiran media.";
+NSAppleMusicUsageDescription = "Signal perlu menggunakan Apple Music untuk memainkan lampiran media.";
 NSCameraUsageDescription = "Signal menggunakan kamera Anda untuk mengambil foto dan untuk panggilan video.";
 NSContactsUsageDescription = "Signal menggunakan kontak Anda untuk mencari pengguna yang Anda ketahui. Kami tidak menyimpan kontak-kontak Anda pada peladen.";
 NSFaceIDUsageDescription = "Kunci Layar Signal menggunakan Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal perlu mengakses lokasi Anda untuk membagikan lokasi terkini Anda.";
 NSMicrophoneUsageDescription = "Signal perlu mengakses mikrofon Anda untuk membuat dan menerima panggilan telepon dan merekam pesan suara.";
 NSPhotoLibraryAddUsageDescription = "Signal akan menyimpan foto-foto ke galeri Anda.";
-NSPhotoLibraryUsageDescription = "Signal will let you choose which photos from your library to send.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSPhotoLibraryUsageDescription = "Signal akan memilih foto mana dari galeri Anda untuk dikirimkan.";
+NSLocalNetworkUsageDescription = "Signal menggunakan jaringan lokal untuk memungkinkan Anda mentransfer secara langsung akun Anda ke ponsel baru. Fitur ini tidak akan digunakan kecuali Anda memilih untuk mentransfer ke sebuah perangkat baru.";

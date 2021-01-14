@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-public class OWSLayerView: UIView {
+open class OWSLayerView: UIView {
     @objc
     public var shouldAnimate = true
 
@@ -29,6 +29,21 @@ public class OWSLayerView: UIView {
         self.layoutCallback = { _ in
         }
         super.init(coder: aDecoder)
+    }
+
+    public static func circleView(size: CGFloat? = nil) -> OWSLayerView {
+        let result = OWSLayerView(frame: .zero) { view in
+            view.layer.cornerRadius = min(view.width, view.height) * 0.5
+        }
+        if let size = size {
+            result.autoSetDimensions(to: CGSize.square(size))
+        }
+        return result
+    }
+
+    // Circle and pills are the same.
+    public static func pillView(size: CGFloat? = nil) -> OWSLayerView {
+        circleView(size: size)
     }
 
     public override var bounds: CGRect {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -482,7 +482,7 @@ public class OWSLinkPreviewManager: NSObject {
     // Twitter doesn't return OpenGraph tags to Signal
     // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
     // If this ever changes, we can switch back to our default User-Agent
-    private static let userAgentString = "WhatsApp"
+    private static let userAgentString = "WhatsApp/2"
 
     // MARK: - Preview Thumbnails
 
@@ -635,12 +635,7 @@ public class OWSLinkPreviewManager: NSObject {
                     }.map { (avatarData: Data) -> Data? in
                         return avatarData
                     }.recover { (error: Error) -> Promise<Data?> in
-                        if IsNetworkConnectivityFailure(error) {
-                            Logger.warn("Error: \(error)")
-
-                        } else {
-                            owsFailDebug("Error: \(error)")
-                        }
+                        owsFailDebugUnlessNetworkFailure(error)
                         return Promise.value(nil)
                     }
                 }.then(on: Self.workQueue) { (imageData: Data?) -> Promise<PreviewThumbnail?> in

@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, AudioPlaybackState) {
+typedef NS_CLOSED_ENUM(NSInteger, AudioPlaybackState) {
     AudioPlaybackState_Stopped,
     AudioPlaybackState_Playing,
     AudioPlaybackState_Paused,
@@ -14,7 +14,7 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 @property (nonatomic) AudioPlaybackState audioPlaybackState;
 
-- (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration;
+- (void)setAudioProgress:(NSTimeInterval)progress duration:(NSTimeInterval)duration;
 
 @optional
 - (void)audioPlayerDidFinish;
@@ -33,19 +33,11 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 
 @interface OWSAudioPlayer : NSObject
 
-@property (nonatomic, readonly, weak) id<OWSAudioPlayerDelegate> delegate;
-
-// This property can be used to associate instances of the player with view
-// or model objects.
-@property (nonatomic, weak) id owner;
+@property (nonatomic, weak) id<OWSAudioPlayerDelegate> delegate;
 
 @property (nonatomic) BOOL isLooping;
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior;
-
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
-                     audioBehavior:(OWSAudioBehavior)audioBehavior
-                        delegate:(id<OWSAudioPlayerDelegate>)delegate;
 
 - (void)play;
 - (void)pause;

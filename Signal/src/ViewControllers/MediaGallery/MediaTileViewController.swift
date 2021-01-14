@@ -441,7 +441,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         let itemCount = round(containerSize.width / approxItemWidth)
         let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing
-        let availableWidth = containerSize.width - interSpaceWidth
+        let availableWidth = max(0, containerSize.width - interSpaceWidth)
 
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(square: itemWidth)

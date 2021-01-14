@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -133,16 +133,16 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let phoneNumberSharing = build.includes(.dev)
+    public static let phoneNumberSharing = build.includes(.qa)
 
     @objc
-    public static let phoneNumberDiscoverability = build.includes(.dev)
+    public static let phoneNumberDiscoverability = build.includes(.qa)
 
     @objc
     public static let complainAboutSlowDBWrites = true
 
     // Don't consult this flags; consult RemoteConfig.usernames.
-    static let usernamesSupported = build.includes(.dev)
+    static let usernamesSupported = build.includes(.qa)
 
     // Don't consult this flags; consult RemoteConfig.groupsV2...
     static var groupsV2Supported: Bool { !CurrentAppContext().isRunningTests }
@@ -163,7 +163,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2MigrationSetCapability = groupsV2Migrations
 
     @objc
-    public static let linkedPhones = build.includes(.internalPreview)
+    public static let linkedPhones = build.includes(.qa)
 
     @objc
     public static let isUsingProductionService = true
@@ -287,7 +287,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.beta))
 
     @objc
-    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(false)
+    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(build.includes(.qa))
 
     @objc
     public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false)
@@ -373,10 +373,25 @@ public class DebugFlags: BaseFlags {
     public static let dontSendContactOrGroupSyncMessages = TestableFlag(false)
 
     @objc
+    public static let forceAttachmentDownloadFailures = TestableFlag(false)
+
+    @objc
+    public static let forceAttachmentDownloadPendingMessageRequest = TestableFlag(false)
+
+    @objc
+    public static let forceAttachmentDownloadPendingManualDownload = TestableFlag(false)
+
+    @objc
     public static let fastPerfTests = false
 
     @objc
+    public static let messageSendsFail = false
+
+    @objc
     public static let extraDebugLogs = build.includes(.qa)
+
+    @objc
+    public static let shouldShowColorPicker = false
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

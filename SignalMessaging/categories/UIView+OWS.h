@@ -104,6 +104,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view;
 - (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view offset:(CGFloat)margin;
 // Return Right on LTR and Left on RTL.
++ (NSTextAlignment)textAlignmentUnnatural;
 - (NSTextAlignment)textAlignmentUnnatural;
 // Leading and trailing anchors honor layout margins.
 // When using a UIView as a "div" to structure layout, we don't want it to have margins.
@@ -111,7 +112,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
 
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor;
+- (void)traverseViewHierarchyUpwardWithVisitor:(UIViewVisitorBlock)visitor;
+
+- (void)traverseViewHierarchyDownwardWithVisitor:(UIViewVisitorBlock)visitor;
 
 #pragma mark - Containers
 

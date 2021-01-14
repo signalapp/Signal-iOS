@@ -238,6 +238,11 @@ class ViewOnceMessageViewController: OWSViewController {
         let dismissButton = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
         }
+        dismissButton.layer.shadowColor = Theme.darkThemeBackgroundColor.cgColor
+        dismissButton.layer.shadowOffset = .zero
+        dismissButton.layer.shadowOpacity = 0.7
+        dismissButton.layer.shadowRadius = 3.0
+
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: vMargin, leading: hMargin, bottom: vMargin, trailing: hMargin)
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(.leading, to: .leading, of: mediaView)

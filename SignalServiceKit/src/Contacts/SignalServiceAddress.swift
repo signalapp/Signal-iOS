@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -293,6 +293,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
+    public var sortKey: String {
+        guard let serviceIdentifier = serviceIdentifier else {
+            owsFailDebug("Invalid address.")
+            return "Invalid"
+        }
+        return serviceIdentifier
+    }
+
+    @objc
     override public var description: String {
         return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(uuid?.uuidString ?? "nil")>"
     }
@@ -378,6 +387,17 @@ extension SignalServiceAddress {
 }
 
 #endif
+
+// MARK: -
+
+public extension Array where Element == SignalServiceAddress {
+    func stableSort() -> [SignalServiceAddress] {
+        // Use an arbitrary sort to ensure the output is deterministic.
+        self.sorted { (left, right) in
+            left.sortKey < right.sortKey
+        }
+    }
+}
 
 // MARK: -
 

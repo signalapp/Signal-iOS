@@ -58,7 +58,7 @@ class ReplaceAdminViewController: OWSTableViewController {
                 imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
                 cell.ows_setAccessoryView(imageView)
 
-                cell.configure(withRecipientAddress: address)
+                cell.configureWithSneakyTransaction(recipientAddress: address)
 
                 return cell
                 },

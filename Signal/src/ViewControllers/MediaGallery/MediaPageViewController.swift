@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -59,11 +59,17 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     @objc
     convenience init(initialMediaAttachment: TSAttachment, thread: TSThread) {
-        self.init(initialMediaAttachment: initialMediaAttachment, thread: thread, showingSingleMessage: false)
+        self.init(initialMediaAttachment: initialMediaAttachment,
+                  thread: thread,
+                  showingSingleMessage: false)
     }
 
-    convenience init(initialMediaAttachment: TSAttachment, thread: TSThread, showingSingleMessage: Bool = false) {
-        self.init(initialMediaAttachment: initialMediaAttachment, mediaGallery: MediaGallery(thread: thread), showingSingleMessage: showingSingleMessage)
+    convenience init(initialMediaAttachment: TSAttachment,
+                     thread: TSThread,
+                     showingSingleMessage: Bool = false) {
+        self.init(initialMediaAttachment: initialMediaAttachment,
+                  mediaGallery: MediaGallery(thread: thread),
+                  showingSingleMessage: showingSingleMessage)
     }
 
     init(initialMediaAttachment: TSAttachment, mediaGallery: MediaGallery, showingSingleMessage: Bool = false) {
@@ -95,7 +101,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         mediaGallery.ensureLoadedForDetailView(focusedItem: initialItem)
         mediaGallery.addDelegate(self)
 
-        guard let initialPage = buildGalleryPage(galleryItem: initialItem) else {
+        guard let initialPage = buildGalleryPage(galleryItem: initialItem,
+                                                 shouldAutoPlayVideo: true) else {
             owsFailDebug("unexpectedly unable to build initial gallery item")
             return
         }
@@ -396,23 +403,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     @objc
     public func didPressForward(_ sender: Any) {
         let galleryItem: MediaGalleryItem = currentItem
-        var fetchedItem: ConversationViewItem?
-        databaseStorage.uiRead { transaction in
-            let message = galleryItem.message
-            let thread = message.thread(transaction: transaction)
-            let conversationStyle = ConversationStyle(thread: thread)
-            fetchedItem = ConversationInteractionViewItem(interaction: message,
-                                                          thread: thread,
-                                                          transaction: transaction,
-                                                          conversationStyle: conversationStyle)
-        }
 
-        guard let viewItem = fetchedItem else {
+        guard let renderItem = buildRenderItem(forGalleryItem: galleryItem) else {
             owsFailDebug("viewItem was unexpectedly nil")
             return
         }
-
-        ForwardMessageNavigationController.present(for: viewItem, from: self, delegate: self)
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
     }
 
     @objc
@@ -594,7 +591,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return nextPage
     }
 
-    private func buildGalleryPage(galleryItem: MediaGalleryItem) -> MediaDetailViewController? {
+    private func buildGalleryPage(galleryItem: MediaGalleryItem,
+                                  shouldAutoPlayVideo: Bool = false) -> MediaDetailViewController? {
 
         if let cachedPage = cachedPages[galleryItem] {
             Logger.debug("cache hit.")
@@ -602,27 +600,34 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         Logger.debug("cache miss.")
-        var fetchedItem: ConversationViewItem?
-        databaseStorage.uiRead { transaction in
-            let message = galleryItem.message
-            let thread = message.thread(transaction: transaction)
-            let conversationStyle = ConversationStyle(thread: thread)
-            fetchedItem = ConversationInteractionViewItem(interaction: message,
-                                                          thread: thread,
-                                                          transaction: transaction,
-                                                          conversationStyle: conversationStyle)
-        }
 
-        guard let viewItem = fetchedItem else {
-            owsFailDebug("viewItem was unexpectedly nil")
-            return nil
-        }
-
-        let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem), viewItem: viewItem)
+        let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem),
+                                                       shouldAutoPlayVideo: shouldAutoPlayVideo)
         viewController.delegate = self
 
         cachedPages[galleryItem] = viewController
         return viewController
+    }
+
+    private func buildRenderItem(forGalleryItem galleryItem: MediaGalleryItem) -> CVRenderItem? {
+
+        return databaseStorage.uiRead { transaction in
+            let interactionId = galleryItem.message.uniqueId
+            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
+                                                           transaction: transaction) else {
+                owsFailDebug("Missing interaction.")
+                return nil
+            }
+            guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
+                                                 transaction: transaction) else {
+                owsFailDebug("Missing thread.")
+                return nil
+            }
+            return CVLoader.buildStandaloneRenderItem(interaction: interaction,
+                                                      thread: thread,
+                                                      containerView: self.view,
+                                                      transaction: transaction)
+        }
     }
 
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
@@ -805,7 +810,7 @@ extension MediaPageViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         let mediaView = currentViewController.mediaView
 
-        guard let mediaSuperview = mediaView.superview else {
+        guard nil != mediaView.superview else {
             owsFailDebug("superview was unexpectedly nil")
             return nil
         }
@@ -891,10 +896,10 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 // MARK: -
 
 extension MediaPageViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(viewItem: ConversationViewItem,
+    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
                                               threads: [TSThread]) {
         dismiss(animated: true) {
-            self.didForwardMessage(viewItem: viewItem, threads: threads)
+            self.didForwardMessage(itemViewModel: itemViewModel, threads: threads)
         }
     }
 
@@ -902,7 +907,7 @@ extension MediaPageViewController: ForwardMessageDelegate {
         dismiss(animated: true)
     }
 
-    func didForwardMessage(viewItem: ConversationViewItem,
+    func didForwardMessage(itemViewModel: CVItemViewModelImpl,
                            threads: [TSThread]) {
         guard threads.count == 1 else {
             return
@@ -911,7 +916,7 @@ extension MediaPageViewController: ForwardMessageDelegate {
             owsFailDebug("Missing thread.")
             return
         }
-        guard thread.uniqueId != viewItem.interaction.uniqueThreadId else {
+        guard thread.uniqueId != itemViewModel.interaction.uniqueThreadId else {
             return
         }
         SignalApp.shared().presentConversation(for: thread, animated: true)

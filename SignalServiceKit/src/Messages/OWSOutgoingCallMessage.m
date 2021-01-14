@@ -149,14 +149,14 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
                                  thread:(TSThread *)thread
                             transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(recipient);
+    OWSAssertDebug(address.isValid);
 
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    builder.callMessage = [self buildCallMessage:recipient.address thread:thread transaction:transaction];
+    builder.callMessage = [self buildCallMessage:address thread:thread transaction:transaction];
 
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];

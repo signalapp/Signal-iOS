@@ -51,12 +51,21 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         explanationLabel.accessibilityIdentifier = "onboarding.linking.helpLink"
         explanationLabel.setContentHuggingHigh()
 
+#if TESTABLE_BUILD
+        let copyURLButton = UIButton(type: .system)
+        copyURLButton.setTitle(LocalizationNotNeeded("COPY URL"), for: .normal)
+        copyURLButton.addTarget(self, action: #selector(didTapCopyURL), for: .touchUpInside)
+#endif
+
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             bodyLabel,
             qrCodeView,
             explanationLabel
             ])
+#if TESTABLE_BUILD
+        stackView.addArrangedSubview(copyURLButton)
+#endif
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.spacing = 12
@@ -87,14 +96,27 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320451")!)
     }
 
+#if TESTABLE_BUILD
+    @IBAction
+    func didTapCopyURL() {
+        if let qrCodeURL = self.qrCodeURL {
+            UIPasteboard.general.url = qrCodeURL
+        } else {
+            UIPasteboard.general.string = LocalizationNotNeeded("URL NOT READY YET")
+        }
+    }
+#endif
+
     // MARK: -
 
     private var hasFetchedAndSetQRCode = false
+    private var qrCodeURL: URL?
     public func fetchAndSetQRCode() {
         guard !hasFetchedAndSetQRCode else { return }
         hasFetchedAndSetQRCode = true
 
         provisioningController.getProvisioningURL().done { url in
+            self.qrCodeURL = url
             try self.qrCodeView.setQR(url: url)
         }.catch { error in
             let title = NSLocalizedString("SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE", comment: "alert title")

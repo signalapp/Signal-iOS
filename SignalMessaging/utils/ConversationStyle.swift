@@ -5,58 +5,108 @@
 import Foundation
 
 @objc
+public enum ConversationStyleType: UInt {
+    // The style used from initialization until presentation begins.
+    // It does not have valid values and should not be rendered.
+    case initial
+    // The style used until the presentation has configured the view(s).
+    // It has values inferred from the navigationController.
+    case placeholder
+    // The style once presentation has configured the view(s).
+    // It has values from the CVC view state.
+    case `default`
+
+    fileprivate var isValid: Bool { self != .initial }
+}
+
+// MARK: -
+
+// An immutable snapshot of the core styling
+// state used by CVC for a given load/render cycle.
+@objc
 public class ConversationStyle: NSObject {
 
-    private let thread: TSThread
+    @objc
+    public let type: ConversationStyleType
+    @objc
+    public var isValidStyle: Bool { type.isValid }
 
     // The width of the collection view.
-    @objc public var viewWidth: CGFloat = 0 {
-        didSet {
-            AssertIsOnMainThread()
+    @objc
+    public let viewWidth: CGFloat
 
-            updateProperties()
-        }
-    }
+    @objc
+    public let isDarkThemeEnabled: Bool
 
-    @objc public let contentMarginTop: CGFloat = 24
-    @objc public let contentMarginBottom: CGFloat = 24
+    private let dynamicBodyTypePointSize: CGFloat
+    private let primaryTextColor: UIColor
 
-    @objc public var gutterLeading: CGFloat = 0
-    @objc public var gutterTrailing: CGFloat = 0
+    @objc
+    public let contentMarginTop: CGFloat = 24
+    @objc
+    public let contentMarginBottom: CGFloat = 24
 
-    @objc public var headerGutterLeading: CGFloat = 28
-    @objc public var headerGutterTrailing: CGFloat = 28
+    @objc
+    public let gutterLeading: CGFloat
+    @objc
+    public let gutterTrailing: CGFloat
+
+    @objc
+    public let headerGutterLeading: CGFloat = 28
+    @objc
+    public let headerGutterTrailing: CGFloat = 28
 
     // These are the gutters used by "full width" views
     // like "contact offer" and "info message".
-    @objc public var fullWidthGutterLeading: CGFloat = 0
-    @objc public var fullWidthGutterTrailing: CGFloat = 0
+    @objc
+    public let fullWidthGutterLeading: CGFloat
+    @objc
+    public let fullWidthGutterTrailing: CGFloat
 
-    @objc static public let groupMessageAvatarDiameter: CGFloat = 28
-    @objc static public let selectionViewWidth: CGFloat = 24
-    @objc static public let messageStackSpacing: CGFloat = 8
-    @objc static public let defaultMessageSpacing: CGFloat = 12
-    @objc static public let compactMessageSpacing: CGFloat = 2
-    @objc static public let systemMessageSpacing: CGFloat = 20
+    @objc
+    static public let groupMessageAvatarDiameter: CGFloat = 28
+    @objc
+    static public let selectionViewWidth: CGFloat = 24
+    @objc
+    static public let messageStackSpacing: CGFloat = 8
+    @objc
+    static public let defaultMessageSpacing: CGFloat = 12
+    @objc
+    static public let compactMessageSpacing: CGFloat = 2
+    @objc
+    static public let systemMessageSpacing: CGFloat = 20
 
-    @objc public var contentWidth: CGFloat {
-        return viewWidth - (gutterLeading + gutterTrailing)
+    @objc
+    public let contentWidth: CGFloat
+
+    @objc
+    public var selectableCenteredContentWidth: CGFloat {
+        viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing) - (Self.selectionViewWidth + Self.messageStackSpacing) * 2
     }
 
-    @objc public var selectableCenteredContentWidth: CGFloat {
-        return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing) - (Self.selectionViewWidth + Self.messageStackSpacing) * 2
+    @objc
+    public var headerViewContentWidth: CGFloat {
+        viewWidth - (headerGutterLeading + headerGutterTrailing)
     }
 
-    @objc public var headerViewContentWidth: CGFloat {
-        return viewWidth - (headerGutterLeading + headerGutterTrailing)
+    @objc
+    public let maxMessageWidth: CGFloat
+    @objc
+    public let maxMediaMessageWidth: CGFloat
+
+    @objc
+    public let textInsetTop: CGFloat
+    @objc
+    public let textInsetBottom: CGFloat
+    @objc
+    public let textInsetHorizontal: CGFloat
+    @objc
+    public var textInsets: UIEdgeInsets {
+        UIEdgeInsets(top: textInsetTop,
+                     leading: textInsetHorizontal,
+                     bottom: textInsetBottom,
+                     trailing: textInsetHorizontal)
     }
-
-    @objc public private(set) var maxMessageWidth: CGFloat = 0
-    @objc public private(set) var maxMediaMessageWidth: CGFloat = 0
-
-    @objc public var textInsetTop: CGFloat = 0
-    @objc public var textInsetBottom: CGFloat = 0
-    @objc public var textInsetHorizontal: CGFloat = 0
 
     // We want to align "group sender" avatars with the v-center of the
     // "last line" of the message body text - or where it would be for
@@ -64,57 +114,29 @@ public class ConversationStyle: NSObject {
     //
     // This is the distance from that v-center to the bottom of the
     // message bubble.
-    @objc public var lastTextLineAxis: CGFloat = 0
+    @objc
+    public let lastTextLineAxis: CGFloat
 
     @objc
-    public required init(thread: TSThread) {
+    public required init(type: ConversationStyleType,
+                         thread: TSThread,
+                         viewWidth: CGFloat) {
 
-        self.thread = thread
+        self.type = type
         self.conversationColor = ConversationStyle.conversationColor(thread: thread)
+        self.viewWidth = viewWidth
+        self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
+        self.primaryTextColor = Theme.primaryTextColor
 
-        super.init()
-
-        updateProperties()
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(uiContentSizeCategoryDidChange),
-                                               name: UIContentSizeCategory.didChangeNotification,
-                                               object: nil)
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    @objc func uiContentSizeCategoryDidChange() {
-        AssertIsOnMainThread()
-
-        updateProperties()
-    }
-
-    // MARK: -
-
-    @objc
-    public func updateProperties() {
         gutterLeading = thread.isGroupThread ? 12 : 16
         gutterTrailing = 16
 
         fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
         fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
-        headerGutterLeading = 28
-        headerGutterTrailing = 28
-
-        maxMessageWidth = contentWidth - (Self.selectionViewWidth + Self.messageStackSpacing)
-        if thread.isGroupThread {
-            maxMessageWidth -= (Self.groupMessageAvatarDiameter + Self.messageStackSpacing)
-        }
-
-        // This upper bound should have no effect in portrait orientation.
-        // It limits body media size in landscape.
-        let kMaxBodyMediaSize: CGFloat = 350
-        maxMediaMessageWidth = floor(min(maxMessageWidth, kMaxBodyMediaSize))
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
+
+        dynamicBodyTypePointSize = messageTextFont.pointSize
 
         let baseFontOffset: CGFloat = 11
 
@@ -130,13 +152,26 @@ public class ConversationStyle: NSObject {
 
         lastTextLineAxis = CGFloat(round(baseFontOffset + messageTextFont.capHeight * 0.5))
 
-        self.conversationColor = ConversationStyle.conversationColor(thread: thread)
+        contentWidth = viewWidth - (gutterLeading + gutterTrailing)
+
+        var maxMessageWidth = contentWidth - (Self.selectionViewWidth + Self.messageStackSpacing)
+        if thread.isGroupThread {
+            maxMessageWidth -= (Self.groupMessageAvatarDiameter + Self.messageStackSpacing)
+        }
+        self.maxMessageWidth = maxMessageWidth
+
+        // This upper bound should have no effect in portrait orientation.
+        // It limits body media size in landscape.
+        let kMaxBodyMediaSize: CGFloat = 350
+        maxMediaMessageWidth = floor(min(maxMessageWidth, kMaxBodyMediaSize))
+
+        super.init()
     }
 
     // MARK: Colors
 
     @objc
-    public var conversationColor: OWSConversationColor
+    public let conversationColor: OWSConversationColor
 
     private class func conversationColor(thread: TSThread) -> OWSConversationColor {
         let colorName = thread.conversationColorName
@@ -145,8 +180,8 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    private static var defaultBubbleColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
+    private var defaultBubbleColorIncoming: UIColor {
+        isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
     }
 
     @objc
@@ -166,7 +201,7 @@ public class ConversationStyle: NSObject {
         if message.wasRemotelyDeleted {
             return Theme.backgroundColor
         } else if message is TSIncomingMessage {
-            return ConversationStyle.defaultBubbleColorIncoming
+            return defaultBubbleColorIncoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:
@@ -184,89 +219,91 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleColor(isIncoming: Bool) -> UIColor {
-        if isIncoming {
-            return ConversationStyle.defaultBubbleColorIncoming
-        } else {
-            return self.bubbleColorOutgoingSent
-        }
+        isIncoming ? defaultBubbleColorIncoming : bubbleColorOutgoingSent
     }
 
     @objc
     public static var bubbleTextColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-    }
-
-    @objc
-    public static var bubbleSecondaryTextColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray60
+        Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
     }
 
     @objc
     public static var bubbleTextColorOutgoing: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+        Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
     }
 
     @objc
-    public static var bubbleSecondaryTextColorOutgoing: UIColor {
-        return Theme.isDarkThemeEnabled ? .ows_whiteAlpha60 : .ows_whiteAlpha80
+    public var bubbleTextColorIncoming: UIColor {
+        isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+    }
+
+    @objc
+    public var bubbleSecondaryTextColorIncoming: UIColor {
+        isDarkThemeEnabled ? .ows_gray25 : .ows_gray60
+    }
+
+    @objc
+    public var bubbleTextColorOutgoing: UIColor {
+        isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+    }
+
+    @objc
+    public var bubbleSecondaryTextColorOutgoing: UIColor {
+        isDarkThemeEnabled ? .ows_whiteAlpha60 : .ows_whiteAlpha80
     }
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
         if message.wasRemotelyDeleted {
-            return Theme.primaryTextColor
+            return primaryTextColor
         } else if message is TSIncomingMessage {
-            return ConversationStyle.bubbleTextColorIncoming
+            return bubbleTextColorIncoming
         } else if message is TSOutgoingMessage {
-            return ConversationStyle.bubbleTextColorOutgoing
+            return bubbleTextColorOutgoing
         } else {
             owsFailDebug("Unexpected message type: \(message)")
-            return ConversationStyle.bubbleTextColorOutgoing
+            return bubbleTextColorOutgoing
         }
     }
 
     @objc
     public func bubbleTextColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return ConversationStyle.bubbleTextColorIncoming
+            return bubbleTextColorIncoming
         } else {
-            return ConversationStyle.bubbleTextColorOutgoing
+            return bubbleTextColorOutgoing
         }
     }
 
     @objc
     public func bubbleReadMoreTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue
+            return isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue
         } else if message is TSOutgoingMessage {
-            return Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
+            return isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
         } else {
             owsFailDebug("Unexpected message type: \(message)")
-            return ConversationStyle.bubbleTextColorOutgoing
+            return bubbleTextColorOutgoing
         }
     }
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return ConversationStyle.bubbleSecondaryTextColorIncoming
+            return bubbleSecondaryTextColorIncoming
         } else {
-            return ConversationStyle.bubbleSecondaryTextColorOutgoing
+            return bubbleSecondaryTextColorOutgoing
         }
     }
 
     @objc
     public var quotedReplyBubbleColor: UIColor {
-        if Theme.isDarkThemeEnabled {
-            return .ows_signalBlueDark
-        } else {
-            return .ows_accentBlueTint
-        }
+        isDarkThemeEnabled ? .ows_signalBlueDark : .ows_accentBlueTint
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        if Theme.isDarkThemeEnabled {
+        if isDarkThemeEnabled {
             if isIncoming {
                 return .ows_accentBlueTint
             } else {
@@ -282,29 +319,61 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotingSelfHighlightColor() -> UIColor {
         // TODO:
-        return UIColor.init(rgbHex: 0xB5B5B5)
+        UIColor.init(rgbHex: 0xB5B5B5)
     }
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return quotedReplyTextColor()
+        quotedReplyTextColor()
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            return UIColor.ows_gray05
-        } else {
-            return UIColor.ows_gray90
-        }
+        isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
     }
 
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            return UIColor.ows_gray05
-        } else {
-            return UIColor.ows_gray90
-        }
+        isDarkThemeEnabled ? .ows_gray05 : UIColor.ows_gray90
+    }
+
+    @objc
+    public func isEqualForCellRendering(_ other: ConversationStyle) -> Bool {
+        // We need to compare any state that could affect
+        // how we render view appearance.
+        (type.isValid == other.type.isValid &&
+            viewWidth == other.viewWidth &&
+            dynamicBodyTypePointSize == other.dynamicBodyTypePointSize &&
+            conversationColor == other.conversationColor &&
+            isDarkThemeEnabled == other.isDarkThemeEnabled &&
+            maxMessageWidth == other.maxMessageWidth &&
+            maxMediaMessageWidth == other.maxMediaMessageWidth &&
+            textInsets == other.textInsets &&
+            gutterLeading == other.gutterLeading &&
+            gutterTrailing == other.gutterTrailing &&
+            fullWidthGutterLeading == other.fullWidthGutterLeading &&
+            fullWidthGutterTrailing == other.fullWidthGutterTrailing &&
+            textInsets == other.textInsets &&
+            lastTextLineAxis == other.lastTextLineAxis)
+    }
+
+    @objc
+    public override var debugDescription: String {
+        "[" +
+            "type.isValid: \(type.isValid), " +
+            "viewWidth: \(viewWidth), " +
+            "dynamicBodyTypePointSize: \(dynamicBodyTypePointSize), " +
+            "conversationColor: \(conversationColor), " +
+            "isDarkThemeEnabled: \(isDarkThemeEnabled), " +
+            "maxMessageWidth: \(maxMessageWidth), " +
+            "maxMediaMessageWidth: \(maxMediaMessageWidth), " +
+            "textInsets: \(textInsets), " +
+            "gutterLeading: \(gutterLeading), " +
+            "gutterTrailing: \(gutterTrailing), " +
+            "fullWidthGutterLeading: \(fullWidthGutterLeading), " +
+            "fullWidthGutterTrailing: \(fullWidthGutterTrailing), " +
+            "textInsets: \(textInsets), " +
+            "lastTextLineAxis: \(lastTextLineAxis), " +
+            "]"
     }
 }

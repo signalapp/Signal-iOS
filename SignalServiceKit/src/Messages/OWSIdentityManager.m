@@ -402,13 +402,22 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     __block OWSRecipientIdentity *_Nullable result;
     [self.databaseQueue readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
-        NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
-        if (accountId) {
-            result = [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction];
-        }
+        result = [self recipientIdentityForAddress:address transaction:transaction];
     }];
 
     return result;
+}
+
+- (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address
+                                                   transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
+    if (accountId) {
+        return [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction];
+    }
+    return nil;
 }
 
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address

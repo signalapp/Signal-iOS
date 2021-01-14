@@ -37,8 +37,11 @@
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "שתף איש קשר";
 
+/* A label for 'tap to download' buttons. */
+"ACTION_TAP_TO_DOWNLOAD" = "הקש כדי להוריד";
+
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "שיחת וידיאו";
+"ACTION_VIDEO_CALL" = "שיחת וידאו";
 
 /* Label for the 'add group member' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "הוסף חבר קבוצה";
@@ -103,7 +106,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "אל תשמור";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "שגיאה";
 
 /* The label for the 'save' button in action sheets. */
@@ -155,7 +158,7 @@
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "כהה";
 
 /* Name indicating that the light theme is enabled. */
-"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "בהיר";
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "בהירה";
 
 /* Name indicating that the system theme is enabled. */
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "מערכת";
@@ -198,9 +201,6 @@
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "צרופה";
-
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ההורדה נכשלה. הקש כדי לנסות מחדש.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "שגיאה בשליחת צרופה";
@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "שגיאת גיבוי בלתי צפויה";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "סגור מודעה";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "לא תקבל יותר הודעות או עדכונים מקבוצה זו.";
 
@@ -383,7 +386,7 @@
 "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "המשתמש נחסם כבר.";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "בטל חסימה";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "שחרר חסימה";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "תוכל להתכתב ולהתקשר אחד לשני.";
@@ -395,10 +398,10 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "חברי קבוצה יוכלו להוסיף אותך שוב אל קבוצה זו.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "לבטל חסימה של קבוצה זו?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "לשחרר חסימה של קבוצה זו?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "לבטל חסימה של %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "לשחרר חסימה של %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "חסום";
@@ -419,7 +422,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "שגיאה";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "בוטלה חסימה של %@.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "חסימה של %@ שוחררה.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "חברי קבוצה קיימים יכולים כעת להוסיף אותך אל הקבוצה שוב.";
@@ -533,7 +536,7 @@
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "החלף אל שיחת שמע";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "החלף אל שיחת וידיאו";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "החלף אל שיחת וידאו";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "חייג חזרה";
@@ -716,7 +719,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "ראה שמות ותמונות של אנשי קשר בהתכתבויות שלך.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "להפעיל את אנשי קשר?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "להפעיל אנשי קשר?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "טלפון";
@@ -777,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "למחוק התכתבות?";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "הורד";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "אינך יכול לבחור יותר מן %@ התכתבויות.";
@@ -953,10 +953,10 @@
 "CONVERSATION_SETTINGS_SEARCH" = "חפש בהתכתבות";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "בטל חסימת קבוצה";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "שחרר חסימת קבוצה";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "בטל חסימת משתמש";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "שחרר חסימת משתמש";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "בטל השתקה";
@@ -1056,9 +1056,6 @@
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "עוד צעד אחד";
-
-/* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "לא היה ניתן לפתוח את יישום הדוא״ל.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "קישור תמצית זה הועתק ללוח העריכה שלך. אתה עומד להיות מוכוון מחדש אל GitHub רשימת סוגיות.";
@@ -1331,7 +1328,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "לא היה ניתן לשלוח עקב נתונים מיושנים.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "לא ניתן לשלוח הודעה מכיוון שהמשתמש חסום על ידך";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "נכשל בשליחת הודעה למשתמש מאחר שחסמת אותו";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal לא היה יכול להתחבר לאינטרנט. אנא נסה שוב.";
@@ -1387,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "מספר הביטחון שלך עם %@ השתנה.";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "התרחשה שגיאה לא ידועה";
 
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמוודא";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "אפס שיח";
 
 /* Accessibility label for finishing new group */
@@ -1452,6 +1452,15 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "צרופה";
+
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "התחל";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "הזמן חברים";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "קבוצה חדשה";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "נכשל במשיכת ה־GIF המבוקש. אנא וודא שאתה מחובר.";
@@ -1616,7 +1625,7 @@
 "GROUP_CALL_START_BUTTON" = "התחל שיחה";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "הקש כאן כדי להתחיל שיחה קבוצתית";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "התחלת שיחה קבוצתית";
@@ -1643,10 +1652,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "את/ה (במכשיר אחר)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "פתח קבוצה חדשה כדי להתחיל שיחה קבוצתית חינמית מוצפנת";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "היכרות עם שיחה קבוצתית";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "יצרת את הקבוצה.";
@@ -1795,14 +1804,29 @@
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "קישור בלתי תקף";
 
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "הקישור אינו תקף יותר";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "הצטרף לקבוצה";
-
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "עדכן את Signal על מכשיר זה כדי להצטרף אל קבוצה זו.";
+
+/* Explanation of the 'approve new group members' switch. */
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "דרוש מנהלן כדי לאשר הצטרפות של חברי קבוצה חדשים באמצעות קישור הקבוצה.";
+
+/* Label for the 'approve new group members' switch. */
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "אשר חברי קבוצה חדשים";
+
+/* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "אפשר ושתף קישור";
+
+/* Label for the 'share link' button in the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "שתף קישור";
+
+/* Subtitle for the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "שתף קישור זה עם חברים כדי לתת להם להצטרף במהירות אל קבוצה זו.";
+
+/* Title for the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "הזמן חברים";
+
+/* Suggestion to invite more group members via the group invite link. */
+"GROUP_LINK_PROMOTION_UPDATE" = "הזמן חברים אל הקבוצה שלך באמצעות קישור הקבוצה";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "אנשים שיסרקו קוד זה יוכלו להצטרף אל הקבוצה שלך. מנהלנים עדין יצטרכו לאשר חברי קבוצה חדשים אם הגדרה זו מופעלת.";
@@ -1942,8 +1966,8 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "שיחת שמע";
 
-/* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "אין חברי קבוצה.";
+/* Label indicating that a new group has no other members. */
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "אתה יכול להוסיף או להזמין חברים לאחר היצירה של הקבוצה הזאת.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "חברי קבוצה";
@@ -1952,7 +1976,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "הודעה";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_VIDEO_CALL" = "שיחת וידיאו";
+"GROUP_MEMBERS_VIDEO_CALL" = "שיחת וידאו";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "שם קבוצה (דרוש)";
@@ -2165,10 +2189,13 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "חסום קבוצה";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "חסום וקבוצה ואת %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "חסום קבוצה ואת %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "חסום את %@";
+
+/* Label for 'invite friends to group' button. */
+"GROUPS_INVITE_FRIENDS_BUTTON" = "הזמן חברים";
 
 /* Body text for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "קבוצות מיושנות הן קבוצות שאינן תואמות עם מאפיינים של קבוצה חדשה כמו מנהלנים ועדכוני קבוצה תיאוריים יותר.";
@@ -2456,7 +2483,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "התכתבויות אלו מאוחסנות בארכיון ויופיעו בתיבה הנכנסת רק אם הודעות חדשות מתקבלות.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "תן לתיבה שלך משהו לכתוב עליו בית. התחל ע״י שליחת הודעה לחבר.";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ התקשר/ה אליך";
@@ -2582,7 +2609,7 @@
 "LINK_NEW_DEVICE_TITLE" = "קשר מכשיר חדש";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "קדם־תצוגה של קישור";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "תצוגה מקדימה של קישור";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "מכשירים מקושרים";
@@ -2624,10 +2651,13 @@
 "LOCATION_PICKER_TITLE" = "בחר מיקום";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "יומן אירועים";
+"LOGGING_SECTION" = "רישום יומן";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "הודעה";
+
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ קבוצות במשותף";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "כל המדיה";
@@ -2643,6 +2673,12 @@
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "מחק הודעה";
+
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ תמונות";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ פריטים";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2782,6 +2818,27 @@
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "למחוק ולעזוב קבוצה?";
 
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "סקור בקשות בזהירות. Signal מצא איש קשר אחר עם אותו שם.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "איש הקשר שלך";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "אם אינך בטוח ממי הבקשה, סקור את אנשי הקשר למטה ונקוט בפעולה.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "בקשה";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "סקור בקשה";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "עדכן איש קשר";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "סקור בקשה";
+
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "קבל";
 
@@ -2792,10 +2849,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "לאפשר אל %@ לשלוח לך הודעות ולשתף את השם והתמונה שלך איתו/איתה? לא תקבל הודעות כלשהן עד שלא תבטל חסימה.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "לבטל חסימה של קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה? לא תקבל הודעות כלשהן עד שלא תבטל חסימה.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "לשחרר חסימה של קבוצה זו ולשתף את השם והתמונה שלך עם חברי הקבוצה? לא תקבל הודעות כלשהן עד שלא תשחרר חסימה.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "לבטל חסימה של קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תבטל חסימה שלה.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "לשחרר חסימה של קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תשחרר חסימה שלה.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "המשך";
@@ -2819,7 +2876,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "להצטרף אל קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תסכים.";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "בטל חסימה";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "שחרר חסימה";
 
 /* Label for button to cancel your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "בטל הזמנה";
@@ -2888,7 +2945,7 @@
 "MISSED_CALL" = "שיחה שלא נענתה";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מצלמה ביישום הגדרות של iOS כדי לבצע שיחות וידיאו ב־Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "אתה יכול לאפשר גישה אל מצלמה ביישום הגדרות של iOS כדי לבצע שיחות וידאו ב־Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal צריך לקבל גישה למצלמה שלך.";
@@ -2983,6 +3040,9 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "מצא אנשי קשר לפי מספר טלפון";
 
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "אין קבוצות במשותף";
+
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "בחר איש קשר או קבוצה כדי להתחיל שיחה.";
 
@@ -3026,7 +3086,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "לעולם אל תפספס הודעה מאנשי הקשר והקבוצות שלך.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "להפעיל את התראות?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "להפעיל התראות?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "פעולות כוללות \"סמן כנקרא\", \"השב\" ו\"התקשר חזרה\".";
@@ -3053,7 +3113,7 @@
 "NOTIFICATIONS_SHOW" = "הראה";
 
 /* Label for the 'ok' button. */
-"OK" = "אישור";
+"OK" = "בסדר";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN שגוי. ניסיונות מוצאו.";
@@ -3216,12 +3276,6 @@
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "התקשרת אל %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF לא היה יכול להיות מוצג";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "הוסף אל הקבוצה";
@@ -4186,6 +4240,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "האם תרצה להזמין את המספר הבא אל Signal:";
 
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+
 /* Navbar title */
 "SETTINGS_ABOUT" = "אודות";
 
@@ -4193,7 +4253,7 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "חסום";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "עקיפת צנזורה";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "עקוף צנזורה";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "מיקום: %@";
@@ -4242,6 +4302,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "יומני שגיאות";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "ערכת נושא";
@@ -4327,6 +4393,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger \n ברישיון תחת GPLv3";
 
+/* Label for the 'data' section of the app settings. */
+"SETTINGS_DATA" = "שימוש בנתונים";
+
+/* Footer for the 'media auto-download' section in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "הודעות קוליות, מדיה לצפייה חד־פעמית, ומדבקות (מתחת אל 100 ק״ב) תמיד מורדות באופן אוטומטי.";
+
+/* Header for the 'media auto-download' section in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "הורדה אוטומטית של מדיה";
+
+/* Label for for the 'reset media auto-download settings' button in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "אפס הגדרות הורדה אוטומטית";
+
+/* The title for the data settings. */
+"SETTINGS_DATA_TITLE" = "שימוש בנתונים";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "מחק חשבון";
 
@@ -4368,6 +4449,27 @@
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "אחזר תצוגות מקדימות של קישורים ישירות מאתרים עבור הודעות שאתה שולח.";
+
+/* Label for the 'never' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "אף פעם";
+
+/* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi וסלולרי";
+
+/* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+
+/* Label for the 'audio' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "שמע";
+
+/* Label for the 'document' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "מסמכים";
+
+/* Label for the 'photo' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "תמונות";
+
+/* Label for the 'video' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "סרטונים";
 
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "תכתובת";
@@ -4433,7 +4535,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "צור PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "קוד PIN של Signal";
+"SETTINGS_PINS_TITLE" = "PIN של SIGNAL";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "הראה שיחות ברשימה \"שיחות אחרונות\" ביישום טלפון של iOS.";
@@ -4487,7 +4589,7 @@
 "SETTINGS_SCREEN_SECURITY" = "אפשר אבטחת מסך";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מן קדם־תצוגות של Signal להופיע במחליף היישומים.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "מנע מן תצוגות מקדימות של Signal להופיע במחליף היישומים.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "צלילים";
@@ -4517,7 +4619,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "הצג מחוונים";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "הראה צלמית מעמד כאשר אתה בוחר \"עוד מידע\" בהודעות שנמסרו ע״י שימוש בשולח אטום.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "הראה איקון מעמד כאשר אתה בוחר \"עוד מידע\" בהודעות שנמסרו ע״י שימוש בשולח אטום.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "התר מכל אחד";
@@ -4561,6 +4663,9 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "לא היה ניתן לשלוח צרופה";
 
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "מעלה…";
 
@@ -4602,9 +4707,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "חבילת מדבקות הותקנה";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "מדבקה";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "התקן";
@@ -4660,8 +4762,35 @@
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "ספר לנו מה הולך";
 
+/* Default prompt for user description in support email requests */
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "ספר לנו על הסוגייה:";
+
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "אנא שלח בדוא״ל את בקשת התמיכה שלך אל support@signal.org";
+
+/* Localized label for support request email filter string. Embeds {{filter text}}. */
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "מסנן: %@";
+
+/* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "חומרה: %@";
+
+/* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
+
+/* Localized divider for support request emails internal information */
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- מידע תמיכה ---";
+
+/* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "גרסת iOS: %@";
+
+/* Localized label for support request email locale string. Embeds {{locale}}. */
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "מַקָּם: %@";
+
+/* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "כתובת יומן: %@";
+
+/* Localized label for support request email signal version string. Embeds {{signal version}}. */
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "גרסת Signal: %@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "בקשת תמיכה של Signal iOS";
@@ -4769,7 +4898,7 @@
 "UNARCHIVE_ACTION" = "הוצא מארכיון";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "המשתמש אינו באנשי הקשר שלך. האם תרצה לחסום משתמש זה?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "המשתמש אינו באנשי הקשר שלך. האם אתה רוצה לחסום משתמש זה?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "איש קשר בלתי ידוע";
@@ -4943,7 +5072,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "סקור מספרי ביטחון";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "שיחת וידיאו";
+"VIDEO_CALL_LABEL" = "שיחת וידאו";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "צפית כבר בהודעה זו.";

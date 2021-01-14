@@ -282,6 +282,62 @@ public class SDSDatabaseStorage: SDSTransactable {
         }.timeout(seconds: 30)
     }
 
+    // MARK: - Id Mapping
+
+    @objc
+    public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Unexpected transaction.")
+            }
+        case .grdbWrite(let grdb):
+            UIDatabaseObserver.serializedSync {
+                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
+                    uiDatabaseObserver.updateIdMapping(thread: thread, transaction: grdb)
+                } else if AppReadiness.isAppReady {
+                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                }
+            }
+        }
+    }
+
+    @objc
+    public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Unexpected transaction.")
+            }
+        case .grdbWrite(let grdb):
+            UIDatabaseObserver.serializedSync {
+                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
+                    uiDatabaseObserver.updateIdMapping(interaction: interaction, transaction: grdb)
+                } else if AppReadiness.isAppReady {
+                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                }
+            }
+        }
+    }
+
+    @objc
+    public func updateIdMapping(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite:
+            if !CurrentAppContext().isRunningTests {
+                owsFailDebug("Unexpected transaction.")
+            }
+        case .grdbWrite(let grdb):
+            UIDatabaseObserver.serializedSync {
+                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
+                    uiDatabaseObserver.updateIdMapping(attachment: attachment, transaction: grdb)
+                } else if AppReadiness.isAppReady {
+                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                }
+            }
+        }
+    }
+
     // MARK: - Touch
 
     @objc(touchInteraction:shouldReindex:transaction:)

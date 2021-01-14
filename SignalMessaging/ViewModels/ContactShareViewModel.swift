@@ -7,6 +7,14 @@ import Foundation
 @objc
 public class ContactShareViewModel: NSObject {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    // MARK: -
+
     @objc
     public let dbRecord: OWSContact
 
@@ -49,13 +57,20 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage? {
+    public func getAvatarImageWithSneakyTransaction(diameter: CGFloat) -> UIImage? {
+        databaseStorage.uiRead { transaction in
+            self.getAvatarImage(diameter: diameter, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func getAvatarImage(diameter: CGFloat, transaction: SDSAnyReadTransaction) -> UIImage? {
         if let avatarImage = avatarImage {
             return avatarImage
         }
 
         var colorSeed = name.displayName
-        let recipientIds = systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+        let recipientIds = systemContactsWithSignalAccountPhoneNumbers(transaction: transaction)
         if let firstRecipientId = recipientIds.first {
             // Try to use the first signal id as the default
             // avatar's color seed, so that it is as consistent
@@ -118,13 +133,18 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public func systemContactsWithSignalAccountPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
-        return dbRecord.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+    public func systemContactsWithSignalAccountPhoneNumbers() -> [String] {
+        return dbRecord.systemContactsWithSignalAccountPhoneNumbers()
     }
 
     @objc
-    public func systemContactPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
-        return dbRecord.systemContactPhoneNumbers(contactsManager)
+    public func systemContactsWithSignalAccountPhoneNumbers(transaction: SDSAnyReadTransaction) -> [String] {
+        return dbRecord.systemContactsWithSignalAccountPhoneNumbers(with: transaction)
+    }
+
+    @objc
+    public func systemContactPhoneNumbers() -> [String] {
+        return dbRecord.systemContactPhoneNumbers()
     }
 
     @objc

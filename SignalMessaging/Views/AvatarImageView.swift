@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class AvatarImageView: UIImageView {
+open class AvatarImageView: UIImageView {
 
     public init() {
         super.init(frame: .zero)
@@ -68,7 +68,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             self.recipientAddress = nil
             self.groupThreadId = groupThread.uniqueId
         default:
-            owsFailDebug("unexpected thread type: \(thread)")
+            owsFailDebug("unexpected thread type: \(thread.uniqueId)")
             self.recipientAddress = nil
             self.groupThreadId = nil
         }
@@ -88,7 +88,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
 
         // TODO group avatar changed
-        self.updateImage()
+        self.updateImageWithSneakyTransaction()
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -96,7 +96,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     }
 
     @objc func themeDidChange() {
-        updateImage()
+        updateImageWithSneakyTransaction()
     }
 
     @objc func handleSignalAccountsChanged(notification: Notification) {
@@ -105,7 +105,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
 
-        self.updateImage()
+        self.updateImageWithSneakyTransaction()
     }
 
     @objc func handleOtherUsersProfileChanged(notification: Notification) {
@@ -127,7 +127,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        self.updateImage()
+        self.updateImageWithSneakyTransaction()
     }
 
     @objc func handleGroupAvatarChanged(notification: Notification) {
@@ -157,13 +157,21 @@ public class ConversationAvatarImageView: AvatarImageView {
         }
         self.thread = latestThread
 
-        self.updateImage()
+        self.updateImageWithSneakyTransaction()
     }
 
-    public func updateImage() {
+    public func updateImageWithSneakyTransaction() {
+        databaseStorage.read { transaction in
+            self.updateImage(transaction: transaction)
+        }
+    }
+
+    public func updateImage(transaction: SDSAnyReadTransaction) {
         Logger.debug("updateImage")
 
-        self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter)
+        self.image = OWSAvatarBuilder.buildImage(thread: thread,
+                                                 diameter: diameter,
+                                                 transaction: transaction)
     }
 }
 

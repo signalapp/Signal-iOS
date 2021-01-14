@@ -37,6 +37,10 @@ public extension String {
         })
     }
 
+    var entireRange: NSRange {
+        NSRange(location: 0, length: utf16.count)
+    }
+
     init?(sysctlKey key: String) {
         var size: Int = 0
         sysctlbyname(key, nil, &size, nil, 0)
@@ -70,6 +74,10 @@ public extension NSString {
 // MARK: - Attributed String Concatentation
 
 public extension NSAttributedString {
+    var entireRange: NSRange {
+        NSRange(location: 0, length: string.utf16.count)
+    }
+
     @objc
     func stringByAppendingString(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) -> NSAttributedString {
         return stringByAppendingString(NSAttributedString(string: string, attributes: attributes))
@@ -99,6 +107,11 @@ public extension NSAttributedString {
         mutableString.ows_strip()
         return NSAttributedString(attributedString: mutableString)
     }
+
+    @objc
+    var isEmpty: Bool {
+        length < 1
+    }
 }
 
 // MARK: -
@@ -116,7 +129,18 @@ public enum ImageAttachmentHeightReference: Int {
     }
 }
 
+// MARK: -
+
 public extension NSMutableAttributedString {
+    func addAttributeToEntireString(_ name: NSAttributedString.Key, value: Any) {
+        addAttribute(name, value: value, range: entireRange)
+    }
+
+    @objc
+    func addAttributesToEntireString(_ attributes: [NSAttributedString.Key: Any] = [:]) {
+        addAttributes(attributes, range: entireRange)
+    }
+
     @objc
     func append(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) {
         append(NSAttributedString(string: string, attributes: attributes))
@@ -207,7 +231,7 @@ public extension NSMutableAttributedString {
 
         if let attributes = attributes {
             let mutableString = NSMutableAttributedString(attributedString: attachmentString)
-            mutableString.addAttributes(attributes, range: NSRange(location: 0, length: mutableString.length))
+            mutableString.addAttributes(attributes, range: mutableString.entireRange)
             append(mutableString)
         } else {
             append(attachmentString)

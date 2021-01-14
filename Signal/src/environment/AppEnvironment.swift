@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc public class AppEnvironment: NSObject {
+@objc
+public class AppEnvironment: NSObject {
 
     private static var _shared: AppEnvironment = AppEnvironment()
 
@@ -47,9 +48,6 @@ import SignalMessaging
     public var sessionResetJobQueue: SessionResetJobQueue
 
     @objc
-    public var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue
-
-    @objc
     public var backup: OWSBackup
 
     @objc
@@ -61,6 +59,9 @@ import SignalMessaging
     @objc
     let deviceTransferService = DeviceTransferService()
 
+    @objc
+    let audioPlayer = CVAudioPlayer()
+
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()
         self.callService = CallService()
@@ -69,7 +70,6 @@ import SignalMessaging
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
-        self.broadcastMediaMessageJobQueue = BroadcastMediaMessageJobQueue()
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
         self.userNotificationActionHandler = UserNotificationActionHandler()

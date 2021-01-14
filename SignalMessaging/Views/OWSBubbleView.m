@@ -165,6 +165,17 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [self updateLayers];
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    if (self.ensureSubviewsFillBounds) {
+        for (UIView *subview in self.subviews) {
+            subview.frame = self.bounds;
+        }
+    }
+}
+
 - (void)updateLayers
 {
     if (!self.maskLayer) {

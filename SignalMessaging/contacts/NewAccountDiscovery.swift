@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,8 +42,7 @@ public class NewAccountDiscovery: NSObject {
         }
 
         databaseStorage.asyncWrite { transaction in
-            // Don't spam inbox with a ton of these
-            for recipient in newRecipients.prefix(3) {
+            for recipient in newRecipients {
 
                 guard !recipient.address.isLocalAddress else {
                     owsFailDebug("unexpectedly found localNumber")

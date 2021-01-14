@@ -3,7 +3,6 @@
 //
 
 #import "OWSQuotedReplyModel.h"
-#import "ConversationViewItem.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
@@ -119,17 +118,17 @@ NS_ASSUME_NONNULL_BEGIN
                    thumbnailDownloadFailed:thumbnailDownloadFailed];
 }
 
-+ (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
+                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(conversationItem);
     OWSAssertDebug(transaction);
 
-    TSMessage *message = (TSMessage *)conversationItem.interaction;
-    if (![message isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"unexpected reply message: %@", message);
+    TSInteraction *interaction = item.interaction;
+    if (![interaction isKindOfClass:[TSMessage class]]) {
+        OWSFailDebug(@"unexpected reply message: %@", interaction);
         return nil;
     }
+    TSMessage *message = (TSMessage *)(interaction);
 
     TSThread *thread = [message threadWithTransaction:transaction];
     OWSAssertDebug(thread);
@@ -166,9 +165,9 @@ NS_ASSUME_NONNULL_BEGIN
                        thumbnailDownloadFailed:NO];
     }
 
-    if (conversationItem.contactShare) {
-        ContactShareViewModel *contactShare = conversationItem.contactShare;
-        
+    if (item.contactShare) {
+        ContactShareViewModel *contactShare = item.contactShare;
+
         // TODO We deliberately always pass `nil` for `thumbnailImage`, even though we might have a contactShare.avatarImage
         // because the QuotedReplyViewModel has some hardcoded assumptions that only quoted attachments have
         // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
@@ -186,19 +185,20 @@ NS_ASSUME_NONNULL_BEGIN
                        thumbnailDownloadFailed:NO];
     }
 
-    if (conversationItem.stickerInfo || conversationItem.stickerAttachment || conversationItem.stickerMetadata) {
-        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment || !conversationItem.stickerMetadata) {
+    if (item.stickerInfo || item.stickerAttachment || item.stickerMetadata) {
+        if (!item.stickerInfo || !item.stickerAttachment || !item.stickerMetadata) {
             OWSFailDebug(@"Incomplete sticker message.");
             return nil;
         }
 
-        TSAttachmentStream *quotedAttachment = conversationItem.stickerAttachment;
-        StickerMetadata *stickerMetadata = conversationItem.stickerMetadata;
+        TSAttachmentStream *quotedAttachment = item.stickerAttachment;
+        StickerMetadata *stickerMetadata = item.stickerMetadata;
         NSData *_Nullable stickerData = [NSData dataWithContentsOfURL:stickerMetadata.stickerDataUrl];
         if (!stickerData) {
             OWSFailDebug(@"Couldn't load sticker data.");
             return nil;
         }
+        const CGFloat kMaxThumbnailSizePixels = 512;
         UIImage *_Nullable thumbnailImage;
         switch (stickerMetadata.stickerType) {
             case StickerTypeWebp:
@@ -209,11 +209,23 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
             case StickerTypeSignalLottie:
                 break;
+            case StickerTypeGif: {
+                NSError *_Nullable error;
+                thumbnailImage = [OWSMediaUtils thumbnailForImageAtPath:stickerMetadata.stickerDataUrl.path
+                                                           maxDimension:kMaxThumbnailSizePixels
+                                                                  error:&error];
+                if (error != nil || thumbnailImage == nil) {
+                    OWSFailDebug(@"Error: %@", error);
+                    thumbnailImage = nil;
+                }
+                break;
+            }
         }
         if (!thumbnailImage) {
             OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
             return nil;
         }
+        thumbnailImage = [thumbnailImage resizedWithMaxDimensionPixels:kMaxThumbnailSizePixels];
 
         return [[self alloc] initWithTimestamp:timestamp
                                  authorAddress:authorAddress
@@ -281,10 +293,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (!quotedAttachment && conversationItem.linkPreview && conversationItem.linkPreviewAttachment &&
-        [conversationItem.linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
+    if (!quotedAttachment && item.linkPreview && item.linkPreviewAttachment &&
+        [item.linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
 
-        quotedAttachment = (TSAttachmentStream *)conversationItem.linkPreviewAttachment;
+        quotedAttachment = (TSAttachmentStream *)item.linkPreviewAttachment;
     }
 
     BOOL hasAttachment = quotedAttachment != nil;

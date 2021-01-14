@@ -173,7 +173,7 @@ public class ReactionManager: NSObject {
 
         // If this is a reaction removal, we want to remove *any* reaction from this author
         // on this message, regardless of the specified emoji.
-        if reaction.remove {
+        if reaction.hasRemove, reaction.remove {
             message.removeReaction(for: reactor, transaction: transaction)
         } else {
             let reaction = message.recordReaction(

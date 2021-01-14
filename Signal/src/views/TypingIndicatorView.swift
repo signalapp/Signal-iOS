@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 @objc class TypingIndicatorView: UIStackView {
     // This represents the spacing between the dots
     // _at their max size_.
-    private let kDotMaxHSpacing: CGFloat = 3
+    private static let kDotMaxHSpacing: CGFloat = 3
 
     @objc
     public static let kMinRadiusPt: CGFloat = 6
@@ -36,7 +36,7 @@
         }
 
         self.axis = .horizontal
-        self.spacing = kDotMaxHSpacing
+        self.spacing = Self.kDotMaxHSpacing
         self.alignment = .center
 
         NotificationCenter.default.addObserver(self,
@@ -65,6 +65,11 @@
 
     @objc
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        Self.measureSize
+    }
+
+    @objc
+    public static var measureSize: CGSize {
         return CGSize(width: TypingIndicatorView.kMaxRadiusPt * 3 + kDotMaxHSpacing * 2, height: TypingIndicatorView.kMaxRadiusPt)
     }
 

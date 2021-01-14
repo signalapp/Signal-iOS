@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -19,6 +19,7 @@ public protocol VideoEditorModelObserver: class {
 
 @objc
 public class VideoEditorModel: NSObject {
+    private let lock = UnfairLock()
 
     @objc
     public let srcVideoPath: String
@@ -168,6 +169,35 @@ public class VideoEditorModel: NSObject {
 
     // MARK: - Rendering
 
+    public var needsRender: Bool { isTrimmed }
+    fileprivate var currentRender: Render?
+
+    // Whenever the model state changes, we need to discard any ongoing render.
+    private func clearRender() {
+        lock.withLock {
+            currentRender?.cancel()
+            currentRender = nil
+        }
+    }
+
+    // This method can be used to access the rendered output.
+    // It can also be used to eagerly initiate a render (if
+    // necessary) to reduce perceived render time.
+    public func ensureCurrentRender() -> Render {
+        return lock.withLock {
+            if let render = self.currentRender {
+                return render
+            } else {
+                let render = Render(model: self)
+                self.currentRender = render
+                render.beginRender()
+                return render
+            }
+        }
+    }
+}
+
+extension VideoEditorModel {
     // Represents an attempt to render the output.
     // Contains a copy of the model state at the
     // time the render is enqueued.
@@ -178,15 +208,121 @@ public class VideoEditorModel: NSObject {
         fileprivate let trimmedDurationSeconds: TimeInterval
         fileprivate let isTrimmed: Bool
 
-        fileprivate let promise: Promise<String>
-        fileprivate let resolver: Resolver<String>
-
-        // This property should only be accessed on VideoEditorModel.serialQueue.
-        private var exportSession: AVAssetExportSession?
-
         // Until the render is consumed, it is the responsibility of this
         // class to clean up its temp files.
-        private let isConsumed = AtomicBool(false)
+        private var lock = UnfairLock()
+        private var exportSession: AVAssetExportSession?
+
+        class Result {
+            private let lock = UnfairLock()
+            private let path: String
+
+            // While the Result owns the resulting file, it is its responsibility to clean
+            // it up on deinit. Ownership can be relinquished to a caller of consumeResultPath()
+            private var isOwned = false
+
+            fileprivate init(path: String, owned: Bool = true) {
+                self.path = path
+                self.isOwned = owned
+            }
+
+            deinit {
+                guard isOwned else { return }
+
+                do {
+                    try FileManager.default.removeItem(at: URL(fileURLWithPath: path))
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
+            }
+
+            /// Returns an unowned reference to the render output file. This path is valid as long as the `Result`
+            /// is valid and file has not been consumed by `consumeResultPath()`. Caller should make a copy
+            /// of this file if they'd like the render result to outlive these events.
+            public func getResultPath() -> String {
+                lock.withLock {
+                    // Something else has already taken ownership of this file
+                    // It's probably still valid, but worth flagging as an issue.
+                    owsAssertDebug(isOwned, "Result file externally owned")
+                }
+                return path
+            }
+
+            /// Returns a path to the render result. Receiver is responsible for deleting the resulting file
+            /// This should be called once at most
+            public func consumeResultPath() throws -> String {
+                // Since the path is being consumed, we no longer own it.
+                // If we didn't already own it, we should make a copy of the unowned filepath
+                // It's incorrect and worthy of a failDebug, but it's also probably still valid.
+                // In that case, we make a copy so that the receiver can take ownership
+                let shouldCopy: Bool = lock.withLock {
+                    owsAssertDebug(isOwned, "Result file externally owned")
+                    let wasAlreadyOwned = isOwned
+                    isOwned = false
+                    return !wasAlreadyOwned
+                }
+
+                if shouldCopy {
+                    let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
+                    try FileManager.default.copyItem(atPath: path, toPath: dstFilePath)
+                    return dstFilePath
+                } else {
+                    return path
+                }
+            }
+        }
+
+        lazy var result: Promise<Result> = {
+            guard isTrimmed else {
+                // Video editor has no changes.
+                owsFailDebug("calling no-op render. Instead copy the file.")
+
+                // Since we haven't trimmed, there's nothing to render. Callers shouldn't get here, but
+                // just in case we'll return an unowned Result. The implementation of Result ensures that
+                // a new copy of the srcVideoPath is made for any consume requests to maintain the ownership contract.
+                return .value(Result(path: srcVideoPath, owned: false))
+            }
+
+            return firstly(on: .sharedUserInitiated) { () -> Promise<Result> in
+                let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
+                let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
+
+                let session: AVAssetExportSession = try self.lock.withLock {
+                    guard self.exportSession == nil else { throw OWSAssertionError("Duplicate session") }
+
+                    // AVAssetExportPresetPassthrough maintains the source quality.
+                    guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
+                        throw OWSAssertionError("Could not create export session.")
+                    }
+
+                    self.exportSession = exportSession
+                    return exportSession
+                }
+
+                session.outputURL = URL(fileURLWithPath: dstFilePath)
+                // This will ensure that the MP4 moov atom (movie atom)
+                // is located at the beginning of the file. That may help
+                // recipients validate incoming videos.
+                session.shouldOptimizeForNetworkUse = true
+                session.outputFileType = AVFileType.mp4
+                // Preserve the original timescale.
+                let cmStart: CMTime = CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: self.untrimmedDuration.timescale)
+                let cmDuration: CMTime = CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: self.untrimmedDuration.timescale)
+                let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
+                session.timeRange = cmRange
+
+                return session.exportPromise().map { path in
+                    Result(path: path, owned: true)
+                }.recover { error -> Promise<Result> in
+                    if case VideoEditorError.cancelled = error {
+                        // No big deal. Cancellations happen.
+                    } else {
+                        owsFailDebug("Export failed: \(error)")
+                    }
+                    throw error
+                }
+            }
+        }()
 
         required init(model: VideoEditorModel) {
             self.srcVideoPath = model.srcVideoPath
@@ -194,203 +330,39 @@ public class VideoEditorModel: NSObject {
             self.trimmedStartSeconds = model.trimmedStartSeconds
             self.trimmedDurationSeconds = model.trimmedDurationSeconds
             self.isTrimmed = model.isTrimmed
-
-            let (promise, resolver) = Promise<String>.pending()
-            self.promise = promise
-            self.resolver = resolver
         }
 
-        deinit {
-            guard !isConsumed.get() else {
-                return
-            }
-
-            _ = promise.done(on: DispatchQueue.global()) { filePath in
-                do {
-                    try FileManager.default.removeItem(at: URL(fileURLWithPath: filePath))
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-            }
+        func beginRender() {
+            _ = result
         }
 
-        // consumableFilePromise
-
-        // Returns a promise that yields a file path
-        // for the output video file path.  The caller
-        // has responsibility for cleaning up this file.
-        public func consumingFilePromise() -> Promise<String> {
-            if isConsumed.get() {
-                owsFailDebug("File is already consumed.")
+        func cancel() {
+            lock.withLock {
+                exportSession?.cancelExport()
+                exportSession = nil
             }
-            isConsumed.set(true)
-            return promise
-        }
-
-        // Returns a promise that yields a file path
-        // for the output video file path.  The caller
-        // does not have responsibility for cleaning up this file.
-        public func nonconsumingFilePromise() -> Promise<String> {
-            if isConsumed.get() {
-                owsFailDebug("File is already consumed.")
-            }
-            return promise
-        }
-
-        fileprivate func set(exportSession: AVAssetExportSession) {
-            assertOnQueue(VideoEditorModel.serialQueue)
-
-            self.exportSession = exportSession
-        }
-
-        // This method should only be accessed on VideoEditorModel.serialQueue.
-        fileprivate func cancel() {
-            assertOnQueue(VideoEditorModel.serialQueue)
-
-            guard let exportSession = self.exportSession else {
-                return
-            }
-            exportSession.cancelExport()
-        }
-    }
-
-    fileprivate static let serialQueue: DispatchQueue = DispatchQueue(label: "VideoEditorModel.serialQueue")
-    // This property should only be accessed on serialQueue.
-    fileprivate var currentRender: Render?
-    // This operation queue ensures that only one render operation is
-    // running at a given time.
-    private static let renderOperationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "VideoEditorModel.renderOperationQueue"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-
-    // Whenever the model state changes, we need to discard any ongoing render.
-    private func clearRender() {
-        VideoEditorModel.serialQueue.sync {
-            guard let render = self.currentRender else {
-                return
-            }
-            render.cancel()
-            self.currentRender = nil
-        }
-    }
-
-    // This method can be used to access the rendered output.
-    // It can also be used to eagerly initiate a render (if
-    // necessary) to reduce perceived render time.
-    public func ensureCurrentRender() -> Render {
-        return VideoEditorModel.serialQueue.sync {
-            if let currentRender = self.currentRender {
-                return currentRender
-            }
-            let render = Render(model: self)
-            self.currentRender = render
-
-            // Enqueue an operation to process the render.
-            let operationQueue = VideoEditorModel.renderOperationQueue
-            let operation = TrimVideoOperation(model: self, render: render)
-            operationQueue.addOperation(operation)
-
-            return render
         }
     }
 }
 
-// MARK: -
-
-private class TrimVideoOperation: OWSOperation {
-
-    private let model: VideoEditorModel
-    private let render: VideoEditorModel.Render
-
-    fileprivate required init(model: VideoEditorModel,
-                              render: VideoEditorModel.Render) {
-        self.model = model
-        self.render = render
-    }
-
-    public override func run() {
-        Logger.debug("")
-
-        let (promise, resolver) = Promise<String>.pending()
-        DispatchQueue.global().async {
-            let currentRender = VideoEditorModel.serialQueue.sync {
-                return self.model.currentRender
-            }
-            guard self.render === currentRender else {
-                // Renders can take quite a while, so it's important to skip
-                // renders that are no longer necessary.
-                resolver.reject(OWSAssertionError("Skipping stale render."))
-                return
-            }
-            let render = self.render
-            guard render.isTrimmed else {
-                // Video editor has no changes.
-                owsFailDebug("calling no-op render. Instead copy the file.")
-                // When rendering a new file, the caller is given a URL that they "own" - that is the
-                // caller can then `consume` it, and must delete on deallocation if they don't.
-                //
-                // However here we return the existing URL, which violates that contract - two entities
-                // now own the original file. In practice, I think we're no longer hitting this code
-                // path, but I'm leaving this here for resiliency.
-                resolver.fulfill(render.srcVideoPath)
+fileprivate extension AVAssetExportSession {
+    func exportPromise() -> Promise<String> {
+        Promise { resolver in
+            guard self.status != .cancelled else {
+                resolver.reject(VideoEditorError.cancelled)
                 return
             }
 
-            let asset = AVURLAsset(url: URL(fileURLWithPath: render.srcVideoPath))
-            let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
-
-            // AVAssetExportPresetPassthrough maintains the source quality.
-            guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-                resolver.reject(OWSAssertionError("Could not create export session."))
-                return
-            }
-            VideoEditorModel.serialQueue.sync {
-                render.set(exportSession: exportSession)
-            }
-
-            exportSession.outputURL = URL(fileURLWithPath: dstFilePath)
-            // This will ensure that the MP4 moov atom (movie atom)
-            // is located at the beginning of the file. That may help
-            // recipients validate incoming videos.
-            exportSession.shouldOptimizeForNetworkUse = true
-            exportSession.outputFileType = AVFileType.mp4
-            // Preserve the original timescale.
-            let cmStart: CMTime = CMTime(seconds: render.trimmedStartSeconds, preferredTimescale: render.untrimmedDuration.timescale)
-            let cmDuration: CMTime = CMTime(seconds: render.trimmedDurationSeconds, preferredTimescale: render.untrimmedDuration.timescale)
-            let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
-            exportSession.timeRange = cmRange
-
-            exportSession.exportAsynchronously {
-                switch exportSession.status {
-                case .completed:
-                    resolver.fulfill(dstFilePath)
-                case .cancelled:
+            exportAsynchronously {
+                switch (self.status, self.outputURL?.path) {
+                case (.completed, let path?):
+                    resolver.fulfill(path)
+                case (.cancelled, _):
                     resolver.reject(VideoEditorError.cancelled)
                 default:
-                    resolver.reject(OWSAssertionError("Status: \(exportSession.status)"))
+                    resolver.reject(self.error ?? OWSAssertionError("Status \(self.status)"))
                 }
             }
-        }
-        promise.done { filePath in
-            self.render.resolver.fulfill(filePath)
-            self.reportSuccess()
-        }.catch { error in
-            if case VideoEditorError.cancelled = error {
-                // operation was cancelled - this is normal.
-            } else {
-                owsFailDebug("Error: \(error)")
-            }
-            self.render.resolver.reject(error)
-            VideoEditorModel.serialQueue.sync {
-                // Discard failed render.
-                if self.model.currentRender === self.render {
-                    self.model.currentRender = nil
-                }
-            }
-            self.reportError(withUndefinedRetry: error)
         }
     }
 }

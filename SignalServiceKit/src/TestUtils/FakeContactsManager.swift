@@ -54,7 +54,15 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 
+    public func isSystemContact(withSignalAccount phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
+        return true
+    }
+
     public func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
+        return true
+    }
+
+    public func hasNameInSystemContacts(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         return true
     }
 

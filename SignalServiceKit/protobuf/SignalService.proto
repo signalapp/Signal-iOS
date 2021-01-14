@@ -254,7 +254,6 @@ message DataMessage {
   message Reaction {
     // @required
     optional string emoji      = 1;
-    // @required
     optional bool   remove     = 2;
     optional string authorE164 = 3;
     optional string authorUuid = 4;

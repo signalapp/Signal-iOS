@@ -7,7 +7,9 @@ import Foundation
 @objc
 protocol InputAccessoryViewPlaceholderDelegate: class {
     func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
+    func inputAccessoryPlaceholderKeyboardDidPresent()
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
+    func inputAccessoryPlaceholderKeyboardDidDismiss()
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
 }
 
@@ -75,24 +77,43 @@ public class InputAccessoryViewPlaceholder: UIView {
         set {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
+            UIView.performWithoutAnimation {
+                heightConstraintView.layoutIfNeeded()
+                self.layoutIfNeeded()
+                superview?.layoutIfNeeded()
+            }
         }
         get {
             return heightConstraint.constant
         }
     }
 
+    private let heightConstraintView = UIView()
+
     private lazy var heightConstraint: NSLayoutConstraint = {
-        let view = UIView()
-        addSubview(view)
-        view.autoPinHeightToSuperview()
-        return view.autoSetDimension(.height, toSize: 0)
+        addSubview(heightConstraintView)
+        heightConstraintView.autoPinHeightToSuperview()
+        return heightConstraintView.autoSetDimension(.height, toSize: 0)
     }()
 
-    private enum KeyboardState {
+    private enum KeyboardState: CustomStringConvertible {
         case dismissed
         case dismissing
         case presented
         case presenting(frame: CGRect)
+
+        public var description: String {
+            switch self {
+            case .dismissed:
+                return "dismissed"
+            case .dismissing:
+                return "dismissing"
+            case .presented:
+                return "presented"
+            case .presenting:
+                return "presenting"
+            }
+        }
     }
     private var keyboardState: KeyboardState = .dismissed
 
@@ -198,6 +219,7 @@ public class InputAccessoryViewPlaceholder: UIView {
     @objc
     private func keyboardDidPresent(_ notification: Notification) {
         keyboardState = .presented
+        delegate?.inputAccessoryPlaceholderKeyboardDidPresent()
     }
 
     @objc
@@ -217,5 +239,6 @@ public class InputAccessoryViewPlaceholder: UIView {
     @objc
     private func keyboardDidDismiss(_ notification: Notification) {
         keyboardState = .dismissed
+        delegate?.inputAccessoryPlaceholderKeyboardDidDismiss()
     }
 }

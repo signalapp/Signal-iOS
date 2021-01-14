@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -135,10 +135,9 @@ protocol ColorPickerViewDelegate: class {
 
 class ColorPickerView: UIView, ColorViewDelegate {
 
+    private let thread: TSThread
     private let colorViews: [ColorView]
-    let conversationStyle: ConversationStyle
-    var outgoingMessageView = OWSMessageBubbleView(forAutoLayout: ())
-    var incomingMessageView = OWSMessageBubbleView(forAutoLayout: ())
+    var conversationStyle: ConversationStyle
     weak var delegate: ColorPickerViewDelegate?
 
     // This is mostly a developer convenience - OWSMessageCell asserts at some point
@@ -147,18 +146,26 @@ class ColorPickerView: UIView, ColorViewDelegate {
     let kMinimumConversationWidth: CGFloat = 300
     override var bounds: CGRect {
         didSet {
-            updateMockConversationView()
+            let didChangeWidth = bounds.width != oldValue.width
+            if didChangeWidth {
+                updateMockConversationView()
+            }
         }
     }
 
     let mockConversationView: UIView = UIView()
 
     init(thread: TSThread) {
+
+        self.thread = thread
+
         let allConversationColors = OWSConversationColor.conversationColorNames.map { OWSConversationColor.conversationColorOrDefault(colorName: $0) }
 
         self.colorViews = allConversationColors.map { ColorView(conversationColor: $0) }
 
-        self.conversationStyle = ConversationStyle(thread: thread)
+        self.conversationStyle = ConversationStyle(type: .`default`,
+                                                   thread: thread,
+                                                   viewWidth: 0)
 
         super.init(frame: .zero)
 
@@ -219,57 +226,57 @@ class ColorPickerView: UIView, ColorViewDelegate {
         return headerView
     }
 
-    private var outgoingViewItem: MockConversationViewItem {
-        let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
-        let outgoingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_1", comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble.")
-        let message = MockOutgoingMessage(messageBody: outgoingText, thread: thread)
-        let outgoingItem = MockConversationViewItem(interaction: message, thread: thread)
-        outgoingItem.displayableBodyText = DisplayableText.displayableTextForTests(outgoingText)
-        outgoingItem.interactionType = .outgoingMessage
-        return outgoingItem
-    }
-
-    private var incomingViewItem: MockConversationViewItem {
-        let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
-        let incomingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_2", comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble.")
-        let message = MockIncomingMessage(messageBody: incomingText, thread: thread)
-        let incomingItem = MockConversationViewItem(interaction: message, thread: thread)
-        incomingItem.displayableBodyText = DisplayableText.displayableTextForTests(incomingText)
-        incomingItem.interactionType = .incomingMessage
-        return incomingItem
-    }
-
     private func updateMockConversationView() {
-        conversationStyle.viewWidth = max(bounds.size.width, kMinimumConversationWidth)
+        let viewWidth = max(bounds.size.width, kMinimumConversationWidth)
+        self.conversationStyle = ConversationStyle(type: .`default`,
+                                                   thread: self.thread,
+                                                   viewWidth: viewWidth)
+
         mockConversationView.subviews.forEach { $0.removeFromSuperview() }
 
-        // outgoing
-        outgoingMessageView = OWSMessageBubbleView(forAutoLayout: ())
-        outgoingMessageView.viewItem = outgoingViewItem
-        outgoingMessageView.cellMediaCache = NSCache()
-        outgoingMessageView.conversationStyle = conversationStyle
-        outgoingMessageView.configureViews()
-        outgoingMessageView.loadContent()
-        let outgoingCell = UIView()
-        outgoingCell.addSubview(outgoingMessageView)
-        outgoingMessageView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .leading)
-        let outgoingSize = outgoingMessageView.measureSize()
-        outgoingMessageView.autoSetDimensions(to: outgoingSize)
+        let containerView = self
+        guard containerView.width > 0 else {
+            return
+        }
 
-        // incoming
-        incomingMessageView = OWSMessageBubbleView(forAutoLayout: ())
-        incomingMessageView.viewItem = incomingViewItem
-        incomingMessageView.cellMediaCache = NSCache()
-        incomingMessageView.conversationStyle = conversationStyle
-        incomingMessageView.configureViews()
-        incomingMessageView.loadContent()
-        let incomingCell = UIView()
-        incomingCell.addSubview(incomingMessageView)
-        incomingMessageView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .trailing)
-        let incomingSize = incomingMessageView.measureSize()
-        incomingMessageView.autoSetDimensions(to: incomingSize)
+        var outgoingRenderItem: CVRenderItem?
+        var incomingRenderItem: CVRenderItem?
 
-        let messagesStackView = UIStackView(arrangedSubviews: [outgoingCell, incomingCell])
+        databaseStorage.uiRead { transaction in
+            let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
+
+            let outgoingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_1", comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble.")
+            let outgoingMessage = MockOutgoingMessage(messageBody: outgoingText, thread: thread)
+
+            let incomingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_2", comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble.")
+            let incomingMessage = MockIncomingMessage(messageBody: incomingText, thread: thread)
+
+            outgoingRenderItem = CVLoader.buildStandaloneRenderItem(interaction: outgoingMessage,
+                                                                    thread: thread,
+                                                                    containerView: containerView,
+                                                                    transaction: transaction)
+            incomingRenderItem = CVLoader.buildStandaloneRenderItem(interaction: incomingMessage,
+                                                                    thread: thread,
+                                                                    containerView: containerView,
+                                                                    transaction: transaction)
+        }
+
+        let outgoingMessageView = CVCellView()
+        let incomingMessageView = CVCellView()
+        if let renderItem = outgoingRenderItem {
+            outgoingMessageView.configure(renderItem: renderItem, componentDelegate: self)
+        } else {
+            owsFailDebug("Missing outgoingRenderItem.")
+        }
+        if let renderItem = incomingRenderItem {
+            incomingMessageView.configure(renderItem: renderItem, componentDelegate: self)
+        } else {
+            owsFailDebug("Missing incomingRenderItem.")
+        }
+        outgoingMessageView.isCellVisible = true
+        incomingMessageView.isCellVisible = true
+
+        let messagesStackView = UIStackView(arrangedSubviews: [outgoingMessageView, incomingMessageView])
         messagesStackView.axis = .vertical
         messagesStackView.spacing = 12
 
@@ -301,7 +308,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
     }
 }
 
-// MARK: Mock Classes for rendering demo conversation
+// MARK: - Mock Classes
 
 @objc
 private class MockThread: TSContactThread {
@@ -315,148 +322,7 @@ private class MockThread: TSContactThread {
     }
 }
 
-@objc
-private class MockConversationViewItem: NSObject, ConversationViewItem {
-    var thread: TSThread
-    var interaction: TSInteraction
-    var interactionType: OWSInteractionType = OWSInteractionType.unknown
-    var quotedReply: OWSQuotedReplyModel?
-    var isGroupThread: Bool = false
-    var hasBodyText: Bool = true
-    var isQuotedReply: Bool = false
-    var hasQuotedAttachment: Bool = false
-    var hasQuotedText: Bool = false
-    var hasPerConversationExpiration: Bool = false
-    var isViewOnceMessage: Bool = false
-    var canShowDate: Bool = false
-    var shouldShowSenderAvatar: Bool = false
-    var senderName: NSAttributedString?
-    var senderUsername: String?
-    var senderProfileName: String?
-    var accessibilityAuthorName: String?
-    var shouldHideFooter: Bool = false
-    var isFirstInCluster: Bool = true
-    var isLastInCluster: Bool = true
-    var lastAudioMessageView: AudioMessageView?
-    var audioDurationSeconds: CGFloat = 0
-    var audioProgressSeconds: CGFloat = 0
-    var messageCellType: OWSMessageCellType = .textOnlyMessage
-    var displayableBodyText: DisplayableText?
-    var attachmentStream: TSAttachmentStream?
-    var attachmentPointer: TSAttachmentPointer?
-    var mediaSize: CGSize  = .zero
-    var displayableQuotedText: DisplayableText?
-    var quotedAttachmentMimetype: String?
-    var quotedAuthorAddress: SignalServiceAddress?
-    var didCellMediaFailToLoad: Bool = false
-    var contactShare: ContactShareViewModel?
-    var systemMessageText: String?
-    var authorConversationColorName: String?
-    var hasBodyTextActionContent: Bool = false
-    var hasMediaActionContent: Bool = false
-    var mediaAlbumItems: [ConversationMediaAlbumItem]?
-    var needsUpdate: Bool = false
-    var linkPreview: OWSLinkPreview?
-    var linkPreviewAttachment: TSAttachment?
-    var groupInviteLinkViewModel: GroupInviteLinkViewModel?
-    var stickerInfo: StickerInfo?
-    var stickerAttachment: TSAttachmentStream?
-    var stickerMetadata: StickerMetadata?
-    var isFailedSticker: Bool = false
-    var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
-    var mutualGroupNames: [String]?
-    var reactionState: InteractionReactionState?
-    var shouldCollapseSystemMessageAction: Bool = false
-    var systemMessageGroupUpdates: [GroupUpdateCopyItem]?
-    var isTruncatedTextVisible: Bool = false
-
-    init(interaction: TSInteraction, thread: TSThread) {
-        self.interaction = interaction
-        self.thread = thread
-
-        super.init()
-    }
-
-    func itemId() -> String {
-        return interaction.uniqueId
-    }
-
-    func dequeueCell(for collectionView: UICollectionView, indexPath: IndexPath) -> ConversationViewCell {
-        owsFailDebug("unexpected invocation")
-        return ConversationViewCell(forAutoLayout: ())
-    }
-
-    func replace(_ interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func clearCachedLayoutState() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func clearNeedsUpdate() {
-        owsFailDebug("unexpected invocation")
-    }
-
-    func shareMediaAction(_ sender: Any?) {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func copyTextAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func deleteAction() {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func canShareMedia() -> Bool {
-        owsFailDebug("unexpected invocation")
-        return false
-    }
-
-    var canForwardMessage: Bool {
-        owsFailDebug("unexpected invocation")
-        return false
-    }
-
-    var audioPlaybackState: AudioPlaybackState = .paused
-
-    func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
-        owsFailDebug("unexpected invocation")
-        return
-    }
-
-    func cellSize() -> CGSize {
-        owsFailDebug("unexpected invocation")
-        return CGSize.zero
-    }
-
-    func vSpacing(withPreviousLayoutItem previousLayoutItem: ConversationViewLayoutItem) -> CGFloat {
-        owsFailDebug("unexpected invocation")
-        return 2
-    }
-
-    func firstValidAlbumAttachment() -> TSAttachmentStream? {
-        owsFailDebug("unexpected invocation")
-        return nil
-    }
-
-    func mediaAlbumHasFailedAttachment() -> Bool {
-        owsFailDebug("unexpected invocation")
-        return false
-    }
-
-    func mediaAlbumHasPendingMessageRequestAttachment() -> Bool {
-        owsFailDebug("unexpected invocation")
-        return false
-    }
-}
+// MARK: -
 
 private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String, thread: TSThread) {
@@ -483,6 +349,8 @@ private class MockIncomingMessage: TSIncomingMessage {
         owsFailDebug("shouldn't save mock message")
     }
 }
+
+// MARK: -
 
 private class MockOutgoingMessage: TSOutgoingMessage {
     init(messageBody: String, thread: TSThread) {
@@ -528,4 +396,126 @@ private class MockOutgoingMessage: TSOutgoingMessage {
     override func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
         return MockOutgoingMessageRecipientState()
     }
+}
+
+// MARK: -
+
+extension ColorPickerView: CVComponentDelegate {
+
+    func cvc_didLongPressTextViewItem(_ cell: CVCell,
+                                      itemViewModel: CVItemViewModelImpl,
+                                      shouldAllowReply: Bool) {}
+
+    func cvc_didLongPressMediaViewItem(_ cell: CVCell,
+                                       itemViewModel: CVItemViewModelImpl,
+                                       shouldAllowReply: Bool) {}
+
+    func cvc_didLongPressQuote(_ cell: CVCell,
+                               itemViewModel: CVItemViewModelImpl,
+                               shouldAllowReply: Bool) {}
+
+    func cvc_didLongPressSystemMessage(_ cell: CVCell,
+                                       itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_didLongPressSticker(_ cell: CVCell,
+                                 itemViewModel: CVItemViewModelImpl,
+                                 shouldAllowReply: Bool) {}
+
+    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {}
+
+    // MARK: -
+
+    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_didTapSenderAvatar(_ interaction: TSInteraction) {}
+
+    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
+
+    func cvc_didTapReactions(reactionState: InteractionReactionState,
+                             message: TSMessage) {}
+
+    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
+
+    var cvc_hasPendingMessageRequest: Bool { false }
+
+    func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage) {}
+
+    // MARK: - Messages
+
+    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
+                             attachmentStream: TSAttachmentStream,
+                             imageView: UIView) {}
+
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) {}
+
+    func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
+
+    func cvc_didTapLinkPreview(_ linkPreview: OWSLinkPreview) {}
+
+    func cvc_didTapContactShare(_ contactShare: ContactShareViewModel) {}
+
+    func cvc_didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {}
+
+    func cvc_didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {}
+
+    func cvc_didTapAddToContacts(contactShare: ContactShareViewModel) {}
+
+    func cvc_didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {}
+
+    func cvc_didTapGroupInviteLink(url: URL) {}
+
+    func cvc_didTapMention(_ mention: Mention) {}
+
+    // MARK: - Selection
+
+    var isShowingSelectionUI: Bool { false }
+
+    func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool { false }
+
+    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
+
+    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
+
+    // MARK: - System Cell
+
+    func cvc_didTapNonBlockingIdentityChange(_ address: SignalServiceAddress) {}
+
+    func cvc_didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {}
+
+    func cvc_didTapCorruptedMessage(_ message: TSErrorMessage) {}
+
+    func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage) {}
+
+    func cvc_didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}
+
+    func cvc_didTapShowFingerprint(_ address: SignalServiceAddress) {}
+
+    func cvc_didTapIndividualCall(_ call: TSCall) {}
+
+    func cvc_didTapGroupCall() {}
+
+    func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}
+
+    func cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
+                                                          oldGroupModel: TSGroupModel,
+                                                          newGroupModel: TSGroupModel) {}
+
+    func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
+
+    func cvc_didTapShowConversationSettings() {}
+
+    func cvc_didTapShowConversationSettingsAndShowMemberRequests() {}
+
+    func cvc_didTapShowUpgradeAppUI() {}
+
+    func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
+                                       newNameComponents: PersonNameComponents) {}
+
+    func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {}
+
+    func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {}
 }

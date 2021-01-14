@@ -15,7 +15,31 @@ extension ConversationViewController {
     }
 
     /// The index path of the last item in the collection view's visible rect
-    @objc var lastVisibleIndexPath: IndexPath? {
+    @objc
+    public var firstVisibleIndexPath: IndexPath? {
+        // For people looking at this in the future, UICollectionView has a very similar looking
+        // property: -indexPathsForVisibleItems. Why aren't we using that?
+        //
+        // That property *almost* gives us what we want, but UIKit ordering isn't favorable. That property
+        // gets updated after -scrollViewDidScroll: returns. But sometimes we want to know what cells are visible
+        // with the updated -contentOffset in -scrollViewDidScroll:. So instead, we'll just see what layoutAttributes
+        // are now in the collection view's visible content rect. This should be safe, since it's computed from the
+        // already updated -contentOffset.
+        let visibleLayoutAttributes = layout.layoutAttributesForElements(in: visibleContentRect) ?? []
+
+        let firstVisibleIndexPath = visibleLayoutAttributes
+            .map { $0.indexPath }
+            .min { $0.row < $1.row }
+
+        if let firstVisibleIndexPath = firstVisibleIndexPath {
+            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(firstVisibleIndexPath) > 0)
+        }
+        return firstVisibleIndexPath
+    }
+
+    /// The index path of the last item in the collection view's visible rect
+    @objc
+    public var lastVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
         //
@@ -31,7 +55,7 @@ extension ConversationViewController {
             .max { $0.row < $1.row }
 
         if let lastVisibleIndexPath = lastVisibleIndexPath {
-            assert(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
+            owsAssertDebug(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
         }
         return lastVisibleIndexPath
     }
@@ -39,54 +63,82 @@ extension ConversationViewController {
     @objc
     var lastVisibleSortId: UInt64 {
         guard let lastVisibleIndexPath = lastVisibleIndexPath else { return 0 }
-        return firstIndexPathWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath)?.sortId ?? 0
+        return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath)?.sortId ?? 0
     }
 
     @objc
     var lastIndexPathInLoadedWindow: IndexPath? {
-        guard !viewItems.isEmpty else { return nil }
-        return IndexPath(row: viewItems.count - 1, section: 0)
+        guard !renderItems.isEmpty else { return nil }
+        return IndexPath(row: renderItems.count - 1, section: 0)
     }
 
     @objc
     var lastSortIdInLoadedWindow: UInt64 {
         guard let lastIndexPath = lastIndexPathInLoadedWindow else { return 0 }
-        return firstIndexPathWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
+        return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
     }
 
     @objc
     func saveLastVisibleSortIdAndOnScreenPercentage() {
         AssertIsOnMainThread()
 
-        let sortIdToSave: UInt64
-        let onScreenPercentageToSave: Double
-
-        if let lastVisibleIndexPath = lastVisibleIndexPath,
-            let (indexPath, sortId) = firstIndexPathWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
-
-            sortIdToSave = sortId
-            onScreenPercentageToSave = Double(percentOfIndexPathVisibleAboveBottom(indexPath))
-        } else {
-            sortIdToSave = 0
-            onScreenPercentageToSave = 0
+        guard hasAppearedAndHasAppliedFirstLoad else {
+            return
+        }
+        guard !isMeasuringKeyboardHeight else {
+            return
         }
 
-        guard thread.lastVisibleSortId != sortIdToSave
-            || !thread.lastVisibleSortIdOnScreenPercentage.isEqual(to: onScreenPercentageToSave) else {
-                return
+        var newValue: TSThread.LastVisibleInteraction?
+        if let lastVisibleIndexPath = lastVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+
+            newValue = TSThread.LastVisibleInteraction(sortId: reference.sortId,
+                                                       onScreenPercentage: onScreenPercentage)
         }
 
         let thread = self.thread
+        let oldValue = databaseStorage.read { transaction in
+            thread.lastVisibleInteraction(transaction: transaction)
+        }
+
+        guard oldValue != newValue else {
+            return
+        }
+
         databaseStorage.asyncWrite { transaction in
-            thread.update(
-                withLastVisibleSortId: sortIdToSave,
-                onScreenPercentage: onScreenPercentageToSave,
-                transaction: transaction
-            )
+            thread.setLastVisibleInteraction(newValue, transaction: transaction)
         }
     }
 
+    #if TESTABLE_BUILD
+    @objc
+    func logFirstAndLastVisibleItems() {
+        AssertIsOnMainThread()
+
+        if let firstVisibleIndexPath = firstVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: firstVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
+            Logger.verbose("---- first visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage), ")
+        }
+
+        if let lastVisibleIndexPath = lastVisibleIndexPath,
+           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+
+            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+            let bodyText: String = (reference.interaction as? TSMessage)?.body ?? "none"
+            Logger.verbose("---- last visible item: sortId: \(reference.sortId), indexPath: \(reference.indexPath), bodyText: \(bodyText), onScreenPercentage: \(onScreenPercentage)")
+        }
+
+    }
+    #endif
+
     private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
+
         // If we don't have layout attributes, it's not visible
         guard let attributes = layout.layoutAttributesForItem(at: indexPath) else { return 0.0 }
 
@@ -99,18 +151,31 @@ extension ConversationViewController {
         return CGFloatClamp01(heightAboveBottom / cellFrameInPrimaryCoordinateSpace.height)
     }
 
-    private func firstIndexPathWithSortId(atOrBeforeIndexPath indexPath: IndexPath) -> (indexPath: IndexPath, sortId: UInt64)? {
+    struct RenderItemReference {
+        let renderItem: CVRenderItem
+        let indexPath: IndexPath
+
+        var interaction: TSInteraction { renderItem.interaction }
+        var sortId: UInt64 { interaction.sortId }
+    }
+
+    private func firstRenderItemReferenceWithSortId(atOrBeforeIndexPath indexPath: IndexPath) -> RenderItemReference? {
         AssertIsOnMainThread()
 
         var matchingIndexPath = indexPath
 
-        while let viewItem = viewItem(forIndex: matchingIndexPath.row), matchingIndexPath.row > 0 {
-            guard !viewItem.interaction.isDynamicInteraction() else {
+        while matchingIndexPath.row >= 0,
+              matchingIndexPath.row < renderItems.count,
+              let renderItem = renderItem(forIndex: matchingIndexPath.row) {
+            guard !renderItem.interaction.isDynamicInteraction() else {
+                guard matchingIndexPath.row > 0 else {
+                    return nil
+                }
                 matchingIndexPath.row -= 1
                 continue
             }
 
-            return (matchingIndexPath, viewItem.interaction.sortId)
+            return RenderItemReference(renderItem: renderItem, indexPath: matchingIndexPath)
         }
 
         return nil

@@ -35,10 +35,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     public var videoPlayButton: UIImageView?
 
     @objc
-    public var audioProgressSeconds: CGFloat = 0
+    public var audioProgressSeconds: TimeInterval = 0
 
     @objc
-    public var audioDurationSeconds: CGFloat = 0
+    public var audioDurationSeconds: TimeInterval = 0
 
     @objc
     public var contentView: UIView?
@@ -122,7 +122,9 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             return
         }
 
-        audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback, delegate: self)
+        let audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback)
+        audioPlayer.delegate = self
+        self.audioPlayer = audioPlayer
 
         var subviews = [UIView]()
 
@@ -406,7 +408,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
     }
 
-    public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
+    public func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval) {
         audioProgressSeconds = progress
         audioDurationSeconds = duration
     }

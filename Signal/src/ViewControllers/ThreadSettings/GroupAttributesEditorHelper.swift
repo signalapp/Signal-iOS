@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -239,7 +239,7 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: replacementString.withoutBidiControlCharacters,
-            byteLimit: UInt(GroupManager.maxGroupNameLength)
+            stringLengthLimit: .characterCount(maxCharacterCount: GroupManager.maxGroupNameCharactersCount)
         )
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -19,7 +19,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view."),
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: CommonStrings.skipButton,
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(skipWasPressed))

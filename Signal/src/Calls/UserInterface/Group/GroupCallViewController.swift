@@ -597,8 +597,6 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             }
         }
         sheet.allowsDismissal = localDeviceHasNotJoined
-        sheet.confirmAction.button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
-        sheet.cancelAction.button.titleLabel?.font = UIFont.ows_dynamicTypeBody
         present(sheet, animated: true, completion: nil)
     }
 }

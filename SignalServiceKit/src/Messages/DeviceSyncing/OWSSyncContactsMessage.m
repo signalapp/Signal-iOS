@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (SignalAccount *signalAccount in signalAccounts) {
         OWSRecipientIdentity *_Nullable recipientIdentity =
-            [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress];
+            [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress transaction:transaction];
         NSData *_Nullable profileKeyData =
             [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress transaction:transaction];
 

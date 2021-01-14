@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -147,11 +147,8 @@ class SendMediaNavigationController: OWSNavigationController {
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
 
     @objc
-    public class func showingCameraFirst(photoCapture: PhotoCapture?) -> SendMediaNavigationController {
+    public class func showingCameraFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
-        if let photoCapture = photoCapture {
-            navController.captureViewController.photoCapture = photoCapture
-        }
         navController.setViewControllers([navController.captureViewController], animated: false)
         return navController
     }

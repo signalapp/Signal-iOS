@@ -26,16 +26,19 @@
 "ACCESSIBILITY_LABEL_STICKER" = "Kleebis";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal-i kõne";
+"ACTION_AUDIO_CALL" = "Signali kõne";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Kutsu Signal-isse";
+"ACTION_INVITE" = "Kutsu Signalisse";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Saada sõnum";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Jaga kontakti";
+
+/* A label for 'tap to download' buttons. */
+"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Videokõne";
@@ -103,7 +106,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ära salvesta";
 
-/* No comment provided by engineer. */
+/* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "Viga";
 
 /* The label for the 'save' button in action sheets. */
@@ -125,13 +128,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Andmebaasi laadimine ei õnnestunud";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Palun uuenda uusimale Signal-i versioonile.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Palun uuenda uusimale Signali versioonile.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Tundmatu andmebaasi versioon.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Sinu vanast seadmest ülekantud andmeid ei saanud taastada. Palun saada silumislogi aadressile support@signal.org, et saaksime seda olukorda uurida. Pärast Signal-i uuesti paigaldamist võib sõnumite ajalugu kaduda.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Sinu vanast seadmest ülekantud andmeid ei saanud taastada. Palun saada silumislogi aadressile support@signal.org, et saaksime seda olukorda uurida. Pärast Signali uuesti paigaldamist võib sõnumite ajalugu kaduda.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Andmete ülekandmine ei õnnestunud";
@@ -146,7 +149,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versioon %@ on nüüd App Store'is saadaval.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Signal-i uus versioon on saadaval";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signali uus versioon on saadaval";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Uuenda";
@@ -198,9 +201,6 @@
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Manus";
-
-/* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Allalaadimine ei õnnestunud. Uuesti proovimiseks klõpsa.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Tõrge manuse saatmisel";
@@ -358,6 +358,9 @@
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Ootamatu varukoopia tõrge";
 
+/* Accessibility label for banner close button */
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Sulge bänner";
+
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Sa ei saa sellest grupist rohkem sõnumeid või uuendusi.";
 
@@ -473,7 +476,7 @@
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Vastamata häälkõne";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signal-ile juurdepääs mikrofonile.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signalile juurdepääs mikrofonile.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Juurdepääs mikrofonile on vajalik";
@@ -506,7 +509,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Vastamata videokõne";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vasta ilma videota";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vasta videota";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Vasta";
@@ -542,7 +545,7 @@
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Sinu kaamera on väljas";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-i kasutaja";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signali kasutaja";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Pildista foto ja siis saada see";
@@ -572,13 +575,13 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Taasta";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal-il ei õnnestunud tuvastada sinu iCloudi konto olekut. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signalil ei õnnestunud tuvastada sinu iCloudi konto olekut. Signali andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloudi konto puudub. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloudi konto puudub. Signali andmetest varukoopia tegemiseks pead iOSi sätetes iCloudi kontole sisse logima.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal-ile ei antud juurdepääsu sinu iCloudi kontole varukoopiate tegemiseks. Signal-i andmetest varukoopia tegemiseks pead iOSi sätetes andma Signal-ile juurdepääs oma iCloudi kontole.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalile ei antud juurdepääsu sinu iCloudi kontole varukoopiate tegemiseks. Signali andmetest varukoopia tegemiseks pead iOSi sätetes andma Signalile juurdepääs oma iCloudi kontole.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Vali selle vestluse sõnumite värv.";
@@ -593,7 +596,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Võrdle lõikepuhvriga";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Vestluse alustamiseks otsi või vali Signal-i kasutaja.";
+"COMPOSE_BUTTON_HINT" = "Vestluse alustamiseks otsi või vali Signali kasutaja.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Koosta";
@@ -611,7 +614,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Kasutajanime otsing";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et näha, kes sinu kontaktidest on Signal-i kasutajad.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et näha, kes sinu kontaktidest on Signali kasutajad.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "See toiming lähtestab rakenduse, kustutades kõik sõnumid ja eemaldades serverist sinu registreerimise. Rakendus sulgub pärast andmete kustutamist.";
@@ -746,7 +749,7 @@
 "CONTACT_SUPPORT" = "Võta ühendust kasutajatoega";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal-il ei õnnestunud su kasutajatoesoovi täita.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signalil ei õnnestunud su kasutajatoesoovi täita.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Proovi uuesti";
@@ -777,9 +780,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Kas kustutada vestlus?";
-
-/* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Laadi alla";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Saad valida maksimaalselt %@ vestlust.";
@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Kõik liikmed";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Grupi link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Grupilink";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Tee administraatoriks";
@@ -1057,9 +1057,6 @@
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Üks samm veel";
 
-/* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "E-posti rakenduse käivitamine ei õnnestunud.";
-
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist link kopeeriti lõikepuhvrisse. Nüüd suunatakse sind edasi GitHubi ülesannete loendisse.";
 
@@ -1085,7 +1082,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registreeri see telefoninumber uuesti";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Signal-is mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
+"DEREGISTRATION_WARNING" = "Seade ei ole enam registreeritud. Sinu telefoninumber võib olla registreeritud Signalis mõne teise seadmega. Klõpsa uuesti registreerimiseks.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimati aktiivne: %@";
@@ -1109,10 +1106,10 @@
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Kui sul on vana iOS seade alles, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Kui kasutasid varem Signal-it ühendatud iPadis, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Kui kasutasid varem Signalit ühendatud iPadis, siis saad enda konto ja sõnumid sellesse seadmesse turvaliselt üle kanda.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Jätka ilma kontot ja sõnumeid üle kandmata";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Jätka kontot ja sõnumeid üle kandmata";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Lisa see iPad uue ühendatud seadmena sõnumite ajalugu üle kandmata";
@@ -1121,7 +1118,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Lisa uue seadmena";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registreeri ilma ülekandmiseta";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registreeri andmete ülekandmiseta";
 
 /* The title for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Kanna konto ja sõnumid üle";
@@ -1157,13 +1154,13 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Ülekandmise lõpetamiseks pole piisavalt vaba ruumi";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Uuenda uusimale Signal-i versioonile ja proovi uuesti";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Uuenda uusimale Signali versioonile ja proovi uuesti";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Teisalda Signal-i konto uude iOS seadmesse. Kontrolli, et uus seade oleks läheduses ja sisse lülitatud.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Teisalda Signali konto uude iOS seadmesse. Kontrolli, et uus seade oleks läheduses ja sisse lülitatud.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Teisalda konto";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Kanna konto üle";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Ava Signal vanas seadmes, too see lähedale ja kontrolli, et Wi-Fi ja Bluetooth oleks mõlemas seadmes lubatud.";
@@ -1232,7 +1229,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Muuda gruppi";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Seda kasutajat ei saa enne gruppi lisada, kui ta on uuendanud oma Signal-it.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Seda kasutajat ei saa enne gruppi lisada, kui ta on uuendanud oma Signalit.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maksimaalne grupi liikmete arv %@ on täidetud.";
@@ -1256,10 +1253,10 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopeeri";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Tervist!\n\nOlen viimasel ajal kasutanud vestluste iPhone'is privaatsena hoidmiseks rakendust Signal. Soovin, et sinagi paigaldaks selle, et saaksime kindlad olla, et ainult sina ja mina saame meie sõnumeid lugeda ning kõnesid kuulda.\n\nSignal on saadaval nii iOS kui Android seadmetele. Paigalda saab siit: %@\n\nSignal töötab nagu teisedki sõnumirakendused: saame saata pilte ja videosid, teha kõnesid ja alustada grupivestlusi. Parim seejuures on, et mitte keegi teine ei saa seda näha, isegi mitte Signal-i loojad!\n\nLoe täpsemalt Signal-i looja Open Whisper Systemsi kohta siit: %@";
+"EMAIL_INVITE_BODY" = "Tervist!\n\nOlen viimasel ajal kasutanud vestluste iPhone'is privaatsena hoidmiseks rakendust Signal. Soovin, et sinagi paigaldaks selle, et saaksime kindlad olla, et ainult sina ja mina saame meie sõnumeid lugeda ning kõnesid kuulda.\n\nSignal on saadaval nii iOS kui Android seadmetele. Paigaldada saab siit: %@\n\nSignal töötab nagu teisedki sõnumirakendused: saame saata pilte ja videosid, teha kõnesid ja alustada grupivestlusi. Parim seejuures on, et mitte keegi teine ei saa seda näha, isegi mitte Signali loojad!\n\nLoe täpsemalt Signali looja Open Whisper Systemsi kohta siit: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Lülitume Signal-ile";
+"EMAIL_INVITE_SUBJECT" = "Lülitume Signalile";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "Sinu seade pole seadistatud e-kirjasid saatma. Kasutajatoesoovi saatmiseks seadista oma seadmes e-kirjade saatmine või saada kiri aadressile support@signal.org";
@@ -1295,7 +1292,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Reisimine ja kohad";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Signal-it.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Signalit.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Miks mitte neid kutsuda?";
@@ -1334,7 +1331,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kasutajale sõnumi saatmine ei õnnestunud, sest oled ta blokeerinud.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal-il ei õnnestunud internetti ühenduda. Palun proovi uuesti.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signalil ei õnnestunud internetti ühenduda. Palun proovi uuesti.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
@@ -1358,13 +1355,13 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ilmnes tundmatu tõrge.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Signal-i kasutaja.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Signali kasutaja.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Manuse allalaadimine ei õnnestunud.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Manuse tõrge: palu sellel kontaktil saata see sõnum pärast Signal-i uusimale versioonile uuendamist uuesti.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Manuse tõrge: palu sellel kontaktil saata see sõnum pärast Signali uusimale versioonile uuendamist uuesti.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Saabus duplikaatsõnum.";
@@ -1387,6 +1384,9 @@
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Sinu turvanumber kasutajaga %@ on muutunud.";
 
+/* Text notifying the user that their secure session has been reset */
+"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ilmnes tundmatu tõrge.";
 
@@ -1403,19 +1403,19 @@
 "ERROR_SENDING_DEREGISTERED" = "Sinu seade ei ole enam registreeritud. Sõnumite saatmise jätkamiseks palun registreeri uuesti.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Sinu Signal-i versioon on aegunud. Sõnumite saatmise jätkamiseks palun uuenda rakendust.";
+"ERROR_SENDING_EXPIRED" = "Sinu Signali versioon on aegunud. Palun uuenda rakendust sõnumite saatmise jätkamiseks.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Registreerimata kasutaja: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Sinu Signal-i versioon on aegunud! Klõpsa uusimale versioonile uuendamiseks.";
+"EXPIRATION_ERROR" = "Sinu Signali versioon on aegunud! Klõpsa uusimale versioonile uuendamiseks.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Sinu Signal-i versioon aegub %d päeva pärast. Koputa, et uuendada uusimale versioonile.";
+"EXPIRATION_WARNING_SOON" = "Sinu Signali versioon aegub %d päeva pärast. Koputa, et uuendada kõige uuemale versioonile.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Sinu Signal-i versioon aegub täna. Koputa, et uuendada uusimale versioonile.";
+"EXPIRATION_WARNING_TODAY" = "Sinu Signali versioon aegub täna. Koputa, et uuendada kõige uuemale versioonile.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Liiga palju ebaõnnestumisi selle kontaktiga. Palun proovi hiljem uuesti.";
@@ -1429,7 +1429,7 @@
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Märgi kinnitatuks";
 
-/* No comment provided by engineer. */
+/* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Lähtesta seanss";
 
 /* Accessibility label for finishing new group */
@@ -1452,6 +1452,15 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Manus";
+
+/* Title for the 'Get Started' banner */
+"GET_STARTED_BANNER_TITLE" = "Alustamine";
+
+/* 'Get Started' button directing users to invite friends */
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Kutsu sõpru";
+
+/* 'Get Started' button directing users to create a group' */
+"GET_STARTED_CARD_NEW_GROUP" = "Uus grupp";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Soovitud GIF-i tõmbamine ei õnnestunud. Palun kontrolli, kas oled internetis.";
@@ -1481,7 +1490,7 @@
 "GO_TO_SETTINGS_BUTTON" = "Mine sätetesse";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "See Signal-i versioon sisaldab andmebaasi täiendusi ja töökiiruse parendusi. Protsessi lõpetamiseks pead äpi uuesti avama.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "See Signali versioon sisaldab andmebaasi täiendusi ja töökiiruse parendusi. Protsessi lõpetamiseks pead äpi uuesti avama.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Andmebaasi optimeerimine";
@@ -1541,16 +1550,16 @@
 "GROUP_CALL_ERROR_DETAILS" = "Rohkem infot";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Selle kõne maksimaalne osavõtjate arv %ld on täidetud. Proovi hiljem uuesti.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Selle kõne maksimaalne osavõtjate arv %ld on täitunud. Proovi hiljem uuesti.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Selle kõne maksimaalne osavõtjate arv on täidetud. Proovi hiljem uuesti.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Selle kõne maksimaalne osavõtjate arv on täitunud. Proovi hiljem uuesti.";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Kõne on täis";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Ühine kõnega";
+"GROUP_CALL_JOIN_BUTTON" = "Liitu kõnega";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Lahku kõnest";
@@ -1577,19 +1586,19 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Selles kõnes pole veel kedagi.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ ja %ld muud kasutajat ühinesid kõnega";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ ja %ld muud kasutajat liitusid kõnega";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ ja %ld muud kasutajat lahkusid kõnest";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ ühines kõnega";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ liitus kõnega";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ lahkus kõnest";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ ja %@ ühinesid kõnega";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ ja %@ liitusid kõnega";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ ja %@ lahkusid kõnest";
@@ -1616,7 +1625,7 @@
 "GROUP_CALL_START_BUTTON" = "Alusta kõnet";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Klõpsa siia grupikõne alustamiseks";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "Sa alustasid grupikõne";
@@ -1631,7 +1640,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ ja %2$@ on selles kõnes";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Kaotasid ühenduse kõnega. Kontrolli internetiühendust ja proovi uuesti.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Sina";
@@ -1643,10 +1652,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Sina (teisest seadmest)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Uue krüptitud grupikõne alustamiseks vajuta \"Uus grupp\"";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Tutvustame grupikõnesid";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Sa lõid uue grupi.";
@@ -1697,58 +1706,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Vigased kutsed tühistati.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Grupi link on välja lülitatud.";
+"GROUP_INVITE_LINK_DISABLED" = "Grupilink on välja lülitatud.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Sa lülitasid grupi lingi välja.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Sa lülitasid grupilingi välja.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupi lingi välja.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupilingi välja.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Administraatori kinnitusega grupilink lülitati sisse.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid administraatori kinnitusega grupilingi sisse.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas administraatori kinnitusega grupilingi sisse.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Administraatori kinnituseta grupilink lülitati sisse.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid administraatori kinnituseta grupilingi sisse.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas administraatori kinnituseta grupilingi sisse.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Grupi link lähtestati.";
+"GROUP_INVITE_LINK_RESET" = "Grupilink lähtestati.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Sa lähtestasid grupi lingi.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Sa lähtestasid grupilingi.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ lähtestas grupi lingi.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ lähtestas grupilingi.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Grupilingi administraatori kinnitus lülitati välja.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid grupilingi administraatori kinnituse välja.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupilingi administraatori kinnituse sisse.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Grupilingi administraatori kinnitus lülitati sisse.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Sa lülitasid grupilingi administraatori kinnituse sisse.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ lülitas grupilingi administraatori kinnituse sisse.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Sa ei saa kasutajat %@ automaatselt gruppi lisada. Nad on kutsutud grupiga liituma ja ei näe grupi sõnumeid enne kui on nõusoleku andnud.";
@@ -1790,19 +1799,34 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Palun proovi uuesti.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "See ei ole kehtiv grupi link. Kontrolli, kas link on korrektne ja vajadusel paranda enne liitumiskatset.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "See ei ole kehtiv grupilink. Kontrolli, kas link on korrektne ja vajadusel paranda enne liitumiskatset.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Vigane link";
 
-/* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link ei ole enam kehtiv";
-
-/* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Liitu grupiga";
-
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Selle grupiga liitumiseks pead selles seadmes Signal-it uuendama.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Selle grupiga liitumiseks pead selles seadmes Signalit uuendama.";
+
+/* Explanation of the 'approve new group members' switch. */
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Nõua grupilingi kaudu liituvate uute liikmete kinnitamist administraatori poolt.";
+
+/* Label for the 'approve new group members' switch. */
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Uute liikmete kinnitamine";
+
+/* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+
+/* Label for the 'share link' button in the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+
+/* Subtitle for the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+
+/* Title for the 'group link promotion' alert view. */
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Kutsu sõpru";
+
+/* Suggestion to invite more group members via the group invite link. */
+"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Seda koodi skaneerivad isikud saavad grupiga liituda. Administraatorid peavad uued liikmed ikkagi kinnitama, kui see säte on sisse lülitatud.";
@@ -1820,13 +1844,13 @@
 "GROUP_LINK_VIEW_COPY_LINK" = "Kopeeri link";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Grupi link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Grupilink";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Haldamine ja jagamine";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Nõua grupilingi kaudu liituvate uute liikmete administraatori poolt kinnitamist.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Nõua grupilingi kaudu liituvate uute liikmete kinnitamist administraatori poolt.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Liikmelisuse soovid";
@@ -1835,7 +1859,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Lähtesta link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Kas sa tõesti soovid vestluse linki lähtestada? Inimesed ei saa siis varasema lingi kaudu enam vestlusega liituda.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Kas sa tõesti soovid grupilinki lähtestada? Inimesed ei saa siis varasema lingi kaudu enam vestlusega liituda.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Jaga";
@@ -1847,13 +1871,13 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR-kood";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Jaga Signal-i kaudu";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Jaga Signali kaudu";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Igaüks saab selle lingi kaudu vestlusega liituda või saata sooviavaldust liitumiseks. Jaga seda isikutega, keda usaldad.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Grupi link";
+"GROUP_LINK_VIEW_TITLE" = "Grupilink";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ lisas sind.";
@@ -1889,10 +1913,10 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Sind kutsuti gruppi.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Sa ühinesid grupiga.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Sa liitusid grupiga.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Sa ühinesid grupiga grupilingi kaudu.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Sa liitusid grupiga grupilingi kaudu.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ eemaldas sinu.";
@@ -1904,13 +1928,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ kinnitas sinu grupiga liitumise soovi.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Sa katkestasid enda grupiga liitumise soovi.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Sinu grupiga liitumise soovist keelduti.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Sa saatsid grupiga liitumise soovi.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Sinu administraatoriõigused tühistati.";
@@ -1942,8 +1966,8 @@
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Häälkõne";
 
-/* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Liikmeid pole.";
+/* Label indicating that a new group has no other members. */
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Sul on võimalik lisada või kutsuda sõpru pärast grupi loomist.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Liikmed";
@@ -2027,10 +2051,10 @@
 "GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ isikut kutsuti gruppi.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ ühines grupiga.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ liitus grupiga.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ liitus grupiga grupilingi kaudu.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ lahkus grupist.";
@@ -2045,22 +2069,22 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Sa kinnitasid isiku %@ soovi grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ kinnitas isiku %1$@ grupiga liitumise soovi.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ kinnitas isiku %1$@ soovi grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Isiku %@ soov grupiga liituda kinnitati.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ loobus enda grupiga liitumise soovist.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Sa keeldusid kasutaja %@ soovist grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ tühistas kasutaja %1$@ grupiga liitumise soovi.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ tühistas kasutaja %1$@ soovi grupiga liituda.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Grupiga liitumise soovist isikult %@ keelduti.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Kasutaja %@ soovist grupiga liituda keelduti.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ esitas grupilingi kaudu soovi grupiga liituda.";
@@ -2129,25 +2153,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Grupi nimi on nüüd “%@”.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "See grupp uuendati uueks grupiks.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Liiget polnud võimalik uude gruppi lisada ja ta eemaldati grupist.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Sind polnud võimalik uude gruppi lisada ja seepärast eemaldati sind grupist.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ liiget polnud võimalik gruppi lisada ja nad eemaldati grupist.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Liiget polnud võimalik uude gruppi lisada ja teda kutsuti liituma";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Sind polnud võimalik uude gruppi lisada ja sind kutsuti liituma";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ liiget polnud võimalik uude gruppi lisada ja neid kutsuti liituma.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Sa lahkusid grupist.";
@@ -2170,26 +2194,29 @@
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokeeri %@";
 
+/* Label for 'invite friends to group' button. */
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Kutsu sõpru";
+
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vana tüüpi grupid on need grupid, mis pole ühilduvad uut tüüpi gruppide funktsionaalsustega, nt administraatorid ja rohkem kirjeldavad grupi muudatused.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vanad grupid on need grupid, mis pole ühilduvad uute gruppide funktsionaalsustega, nt administraatorid ja rohkem kirjeldavad grupi muudatused.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mis on vana tüüpi grupid?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mis on vanad grupid?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vana tüüpi gruppe ei saa veel uut tüüpi gruppideks teisendada, aga sa saad luua samade liikmetega uue grupi, kui need liikmed kasutavad uusimat Signal-i versiooni.\n\nSignal pakub tulevikus vanade gruppide uuteks gruppideks uuendamise võimalust.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vanu gruppe ei saa veel uuteks gruppideks uuendada, aga sa saad luua samade liikmetega uue grupi, kui need liikmed kasutavad uusimat Signali versiooni.\n\nSignal pakub tulevikus vanade gruppide uuteks gruppideks uuendamise võimalust.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kas saan vana tüüpi gruppi uuendada?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kas saan vana gruppi uuendada?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uue grupi loomiseks peavad kõik liikmed uuendama enda Signal-i uusimale versioonile.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uue grupi loomiseks peavad kõik liikmed uuendama enda Signali uusimale versioonile.";
 
 /* Title for the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanad vs uued grupid";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Uuenda seda gruppi, et aktiveerida uus funktsionaalsus nagu @mainimised ja administraatorid. Liikmed, kes pole selles grupis jaganud enda nime ja fotot kutsutakse liituma. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Uueks grupiks uuendamine ei õnnestunud";
@@ -2198,58 +2225,58 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Seda gruppi ei saa uueks grupiks uuendada, sest sellel on liiga palju liikmeid. Maksimaalne grupi suurus, mida saab uuendada on %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kui kõik praegused grupi liikmed kasutavad Signal-i versiooni, mis on võimeline uue grupiga liituma, siis uuendatakse seda gruppi.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kui kõik praegused grupi liikmed kasutavad Signali versiooni, mis on võimeline uue grupiga liituma, siis uuendatakse seda gruppi.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Kogu sõnumite ajalugu ja meediafailid jäävad alles.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Seda gruppi pole võimalik luuga, kuna 1 liige kasutab Signali vana versiooni. Sul on võimalik luua temaga uus grupp pärast seda, kui ta uuendab enda Signalit või eemaldada nad enne grupi loomist.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Seda gruppi pole võimalik luuga, kuna %@ liiget kasutavad Signali vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signalit või eemaldada nad enne grupi loomist.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Seda gruppi pole võimalik luua, kuna 1 liige kasutab Signali vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signali või eemaldada nad enne grupi loomist. %@.";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Seda gruppi pole võimalik luua,  kuna %1$@  kuna 1 liige kasutab Signali vana versiooni. Sul on võimalik luua nendega uus grupp pärast seda, kui nad uuendavad enda Signali või eemaldada nad enne grupi loomist. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Luuakse vana tüüpi grupp, sest 1 liige kasutab Signal-i vana versiooni. Selle kasutajaga on võimalik uut tüüpi grupp luua pärast seda, kui ta on Signal-it uuendanud või eemalda ta enne uue grupi loomist.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Luuakse vana grupp, sest 1 liige kasutab Signali vana versiooni. Selle kasutajaga on võimalik uus grupp luua pärast seda, kui ta on Signali uuendanud või eemalda ta enne uue grupi loomist.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Luuakse vana tüüpi grupp, sest %@ liige kasutab Signal-i vana versiooni. Nende kasutajatega on võimalik uut tüüpi grupp luua pärast seda, kui nad on Signal-it uuendanud või eemalda ta enne uue grupi loomist.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Luuakse vana grupp, sest %@ liiget kasutavad Signali vana versiooni. Nende kasutajatega on võimalik uus grupp luua pärast seda, kui nad on Signali uuendanud või eemalda nad enne uue grupi loomist.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 liige ei toeta uut tüüpi gruppe, seega luuakse vana tüüpi grupp. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 liige ei toeta uusi gruppe, seega luuakse vana grupp. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ liiget ei toeta uut tüüpi gruppe, seega luuakse vana tüüpi grupp. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ liiget ei toeta uusi gruppe, seega luuakse vana grupp. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "See on vana tüüpi grupp. Uued funktsioonid, nt grupi administraatorid on saadaval ainult uut tüüpi gruppidel. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "See on vana grupp. Uued funktsioonid, nt grupi administraatorid on saadaval ainult uutes gruppides. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "See vana grupp pole veel uueks grupiks uuendamiseks valmis. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Seda vana gruppi ei saa uueks grupiks uuendada, sest see on liiga suur. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "See on vana grupp. Uute funktsioonide, näiteks @mainimised ja administraatorid, kasutamiseks %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 liiget polnud võimalik uude gruppi uuesti lisada. Kas sa soovid teda nüüd lisada?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ liiget polnud võimalik uude gruppi uuesti lisada. Kas sa soovid neid nüüd lisada?";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Vana tüüpi grupp";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Vana grupp";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Selle grupiga uuesti liitumiseks pead nõustuma kutsega ja sa ei saa grupi sõnumeid senikaua kuni oled nõustunud.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Uuenda gruppi";
@@ -2282,28 +2309,28 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Lisa liikmeid";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Seda liiget polnud võimalik uude gruppi automaatselt lisada, kui see uuendati:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Neid liikmeid polnud võimalik uude gruppi automaatselt lisada, kui seda uuendati:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Kogu täienduse-eelne sõnumiajalugu ja -meedia on alles.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "See liige eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signalit uuendanud:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Need liikmed eemaldati grupist ja ei saa grupiga uuesti liituda senikaua kuni pole Signalit uuendanud:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "See liige peab selle grupiga liitumise kutse uuesti vastu võtma ning ei saa enne nõustumist grupi sõnumeid näha:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Need liikmed peavad selle grupiga liitumise kutse uuesti vastu võtma ning ei saa enne nõustumist grupi sõnumeid näha:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Need liikmed pole võimelised uute gruppidega liituma ja eemaldatakse grupist:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Need liikmed pole võimelised uute gruppidega liituma ja eemaldatakse grupist:";
@@ -2339,7 +2366,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Vali uus administraator";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal-i grupid toimivad kõige paremini %@ või vähema liikmega. Rohkem liikmete lisamine võib põhjustada viivitusi sõnumite saamises ja saatmises.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signali grupid toimivad kõige paremini %@ või vähema liikmega. Rohkem liikmete lisamine võib põhjustada viivitusi sõnumite saamises ja saatmises.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Jõuti soovitatava liikmete arvu piirini";
@@ -2372,13 +2399,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Mustand:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Mõned su kontaktidest kasutavad juba Signal-it, kaasaarvatud %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Mõned su kontaktidest kasutavad juba Signalit, kaasaarvatud %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signal-it, kaasaarvatud %@ ja %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signalit, kaasaarvatud %@ ja %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signal-it, kaasaarvatud %@, %@ ja %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Mõned su kontaktidest juba kasutavad Signalit, kaasaarvatud %@, %@ ja %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Alusta siin enda esimest vestlust.";
@@ -2414,7 +2441,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Muuda fotosid";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Luba sätetes täielik ligipääs või muuda, millistele fotodele on Signal-il ligipääs.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Luba sätetes täielik ligipääs või muuda, millistele fotodele on Signalil ligipääs.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Kas sa ei näe enda fotosid?";
@@ -2456,7 +2483,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Need vestlused on arhiveeritud ja ilmuvad sisendkausta ainult siis, kui saabub uusi sõnumeid.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Lisa oma postkasti midagi, näiteks alusta sõbraga sõnumite vahetamist.";
+"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ helistas sulle";
@@ -2465,7 +2492,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Sul on võimalik saata ja saada enda telefonist või iPadist sünkroonitud sõnumeid. ↵Sinu turvalisuse huvides ei kanta vestluste ajalugu uutesse ühendatud seadmetesse üle.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ kasutab Signal-it!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ kasutab Signalit!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Kleebised";
@@ -2477,13 +2504,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Vigane audiofail.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signal-it kasutama.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signalit kasutama.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Juurdepääs kontaktidele";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Signal-isse";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Signalisse";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Otsi";
@@ -2600,7 +2627,7 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Iga lingi eelvaade";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Sinu Signal-i konto ülekandmiseks pead mõlemas seadmes lubama ligipääsu kohalikule võrgule.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Sinu Signali konto ülekandmiseks pead mõlemas seadmes lubama ligipääsu kohalikule võrgule.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Kas vajad abi?";
@@ -2612,7 +2639,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Lülita sisse \"Kohalik võrk\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Liigu Signal-isse";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Liigu Signalisse";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Lülita sisse Ligipääs kohalikule võrgule";
@@ -2629,6 +2656,9 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Sõnum";
 
+/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
+"MANY_GROUPS_IN_COMMON" = "%@ ühist gruppi";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Kõik meediafailid";
 
@@ -2643,6 +2673,12 @@
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Kustuta sõnum";
+
+/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Photos";
+
+/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2666,7 +2702,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Kustuta kõigi jaoks";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "See sõnum kustutatakse kõigilt vestluse liikmetelt, kui neil on Signal-i värske versioon. Nad näevad, et sa kustutasid sõnumi.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "See sõnum kustutatakse kõigilt vestluse liikmetelt, kui nad kasutavad Signali värsket versiooni. Nad näevad, et sa kustutasid sõnumi.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Kelle jaoks soovid seda sõnumit kustutada?";
@@ -2782,6 +2818,27 @@
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Kas kustutada ja lahkuda grupist?";
 
+/* Banner label notifying user that a new message is from a user with the same name as an existing contact */
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Kontrolli soovi hoolega. Signal leidis ka teise sama nimega kontakti.";
+
+/* A header string above a known contact's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Sinu kontakt";
+
+/* A header string informing the user about name collisions in a message request */
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Kui sa pole kindel, kellelt soov on, siis kontrolli allpool kontakte ja tegutse vastavalt.";
+
+/* A header string above the requester's contact info */
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Taotlus";
+
+/* A title string for a view that allows a user to review name collisions for an incoming message request */
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Vaata taotlus üle";
+
+/* A button that updates a known contact's information to resolve a name collision */
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Uuendatud kontakt";
+
+/* Button to allow user to review known name collisions with an incoming message request */
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Vaata taotlus üle";
+
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Nõustun";
 
@@ -2807,7 +2864,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Kas jätkata seda vestlust isikuga %@ ja jagada talle sinu nime ja fotot?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kas jätkata vestlust selle grupiga ja jagada sinu nime ja fotot selle liikmetele?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kas jätkata vestlust selle grupiga ja jagada sinu nime ning fotot grupi liikmetele?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Kas lubad kasutajal %@ sulle sõnumeid saata ja jagad enda nime ning fotot temaga? Ta ei tea, et oled tema sõnumit näinud kuni sa lubad.";
@@ -2888,7 +2945,7 @@
 "MISSED_CALL" = "Vastamata kõne";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal-iga videokõnede tegemiseks on võimalik iOSi sätetes lubada juurdepääs kaamerale.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signaliga videokõnede tegemiseks on võimalik iOSi sätetes lubada juurdepääs kaamerale.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab juurdepääsu sinu kaamerale.";
@@ -2983,11 +3040,14 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Leia kontakte telefoninumbri järgi";
 
+/* A string describing that the user has no groups in common with another user */
+"NO_GROUPS_IN_COMMON" = "Ühised grupid puuduvad";
+
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Vestluse alustamiseks vali kontakt või grupp.";
 
 /* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Tere tulemast Signal-it kasutama";
+"NO_SELECTED_CONVERSATION_TITLE" = "Tere tulemast Signalit kasutama";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Uus sõnum kasutajale:";
@@ -3098,7 +3158,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Ühenda iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Klõpsmine nupul \"Registreeri iPad\" võimaldab luua uue Signal-i konto või teisaldada olemasolev konto sellesse iPadi. See keelab Signal-i kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Klõpsmine nupul \"Registreeri iPad\" võimaldab luua uue Signali konto või teisaldada olemasolev konto sellesse iPadi. See keelab Signali kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Klõpsamine nupul \"Ühenda iPhone\" võimaldab sul ühendada enda telefon olemasoleva kontoga. Telefoni ühendamine üldiselt ei ole soovitatud ja limiteerib osasid funktsioone, näiteks helistamine.";
@@ -3110,7 +3170,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Ühenda see iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Selle iPadi registreerimine keelab Signal-i kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Selle iPadi registreerimine keelab Signali kõigil teistel sama telefoninumbriga hetkel registreeritud seadmetel.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "iPhone'i ühendamine ei ole soovitatud ja limiteerib põhifunktsionaalsust.";
@@ -3125,10 +3185,10 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Hangi sõnum";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Vali, kes saavad sind Signal-is otsida sinu telefoninumbri %@ kaudu.";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Vali, kes saavad sind Signalis otsida telefoninumbri %@ järgi.";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kes saab sind sinu numbri abil leida?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kes saavad sind sinu numbri järgi leida?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Alustamiseks sisesta oma telefoninumber";
@@ -3137,7 +3197,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Vigane number";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signal-i konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto ilma salvestatud profiiliteabe või säteteta.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi katsete arv on otsa saanud, kuid pääsed siiski oma Signali konto juurde, luues uue PIN-koodi. Privaatsuse ja turvalisuse huvides taastatakse sinu konto salvestatud profiiliteabe või säteteta.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
@@ -3173,7 +3233,7 @@
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Ma ei saanud koodi (saadaval %@ pärast)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Võta ühendust Signal-i kasutajatoega";
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Võta ühendust Signali kasutajatoega";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "See kood ei ole õige";
@@ -3212,16 +3272,10 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ määras kaduvate sõnumite ajaks %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal-il on hetkel tehnilisi raskusi. Tegeleme teenuse taastamisega tõsiselt nii kiiresti kui võimalik.";
+"OUTAGE_WARNING" = "Signalil on hetkel tehnilisi raskusi. Tegeleme teenuse taastamisega tõsiselt nii kiiresti kui võimalik.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Sa helistasid isikule %@";
-
-/* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF-i näitamine ei õnnestunud";
-
-/* Navbar title for for PDF view. */
-"PDF_VIEW_TITLE" = "PDF";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Lisa gruppi";
@@ -3326,13 +3380,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Igaüks";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Igaüks, kellel on sinu telefoninumber kontaktides näeb sind ka kontaktina Signal-is. Teised saavad sind otsida otsingu kaudu.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Igaüks, kellel on sinu telefoninumber kontaktides näeb sind ka kontaktina Signalis. Teised saavad sind leida otsingu kaudu.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Mitte keegi";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Mitte keegi ei saa sind leida Signal-ist sinu telefoninumbri kaudu. Sa pole kontaktina nähtav isikutele, kellel on sinu telefoninumber nende kontaktides ja teistel pole võimalik sind leida telefoninumbri järgi otsides.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Mitte keegi ei saa sind leida Signalist sinu telefoninumbri kaudu. Sa pole kontaktina nähtav isikutele, kellel on sinu telefoninumber nende kontaktides ja teistel pole võimalik sind leida telefoninumbri järgi otsides.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Näide: %@";
@@ -3341,19 +3395,19 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Minu kontaktid";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Ainult sinu kontaktid näevad Signal-is sinu telefoninumbrit.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Ainult sinu kontaktid näevad Signalis sinu telefoninumbrit.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Igaüks";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Sinu telefoninumber on nähtav isikutele ja gruppidele, millega suhtled. Isikud, kellel on sinu telefoninumber nende telefonikontaktides, näevad seda ka Signal-is.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Sinu telefoninumber on nähtav isikutele ja gruppidele, millega suhtled. Isikud, kellel on sinu telefoninumber nende telefonikontaktides, näevad seda ka Signalis.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Mitte keegi";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Mitte keegi ei näe Signal-is sinu telefoninumbrit.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Mitte keegi ei näe Signalis sinu telefoninumbrit.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3440,7 +3494,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN-koodi loomine ei õnnestunud";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
+"PIN_CREATION_EXPLANATION" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signali uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
@@ -3503,7 +3557,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Tuletame paari päeva pärast uuesti meelde.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Kinnita Signal-i PIN-kood";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Kinnita Signali PIN-kood";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Tuletame homme jälle meelde.";
@@ -3518,7 +3572,7 @@
 "PIN_REMINDER_MISMATCH_ERROR" = "Lubamatu PIN-kood, proovi uuesti.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Sisesta Signal-i PIN-kood";
+"PIN_REMINDER_TITLE" = "Sisesta Signali PIN-kood";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-kood peab olema vähemalt 4 numbri pikkune.";
@@ -3533,7 +3587,7 @@
 "PINS_MEGAPHONE_ACTION" = "Loo PIN-kood";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna";
+"PINS_MEGAPHONE_BODY" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Tuletame sulle hiljem meelde. PIN-koodi loomine muutub %ld päeva pärast kohustuslikuks.";
@@ -3575,16 +3629,16 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ei leidnud sinu lõikepuhvrist ühtegi turvanumbrit. Kas sa kopeerisid selle korrektselt?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Iga Signal-i kasutajate paar omab eraldi turvanumbrit. Kontrolli üle, kas %@ näitab *sinu* turvanumbrit.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Iga Signali kasutajate paar omab eraldi turvanumbrit. Kontrolli üle, kas %@ näitab *sinu* turvanumbrit.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sa kasutad Signal-i vana versiooni. Kinnitamiseks pead kõigepealt rakendust uuendama.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sa kasutad Signali vana versiooni. Kinnitamiseks pead kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Signal-i vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Signali vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signal-i versiooni?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signali versiooni?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Otspunktkrüptimise turvalisuse kinnitamiseks kasutajaga %@ võrdle ülaltoodud numbreid tema seadmes näidatavate numbritega.\n\nTeise võimalusena saad skannida koodi tema telefonist või paluda tal sinu koodi skannida.";
@@ -3854,7 +3908,7 @@
 "RESEARCH_MEGAPHONE_BODY" = "Tahame kuulda sinult tagasisidet, et teha Signal planeedi parimaks suhtlusrakenduseks.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Räägi Signal-ile, mida sa arvad";
+"RESEARCH_MEGAPHONE_TITLE" = "Räägi Signalile, mida sa arvad";
 
 /* Text for the research modal footer */
 "RESEARCH_MODAL_FOOTER" = "Seda küsitlust teostab Surveygizmo turvalises domeenis surveys.signalusers.org";
@@ -3863,7 +3917,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Tänan, ei";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Me usume privaatsusesse.</bold>\n\nSignal ei jälita sind ega kogu sinu andmeid. Signal-i täiustamisel kõigi jaoks sõltume kasutaja tagasisidest <bold>ja ootame seda ka sinult </bold>.\n\nTeostame küsitlust, et saada aru, kuidas sa Signal-it kasutad. Meie küsitlus ei kogu sind identifitseerivaid andmeid. Kui oled huvitatud lisaks tagasiside andmisest, siis on sul võimalus sisestada kontaktinfo.\n\nKui sul on paar minutit aega ja tagasisidet, mida jagada, siis sooviksime seda sinult kuulda.";
+"RESEARCH_MODAL_PLEA" = "<bold>Me usume privaatsusesse.</bold>\n\nSignal ei jälita sind ega kogu sinu andmeid. Signali täiustamisel kõigi jaoks sõltume kasutaja tagasisidest <bold>ja ootame seda ka sinult </bold>.\n\nTeostame küsitlust, et saada aru, kuidas sa Signalit kasutad. Meie küsitlus ei kogu sind identifitseerivaid andmeid. Kui oled huvitatud lisaks tagasiside andmisest, siis on sul võimalus sisestada kontaktinfo.\n\nKui sul on paar minutit aega ja tagasisidet, mida jagada, siis sooviksime seda sinult kuulda.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Osale küsitluses";
@@ -4097,13 +4151,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Ühendamiskoodi hankimine ei õnnestunud";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Telefoniga ühendamiseks pead selles seadmes Signal-it uuendama.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Telefoniga ühendamiseks pead selles seadmes Signalit uuendama.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versioon pole toetatud";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Sinu muu seadme kasutab aegunud Signal-i versiooni, mis ei toeta iPadi QR-koodide skannimist. Palun paigalda Signal-i uusi versioon ja proovi uuesti.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Sinu muu seade kasutab aegunud Signali versiooni, mis ei toeta iPadi QR-koodide skannimist. Palun paigalda Signali uusi versioon ja proovi uuesti.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Uuenda skannivat seadet";
@@ -4127,7 +4181,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Käivita Signal oma telefonis, et ühendada see iPad oma kontoga";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Mul ei ole telefonis Signal-it...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Mul ei ole telefonis Signalit...";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Mine telefonis rakendustepoodi, paigalda Signal, täida registreerumisprotsess ja siis saad ühendada enda iPadi sama konto külge.";
@@ -4136,7 +4190,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Paigalda Signal enda telefoni";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Klõpsa enda profiilipildil, et avada telefonis Signal-i sätted. Seejärel vali \"Ühendatud seadmed\" ja \"Ühenda uus seade\", et skannida see kood oma telefoniga:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Klõpsa enda profiilipildil, et avada telefonis Signali sätted. Seejärel vali \"Ühendatud seadmed\" ja \"Ühenda uus seade\", et skannida see kood oma telefoniga:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Siit saad abi iPadi ühendamise osas";
@@ -4169,7 +4223,7 @@
 "SEND_INVITE_FAILURE" = "Kutse saatmine ei õnnestunud, palun proovi hiljem uuesti.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Signal-it kasutama!";
+"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Signalit kasutama!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Unusta meediafailid";
@@ -4185,6 +4239,12 @@
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Kas sa soovid seda numbrit kutsuda Signalit kasutama?";
+
+/* Description for the session refresh alert */
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+
+/* Title for the session refresh alert */
+"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Teave";
@@ -4232,7 +4292,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Luba PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal-i PIN-kood";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signali PIN-kood";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Postita silumislogi";
@@ -4242,6 +4302,12 @@
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Vealogid";
+
+/* Footer for avatar section in appearance settings */
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+
+/* Title for switch to toggle preference between contact and profile avatars */
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Teema";
@@ -4319,13 +4385,28 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alati edastada kõned";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõik kõned läbi Signal-i serveri, et hoiduda enda IP-aadressi paljastamisest oma kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõik kõned läbi Signali serveri, et hoiduda enda IP-aadressi paljastamisest oma kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Tühjenda vestluse ajalugu";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Autoriõigus Signal Messenger \nLitsentsitud GPLv3 litsentsiga";
+
+/* Label for the 'data' section of the app settings. */
+"SETTINGS_DATA" = "Data Usage";
+
+/* Footer for the 'media auto-download' section in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+
+/* Header for the 'media auto-download' section in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-DOWNLOAD";
+
+/* Label for for the 'reset media auto-download settings' button in the data settings. */
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+
+/* The title for the data settings. */
+"SETTINGS_DATA_TITLE" = "Data Usage";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Kustuta konto";
@@ -4340,7 +4421,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Kustuta kõik";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Anneta Signal-ile";
+"SETTINGS_DONATE" = "Anneta Signalile";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Abi";
@@ -4369,6 +4450,27 @@
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Hangib sinu saadetavatele sõnumitele linkide eelvaated otse saitidelt.";
 
+/* Label for the 'never' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Mitte kunagi";
+
+/* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+
+/* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+
+/* Label for the 'audio' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Audio";
+
+/* Label for the 'document' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Dokumendid";
+
+/* Label for the 'photo' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Fotod";
+
+/* Label for the 'video' attachment type in the media download settings. */
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videod";
+
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Sõnumside";
 
@@ -4388,7 +4490,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Märguande sisu";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt ühines Signal-iga";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt liitus Signaliga";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Sündmused";
@@ -4412,10 +4514,10 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Lülita meeldetuletused välja";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Jäta kindlasti meelde või salvesta PIN-kood turvaliselt, kuna seda pole võimalik taastada. Kui unustad PIN-koodi, võid Signal-i kontot uuesti registreerides enda andmed kaotada.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Jäta kindlasti meelde või salvesta PIN-kood turvaliselt, kuna seda pole võimalik taastada. Kui unustad PIN-koodi, võid Signali kontot uuesti registreerides enda andmed kaotada.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Kinnita Signal-i PIN-kood";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Kinnita Signali PIN-kood";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_PIN_REMINDER_FOOTER" = "Meeldetuletused aitavad sul PIN-koodi meelde jätta, kuna seda pole võimalik taastada. Aja möödudes küsitakse sult seda harvemini.";
@@ -4424,7 +4526,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN-koodi meeldetuletused";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse.";
+"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signali uuesti, siis sinu profiil, sätted ja kontaktid taastatakse.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Muuda enda PIN-koodi";
@@ -4460,7 +4562,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Lülita sisse";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Kui unustad Signal-iga uuesti registreerumisel oma Signal PIN-koodi, lukustatakse sind 7 päevaks oma kontolt.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Kui unustad Signaliga uuesti registreerumisel oma Signal PIN-koodi, lukustatakse sind 7 päevaks oma kontolt.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Kas lülitada registreerimislukk sisse?";
@@ -4475,7 +4577,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekraaniluku aegumine";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signal-i ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada märguandeid sõnumite kohta. Signal-i teavituste sätted võimaldavad kuvatavat teavet kohandada.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signali ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada märguandeid sõnumite kohta. Signali teavituste sätted võimaldavad kuvatavat teavet kohandada.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekraanilukk";
@@ -4502,7 +4604,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreerimislukk";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Lisaturvalisuse huvides lülita sisse registreerimislukk, mis nõuab sinu telefoninumbri Signal-isse uuesti registreerimiseks Signal-i PIN-koodi .";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Lisaturvalisuse huvides lülita sisse registreerimislukk, mis nõuab sinu telefoninumbri Signalisse uuesti registreerimiseks Signali PIN-koodi .";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Sisestamisindikaatorid";
@@ -4561,6 +4663,9 @@
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Manuse saatmine pole võimalik";
 
+/* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Üleslaadimine...";
 
@@ -4602,9 +4707,6 @@
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Kleebistepakk paigaldatud";
-
-/* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Kleebis";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Paigalda";
@@ -4660,11 +4762,38 @@
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Räägi meile, mis toimub";
 
+/* Default prompt for user description in support email requests */
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Räägi meile oma probleemist: ";
+
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Palun saada kasutajatoesoov aadressile support@signal.org";
 
+/* Localized label for support request email filter string. Embeds {{filter text}}. */
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
+
+/* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Riistvara: %@";
+
+/* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
+
+/* Localized divider for support request emails internal information */
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Kasutajatoe info ---";
+
+/* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS versioon: %@";
+
+/* Localized label for support request email locale string. Embeds {{locale}}. */
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Lokaat: %@";
+
+/* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Logi URL: %@";
+
+/* Localized label for support request email signal version string. Embeds {{signal version}}. */
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signali versioon: %@";
+
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal-i IOS versiooni kasutajatoesoov";
+"SUPPORT_EMAIL_SUBJECT" = "Signali IOS versiooni kasutajatoesoov";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Kuidas sa end tunned? (valikuline)";
@@ -4778,25 +4907,25 @@
 "UNKNOWN_COUNTRY_NAME" = "Tundmatu riik";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Üks sinu seadmetest saatis sõnumi, mida ei saa töödelda või siin kuvada, sest see kasutab Signal-i uut funktsionaalsust.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Üks sinu seadmetest saatis sõnumi, mida ei saa töödelda või siin kuvada, sest see kasutab Signali uut funktsionaalsust.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ saatis sulle sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signal-i funktsionaalsust.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ saatis sulle sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signali funktsionaalsust.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Sa said sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signal-i funktsionaalsust.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Sa said sõnumi, mida ei saa töödelda või kuvada, sest see kasutab uut Signali funktsionaalsust.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Uuenda Signal-it nüüd";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Uuenda Signaliit nüüd";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal uuendatud värskeimale versioonile. Nüüd saad seda sõnumit oma seadmes vastu võtta.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Nüüd kui kasutad uuendatud Signal-it, saad paluda kontaktil %@ see sõnum uuesti saata.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Nüüd kui kasutad uuendatud Signalit, saad paluda kontaktil %@ see sõnum uuesti saata.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Nüüd kui kasutad uuendatud Signal-it, saad paluda saatjal see sõnum uuesti saata.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Nüüd kui kasutad uuendatud Signalit, saad paluda saatjal see sõnum uuesti saata.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Tundmatu";
@@ -4862,7 +4991,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodid hoiavad Signalis salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signali uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Tutvustame PIN-koode";
@@ -4877,7 +5006,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Kasutajanimed on Signal-is vabatahtlikud. Kui lood endale Signal-is kasutajanime, siis saavad teised Signal-i kasutajad leida sind kasutajanime järgi ja võtta ühendust ilma sinu telefoninumbrit teadmata.";
+"USERNAME_DESCRIPTION" = "Kasutajanimed on Signalis vabatahtlikud. Kui otsustad endale Signalis kasutajanime luua, siis saavad teised Signali kasutajad leida sind kasutajanime järgi ja võtta ühendust sinu telefoninumbrit teadmata.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Kasutajanimi";
@@ -4889,7 +5018,7 @@
 "USERNAME_LOOKUP_ERROR" = "Kasutajanime otsimisel tekkis tõrge. Palun proovi hiljem uuesti.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ ei ole Signal-i kasutaja. Tee kindlaks, et sisestasid kasutajanime õigesti.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ ei ole Signali kasutaja. Tee kindlaks, et sisestasid kasutajanime õigesti.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Kasutajat ei leitud";

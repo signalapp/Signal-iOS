@@ -250,6 +250,25 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 // MARK: -
 
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
+
+    #if TESTABLE_BUILD
+    // TODO: We could eventually eliminate all nested transactions.
+    private static let detectNestedTransactions = false
+
+    // In debug builds, we can detect transactions opened within transaction.
+    // These checks can also be used to detect unexpected "sneaky" transactions.
+    private static let kCanOpenTransactionKey = "kCanOpenTransactionKey"
+    public static func setCanOpenTransaction(_ value: Bool) {
+        Thread.current.threadDictionary[kCanOpenTransactionKey] = NSNumber(value: value)
+    }
+    private static var canOpenTransaction: Bool {
+        guard let value = Thread.current.threadDictionary[kCanOpenTransactionKey] as? NSNumber else {
+            return true
+        }
+        return value.boolValue
+    }
+    #endif
+
     private func assertCanRead() {
         if !databaseStorage.canReadFromGrdb {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
@@ -272,6 +291,21 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     // TODO readThrows/writeThrows flavors
     public func uiReadThrows(block: @escaping (GRDBReadTransaction) throws -> Void) rethrows {
         assertCanRead()
+
+        #if TESTABLE_BUILD
+        owsAssertDebug(Self.canOpenTransaction)
+        // Check for nested tractions.
+        if Self.detectNestedTransactions {
+            // Check for nested tractions.
+            Self.setCanOpenTransaction(false)
+        }
+        defer {
+            if Self.detectNestedTransactions {
+                Self.setCanOpenTransaction(true)
+            }
+        }
+        #endif
+
         AssertIsOnMainThread()
         try latestSnapshot.read { database in
             try autoreleasepool {
@@ -283,6 +317,21 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     @discardableResult
     public func read<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
         assertCanRead()
+
+        #if TESTABLE_BUILD
+        owsAssertDebug(Self.canOpenTransaction)
+        // Check for nested tractions.
+        if Self.detectNestedTransactions {
+            // Check for nested tractions.
+            Self.setCanOpenTransaction(false)
+        }
+        defer {
+            if Self.detectNestedTransactions {
+                Self.setCanOpenTransaction(true)
+            }
+        }
+        #endif
+
         return try pool.read { database in
             try autoreleasepool {
                 return try block(GRDBReadTransaction(database: database, isUIRead: false))
@@ -292,6 +341,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     @discardableResult
     public func write<T>(block: @escaping (GRDBWriteTransaction) throws -> T) throws -> T {
+
         var value: T!
         var thrown: Error?
         try write { (transaction) in
@@ -312,6 +362,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         assertCanRead()
         AssertIsOnMainThread()
 
+        #if TESTABLE_BUILD
+        owsAssertDebug(Self.canOpenTransaction)
+        // Check for nested tractions.
+        if Self.detectNestedTransactions {
+            // Check for nested tractions.
+            Self.setCanOpenTransaction(false)
+        }
+        defer {
+            if Self.detectNestedTransactions {
+                Self.setCanOpenTransaction(true)
+            }
+        }
+        #endif
+
         guard CurrentAppContext().hasUI else {
             // Never do uiReads in the NSE.
             return try read(block: block)
@@ -327,6 +391,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
         assertCanRead()
+
+        #if TESTABLE_BUILD
+        owsAssertDebug(Self.canOpenTransaction)
+        if Self.detectNestedTransactions {
+            // Check for nested tractions.
+            Self.setCanOpenTransaction(false)
+        }
+        defer {
+            if Self.detectNestedTransactions {
+                Self.setCanOpenTransaction(true)
+            }
+        }
+        #endif
+
         try pool.read { database in
             autoreleasepool {
                 block(GRDBReadTransaction(database: database, isUIRead: false))
@@ -334,8 +412,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    @objc
-    public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
+    private func assertCanWrite() {
         if !databaseStorage.canWriteToGrdb {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")
             Logger.error(
@@ -352,6 +429,25 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 Logger.error("Unexpected GRDB write.")
             }
         }
+    }
+
+    @objc
+    public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
+        assertCanWrite()
+
+        #if TESTABLE_BUILD
+        owsAssertDebug(Self.canOpenTransaction)
+        // Check for nested tractions.
+        if Self.detectNestedTransactions {
+            // Check for nested tractions.
+            Self.setCanOpenTransaction(false)
+        }
+        defer {
+            if Self.detectNestedTransactions {
+                Self.setCanOpenTransaction(true)
+            }
+        }
+        #endif
 
         var syncCompletions: [GRDBWriteTransaction.CompletionBlock] = []
         var asyncCompletions: [GRDBWriteTransaction.AsyncCompletion] = []
@@ -380,24 +476,25 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
 // MARK: -
 
+func filterForDBQueryLog(_ input: String) -> String {
+    var result = input
+    while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
+        let charCount = result.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
+        let byteCount = Int64(charCount) / 2
+        let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
+        result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
+    }
+    return result
+}
+
 private func dbQueryLog(_ value: String) {
     guard SDSDatabaseStorage.shouldLogDBQueries else {
         return
     }
-    func filter(_ input: String) -> String {
-        var result = input
-
-        while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
-            let charCount = input.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
-            let byteCount = Int64(charCount) / 2
-            let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
-            result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
-        }
-
-        return result
-    }
-    Logger.info(filter(value))
+    Logger.info(filterForDBQueryLog(value))
 }
+
+// MARK: -
 
 private struct GRDBStorage {
 

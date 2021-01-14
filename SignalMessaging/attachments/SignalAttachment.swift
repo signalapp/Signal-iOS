@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -185,11 +185,11 @@ public class SignalAttachment: NSObject {
 
     // MARK: Constants
 
-    static let kMaxFileSizeAnimatedImage = OWSMediaUtils.kMaxFileSizeAnimatedImage
-    static let kMaxFileSizeImage = OWSMediaUtils.kMaxFileSizeImage
-    static let kMaxFileSizeVideo = OWSMediaUtils.kMaxFileSizeVideo
-    static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
-    static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
+    public static let kMaxFileSizeAnimatedImage = OWSMediaUtils.kMaxFileSizeAnimatedImage
+    public static let kMaxFileSizeImage = OWSMediaUtils.kMaxFileSizeImage
+    public static let kMaxFileSizeVideo = OWSMediaUtils.kMaxFileSizeVideo
+    public static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
+    public static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
 
     // MARK: 
 
@@ -759,11 +759,13 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            if isValidOutput {
+            if isValidOutput, canStripMetadata(for: attachment.mimeType) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)) attachment as supported image type.")
+                let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
+                Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
+
                 return convertAndCompressImage(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
@@ -793,9 +795,11 @@ public class SignalAttachment: NSObject {
 
         if imageQuality == .original &&
             attachment.dataLength < kMaxFileSizeGeneric &&
-            outputImageUTISet.contains(attachment.dataUTI) {
+            outputImageUTISet.contains(attachment.dataUTI) &&
+            canStripMetadata(for: attachment.dataUTI) {
             // We should avoid resizing images attached "as documents" if possible.
-            return attachment
+            // Just remove the metadata and return.
+            return removeImageMetadata(attachment: attachment)
         }
 
         var imageUploadQuality = imageQuality.imageQualityTier()
@@ -859,7 +863,7 @@ public class SignalAttachment: NSObject {
                 return recompressedAttachment
             }
 
-            // If the JPEG output is larger than the file size limit,
+            // If the image output is larger than the file size limit,
             // continue to try again by progressively reducing the
             // image upload quality.
             switch imageUploadQuality {
@@ -973,7 +977,17 @@ public class SignalAttachment: NSObject {
         }
     }
 
+    private class func canStripMetadata(for typeIdentifier: String) -> Bool {
+        let cgSupportedTypes = CGImageDestinationCopyTypeIdentifiers() as NSArray
+        return cgSupportedTypes.contains(typeIdentifier)
+    }
+
     private class func removeImageMetadata(attachment: SignalAttachment) -> SignalAttachment {
+        guard canStripMetadata(for: attachment.dataUTI) else {
+            owsFailDebug("CoreGraphics can't output \(attachment.dataUTI). Stripping unsupported.")
+            attachment.error = .couldNotRemoveMetadata
+            return attachment
+        }
 
         guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
@@ -1077,9 +1091,12 @@ public class SignalAttachment: NSObject {
             return (Promise.value(attachment), nil)
         }
 
-        let asset = AVAsset(url: url)
+        return compressVideoAsMp4(asset: AVAsset(url: url), baseFilename: dataSource.sourceFilename, dataUTI: dataUTI)
+    }
 
-        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
+    public class func compressVideoAsMp4(asset: AVAsset, baseFilename: String?, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
+        Logger.debug("")
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPreset640x480) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
             return (Promise.value(attachment), nil)
@@ -1097,7 +1114,6 @@ public class SignalAttachment: NSObject {
         Logger.debug("starting video export")
         exportSession.exportAsynchronously {
             Logger.debug("Completed video export")
-            let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
             do {
@@ -1141,33 +1157,32 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public class func isInvalidVideo(dataSource: DataSource, dataUTI: String) -> Bool {
+    public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
         guard videoUTISet.contains(dataUTI) else {
             // not a video
             return false
         }
 
-        guard isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) else {
-            // found a video which needs to be converted
-            return true
-        }
-
-        // It is a video, but it's not invalid
-        return false
+        // Today we re-encode all videos for the most consistent experience.
+        return true
     }
 
     private class func isValidOutputVideo(dataSource: DataSource?, dataUTI: String) -> Bool {
         guard let dataSource = dataSource else {
+            Logger.warn("Missing dataSource.")
             return false
         }
 
         guard SignalAttachment.outputVideoUTISet.contains(dataUTI) else {
+            Logger.warn("Invalid UTI type: \(dataUTI).")
             return false
         }
 
         if dataSource.dataLength <= kMaxFileSizeVideo {
             return true
         }
+        Logger.verbose("Invalid file size: \(dataSource.dataLength) > \(kMaxFileSizeVideo).")
+        Logger.warn("Invalid file size.")
         return false
     }
 

@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//
+
 #!/usr/bin/env xcrun --sdk macosx swift
 
 import Foundation
@@ -26,7 +30,7 @@ class EmojiGenerator {
 
     static let emojiDirectory = URL(fileURLWithPath: "../Signal/src/util/Emoji", isDirectory: true, relativeTo: pathToFolderContainingThisScript!)
 
-    enum EmojiCategory: String, Codable {
+    enum EmojiCategory: String, Codable, Equatable {
         case smileys = "Smileys & Emotion"
         case people = "People & Body"
 
@@ -44,7 +48,7 @@ class EmojiGenerator {
         case skinTones = "Skin Tones"
     }
 
-    enum SkinTone: String, CaseIterable {
+    enum SkinTone: String, CaseIterable, Equatable {
         case light = "1F3FB"
         case mediumLight = "1F3FC"
         case medium = "1F3FD"
@@ -131,7 +135,7 @@ class EmojiGenerator {
         }
         var sortedEmojiPerSkinTone: [([SkinTone], String)]? {
             guard let emojiPerSkinTone = emojiPerSkinTone else { return nil }
-            return emojiPerSkinTone.sorted { lhs, rhs in 
+            return emojiPerSkinTone.sorted { lhs, rhs in
                 var index = 0
                 while true {
                     if index >= lhs.key.count {
@@ -191,7 +195,7 @@ class EmojiGenerator {
         // Main enum
         writeBlock(fileName: "Emoji.swift") { fileHandle in
             fileHandle.writeLine("/// A sorted representation of all available emoji")
-            fileHandle.writeLine("enum Emoji: String, CaseIterable {")
+            fileHandle.writeLine("enum Emoji: String, CaseIterable, Equatable {")
 
             for emojiData in sortedEmojiData {
                 fileHandle.writeLine("    case \(emojiData.enumName) = \"\(emojiData.emoji)\"")
@@ -232,7 +236,7 @@ class EmojiGenerator {
             fileHandle.writeLine("extension Emoji {")
 
             // Start SkinTone enum
-            fileHandle.writeLine("    enum SkinTone: String, CaseIterable {")
+            fileHandle.writeLine("    enum SkinTone: String, CaseIterable, Equatable {")
             for skinTone in SkinTone.allCases {
                 fileHandle.writeLine("        case \(skinTone) = \"\(skinTone.unicodeScalar)\"")
             }
@@ -296,7 +300,7 @@ class EmojiGenerator {
             fileHandle.writeLine("extension Emoji {")
 
             // Start Category enum
-            fileHandle.writeLine("    enum Category: String, CaseIterable {")
+            fileHandle.writeLine("    enum Category: String, CaseIterable, Equatable {")
             for category in outputCategories {
                 fileHandle.writeLine("        case \(category) = \"\(category.rawValue)\"")
             }

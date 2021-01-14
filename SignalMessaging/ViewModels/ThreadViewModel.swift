@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ public class ThreadViewModel: NSObject {
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     @objc public let groupCallInProgress: Bool
 
-    var isContactThread: Bool {
+    public var isContactThread: Bool {
         return !isGroupThread
     }
 
@@ -31,8 +31,6 @@ public class ThreadViewModel: NSObject {
     @objc public let draftText: String?
     @objc public let lastMessageText: String?
     @objc public let lastMessageForInbox: TSInteraction?
-
-    @objc public let lastVisibleInteraction: TSInteraction?
 
     @objc
     public init(thread: TSThread, transaction: SDSAnyReadTransaction) {
@@ -77,7 +75,6 @@ public class ThreadViewModel: NSObject {
             self.draftText = nil
         }
 
-        self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
         self.groupCallInProgress = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction)
             .filter { $0.joinedMemberAddresses.count > 0 }
             .count > 0

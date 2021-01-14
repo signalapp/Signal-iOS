@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -225,8 +225,7 @@ public extension GroupsV2Migration {
                 }
                 return ContactDiscoveryTask(phoneNumbers: phoneNumbersWithoutUuids).perform().asVoid()
             }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-                // Log but otherwise ignore errors in CDS lookup.
-                owsFailDebug("Error: \(error)")
+                owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
             }.map(on: .global()) { _ in
                 Logger.verbose("")
@@ -257,7 +256,7 @@ public extension GroupsV2Migration {
                     }
                 }
             }.catch(on: .global()) { error in
-                owsFailDebug("Error: \(error)")
+                owsFailDebugUnlessNetworkFailure(error)
             }
         }
     }
@@ -398,12 +397,7 @@ fileprivate extension GroupsV2Migration {
             return firstly {
                 discoveryTask.perform().asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
-                // Log but ignore errors.
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
-                }
+                owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
             }
         }.then(on: .global()) { () -> Promise<Void> in
@@ -437,21 +431,21 @@ fileprivate extension GroupsV2Migration {
         case parallel
     }
 
-    private static func fetchProfiles(addresses: [SignalServiceAddress], profileFetchMode: ProfileFetchMode) -> Promise<Void> {
+    private static func fetchProfiles(addresses: [SignalServiceAddress],
+                                      profileFetchMode: ProfileFetchMode) -> Promise<Void> {
         func fetchProfilePromise(address: SignalServiceAddress) -> Promise<Void> {
             firstly {
                 ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
                 if case ProfileFetchError.throttled = error {
-                    // Do not ignore throttling errors.
-                    throw error
+                    // Ignore throttling errors.
+                    return Promise.value(())
                 }
-                // Log but ignore errors.
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
+                if case ProfileFetchError.missing = error {
+                    // If a user has no profile, ignore.
+                    return Promise.value(())
                 }
+                owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
             }
         }
@@ -1115,7 +1109,7 @@ fileprivate extension GroupsV2Migration {
             }
             guard groupThread.groupModel.groupsVersion == .V1 else {
                 // This can happen due to races, but should be very rare.
-                throw OWSAssertionError("Unexpected groupsVersion.")
+                throw OWSGenericError("Unexpected groupsVersion.")
             }
             let disappearingMessagesConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
             let migrationMetadata = try Self.calculateMigrationMetadata(for: groupThread.groupModel)

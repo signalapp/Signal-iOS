@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,16 +30,28 @@ public class MediaDownloadView: UIView {
     }
 
     @objc
-    public required init(attachmentId: String, radius: CGFloat) {
+    public required init(attachmentId: String, radius: CGFloat, withCircle: Bool = false) {
         self.attachmentId = attachmentId
         progressView = CircularProgressView(thickness: 0.1)
 
         super.init(frame: .zero)
 
-        addSubview(progressView)
-        progressView.autoSetDimension(.width, toSize: radius * 2)
-        progressView.autoSetDimension(.height, toSize: radius * 2)
-        progressView.autoCenterInSuperview()
+        self.isUserInteractionEnabled = false
+
+        if withCircle {
+            let circleView = OWSLayerView.circleView(size: radius * 2)
+            circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+            addSubview(circleView)
+            circleView.autoCenterInSuperview()
+
+            circleView.addSubview(progressView)
+            progressView.autoSetDimensions(to: CGSize.square(radius * 2 * 32 / 44))
+            progressView.autoCenterInSuperview()
+        } else {
+            addSubview(progressView)
+            progressView.autoSetDimensions(to: CGSize.square(radius * 2))
+            progressView.autoCenterInSuperview()
+        }
 
         NotificationCenter.default.addObserver(forName: OWSAttachmentDownloads.attachmentDownloadProgressNotification,
                                                object: nil,

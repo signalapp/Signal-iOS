@@ -8,7 +8,7 @@ import Foundation
 public extension NSRegularExpression {
 
     func hasMatch(input: String) -> Bool {
-        return self.firstMatch(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count)) != nil
+        return self.firstMatch(in: input, options: [], range: input.entireRange) != nil
     }
 
     class func parseFirstMatch(pattern: String,
@@ -18,7 +18,7 @@ public extension NSRegularExpression {
             let regex = try NSRegularExpression(pattern: pattern, options: options)
             guard let match = regex.firstMatch(in: text,
                                                options: [],
-                                               range: NSRange(location: 0, length: text.utf16.count)) else {
+                                               range: text.entireRange) else {
                                                 return nil
             }
             let matchRange = match.range(at: 1)
@@ -38,7 +38,7 @@ public extension NSRegularExpression {
                                 options: NSRegularExpression.Options = []) -> String? {
         guard let match = self.firstMatch(in: text,
                                           options: [],
-                                          range: NSRange(location: 0, length: text.utf16.count)) else {
+                                          range: text.entireRange) else {
                                             return nil
         }
         let matchRange = match.range(at: 1)

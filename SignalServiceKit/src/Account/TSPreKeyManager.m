@@ -16,7 +16,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Time before deletion of signed prekeys (measured in seconds)
-#define kSignedPreKeysDeletionTime (7 * kDayInterval)
+#define kSignedPreKeysDeletionTime (30 * kDayInterval)
 
 // Time before rotation of signed prekeys (measured in seconds)
 #define kSignedPreKeyRotationTime (2 * kDayInterval)

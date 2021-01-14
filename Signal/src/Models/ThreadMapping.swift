@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -578,16 +578,42 @@ class ThreadMapping: NSObject {
             }
         }
 
+        func logThreadIds(_ threadIds: [String], name: String) {
+            Logger.verbose("\(name)[\(threadIds.count)]: \(threadIds.joined(separator: "\n"))")
+        }
+
         // Once the moves are complete, the new ordering should be correct.
         guard newPinnedThreadIds == naivePinnedThreadIdOrdering else {
-            Logger.verbose("newPinnedThreadIds: \(newPinnedThreadIds)")
-            Logger.verbose("naivePinnedThreadIdOrdering: \(naivePinnedThreadIdOrdering)")
+            logThreadIds(newPinnedThreadIds, name: "newPinnedThreadIds")
+            logThreadIds(oldPinnedThreadIds, name: "oldPinnedThreadIds")
+            logThreadIds(newUnpinnedThreadIds, name: "newUnpinnedThreadIds")
+            logThreadIds(oldUnpinnedThreadIds, name: "oldUnpinnedThreadIds")
+            logThreadIds(newlyPinnedThreadIds, name: "newlyPinnedThreadIds")
+            logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
+            logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
+            logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
+            logThreadIds(insertedThreadIds, name: "insertedThreadIds")
+            logThreadIds(deletedThreadIds, name: "deletedThreadIds")
+            logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
+            logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
+            logThreadIds(movedThreadIds, name: "movedThreadIds")
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
         guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
-            Logger.verbose("newUnpinnedThreadIds: \(newUnpinnedThreadIds)")
-            Logger.verbose("naiveUnpinnedThreadIdOrdering: \(naiveUnpinnedThreadIdOrdering)")
+            logThreadIds(newPinnedThreadIds, name: "newPinnedThreadIds")
+            logThreadIds(oldPinnedThreadIds, name: "oldPinnedThreadIds")
+            logThreadIds(newUnpinnedThreadIds, name: "newUnpinnedThreadIds")
+            logThreadIds(oldUnpinnedThreadIds, name: "oldUnpinnedThreadIds")
+            logThreadIds(newlyPinnedThreadIds, name: "newlyPinnedThreadIds")
+            logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
+            logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
+            logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
+            logThreadIds(insertedThreadIds, name: "insertedThreadIds")
+            logThreadIds(deletedThreadIds, name: "deletedThreadIds")
+            logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
+            logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
+            logThreadIds(movedThreadIds, name: "movedThreadIds")
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 

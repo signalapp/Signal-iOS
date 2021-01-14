@@ -174,14 +174,14 @@ open class MentionTextView: OWSTextView {
         set {
             guard let newValue = newValue else {
                 replaceCharacters(
-                    in: NSRange(location: 0, length: textStorage.length),
+                    in: textStorage.entireRange,
                     with: ""
                 )
                 typingAttributes = defaultAttributes
                 return
             }
             replaceCharacters(
-                in: NSRange(location: 0, length: textStorage.length),
+                in: textStorage.entireRange,
                 with: newValue
             )
         }
@@ -345,7 +345,7 @@ open class MentionTextView: OWSTextView {
                     .mention,
                     at: subrange.location,
                     longestEffectiveRange: &uniqueMentionRange,
-                    in: NSRange(location: 0, length: textStorage.length)
+                    in: textStorage.entireRange
                 ) != nil else {
                     return owsFailDebug("Unexpectedly missing mention for subrange")
                 }
@@ -372,7 +372,7 @@ open class MentionTextView: OWSTextView {
                     .mention,
                     at: range.location,
                     longestEffectiveRange: &uniqueMentionRange,
-                    in: NSRange(location: 0, length: textStorage.length)
+                    in: textStorage.entireRange
                 ) as? Mention,
                 leftMention == rightMention {
                 deletedMentions[uniqueMentionRange] = leftMention

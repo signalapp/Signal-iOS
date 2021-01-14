@@ -19,18 +19,7 @@ public class OWSMessageSend: NSObject {
     public let thread: TSThread
 
     @objc
-    public let recipient: SignalRecipient
-
-    @objc
-    public var deviceIds: [NSNumber] {
-        recipient.devices.compactMap { value in
-            guard let deviceId = value as? NSNumber else {
-                owsFailDebug("Invalid device id: \(value)")
-                return nil
-            }
-            return deviceId
-        }
-    }
+    public let address: SignalServiceAddress
 
     private static let kMaxRetriesPerRecipient: Int = 3
 
@@ -79,15 +68,15 @@ public class OWSMessageSend: NSObject {
     @objc
     public init(message: TSOutgoingMessage,
                 thread: TSThread,
-                recipient: SignalRecipient,
+                address: SignalServiceAddress,
                 udSendingAccess: OWSUDSendingAccess?,
                 localAddress: SignalServiceAddress,
                 sendErrorBlock: ((Error) -> Void)?) {
         self.message = message
         self.thread = thread
-        self.recipient = recipient
+        self.address = address
         self.localAddress = localAddress
-        self.isLocalAddress = recipient.address.isLocalAddress
+        self.isLocalAddress = address.isLocalAddress
 
         let (promise, resolver) = Promise<Void>.pending()
         self.promise = promise
@@ -113,13 +102,13 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public func disableUD() {
-        Logger.verbose("\(recipient.address)")
+        Logger.verbose("\(address)")
         udSendingAccess = nil
     }
 
     @objc
     public func setHasUDAuthFailed() {
-        Logger.verbose("\(recipient.address)")
+        Logger.verbose("\(address)")
         // We "fail over" to non-UD sends after auth errors sending via UD.
         disableUD()
     }

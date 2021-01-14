@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +17,7 @@ protocol CompareSafetyNumbersActivityDelegate {
 class CompareSafetyNumbersActivity: UIActivity {
 
     var mySafetyNumbers: String?
-    let delegate: CompareSafetyNumbersActivityDelegate
+    weak var delegate: CompareSafetyNumbersActivityDelegate?
 
     @objc
     required init(delegate: CompareSafetyNumbersActivityDelegate) {
@@ -59,9 +59,15 @@ class CompareSafetyNumbersActivity: UIActivity {
     override func perform() {
         defer { activityDidFinish(true) }
 
-        let pasteboardString = numericOnly(string: UIPasteboard.general.string)
-        guard (pasteboardString != nil && pasteboardString!.count == 60) else {
-            Logger.warn("no valid safety numbers found in pasteboard: \(String(describing: pasteboardString))")
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+
+        let pasteboardNumerics = numericOnly(string: UIPasteboard.general.string)
+        guard let pasteboardString = pasteboardNumerics,
+              pasteboardString.count == 60 else {
+            Logger.warn("no valid safety numbers found in pasteboard: \(String(describing: pasteboardNumerics))")
             let error = OWSErrorWithCodeDescription(OWSErrorCode.userError,
                                                     NSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error"))
 
@@ -69,7 +75,7 @@ class CompareSafetyNumbersActivity: UIActivity {
             return
         }
 
-        let pasteboardSafetyNumbers = pasteboardString!
+        let pasteboardSafetyNumbers = pasteboardString
 
         if pasteboardSafetyNumbers == mySafetyNumbers {
             Logger.info("successfully matched safety numbers. local numbers: \(String(describing: mySafetyNumbers)) pasteboard:\(pasteboardSafetyNumbers)")
@@ -91,7 +97,7 @@ class CompareSafetyNumbersActivity: UIActivity {
 
         var numericOnly: String?
         if let regex = try? NSRegularExpression(pattern: "\\D", options: .caseInsensitive) {
-            numericOnly = regex.stringByReplacingMatches(in: string, options: .withTransparentBounds, range: NSRange(location: 0, length: string.utf16.count), withTemplate: "")
+            numericOnly = regex.stringByReplacingMatches(in: string, options: .withTransparentBounds, range: string.entireRange, withTemplate: "")
         }
 
         return numericOnly

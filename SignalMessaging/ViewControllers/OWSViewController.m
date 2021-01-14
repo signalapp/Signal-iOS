@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     // appears.  We don't do any checking for accessibilityIdentifier collisions
     // so we're counting on the fact that navbar contents are short-lived.
     __block int accessibilityIdCounter = 0;
-    [navigationBar traverseViewHierarchyWithVisitor:^(UIView *view) {
+    [navigationBar traverseViewHierarchyDownwardWithVisitor:^(UIView *view) {
         if ([view isKindOfClass:[UIControl class]] && view.accessibilityIdentifier == nil) {
             // The view should probably be an instance of _UIButtonBarButton or _UIModernBarButton.
             view.accessibilityIdentifier = [NSString stringWithFormat:@"navbar-%d", accessibilityIdCounter];

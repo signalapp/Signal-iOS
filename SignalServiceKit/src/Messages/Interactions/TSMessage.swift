@@ -1,10 +1,55 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 public extension TSMessage {
+
+    @objc
+    var isIncoming: Bool { self as? TSIncomingMessage != nil }
+
+    @objc
+    var isOutgoing: Bool { self as? TSOutgoingMessage != nil }
+
+    // MARK: - Attachments
+
+    func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        let states: [TSAttachmentPointerState] = [.failed]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+    }
+
+    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = allAttachments(with: transaction.unwrapGrdbRead)
+        let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+    }
+
+    func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
+        let states: [TSAttachmentPointerState] = [.failed]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+    }
+
+    func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
+        let attachments: [TSAttachment] = bodyAttachments(with: transaction.unwrapGrdbRead)
+        let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+    }
+
+    private static func onlyAttachmentPointers(attachments: [TSAttachment],
+                                               withStateIn states: Set<TSAttachmentPointerState>) -> [TSAttachmentPointer] {
+        return attachments.compactMap { attachment -> TSAttachmentPointer? in
+            guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+                return nil
+            }
+            guard states.contains(attachmentPointer.state) else {
+                return nil
+            }
+            return attachmentPointer
+        }
+    }
 
     // MARK: - Reactions
 
@@ -173,5 +218,20 @@ public extension TSInteraction {
             return false
         }
         return newGroupModel.wasJustMigratedToV2
+    }
+
+    @objc
+    var isGroupWasJustCreatedByLocalUserMessage: Bool {
+        guard let message = self as? TSInfoMessage else {
+            return false
+        }
+        guard message.messageType == .typeGroupUpdate else {
+            return false
+        }
+        guard let newGroupModel = message.newGroupModel else {
+            owsFailDebug("Missing newGroupModel.")
+            return false
+        }
+        return newGroupModel.wasJustCreatedByLocalUserV2
     }
 }

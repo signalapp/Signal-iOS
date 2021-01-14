@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,6 +137,15 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var groupCalling: Bool {
         return DebugFlags.forceGroupCalling || !isEnabled(.groupCallingKillSwitch)
+    }
+
+    @objc
+    public static var cdsSyncInterval: TimeInterval {
+        guard let cdsSyncIntervalString: String = value(.cdsSyncInterval),
+              let cdsSyncInterval = TimeInterval(cdsSyncIntervalString) else {
+            return 2 * kDayInterval
+        }
+        return cdsSyncInterval
     }
 
     @objc
@@ -339,6 +348,7 @@ private struct Flags {
         case groupsV2MaxGroupSizeHardLimit
         case clientExpiration
         case researchMegaphone
+        case cdsSyncInterval
     }
 }
 
@@ -358,6 +368,7 @@ private extension FlagType {
         case "groupsV2MaxGroupSizeRecommended": return "global.groupsv2.maxGroupSize"
         case "groupsV2MaxGroupSizeHardLimit": return "global.groupsv2.groupSizeHardLimit"
         case "researchMegaphone": return "research.megaphone.1"
+        case "cdsSyncInterval": return "cds.syncInterval.seconds"
         default: return Flags.prefix + rawValue
         }
     }

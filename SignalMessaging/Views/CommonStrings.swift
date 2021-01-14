@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,6 +30,9 @@ import Foundation
 
     @objc
     static public let nextButton = NSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
+
+    @objc
+    static public let skipButton = NSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view.")
 
     @objc
     static public let deleteButton = NSLocalizedString("TXT_DELETE_TITLE", comment: "Label for the delete button in an alert or action sheet.")
@@ -102,6 +105,17 @@ import Foundation
 
     @objc
     static public let addButton = NSLocalizedString("BUTTON_ADD", comment: "Label for the 'add' button.")
+
+    @objc
+    static public let genericError = NSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")
+
+    @objc
+    static public let attachmentTypePhoto = NSLocalizedString("ATTACHMENT_TYPE_PHOTO",
+                                                       comment: "Short text label for a photo attachment, used for thread preview and on the lock screen")
+
+    @objc
+    static public let attachmentTypeVideo = NSLocalizedString("ATTACHMENT_TYPE_VIDEO",
+                                          comment: "Short text label for a video attachment, used for thread preview and on the lock screen")
 }
 
 @objc

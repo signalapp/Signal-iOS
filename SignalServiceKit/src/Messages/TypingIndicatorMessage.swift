@@ -62,7 +62,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     @objc
-    public override func buildPlainTextData(_ recipient: SignalRecipient,
+    public override func buildPlainTextData(_ address: SignalServiceAddress,
                                             thread: TSThread,
                                             transaction: SDSAnyReadTransaction) -> Data? {
 

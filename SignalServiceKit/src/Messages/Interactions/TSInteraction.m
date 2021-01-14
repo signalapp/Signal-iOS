@@ -341,6 +341,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // populated yet.
 }
 
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [SDSDatabaseStorage.shared updateIdMappingWithInteraction:self transaction:transaction];
+
+    [super anyWillRemoveWithTransaction:transaction];
+}
+
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];

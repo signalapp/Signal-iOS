@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsManager.h"
@@ -80,7 +80,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSContactsManagerCollection];
 
     // TODO: We need to configure the limits of this cache.
-    _avatarCache = [ImageCache new];
+    _avatarCachePrivate = [ImageCache new];
     _colorNameCache = [NSCache new];
 
     _allContacts = @[];
@@ -402,7 +402,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
                 const NSUInteger contactCount = phoneNumbersForIntersection.count;
 
-                NSDate *nextFullIntersectionDate = [NSDate dateWithTimeIntervalSinceNow:kDayInterval];
+                NSDate *nextFullIntersectionDate = [NSDate dateWithTimeIntervalSinceNow:RemoteConfig.cdsSyncInterval];
                 OWSLogDebug(@"contactCount: %lu, currentDate: %@, nextFullIntersectionDate: %@",
                     (unsigned long)contactCount,
                     [NSDate new],
@@ -514,7 +514,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
         OWSAssertDebug(address.isValid);
 
-        [self.avatarCache removeAllImagesForKey:address.stringForDisplay];
+        [self removeAllFromAvatarCacheWithKey:address.stringForDisplay];
     }];
 }
 
@@ -553,7 +553,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             [self.cnContactCache removeAllObjects];
             [self.cnContactAvatarCache removeAllObjects];
 
-            [self.avatarCache removeAllImages];
+            [self removeAllFromAvatarCache];
 
             [self intersectContacts:allContacts
                     isUserRequested:isUserRequested
@@ -950,8 +950,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
                                              transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertIsOnMainThread();
-
     _Nullable ConversationColorName cachedColorName = [self.colorNameCache objectForKey:address];
     if (cachedColorName != nil) {
         return cachedColorName;
@@ -994,9 +992,23 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self hasSignalAccountForAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
 }
 
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(phoneNumber.length > 0);
+
+    return [self hasSignalAccountForAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]
+                                transaction:transaction];
+}
+
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
 {
     return [self cachedContactNameForAddress:address].length > 0;
+}
+
+- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self cachedContactNameForAddress:address transaction:transaction].length > 0;
 }
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
@@ -1044,6 +1056,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
 {
     return [self cachedContactNameForAddress:address];
+}
+
+- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
+                                            transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self cachedContactNameForAddress:address transaction:transaction];
 }
 
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
@@ -1192,6 +1210,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self fetchSignalAccountForAddress:address] != nil;
 }
 
+- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self fetchSignalAccountForAddress:address transaction:transaction] != nil;
+}
+
 - (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address
                                                transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1282,13 +1305,17 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    __block UIImage *_Nullable image = [self systemContactOrSyncedImageForAddress:address transaction:transaction];
-    if (image != nil) {
-        return image;
+    __block UIImage *_Nullable image = nil;
+    if ([SSKPreferences preferContactAvatarsWithTransaction:transaction]) {
+        // Grab the system contact avatar if available. Otherwise, profile avatar.
+        image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
+        image = image ?: [self.profileManager profileAvatarForAddress:address transaction:transaction];
+    } else {
+        // Grab the profile avatar if available. Otherwise, system contact avatar.
+        image = image ?: [self.profileManager profileAvatarForAddress:address transaction:transaction];
+        image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
     }
-
-    // Else try to use the image from their profile
-    return [self.profileManager profileAvatarForAddress:address transaction:transaction];
+    return image;
 }
 
 - (BOOL)shouldSortByGivenName

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,6 +35,9 @@ public extension UIDevice {
             return true
         case 2436:
             // iPhone X, iPhone XS
+            return true
+        case 2532:
+            // iPhone 12 Pro
             return true
         case 2688:
             // iPhone X Max
@@ -73,6 +76,9 @@ public extension UIDevice {
             return false
         case 2436:
             // iPhone X, iPhone XS
+            return false
+        case 2532:
+            // iPhone 12 Pro
             return false
         case 2688:
             // iPhone X Max

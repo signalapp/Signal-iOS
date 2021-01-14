@@ -6,8 +6,6 @@ import Foundation
 
 @objc(OWSThreadDetailsInteraction)
 public class ThreadDetailsInteraction: TSInteraction {
-    @objc
-    public static let ThreadDetailsId = "ThreadDetails"
 
     @objc
     public override func isDynamicInteraction() -> Bool {
@@ -33,7 +31,11 @@ public class ThreadDetailsInteraction: TSInteraction {
 
     @objc
     public init(thread: TSThread, timestamp: UInt64) {
-        super.init(uniqueId: ThreadDetailsInteraction.ThreadDetailsId, timestamp: timestamp, thread: thread)
+        // Include timestamp in uniqueId to ensure invariant that
+        // interactions don't move in the chat history ordering.
+        super.init(uniqueId: "ThreadDetails_\(timestamp)",
+                   timestamp: timestamp,
+                   thread: thread)
     }
 
     public override var shouldBeSaved: Bool {

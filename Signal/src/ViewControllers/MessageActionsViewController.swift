@@ -54,23 +54,25 @@ public class MessageAction: NSObject {
 }
 
 @objc
-protocol MessageActionsViewControllerDelegate: class {
+public protocol MessageActionsViewControllerDelegate: class {
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withAction: MessageAction?)
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withReaction: String, isRemoving: Bool)
     func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
                                       shouldShowReactionPickerForInteraction: TSInteraction) -> Bool
-    func messageActionsViewControllerRequestedKeyboardDismissal(_ messageActionsViewController: MessageActionsViewController, focusedView: ConversationViewCell)
+    func messageActionsViewControllerRequestedKeyboardDismissal(_ messageActionsViewController: MessageActionsViewController, focusedView: UIView)
     func messageActionsViewControllerLongPressGestureRecognizer(_ messageActionsViewController: MessageActionsViewController) -> UILongPressGestureRecognizer
 }
 
 @objc
-class MessageActionsViewController: UIViewController {
+public class MessageActionsViewController: UIViewController {
+
+    private let itemViewModel: CVItemViewModelImpl
     @objc
-    let focusedViewItem: ConversationViewItem
-    @objc
-    var focusedInteraction: TSInteraction { focusedViewItem.interaction }
-    var thread: TSThread { focusedViewItem.thread }
-    let focusedView: ConversationViewCell
+    public var focusedInteraction: TSInteraction { itemViewModel.interaction }
+    var thread: TSThread { itemViewModel.thread }
+    public var reactionState: InteractionReactionState? { itemViewModel.reactionState }
+
+    let focusedView: UIView
     private let actionsToolbar: MessageActionsToolbar
 
     @objc
@@ -83,8 +85,8 @@ class MessageActionsViewController: UIViewController {
     public weak var delegate: MessageActionsViewControllerDelegate?
 
     @objc
-    init(focusedViewItem: ConversationViewItem, focusedView: ConversationViewCell, actions: [MessageAction]) {
-        self.focusedViewItem = focusedViewItem
+    init(itemViewModel: CVItemViewModelImpl, focusedView: UIView, actions: [MessageAction]) {
+        self.itemViewModel = itemViewModel
         self.focusedView = focusedView
         self.actionsToolbar = MessageActionsToolbar(actions: actions)
 
@@ -99,7 +101,7 @@ class MessageActionsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func loadView() {
+    public override func loadView() {
         view = UIView()
 
         backdropView.backgroundColor = Theme.backdropColor
@@ -262,7 +264,7 @@ class MessageActionsViewController: UIViewController {
     private func addReactionPickerIfNecessary() {
         guard canAddReact, quickReactionPicker == nil else { return }
 
-        let picker = MessageReactionPicker(selectedEmoji: focusedViewItem.reactionState?.localUserEmoji, delegate: self)
+        let picker = MessageReactionPicker(selectedEmoji: reactionState?.localUserEmoji, delegate: self)
         view.addSubview(picker)
 
         view.setNeedsLayout()
@@ -354,7 +356,7 @@ class MessageActionsViewController: UIViewController {
             delegate?.messageActionsViewControllerRequestedDismissal(
                 self,
                 withReaction: focusedEmoji,
-                isRemoving: focusedEmoji == focusedViewItem.reactionState?.localUserEmoji
+                isRemoving: focusedEmoji == reactionState?.localUserEmoji
             )
         }
     }
@@ -372,7 +374,7 @@ class MessageActionsViewController: UIViewController {
             self.delegate?.messageActionsViewControllerRequestedDismissal(
                 self,
                 withReaction: emojiString,
-                isRemoving: emojiString == self.focusedViewItem.reactionState?.localUserEmoji
+                isRemoving: emojiString == self.reactionState?.localUserEmoji
             )
         }
         picker.backdropView = backdropView

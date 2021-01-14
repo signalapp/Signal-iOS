@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-@objc(OWSConversationMediaView)
-public class ConversationMediaView: UIView {
+public class CVMediaView: UIView {
 
     private enum MediaError {
         case missing
@@ -16,7 +15,6 @@ public class ConversationMediaView: UIView {
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>
-    @objc
     public let attachment: TSAttachment
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
@@ -81,7 +79,6 @@ public class ConversationMediaView: UIView {
 
     // MARK: - Initializers
 
-    @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
@@ -143,62 +140,11 @@ public class ConversationMediaView: UIView {
             return configure(forError: .failed)
         }
 
-        guard !isPendingMessageRequest else {
-            return configureForMessageRequest()
+        guard !isPendingDownload else {
+            return
         }
 
         addDownloadProgressIfNecessary()
-    }
-
-    private func configureForMessageRequest() {
-        backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05
-
-        let downloadIconView = UIImageView()
-        downloadIconView.setTemplateImageName("arrow-down-circle-outline-24", tintColor: Theme.primaryTextColor)
-        downloadIconView.autoSetDimension(.height, toSize: 24)
-        downloadIconView.contentMode = .scaleAspectFit
-
-        let downloadLabel = UILabel()
-        downloadLabel.textColor = Theme.primaryTextColor
-        downloadLabel.font = UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold
-        downloadLabel.textAlignment = .center
-        downloadLabel.numberOfLines = 0
-        downloadLabel.text = NSLocalizedString("CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE",
-                                               comment: "Indicates that the user can tap to download this image.")
-
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
-
-        let stackView = UIStackView(arrangedSubviews: [topSpacer, downloadIconView, downloadLabel, bottomSpacer])
-        stackView.axis = .vertical
-        stackView.spacing = 6
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-
-        let primaryColor: UIColor
-
-        if hasBlurHash {
-            let isDarkBlurHash = BlurHash.isDarkBlurHash(attachment.blurHash) == true
-            primaryColor = isDarkBlurHash ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
-            let shadowColor: UIColor = isDarkBlurHash ? .ows_blackAlpha40 : .ows_whiteAlpha90
-
-            // Add shadows if we have a blur hash since while we know it's
-            // primarily dark or light, we don't know if we'll still overlap
-            // some of the opposing color.
-            for downloadView in [downloadLabel, downloadIconView] {
-                downloadView.layer.shadowColor = shadowColor.cgColor
-                downloadView.layer.shadowOffset = .zero
-                downloadView.layer.shadowOpacity = 1
-                downloadView.layer.shadowRadius = 4
-            }
-        } else {
-            primaryColor = Theme.primaryTextColor
-        }
-
-        downloadLabel.textColor = primaryColor
-        downloadIconView.tintColor = primaryColor
     }
 
     private func addDownloadProgressIfNecessary() {
@@ -224,7 +170,7 @@ public class ConversationMediaView: UIView {
         }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: 22, withCircle: true)
         self.addSubview(progressView)
         progressView.autoPinEdgesToSuperviewEdges()
     }
@@ -423,8 +369,8 @@ public class ConversationMediaView: UIView {
         stillImageView.autoPinEdgesToSuperviewEdges()
 
         if !addUploadProgressIfNecessary(stillImageView) {
-            let videoPlayIcon = UIImage(named: "play_button")
-            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            let videoPlayButton = Self.buildVideoPlayButton {}
+            videoPlayButton.isUserInteractionEnabled = false
             stillImageView.addSubview(videoPlayButton)
             videoPlayButton.autoCenterInSuperview()
         }
@@ -467,11 +413,39 @@ public class ConversationMediaView: UIView {
         }
     }
 
-    private var isPendingMessageRequest: Bool {
+    @objc
+    public static func buildVideoPlayButton(block: @escaping () -> Void) -> UIView {
+        let playVideoButton = OWSButton(block: block)
+
+        let playVideoCircleView = OWSLayerView(frame: .zero) { view in
+            view.layer.cornerRadius = min(view.width, view.height) * 0.5
+        }
+        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+        playVideoCircleView.isUserInteractionEnabled = false
+        playVideoButton.addSubview(playVideoCircleView)
+
+        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
+                                                                  tintColor: UIColor.ows_white)
+        playVideoIconView.isUserInteractionEnabled = false
+        playVideoButton.addSubview(playVideoIconView)
+
+        let playVideoButtonWidth = ScaleFromIPhone5(44)
+        let playVideoIconWidth = ScaleFromIPhone5(20)
+        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
+        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
+        playVideoCircleView.autoPinEdgesToSuperviewEdges()
+        playVideoIconView.autoCenterInSuperview()
+
+        return playVideoButton
+    }
+
+    private var isPendingDownload: Bool {
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             return false
         }
-        return attachmentPointer.state == .pendingMessageRequest
+        return (attachmentPointer.state == .pendingMessageRequest ||
+            attachmentPointer.state == .pendingManualDownload)
+
     }
 
     private var isFailedDownload: Bool {
@@ -554,7 +528,7 @@ public class ConversationMediaView: UIView {
         Logger.verbose("media cache miss")
 
         let threadSafeLoadState = self.threadSafeLoadState
-        ConversationMediaView.loadQueue.async {
+        CVMediaView.loadQueue.async {
             guard threadSafeLoadState.get() == .loading else {
                 Logger.verbose("Skipping obsolete load.")
                 return
@@ -592,7 +566,6 @@ public class ConversationMediaView: UIView {
     //   "skip rate" of obsolete loads.
     private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
 
-    @objc
     public func loadMedia() {
         AssertIsOnMainThread()
 
@@ -609,7 +582,6 @@ public class ConversationMediaView: UIView {
         }
     }
 
-    @objc
     public func unloadMedia() {
         AssertIsOnMainThread()
 

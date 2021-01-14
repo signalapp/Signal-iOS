@@ -129,11 +129,6 @@ class ConversationSettingsViewController: OWSTableViewController {
         return OWSDisappearingMessagesConfiguration.validDurationsSeconds()
     }
 
-    // A local feature flag.
-    var shouldShowColorPicker: Bool {
-        return false
-    }
-
     class var headerBackgroundColor: UIColor {
         return (Theme.isDarkThemeEnabled ? Theme.tableViewBackgroundColor : Theme.tableCellBackgroundColor)
     }
@@ -168,7 +163,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         disappearingMessagesDurationLabel.setAccessibilityIdentifier(in: self, name: "disappearingMessagesDurationLabel")
 
-        if shouldShowColorPicker {
+        if DebugFlags.shouldShowColorPicker {
             let colorPicker = ColorPicker(thread: self.thread)
             colorPicker.delegate = self
             self.colorPicker = colorPicker
@@ -323,8 +318,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         if sender.state == .recognized {
             if isGroupThread {
-                let location = sender.location(in: avatarView)
-                if avatarView.bounds.contains(location) {
+                if avatarView.containsGestureLocation(sender) {
                     showGroupAttributesView(editAction: .avatar)
                 } else {
                     showGroupAttributesView(editAction: .name)
@@ -1052,7 +1046,7 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
             self.thread.updateConversationColorName(conversationColor.name, transaction: transaction)
         }
 
-        contactsManager.avatarCache.removeAllImages()
+        contactsManager.removeAllFromAvatarCache()
         contactsManager.clearColorNameCache()
         updateTableContents()
         conversationSettingsViewDelegate?.conversationColorWasUpdated()

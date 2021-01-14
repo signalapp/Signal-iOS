@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objcMembers
 public class GroupUpdateCopyItem: NSObject {
-    let type: GroupUpdateType
-    let text: String
+    public let type: GroupUpdateType
+    public let text: String
 
     init(type: GroupUpdateType, text: String) {
         self.type = type
@@ -41,6 +41,7 @@ public enum GroupUpdateType: Int {
     case groupMigrated
     case groupMigrated_usersDropped
     case groupMigrated_usersInvited
+    case groupGroupLinkPromotion
     case debug
 
     var typeForDeduplication: GroupUpdateType {
@@ -187,6 +188,10 @@ struct GroupUpdateCopy {
             // Include a description of current DM state, if necessary.
             addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
                                           newToken: newDisappearingMessageToken)
+
+            if newGroupModel.wasJustCreatedByLocalUserV2 {
+                addWasJustCreatedByLocalUserUpdates()
+            }
         }
 
         if itemList.count < 1 {
@@ -445,10 +450,7 @@ extension GroupUpdateCopy {
         var membershipCounts = MembershipCounts()
 
         let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
-        var allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
-            // Use an arbitrary sort to ensure the output is deterministic.
-            return left.stringForDisplay > right.stringForDisplay
-        }
+        var allUsersSorted = Array(allUsersUnsorted).stableSort()
         // If local user had a membership update, ensure it appears _first_.
         if allUsersSorted.contains(localAddress) {
             allUsersSorted = [localAddress] + allUsersSorted.filter { $0 != localAddress}
@@ -1660,7 +1662,7 @@ extension GroupUpdateCopy {
             }
         case .invited:
             if let localAddress = Self.tsAccountManager.localAddress,
-                let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
+               let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
                 let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
                 let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
@@ -1687,6 +1689,12 @@ extension GroupUpdateCopy {
                 addItem(.debug, copy: "Error: Learned of group without any membership status.")
             }
         }
+    }
+
+    mutating func addWasJustCreatedByLocalUserUpdates() {
+        addItem(.groupGroupLinkPromotion,
+                copy: NSLocalizedString("GROUP_LINK_PROMOTION_UPDATE",
+                                        comment: "Suggestion to invite more group members via the group invite link."))
     }
 
     // MARK: - Migration

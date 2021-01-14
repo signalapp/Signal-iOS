@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                [cell configureWithRecipientAddress:address];
+                                [cell configureWithRecipientAddressWithSneakyTransaction:address];
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
                                 return cell;

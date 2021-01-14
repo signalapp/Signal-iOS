@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -648,6 +648,9 @@ extension StorageServiceProtoAccountRecord {
         let pinnedConversationProtos = try PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
         builder.setPinnedConversations(pinnedConversationProtos)
 
+        let preferContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
+        builder.setPreferContactAvatars(preferContactAvatars)
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -772,6 +775,14 @@ extension StorageServiceProtoAccountRecord {
         } catch {
             owsFailDebug("Failed to process pinned conversations \(error)")
             mergeState = .needsUpdate
+        }
+
+        let localPrefersContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
+        if preferContactAvatars != localPrefersContactAvatars {
+            SSKPreferences.setPreferContactAvatars(
+                preferContactAvatars,
+                updateStorageService: false,
+                transaction: transaction)
         }
 
         return mergeState

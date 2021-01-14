@@ -17,9 +17,19 @@ import SignalMessaging
  */
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
+    // MARK: - Dependencies
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    internal var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
+    }
+
+    // MARK: -
+
     private let callManager: CallKitCallManager
-    internal let notificationPresenter: NotificationPresenter
-    internal let contactsManager: OWSContactsManager
     private let showNamesOnCallScreen: Bool
     private let provider: CXProvider
     private let audioActivity: AudioActivity
@@ -88,14 +98,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(contactsManager: OWSContactsManager, notificationPresenter: NotificationPresenter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
+    init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
         AssertIsOnMainThread()
 
         Logger.debug("")
 
         self.callManager = CallKitCallManager(showNamesOnCallScreen: showNamesOnCallScreen)
-        self.contactsManager = contactsManager
-        self.notificationPresenter = notificationPresenter
 
         self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
 
@@ -153,7 +161,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
 
         if showNamesOnCallScreen {
-            update.localizedCallerName = self.contactsManager.displayName(for: call.individualCall.remoteAddress)
+            update.localizedCallerName = contactsManager.displayName(for: call.individualCall.remoteAddress)
             if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
                 update.remoteHandle = CXHandle(type: .phoneNumber, value: phoneNumber)
             }

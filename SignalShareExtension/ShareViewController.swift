@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -479,7 +479,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     public func shareViewFailed(error: Error) {
-        Logger.info("")
+        owsFailDebug("Error: \(error)")
 
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
@@ -535,8 +535,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             self.progressPoller = nil
             self.loadViewController = nil
 
-            let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
-            conversationPicker.attachments = attachments
+            let conversationPicker = SharingThreadPickerViewController(attachments: attachments, shareViewDelegate: self)
             self.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachments: \(attachments)")
         }.catch { [weak self] error in
@@ -830,7 +829,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             dataSource.sourceFilename = url.lastPathComponent
             let utiType = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) ?? kUTTypeData as String
 
-            guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: utiType) else {
+            guard !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: utiType) else {
                 // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
 
                 let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: utiType)

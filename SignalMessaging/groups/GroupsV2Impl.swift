@@ -427,7 +427,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 owsFailDebug("Error: \(error)")
                 continue
             }
-            let message = OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            let message = OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress) -> Data in
                 contentProtoData
             }
             ThreadUtil.sendMessageNonDurably(message: message)
@@ -1058,10 +1058,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }.done { _ in
             Logger.verbose("Update succeeded.")
         }.catch { error in
-            if IsNetworkConnectivityFailure(error) {
-                Logger.warn("Error: \(error)")
+            if case GroupsV2Error.localUserNotInGroup = error {
+                Logger.verbose("Error: \(error)")
             } else {
-                owsFailDebug("Error: \(error)")
+                owsFailDebugUnlessNetworkFailure(error)
             }
         }
     }

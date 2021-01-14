@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+// TODO: Remove this view.
 @interface OWSQuotedMessageView : UIView
 
 @property (nonatomic, nullable, weak) id<OWSQuotedMessageViewDelegate> delegate;

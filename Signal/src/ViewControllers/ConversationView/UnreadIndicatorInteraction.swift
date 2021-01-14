@@ -8,9 +8,6 @@ import Foundation
 public class UnreadIndicatorInteraction: TSInteraction {
 
     @objc
-    public static let UnreadIndicatorInteractionId = "UnreadIndicatorInteractionId"
-
-    @objc
     public override func isDynamicInteraction() -> Bool {
         return true
     }
@@ -34,7 +31,9 @@ public class UnreadIndicatorInteraction: TSInteraction {
 
     @objc
     public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
-        super.init(uniqueId: UnreadIndicatorInteraction.UnreadIndicatorInteractionId,
+        // Include timestamp in uniqueId to ensure invariant that
+        // interactions don't move in the chat history ordering.
+        super.init(uniqueId: "UnreadIndicator_\(timestamp)",
                    timestamp: timestamp,
                    receivedAtTimestamp: receivedAtTimestamp,
                    thread: thread)

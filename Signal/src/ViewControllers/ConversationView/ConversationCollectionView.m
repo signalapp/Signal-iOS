@@ -64,9 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
 {
-    [super setContentOffset:contentOffset animated:animated];
+    if (animated) {
+        [self.layoutDelegate collectionViewWillAnimate];
+    }
 
-    return;
+    [super setContentOffset:contentOffset animated:animated];
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset
@@ -95,6 +97,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [super setContentOffset:contentOffset];
+}
+
+- (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
+{
+    if (animated) {
+        [self.layoutDelegate collectionViewWillAnimate];
+    }
+
+    [super scrollRectToVisible:rect animated:animated];
 }
 
 - (BOOL)shouldSkipAdjustmentDueToLoadingMoreWhileOverscrolledWithProposedContentOffset:(CGPoint)proposedContentOffset

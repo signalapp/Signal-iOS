@@ -26,6 +26,14 @@ public extension UIResponder {
         AppEnvironment.shared.accountManager
     }
 
+    var tsAccountManager: TSAccountManager {
+        SSKEnvironment.shared.tsAccountManager
+    }
+
+    static var tsAccountManager: TSAccountManager {
+        SSKEnvironment.shared.tsAccountManager
+    }
+
     var callUIAdapter: CallUIAdapter {
         AppEnvironment.shared.callService.individualCallService.callUIAdapter
     }
@@ -80,6 +88,14 @@ public extension UIResponder {
 
     static var userNotificationActionHandler: UserNotificationActionHandler {
         AppEnvironment.shared.userNotificationActionHandler
+    }
+
+    var audioPlayer: CVAudioPlayer {
+        return AppEnvironment.shared.audioPlayer
+    }
+
+    static var audioPlayer: CVAudioPlayer {
+        return AppEnvironment.shared.audioPlayer
     }
 }
 

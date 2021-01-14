@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -88,6 +88,7 @@ public enum ThemeIcon: UInt {
     case videoIncoming16
     case videoOutgoing16
     case videoX16
+    case refresh16
 
     case transfer
     case register
@@ -297,6 +298,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "video-outgoing-solid-16" : "video-outgoing-outline-16"
         case .videoX16:
             return isDarkThemeEnabled ? "video-x-solid-16" : "video-x-outline-16"
+        case .refresh16:
+            return "refresh-16"
 
         case .transfer:
             return "transfer-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"

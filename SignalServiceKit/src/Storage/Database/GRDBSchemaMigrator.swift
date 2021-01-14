@@ -1739,12 +1739,13 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
         // Since we have duplicate recipients for an address, we want to keep the one returned by the
         // finder, since that is the one whose uniqueId is used as the `accountId` for the
         // accountId finder.
-        guard let primaryRecipient = SignalRecipient.registeredRecipient(for: address,
-                                                                         mustHaveDevices: false,
-                                                                         transaction: transaction) else {
-                                                                            owsFailDebug("primaryRecipient was unexpectedly nil")
-                                                                            continue
-
+        guard let primaryRecipient = SignalRecipient.get(
+            address: address,
+            mustHaveDevices: false,
+            transaction: transaction
+        ) else {
+            owsFailDebug("primaryRecipient was unexpectedly nil")
+            continue
         }
 
         let redundantRecipientIds = recipientIds.filter { $0 != primaryRecipient.uniqueId }

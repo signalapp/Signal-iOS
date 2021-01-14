@@ -100,11 +100,20 @@ target 'SignalMessaging'
 target 'NotificationServiceExtension'
 
 post_install do |installer|
+  enable_strip(installer)
   enable_extension_support_for_purelayout(installer)
   configure_warning_flags(installer)
   configure_testable_build(installer)
   disable_bitcode(installer)
   copy_acknowledgements
+end
+
+# Works around CocoaPods behavior designed for static libraries.
+# See https://github.com/CocoaPods/CocoaPods/issues/10277
+def enable_strip(installer)
+  installer.pods_project.build_configurations.each do |build_configuration|
+    build_configuration.build_settings['STRIP_INSTALLED_PRODUCT'] = 'YES'
+  end
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.

@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class InteractionReactionState: NSObject {
+public class InteractionReactionState: NSObject {
     @objc
     var hasReactions: Bool { return !emojiCounts.isEmpty }
 

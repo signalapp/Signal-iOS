@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -266,6 +266,9 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         case TSErrorMessageGroupCreationFailed:
             return NSLocalizedString(@"GROUP_CREATION_FAILED",
                 @"Message shown in conversation view that indicates there were issues with group creation.");
+        case TSErrorMessageSessionRefresh:
+            return NSLocalizedString(
+                @"ERROR_MESSAGE_SESSION_REFRESH", @"Text notifying the user that their secure session has been reset");
         default:
             OWSFailDebug(@"failure: unknown error type");
             break;
@@ -303,6 +306,14 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
                         failedMessageType:TSErrorMessageNoSession];
+}
+
++ (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
+                           withTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    return [[self alloc] initWithEnvelope:envelope
+                          withTransaction:transaction
+                        failedMessageType:TSErrorMessageSessionRefresh];
 }
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address

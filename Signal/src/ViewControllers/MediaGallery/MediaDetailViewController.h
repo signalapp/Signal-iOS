@@ -1,12 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol ConversationViewItem;
 
 @class GalleryItemBox;
 @class MediaDetailViewController;
@@ -33,8 +31,8 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 @property (nonatomic, readonly) GalleryItemBox *galleryItemBox;
 
 // If viewItem is non-null, long press will show a menu controller.
-- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
-                              viewItem:(nullable id<ConversationViewItem>)viewItem;
+- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox shouldAutoPlayVideo:(BOOL)shouldAutoPlayVideo;
+
 #pragma mark - Actions
 
 - (void)didPressPlayBarButton:(id)sender;

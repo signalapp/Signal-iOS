@@ -26,8 +26,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
-@property (nonnull, readonly) ImageCache *avatarCache;
-
+// Do not access this property directly.
+@property (nonnull, readonly) ImageCache *avatarCachePrivate;
 
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 
@@ -43,10 +43,13 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
                                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
+                                            transaction:(SDSAnyReadTransaction *)transaction;
 
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 - (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address;
+- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - System Contact Fetching
 
@@ -81,7 +84,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 - (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber;
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
 /**

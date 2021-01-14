@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -12,33 +12,33 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
     ConversationViewActionCompose,
     ConversationViewActionAudioCall,
     ConversationViewActionVideoCall,
-    ConversationViewActionGroupCallLobby
+    ConversationViewActionGroupCallLobby,
+    ConversationViewActionNewGroupActionSheet
 };
 
-@class CVCViewState;
+@class CVLoadCoordinator;
+@class CVViewState;
 @class ConversationCollectionView;
 @class ConversationHeaderView;
 @class ConversationSearchController;
-@class ConversationViewCell;
+@class ConversationStyle;
 @class ConversationViewLayout;
-@class ConversationViewModel;
 @class MessageActionsToolbar;
+@class SDSAnyReadTransaction;
 @class SDSDatabaseStorage;
 @class SelectionHighlightView;
+@class TSMessage;
 @class TSThread;
 @class ThreadViewModel;
 
-@protocol ConversationViewItem;
-@protocol ConversationViewItem;
+@protocol CVComponentDelegate;
 
-@interface ConversationViewController : OWSViewController
+@interface ConversationViewController : OWSViewController <CVComponentDelegate>
 
-@property (nonatomic, readonly) TSThread *thread;
-@property (nonatomic, readonly) ThreadViewModel *threadViewModel;
-@property (nonatomic, readonly) BOOL isUserScrolling;
 @property (nonatomic, readonly) CGFloat safeContentHeight;
-@property (nonatomic, nullable) NSString *panGestureCurrentInteractionId;
-@property (nonatomic, nullable) NSString *longPressGestureCurrentInteractionId;
+
+@property (nonatomic, readonly) CVLoadCoordinator *loadCoordinator;
+@property (nonatomic, nullable, readonly) NSArray<TSMessage *> *unreadMentionMessages;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -47,15 +47,15 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                                  action:(ConversationViewAction)action
                          focusMessageId:(nullable NSString *)focusMessageId NS_DESIGNATED_INITIALIZER;
 
-- (void)updateMessageActionsStateForCell:(ConversationViewCell *)cell;
+- (void)updateMessageActionsStateForCell:(UIView *)cell;
 
 - (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
-    NS_SWIFT_NAME(buildInputToolbar(conversationStyle:));
+                                   messageDraft:(nullable MessageBody *)messageDraft
+    NS_SWIFT_NAME(buildInputToolbar(conversationStyle:messageDraft:));
 
-#pragma mark 3D Touch Methods
+#pragma mark 3D Touch/UIContextMenu Methods
 
-- (void)peekSetup;
-- (void)popped;
+- (void)previewSetup;
 
 #pragma mark - Keyboard Shortcuts
 
@@ -68,31 +68,46 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)dismissMessageActionsAnimated:(BOOL)animated;
 - (void)dismissMessageActionsAnimated:(BOOL)animated completion:(void (^)(void))completion;
 
+@property (nonatomic, readonly) BOOL isShowingSelectionUI;
+
 @end
 
 #pragma mark - Internal Methods. Used in extensions
 
-typedef NS_CLOSED_ENUM(NSUInteger,
-    ConversationUIMode) { ConversationUIMode_Normal, ConversationUIMode_Search, ConversationUIMode_Selection };
+typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
+    ConversationUIMode_Normal,
+    ConversationUIMode_Search,
+    ConversationUIMode_Selection
+};
 
 @interface ConversationViewController (Internal)
 
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
-@property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 @property (nonatomic, readonly) BOOL isViewVisible;
 @property (nonatomic, readonly) BOOL isPresentingMessageActions;
 @property (nonatomic, readonly) ConversationHeaderView *headerView;
 
 @property (nonatomic, readonly) ConversationViewLayout *layout;
-@property (nonatomic, readonly) CVCViewState *viewState;
+@property (nonatomic, readonly) CVViewState *viewState;
 
-@property (nonatomic) ConversationUIMode uiMode;
-
-- (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem;
-- (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem;
 - (void)updateBarButtonItems;
 - (void)ensureBannerState;
-- (void)updateContentInsetsAnimated:(BOOL)animated;
+
+// TODO: Remove or rework method.
+- (void)reloadCollectionView;
+
+- (void)updateNavigationBarSubtitleLabel;
+- (void)dismissMessageActionsIfNecessary;
+- (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)updateNavigationTitle;
+- (void)updateUnreadMessageFlagWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)updateUnreadMessageFlagUsingAsyncTransaction;
+- (void)configureScrollDownButtons;
+- (void)performBatchUpdates:(void (^_Nonnull)(void))batchUpdates
+                 completion:(void (^_Nonnull)(BOOL))completion
+            logFailureBlock:(void (^_Nonnull)(void))logFailureBlock
+       shouldAnimateUpdates:(BOOL)shouldAnimateUpdates;
+- (BOOL)autoLoadMoreIfNecessary;
 
 #pragma mark - Search
 
@@ -101,13 +116,9 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 #pragma mark - Selection
 
 @property (nonatomic, readonly) MessageActionsToolbar *selectionToolbar;
-@property (nonatomic) NSDictionary<NSString *, id<ConversationViewItem>> *selectedItems;
 @property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
-@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
-@property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
-@property (nonatomic, readonly) BOOL isShowingSelectionUI;
 
-- (void)conversationCell:(nonnull ConversationViewCell *)cell didSelectViewItem:(id<ConversationViewItem>)viewItem;
+@property (nonatomic, readonly) id<CVComponentDelegate> componentDelegate;
 
 @end
 

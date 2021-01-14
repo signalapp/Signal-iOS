@@ -33,6 +33,12 @@ public struct OrderedSet<Element> where Element: Hashable {
         orderedMembers = orderedMembers.filter { $0 != element }
     }
 
+    public mutating func remove(_ elements: [Element]) {
+        for element in elements {
+            remove(element)
+        }
+    }
+
     public func contains(_ element: Element) -> Bool {
         return set.contains(element)
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -14,6 +14,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/BlockListUIUtils.h>
+#import <SignalMessaging/CVItemViewModel.h>
 #import <SignalMessaging/ContactCellView.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
@@ -38,6 +39,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSConversationColor.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSGroupAvatarBuilder.h>
+#import <SignalMessaging/OWSMessageTextView.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalMessaging/OWSPreferences.h>
@@ -52,7 +54,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSWindowManager.h>
 #import <SignalMessaging/PrivateMethodsForMigration.h>
 #import <SignalMessaging/ScreenLockViewController.h>
-#import <SignalMessaging/SharingThreadPickerViewController.h>
+#import <SignalMessaging/SelectThreadViewController.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/ThreadViewHelper.h>

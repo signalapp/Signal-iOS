@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -128,7 +128,7 @@ public class GroupManager: NSObject {
         RemoteConfig.groupsV2MigrationBlockingMigrations
     }
 
-    public static let maxGroupNameLength: Int = 32
+    public static let maxGroupNameCharactersCount: Int = 32
 
     // Epoch 1: Group Links
     public static let changeProtoEpoch: UInt32 = 1
@@ -169,29 +169,38 @@ public class GroupManager: NSObject {
     public static func isValidGroupIdOfAnyKind(_ groupId: Data) -> Bool {
         guard groupId.count == kGroupIdLengthV1 ||
             groupId.count == kGroupIdLengthV2 else {
-                owsFailDebug("Invalid groupId: \(groupId.count) != \(kGroupIdLengthV1), \(kGroupIdLengthV2)")
+            Logger.warn("Invalid groupId: \(groupId.count) != \(kGroupIdLengthV1), \(kGroupIdLengthV2)")
                 return false
         }
         return true
     }
 
-    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: UUID,
-                                                                     groupMembership: GroupMembership) -> Bool {
-        canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress(uuid: localUuid),
-                                                      groupMembership: groupMembership)
-    }
-
     public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress,
                                                                      groupMembership: GroupMembership) -> Bool {
-        guard groupMembership.isFullMemberAndAdministrator(localAddress) else {
+        guard let localUuid = localAddress.uuid else {
+            owsFailDebug("Missing localUuid.")
+            return false
+        }
+        let remainingFullMemberUuids = Set(groupMembership.fullMembers.compactMap { $0.uuid })
+        let remainingAdminUuids = Set(groupMembership.fullMemberAdministrators.compactMap { $0.uuid })
+        return canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
+                                                             remainingFullMemberUuids: remainingFullMemberUuids,
+                                                             remainingAdminUuids: remainingAdminUuids)
+    }
+
+    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: UUID,
+                                                                     remainingFullMemberUuids: Set<UUID>,
+                                                                     remainingAdminUuids: Set<UUID>) -> Bool {
+        let isLocalUserAdministrator = remainingAdminUuids.contains(localUuid)
+        guard isLocalUserAdministrator else {
             // Only admins need to appoint new admins before leaving the group.
             return true
         }
-        guard groupMembership.fullMemberAdministrators.count == 1 else {
+        guard remainingAdminUuids.count == 1 else {
             // There's more than one admin.
             return true
         }
-        guard groupMembership.allMembersOfAnyKind.count > 1 else {
+        guard remainingFullMemberUuids.count > 1 else {
             // There's no one else in the group, we can abandon it.
             return true
         }
@@ -388,8 +397,9 @@ public class GroupManager: NSObject {
                 self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
                 let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModel in
-                    let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                    var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                              transaction: transaction)
+                    builder.wasJustCreatedByLocalUser = true
                     return try builder.build(transaction: transaction)
                 }
                 if proposedGroupModel != createdGroupModel {

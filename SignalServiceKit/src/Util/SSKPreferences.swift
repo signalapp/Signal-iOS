@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -160,6 +160,39 @@ public class SSKPreferences: NSObject {
     public static func setIncludeMutedThreadsInBadgeCount(_ value: Bool, transaction: SDSAnyWriteTransaction) {
         store.setBool(value, key: includeMutedThreadsInBadgeCount, transaction: transaction)
         includeMutedThreadsInBadgeCountCached = value
+    }
+
+    // MARK: - Profile avatar preference
+
+    @objc
+    public static let preferContactAvatarsPreferenceDidChange = Notification.Name("PreferContactAvatarsPreferenceDidChange")
+    private static let preferContactAvatarsKey = "preferContactAvatarsKey"
+    private static var preferContactAvatarsCached: Bool?
+
+    @objc
+    public static func preferContactAvatars(transaction: SDSAnyReadTransaction) -> Bool {
+        if let value = preferContactAvatarsCached { return value }
+        let value = store.getBool(preferContactAvatarsKey, defaultValue: false, transaction: transaction)
+        preferContactAvatarsCached = value
+        return value
+    }
+
+    @objc
+    public static func setPreferContactAvatars(
+        _ value: Bool,
+        updateStorageService: Bool = true,
+        transaction: SDSAnyWriteTransaction) {
+
+        let oldValue = store.getBool(preferContactAvatarsKey, transaction: transaction)
+        store.setBool(value, key: preferContactAvatarsKey, transaction: transaction)
+        preferContactAvatarsCached = value
+
+        if oldValue != value {
+            if updateStorageService {
+                SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
+            NotificationCenter.default.postNotificationNameAsync(Self.preferContactAvatarsPreferenceDidChange, object: nil)
+        }
     }
 
     // MARK: -

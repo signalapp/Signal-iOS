@@ -126,7 +126,11 @@ public class ContactDiscoveryTask: NSObject {
         guard let database = database else {
             // Just return a set of in-memory SignalRecipients built from discoveredAddresses
             owsAssertDebug(CurrentAppContext().isRunningTests)
+            #if TESTABLE_BUILD
             return Set(discoveredAddresses.map { SignalRecipient(address: $0) })
+            #else
+            return Set()
+            #endif
         }
 
         return database.write { tx in

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ public class GroupMigrationActionSheet: UIView {
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 48, leading: 20, bottom: 38, trailing: 24)
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        stackView.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
 
         layoutMargins = .zero
         addSubview(stackView)
@@ -551,7 +551,9 @@ private extension GroupMigrationActionSheet {
                                                         firstly {
                                                             self.reAddDroppedMembersPromise(members: members)
                                                         }.done { (_) in
-                                                            modalActivityIndicator.dismiss {}
+                                                            modalActivityIndicator.dismiss {
+                                                                self.dismissActionSheet()
+                                                            }
                                                         }.catch { error in
                                                             owsFailDebug("Error: \(error)")
 
@@ -602,6 +604,12 @@ private extension GroupMigrationActionSheet {
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
+    }
+
+    private func dismissActionSheet() {
+        AssertIsOnMainThread()
+
+        actionSheetController?.dismiss(animated: true)
     }
 
     private func showUpgradeFailedAlert(error: Error) {

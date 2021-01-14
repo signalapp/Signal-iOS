@@ -18,6 +18,10 @@ extern const NSUInteger kLargeAvatarSize;
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter NS_SWIFT_NAME(buildImage(thread:diameter:));
 
++ (nullable UIImage *)buildImageForThread:(TSThread *)thread
+                                 diameter:(NSUInteger)diameter
+                              transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(buildImage(thread:diameter:transaction:));
+
 + (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
 
 - (nullable UIImage *)buildSavedImage;
