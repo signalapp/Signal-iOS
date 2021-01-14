@@ -2250,10 +2250,9 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
                                                                       dataUTI:type
-                                                                 imageQuality:TSImageQualityOriginal];
+                                                                 imageQuality:TSImageQualityMedium];
     [self showApprovalDialogForAttachment:attachment];
 }
 

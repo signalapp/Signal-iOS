@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -216,7 +216,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return .medium
         }
 
-        return delegate.isPickingAsDocument ? .original : .medium
+        return .medium
     }
 
     override func viewWillLayoutSubviews() {

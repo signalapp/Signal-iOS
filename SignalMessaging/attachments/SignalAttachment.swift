@@ -39,6 +39,20 @@ extension String {
     }
 }
 
+extension CGImage {
+    fileprivate var hasAlpha: Bool {
+        switch self.alphaInfo {
+        case .none, .noneSkipFirst, .noneSkipLast:
+            return false
+        case .first, .last, .premultipliedFirst, .premultipliedLast, .alphaOnly:
+            return true
+        @unknown default:
+            // better safe than sorry
+            return true
+        }
+    }
+}
+
 extension SignalAttachmentError: LocalizedError {
     public var errorDescription: String? {
         switch self {
@@ -639,7 +653,6 @@ public class SignalAttachment: NSObject {
                 // we want to make it borderless.
                 let isBorderless = dataSource?.hasStickerLikeProperties ?? false
 
-                // Pasted images _SHOULD _NOT_ be resized, if possible.
                 return imageAttachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium, isBorderless: isBorderless)
             }
         }
@@ -757,7 +770,7 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            if isValidOutputImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
+            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
                     return try removeImageMetadata(attachment: attachment)
@@ -778,11 +791,16 @@ public class SignalAttachment: NSObject {
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isValidOutputImage(dataSource: DataSource, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
+    private class func isValidOutputOriginalImage(dataSource: DataSource,
+                                                  dataUTI: String,
+                                                  imageQuality: TSImageQuality) -> Bool {
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else {
             return false
         }
-        if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
+        if !doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
+            return false
+        }
+        if imageQuality == .original || dataSource.hasStickerLikeProperties {
             return true
         }
         return false
@@ -810,7 +828,7 @@ public class SignalAttachment: NSObject {
             let dataFileExtension: String
             let imageData: Data
 
-            if attachment.mimeType == OWSMimeTypeImageWebp {
+            if image.cgImage?.hasAlpha == true {
                 guard let pngImageData = dstImage.pngData() else {
                     attachment.error = .couldNotConvertImage
                     return attachment
@@ -951,20 +969,9 @@ public class SignalAttachment: NSObject {
     }
 
     private class func jpegCompressionQuality(imageUploadQuality: TSImageQualityTier) -> CGFloat {
-        switch imageUploadQuality {
-        case .original:
-            return 1
-        case .high:
-            return 0.9
-        case .mediumHigh:
-            return 0.8
-        case .medium:
-            return 0.7
-        case .mediumLow:
-            return 0.6
-        case .low:
-            return 0.5
-        }
+        // 0.6 produces some artifacting but not a ton.
+        // We don't want to scale this level down across qualities because lower resolutions show artifacting more.
+        return 0.6
     }
 
     private class func removeImageMetadata(attachment: SignalAttachment) throws -> SignalAttachment {
