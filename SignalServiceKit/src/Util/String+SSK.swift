@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -544,6 +544,64 @@ public extension String {
                 !$0.isEmoji
                     && !$0.isZeroWidthJoiner
             })
+    }
+
+    func trimToGlyphCount(_ maxGlyphCount: Int) -> String {
+        guard glyphCount > maxGlyphCount else {
+            return self
+        }
+        // Binary search for longest substring with valid glyph count.
+        var left: Int = 0
+        var right = count
+        while true {
+            let mid = (left + right) / 2
+            guard left != right,
+                  mid != left,
+                  mid != right else {
+                let result = substring(to: left)
+                owsAssertDebug(result.glyphCount <= maxGlyphCount)
+                return result
+            }
+            let segment = substring(to: mid)
+            if segment.glyphCount <= maxGlyphCount {
+                left = mid
+            } else {
+                right = mid
+            }
+        }
+    }
+
+    var utf8ByteCount: Int {
+        guard let data = data(using: .utf8) else {
+            owsFailDebug("Could not convert to utf-8.")
+            return 0
+        }
+        return data.count
+    }
+
+    func trimToUtf8ByteCount(_ maxByteCount: Int) -> String {
+        guard utf8ByteCount > maxByteCount else {
+            return self
+        }
+        // Binary search for longest substring with valid UTF-8 count.
+        var left: Int = 0
+        var right = count
+        while true {
+            let mid = (left + right) / 2
+            guard left != right,
+                  mid != left,
+                  mid != right else {
+                let result = substring(to: left)
+                owsAssertDebug(result.utf8ByteCount <= maxByteCount)
+                return result
+            }
+            let segment = substring(to: mid)
+            if segment.utf8ByteCount <= maxByteCount {
+                left = mid
+            } else {
+                right = mid
+            }
+        }
     }
 }
 

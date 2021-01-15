@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,7 +16,7 @@ class UsernameViewController: OWSViewController {
     }
 
     private static let minimumUsernameLength = 4
-    private static let maximumUsernameLength: UInt = 26
+    private static let maximumUsernameLength: Int = 26
 
     private let usernameTextField = OWSTextField()
     private var hasPendingChanges: Bool {
@@ -289,12 +289,14 @@ extension UsernameViewController: UITextFieldDelegate {
         return false
     }
 
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField,
+                   shouldChangeCharactersIn range: NSRange,
+                   replacementString string: String) -> Bool {
         return TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string,
-            byteLimit: UsernameViewController.maximumUsernameLength
+            maxByteCount: UsernameViewController.maximumUsernameLength
         )
     }
 }

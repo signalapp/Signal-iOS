@@ -17,6 +17,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private var avatarImage: UIImage? { threadDetails.avatar }
     private var titleText: String { threadDetails.titleText }
+    private var bioText: String? { threadDetails.bioText }
     private var detailsText: String? { threadDetails.detailsText }
     private var mutualGroupsText: NSAttributedString? { threadDetails.mutualGroupsText }
 
@@ -72,25 +73,45 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         titleLabelConfig.applyForRendering(label: titleLabel)
         stackView.addArrangedSubview(titleLabel)
 
+        if let bioText = self.bioText {
+            let bioLabel = componentView.bioLabel
+            bioLabelConfig(text: bioText).applyForRendering(label: bioLabel)
+            stackView.addArrangedSubview(UIView.spacer(withHeight: vSpacingSubtitle))
+            stackView.addArrangedSubview(bioLabel)
+        }
+
         if let detailsText = self.detailsText {
             let detailsLabel = componentView.detailsLabel
             detailsLabelConfig(text: detailsText).applyForRendering(label: detailsLabel)
+            stackView.addArrangedSubview(UIView.spacer(withHeight: vSpacingSubtitle))
             stackView.addArrangedSubview(detailsLabel)
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
             let mutualGroupsLabel = componentView.mutualGroupsLabel
             mutualGroupsLabelConfig(attributedText: mutualGroupsText).applyForRendering(label: mutualGroupsLabel)
-            stackView.addArrangedSubview(UIView.spacer(withHeight: 5))
+            stackView.addArrangedSubview(UIView.spacer(withHeight: vSpacingMutualGroups))
             stackView.addArrangedSubview(mutualGroupsLabel)
         }
     }
+
+    private let vSpacingSubtitle: CGFloat = 2
+    private let vSpacingMutualGroups: CGFloat = 4
 
     private var titleLabelConfig: CVLabelConfig {
         CVLabelConfig(text: titleText,
                       font: UIFont.ows_dynamicTypeTitle1.ows_semibold,
                       textColor: Theme.secondaryTextAndIconColor,
                       numberOfLines: 0,
+                      lineBreakMode: .byWordWrapping,
+                      textAlignment: .center)
+    }
+
+    private func bioLabelConfig(text: String) -> CVLabelConfig {
+        CVLabelConfig(text: text,
+                      font: .ows_dynamicTypeSubheadline,
+                      textColor: Theme.secondaryTextAndIconColor,
+                      numberOfLines: 2,
                       lineBreakMode: .byWordWrapping,
                       textAlignment: .center)
     }
@@ -132,6 +153,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             owsFailDebug("Invalid thread.")
             return CVComponentState.ThreadDetails(avatar: nil,
                                                   titleText: TSGroupThread.defaultGroupName,
+                                                  bioText: nil,
                                                   detailsText: nil,
                                                   mutualGroupsText: nil)
         }
@@ -152,6 +174,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             } else {
                 return contactName
             }
+        }()
+
+        let bioText = { () -> String? in
+            if contactThread.isNoteToSelf {
+                return nil
+            }
+            return Self.profileManager.profileBioForDisplay(for: contactThread.contactAddress,
+                                                            transaction: transaction)
         }()
 
         let detailsText = { () -> String? in
@@ -260,6 +290,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         return CVComponentState.ThreadDetails(avatar: avatar,
                                               titleText: titleText,
+                                              bioText: bioText,
                                               detailsText: detailsText,
                                               mutualGroupsText: mutualGroupsText)
     }
@@ -288,6 +319,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         return CVComponentState.ThreadDetails(avatar: avatar,
                                               titleText: titleText,
+                                              bioText: nil,
                                               detailsText: detailsText,
                                               mutualGroupsText: nil)
     }
@@ -311,16 +343,24 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)
         subviewSizes.append(titleSize)
 
+        if let bioText = self.bioText {
+            let bioSize = CVText.measureLabel(config: bioLabelConfig(text: bioText),
+                                              maxWidth: maxContentWidth)
+            subviewSizes.append(CGSize(square: vSpacingSubtitle))
+            subviewSizes.append(bioSize)
+        }
+
         if let detailsText = self.detailsText {
             let detailsSize = CVText.measureLabel(config: detailsLabelConfig(text: detailsText),
                                                   maxWidth: maxContentWidth)
+            subviewSizes.append(CGSize(square: vSpacingSubtitle))
             subviewSizes.append(detailsSize)
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
             let mutualGroupsSize = CVText.measureLabel(config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
                                                        maxWidth: maxContentWidth)
-            subviewSizes.append(CGSize(square: 5))
+            subviewSizes.append(CGSize(square: vSpacingMutualGroups))
             subviewSizes.append(mutualGroupsSize)
         }
 
@@ -337,6 +377,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate var avatarView: AvatarImageView?
 
         fileprivate let titleLabel = UILabel()
+        fileprivate let bioLabel = UILabel()
         fileprivate let detailsLabel = UILabel()
 
         fileprivate let mutualGroupsLabel = UILabel()
@@ -356,6 +397,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         public func reset() {
             stackView.reset()
             titleLabel.text = nil
+            bioLabel.text = nil
             detailsLabel.text = nil
             mutualGroupsLabel.text = nil
             avatarView = nil

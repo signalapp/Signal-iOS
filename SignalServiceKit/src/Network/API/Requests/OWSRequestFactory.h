@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/RemoteAttestation.h>
@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ECKeyPair;
 @class OWSDevice;
 @class PreKeyRecord;
+@class ProfileValue;
 @class SMKUDAccessKey;
 @class SignalServiceAddress;
 @class SignedPreKeyRecord;
@@ -165,7 +166,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName;
 
-+ (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
++ (TSRequest *)versionedProfileSetRequestWithName:(nullable ProfileValue *)name
+                                              bio:(nullable ProfileValue *)bio
+                                         bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment;

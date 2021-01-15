@@ -11,11 +11,11 @@
 #import "OWSBackupSettingsViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
-#import "ProfileViewController.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -85,6 +85,8 @@
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
 
     [self updateTableContents];
+
+    [self.bulkProfileFetch fetchProfileWithAddress:self.tsAccountManager.localAddress];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -346,12 +348,12 @@
 
 - (void)showProfile
 {
-    ProfileViewController *profileVC =
-        [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings
+    UIViewController *vc =
+        [[ProfileViewController alloc] initWithMode:ProfileViewModeAppSettings
                                   completionHandler:^(ProfileViewController *completedVC) {
                                       [completedVC.navigationController popViewControllerAnimated:YES];
                                   }];
-    [self.navigationController pushViewController:profileVC animated:YES];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showData

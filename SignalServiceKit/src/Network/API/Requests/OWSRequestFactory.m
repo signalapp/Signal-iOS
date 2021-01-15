@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRequestFactory.h"
@@ -807,7 +807,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - Versioned Profiles
 
-+ (TSRequest *)versionedProfileSetRequestWithName:(nullable NSData *)name
++ (TSRequest *)versionedProfileSetRequestWithName:(nullable ProfileValue *)name
+                                              bio:(nullable ProfileValue *)bio
+                                         bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment
@@ -822,14 +824,18 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         @"avatar" : @(hasAvatar),
         @"commitment" : base64EncodedCommitment,
     } mutableCopy];
-    if (name.length > 0) {
-        // TODO: Do we need check padded length as we used to with profileNameSetRequestWithEncryptedPaddedName?
-        // TODO: Do we need remove "/" from name as we used to with profileNameSetRequestWithEncryptedPaddedName?
 
-        const NSUInteger kEncodedNameLength = 108;
-        NSString *base64EncodedName = [name base64EncodedString];
-        OWSAssertDebug(base64EncodedName.length == kEncodedNameLength);
-        parameters[@"name"] = base64EncodedName;
+    if (name != nil) {
+        OWSAssertDebug(name.hasValidBase64Length);
+        parameters[@"name"] = name.encryptedBase64;
+    }
+    if (bio != nil) {
+        OWSAssertDebug(bio.hasValidBase64Length);
+        parameters[@"about"] = bio.encryptedBase64;
+    }
+    if (bioEmoji != nil) {
+        OWSAssertDebug(bioEmoji.hasValidBase64Length);
+        parameters[@"aboutEmoji"] = bioEmoji.encryptedBase64;
     }
 
     NSURL *url = [NSURL URLWithString:textSecureVersionedProfileAPI];
