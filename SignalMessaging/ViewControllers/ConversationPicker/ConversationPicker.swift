@@ -36,7 +36,8 @@ open class ConversationPickerViewController: OWSViewController {
 
     private let tableView = UITableView()
     private let footerView = ApprovalFooterView()
-    private var footerOffsetConstraint: NSLayoutConstraint!
+    private var bottomConstraint: NSLayoutConstraint?
+
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
         searchBar.placeholder = CommonStrings.searchPlaceholder
@@ -46,23 +47,12 @@ open class ConversationPickerViewController: OWSViewController {
 
     // MARK: - UIViewController
 
-    public override var canBecomeFirstResponder: Bool {
-        return true
-    }
-
-    var currentInputAcccessoryView: UIView? {
-        didSet {
-            if oldValue != currentInputAcccessoryView {
-                searchBar.inputAccessoryView = currentInputAcccessoryView
-                searchBar.reloadInputViews()
-                reloadInputViews()
-            }
-        }
-    }
-
-    public override var inputAccessoryView: UIView? {
-        return currentInputAcccessoryView
-    }
+    private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
+        let placeholder = InputAccessoryViewPlaceholder()
+        placeholder.delegate = self
+        placeholder.referenceView = view
+        return placeholder
+    }()
 
     private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
@@ -89,6 +79,10 @@ open class ConversationPickerViewController: OWSViewController {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
             self.navigationItem.leftBarButtonItem = cancelButton
         }
+
+        view.addSubview(footerView)
+        footerView.autoPinWidthToSuperview()
+        bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     public override func viewDidLoad() {
@@ -513,12 +507,6 @@ extension ConversationPickerViewController: UITableViewDelegate {
         guard let delegate = delegate else { return }
 
         let conversations = delegate.selectedConversationsForConversationPicker
-        if conversations.count == 0 {
-            currentInputAcccessoryView = nil
-        } else {
-            currentInputAcccessoryView = footerView
-        }
-
         let labelText = conversations.map { $0.title }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)
     }
@@ -693,4 +681,45 @@ private class ConversationPickerCell: ContactTableViewCell {
         imageView.tintColor = .ows_accentBlue
         return imageView
     }()
+}
+
+extension ConversationPickerViewController: InputAccessoryViewPlaceholderDelegate {
+    func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardDidPresent() {
+        updateFooterViewPosition()
+    }
+
+    func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardDidDismiss() {
+        updateFooterViewPosition()
+    }
+
+    func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
+        updateFooterViewPosition()
+    }
+
+    func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        guard animationDuration > 0 else { return updateFooterViewPosition() }
+
+        UIView.beginAnimations("keyboardStateChange", context: nil)
+        UIView.setAnimationBeginsFromCurrentState(true)
+        UIView.setAnimationCurve(animationCurve)
+        UIView.setAnimationDuration(animationDuration)
+        updateFooterViewPosition()
+        UIView.commitAnimations()
+    }
+
+    func updateFooterViewPosition() {
+        bottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+
+        // We always want to apply the new bottom bar position immediately,
+        // as this only happens during animations (interactive or otherwise)
+        view.layoutIfNeeded()
+    }
 }
