@@ -17,9 +17,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private var mediaAlbumHasPendingAttachment: Bool {
         bodyMedia.mediaAlbumHasPendingAttachment
     }
-    private var mediaAlbumHasPendingManualDownloadAttachment: Bool {
-        bodyMedia.mediaAlbumHasPendingManualDownloadAttachment
-    }
 
     private var areAllItemsImages: Bool {
         for item in items {
@@ -179,7 +176,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentView.rootView.addSubview(downloadButton)
             downloadButton.autoCenterInSuperview()
 
-            if mediaAlbumHasPendingManualDownloadAttachment {
+            if mediaAlbumHasPendingAttachment {
                 let attachmentPointers = items.compactMap { $0.attachment as? TSAttachmentPointer }
                 let pendingManualDownloadAttachments = attachmentPointers.filter { $0.isPendingManualDownload }
                 let totalSize = pendingManualDownloadAttachments.map { $0.byteCount}.reduce(0, +)

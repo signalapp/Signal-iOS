@@ -67,7 +67,6 @@ public class CVComponentState: Equatable {
         let items: [CVMediaAlbumItem]
         let mediaAlbumHasFailedAttachment: Bool
         let mediaAlbumHasPendingAttachment: Bool
-        let mediaAlbumHasPendingManualDownloadAttachment: Bool
     }
     let bodyMedia: BodyMedia?
 
@@ -708,7 +707,6 @@ fileprivate extension CVComponentState.Builder {
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
-                var mediaAlbumHasPendingManualDownloadAttachment = false
                 for attachment in bodyAttachments {
                     guard let attachmentPointer = attachment as? TSAttachmentPointer else {
                         continue
@@ -722,7 +720,6 @@ fileprivate extension CVComponentState.Builder {
                         mediaAlbumHasPendingAttachment = true
                     case .pendingManualDownload:
                         mediaAlbumHasPendingAttachment = true
-                        mediaAlbumHasPendingManualDownloadAttachment = true
                     @unknown default:
                         owsFailDebug("Invalid attachment pointer state.")
                         continue
@@ -731,8 +728,7 @@ fileprivate extension CVComponentState.Builder {
 
                 self.bodyMedia = BodyMedia(items: mediaAlbumItems,
                                            mediaAlbumHasFailedAttachment: mediaAlbumHasFailedAttachment,
-                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment,
-                                           mediaAlbumHasPendingManualDownloadAttachment: mediaAlbumHasPendingManualDownloadAttachment)
+                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment)
                 return build()
             }
 
