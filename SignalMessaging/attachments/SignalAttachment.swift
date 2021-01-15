@@ -912,7 +912,7 @@ public class SignalAttachment: NSObject {
         let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
         var maxSizeRect = CGRect.zero
         maxSizeRect.size = CGSize(square: maxSize)
-        let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size
+        let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size.floor
         assert(newSize.width <= maxSize)
         assert(newSize.height <= maxSize)
 
