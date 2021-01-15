@@ -54,6 +54,14 @@ open class ConversationPickerViewController: OWSViewController {
         return placeholder
     }()
 
+    public override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    public override var inputAccessoryView: UIView? {
+        return inputAccessoryPlaceholder
+    }
+
     private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
             return .send
@@ -280,6 +288,18 @@ open class ConversationPickerViewController: OWSViewController {
         return conversationCollection.conversations(section: section)[indexPath.row]
     }
 
+    public func conversation(for thread: TSThread) -> ConversationItem? {
+        return conversationCollection.allConversations.first { item in
+            if let thread = thread as? TSGroupThread, case .group(let otherThread) = item.messageRecipient {
+                return thread.uniqueId == otherThread.uniqueId
+            } else if let thread = thread as? TSContactThread, case .contact(let otherAddress) = item.messageRecipient {
+                return thread.contactAddress == otherAddress
+            } else {
+                return false
+            }
+        }
+    }
+
     var conversationCollection: ConversationCollection = .empty
 
     struct ConversationCollection {
@@ -289,6 +309,10 @@ open class ConversationPickerViewController: OWSViewController {
         let contactConversations: [ConversationItem]
         let recentConversations: [ConversationItem]
         let groupConversations: [ConversationItem]
+
+        var allConversations: [ConversationItem] {
+            recentConversations + contactConversations + groupConversations
+        }
 
         func conversations(section: Section) -> [ConversationItem] {
             switch section {

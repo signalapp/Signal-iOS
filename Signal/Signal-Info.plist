@@ -137,6 +137,10 @@
 	<string>Signal will save photos to your library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Signal will let you choose which photos from your library to send.</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+	</array>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIAppFonts</key>

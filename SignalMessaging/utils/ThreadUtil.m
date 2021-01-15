@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadUtil.h"
@@ -99,7 +99,11 @@ NS_ASSUME_NONNULL_BEGIN
                                         });
                                 }];
 
-    return outgoingMessagePreparer.unpreparedMessage;
+    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
+    if (message.hasRenderableContent) {
+        [thread donateSendMessageIntentWithTransaction:transaction];
+    }
+    return message;
 }
 
 + (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
@@ -212,8 +216,10 @@ NS_ASSUME_NONNULL_BEGIN
         
         [message anyInsertWithTransaction:transaction];
         [message updateWithMessageSticker:messageSticker transaction:transaction];
-        
+
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+
+        [thread donateSendMessageIntentWithTransaction:transaction];
     });
 }
 
@@ -268,7 +274,11 @@ NS_ASSUME_NONNULL_BEGIN
         }];
     });
 
-    return outgoingMessagePreparer.unpreparedMessage;
+    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
+    if (message.hasRenderableContent) {
+        [thread donateSendMessageIntentWithTransaction:transaction];
+    }
+    return message;
 }
 
 + (nullable MessageSticker *)messageStickerForStickerDraft:(MessageStickerDraft *)stickerDraft

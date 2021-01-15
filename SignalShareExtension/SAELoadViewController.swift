@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -56,14 +56,17 @@ class SAELoadViewController: UIViewController {
     override func loadView() {
         super.loadView()
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                                target: self,
-                                                                action: #selector(cancelPressed))
-        self.navigationItem.title = "Signal"
-
-        self.view.backgroundColor = Theme.launchScreenBackground
+        if #available(iOS 13, *) {
+            // Do nothing, you can swipe to cancel
+        } else {
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
+                                                                    target: self,
+                                                                    action: #selector(cancelPressed))
+        }
+        self.view.backgroundColor = Theme.backgroundColor
 
         let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicator.color = Theme.primaryIconColor
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoCenterInSuperview()
@@ -74,18 +77,18 @@ class SAELoadViewController: UIViewController {
         self.view.addSubview(progressView)
         progressView.autoVCenterInSuperview()
         progressView.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5(30))
-        progressView.progressTintColor = UIColor.white
+        progressView.progressTintColor = Theme.accentBlueColor
 
         updateProgressViewVisability()
 
         let label = UILabel()
-        label.textColor = UIColor.white
-        label.font = UIFont.ows_semiboldFont(withSize: 18)
+        label.textColor = Theme.primaryTextColor
+        label.font = .systemFont(ofSize: 17)
         label.text = NSLocalizedString("SHARE_EXTENSION_LOADING",
                                        comment: "Indicates that the share extension is still loading.")
         self.view.addSubview(label)
         label.autoHCenterInSuperview()
-        label.autoPinEdge(.top, to: .bottom, of: activityIndicator, withOffset: 25)
+        label.autoPinEdge(.top, to: .bottom, of: activityIndicator, withOffset: 12)
     }
 
     override func viewWillAppear(_ animated: Bool) {

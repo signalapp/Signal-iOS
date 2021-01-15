@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,4 +10,5 @@ public protocol ShareViewDelegate: class {
     func shareViewWasCompleted()
     func shareViewWasCancelled()
     func shareViewFailed(error: Error)
+    var shareViewNavigationController: OWSNavigationController? { get }
 }
