@@ -219,8 +219,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                   style: .withoutCircle(diameter: downloadViewSize),
                                                   layout: .withoutContainer)
-        progressView.setCompressionResistanceHigh()
-        progressView.setContentHuggingHigh()
         return progressView
     }
 

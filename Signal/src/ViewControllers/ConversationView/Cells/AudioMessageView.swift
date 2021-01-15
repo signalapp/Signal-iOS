@@ -64,20 +64,6 @@ class AudioMessageView: OWSStackView {
             addArrangedSubview(topLabel)
         }
 
-        // TODO: There is a bug with Lottie where animations lag when there are a lot
-        // of other things happening on screen. Since this animation generally plays
-        // when the progress bar / waveform is rendering we speed up the playback to
-        // address some of the lag issues. Once this is fixed we should update lottie
-        // and remove this check. https://github.com/airbnb/lottie-ios/issues/1034
-        playPauseAnimation.animationSpeed = 3
-        playPauseAnimation.backgroundBehavior = .forceFinish
-        playPauseAnimation.contentMode = .scaleAspectFit
-        playPauseAnimation.autoSetDimensions(to: CGSize(square: Self.animationSize))
-        playPauseAnimation.setContentHuggingHigh()
-
-        let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
-        playPauseAnimation.setValueProvider(ColorValueProvider(thumbColor.lottieColorValue), keypath: fillColorKeypath)
-
         let waveformContainer = UIView.container()
         waveformContainer.autoSetDimension(.height, toSize: AudioMessageView.waveformHeight)
 
@@ -103,8 +89,28 @@ class AudioMessageView: OWSStackView {
 
         let leftView: UIView
         if isDownloaded {
+            // TODO: There is a bug with Lottie where animations lag when there are a lot
+            // of other things happening on screen. Since this animation generally plays
+            // when the progress bar / waveform is rendering we speed up the playback to
+            // address some of the lag issues. Once this is fixed we should update lottie
+            // and remove this check. https://github.com/airbnb/lottie-ios/issues/1034
+            playPauseAnimation.animationSpeed = 3
+            playPauseAnimation.backgroundBehavior = .forceFinish
+            playPauseAnimation.contentMode = .scaleAspectFit
+            playPauseAnimation.autoSetDimensions(to: CGSize(square: Self.animationSize))
+            playPauseAnimation.setContentHuggingHigh()
+
+            let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
+            playPauseAnimation.setValueProvider(ColorValueProvider(thumbColor.lottieColorValue), keypath: fillColorKeypath)
+
             leftView = playPauseAnimation
+        } else if let attachmentPointer = audioAttachment.attachmentPointer {
+            leftView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                              style: .withoutCircle(diameter: Self.animationSize),
+                                              layout: .withoutContainer)
         } else {
+            owsFailDebug("Unexpected state.")
+
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",
                                                              tintColor: Theme.accentBlueColor)
             iconView.autoSetDimensions(to: CGSize.square(20))
@@ -259,7 +265,6 @@ class AudioMessageView: OWSStackView {
     func updateContents(animated: Bool) {
         updatePlaybackState(animated: animated)
         updateAudioProgress()
-//        showDownloadProgressIfNecessary()
     }
 
     private var audioProgressRatio: CGFloat {
@@ -321,30 +326,6 @@ class AudioMessageView: OWSStackView {
         overrideProgress = nil
         updateContents(animated: animated)
     }
-
-//    private func showDownloadProgressIfNecessary() {
-//        guard let attachmentPointer = attachment as? TSAttachmentPointer else { return }
-//
-//        // We don't need to handle the "tap to retry" state here,
-//        // only download progress.
-//        guard .failed != attachmentPointer.state else { return }
-//
-//        // TODO: Show "restoring" indicator and possibly progress.
-//        guard .restoring != attachmentPointer.pointerType else { return }
-//
-//        guard attachmentPointer.uniqueId.count > 1 else {
-//            return owsFailDebug("missing unique id")
-//        }
-//
-//        // Add the download view to the play pause animation. This view
-//        // will get recreated once the download completes so we don't
-//        // have to worry about resetting anything.
-//        let downloadView = MediaDownloadView(attachmentId: attachmentPointer.uniqueId, radius: iconSize * 0.5)
-//        playPauseAnimation.animation = nil
-//        playPauseAnimation.addSubview(downloadView)
-//        downloadView.autoSetDimensions(to: CGSize(square: iconSize))
-//        downloadView.autoCenterInSuperview()
-//    }
 
     private func trackImage(color: UIColor) -> UIImage? {
         return UIImage(named: "audio_message_track")?

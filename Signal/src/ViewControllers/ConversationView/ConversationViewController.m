@@ -965,12 +965,14 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self autoLoadMoreIfNecessary];
-    [self updateV2GroupIfNecessary];
+    if (!SSKDebugFlags.reduceLogChatter) {
+        [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
+        [self updateV2GroupIfNecessary];
+    }
 
     if (!self.viewHasEverAppeared) {
         // To minimize time to initial apearance, we initially disable prefetching, but then
@@ -1021,7 +1023,9 @@ typedef enum : NSUInteger {
     if (!self.viewState.hasTriedToMigrateGroup) {
         self.viewState.hasTriedToMigrateGroup = YES;
 
-        [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+        if (!SSKDebugFlags.reduceLogChatter) {
+            [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+        }
     }
 
     [self viewDidAppearDidComplete];

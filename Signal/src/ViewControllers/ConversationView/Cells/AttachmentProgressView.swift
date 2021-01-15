@@ -52,7 +52,7 @@ public class AttachmentProgressView: UIView {
         self.direction = direction
         self.style = style
         self.layout = layout
-        self.stateView = StateView(diameter: Self.innerDiameter(style: style))
+        self.stateView = StateView(diameter: Self.innerDiameter(style: style), style: style)
 
         super.init(frame: .zero)
 
@@ -96,8 +96,9 @@ public class AttachmentProgressView: UIView {
 
     private class StateView: UIView {
         private let diameter: CGFloat
-        private let imageView = UIImageView()
-        private let progressView = CircularProgressView(thickness: 0.1)
+        private let style: Style
+        private lazy var imageView = UIImageView()
+        private lazy var progressView = CircularProgressView(thickness: 0.1)
 
         private var layoutConstraints = [NSLayoutConstraint]()
 
@@ -107,8 +108,9 @@ public class AttachmentProgressView: UIView {
             }
         }
 
-        required init(diameter: CGFloat) {
+        required init(diameter: CGFloat, style: Style) {
             self.diameter = diameter
+            self.style = style
 
             super.init(frame: .zero)
 
@@ -144,9 +146,18 @@ public class AttachmentProgressView: UIView {
         private func presentIcon(templateName: String, fractionalSize: CGFloat) {
             reset()
 
-            imageView.setTemplateImageName(templateName, tintColor: .ows_white)
+            let tintColor: UIColor
+            let iconSize: CGFloat
+            switch style {
+            case .withCircle:
+                tintColor = .ows_white
+                iconSize = diameter * fractionalSize
+            case .withoutCircle:
+                tintColor = Theme.primaryTextColor
+                iconSize = diameter
+            }
+            imageView.setTemplateImageName(templateName, tintColor: tintColor)
             addSubview(imageView)
-            let iconSize = diameter * fractionalSize
             layoutConstraints.append(contentsOf: imageView.autoSetDimensions(to: .square(iconSize)))
         }
 
@@ -154,6 +165,12 @@ public class AttachmentProgressView: UIView {
             reset()
 
             progressView.progress = progress
+            switch style {
+            case .withCircle:
+                break
+            case .withoutCircle:
+                progressView.progressColor = Theme.primaryTextColor
+            }
             addSubview(progressView)
             layoutConstraints.append(contentsOf: progressView.autoPinEdgesToSuperviewEdges())
         }
@@ -191,6 +208,8 @@ public class AttachmentProgressView: UIView {
         switch layout {
         case .withoutContainer:
             outerContentView.autoPinEdgesToSuperviewEdges()
+            outerContentView.setContentHuggingHigh()
+            outerContentView.setCompressionResistanceHigh()
         case .withContainer:
             outerContentView.autoCenterInSuperview()
         }
