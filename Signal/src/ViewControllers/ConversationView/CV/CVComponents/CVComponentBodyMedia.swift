@@ -298,7 +298,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
-                return false
+                Self.attachmentDownloads.cancelDownload(attachmentId: attachmentPointer.uniqueId)
+                return true
             @unknown default:
                 owsFailDebug("Invalid attachment pointer state.")
                 return false

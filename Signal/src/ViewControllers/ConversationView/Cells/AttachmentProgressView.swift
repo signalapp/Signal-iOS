@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Lottie
 
 // A view for presenting attachment upload/download/failure/pending state.
 @objc
@@ -91,7 +92,10 @@ public class AttachmentProgressView: UIView {
         case none
         case tapToDownload
         case downloadFailed
-        case progress(progress: CGFloat)
+        case downloadUnknownProgress
+        case uploadUnknownProgress
+        case downloadProgress(progress: CGFloat)
+        case uploadProgress(progress: CGFloat)
     }
 
     private class StateView: UIView {
@@ -133,28 +137,49 @@ public class AttachmentProgressView: UIView {
                 if oldState != newState {
                     presentIcon(templateName: "retry-alt-24", fractionalSize: 0.5)
                 }
-            case .progress(let progress):
+            case .downloadProgress(let progress):
                 switch oldState {
-                case .progress:
+                case .downloadProgress:
+                    updateProgress(progress: progress)
+                default:
+                    presentProgress(progress: progress)
+                    presentIcon(templateName: "pause-filled-24", fractionalSize: 0.5, isPauseIcon: true)
+                }
+            case .uploadProgress(let progress):
+                switch oldState {
+                case .uploadProgress:
                     updateProgress(progress: progress)
                 default:
                     presentProgress(progress: progress)
                 }
+            case .downloadUnknownProgress:
+                presentUnknownProgress()
+                presentIcon(templateName: "pause-filled-24", fractionalSize: 0.5, isPauseIcon: true)
+            case .uploadUnknownProgress:
+                presentUnknownProgress()
             }
         }
 
-        private func presentIcon(templateName: String, fractionalSize: CGFloat) {
-            reset()
+        private func presentIcon(templateName: String,
+                                 fractionalSize: CGFloat,
+                                 isPauseIcon: Bool = false) {
+            if !isPauseIcon {
+                reset()
+            }
 
-            let tintColor: UIColor
             let iconSize: CGFloat
+            let tintColor: UIColor
             switch style {
             case .withCircle:
                 tintColor = .ows_white
                 iconSize = diameter * fractionalSize
             case .withoutCircle:
                 tintColor = Theme.primaryTextColor
-                iconSize = diameter
+                if isPauseIcon {
+                    iconSize = diameter * fractionalSize
+                } else {
+                    iconSize = diameter
+                }
             }
             imageView.setTemplateImageName(templateName, tintColor: tintColor)
             addSubview(imageView)
@@ -183,6 +208,27 @@ public class AttachmentProgressView: UIView {
             removeAllSubviews()
             NSLayoutConstraint.deactivate(layoutConstraints)
             layoutConstraints.removeAll()
+            unknownProgressAnimation?.stop()
+        }
+
+        private var unknownProgressAnimation: AnimationView?
+
+        private func presentUnknownProgress() {
+            reset()
+
+            let animationView: AnimationView
+            if let unknownProgressAnimation = unknownProgressAnimation {
+                animationView = unknownProgressAnimation
+            } else {
+                animationView = AnimationView(name: "pinCreationInProgress")
+                animationView.backgroundBehavior = .pauseAndRestore
+                animationView.loopMode = .loop
+                animationView.contentMode = .scaleAspectFit
+            }
+            animationView.play()
+
+            addSubview(animationView)
+            layoutConstraints.append(contentsOf: animationView.autoPinEdgesToSuperviewEdges())
         }
     }
 
@@ -212,6 +258,8 @@ public class AttachmentProgressView: UIView {
     private func configureState() {
         switch direction {
         case .upload:
+            stateView.state = .uploadUnknownProgress
+
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(processUploadNotification(notification:)),
                                                    name: .attachmentUploadProgress,
@@ -256,9 +304,9 @@ public class AttachmentProgressView: UIView {
         }
         if progress == CGFloat.nan {
             owsFailDebug("Progress is nan.")
-            stateView.state = .none
+            stateView.state = .downloadUnknownProgress
         } else {
-            stateView.state = .progress(progress: CGFloat(progress))
+            stateView.state = .downloadProgress(progress: CGFloat(progress))
         }
     }
 
@@ -278,9 +326,9 @@ public class AttachmentProgressView: UIView {
 
         if progress.floatValue == Float.nan {
             owsFailDebug("Progress is nan.")
-            stateView.state = .none
+            stateView.state = .uploadUnknownProgress
         } else {
-            stateView.state = .progress(progress: CGFloat(progress.floatValue))
+            stateView.state = .uploadProgress(progress: CGFloat(progress.floatValue))
         }
     }
 }

@@ -242,7 +242,12 @@ public class OWSAttachmentDownloads: NSObject {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
                 owsFailDebug("Unexepected state: \(attachmentPointer.state)")
             case .enqueued, .downloading:
-                attachmentPointer.updateAttachmentPointerState(.failed, transaction: transaction)
+                // If the download was cancelled, mark as paused.                
+                if case AttachmentDownloadError.cancelled = error {
+                    attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)
+                } else {
+                    attachmentPointer.updateAttachmentPointerState(.failed, transaction: transaction)
+                }
             @unknown default:
                 owsFailDebug("Invalid value.")
             }
