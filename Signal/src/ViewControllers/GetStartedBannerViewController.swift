@@ -42,12 +42,19 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     }()
 
     // Colors are updated in applyTheme()
-    private let backdrop = GradientView(colors: [])
+    private let opaqueBackdrop = UIView()
+    private let gradientBackdrop: GradientView = {
+        let gradient = GradientView(colors: [])
+        gradient.isUserInteractionEnabled = false
+        return gradient
+    }()
 
     // MARK: - Data
 
     @objc
     public var hasIncompleteCards: Bool { bannerContent.count > 0 }
+    @objc
+    public var opaqueHeight: CGFloat { view.height - gradientBackdrop.height }
 
     private weak var delegate: GetStartedBannerViewControllerDelegate?
     private let threadFinder = AnyThreadFinder()
@@ -84,18 +91,22 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     }
 
     override func loadView() {
-        let view = UIView()
+        let view = PassthroughView()
 
-        view.addSubview(backdrop)
+        view.addSubview(gradientBackdrop)
+        view.addSubview(opaqueBackdrop)
         view.addSubview(header)
         view.addSubview(collectionView)
         view.layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 8, trailing: 8)
 
-        backdrop.autoPinEdgesToSuperviewEdges()
+        gradientBackdrop.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        gradientBackdrop.autoSetDimension(.height, toSize: 40)
+        opaqueBackdrop.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        opaqueBackdrop.autoPinEdge(.top, to: .bottom, of: gradientBackdrop)
 
         header.autoPinLeadingToSuperviewMargin()
         header.autoPinEdge(toSuperviewMargin: .trailing, relation: .lessThanOrEqual)
-        header.autoPinEdge(.top, to: .top, of: backdrop, withOffset: 82)
+        header.autoPinEdge(.top, to: .top, of: opaqueBackdrop, withOffset: 8)
 
         collectionView.preservesSuperviewLayoutMargins = true
         collectionView.autoSetDimension(.height, toSize: 180)
@@ -109,16 +120,18 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
 
     @objc func applyTheme() {
         header.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
+        let backdropColor = Theme.backgroundColor
+        opaqueBackdrop.backgroundColor = backdropColor
 
         if Theme.isDarkThemeEnabled {
-            backdrop.colors = [
-                (color: .clear, location: 0.0588),
-                (color: .ows_black, location: 0.2059)
+            gradientBackdrop.colors = [
+                (color: .clear, location: 0),
+                (color: backdropColor, location: 1)
             ]
         } else {
-            backdrop.colors = [
-                (color: .ows_whiteAlpha00, location: 0.0588),
-                (color: .ows_white, location: 0.2059)
+            gradientBackdrop.colors = [
+                (color: .ows_whiteAlpha00, location: 0),
+                (color: backdropColor, location: 1)
             ]
         }
     }
@@ -306,5 +319,14 @@ extension GetStartedBannerViewController: UIDatabaseSnapshotDelegate {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         updateContent()
+    }
+}
+
+// Wrapper view for a collection of interactable subviews
+// Will not return a positive hit test result for itself
+class PassthroughView: UIView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let result = super.hitTest(point, with: event)
+        return result != self ? result : nil
     }
 }
