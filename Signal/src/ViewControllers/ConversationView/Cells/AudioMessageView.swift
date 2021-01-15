@@ -109,16 +109,7 @@ class AudioMessageView: OWSStackView {
                                               style: .withoutCircle(diameter: Self.animationSize))
         } else {
             owsFailDebug("Unexpected state.")
-
-            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
-                                                             tintColor: Theme.accentBlueColor)
-            iconView.autoSetDimensions(to: CGSize.square(20))
-            let progressView = CircularProgressView(thickness: 0.1)
-            progressView.progress = 0.0
-            progressView.autoSetDimensions(to: CGSize(square: Self.animationSize))
-            progressView.addSubview(iconView)
-            iconView.autoCenterInSuperview()
-            leftView = progressView
+            leftView = UIView()
         }
 
         let innerStack = OWSStackView(name: "playerStack",

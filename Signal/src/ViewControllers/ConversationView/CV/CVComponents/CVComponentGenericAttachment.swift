@@ -181,25 +181,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return nil
         }
 
-        let downloadViewSize = min(iconSize.width, iconSize.height)
-        switch attachmentPointer.state {
-        case .enqueued, .downloading:
-            break
-        case .failed, .pendingMessageRequest, .pendingManualDownload:
-            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
-                                                             tintColor: Theme.accentBlueColor)
-            iconView.autoSetDimensions(to: CGSize.square(20))
-            let progressView = CircularProgressView(thickness: 0.1)
-            progressView.progress = 0.0
-            progressView.autoSetDimensions(to: CGSize(square: downloadViewSize))
-            progressView.addSubview(iconView)
-            iconView.autoCenterInSuperview()
-            return progressView
-        @unknown default:
-            owsFailDebug("Invalid value.")
-            return nil
-        }
-
         switch attachmentPointer.pointerType {
         case .restoring:
             // TODO: Show "restoring" indicator and possibly progress.
@@ -211,6 +192,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return nil
         }
 
+        let downloadViewSize = min(iconSize.width, iconSize.height)
         let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                   style: .withoutCircle(diameter: downloadViewSize))
         return progressView
