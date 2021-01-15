@@ -141,7 +141,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             // of the max-length padded value.
             let bioValue = try encryptOptionalValue(profileBio,
                                                     paddedLengths: [128, 254, 512 ],
-                                                    validBase64Lengths: [208, 276, 720])
+                                                    validBase64Lengths: [208, 376, 720])
 
             let bioEmojiValue = try encryptOptionalValue(profileBioEmoji,
                                                          paddedLengths: [32 ],

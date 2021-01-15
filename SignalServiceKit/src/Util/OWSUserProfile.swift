@@ -174,7 +174,7 @@ public extension OWSUserProfile {
         }
         let value = ProfileValue(encrypted: encrypted, validBase64Lengths: validBase64Lengths)
         guard value.hasValidBase64Length else {
-            owsFailDebug("Value has invalid base64 length.")
+            owsFailDebug("Value has invalid base64 length: \(encrypted.count) -> \(value.encryptedBase64.count) not in \(validBase64Lengths).")
             return nil
         }
         return value
