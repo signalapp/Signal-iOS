@@ -4,6 +4,7 @@
 
 import Foundation
 
+// A view for presenting attachment upload/download/failure/pending state.
 @objc
 public class AttachmentProgressView: UIView {
 
@@ -24,7 +25,9 @@ public class AttachmentProgressView: UIView {
     // The progress views have two styles:
     //
     // * Light on dark circle, overlaid over media.
+    //   This style has a fixed size.
     // * Theme colors.
+    //   This style can be embedded with other content within a message bubble.
     public enum Style {
         case withCircle
         case withoutCircle(diameter: CGFloat)
