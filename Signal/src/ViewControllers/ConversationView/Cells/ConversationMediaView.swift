@@ -165,8 +165,7 @@ public class CVMediaView: UIView {
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                     style: .withCircle,
-                                                     layout: .withoutContainer)
+                                                     style: .withCircle)
         self.addSubview(progressView)
         progressView.autoCenterInSuperview()
     }
@@ -182,8 +181,7 @@ public class CVMediaView: UIView {
             return false
         }
         let progressView = AttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
-                                                     style: .withCircle,
-                                                     layout: .withoutContainer)
+                                                     style: .withCircle)
         self.addSubview(progressView)
         progressView.autoCenterInSuperview()
         return true

@@ -106,8 +106,7 @@ class AudioMessageView: OWSStackView {
             leftView = playPauseAnimation
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
             leftView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                              style: .withoutCircle(diameter: Self.animationSize),
-                                              layout: .withoutContainer)
+                                              style: .withoutCircle(diameter: Self.animationSize))
         } else {
             owsFailDebug("Unexpected state.")
 

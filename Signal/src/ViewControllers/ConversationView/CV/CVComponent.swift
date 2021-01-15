@@ -334,14 +334,14 @@ extension CVComponentBase: CVNode {
             return nil
         }
 
-        let uploadView = AttachmentUploadView(attachment: attachmentStream)
-        hostView.addSubview(uploadView)
-        uploadView.autoPinEdgesToSuperviewEdges()
-        uploadView.setContentHuggingLow()
-        uploadView.setCompressionResistanceLow()
+        let diameter = conversationStyle.maxMessageWidth * 0.2
+        let progressView = AttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
+                                                  style: .withoutCircle(diameter: diameter))
+        hostView.addSubview(progressView)
+        progressView.autoCenterInSuperview()
 
         return ProgressViewToken(reset: {
-            uploadView.removeFromSuperview()
+            progressView.removeFromSuperview()
         })
     }
 
@@ -374,11 +374,6 @@ extension CVComponentBase: CVNode {
         if !shouldShowDownloadProgress {
             return nil
         }
-        let attachmentId = attachmentPointer.uniqueId
-        guard nil != Self.attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
-            Logger.warn("Missing download progress.")
-            return nil
-        }
 
         let overlayView = UIView.container()
         overlayView.backgroundColor = bubbleColorForMessage.withAlphaComponent(0.5)
@@ -387,20 +382,17 @@ extension CVComponentBase: CVNode {
         overlayView.setContentHuggingLow()
         overlayView.setCompressionResistanceLow()
 
-        let radius = conversationStyle.maxMessageWidth * 0.1
-        let downloadView = MediaDownloadView(attachmentId: attachmentId, radius: radius)
-        // TODO: Is this okay to overlay over the attachment view?
-        // Will it have the right alignment?
-        hostView.addSubview(downloadView)
-        downloadView.autoPinEdgesToSuperviewEdges()
-        downloadView.setContentHuggingLow()
-        downloadView.setCompressionResistanceLow()
+        let diameter = conversationStyle.maxMessageWidth * 0.2
+        let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                  style: .withoutCircle(diameter: diameter))
+        hostView.addSubview(progressView)
+        progressView.autoCenterInSuperview()
 
         attachmentView.layer.opacity = 0.5
 
         return ProgressViewToken(reset: {
             overlayView.removeFromSuperview()
-            downloadView.removeFromSuperview()
+            progressView.removeFromSuperview()
             attachmentView.layer.opacity = 1
         })
     }

@@ -39,23 +39,16 @@ public class AttachmentProgressView: UIView {
         }
     }
 
-    public enum Layout {
-        case withoutContainer
-        case withContainer
-    }
-
     private let direction: Direction
     private let style: Style
-    private let layout: Layout
 
     private var attachmentId: String { direction.attachmentId }
 
     private let stateView: StateView
 
-    public required init(direction: Direction, style: Style, layout: Layout) {
+    public required init(direction: Direction, style: Style) {
         self.direction = direction
         self.style = style
-        self.layout = layout
         self.stateView = StateView(diameter: Self.innerDiameter(style: style), style: style)
 
         super.init(frame: .zero)
@@ -208,15 +201,9 @@ public class AttachmentProgressView: UIView {
         }
 
         addSubview(outerContentView)
-
-        switch layout {
-        case .withoutContainer:
-            outerContentView.autoPinEdgesToSuperviewEdges()
-            outerContentView.setContentHuggingHigh()
-            outerContentView.setCompressionResistanceHigh()
-        case .withContainer:
-            outerContentView.autoCenterInSuperview()
-        }
+        outerContentView.autoPinEdgesToSuperviewEdges()
+        outerContentView.setContentHuggingHigh()
+        outerContentView.setCompressionResistanceHigh()
     }
 
     private func configureState() {
