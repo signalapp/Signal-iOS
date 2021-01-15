@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MediaTransferProgressView: UIView {
+public class AttachmentProgressView: UIView {
 
     public enum Direction {
         case upload(attachmentStream: TSAttachmentStream)

@@ -69,7 +69,7 @@
 		34123C5E239AA3E900782788 /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5D239AA3E900782788 /* TooltipView.swift */; };
 		34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
-		3415217525B0CB31009F177F /* MediaTransferProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* MediaTransferProgressView.swift */; };
+		3415217525B0CB31009F177F /* AttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* AttachmentProgressView.swift */; };
 		3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */; };
 		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
 		341D392925472F3B00996E7B /* CVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVViewState.swift */; };
@@ -432,7 +432,6 @@
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
 		34EA69402194933900702471 /* MediaDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA693F2194933900702471 /* MediaDownloadView.swift */; };
-		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34F0566A23DA209300265283 /* GroupsV2Changes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2Changes.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
@@ -1048,7 +1047,7 @@
 		34129B8521EF8779005457A8 /* LinkPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPerformanceTest.swift; sourceTree = "<group>"; };
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
-		3415217425B0CB30009F177F /* MediaTransferProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaTransferProgressView.swift; sourceTree = "<group>"; };
+		3415217425B0CB30009F177F /* AttachmentProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentProgressView.swift; sourceTree = "<group>"; };
 		3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
 		341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupsV2Impl+RestoreGroups.swift"; sourceTree = "<group>"; };
 		341D392825472F3B00996E7B /* CVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewState.swift; sourceTree = "<group>"; };
@@ -1468,7 +1467,6 @@
 		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
 		34EA693F2194933900702471 /* MediaDownloadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadView.swift; sourceTree = "<group>"; };
-		34EA69412194DE7F00702471 /* MediaUploadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaUploadView.swift; sourceTree = "<group>"; };
 		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2Changes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Changes.swift; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
@@ -2924,6 +2922,7 @@
 		34D1F0951F867BFC0066283D /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				3415217425B0CB30009F177F /* AttachmentProgressView.swift */,
 				34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */,
 				34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */,
 				88594E592335B08000390B19 /* AudioMessageView.swift */,
@@ -2934,8 +2933,6 @@
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 				34EA693F2194933900702471 /* MediaDownloadView.swift */,
-				3415217425B0CB30009F177F /* MediaTransferProgressView.swift */,
-				34EA69412194DE7F00702471 /* MediaUploadView.swift */,
 				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
 				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
 				34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */,
@@ -5053,7 +5050,7 @@
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				88D1BCBB24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
-				3415217525B0CB31009F177F /* MediaTransferProgressView.swift in Sources */,
+				3415217525B0CB31009F177F /* AttachmentProgressView.swift in Sources */,
 				88ABB8B52534070400229EAA /* CallHeader.swift in Sources */,
 				347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */,
 				3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */,
@@ -5360,7 +5357,6 @@
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
 				88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */,
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
-				34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				347C3842252CE6C900F3D941 /* CVComponentMessage.swift in Sources */,
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,

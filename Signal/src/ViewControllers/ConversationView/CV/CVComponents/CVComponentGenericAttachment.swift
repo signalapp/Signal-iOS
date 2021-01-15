@@ -215,14 +215,13 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             owsFailDebug("Invalid value.")
             return nil
         }
-        let attachmentId = attachmentPointer.uniqueId
 
-        let radius = downloadViewSize * 0.5
-        let downloadView = MediaDownloadView(attachmentId: attachmentId, radius: radius)
-        downloadView.autoSetDimensions(to: CGSize(square: downloadViewSize))
-        downloadView.setCompressionResistanceHigh()
-        downloadView.setContentHuggingHigh()
-        return downloadView
+        let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                  style: .withoutCircle(diameter: downloadViewSize),
+                                                  layout: .withoutContainer)
+        progressView.setCompressionResistanceHigh()
+        progressView.setContentHuggingHigh()
+        return progressView
     }
 
     private let hSpacing: CGFloat = 8

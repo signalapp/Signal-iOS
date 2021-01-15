@@ -164,7 +164,7 @@ public class CVMediaView: UIView {
         }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = MediaTransferProgressView(direction: .download(attachmentPointer: attachmentPointer),
+        let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                      style: .withCircle,
                                                      layout: .withoutContainer)
         self.addSubview(progressView)
@@ -181,7 +181,7 @@ public class CVMediaView: UIView {
         guard !attachmentStream.isUploaded else {
             return false
         }
-        let progressView = MediaTransferProgressView(direction: .upload(attachmentStream: attachmentStream),
+        let progressView = AttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                      style: .withCircle,
                                                      layout: .withoutContainer)
         self.addSubview(progressView)
