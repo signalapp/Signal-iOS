@@ -21,6 +21,10 @@ public class AttachmentProgressView: UIView {
         }
     }
 
+    // The progress views have two styles:
+    //
+    // * Light on dark circle, overlaid over media.
+    // * Theme colors.
     public enum Style {
         case withCircle
         case withoutCircle(diameter: CGFloat)
