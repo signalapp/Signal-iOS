@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSNetworkManager.h"
@@ -36,16 +36,16 @@ BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
                 // TODO: We might want to add kCFURLErrorCannotFindHost.
                 return YES;
             default:
-                break;
+                return NO;
         }
     }
     BOOL isObjCNetworkConnectivityFailure = ([error.domain isEqualToString:TSNetworkManagerErrorDomain]
         && error.code == TSNetworkManagerErrorFailedConnection);
+    BOOL isOWSWebSocketFailure = ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+        && error.code == OWSErrorCodeMessageRequestFailed);
     BOOL isNetworkProtocolError = ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == 100);
 
-    if (isObjCNetworkConnectivityFailure) {
-        return YES;
-    } else if (isNetworkProtocolError) {
+    if (isObjCNetworkConnectivityFailure || isOWSWebSocketFailure || isNetworkProtocolError) {
         return YES;
     } else if ([TSNetworkManager isSwiftNetworkConnectivityError:error]) {
         return YES;
