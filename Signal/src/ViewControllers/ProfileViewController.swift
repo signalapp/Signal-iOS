@@ -11,6 +11,15 @@ public enum ProfileViewMode: UInt {
     case appSettings
     case registration
     case experienceUpgrade
+
+    fileprivate var hasSaveButton: Bool {
+        switch self {
+        case .appSettings:
+            return false
+        case .registration, .experienceUpgrade:
+            return true
+        }
+    }
 }
 
 // MARK: -
@@ -20,17 +29,9 @@ public class ProfileViewController: OWSTableViewController {
 
     private let avatarViewHelper = AvatarViewHelper()
 
-    private static func buildTextField() -> UITextField {
-        if UIDevice.current.isIPhone5OrShorter {
-            return DismissableTextField()
-        } else {
-            return OWSTextField()
-        }
-    }
+    private lazy var givenNameTextField = OWSTextField()
 
-    private lazy var givenNameTextField = Self.buildTextField()
-
-    private lazy var familyNameTextField = Self.buildTextField()
+    private lazy var familyNameTextField = OWSTextField()
 
     private let profileNamePreviewLabel = UILabel()
 
@@ -63,10 +64,6 @@ public class ProfileViewController: OWSTableViewController {
         self.completionHandler = completionHandler
 
         super.init()
-
-        databaseStorage.asyncWrite { transaction in
-            Self.keyValueStore.setDate(Date(), key: Self.lastPresentedDateKey, transaction: transaction)
-        }
     }
 
     // MARK: - Orientation
@@ -76,29 +73,6 @@ public class ProfileViewController: OWSTableViewController {
             return .all
         }
         return (mode == .registration ? .portrait : .allButUpsideDown)
-    }
-
-    // MARK: -
-
-    public static let keyValueStore = SDSKeyValueStore(collection: "kProfileView_Collection")
-
-    private static let lastPresentedDateKey = "kProfileView_LastPresentedDate"
-
-    static var shouldDisplayProfileViewOnLaunch: Bool {
-        // Only nag until the user sets a profile _name_.  Profile names are
-        // recommended profile avatars are optional.
-        if let localGivenName = profileManager.localGivenName(),
-           !localGivenName.isEmpty {
-            return false
-        }
-
-        let kProfileNagFrequency = kDayInterval * 30
-        guard let lastPresentedDate = (databaseStorage.read { transaction in
-            Self.keyValueStore.getDate(lastPresentedDateKey, transaction: transaction)
-        }) else {
-            return true
-        }
-        return abs(lastPresentedDate.timeIntervalSinceNow) > kProfileNagFrequency
     }
 
     // MARK: -
@@ -176,9 +150,9 @@ public class ProfileViewController: OWSTableViewController {
         givenNameTextField.accessibilityIdentifier = "given_name_textfield"
         givenNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
-        givenNameTextField.returnKeyType = .done
-        givenNameTextField.autocorrectionType = .no
-        givenNameTextField.spellCheckingType = .no
+        familyNameTextField.returnKeyType = .done
+        familyNameTextField.autocorrectionType = .no
+        familyNameTextField.spellCheckingType = .no
         familyNameTextField.placeholder = NSLocalizedString("PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
                                                             comment: "Default text for the family name field of the profile view.")
         familyNameTextField.delegate = self
@@ -323,8 +297,9 @@ public class ProfileViewController: OWSTableViewController {
 
         // Information Footer
 
-        lastSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-            let cell = OWSTableItem.newCell()
+        let infoGestureRecognizer = UITapGestureRecognizer(target: self,
+                                                           action: #selector(didTapInfo))
+        lastSection.customFooterView = { () -> UIView in
 
             let label = UILabel()
             label.textColor = Theme.secondaryTextAndIconColor
@@ -342,21 +317,22 @@ public class ProfileViewController: OWSTableViewController {
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
 
-            cell.contentView.addSubview(label)
+            label.backgroundColor = Theme.tableViewBackgroundColor
+
+            label.isUserInteractionEnabled = true
+            label.addGestureRecognizer(infoGestureRecognizer)
+
+            let footer = UIView()
+            footer.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 12)
+            footer.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
 
-            cell.backgroundColor = Theme.tableViewBackgroundColor
-            cell.contentView.backgroundColor = Theme.tableViewBackgroundColor
-
-            return cell
-        },
-        actionBlock: { [weak self] in
-            self?.didTapInfo()
-        }))
+            return footer
+        }()
 
         // Big Button
 
-        if mode == .experienceUpgrade {
+        if mode.hasSaveButton {
             let buttonSection = OWSTableSection()
             let target = self
             let selector = #selector(updateProfile)
@@ -693,6 +669,7 @@ public class ProfileViewController: OWSTableViewController {
         avatarViewHelper.showChangeAvatarUI()
     }
 
+    @objc
     private func didTapInfo() {
         let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/articles/360007459591")!)
         present(vc, animated: true, completion: nil)

@@ -27,6 +27,8 @@ public class TextFieldHelper: NSObject {
                                 replacementString: String,
                                 maxByteCount: Int? = nil,
                                 maxCharacterCount: Int? = nil) -> Bool {
+        // At least one must be set.
+        owsAssertDebug(maxByteCount != nil || maxCharacterCount != nil)
 
         func hasValidLength(_ string: String) -> Bool {
             if let maxByteCount = maxByteCount {

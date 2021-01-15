@@ -24,13 +24,14 @@ public extension OWSUserProfile {
     // limits on the components.
     static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
         var components = [String]()
-        if let component = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthChars).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
-           !component.isEmpty {
-            components.append(component)
+        // TODO: We could use EmojiWithSkinTones to check for availability of the emoji.
+        if let emoji = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthChars).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
+           !emoji.isEmpty {
+            components.append(emoji)
         }
-        if let component = bio?.filterStringForDisplay().trimToGlyphCount(kMaxBioLengthChars).trimToUtf8ByteCount(kMaxBioLengthBytes),
-           !component.isEmpty {
-            components.append(component)
+        if let bioText = bio?.filterStringForDisplay().trimToGlyphCount(kMaxBioLengthChars).trimToUtf8ByteCount(kMaxBioLengthBytes),
+           !bioText.isEmpty {
+            components.append(bioText)
         }
         guard !components.isEmpty else {
             return nil
@@ -151,22 +152,17 @@ public extension OWSUserProfile {
         }
 
         guard let paddedData = ({ () -> Data? in
-            for paddedLength in paddedLengths {
-                owsAssertDebug(paddedLength > 0)
-
-                guard stringData.count <= paddedLength else {
-                    continue
-                }
-
-                var paddedData = stringData
-                let paddingByteCount = paddedLength - paddedData.count
-                paddedData.count += paddingByteCount
-
-                assert(paddedData.count == paddedLength)
-                return paddedData
+            guard let paddedLength = paddedLengths.first(where: { $0 >= stringData.count }) else {
+                owsFailDebug("Oversize value: \(stringData.count) > \(paddedLengths)")
+                return nil
             }
-            owsFailDebug("Oversize value: \(stringData.count) > \(paddedLengths)")
-            return nil
+
+            var paddedData = stringData
+            let paddingByteCount = paddedLength - paddedData.count
+            paddedData.count += paddingByteCount
+
+            assert(paddedData.count == paddedLength)
+            return paddedData
         }()) else {
             owsFailDebug("Could not pad value.")
             return nil

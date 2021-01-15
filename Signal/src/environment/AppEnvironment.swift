@@ -80,7 +80,6 @@ public class AppEnvironment: NSObject {
 
         YDBToGRDBMigration.add(keyStore: backup.keyValueStore, label: "backup")
         YDBToGRDBMigration.add(keyStore: AppUpdateNag.shared.keyValueStore, label: "AppUpdateNag")
-        YDBToGRDBMigration.add(keyStore: ProfileViewController.keyValueStore, label: "ProfileViewController")
     }
 
     @objc

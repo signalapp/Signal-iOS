@@ -16,15 +16,7 @@ class ProfileBioViewController: OWSTableViewController {
 
     private weak var profileDelegate: ProfileBioViewControllerDelegate?
 
-    private static func buildTextField() -> UITextField {
-        if UIDevice.current.isIPhone5OrShorter {
-            return DismissableTextField()
-        } else {
-            return OWSTextField()
-        }
-    }
-
-    private lazy var bioTextField = Self.buildTextField()
+    private lazy var bioTextField = OWSTextField()
 
     private let bioEmojiLabel = UILabel()
 
