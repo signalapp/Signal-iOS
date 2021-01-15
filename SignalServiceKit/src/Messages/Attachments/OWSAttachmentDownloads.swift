@@ -5,7 +5,8 @@
 import Foundation
 import PromiseKit
 
-public extension OWSAttachmentDownloads {
+@objc
+public class OWSAttachmentDownloads: NSObject {
 
     // MARK: - Dependencies
 
@@ -23,6 +24,271 @@ public extension OWSAttachmentDownloads {
 
     private class var reachabilityManager: SSKReachabilityManager {
         SSKEnvironment.shared.reachabilityManager
+    }
+
+    private class var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    // MARK: -
+
+    public typealias AttachmentId = String
+    public typealias SuccessBlock = (TSAttachmentStream) -> Void
+    public typealias FailureBlock = (Error) -> Void
+
+    private class Job {
+        let attachmentId: AttachmentId
+        let message: TSMessage?
+        let success: SuccessBlock
+        let failure: FailureBlock
+        var progress: CGFloat = 0
+
+        init(attachmentId: AttachmentId,
+             message: TSMessage?,
+             success: @escaping SuccessBlock,
+             failure: @escaping FailureBlock) {
+            self.attachmentId = attachmentId
+            self.message = message
+            self.success = success
+            self.failure = failure
+        }
+    }
+
+    private static let unfairLock = UnfairLock()
+    // This property should only be accessed with unfairLock.
+    private var downloadingJobMap = [AttachmentId: Job]()
+    // This property should only be accessed with unfairLock.
+    private var attachmentDownloadJobQueue = [Job]()
+
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(profileWhitelistDidChange(notification:)),
+                                               name: .profileWhitelistDidChange,
+                                               object: nil)
+    }
+
+    @objc
+    func profileWhitelistDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
+        // If a thread was newly whitelisted, try and start any
+        // downloads that were pending on a message request.
+        Self.databaseStorage.read { transaction in
+            guard let whitelistedThread = ({ () -> TSThread? in
+                if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+                   address.isValid,
+                   Self.profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+                    return TSContactThread.getWithContactAddress(address, transaction: transaction)
+                }
+                if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,
+                   Self.profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+                    return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                }
+                return nil
+            }()) else {
+                return
+            }
+            self.downloadAllAttachments(forThread: whitelistedThread,
+                                        transaction: transaction)
+        }
+    }
+
+    // MARK: -
+
+    public func downloadProgress(forAttachmentId attachmentId: AttachmentId) -> CGFloat? {
+        Self.unfairLock.withLock {
+            guard let job = downloadingJobMap[attachmentId] else {
+                return nil
+            }
+            return job.progress
+        }
+    }
+
+    // TODO: Convert completions to promises.
+    private func enqueueJob(forAttachmentId attachmentId: AttachmentId,
+                            message: TSMessage?,
+                            success: @escaping SuccessBlock,
+                            failure: @escaping FailureBlock) {
+        owsAssertDebug(!attachmentId.isEmpty)
+
+        let job = Job(attachmentId: attachmentId, message: message, success: success, failure: failure)
+
+        Self.unfairLock.withLock {
+            attachmentDownloadJobQueue.append(job)
+        }
+
+        tryToStartNextDownload()
+    }
+
+    private func dequeueNextJob() -> Job? {
+        Self.unfairLock.withLock {
+            let kMaxSimultaneousDownloads = 4
+            guard self.downloadingJobMap.count < kMaxSimultaneousDownloads else {
+                return nil
+            }
+            guard let job = self.attachmentDownloadJobQueue.first else {
+                return nil
+            }
+            self.attachmentDownloadJobQueue.remove(at: 0)
+            guard self.downloadingJobMap[job.attachmentId] == nil else {
+                // Ensure we only have one download in flight at a time for a given attachment.
+                Logger.warn("Ignoring duplicate download.")
+                return nil
+            }
+            self.downloadingJobMap[job.attachmentId] = job
+            return job
+        }
+    }
+
+    private func markJobComplete(_ job: Job) {
+        Self.unfairLock.withLock {
+            owsAssertDebug(self.downloadingJobMap[job.attachmentId] != nil)
+            self.downloadingJobMap[job.attachmentId] = nil
+            owsAssertDebug(self.downloadingJobMap[job.attachmentId] == nil)
+        }
+        tryToStartNextDownload()
+    }
+
+    private func tryToStartNextDownload() {
+        Self.serialQueue.async {
+            guard let job = self.dequeueNextJob() else {
+                return
+            }
+
+            func prepareDownload() -> TSAttachmentPointer? {
+                Self.databaseStorage.write { transaction in
+                    // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
+                    guard let attachment = TSAttachment.anyFetch(uniqueId: job.attachmentId, transaction: transaction) else {
+                        // This isn't necessarily a bug.  For example:
+                        //
+                        // * Receive an incoming message with an attachment.
+                        // * Kick off download of that attachment.
+                        // * Receive read receipt for that message, causing it to be disappeared immediately.
+                        // * Try to download that attachment - but it's missing.
+                        Logger.warn("Missing attachment.")
+                        return nil
+                    }
+                    guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+                        // This isn't necessarily a bug.
+                        //
+                        // * An attachment may have been re-enqueued for download while it was already being downloaded.
+                        owsFailDebug("Attachment already downloaded.")
+                        return nil
+                    }
+                    attachmentPointer.updateAttachmentPointerState(.downloading, transaction: transaction)
+
+                    if let message = job.message {
+                        self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+                    }
+                    return attachmentPointer
+                }
+            }
+
+            guard let attachmentPointer = prepareDownload() else {
+                // Abort.
+                self.markJobComplete(job)
+                return
+            }
+
+            self.retrieveAttachment(job: job,
+                                    attachmentPointer: attachmentPointer,
+                                    success: { attachmentStream in
+                                        self.downloadDidSucceed(attachmentStream: attachmentStream,
+                                                                job: job)
+                                    },
+                                    failure: { error in
+                                        self.downloadDidFail(error: error, job: job)
+                                    })
+        }
+    }
+
+    private func downloadDidSucceed(attachmentStream: TSAttachmentStream,
+                                    job: Job) {
+        Logger.verbose("Attachment download succeeded.")
+
+        Self.databaseStorage.write { transaction in
+            guard let attachmentPointer = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: job.attachmentId,
+                                                                                        transaction: transaction) else {
+                Logger.warn("Attachment pointer no longer exists.")
+                return
+            }
+            attachmentPointer.anyRemove(transaction: transaction)
+            attachmentStream.anyInsert(transaction: transaction)
+
+            if let message = job.message {
+                self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            }
+        }
+
+        // TODO: Should we call success() if the attachmentPointer no longer existed?
+        job.success(attachmentStream)
+
+        markJobComplete(job)
+    }
+
+    private func downloadDidFail(error: Error,
+                                 job: Job) {
+        Logger.error("Attachment download failed with error: \(error)")
+
+        Self.databaseStorage.write { transaction in
+            // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
+            guard let attachmentPointer = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: job.attachmentId,
+                                                                                        transaction: transaction) else {
+                Logger.warn("Attachment pointer no longer exists.")
+                return
+            }
+            switch attachmentPointer.state {
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                owsFailDebug("Unexepected state: \(attachmentPointer.state)")
+            case .enqueued, .downloading:
+                attachmentPointer.updateAttachmentPointerState(.failed, transaction: transaction)
+            @unknown default:
+                owsFailDebug("Invalid value.")
+            }
+
+            if let message = job.message {
+                self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            }
+        }
+
+        // TODO: Should we call failure() if the attachmentPointer no longer existed?
+        job.failure(error)
+
+        markJobComplete(job)
+    }
+
+    private func reloadAndTouchLatestVersionOfMessage(_ message: TSMessage,
+                                                      transaction: SDSAnyWriteTransaction) {
+        let messageToNotify: TSMessage
+        if message.sortId > 0 {
+            messageToNotify = message
+        } else {
+            // Ensure relevant sortId is loaded for touch to succeed.
+            guard let latestMessage = TSMessage.anyFetchMessage(uniqueId: message.uniqueId, transaction: transaction) else {
+                // This could be valid but should be very rare.
+                owsFailDebug("Message has been deleted.")
+                return
+            }
+            messageToNotify = latestMessage
+        }
+        // We need to re-index as we may have just downloaded an attachment
+        // that affects index content (e.g. oversize text attachment).
+        Self.databaseStorage.touch(interaction: messageToNotify, shouldReindex: true, transaction: transaction)
+    }
+
+    // MARK: - Cancellation
+
+    private var cancellationDateMap = [String: Date]()
+
+    public func cancelDownload(attachmentId: AttachmentId) {
+        Self.unfairLock.withLock {
+            cancellationDateMap[attachmentId] = Date()
+        }
     }
 }
 
@@ -362,7 +628,7 @@ public extension OWSAttachmentDownloads {
                                                 transaction: SDSAnyReadTransaction) -> [AttachmentReference] {
 
         var references = [AttachmentReference]()
-        var attachmentIds = Set<String>()
+        var attachmentIds = Set<AttachmentId>()
 
         func addReference(attachment: TSAttachment, category: AttachmentCategory) {
 
@@ -394,7 +660,7 @@ public extension OWSAttachmentDownloads {
             }
         }
 
-        func addReference(attachmentId: String, category: AttachmentCategory) {
+        func addReference(attachmentId: AttachmentId, category: AttachmentCategory) {
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
                                                          transaction: transaction) else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
@@ -709,11 +975,10 @@ public extension OWSAttachmentDownloads {
     // We want to avoid large downloads from a compromised or buggy service.
     private static let maxDownloadSize = 150 * 1024 * 1024
 
-    @objc
-    func retrieveAttachment(job: OWSAttachmentDownloadJob,
-                            attachmentPointer: TSAttachmentPointer,
-                            success: @escaping (TSAttachmentStream) -> Void,
-                            failure: @escaping (Error) -> Void) {
+    private func retrieveAttachment(job: Job,
+                                    attachmentPointer: TSAttachmentPointer,
+                                    success: @escaping (TSAttachmentStream) -> Void,
+                                    failure: @escaping (Error) -> Void) {
         firstly {
             Self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
         }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
@@ -723,7 +988,7 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private class func retrieveAttachment(job: OWSAttachmentDownloadJob,
+    private class func retrieveAttachment(job: Job,
                                           attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "retrieveAttachment")
@@ -743,18 +1008,17 @@ public extension OWSAttachmentDownloads {
     }
 
     private class DownloadState {
-        let job: OWSAttachmentDownloadJob
+        let job: Job
         let attachmentPointer: TSAttachmentPointer
+        let startDate = Date()
 
-        required init(job: OWSAttachmentDownloadJob, attachmentPointer: TSAttachmentPointer) {
+        required init(job: Job, attachmentPointer: TSAttachmentPointer) {
             self.job = job
             self.attachmentPointer = attachmentPointer
         }
     }
 
-    func test() {}
-
-    private class func download(job: OWSAttachmentDownloadJob,
+    private class func download(job: Job,
                                 attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
 
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
@@ -917,7 +1181,7 @@ public extension OWSAttachmentDownloads {
     @objc
     static let attachmentDownloadAttachmentIDKey = "attachmentDownloadAttachmentIDKey"
 
-    private class func fireProgressNotification(progress: Double, attachmentId: String) {
+    private class func fireProgressNotification(progress: Double, attachmentId: AttachmentId) {
         NotificationCenter.default.postNotificationNameAsync(attachmentDownloadProgressNotification,
                                                              object: nil,
                                                              userInfo: [

@@ -50,7 +50,6 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFormat.h>

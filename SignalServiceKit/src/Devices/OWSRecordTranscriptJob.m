@@ -4,7 +4,6 @@
 
 #import "OWSRecordTranscriptJob.h"
 #import "FunctionalUtil.h"
-#import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSReadReceiptManager.h"

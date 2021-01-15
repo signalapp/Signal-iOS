@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
 #import "OWS2FAManager.h"
-#import "OWSAttachmentDownloads.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesJob.h"

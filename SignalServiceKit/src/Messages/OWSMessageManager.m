@@ -10,7 +10,6 @@
 #import "MimeTypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
-#import "OWSAttachmentDownloads.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"

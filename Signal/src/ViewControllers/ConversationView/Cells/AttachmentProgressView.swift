@@ -213,7 +213,7 @@ public class AttachmentProgressView: UIView {
         switch direction {
         case .upload:
             NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(processUploadNotification),
+                                                   selector: #selector(processUploadNotification(notification:)),
                                                    name: .attachmentUploadProgress,
                                                    object: nil)
 
@@ -227,7 +227,7 @@ public class AttachmentProgressView: UIView {
                 updateDownloadProgress()
 
                 NotificationCenter.default.addObserver(self,
-                                                       selector: #selector(processDownloadNotification),
+                                                       selector: #selector(processDownloadNotification(notification:)),
                                                        name: OWSAttachmentDownloads.attachmentDownloadProgressNotification,
                                                        object: nil)
             @unknown default:
@@ -254,11 +254,11 @@ public class AttachmentProgressView: UIView {
             Logger.warn("No progress for attachment.")
             return
         }
-        if progress.floatValue == Float.nan {
+        if progress == CGFloat.nan {
             owsFailDebug("Progress is nan.")
             stateView.state = .none
         } else {
-            stateView.state = .progress(progress: CGFloat(progress.floatValue))
+            stateView.state = .progress(progress: CGFloat(progress))
         }
     }
 
