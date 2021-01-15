@@ -146,6 +146,7 @@ public class OWSAttachmentDownloads: NSObject {
         Self.unfairLock.withLock {
             owsAssertDebug(activeJobMap[job.attachmentId] != nil)
             activeJobMap[job.attachmentId] = nil
+            cancellationRequestMap[job.attachmentId] = nil
             owsAssertDebug(activeJobMap[job.attachmentId] == nil)
         }
         tryToStartNextDownload()
@@ -193,11 +194,9 @@ public class OWSAttachmentDownloads: NSObject {
             }
 
             firstly { () -> Promise<TSAttachmentStream> in
-                Self.retrieveAttachment(job: job,
-                                        attachmentPointer: attachmentPointer)
+                self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
             }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
-                self.downloadDidSucceed(attachmentStream: attachmentStream,
-                                        job: job)
+                self.downloadDidSucceed(attachmentStream: attachmentStream, job: job)
             }.catch(on: Self.serialQueue) { (error: Error) in
                 self.downloadDidFail(error: error, job: job)
             }
@@ -279,11 +278,21 @@ public class OWSAttachmentDownloads: NSObject {
 
     // MARK: - Cancellation
 
-    private var cancellationDateMap = [String: Date]()
+    // This property should only be accessed with unfairLock.
+    private var cancellationRequestMap = [String: Date]()
 
     public func cancelDownload(attachmentId: AttachmentId) {
         Self.unfairLock.withLock {
-            cancellationDateMap[attachmentId] = Date()
+            cancellationRequestMap[attachmentId] = Date()
+        }
+    }
+
+    private func shouldCancelJob(downloadState: DownloadState) -> Bool {
+        Self.unfairLock.withLock {
+            guard let cancellationDate = cancellationRequestMap[downloadState.job.attachmentId] else {
+                return false
+            }
+            return cancellationDate > downloadState.startDate
         }
     }
 }
@@ -960,13 +969,13 @@ public extension OWSAttachmentDownloads {
     // We want to avoid large downloads from a compromised or buggy service.
     private static let maxDownloadSize = 150 * 1024 * 1024
 
-    private class func retrieveAttachment(job: Job,
-                                          attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
+    private func retrieveAttachment(job: Job,
+                                    attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "retrieveAttachment")
 
         return firstly(on: Self.serialQueue) { () -> Promise<URL> in
-            Self.download(job: job, attachmentPointer: attachmentPointer)
+            self.download(job: job, attachmentPointer: attachmentPointer)
         }.then(on: Self.serialQueue) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
             Self.decrypt(encryptedFileUrl: encryptedFileUrl,
                          attachmentPointer: attachmentPointer)
@@ -990,32 +999,34 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private class func download(job: Job,
-                                attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
+    private func download(job: Job, attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
 
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
         return firstly(on: Self.serialQueue) { () -> Promise<URL> in
-            Self.downloadAttempt(downloadState: downloadState)
+            self.downloadAttempt(downloadState: downloadState)
         }
     }
 
-    private class func downloadAttempt(downloadState: DownloadState,
-                                       resumeData: Data? = nil,
-                                       attemptIndex: UInt = 0) -> Promise<URL> {
+    private func downloadAttempt(downloadState: DownloadState,
+                                 resumeData: Data? = nil,
+                                 attemptIndex: UInt = 0) -> Promise<URL> {
 
-        return firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
+        let (promise, resolver) = Promise<URL>.pending()
+
+        firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
-            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
+            let urlSession = Self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
             let urlPath = try Self.urlPath(for: downloadState)
             let headers: [String: String] = [
                 "Content-Type": OWSMimeTypeApplicationOctetStream
             ]
 
             let progress = { (task: URLSessionTask, progress: Progress) in
-                Self.handleDownloadProgress(downloadState: downloadState,
+                self.handleDownloadProgress(downloadState: downloadState,
                                             task: task,
-                                            progress: progress)
+                                            progress: progress,
+                                            resolver: resolver)
             }
 
             if let resumeData = resumeData {
@@ -1057,7 +1068,13 @@ public extension OWSAttachmentDownloads {
             } else {
                 throw error
             }
+        }.done(on: Self.serialQueue) { url in
+            resolver.fulfill(url)
+        }.catch(on: Self.serialQueue) { error in
+            resolver.reject(error)
         }
+
+        return promise
     }
 
     private class func urlPath(for downloadState: DownloadState) throws -> String {
@@ -1075,16 +1092,30 @@ public extension OWSAttachmentDownloads {
         return urlPath
     }
 
-    private class func handleDownloadProgress(downloadState: DownloadState,
-                                              task: URLSessionTask,
-                                              progress: Progress) {
+    private enum AttachmentDownloadError: Error {
+        case cancelled
+        case oversize
+    }
+
+    private func handleDownloadProgress(downloadState: DownloadState,
+                                        task: URLSessionTask,
+                                        progress: Progress,
+                                        resolver: Resolver<URL>) {
+
+        guard !self.shouldCancelJob(downloadState: downloadState) else {
+            Logger.info("Cancelling job.")
+            task.cancel()
+            resolver.reject(AttachmentDownloadError.cancelled)
+            return
+        }
+
         // Don't do anything until we've received at least one byte of data.
         guard progress.completedUnitCount > 0 else {
             return
         }
 
-        guard progress.totalUnitCount <= maxDownloadSize,
-              progress.completedUnitCount <= maxDownloadSize else {
+        guard progress.totalUnitCount <= Self.maxDownloadSize,
+              progress.completedUnitCount <= Self.maxDownloadSize else {
             // A malicious service might send a misleading content length header,
             // so....
             //
@@ -1092,6 +1123,7 @@ public extension OWSAttachmentDownloads {
             // exceed the max download size, abort the download.
             owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
             task.cancel()
+            resolver.reject(AttachmentDownloadError.oversize)
             return
         }
 
