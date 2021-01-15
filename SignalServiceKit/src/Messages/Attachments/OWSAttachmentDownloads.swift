@@ -52,9 +52,9 @@ public class OWSAttachmentDownloads: NSObject {
 
     private static let unfairLock = UnfairLock()
     // This property should only be accessed with unfairLock.
-    private var downloadingJobMap = [AttachmentId: Job]()
+    private var activeJobMap = [AttachmentId: Job]()
     // This property should only be accessed with unfairLock.
-    private var attachmentDownloadJobQueue = [Job]()
+    private var jobQueue = [Job]()
 
     @objc
     public override init() {
@@ -98,12 +98,14 @@ public class OWSAttachmentDownloads: NSObject {
 
     public func downloadProgress(forAttachmentId attachmentId: AttachmentId) -> CGFloat? {
         Self.unfairLock.withLock {
-            guard let job = downloadingJobMap[attachmentId] else {
-                return nil
+            if let job = activeJobMap[attachmentId] {
+                return job.progress
             }
-            return job.progress
+            return nil
         }
     }
+
+    // MARK: -
 
     private func enqueueJob(forAttachmentId attachmentId: AttachmentId,
                             message: TSMessage?) -> Job {
@@ -112,7 +114,7 @@ public class OWSAttachmentDownloads: NSObject {
         let job = Job(attachmentId: attachmentId, message: message)
 
         Self.unfairLock.withLock {
-            attachmentDownloadJobQueue.append(job)
+            jobQueue.append(job)
         }
 
         tryToStartNextDownload()
@@ -123,28 +125,28 @@ public class OWSAttachmentDownloads: NSObject {
     private func dequeueNextJob() -> Job? {
         Self.unfairLock.withLock {
             let kMaxSimultaneousDownloads = 4
-            guard self.downloadingJobMap.count < kMaxSimultaneousDownloads else {
+            guard activeJobMap.count < kMaxSimultaneousDownloads else {
                 return nil
             }
-            guard let job = self.attachmentDownloadJobQueue.first else {
+            guard let job = jobQueue.first else {
                 return nil
             }
-            self.attachmentDownloadJobQueue.remove(at: 0)
-            guard self.downloadingJobMap[job.attachmentId] == nil else {
+            jobQueue.remove(at: 0)
+            guard activeJobMap[job.attachmentId] == nil else {
                 // Ensure we only have one download in flight at a time for a given attachment.
                 Logger.warn("Ignoring duplicate download.")
                 return nil
             }
-            self.downloadingJobMap[job.attachmentId] = job
+            activeJobMap[job.attachmentId] = job
             return job
         }
     }
 
     private func markJobComplete(_ job: Job) {
         Self.unfairLock.withLock {
-            owsAssertDebug(self.downloadingJobMap[job.attachmentId] != nil)
-            self.downloadingJobMap[job.attachmentId] = nil
-            owsAssertDebug(self.downloadingJobMap[job.attachmentId] == nil)
+            owsAssertDebug(activeJobMap[job.attachmentId] != nil)
+            activeJobMap[job.attachmentId] = nil
+            owsAssertDebug(activeJobMap[job.attachmentId] == nil)
         }
         tryToStartNextDownload()
     }
