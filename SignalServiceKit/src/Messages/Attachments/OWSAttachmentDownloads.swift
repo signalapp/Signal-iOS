@@ -33,24 +33,20 @@ public class OWSAttachmentDownloads: NSObject {
     // MARK: -
 
     public typealias AttachmentId = String
-    public typealias SuccessBlock = (TSAttachmentStream) -> Void
-    public typealias FailureBlock = (Error) -> Void
 
     private class Job {
         let attachmentId: AttachmentId
         let message: TSMessage?
-        let success: SuccessBlock
-        let failure: FailureBlock
+        let promise: Promise<TSAttachmentStream>
+        let resolver: Resolver<TSAttachmentStream>
         var progress: CGFloat = 0
 
-        init(attachmentId: AttachmentId,
-             message: TSMessage?,
-             success: @escaping SuccessBlock,
-             failure: @escaping FailureBlock) {
+        init(attachmentId: AttachmentId, message: TSMessage?) {
             self.attachmentId = attachmentId
             self.message = message
-            self.success = success
-            self.failure = failure
+            let (promise, resolver) = Promise<TSAttachmentStream>.pending()
+            self.promise = promise
+            self.resolver = resolver
         }
     }
 
@@ -111,18 +107,18 @@ public class OWSAttachmentDownloads: NSObject {
 
     // TODO: Convert completions to promises.
     private func enqueueJob(forAttachmentId attachmentId: AttachmentId,
-                            message: TSMessage?,
-                            success: @escaping SuccessBlock,
-                            failure: @escaping FailureBlock) {
+                            message: TSMessage?) -> Job {
         owsAssertDebug(!attachmentId.isEmpty)
 
-        let job = Job(attachmentId: attachmentId, message: message, success: success, failure: failure)
+        let job = Job(attachmentId: attachmentId, message: message)
 
         Self.unfairLock.withLock {
             attachmentDownloadJobQueue.append(job)
         }
 
         tryToStartNextDownload()
+
+        return job
     }
 
     private func dequeueNextJob() -> Job? {
@@ -225,8 +221,8 @@ public class OWSAttachmentDownloads: NSObject {
             }
         }
 
-        // TODO: Should we call success() if the attachmentPointer no longer existed?
-        job.success(attachmentStream)
+        // TODO: Should we fulfill() if the attachmentPointer no longer existed?
+        job.resolver.fulfill(attachmentStream)
 
         markJobComplete(job)
     }
@@ -256,8 +252,8 @@ public class OWSAttachmentDownloads: NSObject {
             }
         }
 
-        // TODO: Should we call failure() if the attachmentPointer no longer existed?
-        job.failure(error)
+        // TODO: Should we reject() if the attachmentPointer no longer existed?
+        job.resolver.reject(error)
 
         markJobComplete(job)
     }
@@ -918,19 +914,9 @@ public extension OWSAttachmentDownloads {
                         continue
                     }
 
-                    let (promise, resolver) = Promise<Void>.pending()
-                    promises.append(promise)
-                    self.enqueueJob(forAttachmentId: attachmentPointer.uniqueId,
-                                    message: message,
-                                    success: { attachmentStream in
-                                        unfairLock.withLock {
-                                            attachmentStreams.append(attachmentStream)
-                                        }
-                                        resolver.fulfill(())
-                                    },
-                                    failure: { error in
-                                        resolver.reject(error)
-                                    })
+                    let job = self.enqueueJob(forAttachmentId: attachmentPointer.uniqueId,
+                                              message: message)
+                    promises.append(job.promise.asVoid())
                 }
             }
 
