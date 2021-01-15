@@ -78,11 +78,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         hStackView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
     }
 
-    public override func incompleteAttachmentInfo(componentView: CVComponentView) -> IncompleteAttachmentInfo? {
-        return incompleteAttachmentInfoIfNecessary(attachment: attachment,
-                                                   attachmentView: componentView.rootView)
-    }
-
     private var hStackLayoutMargins: UIEdgeInsets {
         return UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)
     }

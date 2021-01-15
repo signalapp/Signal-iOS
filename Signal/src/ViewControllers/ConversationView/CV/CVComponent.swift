@@ -55,22 +55,6 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               swipeToReplyState: CVSwipeToReplyState)
-
-    func incompleteAttachmentInfo(componentView: CVComponentView) -> IncompleteAttachmentInfo?
-}
-
-// MARK: -
-
-public struct IncompleteAttachmentInfo {
-    let attachment: TSAttachment
-    let attachmentView: UIView
-    let shouldShowDownloadProgress: Bool
-}
-
-// MARK: -
-
-public struct ProgressViewToken {
-    let reset: () -> Void
 }
 
 // MARK: -
@@ -210,51 +194,6 @@ public class CVComponentBase: NSObject {
     var isShowingSelectionUI: Bool {
         itemModel.itemViewState.isShowingSelectionUI
     }
-
-    public func incompleteAttachmentInfo(componentView: CVComponentView) -> IncompleteAttachmentInfo? { nil }
-
-    func incompleteAttachmentInfoIfNecessary(attachment: TSAttachment,
-                                             attachmentView: UIView,
-                                             shouldShowDownloadProgress: Bool = true) -> IncompleteAttachmentInfo? {
-
-        let buildInfo = {
-            IncompleteAttachmentInfo(attachment: attachment,
-                                     attachmentView: attachmentView,
-                                     shouldShowDownloadProgress: shouldShowDownloadProgress)
-        }
-
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            guard isOutgoing, !attachmentStream.isUploaded else {
-                return nil
-            }
-            return buildInfo()
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            switch attachmentPointer.state {
-            case .failed:
-                return buildInfo()
-            case .enqueued, .downloading, .pendingMessageRequest, .pendingManualDownload:
-                switch attachmentPointer.pointerType {
-                case .restoring:
-                    // TODO: Show "restoring" indicator and possibly progress.
-                    return nil
-                case .unknown, .incoming:
-                    if !shouldShowDownloadProgress {
-                        return nil
-                    }
-                    return buildInfo()
-                @unknown default:
-                    owsFailDebug("Invalid value.")
-                    return nil
-                }
-            @unknown default:
-                owsFailDebug("Invalid value.")
-                return nil
-            }
-        } else {
-            owsFailDebug("Invalid attachment.")
-            return nil
-        }
-    }
 }
 
 // MARK: -
@@ -306,95 +245,6 @@ extension CVComponentBase: CVNode {
             owsFailDebug("Missing sender name.")
             return description
         }
-    }
-
-    // TODO: Make sure we're applying everywhere that we need to.
-    func addProgressViewsIfNecessary(attachment: TSAttachment,
-                                     attachmentView: UIView,
-                                     hostView: UIView,
-                                     shouldShowDownloadProgress: Bool) -> ProgressViewToken? {
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            return addUploadViewIfNecessary(attachmentStream: attachmentStream,
-                                            hostView: hostView)
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            return addDownloadViewIfNecessary(attachmentPointer: attachmentPointer,
-                                              attachmentView: attachmentView,
-                                              hostView: hostView,
-                                              shouldShowDownloadProgress: shouldShowDownloadProgress)
-        } else {
-            owsFailDebug("Invalid attachment.")
-            return nil
-        }
-    }
-
-    // TODO: Make sure we're applying everywhere that we need to.
-    func addUploadViewIfNecessary(attachmentStream: TSAttachmentStream,
-                                  hostView: UIView) -> ProgressViewToken? {
-        guard isOutgoing, !attachmentStream.isUploaded else {
-            return nil
-        }
-
-        let diameter = conversationStyle.maxMessageWidth * 0.2
-        let progressView = AttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
-                                                  style: .withoutCircle(diameter: diameter))
-        hostView.addSubview(progressView)
-        progressView.autoCenterInSuperview()
-
-        return ProgressViewToken(reset: {
-            progressView.removeFromSuperview()
-        })
-    }
-
-    func addDownloadViewIfNecessary(attachmentPointer: TSAttachmentPointer,
-                                    attachmentView: UIView,
-                                    hostView: UIView,
-                                    shouldShowDownloadProgress: Bool) -> ProgressViewToken? {
-
-        switch attachmentPointer.state {
-        case .failed, .pendingMessageRequest, .pendingManualDownload:
-            return nil
-        case .enqueued, .downloading:
-            break
-        @unknown default:
-            owsFailDebug("Invalid value.")
-            return nil
-        }
-
-        switch attachmentPointer.pointerType {
-        case .restoring:
-            // TODO: Show "restoring" indicator and possibly progress.
-            return nil
-        case .unknown,
-             .incoming:
-            break
-        @unknown default:
-            owsFailDebug("Invalid value.")
-            return nil
-        }
-        if !shouldShowDownloadProgress {
-            return nil
-        }
-
-        let overlayView = UIView.container()
-        overlayView.backgroundColor = bubbleColorForMessage.withAlphaComponent(0.5)
-        hostView.addSubview(overlayView)
-        overlayView.autoPinEdgesToSuperviewEdges()
-        overlayView.setContentHuggingLow()
-        overlayView.setCompressionResistanceLow()
-
-        let diameter = conversationStyle.maxMessageWidth * 0.2
-        let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                  style: .withoutCircle(diameter: diameter))
-        hostView.addSubview(progressView)
-        progressView.autoCenterInSuperview()
-
-        attachmentView.layer.opacity = 0.5
-
-        return ProgressViewToken(reset: {
-            overlayView.removeFromSuperview()
-            progressView.removeFromSuperview()
-            attachmentView.layer.opacity = 1
-        })
     }
 
     // This var should only be accessed for messages.

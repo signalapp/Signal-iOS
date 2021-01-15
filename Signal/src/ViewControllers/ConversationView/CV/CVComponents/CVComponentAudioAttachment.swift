@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,11 +50,6 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
                                                          comment: "Accessibility label for audio.")
         audioMessageView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
-    }
-
-    public override func incompleteAttachmentInfo(componentView: CVComponentView) -> IncompleteAttachmentInfo? {
-        return incompleteAttachmentInfoIfNecessary(attachment: attachment,
-                                                   attachmentView: componentView.rootView)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
