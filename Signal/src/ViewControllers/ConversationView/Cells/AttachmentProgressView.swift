@@ -254,7 +254,12 @@ public class AttachmentProgressView: UIView {
             Logger.warn("No progress for attachment.")
             return
         }
-        stateView.state = .progress(progress: CGFloat(progress.floatValue))
+        if progress.floatValue == Float.nan {
+            owsFailDebug("Progress is nan.")
+            stateView.state = .none
+        } else {
+            stateView.state = .progress(progress: CGFloat(progress.floatValue))
+        }
     }
 
     @objc
@@ -270,6 +275,12 @@ public class AttachmentProgressView: UIView {
             owsFailDebug("Missing progress.")
             return
         }
-        stateView.state = .progress(progress: CGFloat(progress.floatValue))
+
+        if progress.floatValue == Float.nan {
+            owsFailDebug("Progress is nan.")
+            stateView.state = .none
+        } else {
+            stateView.state = .progress(progress: CGFloat(progress.floatValue))
+        }
     }
 }

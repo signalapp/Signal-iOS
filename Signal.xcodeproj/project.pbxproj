@@ -404,7 +404,6 @@
 		34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */; };
 		34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06E1F8678AA0066283D /* ConversationViewController.m */; };
 		34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
-		34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
 		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
 		34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
@@ -1418,8 +1417,6 @@
 		34D1F06E1F8678AA0066283D /* ConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewController.m; sourceTree = "<group>"; };
 		34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationCollectionView.h; sourceTree = "<group>"; };
 		34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationCollectionView.m; sourceTree = "<group>"; };
-		34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentUploadView.h; sourceTree = "<group>"; };
-		34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScreenLockUI.h; sourceTree = "<group>"; };
 		34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScreenLockUI.m; sourceTree = "<group>"; };
@@ -2921,8 +2918,6 @@
 			isa = PBXGroup;
 			children = (
 				3415217425B0CB30009F177F /* AttachmentProgressView.swift */,
-				34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */,
-				34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */,
 				88594E592335B08000390B19 /* AudioMessageView.swift */,
 				88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */,
 				3488F9352191CC4000E524CC /* ConversationMediaView.swift */,
@@ -5054,7 +5049,6 @@
 				348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */,
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				347C384D252D0FDC00F3D941 /* CVComponentTypingIndicator.swift in Sources */,
-				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */,
