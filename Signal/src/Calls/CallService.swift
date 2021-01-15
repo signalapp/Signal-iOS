@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -124,6 +124,19 @@ public final class CallService: NSObject {
             name: .OWSApplicationDidBecomeActive,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(configureBandwidthMode),
+            name: Self.callServicePreferencesDidChange,
+            object: nil)
+
+        // Note that we're not using the usual .owsReachabilityChanged
+        // We want to update our bandwidth mode if the app has been backgrounded
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(configureBandwidthMode),
+            name: .reachabilityChanged,
+            object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
@@ -305,6 +318,28 @@ public final class CallService: NSObject {
             handleFailedCall(failedCall: staleCall, error: error)
         } else {
             Logger.info("ignoring \(function):\(line) for call: \(staleCall) since currentCall has ended.")
+        }
+    }
+
+    @objc
+    func configureBandwidthMode() {
+        guard AppReadiness.isAppReady else { return }
+        guard let currentCall = currentCall else { return }
+
+        let highBandwidthInterfaces = databaseStorage.read { readTx in
+            Self.highBandwidthNetworkInterfaces(readTx: readTx)
+        }
+        let useLowBandwidth = !SSKEnvironment.shared.reachabilityManager.isReachable(with: highBandwidthInterfaces)
+        Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
+
+        switch currentCall.mode {
+        case let .group(call):
+            call.updateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
+        case let .individual(call) where call.state == .connected:
+            callManager.setLowBandwidthMode(enabled: useLowBandwidth)
+        default:
+            // Do nothing. We'll reapply the bandwidth mode once connected
+            break
         }
     }
 
@@ -562,12 +597,35 @@ public final class CallService: NSObject {
             return tokenData
         }
     }
+
+    // MARK: - Bandwidth
+    static let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
+    private static let keyValueStore = SDSKeyValueStore(collection: "CallService")
+    private static let highBandwidthPreferenceKey = "HighBandwidthPreferenceKey"
+
+    static func setHighBandwidthInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
+        Logger.info("Updating preferred low bandwidth interfaces: \(interfaceSet.rawValue)")
+
+        keyValueStore.setUInt(interfaceSet.rawValue, key: highBandwidthPreferenceKey, transaction: writeTx)
+        writeTx.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(callServicePreferencesDidChange, object: nil)
+        }
+    }
+
+    static func highBandwidthNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
+        guard let highBandwidthPreference = keyValueStore.getUInt(
+                highBandwidthPreferenceKey,
+                transaction: readTx) else { return .wifiAndCellular }
+
+        return NetworkInterfaceSet(rawValue: highBandwidthPreference)
+    }
 }
 
 extension CallService: CallObserver {
     public func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
         updateIsVideoEnabled()
+        configureBandwidthMode()
     }
 
     public func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
@@ -581,6 +639,7 @@ extension CallService: CallObserver {
         AssertIsOnMainThread()
         updateIsVideoEnabled()
         updateGroupMembersForCurrentCallIfNecessary()
+        configureBandwidthMode()
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
