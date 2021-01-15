@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidAppear:animated];
 
-    if (self.shouldAutoPlayVideo && !self.hasAutoPlayedVideo) {
+    if (self.isVideo && self.shouldAutoPlayVideo && !self.hasAutoPlayedVideo) {
 
         [self playVideo];
         self.hasAutoPlayedVideo = YES;
