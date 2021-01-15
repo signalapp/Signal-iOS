@@ -105,7 +105,6 @@ public class OWSAttachmentDownloads: NSObject {
         }
     }
 
-    // TODO: Convert completions to promises.
     private func enqueueJob(forAttachmentId attachmentId: AttachmentId,
                             message: TSMessage?) -> Job {
         owsAssertDebug(!attachmentId.isEmpty)
@@ -191,15 +190,15 @@ public class OWSAttachmentDownloads: NSObject {
                 return
             }
 
-            self.retrieveAttachment(job: job,
-                                    attachmentPointer: attachmentPointer,
-                                    success: { attachmentStream in
-                                        self.downloadDidSucceed(attachmentStream: attachmentStream,
-                                                                job: job)
-                                    },
-                                    failure: { error in
-                                        self.downloadDidFail(error: error, job: job)
-                                    })
+            firstly { () -> Promise<TSAttachmentStream> in
+                Self.retrieveAttachment(job: job,
+                                        attachmentPointer: attachmentPointer)
+            }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
+                self.downloadDidSucceed(attachmentStream: attachmentStream,
+                                        job: job)
+            }.catch(on: Self.serialQueue) { (error: Error) in
+                self.downloadDidFail(error: error, job: job)
+            }
         }
     }
 
@@ -252,7 +251,6 @@ public class OWSAttachmentDownloads: NSObject {
             }
         }
 
-        // TODO: Should we reject() if the attachmentPointer no longer existed?
         job.resolver.reject(error)
 
         markJobComplete(job)
@@ -549,7 +547,7 @@ public extension OWSAttachmentDownloads {
             }
 
             // Block until _all_ promises have either succeeded or failed.
-            _ = firstly(on: .global()) {
+            _ = firstly(on: Self.serialQueue) {
                 when(fulfilled: promises)
             }.done(on: Self.serialQueue) { _ in
                 let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
@@ -726,7 +724,6 @@ public extension OWSAttachmentDownloads {
         return references
     }
 
-    // TODO: This replaces downloadAttachmentsForMessage().
     @objc
     func downloadAttachments(forMessageId messageId: String,
                              attachmentGroup: AttachmentGroup,
@@ -926,7 +923,7 @@ public extension OWSAttachmentDownloads {
             }
 
             // Block until _all_ promises have either succeeded or failed.
-            _ = firstly(on: .global()) {
+            _ = firstly(on: Self.serialQueue) {
                 when(fulfilled: promises)
             }.done(on: Self.serialQueue) { _ in
                 let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
@@ -960,19 +957,6 @@ public extension OWSAttachmentDownloads {
 
     // We want to avoid large downloads from a compromised or buggy service.
     private static let maxDownloadSize = 150 * 1024 * 1024
-
-    private func retrieveAttachment(job: Job,
-                                    attachmentPointer: TSAttachmentPointer,
-                                    success: @escaping (TSAttachmentStream) -> Void,
-                                    failure: @escaping (Error) -> Void) {
-        firstly {
-            Self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
-        }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
-            success(attachmentStream)
-        }.catch(on: Self.serialQueue) { (error: Error) in
-            failure(error)
-        }
-    }
 
     private class func retrieveAttachment(job: Job,
                                           attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
