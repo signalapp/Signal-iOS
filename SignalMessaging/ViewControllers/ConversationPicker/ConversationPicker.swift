@@ -71,6 +71,8 @@ open class ConversationPickerViewController: OWSViewController {
         return delegate.approvalMode(self)
     }
 
+    public func updateApprovalMode() { footerView.updateContents() }
+
     public override func loadView() {
         self.view = UIView()
         view.backgroundColor = Theme.backgroundColor

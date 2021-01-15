@@ -408,19 +408,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         super.viewWillDisappear(animated)
 
         Logger.flush()
-    }
-
-    override open func viewDidDisappear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewDidDisappear(animated)
-
-        Logger.flush()
 
         // Share extensions reside in a process that may be reused between usages.
         // That isn't safe; the codebase is full of statics (e.g. singletons) which
         // we can't easily clean up.
-        ExitShareExtension()
+        //
+        // We do this here, because since iOS 13 `viewDidDisappear` is never called.
+        DispatchQueue.main.async { ExitShareExtension() }
     }
 
     @objc
@@ -515,17 +509,23 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private func buildAttachmentsAndPresentConversationPicker() {
-        firstly { () -> Promise<[UnloadedItem]> in
+        // Present the conversation picker immediately, we'll tell
+        // it what attachments we're sharing as soon as we've finished
+        // building them.
+        let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: self)
+        self.showPrimaryViewController(conversationPicker)
+
+        firstly(on: .sharedUserInitiated) { () -> Promise<[UnloadedItem]> in
             guard let inputItems = self.extensionContext?.inputItems as? [NSExtensionItem] else {
                 throw OWSAssertionError("no input item")
             }
-            let result = try itemsToLoad(inputItems: inputItems)
+            let result = try self.itemsToLoad(inputItems: inputItems)
             return Promise.value(result)
-        }.then { [weak self] (unloadedItems: [UnloadedItem]) -> Promise<[LoadedItem]> in
+        }.then(on: .sharedUserInitiated) { [weak self] (unloadedItems: [UnloadedItem]) -> Promise<[LoadedItem]> in
             guard let self = self else { throw PMKError.cancelled }
 
             return self.loadItems(unloadedItems: unloadedItems)
-        }.then { [weak self] (loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> in
+        }.then(on: .sharedUserInitiated) { [weak self] (loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> in
             guard let self = self else { throw PMKError.cancelled }
 
             return self.buildAttachments(loadedItems: loadedItems)
@@ -535,18 +535,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             self.progressPoller = nil
             self.loadViewController = nil
 
-            let conversationPicker = SharingThreadPickerViewController(attachments: attachments, shareViewDelegate: self)
-            self.showPrimaryViewController(conversationPicker)
-            Logger.info("showing picker with attachments: \(attachments)")
+            Logger.info("Setting picker attachments: \(attachments)")
+            conversationPicker.attachments = attachments
         }.catch { [weak self] error in
             guard let self = self else { return }
 
             let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
                                                comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
-            OWSActionSheets.showActionSheet(title: alertTitle,
-                                message: error.localizedDescription,
-                                buttonTitle: CommonStrings.cancelButton) { _ in
-                                    self.shareViewWasCancelled()
+            OWSActionSheets.showActionSheet(
+                title: alertTitle,
+                message: error.localizedDescription,
+                buttonTitle: CommonStrings.cancelButton
+            ) { _ in
+                self.shareViewWasCancelled()
             }
             owsFailDebug("building attachment failed with error: \(error)")
         }

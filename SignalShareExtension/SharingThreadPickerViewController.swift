@@ -11,15 +11,17 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     weak var shareViewDelegate: ShareViewDelegate?
 
-    let attachments: [SignalAttachment]
+    var attachments: [SignalAttachment]? {
+        didSet { updateApprovalMode() }
+    }
 
     lazy var isTextMessage: Bool = {
-        guard attachments.count == 1, let attachment = attachments.first else { return false }
+        guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToTextMessage && attachment.dataLength < kOversizeTextMessageSizeThreshold
     }()
 
     lazy var isContactShare: Bool = {
-        guard attachments.count == 1, let attachment = attachments.first else { return false }
+        guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToContactShare
     }()
 
@@ -35,8 +37,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var selectedConversations: [ConversationItem] = []
 
     @objc
-    public init(attachments: [SignalAttachment], shareViewDelegate: ShareViewDelegate) {
-        self.attachments = attachments
+    public init(shareViewDelegate: ShareViewDelegate) {
         self.shareViewDelegate = shareViewDelegate
         super.init()
         delegate = self
@@ -56,7 +57,7 @@ extension SharingThreadPickerViewController {
     }
 
     func showApprovalUI() throws {
-        guard let firstAttachment = attachments.first else {
+        guard let attachments = attachments, let firstAttachment = attachments.first else {
             throw OWSAssertionError("Unexpectedly missing attachments")
         }
         guard let navigationController = navigationController else {
@@ -487,7 +488,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
     }
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
-        return .next
+        return attachments?.isEmpty != false ? .loading : .next
     }
 }
 
