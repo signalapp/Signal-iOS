@@ -32,24 +32,16 @@ NS_ASSUME_NONNULL_BEGIN
     const unsigned long kOneMegabyte = kOneKilobyte * kOneKilobyte;
     const unsigned long kOneGigabyte = kOneMegabyte * kOneKilobyte;
 
+    // NOTE: These values are not localized.
     if (fileSize > kOneGigabyte * 1) {
         int gbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneGigabyte));
-        return [@[
-            [formatter stringFromNumber:@(gbSize)],
-            @"GB",
-        ] componentsJoinedByString:@" "];
+        return [NSString stringWithFormat:@"%lu GB", (unsigned long)gbSize];
     } else if (fileSize > kOneMegabyte * 1) {
         int mbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneMegabyte));
-        return [@[
-            [formatter stringFromNumber:@(mbSize)],
-            @"MB",
-        ] componentsJoinedByString:@" "];
+        return [NSString stringWithFormat:@"%lu MB", (unsigned long)mbSize];
     } else {
         int kbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneKilobyte));
-        return [@[
-            [formatter stringFromNumber:@(kbSize)],
-            @"KB",
-        ] componentsJoinedByString:@" "];
+        return [NSString stringWithFormat:@"%lu KB", (unsigned long)kbSize];
     }
 }
 
