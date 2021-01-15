@@ -31,6 +31,11 @@ open class OWSLayerView: UIView {
         super.init(coder: aDecoder)
     }
 
+    @objc
+    public static func circleView() -> OWSLayerView {
+        circleView(size: nil)
+    }
+
     public static func circleView(size: CGFloat? = nil) -> OWSLayerView {
         let result = OWSLayerView(frame: .zero) { view in
             view.layer.cornerRadius = min(view.width, view.height) * 0.5
@@ -41,7 +46,12 @@ open class OWSLayerView: UIView {
         return result
     }
 
-    // Circle and pills are the same.
+    @objc
+    public static func pillView() -> OWSLayerView {
+        pillView(size: nil)
+    }
+
+    // Circles and pills are the same.
     public static func pillView(size: CGFloat? = nil) -> OWSLayerView {
         circleView(size: size)
     }

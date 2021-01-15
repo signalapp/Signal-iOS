@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFormat.h"
@@ -30,15 +30,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     const unsigned long kOneKilobyte = 1024;
     const unsigned long kOneMegabyte = kOneKilobyte * kOneKilobyte;
+    const unsigned long kOneGigabyte = kOneMegabyte * kOneKilobyte;
 
-    if (fileSize > kOneMegabyte * 10) {
-        return [[formatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneMegabyte))]
-            stringByAppendingString:@" MB"];
-    } else if (fileSize > kOneKilobyte * 10) {
-        return [[formatter stringFromNumber:@((int)round(fileSize / (CGFloat)kOneKilobyte))]
-            stringByAppendingString:@" KB"];
+    // NOTE: These values are not localized.
+    if (fileSize > kOneGigabyte * 1) {
+        int gbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneGigabyte));
+        return [NSString stringWithFormat:@"%lu GB", (unsigned long)gbSize];
+    } else if (fileSize > kOneMegabyte * 1) {
+        int mbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneMegabyte));
+        return [NSString stringWithFormat:@"%lu MB", (unsigned long)mbSize];
     } else {
-        return [NSString stringWithFormat:@"%lu Bytes", fileSize];
+        int kbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneKilobyte));
+        return [NSString stringWithFormat:@"%lu KB", (unsigned long)kbSize];
     }
 }
 

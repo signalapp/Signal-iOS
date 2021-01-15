@@ -417,9 +417,7 @@ public class CVMediaView: UIView {
     public static func buildVideoPlayButton(block: @escaping () -> Void) -> UIView {
         let playVideoButton = OWSButton(block: block)
 
-        let playVideoCircleView = OWSLayerView(frame: .zero) { view in
-            view.layer.cornerRadius = min(view.width, view.height) * 0.5
-        }
+        let playVideoCircleView = OWSLayerView.circleView()
         playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
         playVideoCircleView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoCircleView)
@@ -429,8 +427,8 @@ public class CVMediaView: UIView {
         playVideoIconView.isUserInteractionEnabled = false
         playVideoButton.addSubview(playVideoIconView)
 
-        let playVideoButtonWidth = ScaleFromIPhone5(44)
-        let playVideoIconWidth = ScaleFromIPhone5(20)
+        let playVideoButtonWidth: CGFloat = 44
+        let playVideoIconWidth: CGFloat = 20
         playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
         playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
         playVideoCircleView.autoPinEdgesToSuperviewEdges()
