@@ -12,6 +12,15 @@ public enum ProfileViewMode: UInt {
     case registration
     case experienceUpgrade
 
+    fileprivate var hasBio: Bool {
+        switch self {
+        case .appSettings:
+            return true
+        case .registration, .experienceUpgrade:
+            return false
+        }
+    }
+
     fileprivate var hasSaveButton: Bool {
         switch self {
         case .appSettings:
@@ -255,45 +264,49 @@ public class ProfileViewController: OWSTableViewController {
         }
         contents.addSection(namesSection)
 
-        let aboutSection = OWSTableSection()
-        aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
-                                                     comment: "Header for the 'bio' section of the profile view.")
-        let profileBio = self.normalizedProfileBio
-        let profileBioEmoji = self.normalizedProfileBioEmoji
-        if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
-            aboutSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                let cell = OWSTableItem.newCell()
+        var lastSection = namesSection
 
-                let label = UILabel()
-                label.text = bioForDisplay
-                label.textColor = Theme.primaryTextColor
-                label.font = .ows_dynamicTypeBodyClamped
-                label.numberOfLines = 0
-                label.lineBreakMode = .byWordWrapping
-                cell.contentView.addSubview(label)
-                label.autoPinEdgesToSuperviewMargins()
+        if mode.hasBio {
+            let aboutSection = OWSTableSection()
+            aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
+                                                         comment: "Header for the 'bio' section of the profile view.")
+            let profileBio = self.normalizedProfileBio
+            let profileBioEmoji = self.normalizedProfileBioEmoji
+            if let bioForDisplay = OWSUserProfile.bioForDisplay(bio: profileBio, bioEmoji: profileBioEmoji) {
+                aboutSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                    let cell = OWSTableItem.newCell()
 
-                cell.accessoryType = .disclosureIndicator
+                    let label = UILabel()
+                    label.text = bioForDisplay
+                    label.textColor = Theme.primaryTextColor
+                    label.font = .ows_dynamicTypeBodyClamped
+                    label.numberOfLines = 0
+                    label.lineBreakMode = .byWordWrapping
+                    cell.contentView.addSubview(label)
+                    label.autoPinEdgesToSuperviewMargins()
 
-                cell.accessibilityIdentifier = "profile_bio"
+                    cell.accessoryType = .disclosureIndicator
 
-                return cell
-            },
-            actionBlock: { [weak self] in
-                self?.didTapBio()
-            }))
-        } else {
-            aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
-                                                                       comment: "Button to add a 'bio' to the user's profile in the profile view."),
-                                               textColor: Theme.accentBlueColor,
-                                               accessoryType: .disclosureIndicator,
-                                               accessibilityIdentifier: "profile_bio") { [weak self] in
-                self?.didTapBio()
-            })
+                    cell.accessibilityIdentifier = "profile_bio"
+
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    self?.didTapBio()
+                }))
+            } else {
+                aboutSection.add(OWSTableItem.item(name: NSLocalizedString("PROFILE_VIEW_ADD_BIO_TO_PROFILE",
+                                                                           comment: "Button to add a 'bio' to the user's profile in the profile view."),
+                                                   textColor: Theme.accentBlueColor,
+                                                   accessoryType: .disclosureIndicator,
+                                                   accessibilityIdentifier: "profile_bio") { [weak self] in
+                    self?.didTapBio()
+                })
+            }
+            contents.addSection(aboutSection)
+
+            lastSection = aboutSection
         }
-        contents.addSection(aboutSection)
-
-        let lastSection = aboutSection
 
         // Information Footer
 
