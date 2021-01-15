@@ -757,6 +757,7 @@
 		888B6D5025B25D2100E2A662 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4425B2224E00E2A662 /* Wallpaper.swift */; };
 		888B6D5125B25D2400E2A662 /* Wallpaper+SolidColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4825B2430700E2A662 /* Wallpaper+SolidColor.swift */; };
 		888B6D5225B25D2800E2A662 /* Wallpaper+Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */; };
+		888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		888F188623AC5A9E000780E9 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
@@ -1861,10 +1862,9 @@
 		888A280424B3E9820045D639 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A280524B3E9820045D639 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888B6D4025AE7E2200E2A662 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = translations/zh_HK.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		888B6D4425B2224E00E2A662 /* Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
-		888B6D4825B2430700E2A662 /* Wallpaper+SolidColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+SolidColor.swift"; sourceTree = "<group>"; };
 		888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Gradient.swift"; sourceTree = "<group>"; };
 		888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Wallpaper.swift"; sourceTree = "<group>"; };
+		888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingSuggestionsMegaphone.swift; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
@@ -3569,6 +3569,7 @@
 				347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */,
+				888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */,
@@ -5395,6 +5396,7 @@
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
 				34798A8525AF370D00EC89B4 /* ProfileViewController.swift in Sources */,
+				888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				88588D1B252D3DFF00405414 /* CallControls.swift in Sources */,

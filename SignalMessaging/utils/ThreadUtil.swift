@@ -202,6 +202,8 @@ extension TSThread {
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return }
 
+        guard SSKPreferences.areSharingSuggestionsEnabled(transaction: transaction) else { return }
+
         let threadName = contactsManager.displayName(for: self, transaction: transaction)
 
         let sendMessageIntent = INSendMessageIntent(

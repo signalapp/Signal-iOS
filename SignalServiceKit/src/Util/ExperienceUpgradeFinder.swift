@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,6 +15,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case researchMegaphone1
     case groupsV2AndMentionsSplash2
     case groupCallsMegaphone
+    case sharingSuggestions
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -61,6 +62,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return FeatureFlags.groupsV2showSplash
         case .groupCallsMegaphone:
             return RemoteConfig.groupCalling
+        case .sharingSuggestions:
+            return true
         }
     }
 
@@ -114,6 +117,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .groupsV2AndMentionsSplash2:
             return .medium
         case .groupCallsMegaphone:
+            return .medium
+        case .sharingSuggestions:
             return .medium
         }
     }
@@ -176,6 +181,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .researchMegaphone1:               return .researchMegaphone1
         case .groupsV2AndMentionsSplash2:       return .groupsV2AndMentionsSplash2
         case .groupCallsMegaphone:              return .groupCallsMegaphone
+        case .sharingSuggestions:               return .sharingSuggestions
         }
     }
 }
@@ -338,6 +344,7 @@ public enum ObjcExperienceUpgradeId: Int {
     case researchMegaphone1
     case groupsV2AndMentionsSplash2
     case groupCallsMegaphone
+    case sharingSuggestions
 
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
@@ -349,6 +356,7 @@ public enum ObjcExperienceUpgradeId: Int {
         case .researchMegaphone1:               return .researchMegaphone1
         case .groupsV2AndMentionsSplash2:       return .groupsV2AndMentionsSplash2
         case .groupCallsMegaphone:              return .groupCallsMegaphone
+        case .sharingSuggestions:               return .sharingSuggestions
         }
     }
 }
