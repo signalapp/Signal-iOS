@@ -1326,29 +1326,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    if (signalAccount != nil) {
-        return [self comparableNameForSignalAccount:signalAccount
-                                        transaction:transaction];
+    if (!signalAccount) {
+        signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:address];
     }
 
-    NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
-    if (phoneNumber != nil) {
-        Contact *_Nullable contact = self.allContactsMap[phoneNumber];
-        NSString *_Nullable comparableContactName = [self comparableNameForContact:contact];
-        if (comparableContactName.length > 0) {
-            return comparableContactName;
-        }
-    }
-
-    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
-    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
-        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
-        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
-        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
-    }
-
-    // Fall back to non-contact display name.
-    return [self displayNameForAddress:address transaction:transaction];
+    return [self comparableNameForSignalAccount:signalAccount transaction:transaction];
 }
 
 - (nullable NSString *)comparableNameForContact:(nullable Contact *)contact
@@ -1368,11 +1350,32 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     NSString *_Nullable name = [self comparableNameForContact:signalAccount.contact];
 
-    if (name.length < 1) {
-        name = [self displayNameForSignalAccount:signalAccount];
+    if (name.length > 0) {
+        return name;
     }
 
-    return name;
+    NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
+    if (phoneNumber != nil) {
+        Contact *_Nullable contact = self.allContactsMap[phoneNumber];
+        NSString *_Nullable comparableContactName = [self comparableNameForContact:contact];
+        if (comparableContactName.length > 0) {
+            return comparableContactName;
+        }
+    }
+
+    __block NSPersonNameComponents *_Nullable nameComponents;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        nameComponents = [self nameComponentsForAddress:signalAccount.recipientAddress transaction:transaction];
+    }];
+
+    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
+        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
+        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
+        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
+    }
+
+    // Fall back to non-contact display name.
+    return [self displayNameForSignalAccount:signalAccount];
 }
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
@@ -1380,11 +1383,30 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     NSString *_Nullable name = [self comparableNameForContact:signalAccount.contact];
 
-    if (name.length < 1) {
-        name = [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
+    if (name.length > 0) {
+        return name;
     }
 
-    return name;
+    NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
+    if (phoneNumber != nil) {
+        Contact *_Nullable contact = self.allContactsMap[phoneNumber];
+        NSString *_Nullable comparableContactName = [self comparableNameForContact:contact];
+        if (comparableContactName.length > 0) {
+            return comparableContactName;
+        }
+    }
+
+    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:signalAccount.recipientAddress
+                                                                          transaction:transaction];
+
+    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
+        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
+        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
+        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
+    }
+
+    // Fall back to non-contact display name.
+    return [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
 }
 
 NS_ASSUME_NONNULL_END

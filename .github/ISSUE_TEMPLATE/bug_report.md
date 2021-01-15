@@ -1,3 +1,12 @@
+---
+name: 🛠️ Bug report
+about: Create a report about a technical issue
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 <!-- This is a bug report template. By following the instructions below and filling out the sections with your information, you will help the developers get all the necessary data to fix your issue.
 You can also preview your report before submitting it. You may remove sections that aren't relevant to your particular case.
 
