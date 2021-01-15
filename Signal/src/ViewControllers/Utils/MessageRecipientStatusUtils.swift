@@ -17,7 +17,7 @@ import SignalMessaging
 }
 
 @objc
-public class MessageRecipientStatusUtils: NSObject {
+public final class MessageRecipientStatusUtils: NSObject {
     // MARK: Initializers
 
     @available(*, unavailable, message:"do not instantiate this class.")

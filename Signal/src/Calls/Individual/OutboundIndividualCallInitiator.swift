@@ -9,7 +9,7 @@ import SignalMessaging
 /**
  * Creates an outbound call via WebRTC.
  */
-@objc public class OutboundIndividualCallInitiator: NSObject {
+@objc public final class OutboundIndividualCallInitiator: NSObject {
 
     @objc public override init() {
         super.init()

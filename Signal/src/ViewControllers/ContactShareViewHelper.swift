@@ -13,7 +13,7 @@ public protocol ContactShareViewHelperDelegate: class {
 }
 
 @objc
-public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
+public final class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: - Dependencies
 

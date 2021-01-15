@@ -43,7 +43,7 @@ public extension CallObserver {
 }
 
 @objc
-public class SignalCall: NSObject, CallManagerCallReference {
+public final class SignalCall: NSObject, CallManagerCallReference {
     public let mode: Mode
     public enum Mode {
         case individual(IndividualCall)

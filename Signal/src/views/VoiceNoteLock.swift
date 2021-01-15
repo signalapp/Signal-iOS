@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class VoiceMemoLockView: UIView {
+public final class VoiceMemoLockView: UIView {
 
     private var offsetConstraint: NSLayoutConstraint!
 

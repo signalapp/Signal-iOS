@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MessageSelectionView: UIView {
+public final class MessageSelectionView: UIView {
 
     @objc
     public var isSelected: Bool = false {

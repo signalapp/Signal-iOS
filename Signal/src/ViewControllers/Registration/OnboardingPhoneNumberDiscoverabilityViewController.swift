@@ -6,7 +6,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseViewController {
+public final class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseViewController {
 
     static let hInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
 

@@ -13,7 +13,7 @@ import PromiseKit
 //       db transactions and updates.
 //       It might help ensure that CVComponentState equality
 //       works correctly.
-public class CVAvatarBuilder {
+public final class CVAvatarBuilder {
 
     // MARK: - Dependencies
 

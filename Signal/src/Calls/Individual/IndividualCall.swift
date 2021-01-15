@@ -46,7 +46,7 @@ public protocol IndividualCallDelegate: class {
  * This class' state should only be accessed on the main queue.
  */
 @objc
-public class IndividualCall: NSObject, IndividualCallNotificationInfo {
+public final class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // Mark -
 

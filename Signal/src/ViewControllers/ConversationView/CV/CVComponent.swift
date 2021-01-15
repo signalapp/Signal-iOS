@@ -102,7 +102,7 @@ public struct CVCellMeasurement: Equatable {
     private let sizes: [String: CGSize]
     private let values: [String: CGFloat]
 
-    public class Builder {
+    public final class Builder {
         var cellSize: CGSize = .zero
         private var sizes = [String: CGSize]()
         private var values = [String: CGFloat]()

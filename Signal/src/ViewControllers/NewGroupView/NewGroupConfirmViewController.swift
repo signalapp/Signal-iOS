@@ -7,7 +7,7 @@ import PromiseKit
 import SafariServices
 
 @objc
-public class NewGroupConfirmViewController: OWSViewController {
+public final class NewGroupConfirmViewController: OWSViewController {
 
     private var newGroupState = NewGroupState()
 

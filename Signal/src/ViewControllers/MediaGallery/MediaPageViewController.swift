@@ -7,7 +7,7 @@ import PromiseKit
 
 // Objc wrapper for the MediaGalleryItem struct
 @objc
-public class GalleryItemBox: NSObject {
+public final class GalleryItemBox: NSObject {
     public let value: MediaGalleryItem
 
     init(_ value: MediaGalleryItem) {

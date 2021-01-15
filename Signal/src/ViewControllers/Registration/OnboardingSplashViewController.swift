@@ -7,7 +7,7 @@ import PromiseKit
 import SafariServices
 
 @objc
-public class OnboardingSplashViewController: OnboardingBaseViewController {
+public final class OnboardingSplashViewController: OnboardingBaseViewController {
 
     let modeSwitchButton = UIButton()
 

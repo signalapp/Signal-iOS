@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSAvatarTableViewCell)
-public class AvatarTableViewCell: UITableViewCell {
+public final class AvatarTableViewCell: UITableViewCell {
 
     private let columns: UIStackView
     private let textRows: UIStackView

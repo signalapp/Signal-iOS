@@ -78,7 +78,7 @@ extension CallUIAdaptee {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-@objc public class CallUIAdapter: NSObject, CallServiceObserver {
+@objc public final class CallUIAdapter: NSObject, CallServiceObserver {
 
     var contactsManager: OWSContactsManager { Environment.shared.contactsManager }
     var callService: CallService { AppEnvironment.shared.callService }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVMediaAlbumView: UIStackView {
+public final class CVMediaAlbumView: UIStackView {
     private var items = [CVMediaAlbumItem]()
     private var isBorderless = false
 

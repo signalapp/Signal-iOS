@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class Onboarding2FAViewController: OnboardingBaseViewController {
+public final class Onboarding2FAViewController: OnboardingBaseViewController {
 
     // When the users attempts remaining falls below this number,
     // we will show an alert with more detail about the risks.

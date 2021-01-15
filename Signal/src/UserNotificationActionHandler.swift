@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc(OWSUserNotificationActionHandler)
-public class UserNotificationActionHandler: NSObject {
+public final class UserNotificationActionHandler: NSObject {
 
     var actionHandler: NotificationActionHandler {
         return NotificationActionHandler.shared

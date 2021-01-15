@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MediaUploadView: UIView {
+public final class MediaUploadView: UIView {
 
     // MARK: -
 

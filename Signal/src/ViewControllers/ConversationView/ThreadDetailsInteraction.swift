@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSThreadDetailsInteraction)
-public class ThreadDetailsInteraction: TSInteraction {
+public final class ThreadDetailsInteraction: TSInteraction {
 
     @objc
     public override func isDynamicInteraction() -> Bool {

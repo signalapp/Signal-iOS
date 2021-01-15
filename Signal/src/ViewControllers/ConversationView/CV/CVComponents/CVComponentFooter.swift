@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentFooter: CVComponentBase, CVComponent {
+public final class CVComponentFooter: CVComponentBase, CVComponent {
 
     struct State: Equatable {
         let timestampText: String
@@ -307,7 +307,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewFooter: NSObject, CVComponentView {
+    public final class CVComponentViewFooter: NSObject, CVComponentView {
 
         fileprivate let outerStack = OWSStackView(name: "footer.outerStack")
         fileprivate let innerStack = OWSStackView(name: "footer.innerStack")

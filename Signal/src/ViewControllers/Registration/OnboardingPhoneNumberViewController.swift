@@ -6,7 +6,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
+public final class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     private let countryNameLabel = UILabel()
     private let callingCodeLabel = UILabel()

@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
+public final class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.threadDetails
@@ -332,7 +332,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewThreadDetails: NSObject, CVComponentView {
+    public final class CVComponentViewThreadDetails: NSObject, CVComponentView {
 
         fileprivate var avatarView: AvatarImageView?
 

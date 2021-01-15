@@ -19,7 +19,7 @@ enum ViewOnceState: Equatable {
 // MARK: -
 
 @objc
-public class CVComponentViewOnce: CVComponentBase, CVComponent {
+public final class CVComponentViewOnce: CVComponentBase, CVComponent {
 
     private enum ViewOnceMessageType: Equatable {
         case unknown
@@ -177,7 +177,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewViewOnce: NSObject, CVComponentView {
+    public final class CVComponentViewViewOnce: NSObject, CVComponentView {
 
         fileprivate let hStackView = OWSStackView(name: "viewOnce")
         fileprivate let iconView = UIImageView()

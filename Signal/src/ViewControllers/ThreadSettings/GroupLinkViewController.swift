@@ -12,7 +12,7 @@ protocol GroupLinkViewControllerDelegate: class {
 // MARK: -
 
 @objc
-public class GroupLinkViewController: OWSTableViewController {
+public final class GroupLinkViewController: OWSTableViewController {
 
     weak var groupLinkViewControllerDelegate: GroupLinkViewControllerDelegate?
 
@@ -250,7 +250,7 @@ public class GroupLinkViewController: OWSTableViewController {
 
 // MARK: -
 
-public class GroupLinkViewUtils {
+public final class GroupLinkViewUtils {
 
     static func updateLinkMode(groupModelV2: TSGroupModelV2,
                                linkMode: GroupsV2LinkMode,

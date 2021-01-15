@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVContactShareView: UIView {
+public final class CVContactShareView: UIView {
 
     struct State: Equatable {
         let contactShare: ContactShareViewModel

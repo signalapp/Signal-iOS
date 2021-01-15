@@ -11,7 +11,7 @@ public protocol PhotoGridItem: class {
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
 }
 
-public class PhotoGridViewCell: UICollectionViewCell {
+public final class PhotoGridViewCell: UICollectionViewCell {
 
     static let reuseIdentifier = "PhotoGridViewCell"
 

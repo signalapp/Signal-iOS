@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
+public final class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.unreadIndicator
@@ -103,7 +103,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewUnreadIndicator: NSObject, CVComponentView {
+    public final class CVComponentViewUnreadIndicator: NSObject, CVComponentView {
 
         fileprivate let stackView = OWSStackView(name: "UnreadIndicator")
 

@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class LogPickerViewController: OWSTableViewController {
+public final class LogPickerViewController: OWSTableViewController {
     let logDirUrl: URL
 
     @objc
@@ -85,7 +85,7 @@ public class LogPickerViewController: OWSTableViewController {
 }
 
 @objc
-public class LogViewController: UIViewController {
+public final class LogViewController: UIViewController {
 
     let logUrl: URL
 

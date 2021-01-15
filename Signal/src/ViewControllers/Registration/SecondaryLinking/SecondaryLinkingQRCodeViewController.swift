@@ -6,7 +6,7 @@ import Foundation
 import SafariServices
 
 @objc
-public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController {
+public final class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController {
 
     let provisioningController: ProvisioningController
 

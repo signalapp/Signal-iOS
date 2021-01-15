@@ -13,7 +13,7 @@ import PromiseKit
 // Note that all of our CloudKit records are immutable.
 // "Persistent" records are only uploaded once.
 // "Ephemeral" records are always uploaded to a new record name.
-@objc public class OWSBackupAPI: NSObject {
+@objc public final class OWSBackupAPI: NSObject {
 
     // If we change the record types, we need to ensure indices
     // are configured properly in the CloudKit dashboard.

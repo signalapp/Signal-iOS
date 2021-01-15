@@ -12,7 +12,7 @@ protocol AddGroupMembersViewControllerDelegate: class {
 // MARK: -
 
 @objc
-public class AddGroupMembersViewController: BaseGroupMemberViewController {
+public final class AddGroupMembersViewController: BaseGroupMemberViewController {
 
     weak var addGroupMembersViewControllerDelegate: AddGroupMembersViewControllerDelegate?
 

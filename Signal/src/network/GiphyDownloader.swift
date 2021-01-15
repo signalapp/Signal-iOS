@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public class GiphyDownloader: ProxiedContentDownloader {
+public final class GiphyDownloader: ProxiedContentDownloader {
 
     // MARK: - Properties
 

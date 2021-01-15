@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MessageAction: NSObject {
+public final class MessageAction: NSObject {
     @objc
     let block: (_ sender: Any?) -> Void
     let accessibilityIdentifier: String
@@ -64,7 +64,7 @@ public protocol MessageActionsViewControllerDelegate: class {
 }
 
 @objc
-public class MessageActionsViewController: UIViewController {
+public final class MessageActionsViewController: UIViewController {
 
     private let itemViewModel: CVItemViewModelImpl
     @objc
@@ -420,7 +420,7 @@ public protocol MessageActionsToolbarDelegate: class {
     func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction)
 }
 
-public class MessageActionsToolbar: UIToolbar {
+public final class MessageActionsToolbar: UIToolbar {
 
     weak var actionDelegate: MessageActionsToolbarDelegate?
 

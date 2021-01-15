@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
+public final class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
 
     private var galleryItems: [GalleryDate: [MediaGalleryItem]] { return mediaGallery.sections }
     private var galleryDates: [GalleryDate] { return mediaGallery.sectionDates }

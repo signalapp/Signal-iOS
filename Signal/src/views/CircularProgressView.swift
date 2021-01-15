@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CircularProgressView: UIView {
+public final class CircularProgressView: UIView {
 
     // MARK: -
 

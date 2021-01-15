@@ -6,7 +6,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class OnboardingCountryState: NSObject {
+public final class OnboardingCountryState: NSObject {
     public let countryName: String
     public let callingCode: String
     public let countryCode: String
@@ -44,7 +44,7 @@ public class OnboardingCountryState: NSObject {
 // MARK: -
 
 @objc
-public class OnboardingPhoneNumber: NSObject {
+public final class OnboardingPhoneNumber: NSObject {
     public let e164: String
     public let userInput: String
 
@@ -59,7 +59,7 @@ public class OnboardingPhoneNumber: NSObject {
 // MARK: -
 
 @objc
-public class OnboardingNavigationController: OWSNavigationController {
+public final class OnboardingNavigationController: OWSNavigationController {
     let onboardingController: OnboardingController
 
     @objc
@@ -73,7 +73,7 @@ public class OnboardingNavigationController: OWSNavigationController {
 }
 
 @objc
-public class OnboardingController: NSObject {
+public final class OnboardingController: NSObject {
 
     // MARK: - Dependencies
 

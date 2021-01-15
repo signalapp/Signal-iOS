@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
+public final class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     // MARK: - Dependencies
 
@@ -170,7 +170,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewAudioAttachment: NSObject, CVComponentView {
+    public final class CVComponentViewAudioAttachment: NSObject, CVComponentView {
 
         fileprivate let containerView = UIView.container()
 

@@ -7,7 +7,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class GroupInviteLinksUI: UIView {
+public final class GroupInviteLinksUI: UIView {
 
     @available(*, unavailable, message:"Do not instantiate this class.")
     required init(coder: NSCoder) {

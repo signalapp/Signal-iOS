@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSTypingIndicatorInteraction)
-public class TypingIndicatorInteraction: TSInteraction {
+public final class TypingIndicatorInteraction: TSInteraction {
     @objc
     public static let TypingIndicatorId = "TypingIndicator"
 

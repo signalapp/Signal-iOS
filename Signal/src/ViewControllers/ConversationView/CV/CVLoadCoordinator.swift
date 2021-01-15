@@ -35,7 +35,7 @@ struct CVUpdateToken {
 // MARK: -
 
 @objc
-public class CVLoadCoordinator: NSObject {
+public final class CVLoadCoordinator: NSObject {
 
     // MARK: - Dependencies
 

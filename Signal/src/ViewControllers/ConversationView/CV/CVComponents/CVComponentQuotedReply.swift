@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentQuotedReply: CVComponentBase, CVComponent {
+public final class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
     private let quotedReply: CVComponentState.QuotedReply
     private var quotedReplyModel: OWSQuotedReplyModel {
@@ -71,7 +71,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewQuotedReply: NSObject, CVComponentView {
+    public final class CVComponentViewQuotedReply: NSObject, CVComponentView {
 
         // For now we simply use this view to host QuotedMessageView.
         //

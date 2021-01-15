@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class LoadMoreMessagesView: UICollectionReusableView {
+public final class LoadMoreMessagesView: UICollectionReusableView {
 
     @objc
     public static let reuseIdentifier = "LoadMoreMessagesView"

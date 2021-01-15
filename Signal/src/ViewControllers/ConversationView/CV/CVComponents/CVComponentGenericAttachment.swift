@@ -6,7 +6,7 @@ import Foundation
 import QuickLook
 
 @objc
-public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
+public final class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private let genericAttachment: CVComponentState.GenericAttachment
     private var attachment: TSAttachment { genericAttachment.attachment }
@@ -281,7 +281,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewGenericAttachment: NSObject, CVComponentView {
+    public final class CVComponentViewGenericAttachment: NSObject, CVComponentView {
 
         fileprivate let hStackView = OWSStackView(name: "GenericAttachment.hStackView")
         fileprivate let vStackView = OWSStackView(name: "GenericAttachment.vStackView")

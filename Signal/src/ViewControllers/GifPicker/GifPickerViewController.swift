@@ -8,7 +8,7 @@ import SignalMessaging
 import PromiseKit
 
 @objc
-public class GifPickerNavigationViewController: OWSNavigationController {
+public final class GifPickerNavigationViewController: OWSNavigationController {
 
     @objc
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?

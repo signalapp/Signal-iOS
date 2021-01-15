@@ -5,7 +5,7 @@
 import UIKit
 
 @objc(OWSPinReminderViewController)
-public class PinReminderViewController: OWSViewController {
+public final class PinReminderViewController: OWSViewController {
 
     private let completionHandler: (() -> Void)?
 

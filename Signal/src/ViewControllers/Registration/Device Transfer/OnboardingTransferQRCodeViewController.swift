@@ -5,7 +5,7 @@
 import Foundation
 import MultipeerConnectivity
 
-public class OnboardingTransferQRCodeViewController: OnboardingBaseViewController {
+public final class OnboardingTransferQRCodeViewController: OnboardingBaseViewController {
 
     private let qrCodeView = QRCodeView()
 

@@ -8,7 +8,7 @@ import PromiseKit
 // The initial presentation is intended to be indistinguishable from the Launch Screen.
 // After a delay we present some "loading" UI so the user doesn't think the app is frozen.
 @objc
-public class LoadingViewController: UIViewController {
+public final class LoadingViewController: UIViewController {
 
     var logoView: UIImageView!
     var topLabel: UILabel!

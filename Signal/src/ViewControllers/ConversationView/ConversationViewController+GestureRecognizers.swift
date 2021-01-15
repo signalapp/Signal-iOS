@@ -287,7 +287,7 @@ public struct CVLongPressHandler {
 
 // MARK: -
 
-public class CVPanHandler {
+public final class CVPanHandler {
     public enum PanType {
         case swipeToReply
         case scrubAudio

@@ -12,7 +12,7 @@ protocol GroupMemberRequestsAndInvitesViewControllerDelegate: class {
 // MARK: -
 
 @objc
-public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController {
+public final class GroupMemberRequestsAndInvitesViewController: OWSTableViewController {
 
     weak var groupMemberRequestsAndInvitesViewControllerDelegate: GroupMemberRequestsAndInvitesViewControllerDelegate?
 

@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentSticker: CVComponentBase, CVComponent {
+public final class CVComponentSticker: CVComponentBase, CVComponent {
 
     private let sticker: CVComponentState.Sticker
     private var stickerMetadata: StickerMetadata? {
@@ -157,7 +157,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewSticker: NSObject, CVComponentView {
+    public final class CVComponentViewSticker: NSObject, CVComponentView {
 
         fileprivate let containerView = UIView()
 

@@ -18,7 +18,7 @@ public protocol LocationPickerDelegate {
 }
 
 @objc
-public class LocationPicker: UIViewController {
+public final class LocationPicker: UIViewController {
     @objc public weak var delegate: LocationPickerDelegate?
     public var location: Location? { didSet { updateAnnotation() } }
 
@@ -67,7 +67,7 @@ public class LocationPicker: UIViewController {
         geocoder.cancelGeocode()
     }
 
-    open override func loadView() {
+    public override func loadView() {
         view = mapView
 
         let currentLocationButton = UIButton()
@@ -87,7 +87,7 @@ public class LocationPicker: UIViewController {
         currentLocationButton.addTarget(self, action: #selector(didPressCurrentLocation), for: .touchUpInside)
     }
 
-    open override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
@@ -405,7 +405,7 @@ class LocationSearchResults: UITableViewController {
 }
 
 @objc
-public class Location: NSObject {
+public final class Location: NSObject {
     public let name: String?
 
     // difference from placemark location is that if location was reverse geocoded,

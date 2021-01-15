@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSUnreadIndicatorInteraction)
-public class UnreadIndicatorInteraction: TSInteraction {
+public final class UnreadIndicatorInteraction: TSInteraction {
 
     @objc
     public override func isDynamicInteraction() -> Bool {

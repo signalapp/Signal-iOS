@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSDateHeaderInteraction)
-public class DateHeaderInteraction: TSInteraction {
+public final class DateHeaderInteraction: TSInteraction {
 
     @objc
     public override func isDynamicInteraction() -> Bool {

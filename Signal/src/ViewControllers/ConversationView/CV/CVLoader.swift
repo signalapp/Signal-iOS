@@ -7,7 +7,7 @@ import PromiseKit
 
 // This entity performs a single load.
 @objc
-public class CVLoader: NSObject {
+public final class CVLoader: NSObject {
 
     // MARK: - Dependencies
 

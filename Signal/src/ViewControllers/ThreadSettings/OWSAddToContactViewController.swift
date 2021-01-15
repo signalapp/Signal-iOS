@@ -10,7 +10,7 @@ import SignalServiceKit
 import SignalMessaging
 
 @objc
-public class OWSAddToContactViewController: OWSViewController {
+public final class OWSAddToContactViewController: OWSViewController {
 
     private let address: SignalServiceAddress
     private var tableView: UITableView!

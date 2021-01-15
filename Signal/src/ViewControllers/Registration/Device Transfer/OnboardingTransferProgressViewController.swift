@@ -6,7 +6,7 @@ import UIKit
 import MultipeerConnectivity
 
 @objc
-public class OnboardingTransferProgressViewController: OnboardingBaseViewController {
+public final class OnboardingTransferProgressViewController: OnboardingBaseViewController {
 
     let progressView: TransferProgressView
 

@@ -28,7 +28,7 @@ public protocol ConversationViewLayoutDelegate {
 // MARK: -
 
 @objc
-public class ConversationViewLayout: UICollectionViewLayout {
+public final class ConversationViewLayout: UICollectionViewLayout {
 
     @objc
     public weak var delegate: ConversationViewLayoutDelegate?

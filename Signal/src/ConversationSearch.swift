@@ -17,7 +17,7 @@ public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate
 }
 
 @objc
-public class ConversationSearchController: NSObject {
+public final class ConversationSearchController: NSObject {
 
     // MARK: - Dependencies
 
@@ -157,7 +157,7 @@ protocol SearchResultsBarDelegate: AnyObject {
                           resultSet: ConversationScreenSearchResultSet)
 }
 
-public class SearchResultsBar: UIView {
+public final class SearchResultsBar: UIView {
 
     weak var resultsBarDelegate: SearchResultsBarDelegate?
 

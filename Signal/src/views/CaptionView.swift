@@ -6,7 +6,7 @@ public protocol CaptionContainerViewDelegate: class {
     func captionContainerViewDidUpdateText(_ captionContainerView: CaptionContainerView)
 }
 
-public class CaptionContainerView: UIView {
+public final class CaptionContainerView: UIView {
 
     weak var delegate: CaptionContainerViewDelegate?
 

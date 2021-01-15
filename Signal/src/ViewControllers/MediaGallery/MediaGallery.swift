@@ -40,7 +40,7 @@ class MediaGalleryAlbum {
     }
 }
 
-public class MediaGalleryItem: Equatable, Hashable {
+public final class MediaGalleryItem: Equatable, Hashable {
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate

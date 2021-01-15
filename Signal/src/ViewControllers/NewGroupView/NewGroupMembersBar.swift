@@ -21,7 +21,7 @@ public protocol NewGroupMembersBarDelegate: NewGroupMemberCellDelegate {
 // MARK: -
 
 @objc
-public class NewGroupMembersBar: UIView {
+public final class NewGroupMembersBar: UIView {
 
     weak var delegate: NewGroupMembersBarDelegate?
 

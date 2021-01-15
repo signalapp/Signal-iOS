@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
+public final class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.dateHeader
@@ -104,7 +104,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewDateHeader: NSObject, CVComponentView {
+    public final class CVComponentViewDateHeader: NSObject, CVComponentView {
 
         fileprivate let titleLabel = UILabel()
 

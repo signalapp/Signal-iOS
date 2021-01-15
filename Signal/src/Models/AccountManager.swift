@@ -11,7 +11,7 @@ import SignalServiceKit
  * AccountManager delegates to both.
  */
 @objc
-public class AccountManager: NSObject {
+public final class AccountManager: NSObject {
 
     // MARK: - Dependencies
 

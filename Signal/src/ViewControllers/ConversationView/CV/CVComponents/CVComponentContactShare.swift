@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentContactShare: CVComponentBase, CVComponent {
+public final class CVComponentContactShare: CVComponentBase, CVComponent {
 
     private let contactShareState: CVComponentState.ContactShare
 
@@ -63,7 +63,7 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewContactShare: NSObject, CVComponentView {
+    public final class CVComponentViewContactShare: NSObject, CVComponentView {
 
         // For now we simply use this view to host ContactShareView.
         //

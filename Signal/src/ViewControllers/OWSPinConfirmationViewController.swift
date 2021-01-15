@@ -5,7 +5,7 @@
 import UIKit
 
 @objc(OWSPinConfirmationViewController)
-public class PinConfirmationViewController: OWSViewController {
+public final class PinConfirmationViewController: OWSViewController {
 
     private let completionHandler: ((Bool) -> Void)
     private let titleText: String

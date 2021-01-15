@@ -6,7 +6,7 @@ import UIKit
 import WebKit
 
 @objc
-public class OnboardingCaptchaViewController: OnboardingBaseViewController {
+public final class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
     private var webView: WKWebView?
 

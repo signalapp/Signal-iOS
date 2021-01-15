@@ -34,7 +34,7 @@ public protocol CVItemCell {
 // MARK: -
 
 @objc
-public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
+public final class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {
         didSet {

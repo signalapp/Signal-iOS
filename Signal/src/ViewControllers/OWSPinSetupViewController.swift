@@ -8,7 +8,7 @@ import PromiseKit
 import SafariServices
 
 @objc(OWSPinSetupViewController)
-public class PinSetupViewController: OWSViewController {
+public final class PinSetupViewController: OWSViewController {
 
     private let pinTextField = UITextField()
     private let pinTypeToggle = UIButton()

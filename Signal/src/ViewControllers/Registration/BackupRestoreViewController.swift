@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class BackupRestoreViewController: OWSTableViewController {
+public final class BackupRestoreViewController: OWSTableViewController {
 
     private var hasBegunImport = false
 

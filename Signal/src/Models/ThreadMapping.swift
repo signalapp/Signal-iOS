@@ -10,7 +10,7 @@ public enum ThreadMappingChange: Int {
 }
 
 @objc
-public class ThreadMappingSectionChange: NSObject {
+public final class ThreadMappingSectionChange: NSObject {
 
     @objc
     public let type: ThreadMappingChange
@@ -25,7 +25,7 @@ public class ThreadMappingSectionChange: NSObject {
 }
 
 @objc
-public class ThreadMappingRowChange: NSObject {
+public final class ThreadMappingRowChange: NSObject {
 
     @objc
     public let type: ThreadMappingChange
@@ -67,7 +67,7 @@ public class ThreadMappingRowChange: NSObject {
 }
 
 @objc
-public class ThreadMappingDiff: NSObject {
+public final class ThreadMappingDiff: NSObject {
 
     @objc
     let sectionChanges: [ThreadMappingSectionChange]

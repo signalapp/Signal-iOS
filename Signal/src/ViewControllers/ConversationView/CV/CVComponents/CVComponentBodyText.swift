@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentBodyText: CVComponentBase, CVComponent {
+public final class CVComponentBodyText: CVComponentBase, CVComponent {
 
     struct State: Equatable {
         let bodyText: CVComponentState.BodyText
@@ -516,7 +516,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     @objc
-    public class CVComponentViewBodyText: NSObject, CVComponentView {
+    public final class CVComponentViewBodyText: NSObject, CVComponentView {
 
         public weak var componentDelegate: CVComponentDelegate?
 

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVMessageMapping: NSObject {
+public final class CVMessageMapping: NSObject {
 
     // MARK: - Dependencies
 

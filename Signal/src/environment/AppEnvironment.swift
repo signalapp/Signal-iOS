@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalMessaging
 
 @objc
-public class AppEnvironment: NSObject {
+public final class AppEnvironment: NSObject {
 
     private static var _shared: AppEnvironment = AppEnvironment()
 

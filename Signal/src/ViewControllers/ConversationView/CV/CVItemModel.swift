@@ -9,7 +9,7 @@ import Foundation
 //
 // All of the state in this class should be immutable.
 @objc
-public class CVItemModel: NSObject {
+public final class CVItemModel: NSObject {
     public let interaction: TSInteraction
     public let thread: TSThread
 

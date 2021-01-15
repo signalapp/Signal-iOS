@@ -11,7 +11,7 @@ protocol LongTextViewDelegate: class {
 }
 
 // MARK: -
-public class LongTextViewController: OWSViewController {
+public final class LongTextViewController: OWSViewController {
 
     // MARK: - Properties
 

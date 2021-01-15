@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class RegistrationController: NSObject {
+public final class RegistrationController: NSObject {
 
     // MARK: - Dependencies
 

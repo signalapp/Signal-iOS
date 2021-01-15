@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class GroupCallTooltip: TooltipView {
+public final class GroupCallTooltip: TooltipView {
     @objc
     public class func present(fromView: UIView,
                               widthReferenceView: UIView,

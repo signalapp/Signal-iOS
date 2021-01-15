@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 @objc
-public class TextFieldHelper: NSObject {
+public final class TextFieldHelper: NSObject {
 
     public enum StringLengthLimit {
         case byteCount(maxByteCount: Int)

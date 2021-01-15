@@ -13,7 +13,7 @@ class CustomActionSheet: ActionSheetController {
 }
 
 @objc
-public class GroupLinkPromotionActionSheet: UIView {
+public final class GroupLinkPromotionActionSheet: UIView {
 
     private weak var conversationViewController: ConversationViewController?
 

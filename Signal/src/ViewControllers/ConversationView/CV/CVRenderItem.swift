@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVRenderItem: NSObject {
+public final class CVRenderItem: NSObject {
     @objc
     public let itemModel: CVItemModel
 

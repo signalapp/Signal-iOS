@@ -12,7 +12,7 @@ public protocol CameraFirstCaptureDelegate: AnyObject {
 }
 
 @objc
-public class CameraFirstCaptureSendFlow: NSObject {
+public final class CameraFirstCaptureSendFlow: NSObject {
     @objc
     public weak var delegate: CameraFirstCaptureDelegate?
 

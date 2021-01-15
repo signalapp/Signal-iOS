@@ -14,7 +14,7 @@ public struct EmojiItem {
     let didSelect: () -> Void
 }
 
-public class EmojiCountsCollectionView: UICollectionView {
+public final class EmojiCountsCollectionView: UICollectionView {
 
     let itemHeight: CGFloat = 36
 

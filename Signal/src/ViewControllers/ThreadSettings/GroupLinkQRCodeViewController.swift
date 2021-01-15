@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class GroupLinkQRCodeViewController: OWSViewController {
+public final class GroupLinkQRCodeViewController: OWSViewController {
 
     private var groupModelV2: TSGroupModelV2
 

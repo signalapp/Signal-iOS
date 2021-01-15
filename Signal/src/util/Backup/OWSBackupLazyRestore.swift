@@ -7,7 +7,7 @@ import PromiseKit
 import SignalServiceKit
 
 @objc(OWSBackupLazyRestore)
-public class BackupLazyRestore: NSObject {
+public final class BackupLazyRestore: NSObject {
 
     // MARK: - Dependencies
 

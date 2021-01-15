@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-public class CVComponentState: Equatable {
+public final class CVComponentState: Equatable {
     let messageCellType: CVMessageCellType
 
     // TODO: Can/should we eliminate/populate this?

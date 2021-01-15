@@ -6,7 +6,7 @@ import Foundation
 
 // TODO: Rename to NewGroupViewController; remove old view.
 @objc
-public class NewGroupMembersViewController: BaseGroupMemberViewController {
+public final class NewGroupMembersViewController: BaseGroupMemberViewController {
 
     private var newGroupState = NewGroupState()
 

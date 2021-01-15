@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class OnboardingTransferChoiceViewController: OnboardingBaseViewController {
+public final class OnboardingTransferChoiceViewController: OnboardingBaseViewController {
 
     override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins

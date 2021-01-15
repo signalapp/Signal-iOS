@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MessageStatusView: UIView {
+public final class MessageStatusView: UIView {
 
     private let imageView: UIImageView
     private let lastBaselineView: UIView

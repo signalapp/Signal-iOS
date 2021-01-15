@@ -7,7 +7,7 @@ import PromiseKit
 import SignalServiceKit
 
 @objc(OWSSessionResetJobQueue)
-public class SessionResetJobQueue: NSObject, JobQueue {
+public final class SessionResetJobQueue: NSObject, JobQueue {
 
     @objc(addContactThread:transaction:)
     public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
@@ -67,7 +67,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     }
 }
 
-public class SessionResetOperation: OWSOperation, DurableOperation {
+public final class SessionResetOperation: OWSOperation, DurableOperation {
 
     // MARK: DurableOperation
 

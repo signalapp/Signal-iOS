@@ -40,7 +40,7 @@ class DismissInputBar: UIToolbar {
 }
 
 @objc
-public class DismissableTextField: OWSTextField, DismissInputBarDelegate {
+public final class DismissableTextField: OWSTextField, DismissInputBarDelegate {
 
     private let dismissBar: DismissInputBar
 

@@ -6,7 +6,7 @@ import UIKit
 import SafariServices
 
 @objc
-public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewController {
+public final class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewController {
 
     var hasPendingRestoration: Bool {
         databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }

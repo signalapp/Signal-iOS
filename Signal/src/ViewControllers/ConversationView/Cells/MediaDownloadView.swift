@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class MediaDownloadView: UIView {
+public final class MediaDownloadView: UIView {
 
     private let attachmentId: String
     private let progressView: CircularProgressView

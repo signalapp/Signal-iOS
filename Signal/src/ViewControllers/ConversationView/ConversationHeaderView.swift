@@ -10,7 +10,7 @@ public protocol ConversationHeaderViewDelegate {
 }
 
 @objc
-public class ConversationHeaderView: UIStackView {
+public final class ConversationHeaderView: UIStackView {
 
     @objc
     public weak var delegate: ConversationHeaderViewDelegate?

@@ -29,7 +29,7 @@ public struct CVItemViewState: Equatable {
 
     let isShowingSelectionUI: Bool
 
-    public class Builder {
+    public final class Builder {
         var shouldShowSenderAvatar = false
         var senderName: NSAttributedString?
         var accessibilityAuthorName: String?

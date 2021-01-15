@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-public class ProvisioningController: NSObject {
+public final class ProvisioningController: NSObject {
 
     // MARK: - Dependencies
 

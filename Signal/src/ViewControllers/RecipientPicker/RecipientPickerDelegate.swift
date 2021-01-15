@@ -52,7 +52,7 @@ protocol RecipientPickerDelegate: AnyObject {
 }
 
 @objc
-public class PickedRecipient: NSObject {
+public final class PickedRecipient: NSObject {
     let identifier: Identifier
     enum Identifier: Hashable {
         case address(_ address: SignalServiceAddress)

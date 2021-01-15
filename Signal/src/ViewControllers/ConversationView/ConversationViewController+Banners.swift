@@ -278,7 +278,7 @@ fileprivate extension ConversationViewController {
 
 // A convenience view that allows block-based gesture handling.
 @objc
-public class GestureView: UIView {
+public final class GestureView: UIView {
     @objc
     public required init() {
         super.init(frame: .zero)

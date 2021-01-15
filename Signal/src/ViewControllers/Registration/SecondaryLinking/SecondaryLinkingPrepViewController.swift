@@ -7,7 +7,7 @@ import PromiseKit
 import Lottie
 
 @objc
-public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
+public final class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
     lazy var animationView = AnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
     let isTransferring: Bool

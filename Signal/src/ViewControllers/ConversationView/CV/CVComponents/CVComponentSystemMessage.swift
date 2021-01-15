@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
+public final class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.systemMessage

@@ -25,7 +25,7 @@ protocol CVAudioPlayerListener {
 //
 // It's lifetime matches CVC.
 @objc
-public class CVAudioPlayer: NSObject {
+public final class CVAudioPlayer: NSObject {
 
     // The currently playing audio, if any.
     private var _audioPlayback: CVAudioPlayback?

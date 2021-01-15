@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-public class ActionSheetContentBuilder {
+public final class ActionSheetContentBuilder {
 
     var subviews = [UIView]()
 

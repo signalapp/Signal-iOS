@@ -12,7 +12,7 @@ public enum ValidatedPhoneCountryCodes: UInt {
 }
 
 @objc
-public class PhoneNumberValidator: NSObject {
+public final class PhoneNumberValidator: NSObject {
 
     @objc
     public func isValidForRegistration(phoneNumber: PhoneNumber) -> Bool {

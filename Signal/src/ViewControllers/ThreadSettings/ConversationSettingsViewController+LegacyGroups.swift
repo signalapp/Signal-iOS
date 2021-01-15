@@ -154,7 +154,7 @@ class LegacyGroupView: UIView {
 
 // MARK: -
 
-public class LegacyGroupViewLearnMoreView: UIView {
+public final class LegacyGroupViewLearnMoreView: UIView {
 
     weak var actionSheetController: ActionSheetController?
 

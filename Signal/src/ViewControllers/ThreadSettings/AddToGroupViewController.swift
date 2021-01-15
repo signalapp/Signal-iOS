@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-public class AddToGroupViewController: OWSTableViewController {
+public final class AddToGroupViewController: OWSTableViewController {
 
     private let address: SignalServiceAddress
     private let collation = UILocalizedIndexedCollation.current()

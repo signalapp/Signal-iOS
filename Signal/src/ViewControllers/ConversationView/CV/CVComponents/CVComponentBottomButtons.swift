@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class CVComponentBottomButtons: CVComponentBase, CVComponent {
+public final class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
     private let bottomButtonsState: CVComponentState.BottomButtons
 

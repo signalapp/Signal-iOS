@@ -7,7 +7,7 @@ import UIKit
 import PromiseKit
 
 @objc
-public class GroupMigrationActionSheet: UIView {
+public final class GroupMigrationActionSheet: UIView {
 
     enum Mode {
         case upgradeGroup(migrationInfo: GroupsV2MigrationInfo)

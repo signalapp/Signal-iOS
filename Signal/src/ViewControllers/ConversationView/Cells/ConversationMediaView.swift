@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CVMediaView: UIView {
+public final class CVMediaView: UIView {
 
     private enum MediaError {
         case missing

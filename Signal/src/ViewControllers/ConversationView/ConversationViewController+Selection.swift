@@ -3,7 +3,7 @@
 //
 
 // Represents which interactions are currently selected during multi-select.
-public class CVCellSelection {
+public final class CVCellSelection {
     private var _selectedInteractionIds = Set<String>()
 
     fileprivate func add(_ interactionId: String) {
@@ -327,7 +327,7 @@ extension ConversationViewController {
 // MARK: -
 
 @objc
-public class SelectionHighlightView: UIView {
+public final class SelectionHighlightView: UIView {
     func setHighlightedFrames(_ frames: [CGRect]) {
         subviews.forEach { $0.removeFromSuperview() }
 

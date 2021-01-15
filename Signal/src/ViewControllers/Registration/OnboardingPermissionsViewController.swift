@@ -8,7 +8,7 @@ import Contacts
 import Lottie
 
 @objc
-public class OnboardingPermissionsViewController: OnboardingBaseViewController {
+public final class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
     private let animationView = AnimationView(name: "notificationPermission")
 

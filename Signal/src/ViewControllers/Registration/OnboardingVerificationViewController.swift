@@ -246,7 +246,7 @@ extension OnboardingCodeView: OnboardingCodeViewTextFieldDelegate {
 // MARK: -
 
 @objc
-public class OnboardingVerificationViewController: OnboardingBaseViewController {
+public final class OnboardingVerificationViewController: OnboardingBaseViewController {
 
     private enum CodeState {
         case sent

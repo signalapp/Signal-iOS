@@ -16,7 +16,7 @@ public protocol CVViewStateDelegate: class {
 //
 // These properties should only be accessed on the main thread.
 @objc
-public class CVViewState: NSObject {
+public final class CVViewState: NSObject {
     @objc
     public weak var delegate: CVViewStateDelegate?
 
@@ -355,7 +355,7 @@ struct CVCoreState {
 
 // MARK: -
 
-public class CVTextExpansion {
+public final class CVTextExpansion {
     private var expandedTextInteractionsIds = Set<String>()
 
     required init(expandedTextInteractionsIds: Set<String>? = nil) {
