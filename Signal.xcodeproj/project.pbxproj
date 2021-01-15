@@ -737,6 +737,8 @@
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
 		886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */; };
 		886BB3D425BA0CA900079781 /* WallpaperSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */; };
+		886BB3D725BA871B00079781 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886BB3D525BA871B00079781 /* Wallpaper.swift */; };
+		886BB3D825BA871B00079781 /* Wallpaper+SolidColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886BB3D625BA871B00079781 /* Wallpaper+SolidColor.swift */; };
 		886CB07824E77E5B00753909 /* silence.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 886CB07724E77E5B00753909 /* silence.aiff */; };
 		886CB07C24E78F2200753909 /* Reflection.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 886CB07B24E78F2200753909 /* Reflection.m4r */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
@@ -753,11 +755,9 @@
 		887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48824735D4200FDD265 /* launchApp-iPhone.json */; };
 		887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48924735D4200FDD265 /* launchApp-iPad.json */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
-		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
-		888B6D5025B25D2100E2A662 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4425B2224E00E2A662 /* Wallpaper.swift */; };
-		888B6D5125B25D2400E2A662 /* Wallpaper+SolidColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4825B2430700E2A662 /* Wallpaper+SolidColor.swift */; };
-		888B6D5225B25D2800E2A662 /* Wallpaper+Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */; };
 		888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */; };
+		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
+		888B6D5225B25D2800E2A662 /* Wallpaper+Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		888F188623AC5A9E000780E9 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
@@ -1794,6 +1794,8 @@
 		885DDD212362695B0003AC9C /* ActionSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetController.swift; sourceTree = "<group>"; };
 		8860CC202508507F00A4D18E /* GroupLinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupLinkPreview.swift; sourceTree = "<group>"; };
 		8861DECF2445349B00BB4145 /* LinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingTextView.swift; sourceTree = "<group>"; };
+		886BB3D525BA871B00079781 /* Wallpaper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallpaper.swift; sourceTree = "<group>"; };
+		886BB3D625BA871B00079781 /* Wallpaper+SolidColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Wallpaper+SolidColor.swift"; sourceTree = "<group>"; };
 		886CB07724E77E5B00753909 /* silence.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = silence.aiff; sourceTree = "<group>"; };
 		886CB07B24E78F2200753909 /* Reflection.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = Reflection.m4r; sourceTree = "<group>"; };
 		886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
@@ -1862,9 +1864,9 @@
 		888A280424B3E9820045D639 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A280524B3E9820045D639 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888B6D4025AE7E2200E2A662 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = translations/zh_HK.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingSuggestionsMegaphone.swift; sourceTree = "<group>"; };
 		888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Gradient.swift"; sourceTree = "<group>"; };
 		888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Wallpaper.swift"; sourceTree = "<group>"; };
-		888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingSuggestionsMegaphone.swift; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
@@ -3523,9 +3525,9 @@
 		888B6D4325B2223200E2A662 /* Wallpapers */ = {
 			isa = PBXGroup;
 			children = (
-				888B6D4425B2224E00E2A662 /* Wallpaper.swift */,
-				888B6D4825B2430700E2A662 /* Wallpaper+SolidColor.swift */,
+				886BB3D525BA871B00079781 /* Wallpaper.swift */,
 				888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */,
+				886BB3D625BA871B00079781 /* Wallpaper+SolidColor.swift */,
 			);
 			path = Wallpapers;
 			sourceTree = "<group>";
@@ -4926,7 +4928,7 @@
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
 				88D5887824846A7F00DC9AB6 /* InputAccessoryViewPlaceholder.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsAdaptee.swift in Sources */,
-				888B6D5125B25D2400E2A662 /* Wallpaper+SolidColor.swift in Sources */,
+				886BB3D825BA871B00079781 /* Wallpaper+SolidColor.swift in Sources */,
 				34AC0A11211B39EA00997B47 /* OWSLayerView.swift in Sources */,
 				34AC0A1B211B39EA00997B47 /* GradientView.swift in Sources */,
 				34123C5E239AA3E900782788 /* TooltipView.swift in Sources */,
@@ -5062,7 +5064,7 @@
 				34BB3C5E23C6644B001651FC /* GroupsV2ChangeSetImpl.swift in Sources */,
 				8821334E2304E72700353626 /* NonContactTableViewCell.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
-				888B6D5025B25D2100E2A662 /* Wallpaper.swift in Sources */,
+				886BB3D725BA871B00079781 /* Wallpaper.swift in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
 				340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */,
 				3464451122B7F97100A957B1 /* DateUtil.m in Sources */,
