@@ -166,6 +166,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return true
         case .contactPermissionReminder:
             return true
+        case .sharingSuggestions:
+            return true
         default:
             return false
         }
