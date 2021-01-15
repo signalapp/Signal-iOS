@@ -464,54 +464,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                                                                                transaction:transaction];
 }
 
-// Returns YES IFF the interaction should show up in the inbox as the last message.
-+ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(interaction);
-
-    if (!interaction.shouldBeSaved) {
-        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
-        return NO;
-    }
-    if (interaction.isDynamicInteraction) {
-        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
-        return NO;
-    }
-    if ([interaction isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
-        return NO;
-    }
-
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            return NO;
-        }
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
-        switch (infoMessage.messageType) {
-            case TSInfoMessageVerificationStateChange:
-            case TSInfoMessageProfileUpdate:
-                return NO;
-            case TSInfoMessageTypeGroupUpdate: {
-                NSArray<GroupUpdateCopyItem *> *updates = [infoMessage groupUpdateItemsWithTransaction:transaction];
-                if (!updates) {
-                    return YES;
-                }
-                return NSNotFound !=
-                    [updates indexOfObjectPassingTest:^(
-                        GroupUpdateCopyItem *update, NSUInteger idx, BOOL *stop) { return update.shouldShowInInbox; }];
-            }
-            default:
-                return YES;
-        }
-    }
-
-    return YES;
-}
-
 - (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self updateWithMessage:message wasMessageInserted:YES transaction:transaction];
@@ -548,7 +500,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     BOOL hasLastVisibleInteraction = [self hasLastVisibleInteractionWithTransaction:transaction];
     BOOL needsToClearLastVisibleSortId = hasLastVisibleInteraction && wasMessageInserted;
 
-    if (![self.class shouldInteractionAppearInInbox:message transaction:transaction]) {
+    if (![message shouldAppearInInboxWithTransaction:transaction]) {
         // We want to clear the last visible sort ID on any new message,
         // even if the message doesn't appear in the inbox view.
         if (needsToClearLastVisibleSortId) {

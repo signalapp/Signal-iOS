@@ -14,7 +14,7 @@ public class GroupUpdateCopyItem: NSObject {
         self.text = text
     }
 
-    var shouldShowInInbox: Bool {
+    var shouldAppearInInbox: Bool {
         switch type {
         case .groupMigrated,
              .groupMigrated_usersDropped,

@@ -674,7 +674,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
                 owsFailDebug("unexpected interaction: \(type(of: object))")
                 return
             }
-            if TSThread.shouldInteractionAppearInInbox(interaction, transaction: transaction.asAnyRead) {
+            if interaction.shouldAppearInInbox(transaction: transaction.asAnyRead) {
                 last = interaction
                 stopPtr.pointee = true
             }
@@ -1094,20 +1094,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             return nil
         }
 
-        let anyTransaction = transaction.asAnyRead
-        func shouldShowInInbox(_ interaction: TSInteraction) -> Bool {
-            guard let message = interaction as? TSInfoMessage,
-                  let groupUpdates = message.groupUpdateItems(transaction: anyTransaction) else {
-                return true
-            }
-            return groupUpdates.contains { $0.shouldShowInInbox }
-        }
-
         // We can't exclude specific group updates in the query.
         // In the (mildly) rare case that the most recent message
         // is a group update that shouldn't be shown,
         // we iterate backward until we find a good interaction.
-        if shouldShowInInbox(firstInteraction) {
+        let anyTransaction = transaction.asAnyRead
+        if firstInteraction.shouldAppearInInbox(transaction: anyTransaction) {
             return firstInteraction
         }
         do {
@@ -1115,7 +1107,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                                                        arguments: arguments,
                                                        transaction: transaction)
             while let interaction = try cursor.next() {
-                if shouldShowInInbox(interaction) {
+                if interaction.shouldAppearInInbox(transaction: anyTransaction) {
                     return interaction
                 }
             }

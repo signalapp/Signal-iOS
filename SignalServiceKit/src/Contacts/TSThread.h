@@ -225,10 +225,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                               transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateWithMentionNotificationMode(_:transaction:));
 
-+ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
-                           transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(shouldInteractionAppearInInbox(_:transaction:));
-
 @end
 
 NS_ASSUME_NONNULL_END
