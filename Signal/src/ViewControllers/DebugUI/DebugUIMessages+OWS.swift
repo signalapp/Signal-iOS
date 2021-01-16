@@ -55,7 +55,9 @@ public extension DebugUIMessages {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
         envelopeBuilder.setSourceUuid(senderClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageProcessor.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0) { _ in }
+        messageProcessor.processEncryptedEnvelopeData(envelopeData,
+                                                      serverDeliveryTimestamp: 0,
+                                                      envelopeSource: .debugUI) { _ in }
     }
 
     @objc

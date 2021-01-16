@@ -42,6 +42,16 @@ static const NSTimeInterval kKeepAliveDuration_ReceiveResponse = 5.f;
 
 NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificationWebSocketStateDidChange";
 
+NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
+{
+    switch (value) {
+        case OWSWebSocketTypeDefault:
+            return @"Default";
+        case OWSWebSocketTypeUD:
+            return @"UD";
+    }
+}
+
 @interface TSSocketMessage : NSObject
 
 @property (nonatomic, readonly) UInt64 requestId;
@@ -147,8 +157,20 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
 #pragma mark -
 
+NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
+{
+    switch (type) {
+        case OWSWebSocketTypeDefault:
+            return @"Default";
+        case OWSWebSocketTypeUD:
+            return @"UD";
+    }
+}
+
 // OWSWebSocket's properties should only be accessed from the main thread.
 @interface OWSWebSocket () <SSKWebSocketDelegate>
+
+@property (nonatomic) OWSWebSocketType webSocketType;
 
 // This class has a few "tiers" of state.
 //
@@ -210,7 +232,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
 @implementation OWSWebSocket
 
-- (instancetype)init
+- (instancetype)initWithWebSocketType:(OWSWebSocketType)webSocketType
 {
     self = [super init];
 
@@ -220,6 +242,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
     OWSAssertIsOnMainThread();
 
+    _webSocketType = webSocketType;
     _state = OWSWebSocketStateClosed;
     _hasEmptiedInitialQueue = NO;
     _willEmptyInitialQueue = NO;
@@ -296,7 +319,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         }
     }
 
-    OWSLogWarn(@"Creating new websocket");
+    OWSLogWarn(@"Creating new websocket: %@", NSStringForOWSWebSocketType(self.webSocketType));
 
     // If socket is not already open or connecting, connect now.
     //
@@ -366,8 +389,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         return;
     }
 
-    OWSLogWarn(
-        @"Socket state: %@ -> %@", [self stringFromOWSWebSocketState:_state], [self stringFromOWSWebSocketState:state]);
+    OWSLogWarn(@"Socket state[%@]: %@ -> %@",
+        NSStringForOWSWebSocketType(self.webSocketType),
+        [self stringFromOWSWebSocketState:_state],
+        [self stringFromOWSWebSocketState:state]);
 
     // If this state update is _not_ redundant,
     // update class state to reflect the new state.
@@ -451,7 +476,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     OWSAssertIsOnMainThread();
 
     if (self.websocket) {
-        OWSLogWarn(@"closeWebSocket.");
+        OWSLogWarn(@"closeWebSocket: %@,", NSStringForOWSWebSocketType(self.webSocketType));
     }
 
     self.state = OWSWebSocketStateClosed;
@@ -539,17 +564,19 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     }
 
     if (!self.canMakeRequests) {
-        OWSLogError(@"makeRequest: socket not open.");
+        OWSLogError(@"makeRequest[%@]: socket not open.", NSStringForOWSWebSocketType(self.webSocketType));
         [socketMessage didFailBeforeSending];
         return;
     }
 
     [self.websocket writeData:messageData];
-    OWSLogInfo(@"making request: %llu, %@: %@, jsonData.length: %zd",
+    OWSLogInfo(@"making request[%@]: %llu, %@: %@, jsonData.length: %zd, socketType: %@",
+        NSStringForOWSWebSocketType(self.webSocketType),
         socketMessage.requestId,
         request.HTTPMethod,
         requestPath,
-        jsonData.length);
+        jsonData.length,
+        NSStringFromOWSWebSocketType(self.webSocketType));
 
     const int64_t kSocketTimeoutSeconds = 10;
     __weak TSSocketMessage *weakSocketMessage = socketMessage;
@@ -574,7 +601,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 {
     OWSAssertDebug(message);
 
-    OWSLogInfo(@"received WebSocket response requestId: %llu, status: %u", message.requestID, message.status);
+    OWSLogInfo(@"received WebSocket response[%@], requestId: %llu, status: %u",
+        NSStringForOWSWebSocketType(self.webSocketType),
+        message.requestID,
+        message.status);
 
     DispatchMainThreadSafe(^{
         [self requestSocketAliveForAtLeastSeconds:kKeepAliveDuration_ReceiveResponse];
@@ -618,7 +648,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     }
 
     if (!socketMessage) {
-        OWSLogError(@"received response to unknown request.");
+        OWSLogError(@"Received response to unknown request: %@.", NSStringForOWSWebSocketType(self.webSocketType));
     } else {
         BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
         BOOL didSucceed = hasSuccessStatus && hasValidResponse;
@@ -627,7 +657,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
-            if (responseStatus == 403) {
+            if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
                 if (self.tsAccountManager.isRegisteredAndReady) {
@@ -660,7 +690,9 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         [self.socketMessageMap removeAllObjects];
     }
 
-    OWSLogInfo(@"failAllPendingSocketMessages: %zd.", socketMessages.count);
+    OWSLogInfo(@"failAllPendingSocketMessages[%@]: %zd.",
+        NSStringForOWSWebSocketType(self.webSocketType),
+        socketMessages.count);
 
     for (TSSocketMessage *socketMessage in socketMessages) {
         [socketMessage didFailBeforeSending];
@@ -695,14 +727,15 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         return;
     }
 
-    OWSLogWarn(@"Websocket did fail with error: %@", error);
+    OWSLogWarn(@"Websocket did fail with error[%@]: %@", NSStringForOWSWebSocketType(self.webSocketType), error);
     if ([error.domain isEqualToString:SSKWebSocketError.errorDomain]) {
         NSNumber *_Nullable statusCode = error.userInfo[SSKWebSocketError.kStatusCodeKey];
-        if (statusCode.unsignedIntegerValue == 403) {
+        if (statusCode.unsignedIntegerValue == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
             if (self.tsAccountManager.isRegisteredAndReady) {
                 [self.tsAccountManager setIsDeregistered:YES];
             } else {
-                OWSLogWarn(@"Ignoring auth failure; not registered and ready.");
+                OWSLogWarn(@"Ignoring auth failure; not registered and ready: %@.",
+                    NSStringForOWSWebSocketType(self.webSocketType));
             }
         }
     }
@@ -751,7 +784,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
+    OWSLogInfo(@"Got message[%@], verb: %@, path: %@",
+        NSStringForOWSWebSocketType(self.webSocketType),
+        message.verb,
+        message.path);
 
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
@@ -801,9 +837,17 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                 OWSLogWarn(@"Missing encrypted envelope on message");
                 ackMessage(NO);
             } else {
+                EnvelopeSource envelopeSource;
+                switch (self.webSocketType) {
+                    case OWSWebSocketTypeDefault:
+                        envelopeSource = EnvelopeSourceWebsocketNormal;
+                    case OWSWebSocketTypeUD:
+                        envelopeSource = EnvelopeSourceWebsocketUD;
+                }
                 [MessageProcessor.shared processEncryptedEnvelopeData:encryptedEnvelope
                                                     encryptedEnvelope:nil
                                               serverDeliveryTimestamp:serverDeliveryTimestamp
+                                                       envelopeSource:envelopeSource
                                                            completion:^(NSError *error) { ackMessage(YES); }];
             }
         });
@@ -837,7 +881,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
             });
         }
     } else {
-        OWSLogWarn(@"Unsupported WebSocket Request");
+        OWSLogWarn(@"Unsupported WebSocket Request: %@.", NSStringForOWSWebSocketType(self.webSocketType));
 
         [self sendWebSocketMessageAcknowledgement:message];
     }
@@ -850,9 +894,9 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     BOOL didSucceed = [self.websocket sendResponseForRequest:request status:200 message:@"OK" error:&error];
     if (!didSucceed) {
         if (IsNetworkConnectivityFailure(error)) {
-            OWSLogWarn(@"Error: %@", error);
+            OWSLogWarn(@"Error[%@]: %@", NSStringForOWSWebSocketType(self.webSocketType), error);
         } else {
-            OWSFailDebug(@"Error: %@", error);
+            OWSFailDebug(@"Error[%@]: %@", NSStringForOWSWebSocketType(self.webSocketType), error);
         }
     }
 }
@@ -891,7 +935,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     if ([self shouldSocketBeOpen]) {
         [self.websocket writePing];
     } else {
-        OWSLogWarn(@"webSocketHeartBeat closing web socket");
+        OWSLogWarn(@"webSocketHeartBeat closing web socket: %@.", NSStringForOWSWebSocketType(self.webSocketType));
         [self closeWebSocket];
         [self applyDesiredSocketState];
     }
@@ -899,10 +943,17 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
 - (NSString *)webSocketAuthenticationString
 {
-
-    NSString *login = [self.tsAccountManager.storedServerUsername stringByReplacingOccurrencesOfString:@"+"
-                                                                                            withString:@"%2B"];
-    return [NSString stringWithFormat:@"?login=%@&password=%@", login, self.tsAccountManager.storedServerAuthToken];
+    switch (self.webSocketType) {
+        case OWSWebSocketTypeUD:
+            // UD socket is unauthenticated.
+            return @"";
+        case OWSWebSocketTypeDefault: {
+            NSString *login = [self.tsAccountManager.storedServerUsername stringByReplacingOccurrencesOfString:@"+"
+                                                                                                    withString:@"%2B"];
+            return [NSString
+                stringWithFormat:@"?login=%@&password=%@", login, self.tsAccountManager.storedServerAuthToken];
+        }
+    }
 }
 
 #pragma mark - Socket LifeCycle
@@ -959,7 +1010,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         OWSAssertDebug(!self.backgroundKeepAliveUntilDate);
         OWSAssertDebug(!self.backgroundKeepAliveTimer);
 
-        OWSLogInfo(@"activating socket in the background");
+        OWSLogInfo(@"Activating socket in the background: %@.", NSStringForOWSWebSocketType(self.webSocketType));
 
         // Set up state used to keep socket alive in background.
         self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];
@@ -1142,8 +1193,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 - (void)deviceListUpdateModifiedDeviceList:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    
-    [self cycleSocket];
+
+    if (self.webSocketType == OWSWebSocketTypeDefault) {
+        [self cycleSocket];
+    }
 }
 
 - (void)environmentDidChange:(NSNotification *)notification

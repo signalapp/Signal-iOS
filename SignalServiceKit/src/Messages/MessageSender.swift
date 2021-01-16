@@ -906,7 +906,7 @@ public extension MessageSender {
         let address: SignalServiceAddress = messageSend.address
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Successfully sent message: \(type(of: message)), recipient: \(address), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD)")
+        Logger.info("Successfully sent message: \(type(of: message)), recipient: \(address), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD), wasSentByWebsocket: \(wasSentByWebsocket)")
 
         if messageSend.isLocalAddress && deviceMessages.isEmpty {
             Logger.info("Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.")

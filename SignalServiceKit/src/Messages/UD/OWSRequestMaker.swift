@@ -100,11 +100,13 @@ public class RequestMaker: NSObject {
         guard let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey) else {
             return Promise(error: RequestMakerError.requestCreationFailed)
         }
-        let canMakeWebsocketRequests = (socketManager.canMakeRequests() && !skipWebsocket && !isUDRequest)
+        let webSocketType: OWSWebSocketType = (isUDRequest ? .UD : .default)
+        let canMakeWebsocketRequests = (socketManager.canMakeRequests(webSocketType: webSocketType) &&
+                                            !skipWebsocket)
 
         if canMakeWebsocketRequests {
             return Promise { resolver in
-                socketManager.make(request, success: { (responseObject: Any?) in
+                socketManager.make(request, webSocketType: webSocketType, success: { (responseObject: Any?) in
                     if self.udManager.isUDVerboseLoggingEnabled() {
                         if isUDRequest {
                             Logger.debug("UD websocket request '\(self.label)' succeeded.")

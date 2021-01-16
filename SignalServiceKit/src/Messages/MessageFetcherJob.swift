@@ -290,7 +290,8 @@ public class MessageFetcherJob: NSObject {
         }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
             Self.messageProcessor.processEncryptedEnvelopes(
                 envelopeJobs: envelopeJobs,
-                serverDeliveryTimestamp: serverDeliveryTimestamp
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                envelopeSource: .rest
             )
 
             if more {

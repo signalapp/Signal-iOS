@@ -1,14 +1,15 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
 public extension TSSocketManager {
-    func makeRequestPromise(request: TSRequest) -> Promise<Any?> {
+    func makeRequestPromise(request: TSRequest, webSocketType: OWSWebSocketType) -> Promise<Any?> {
         let (promise, resolver) = Promise<Any?>.pending()
         self.make(request,
+                  webSocketType: webSocketType,
                   success: { (responseObject: Any?) in
                     resolver.fulfill(responseObject)
         },

@@ -151,10 +151,12 @@ public class OWSAttachmentUploadV2: NSObject {
                                 requestBlock: @escaping () -> TSRequest) -> Promise<Any?> {
         return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
             let formRequest = requestBlock()
-            let shouldUseWebsocket = OWSUpload.socketManager.canMakeRequests() && !skipWebsocket
+            let shouldUseWebsocket = (OWSUpload.socketManager.canMakeRequests(webSocketType: .default) &&
+                                        !skipWebsocket)
             if shouldUseWebsocket {
                 return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
-                    OWSUpload.socketManager.makeRequestPromise(request: formRequest)
+                    OWSUpload.socketManager.makeRequestPromise(request: formRequest,
+                                                               webSocketType: .default)
                 }.recover(on: Self.serialQueue) { (_) -> Promise<Any?> in
                     // Failover to REST request.
                     self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
