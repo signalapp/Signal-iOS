@@ -809,9 +809,17 @@ fileprivate extension CVComponentState.Builder {
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
             if let attachmentPointer = mediaAttachment as? TSAttachmentPointer {
-                return buildViewOnce(viewOnceState: (attachmentPointer.state == .failed
-                                                        ? .incomingFailed
-                                                        : .incomingDownloading(attachmentPointer: attachmentPointer)))
+                switch attachmentPointer.state {
+                case .enqueued, .downloading:
+                    return buildViewOnce(viewOnceState: .incomingDownloading(attachmentPointer: attachmentPointer))
+                case .failed:
+                    return buildViewOnce(viewOnceState: .incomingFailed)
+                case .pendingMessageRequest, .pendingManualDownload:
+                    return buildViewOnce(viewOnceState: .incomingPending)
+                @unknown default:
+                    owsFailDebug("Invalid value.")
+                    return buildViewOnce(viewOnceState: .incomingFailed)
+                }
             } else if let attachmentStream = mediaAttachment as? TSAttachmentStream {
                 if attachmentStream.isValidVisualMedia
                     && (attachmentStream.isImage || attachmentStream.isAnimated || attachmentStream.isVideo) {
