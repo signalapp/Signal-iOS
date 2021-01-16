@@ -198,6 +198,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let supportAnimatedStickers_AnimatedWebp = true
 
+    @objc
+    public static let profileNameAndBioChanges = false
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
