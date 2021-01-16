@@ -82,7 +82,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 @interface OWSMessageDecrypter ()
 
-@property (atomic, readonly) NSMutableSet<NSString *> *recentlyResetSenderIds;
+@property (atomic, readonly) NSMutableSet<NSString *> *senderIdsResetDuringCurrentBatch;
 
 @end
 
@@ -98,7 +98,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
     OWSSingletonAssert();
 
-    _recentlyResetSenderIds = [NSMutableSet new];
+    _senderIdsResetDuringCurrentBatch = [NSMutableSet new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(messageDecryptJobQueueDidFlush)
@@ -170,6 +170,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return SSKEnvironment.shared.messageProcessing;
 }
 
+- (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"OWSMessageDecrypter"];
+}
+
 #pragma mark - Blocking
 
 - (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
@@ -193,7 +198,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     // We clear all recently reset sender ids any time the
     // decryption queue has drained, so that any new messages
     // that fail to decrypt will reset the session again.
-    [self.recentlyResetSenderIds removeAllObjects];
+    [self.senderIdsResetDuringCurrentBatch removeAllObjects];
 }
 
 - (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
@@ -723,29 +728,80 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             // reset IDs is cleared.
 
             NSString *senderId = [NSString stringWithFormat:@"%@.%d", envelope.sourceUuid, envelope.sourceDevice];
-            if (![self.recentlyResetSenderIds containsObject:senderId]) {
-                OWSLogWarn(@"Resetting session for undecryptable message from %@", senderId);
-                [self.recentlyResetSenderIds addObject:senderId];
+
+            BOOL hasResetDuringThisBatch = [self.senderIdsResetDuringCurrentBatch containsObject:senderId];
+
+            // We only ever want to archive sessions outside of a given "batch"
+            // of message decryption. In practice, this means we:
+            // 1. Only archive at max once per sender while draining the initial
+            //    queue after establishing the websocket connection, until we
+            //    receive the empty response.
+            // 2. Only archive once if we get a quick burst of messages that
+            //    cannot decrypt in the decryption queue while the app is running.
+            //
+            // Outside of these cases, we *always* archive your current session
+            // when we encounter a decryption error, so that your next message
+            // send to that device should send a prekey message and establish
+            // a new, healthy, session.
+            if (!hasResetDuringThisBatch) {
+                [self.senderIdsResetDuringCurrentBatch addObject:senderId];
+
+                OWSLogWarn(@"Archiving session for undecryptable message from %@", senderId);
                 [self.sessionStore archiveSessionForAddress:envelope.sourceAddress
                                                    deviceId:envelope.sourceDevice
                                                 transaction:transaction];
-                OWSOutgoingNullMessage *nullMessage =
-                    [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread];
-                [self.messageSender sendMessage:nullMessage.asPreparer
-                    success:^{
-                        OWSLogInfo(
-                            @"Successfully sent null message after session reset for undecryptable message from %@",
-                            senderId);
-                    }
-                    failure:^(NSError *error) {
-                        OWSFailDebug(
-                            @"Failed to send null message after session reset for undecryptable message from %@ (%@)",
-                            senderId,
-                            error.localizedDescription);
-                    }];
-            }
 
-            errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope withTransaction:transaction];
+                // Always notify the user that we have performed an automatic archive.
+                errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope withTransaction:transaction];
+
+                NSDate *_Nullable lastNullMessageDate = [self.keyValueStore getDate:senderId transaction:transaction];
+
+                BOOL hasRecentlySentNullMessage = NO;
+                if (lastNullMessageDate) {
+                    hasRecentlySentNullMessage = fabs([lastNullMessageDate timeIntervalSinceNow])
+                        <= RemoteConfig.automaticSessionResetAttemptInterval;
+                }
+
+                // In order to quickly get both devices into a healthy state, we
+                // try and send a null message immediately to establish the new
+                // session. However, we only do this at max once per a given time
+                // interval so in the case the other client is continually
+                // responding to our message with another message we can't decrypt,
+                // we don't get in a loop where we keep responding to them.
+                // In general, this should never happen because the other
+                // client should be able to decrypt a prekey message.
+                if (RemoteConfig.automaticSessionResetKillSwitch) {
+                    OWSLogWarn(
+                        @"Skipping null message after undecryptable message from %@ due to kill switch.", senderId);
+                } else if (hasRecentlySentNullMessage) {
+                    OWSLogWarn(
+                        @"Skipping null message after undecryptable message from %@, last null message sent %llu",
+                        senderId,
+                        [lastNullMessageDate ows_millisecondsSince1970]);
+                } else {
+                    OWSLogInfo(@"Sending null message to reset session after undecryptable message from: %@", senderId);
+
+                    [self.keyValueStore setDate:[NSDate new] key:senderId transaction:transaction];
+
+                    OWSOutgoingNullMessage *nullMessage =
+                        [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread];
+                    [self.messageSender sendMessage:nullMessage.asPreparer
+                        success:^{
+                            OWSLogInfo(
+                                @"Successfully sent null message after session reset for undecryptable message from %@",
+                                senderId);
+                        }
+                        failure:^(NSError *error) {
+                            OWSFailDebug(@"Failed to send null message after session reset for undecryptable message "
+                                         @"from %@ (%@)",
+                                senderId,
+                                error.localizedDescription);
+                        }];
+                }
+            } else {
+                OWSLogWarn(@"Skipping session reset for undecryptable message from %@, already reset during this batch",
+                    senderId);
+            }
         } else {
             OWSFailDebug(@"Received envelope missing UUID %@.%d", envelope.sourceAddress, envelope.sourceDevice);
             errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
