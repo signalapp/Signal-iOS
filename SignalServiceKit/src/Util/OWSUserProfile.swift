@@ -116,15 +116,15 @@ public extension OWSUserProfile {
         // of the max-length padded value.
         //
         // Two names plus null separator.
-        let totalNameLength = Int(maxNameLengthBytes) * 2 + 1
+        let totalNameMaxLength = Int(maxNameLengthBytes) * 2 + 1
         let paddedLengths: [Int]
         let validBase64Lengths: [Int]
         if FeatureFlags.profileNameAndBioChanges {
-            owsAssertDebug(totalNameLength == 257)
+            owsAssertDebug(totalNameMaxLength == 257)
             paddedLengths = [53, 257 ]
             validBase64Lengths = [108, 380 ]
         } else {
-            owsAssertDebug(totalNameLength == 53)
+            owsAssertDebug(totalNameMaxLength == 53)
             paddedLengths = [53 ]
             validBase64Lengths = [108 ]
         }
