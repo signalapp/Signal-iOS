@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -224,8 +224,6 @@ public class CVCellView: UIView, CVRootComponentHost {
 
         if let componentView = componentView {
             componentView.reset()
-        } else {
-            owsFailDebug("Missing componentView.")
         }
     }
 }
