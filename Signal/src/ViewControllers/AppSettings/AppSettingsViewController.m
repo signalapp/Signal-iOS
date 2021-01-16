@@ -122,17 +122,12 @@
                                                   [weakSelf showInviteFlow];
                                               }]];
 
-    // Starting with iOS 13, show an appearance section to allow setting the app theme
-    // to match the "system" dark/light mode settings and to adjust the app specific
-    // language settings.
-    if (@available(iOS 13, *)) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_APPEARANCE_TITLE",
                                                                   @"The title for the appearance settings.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"appearance")
                                                   actionBlock:^{
                                                       [weakSelf showAppearance];
                                                   }]];
-    }
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")

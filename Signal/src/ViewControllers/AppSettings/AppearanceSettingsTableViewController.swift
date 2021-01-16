@@ -19,15 +19,19 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let themeSection = OWSTableSection()
-        themeSection.headerTitle = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
-                                                     comment: "The title for the theme section in the appearance settings.")
+        // Starting with iOS 13, show them in appearance section to allow setting the app
+        // theme to match the "system" dark/light mode settings..
+        if #available(iOS 13, *) {
+            let themeSection = OWSTableSection()
+            themeSection.headerTitle = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+                                                         comment: "The title for the theme section in the appearance settings.")
 
-        themeSection.add(appearanceItem(.system))
-        themeSection.add(appearanceItem(.light))
-        themeSection.add(appearanceItem(.dark))
+            themeSection.add(appearanceItem(.system))
+            themeSection.add(appearanceItem(.light))
+            themeSection.add(appearanceItem(.dark))
 
-        contents.addSection(themeSection)
+            contents.addSection(themeSection)
+        }
 
         let contactSection = OWSTableSection()
         contactSection.customHeaderHeight = 14
