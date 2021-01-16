@@ -22,7 +22,7 @@ class ProfileBioViewController: OWSTableViewController {
 
     private let addEmojiImageView = UIImageView()
 
-    private let emojiContainerView = UIView.container()
+    private let emojiButton = OWSButton()
 
     private let mode: ProfileViewMode
 
@@ -146,14 +146,17 @@ class ProfileBioViewController: OWSTableViewController {
         // "has emoji" and "no emoji" states, we use a container
         // which is large enough to contain the views both for
         // states.
+        emojiButton.block = { [weak self] in
+            self?.didTapEmojiButton()
+        }
         addEmojiImageView.setTemplateImageName("add-emoji-outline-24",
                                                tintColor: Theme.secondaryTextAndIconColor)
         addEmojiImageView.autoSetDimensions(to: .square(24))
-        emojiContainerView.addSubview(bioEmojiLabel)
-        emojiContainerView.addSubview(addEmojiImageView)
+        emojiButton.addSubview(bioEmojiLabel)
+        emojiButton.addSubview(addEmojiImageView)
         bioEmojiLabel.autoCenterInSuperview()
         addEmojiImageView.autoCenterInSuperview()
-        emojiContainerView.autoSetDimensions(to: .square(28))
+        emojiButton.autoSetDimensions(to: .square(Self.bioButtonHeight))
         bioEmojiLabel.accessibilityIdentifier = "bio_emoji"
         addEmojiImageView.accessibilityIdentifier = "bio_emoji"
         updateEmojiViews()
@@ -168,11 +171,13 @@ class ProfileBioViewController: OWSTableViewController {
         bioTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
     }
 
+    private static let bioButtonHeight: CGFloat = 28
+
     func updateTableContents() {
         let contents = OWSTableContents()
 
         let bioEmojiLabel = self.bioEmojiLabel
-        let emojiContainerView = self.emojiContainerView
+        let emojiButton = self.emojiButton
         let bioTextField = self.bioTextField
 
         let bioSection = OWSTableSection()
@@ -198,11 +203,11 @@ class ProfileBioViewController: OWSTableViewController {
                 self?.didTapResetButton()
             }
             cancelIcon.autoSetDimensions(to: .square(16))
-            cancelButton.autoSetDimensions(to: .square(28))
+            cancelButton.autoSetDimensions(to: .square(Self.bioButtonHeight))
             cancelButton.addSubview(cancelIcon)
             cancelIcon.autoCenterInSuperview()
 
-            let stackView = UIStackView(arrangedSubviews: [emojiContainerView, bioTextField, cancelButton])
+            let stackView = UIStackView(arrangedSubviews: [emojiButton, bioTextField, cancelButton])
             stackView.axis = .horizontal
             stackView.alignment = .center
             stackView.spacing = 10
@@ -211,9 +216,7 @@ class ProfileBioViewController: OWSTableViewController {
 
             return cell
         },
-        actionBlock: { [weak self] in
-            self?.didTapEmoji()
-        }))
+        actionBlock: nil))
         contents.addSection(bioSection)
 
         let defaultBiosSection = OWSTableSection()
@@ -294,7 +297,7 @@ class ProfileBioViewController: OWSTableViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    private func didTapEmoji() {
+    private func didTapEmojiButton() {
         showAnyEmojiPicker()
     }
 
