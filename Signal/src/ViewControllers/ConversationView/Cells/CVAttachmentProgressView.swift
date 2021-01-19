@@ -279,8 +279,6 @@ public class CVAttachmentProgressView: UIView {
         }
 
         private func updateProgress(progress: CGFloat) {
-            Logger.verbose("----- progress: \(progress)")
-
             guard let progressView = progressView else {
                 owsFailDebug("Missing progressView.")
                 return
