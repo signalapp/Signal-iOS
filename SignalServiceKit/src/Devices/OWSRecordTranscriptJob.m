@@ -217,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
         // transaction is committed or attachmentDownloads might race
         // and not be able to find the attachment(s)/message/thread.
         [transaction addAsyncCompletionOffMain:^{
-            [self.attachmentDownloads downloadAttachmentsForMessageId:outgoingMessage.uniqueId
+            [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:outgoingMessage.uniqueId
                 attachmentGroup:AttachmentGroupAllAttachmentsIncoming
                 downloadBehavior:AttachmentDownloadBehaviorBypassAll
                 success:^(NSArray *attachmentStreams) {

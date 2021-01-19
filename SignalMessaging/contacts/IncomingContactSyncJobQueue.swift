@@ -177,9 +177,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         switch attachment {
         case let attachmentPointer as TSAttachmentPointer:
-            return self.attachmentDownloads.downloadPromise(attachmentPointer: attachmentPointer,
-                                                            category: .other,
-                                                            downloadBehavior: .bypassAll)
+            return self.attachmentDownloads.enqueueHeadlessDownloadPromise(attachmentPointer: attachmentPointer)
         case let attachmentStream as TSAttachmentStream:
             return Promise.value(attachmentStream)
         default:

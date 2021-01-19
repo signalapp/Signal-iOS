@@ -1615,7 +1615,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+    [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
         attachmentGroup:AttachmentGroupAllAttachmentsIncoming
         downloadBehavior:AttachmentDownloadBehaviorBypassAll
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
