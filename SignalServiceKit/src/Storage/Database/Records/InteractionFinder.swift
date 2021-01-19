@@ -674,7 +674,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
                 owsFailDebug("unexpected interaction: \(type(of: object))")
                 return
             }
-            if TSThread.shouldInteractionAppear(inInbox: interaction) {
+            if interaction.shouldAppearInInbox(transaction: transaction.asAnyRead) {
                 last = interaction
                 stopPtr.pointee = true
             }
@@ -1093,19 +1093,13 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                                                                 transaction: transaction) else {
             return nil
         }
-        func filterForInbox(_ interaction: TSInteraction) -> Bool {
-            guard let message = interaction as? TSMessage else {
-                return true
-            }
-            return !message.isGroupMigrationMessage
-        }
-        // We can't exclude group migration messages in the query.
-        // In the rare case that the most recent message is a
-        // group migration message, we iterate backward until we
-        // find an interaction that isn't a group migration.
-        // We should never have to iterate more than twice,
-        // since groups can only be migrated once.
-        if filterForInbox(firstInteraction) {
+
+        // We can't exclude specific group updates in the query.
+        // In the (mildly) rare case that the most recent message
+        // is a group update that shouldn't be shown,
+        // we iterate backward until we find a good interaction.
+        let anyTransaction = transaction.asAnyRead
+        if firstInteraction.shouldAppearInInbox(transaction: anyTransaction) {
             return firstInteraction
         }
         do {
@@ -1113,7 +1107,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                                                        arguments: arguments,
                                                        transaction: transaction)
             while let interaction = try cursor.next() {
-                if filterForInbox(interaction) {
+                if interaction.shouldAppearInInbox(transaction: anyTransaction) {
                     return interaction
                 }
             }

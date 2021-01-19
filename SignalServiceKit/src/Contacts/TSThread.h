@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -224,8 +224,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                               transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateWithMentionNotificationMode(_:transaction:));
-
-+ (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 
 @end
 
