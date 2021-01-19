@@ -946,25 +946,23 @@ public extension OWSAttachmentDownloads {
         let unfairLock = UnfairLock()
         var attachmentStreams = [TSAttachmentStream]()
         var promises = [Promise<Void>]()
-        Self.databaseStorage.read { transaction in
-            for jobRequest in jobRequests {
-                if let attachmentStream = jobRequest.loadLatestAttachment(transaction: transaction) as? TSAttachmentStream {
-                    unfairLock.withLock {
-                        attachmentStreams.append(attachmentStream)
-                    }
-                    continue
+        for jobRequest in jobRequests {
+            if let attachmentStream = jobRequest.loadLatestAttachment(transaction: transaction) as? TSAttachmentStream {
+                unfairLock.withLock {
+                    attachmentStreams.append(attachmentStream)
                 }
-                let job = Job(jobRequest: jobRequest, downloadBehavior: downloadBehavior)
-                self.enqueueJob(job: job)
-                let promise = firstly {
-                    job.promise
-                }.map(on: Self.serialQueue) { attachmentStream in
-                    unfairLock.withLock {
-                        attachmentStreams.append(attachmentStream)
-                    }
-                }
-                promises.append(promise)
+                continue
             }
+            let job = Job(jobRequest: jobRequest, downloadBehavior: downloadBehavior)
+            self.enqueueJob(job: job)
+            let promise = firstly {
+                job.promise
+            }.map(on: Self.serialQueue) { attachmentStream in
+                unfairLock.withLock {
+                    attachmentStreams.append(attachmentStream)
+                }
+            }
+            promises.append(promise)
         }
 
         guard !promises.isEmpty else {
