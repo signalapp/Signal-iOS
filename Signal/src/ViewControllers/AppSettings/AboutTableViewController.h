@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSTableViewController.h"
+#import <SignalMessaging/OWSTableViewController.h>
 
 @interface AboutTableViewController : OWSTableViewController
 

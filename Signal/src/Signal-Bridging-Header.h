@@ -11,8 +11,6 @@
 #import "AppSettingsViewController.h"
 #import "AttachmentUploadView.h"
 #import "AvatarViewHelper.h"
-#import "ContactCellView.h"
-#import "ContactTableViewCell.h"
 #import "ConversationCollectionView.h"
 #import "ConversationInputToolbar.h"
 #import "ConversationListCell.h"
@@ -27,8 +25,6 @@
 #import "FingerprintViewController.h"
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
-#import "OWSAnyTouchGestureRecognizer.h"
-#import "OWSAudioPlayer.h"
 #import "OWSBackup.h"
 #import "OWSBackupIO.h"
 #import "OWSBezierPathView.h"
@@ -61,8 +57,10 @@
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/AttachmentSharing.h>
+#import <SignalMessaging/ContactCellView.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSAnyTouchGestureRecognizer.h>
 #import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSContactAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>

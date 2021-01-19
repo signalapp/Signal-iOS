@@ -6,13 +6,13 @@
 #import "DebugUIMessagesAssetLoader.h"
 #import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
-#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
