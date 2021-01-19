@@ -57,30 +57,12 @@ public class OWSAttachmentDownloads: NSObject {
         }
     }
 
-    private class Job {
+    private struct JobRequest {
         let jobType: JobType
         let category: AttachmentCategory
-        let downloadBehavior: AttachmentDownloadBehavior
 
-        let promise: Promise<TSAttachmentStream>
-        let resolver: Resolver<TSAttachmentStream>
-
-        var progress: CGFloat = 0
         var attachmentId: AttachmentId { jobType.attachmentId }
         var message: TSMessage? { jobType.message }
-
-        init(jobType: JobType,
-             category: AttachmentCategory,
-             downloadBehavior: AttachmentDownloadBehavior) {
-
-            self.jobType = jobType
-            self.category = category
-            self.downloadBehavior = downloadBehavior
-
-            let (promise, resolver) = Promise<TSAttachmentStream>.pending()
-            self.promise = promise
-            self.resolver = resolver
-        }
 
         func loadLatestAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
             switch jobType {
@@ -89,6 +71,34 @@ public class OWSAttachmentDownloads: NSObject {
             case .headlessAttachment(let attachmentPointer):
                 return attachmentPointer
             }
+        }
+    }
+
+    private class Job {
+        let jobRequest: JobRequest
+        var jobType: JobType { jobRequest.jobType }
+        let downloadBehavior: AttachmentDownloadBehavior
+
+        let promise: Promise<TSAttachmentStream>
+        let resolver: Resolver<TSAttachmentStream>
+
+        var progress: CGFloat = 0
+        var attachmentId: AttachmentId { jobType.attachmentId }
+        var message: TSMessage? { jobType.message }
+        var category: AttachmentCategory { jobRequest.category }
+
+        init(jobRequest: JobRequest, downloadBehavior: AttachmentDownloadBehavior) {
+
+            self.jobRequest = jobRequest
+            self.downloadBehavior = downloadBehavior
+
+            let (promise, resolver) = Promise<TSAttachmentStream>.pending()
+            self.promise = promise
+            self.resolver = resolver
+        }
+
+        func loadLatestAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
+            jobRequest.loadLatestAttachment(transaction: transaction)
         }
     }
 
@@ -625,9 +635,9 @@ public extension OWSAttachmentDownloads {
         let category: AttachmentCategory = .other
         // Headless downloads always bypass.
         let downloadBehavior: AttachmentDownloadBehavior = .bypassAll
-
-        enqueueDownload(jobType: .headlessAttachment(attachmentPointer: attachmentPointer),
-                        category: category,
+        let jobType: JobType = .headlessAttachment(attachmentPointer: attachmentPointer)
+        let jobRequest = JobRequest(jobType: jobType, category: category)
+        enqueueDownload(jobRequest: jobRequest,
                         downloadBehavior: downloadBehavior,
                         success: success,
                         failure: failure)
@@ -640,16 +650,16 @@ public extension OWSAttachmentDownloads {
                                 downloadBehavior: AttachmentDownloadBehavior,
                                 success: @escaping ([TSAttachmentStream]) -> Void,
                                 failure: @escaping (Error) -> Void) {
-        enqueueDownload(jobType: .messageAttachment(attachmentId: attachmentPointer.uniqueId,
-                                                    message: message),
-                        category: category,
+        let jobType: JobType = .messageAttachment(attachmentId: attachmentPointer.uniqueId,
+                                                  message: message)
+        let jobRequest = JobRequest(jobType: jobType, category: category)
+        enqueueDownload(jobRequest: jobRequest,
                         downloadBehavior: downloadBehavior,
                         success: success,
                         failure: failure)
     }
 
-    private func enqueueDownload(jobType: JobType,
-                                 category: AttachmentCategory,
+    private func enqueueDownload(jobRequest: JobRequest,
                                  downloadBehavior: AttachmentDownloadBehavior,
                                  success: @escaping ([TSAttachmentStream]) -> Void,
                                  failure: @escaping (Error) -> Void) {
@@ -661,11 +671,9 @@ public extension OWSAttachmentDownloads {
             return
         }
 
-        let attachmentReference = AttachmentReference.attachmentPointer(jobType: jobType,
-                                                                        category: category)
         Self.serialQueue.async {
             Self.databaseStorage.read { transaction in
-                self.enqueueJobs(forAttachmentReferences: [attachmentReference],
+                self.enqueueJobs(jobRequests: [jobRequest],
                                  downloadBehavior: downloadBehavior,
                                  transaction: transaction,
                                  success: success,
@@ -762,29 +770,14 @@ public extension OWSAttachmentDownloads {
         case other
     }
 
-    // TODO: Move category: AttachmentCategory to JobType.
-    private enum AttachmentReference {
-        case attachmentStream(attachmentStream: TSAttachmentStream, category: AttachmentCategory)
-        case attachmentPointer(jobType: JobType, category: AttachmentCategory)
+    private class func buildJobRequests(forMessage message: TSMessage,
+                                        attachmentGroup: AttachmentGroup,
+                                        transaction: SDSAnyReadTransaction) -> [JobRequest] {
 
-        var category: AttachmentCategory {
-            switch self {
-            case .attachmentPointer(_, let category):
-                return category
-            case .attachmentStream(_, let category):
-                return category
-            }
-        }
-    }
-
-    private class func loadAttachmentReferences(forMessage message: TSMessage,
-                                                attachmentGroup: AttachmentGroup,
-                                                transaction: SDSAnyReadTransaction) -> [AttachmentReference] {
-
-        var references = [AttachmentReference]()
+        var jobRequests = [JobRequest]()
         var attachmentIds = Set<AttachmentId>()
 
-        func addReference(attachment: TSAttachment, category: AttachmentCategory) {
+        func addJobRequest(attachment: TSAttachment, category: AttachmentCategory) {
 
             if let attachmentPointer = attachment as? TSAttachmentPointer {
                 if attachmentPointer.pointerType == .restoring {
@@ -804,25 +797,17 @@ public extension OWSAttachmentDownloads {
                 return
             }
             attachmentIds.insert(attachmentId)
-
-            if let attachmentStream = attachment as? TSAttachmentStream {
-                references.append(.attachmentStream(attachmentStream: attachmentStream, category: category))
-            } else if attachment as? TSAttachmentPointer != nil {
-                references.append(.attachmentPointer(jobType: .messageAttachment(attachmentId: attachmentId,
-                                                                                 message: message),
-                                                     category: category))
-            } else {
-                owsFailDebug("Invalid attachment: \(type(of: attachment))")
-            }
+            let jobType = JobType.messageAttachment(attachmentId: attachmentId, message: message)
+            jobRequests.append(JobRequest(jobType: jobType, category: category))
         }
 
-        func addReference(attachmentId: AttachmentId, category: AttachmentCategory) {
+        func addJobRequest(attachmentId: AttachmentId, category: AttachmentCategory) {
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
                                                          transaction: transaction) else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
                 return
             }
-            addReference(attachment: attachment, category: category)
+            addJobRequest(attachment: attachment, category: category)
         }
 
         for attachmentId in message.attachmentIds {
@@ -844,28 +829,28 @@ public extension OWSAttachmentDownloads {
                     return .bodyFile
                 }
             }()
-            addReference(attachment: attachment, category: category)
+            addJobRequest(attachment: attachment, category: category)
         }
 
         guard !attachmentGroup.justBodyAttachments else {
-            return references
+            return jobRequests
         }
 
         if let quotedMessage = message.quotedMessage {
             for attachmentId in quotedMessage.thumbnailAttachmentStreamIds() {
-                addReference(attachmentId: attachmentId, category: .quotedReplyThumbnail)
+                addJobRequest(attachmentId: attachmentId, category: .quotedReplyThumbnail)
             }
             if let attachmentId = quotedMessage.thumbnailAttachmentPointerId() {
-                addReference(attachmentId: attachmentId, category: .quotedReplyThumbnail)
+                addJobRequest(attachmentId: attachmentId, category: .quotedReplyThumbnail)
             }
         }
 
         if let attachmentId = message.contactShare?.avatarAttachmentId {
-            addReference(attachmentId: attachmentId, category: .contactShareAvatar)
+            addJobRequest(attachmentId: attachmentId, category: .contactShareAvatar)
         }
 
         if let attachmentId = message.linkPreview?.imageAttachmentId {
-            addReference(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
+            addJobRequest(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
         }
 
         if let attachmentId = message.messageSticker?.attachmentId {
@@ -874,16 +859,16 @@ public extension OWSAttachmentDownloads {
                 owsAssertDebug(attachment.byteCount > 0)
                 let autoDownloadSizeThreshold: UInt32 = 100 * 1024
                 if attachment.byteCount > autoDownloadSizeThreshold {
-                    addReference(attachmentId: attachmentId, category: .stickerLarge)
+                    addJobRequest(attachmentId: attachmentId, category: .stickerLarge)
                 } else {
-                    addReference(attachmentId: attachmentId, category: .stickerSmall)
+                    addJobRequest(attachmentId: attachmentId, category: .stickerSmall)
                 }
             } else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
             }
         }
 
-        return references
+        return jobRequests
     }
 
     @objc
@@ -903,21 +888,21 @@ public extension OWSAttachmentDownloads {
                     failure(Self.buildError())
                     return
                 }
-                let attachmentReferences = Self.loadAttachmentReferences(forMessage: message,
-                                                                         attachmentGroup: attachmentGroup,
-                                                                         transaction: transaction)
-                guard !attachmentReferences.isEmpty else {
+                let jobRequests = Self.buildJobRequests(forMessage: message,
+                                                        attachmentGroup: attachmentGroup,
+                                                        transaction: transaction)
+                guard !jobRequests.isEmpty else {
                     success([])
                     return
                 }
-                self.enqueueJobs(forAttachmentReferences: attachmentReferences,
+                self.enqueueJobs(jobRequests: jobRequests,
                                  downloadBehavior: downloadBehavior,
                                  transaction: transaction,
                                  success: { attachmentStreams in
                                     success(attachmentStreams)
 
                                     Self.updateQuotedMessageThumbnail(messageId: messageId,
-                                                                      attachmentReferences: attachmentReferences,
+                                                                      jobRequests: jobRequests,
                                                                       attachmentStreams: attachmentStreams)
                                  },
                                  failure: failure)
@@ -926,13 +911,13 @@ public extension OWSAttachmentDownloads {
     }
 
     private class func updateQuotedMessageThumbnail(messageId: String,
-                                                    attachmentReferences: [AttachmentReference],
+                                                    jobRequests: [JobRequest],
                                                     attachmentStreams: [TSAttachmentStream]) {
         guard !attachmentStreams.isEmpty else {
             // Don't bothe
             return
         }
-        let quotedMessageThumbnailDownloads = attachmentReferences.filter { $0.category == .quotedReplyThumbnail }
+        let quotedMessageThumbnailDownloads = jobRequests.filter { $0.category == .quotedReplyThumbnail }
         guard !quotedMessageThumbnailDownloads.isEmpty else {
             return
         }
@@ -952,23 +937,24 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private func enqueueJobs(forAttachmentReferences attachmentReferences: [AttachmentReference],
+    private func enqueueJobs(jobRequests: [JobRequest],
                              downloadBehavior: AttachmentDownloadBehavior,
                              transaction: SDSAnyReadTransaction,
                              success: @escaping ([TSAttachmentStream]) -> Void,
                              failure: @escaping (Error) -> Void) {
 
         let unfairLock = UnfairLock()
-        var promises = [Promise<Void>]()
         var attachmentStreams = [TSAttachmentStream]()
-        for attachmentReference in attachmentReferences {
-            switch attachmentReference {
-            case .attachmentStream(let attachmentStream, _):
-                unfairLock.withLock {
-                    attachmentStreams.append(attachmentStream)
+        var promises = [Promise<Void>]()
+        Self.databaseStorage.read { transaction in
+            for jobRequest in jobRequests {
+                if let attachmentStream = jobRequest.loadLatestAttachment(transaction: transaction) as? TSAttachmentStream {
+                    unfairLock.withLock {
+                        attachmentStreams.append(attachmentStream)
+                    }
+                    continue
                 }
-            case .attachmentPointer(let jobType, let category):
-                let job = Job(jobType: jobType, category: category, downloadBehavior: downloadBehavior)
+                let job = Job(jobRequest: jobRequest, downloadBehavior: downloadBehavior)
                 self.enqueueJob(job: job)
                 let promise = firstly {
                     job.promise
