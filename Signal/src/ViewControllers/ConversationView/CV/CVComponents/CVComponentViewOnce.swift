@@ -88,8 +88,9 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
         switch viewOnceState {
         case .incomingDownloading(let attachmentPointer):
-            let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                      style: .withoutCircle(diameter: iconSize))
+            let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                        style: .withoutCircle(diameter: iconSize),
+                                                        conversationStyle: conversationStyle)
             componentView.hStackView.addArrangedSubview(progressView)
         default:
             if shouldShowIcon, let iconName = self.iconName {

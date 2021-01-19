@@ -193,8 +193,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
 
         let downloadViewSize = min(iconSize.width, iconSize.height)
-        let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                  style: .withoutCircle(diameter: downloadViewSize))
+        let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                    style: .withoutCircle(diameter: downloadViewSize),
+                                                    conversationStyle: conversationStyle)
         return progressView
     }
 

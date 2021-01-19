@@ -28,7 +28,8 @@ public class CVMediaAlbumView: UIStackView {
                           items: [CVMediaAlbumItem],
                           isOutgoing: Bool,
                           isBorderless: Bool,
-                          cellMeasurement: CVCellMeasurement) {
+                          cellMeasurement: CVCellMeasurement,
+                          conversationStyle: ConversationStyle) {
 
         guard let maxMessageWidth = cellMeasurement.value(key: Self.maxMessageWidthKey) else {
             owsFailDebug("Missing maxMessageWidth.")
@@ -38,10 +39,11 @@ public class CVMediaAlbumView: UIStackView {
         self.items = items
         self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map {
             CVMediaView(mediaCache: mediaCache,
-                                  attachment: $0.attachment,
-                                  isOutgoing: isOutgoing,
-                                  maxMessageWidth: maxMessageWidth,
-                                  isBorderless: isBorderless)
+                        attachment: $0.attachment,
+                        isOutgoing: isOutgoing,
+                        maxMessageWidth: maxMessageWidth,
+                        isBorderless: isBorderless,
+                        conversationStyle: conversationStyle)
         }
         self.isBorderless = isBorderless
 

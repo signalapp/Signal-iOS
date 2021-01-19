@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -238,109 +238,86 @@ public class OWSURLSession: NSObject {
                       shouldHandleRemoteDeprecation: shouldHandleRemoteDeprecation)
     }
 
-    private class func handleGenericTaskCompletion(resolver: Resolver<OWSHTTPResponse>,
-                                                   requestConfig: RequestConfig,
-                                                   responseData: Data?) {
-        handleTaskCompletion(requestConfig: requestConfig,
-                             responseData: responseData,
-                             success: { (httpUrlResponse: HTTPURLResponse) in
-                                resolver.fulfill(OWSHTTPResponse(task: requestConfig.task,
-                                                                 httpUrlResponse: httpUrlResponse,
-                                                                 responseData: responseData))
-        },
-                             failure: { (error: Error) in
-                                resolver.reject(error)
-        })
-    }
-
-    private class func handleUrlDownloadTaskCompletion(resolver: Resolver<OWSUrlDownloadResponse>,
-                                                       requestConfig: RequestConfig,
-                                                       downloadUrl: URL?) {
-        handleTaskCompletion(requestConfig: requestConfig,
-                             responseData: nil,
-                             success: { (httpUrlResponse: HTTPURLResponse) in
-                                guard let downloadUrl = downloadUrl else {
-                                    resolver.reject(OWSAssertionError("Missing downloadUrl."))
-                                    return
-                                }
-                                let temporaryUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil,
-                                                                                  isAvailableWhileDeviceLocked: true)
-                                do {
-                                    try OWSFileSystem.moveFile(from: downloadUrl, to: temporaryUrl)
-                                } catch {
-                                    resolver.reject(error)
-                                    return
-                                }
-                                resolver.fulfill(OWSUrlDownloadResponse(task: requestConfig.task,
-                                                                        httpUrlResponse: httpUrlResponse,
-                                                                        downloadUrl: temporaryUrl))
-        },
-                             failure: { (error: Error) in
-                                resolver.reject(error)
-        })
-    }
-
-    private class func handleTaskCompletion(requestConfig: RequestConfig,
-                                            responseData: Data?,
-                                            success: (HTTPURLResponse) -> Void,
-                                            failure: (Error) -> Void) {
-
-        let task = requestConfig.task
-
-        if requestConfig.shouldHandleRemoteDeprecation {
-            checkForRemoteDeprecation(task: task, response: task.response)
+    private class func uploadOrDataTaskCompletionPromise(requestConfig: RequestConfig,
+                                                         responseData: Data?) -> Promise<OWSHTTPResponse> {
+        firstly {
+            baseCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> OWSHTTPResponse in
+            OWSHTTPResponse(task: requestConfig.task,
+                            httpUrlResponse: httpUrlResponse,
+                            responseData: responseData)
         }
+    }
 
-        if let error = task.error {
-            if IsNetworkConnectivityFailure(error) {
-                Logger.warn("Request failed: \(error)")
-            } else {
-                #if TESTABLE_BUILD
-                TSNetworkManager.logCurl(for: task)
+    private class func downloadTaskCompletionPromise(requestConfig: RequestConfig,
+                                                     downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> {
+        firstly {
+            baseCompletionPromise(requestConfig: requestConfig, responseData: nil)
+        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> OWSUrlDownloadResponse in
+            return OWSUrlDownloadResponse(task: requestConfig.task,
+                                          httpUrlResponse: httpUrlResponse,
+                                          downloadUrl: downloadUrl)
+        }
+    }
 
-                if let responseData = responseData,
-                    let httpUrlResponse = task.response as? HTTPURLResponse,
-                    let contentType = httpUrlResponse.allHeaderFields["Content-Type"] as? String,
-                    contentType == OWSMimeTypeJson,
-                    let jsonString = String(data: responseData, encoding: .utf8) {
-                    Logger.verbose("Response JSON: \(jsonString)")
-                }
-                #endif
+    private class func baseCompletionPromise(requestConfig: RequestConfig,
+                                             responseData: Data?) -> Promise<HTTPURLResponse> {
 
-                if requestConfig.failOnError {
-                    owsFailDebug("Request failed: \(error)")
+        firstly(on: .global()) { () -> HTTPURLResponse in
+            let task = requestConfig.task
+
+            if requestConfig.shouldHandleRemoteDeprecation {
+                checkForRemoteDeprecation(task: task, response: task.response)
+            }
+
+            if let error = task.error {
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Request failed: \(error)")
                 } else {
-                    Logger.error("Request failed: \(error)")
+                    #if TESTABLE_BUILD
+                    TSNetworkManager.logCurl(for: task)
+
+                    if let responseData = responseData,
+                       let httpUrlResponse = task.response as? HTTPURLResponse,
+                       let contentType = httpUrlResponse.allHeaderFields["Content-Type"] as? String,
+                       contentType == OWSMimeTypeJson,
+                       let jsonString = String(data: responseData, encoding: .utf8) {
+                        Logger.verbose("Response JSON: \(jsonString)")
+                    }
+                    #endif
+
+                    if requestConfig.failOnError {
+                        owsFailDebug("Request failed: \(error)")
+                    } else {
+                        Logger.error("Request failed: \(error)")
+                    }
+                }
+                throw error
+            }
+            guard let httpUrlResponse = task.response as? HTTPURLResponse else {
+                throw OWSAssertionError("Invalid response: \(type(of: task.response)).")
+            }
+
+            if requestConfig.require2xxOr3xx {
+                let statusCode = httpUrlResponse.statusCode
+                guard statusCode >= 200, statusCode < 400 else {
+                    #if TESTABLE_BUILD
+                    TSNetworkManager.logCurl(for: task)
+                    Logger.verbose("Status code: \(statusCode)")
+                    #endif
+
+                    throw OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse)
                 }
             }
-            failure(error)
-            return
-        }
-        guard let httpUrlResponse = task.response as? HTTPURLResponse else {
-            failure(OWSAssertionError("Invalid response: \(type(of: task.response))."))
-            return
-        }
 
-        if requestConfig.require2xxOr3xx {
-            let statusCode = httpUrlResponse.statusCode
-            guard statusCode >= 200, statusCode < 400 else {
-                #if TESTABLE_BUILD
+            #if TESTABLE_BUILD
+            if DebugFlags.logCurlOnSuccess {
                 TSNetworkManager.logCurl(for: task)
-                Logger.verbose("Status code: \(statusCode)")
-                #endif
-
-                failure(OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse))
-                return
             }
-        }
+            #endif
 
-        #if TESTABLE_BUILD
-        if DebugFlags.logCurlOnSuccess {
-            TSNetworkManager.logCurl(for: task)
+            return httpUrlResponse
         }
-        #endif
-
-        success(httpUrlResponse)
     }
 
     private class func checkForRemoteDeprecation(task: URLSessionTask,
@@ -469,54 +446,62 @@ public class OWSURLSession: NSObject {
         return finalUrl
     }
 
-    // MARK: - Progress Blocks
-
-    typealias TaskIdentifier = Int
-
-    public typealias ProgressBlock = (URLSessionTask, Progress) -> Void
-    typealias ProgressBlockMap = [TaskIdentifier: ProgressBlock]
+    // MARK: - TaskState
 
     private let lock = UnfairLock()
-    private var progressBlockMap = ProgressBlockMap()
+
+    typealias TaskIdentifier = Int
+    public typealias ProgressBlock = (URLSessionTask, Progress) -> Void
+
+    private typealias TaskStateMap = [TaskIdentifier: TaskState]
+    private var taskStateMap = TaskStateMap()
+
+    private func addTask(_ task: URLSessionTask, taskState: TaskState) {
+        lock.withLock {
+            owsAssertDebug(self.taskStateMap[task.taskIdentifier] == nil)
+            self.taskStateMap[task.taskIdentifier] = taskState
+        }
+    }
 
     private func progressBlock(forTask task: URLSessionTask) -> ProgressBlock? {
         lock.withLock {
-            self.progressBlockMap[task.taskIdentifier]
+            self.taskStateMap[task.taskIdentifier]?.progressBlock
         }
     }
 
-    private func setProgressBlock(forTask task: URLSessionTask, _ progressBlock: ProgressBlock?) {
-        lock.withLock {
-            if let progressBlock = progressBlock {
-                self.progressBlockMap[task.taskIdentifier] = progressBlock
-            } else {
-                self.progressBlockMap.removeValue(forKey: task.taskIdentifier)
+    private func removeCompletedTaskState(_ task: URLSessionTask) -> TaskState? {
+        lock.withLock { () -> TaskState? in
+            guard let taskState = self.taskStateMap[task.taskIdentifier] else {
+                owsFailDebug("Missing TaskState.")
+                return nil
             }
+            self.taskStateMap[task.taskIdentifier] = nil
+            return taskState
         }
     }
 
-    // MARK: - Download Completion Blocks
-
-    public typealias DownloadCompletionBlock = (URLSessionTask, URL) -> Void
-    typealias DownloadCompletionBlockMap = [TaskIdentifier: DownloadCompletionBlock]
-
-    private var downloadCompletionBlockMap = DownloadCompletionBlockMap()
-
-    private func downloadCompletionBlock(forTask task: URLSessionTask) -> DownloadCompletionBlock? {
-        lock.withLock {
-            self.downloadCompletionBlockMap[task.taskIdentifier]
+    private func downloadTaskDidSucceed(_ task: URLSessionTask, downloadUrl: URL) {
+        guard let taskState = removeCompletedTaskState(task) as? DownloadTaskState else {
+            owsFailDebug("Missing TaskState.")
+            return
         }
+        taskState.resolver.fulfill((task, downloadUrl))
     }
 
-    private func setDownloadCompletionBlock(forTask task: URLSessionTask,
-                                            _ downloadCompletionBlock: DownloadCompletionBlock?) {
-        lock.withLock {
-            if let downloadCompletionBlock = downloadCompletionBlock {
-                self.downloadCompletionBlockMap[task.taskIdentifier] = downloadCompletionBlock
-            } else {
-                self.downloadCompletionBlockMap.removeValue(forKey: task.taskIdentifier)
-            }
+    private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, responseData: Data?) {
+        guard let taskState = removeCompletedTaskState(task) as? UploadTaskState else {
+            owsFailDebug("Missing TaskState.")
+            return
         }
+        taskState.resolver.fulfill((task, responseData))
+    }
+
+    private func taskDidFail(_ task: URLSessionTask, error: Error) {
+        guard let taskState = removeCompletedTaskState(task) else {
+            owsFailDebug("Missing TaskState.")
+            return
+        }
+        taskState.reject(error: error)
     }
 
     // MARK: -
@@ -548,6 +533,22 @@ public class OWSURLSession: NSObject {
 // MARK: -
 
 extension OWSURLSession: URLSessionDelegate {
+
+    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+        Logger.info("Error: \(String(describing: error))")
+        Logger.flush()
+        Logger.flush()
+    }
+
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+//        Logger.info("Error: \(String(describing: error))")
+//        Logger.flush()
+//        Logger.flush()
+        if let error = error {
+            Logger.info("Error: \(error)")
+            taskDidFail(task, error: error)
+        }
+    }
 
     public func urlSession(_ session: URLSession,
                            didReceive challenge: URLAuthenticationChallenge,
@@ -599,10 +600,18 @@ extension OWSURLSession: URLSessionTaskDelegate {
 extension OWSURLSession: URLSessionDownloadDelegate {
 
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let downloadCompletionBlock = self.downloadCompletionBlock(forTask: downloadTask) else {
-            return
+        do {
+            // Download locations are cleaned up quickly, so we
+            // need to move the file synchronously.
+            let temporaryUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil,
+                                                              isAvailableWhileDeviceLocked: true)
+            try OWSFileSystem.moveFile(from: location, to: temporaryUrl)
+            downloadTaskDidSucceed(downloadTask, downloadUrl: temporaryUrl)
+        } catch {
+            owsFailDebugUnlessNetworkFailure(error)
+
+            taskDidFail(downloadTask, error: error)
         }
-        downloadCompletionBlock(downloadTask, location)
     }
 
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
@@ -651,22 +660,27 @@ public extension OWSURLSession {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
+        let taskState = UploadTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
-        let task = session.uploadTask(with: request, from: requestData) { (responseData: Data?, _: URLResponse?, _: Error?) in
+        let task = session.uploadTask(with: request, from: requestData) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
                 owsFailDebug("Missing requestConfig.")
                 return
             }
-            self.setProgressBlock(forTask: requestConfig.task, nil)
-            Self.handleGenericTaskCompletion(resolver: resolver,
-                                             requestConfig: requestConfig,
-                                             responseData: responseData)
+            self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
+        addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task)
-        setProgressBlock(forTask: task, progressBlock)
         task.resume()
-        return promise
+
+        return firstly { () -> Promise<(URLSessionTask, Data?)> in
+            taskState.promise
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+            guard let requestConfig = requestConfig else {
+                throw OWSAssertionError("Missing requestConfig.")
+            }
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+        }
     }
 
     func uploadTaskPromise(_ urlString: String,
@@ -688,22 +702,27 @@ public extension OWSURLSession {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
+        let taskState = UploadTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
-        let task = session.uploadTask(with: request, fromFile: dataUrl) { (responseData: Data?, _: URLResponse?, _: Error?) in
+        let task = session.uploadTask(with: request, fromFile: dataUrl) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
                 owsFailDebug("Missing requestConfig.")
                 return
             }
-            self.setProgressBlock(forTask: requestConfig.task, nil)
-            Self.handleGenericTaskCompletion(resolver: resolver,
-                                             requestConfig: requestConfig,
-                                             responseData: responseData)
+            self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
+        addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task)
-        setProgressBlock(forTask: task, progressBlock)
         task.resume()
-        return promise
+
+        return firstly { () -> Promise<(URLSessionTask, Data?)> in
+            taskState.promise
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+            guard let requestConfig = requestConfig else {
+                throw OWSAssertionError("Missing requestConfig.")
+            }
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+        }
     }
 
     // MARK: - Data Tasks
@@ -724,21 +743,27 @@ public extension OWSURLSession {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
+        let taskState = UploadTaskState(progressBlock: nil)
         var requestConfig: RequestConfig?
-        let task = session.dataTask(with: request) { (responseData: Data?, _: URLResponse?, _: Error?) in
+        let task = session.dataTask(with: request) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
                 owsFailDebug("Missing requestConfig.")
                 return
             }
-            self.setProgressBlock(forTask: requestConfig.task, nil)
-            Self.handleGenericTaskCompletion(resolver: resolver,
-                                             requestConfig: requestConfig,
-                                             responseData: responseData)
+            self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
+        addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task)
         task.resume()
-        return promise
+
+        return firstly { () -> Promise<(URLSessionTask, Data?)> in
+            taskState.promise
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+            guard let requestConfig = requestConfig else {
+                throw OWSAssertionError("Missing requestConfig.")
+            }
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+        }
     }
 
     // MARK: - Download Tasks
@@ -757,58 +782,42 @@ public extension OWSURLSession {
 
     func urlDownloadTaskPromise(request: URLRequest,
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
-
-        guard !Self.appExpiry.isExpired else {
-            return Promise(error: OWSAssertionError("App is expired."))
+        urlDownloadTaskPromise(progress: progressBlock) {
+            // Don't use a completion block or the delegate will be ignored for download tasks.
+            session.downloadTask(with: request)
         }
-
-        let (promise, resolver) = Promise<OWSUrlDownloadResponse>.pending()
-        var requestConfig: RequestConfig?
-        // Don't use the a completion block or the delegate will be ignored for download tasks.
-        let task = session.downloadTask(with: request)
-        requestConfig = self.requestConfig(forTask: task)
-        setProgressBlock(forTask: task, progressBlock)
-        setDownloadCompletionBlock(forTask: task) { (task: URLSessionTask, downloadUrl: URL) in
-            guard let requestConfig = requestConfig else {
-                owsFailDebug("Missing requestConfig.")
-                return
-            }
-            self.setProgressBlock(forTask: task, nil)
-            self.setDownloadCompletionBlock(forTask: task, nil)
-            Self.handleUrlDownloadTaskCompletion(resolver: resolver,
-                                                 requestConfig: requestConfig,
-                                                 downloadUrl: downloadUrl)
-        }
-        task.resume()
-        return promise
     }
 
     func urlDownloadTaskPromise(resumeData: Data,
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
+        urlDownloadTaskPromise(progress: progressBlock) {
+            // Don't use a completion block or the delegate will be ignored for download tasks.
+            session.downloadTask(withResumeData: resumeData)
+        }
+    }
+
+    private func urlDownloadTaskPromise(progress progressBlock: ProgressBlock? = nil,
+                                        taskBlock: () -> URLSessionDownloadTask) -> Promise<OWSUrlDownloadResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let (promise, resolver) = Promise<OWSUrlDownloadResponse>.pending()
+        let taskState = DownloadTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
-        // Don't use the a completion block or the delegate will be ignored for download tasks.
-        let task = session.downloadTask(withResumeData: resumeData)
+        let task = taskBlock()
+        addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task)
-        setProgressBlock(forTask: task, progressBlock)
-        setDownloadCompletionBlock(forTask: task) { (task: URLSessionTask, downloadUrl: URL) in
-            guard let requestConfig = requestConfig else {
-                owsFailDebug("Missing requestConfig.")
-                return
-            }
-            self.setProgressBlock(forTask: task, nil)
-            self.setDownloadCompletionBlock(forTask: task, nil)
-            Self.handleUrlDownloadTaskCompletion(resolver: resolver,
-                                                 requestConfig: requestConfig,
-                                                 downloadUrl: downloadUrl)
-        }
         task.resume()
-        return promise
+
+        return firstly { () -> Promise<(URLSessionTask, URL)> in
+            taskState.promise
+        }.then(on: .global()) { (_: URLSessionTask, downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> in
+            guard let requestConfig = requestConfig else {
+                throw OWSAssertionError("Missing requestConfig.")
+            }
+            return Self.downloadTaskCompletionPromise(requestConfig: requestConfig, downloadUrl: downloadUrl)
+        }
     }
 }
 
@@ -879,5 +888,55 @@ public extension URLRequest {
         for (headerField, headerValue) in httpHeaders.headers {
             addValue(headerValue, forHTTPHeaderField: headerField)
         }
+    }
+}
+
+// MARK: - TaskState
+
+private protocol TaskState {
+    typealias ProgressBlock = (URLSessionTask, Progress) -> Void
+
+    var progressBlock: ProgressBlock? { get }
+
+    func reject(error: Error)
+}
+
+// MARK: - TaskState
+
+private class DownloadTaskState: TaskState {
+    let progressBlock: ProgressBlock?
+    let promise: Promise<(URLSessionTask, URL)>
+    let resolver: Resolver<(URLSessionTask, URL)>
+
+    init(progressBlock: ProgressBlock?) {
+        self.progressBlock = progressBlock
+
+        let (promise, resolver) = Promise<(URLSessionTask, URL)>.pending()
+        self.promise = promise
+        self.resolver = resolver
+    }
+
+    func reject(error: Error) {
+        resolver.reject(error)
+    }
+}
+
+// MARK: - TaskState
+
+private class UploadTaskState: TaskState {
+    let progressBlock: ProgressBlock?
+    let promise: Promise<(URLSessionTask, Data?)>
+    let resolver: Resolver<(URLSessionTask, Data?)>
+
+    init(progressBlock: ProgressBlock?) {
+        self.progressBlock = progressBlock
+
+        let (promise, resolver) = Promise<(URLSessionTask, Data?)>.pending()
+        self.promise = promise
+        self.resolver = resolver
+    }
+
+    func reject(error: Error) {
+        resolver.reject(error)
     }
 }

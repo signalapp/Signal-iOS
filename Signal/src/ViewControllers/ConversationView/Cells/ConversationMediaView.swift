@@ -9,13 +9,13 @@ public class CVMediaView: UIView {
     private enum MediaError {
         case missing
         case invalid
-        case failed
     }
 
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>
     public let attachment: TSAttachment
+    private let conversationStyle: ConversationStyle
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
@@ -83,12 +83,14 @@ public class CVMediaView: UIView {
                          attachment: TSAttachment,
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
-                         isBorderless: Bool) {
+                         isBorderless: Bool,
+                         conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
+        self.conversationStyle = conversationStyle
 
         super.init(frame: .zero)
 
@@ -117,10 +119,6 @@ public class CVMediaView: UIView {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             return configureForUndownloadedImage()
         }
-        guard !isFailedDownload else {
-            configure(forError: .failed)
-            return
-        }
         if attachmentStream.shouldBeRenderedByYY {
             configureForAnimatedImage(attachmentStream: attachmentStream)
         } else if attachmentStream.isImage {
@@ -136,22 +134,6 @@ public class CVMediaView: UIView {
     private func configureForUndownloadedImage() {
         tryToConfigureForBlurHash(attachment: attachment)
 
-        guard !isFailedDownload else {
-            return configure(forError: .failed)
-        }
-
-        guard !isPendingDownload else {
-            return
-        }
-
-        addDownloadProgressIfNecessary()
-    }
-
-    private func addDownloadProgressIfNecessary() {
-        guard !isFailedDownload else {
-            configure(forError: .failed)
-            return
-        }
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             owsFailDebug("Attachment has unexpected type.")
             configure(forError: .invalid)
@@ -164,8 +146,9 @@ public class CVMediaView: UIView {
         }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = AttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                     style: .withCircle)
+        let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                    style: .withCircle,
+                                                    conversationStyle: conversationStyle)
         self.addSubview(progressView)
         progressView.autoCenterInSuperview()
     }
@@ -180,8 +163,9 @@ public class CVMediaView: UIView {
         guard !attachmentStream.isUploaded else {
             return false
         }
-        let progressView = AttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
-                                                     style: .withCircle)
+        let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
+                                                    style: .withCircle,
+                                                    conversationStyle: conversationStyle)
         self.addSubview(progressView)
         progressView.autoCenterInSuperview()
         return true
@@ -432,22 +416,6 @@ public class CVMediaView: UIView {
         return playVideoButton
     }
 
-    private var isPendingDownload: Bool {
-        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
-            return false
-        }
-        return (attachmentPointer.state == .pendingMessageRequest ||
-            attachmentPointer.state == .pendingManualDownload)
-
-    }
-
-    private var isFailedDownload: Bool {
-        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
-            return false
-        }
-        return attachmentPointer.state == .failed
-    }
-
     private var hasBlurHash: Bool {
         return BlurHash.isValidBlurHash(attachment.blurHash)
     }
@@ -456,12 +424,6 @@ public class CVMediaView: UIView {
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let icon: UIImage
         switch error {
-        case .failed:
-            guard let asset = UIImage(named: "media_retry") else {
-                owsFailDebug("Missing image")
-                return
-            }
-            icon = asset
         case .invalid:
             guard let asset = UIImage(named: "media_invalid") else {
                 owsFailDebug("Missing image")

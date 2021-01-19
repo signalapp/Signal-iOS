@@ -437,7 +437,7 @@ public extension OWSAttachmentDownloads {
         return result
     }
 
-    static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
+    private static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
         let preferenceMap = loadMediaBandwidthPreferences(transaction: transaction)
         let hasWifiConnection = reachabilityManager.isReachable(via: .wifi)
         var result = Set<MediaDownloadType>()
