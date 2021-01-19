@@ -167,7 +167,8 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
         let selectedContacts = self.selectedContacts
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+        let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, message: message) { [weak self] _ in
             var promise: Promise<TSGroupThread>!
             Storage.writeSync { transaction in
                 promise = MessageSender.createV2ClosedGroup(name: name, members: selectedContacts, transaction: transaction)
