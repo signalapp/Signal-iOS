@@ -163,7 +163,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard selectedContacts.count >= 1 else {
             return showError(title: "Please pick at least 1 group member")
         }
-        guard selectedContacts.count < 20 else { // Minus one because we're going to include self later
+        guard selectedContacts.count < 100 else { // Minus one because we're going to include self later
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
         let selectedContacts = self.selectedContacts
