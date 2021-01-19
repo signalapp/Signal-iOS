@@ -2648,7 +2648,7 @@
 "vc_create_closed_group_empty_state_button_title" = "Démarrer une session";
 "vc_create_closed_group_group_name_missing_error" = "Veuillez saisir un nom de groupe";
 "vc_create_closed_group_group_name_too_long_error" = "Veuillez saisir un nom de groupe plus court";
-"vc_create_closed_group_too_many_group_members_error" = "Un groupe privé ne peut pas avoir plus de 20 membres";
+"vc_create_closed_group_too_many_group_members_error" = "Un groupe privé ne peut pas avoir plus de 100 membres";
 "vc_create_closed_group_invalid_session_id_error" = "Un des membres de votre groupe a un Session ID non valide";
 
 "vc_join_public_chat_title" = "Joindre un groupe public";

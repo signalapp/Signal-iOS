@@ -2537,6 +2537,7 @@ typedef enum : NSUInteger {
     [ModalActivityIndicatorViewController
         presentFromViewController:self
                         canCancel:YES
+                          message:nil
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       DataSource *dataSource =
                           [DataSourcePath dataSourceWithURL:movieURL shouldDeleteOnDeallocation:NO];

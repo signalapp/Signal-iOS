@@ -4,14 +4,15 @@
 
 import Foundation
 import MediaPlayer
-
+import SessionUIKit
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
 @objc
 public class ModalActivityIndicatorViewController: OWSViewController {
-
     let canCancel: Bool
+    
+    let message: String?
 
     @objc
     public var wasCancelled: Bool = false
@@ -29,25 +30,26 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         notImplemented()
     }
 
-    public required init(canCancel: Bool) {
+    public required init(canCancel: Bool = false, message: String? = nil) {
         self.canCancel = canCancel
+        self.message = message
         super.init(nibName: nil, bundle: nil)
     }
 
     @objc
-    public class func present(fromViewController: UIViewController,
-                              canCancel: Bool, backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+    public class func present(fromViewController: UIViewController, canCancel: Bool = false, message: String? = nil,
+        backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel)
+        let view = ModalActivityIndicatorViewController(canCancel: canCancel, message: message)
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
         view.modalTransitionStyle = .crossDissolve
-        fromViewController.present(view,
-                                   animated: false) {
-                                    DispatchQueue.global().async {
-                                        backgroundBlock(view)
-                                    }
+        fromViewController.present(view, animated: false) {
+            DispatchQueue.global().async {
+                backgroundBlock(view)
+                
+            }
         }
     }
 
@@ -70,15 +72,31 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func loadView() {
         super.loadView()
 
-        self.view.backgroundColor = (Theme.isDarkThemeEnabled
-            ? UIColor(white: 0, alpha: 0.5)
-            : UIColor(white: 0, alpha: 0.5))
+        self.view.backgroundColor = UIColor(white: 0, alpha: 0.5)
         self.view.isOpaque = false
 
         let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         self.activityIndicator = activityIndicator
-        self.view.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
+        
+        if let message = message {
+            let messageLabel = UILabel()
+            messageLabel.text = message
+            messageLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+            messageLabel.textColor = UIColor.white
+            messageLabel.numberOfLines = 0
+            messageLabel.textAlignment = .center
+            messageLabel.lineBreakMode = .byWordWrapping
+            messageLabel.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
+            let stackView = UIStackView(arrangedSubviews: [ messageLabel, activityIndicator ])
+            stackView.axis = .vertical
+            stackView.spacing = Values.largeSpacing
+            stackView.alignment = .center
+            self.view.addSubview(stackView)
+            stackView.center(in: self.view)
+        } else {
+            self.view.addSubview(activityIndicator)
+            activityIndicator.autoCenterInSuperview()
+        }
 
         if canCancel {
             let cancelButton = UIButton(type: .custom)
@@ -152,7 +170,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         wasCancelled = true
 
-        dismiss {
-        }
+        dismiss { }
     }
 }
