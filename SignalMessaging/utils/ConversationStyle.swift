@@ -140,8 +140,8 @@ public class ConversationStyle: NSObject {
         gutterLeading = thread.isGroupThread ? 12 : 16
         gutterTrailing = 16
 
-        fullWidthGutterLeading = 32
-        fullWidthGutterTrailing = 32
+        fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
+        fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 

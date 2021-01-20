@@ -48,9 +48,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private var cellLayoutMargins: UIEdgeInsets {
         UIEdgeInsets(top: 0,
-                     leading: conversationStyle.fullWidthGutterLeading,
+                     leading: conversationStyle.fullWidthGutterLeading + 20,
                      bottom: 0,
-                     trailing: conversationStyle.fullWidthGutterTrailing)
+                     trailing: conversationStyle.fullWidthGutterTrailing + 20)
     }
 
     private var outerStackConfig: CVStackViewConfig {
