@@ -468,6 +468,8 @@ static NSTimeInterval launchStartedAt;
         // Only mark the app as ready once
         return;
     }
+    
+    [SNConfiguration performMainSetup];
 
     // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
     [self.profileManager ensureLocalProfileCached];
