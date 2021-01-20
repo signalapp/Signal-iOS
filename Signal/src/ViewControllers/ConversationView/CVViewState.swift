@@ -104,7 +104,7 @@ public class CVViewState: NSObject {
     public var sendMessageController: SendMessageController?
 
     public let mediaViewCache = MediaViewCache(maxSize: 12)
-    
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -253,6 +253,8 @@ public extension ConversationViewController {
 
     var isMeasuringKeyboardHeight: Bool { inputToolbar?.isMeasuringKeyboardHeight ?? false }
 
+    var mediaViewCache: MediaViewCache { viewState.mediaViewCache }
+
     // MARK: - Gestures
 
     var collectionViewTapGestureRecognizer: UITapGestureRecognizer {
@@ -301,7 +303,8 @@ extension CVViewState {
 
     var asCoreState: CVCoreState {
         CVCoreState(conversationStyle: conversationStyle,
-                    cellMediaCache: cellMediaCache)
+                    cellMediaCache: cellMediaCache,
+                    mediaViewCache: mediaViewCache)
     }
 }
 
@@ -344,8 +347,6 @@ extension ConversationViewController {
         get { viewState.sendMessageController }
         set { viewState.sendMessageController = newValue }
     }
-
-    var mediaViewCache: MediaViewCache { viewState.mediaViewCache }
 }
 
 // MARK: -
@@ -355,6 +356,7 @@ extension ConversationViewController {
 struct CVCoreState {
     let conversationStyle: ConversationStyle
     let cellMediaCache: NSCache<NSString, AnyObject>
+    let mediaViewCache: MediaViewCache
 }
 
 // MARK: -

@@ -67,6 +67,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         let albumView = componentView.albumView
         albumView.configure(mediaCache: self.cellMediaCache,
+                            mediaViewCache: self.mediaViewCache,
                             items: self.items,
                             isOutgoing: self.isOutgoing,
                             isBorderless: self.isBorderless,

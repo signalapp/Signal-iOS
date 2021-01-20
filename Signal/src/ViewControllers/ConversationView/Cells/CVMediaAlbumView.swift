@@ -25,6 +25,7 @@ public class CVMediaAlbumView: UIStackView {
     }
 
     public func configure(mediaCache: NSCache<NSString, AnyObject>,
+                          mediaViewCache: MediaViewCache,
                           items: [CVMediaAlbumItem],
                           isOutgoing: Bool,
                           isBorderless: Bool,
@@ -39,6 +40,7 @@ public class CVMediaAlbumView: UIStackView {
         self.items = items
         self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map {
             CVMediaView(mediaCache: mediaCache,
+                        mediaViewCache: mediaViewCache,
                         attachment: $0.attachment,
                         isOutgoing: isOutgoing,
                         maxMessageWidth: maxMessageWidth,

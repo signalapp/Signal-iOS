@@ -270,7 +270,7 @@
 		348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */; };
 		348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */; };
 		348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CF25545C0A00D4F4C4 /* CVAttachments.swift */; };
-		3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* ConversationMediaView.swift */; };
+		3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* CVMediaView.swift */; };
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		348C686D246B0B110039705A /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
@@ -1273,7 +1273,7 @@
 		348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAudioPlayback.swift; sourceTree = "<group>"; };
 		348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentGenericAttachment.swift; sourceTree = "<group>"; };
 		348815CF25545C0A00D4F4C4 /* CVAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAttachments.swift; sourceTree = "<group>"; };
-		3488F9352191CC4000E524CC /* ConversationMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationMediaView.swift; sourceTree = "<group>"; };
+		3488F9352191CC4000E524CC /* CVMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaView.swift; sourceTree = "<group>"; };
 		348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinderPerformanceTest.swift; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348C686C246B0B100039705A /* ThreadUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadUtil.swift; sourceTree = "<group>"; };
@@ -2932,10 +2932,10 @@
 			children = (
 				88594E592335B08000390B19 /* AudioMessageView.swift */,
 				88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */,
-				3488F9352191CC4000E524CC /* ConversationMediaView.swift */,
 				3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */,
 				3470C87F2555F25200F5847C /* CVContactShareView.swift */,
 				34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */,
+				3488F9352191CC4000E524CC /* CVMediaView.swift */,
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 				348EE28C25B897BF00814FC2 /* MediaViewCache.swift */,
@@ -5350,7 +5350,7 @@
 				3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				348815BE2552EB2900D4F4C4 /* OWSStackView.swift in Sources */,
-				3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */,
+				3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */,
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */,

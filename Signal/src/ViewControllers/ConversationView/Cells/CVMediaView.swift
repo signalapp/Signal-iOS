@@ -31,15 +31,9 @@ public class CVMediaView: UIView {
                          attachment: TSAttachment,
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
-<<<<<<< HEAD
                          isBorderless: Bool,
                          conversationStyle: ConversationStyle) {
-||||||| parent of b43076603e... Reuse media views.
-                         isBorderless: Bool) {
-=======
-                         isBorderless: Bool) {
         self.mediaViewCache = mediaViewCache
->>>>>>> b43076603e... Reuse media views.
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
@@ -202,143 +196,45 @@ public class CVMediaView: UIView {
 
     private func configureForVideo(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-<<<<<<< HEAD
-        let stillImageView = UIImageView()
-        // We need to specify a contentMode since the size of the image
-        // might not match the aspect ratio of the view.
-        stillImageView.contentMode = .scaleAspectFill
-        // Use trilinear filters for better scaling quality at
-        // some performance cost.
-        stillImageView.layer.minificationFilter = .trilinear
-        stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.washColor
-
-        addSubview(stillImageView)
-        stillImageView.autoPinEdgesToSuperviewEdges()
-
-        if !addUploadProgressIfNecessary(stillImageView) {
-            let videoPlayButton = Self.buildVideoPlayButton {}
-            videoPlayButton.isUserInteractionEnabled = false
-            stillImageView.addSubview(videoPlayButton)
-            videoPlayButton.autoCenterInSuperview()
-        }
-
-        loadBlock = { [weak self] in
-            AssertIsOnMainThread()
-
-            if stillImageView.image != nil {
-                owsFailDebug("Unexpectedly already loaded.")
-                return
-            }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidVideo else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                return attachmentStream.thumbnailImageLarge(success: { (image) in
-                    AssertIsOnMainThread()
-
-                    stillImageView.image = image
-                }, failure: {
-                    Logger.error("Could not load thumbnail")
-                })
-            },
-                                 applyMediaBlock: { (media) in
-                                    AssertIsOnMainThread()
-
-                                    guard let image = media as? UIImage else {
-                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                        return
-                                    }
-                                    stillImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
-||||||| parent of b43076603e... Reuse media views.
-        let stillImageView = UIImageView()
-        // We need to specify a contentMode since the size of the image
-        // might not match the aspect ratio of the view.
-        stillImageView.contentMode = .scaleAspectFill
-        // Use trilinear filters for better scaling quality at
-        // some performance cost.
-        stillImageView.layer.minificationFilter = .trilinear
-        stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.washColor
-
-        addSubview(stillImageView)
-        stillImageView.autoPinEdgesToSuperviewEdges()
-
-        if !addUploadProgressIfNecessary(stillImageView) {
-            let videoPlayIcon = UIImage(named: "play_button")
-            let videoPlayButton = UIImageView(image: videoPlayIcon)
-            stillImageView.addSubview(videoPlayButton)
-            videoPlayButton.autoCenterInSuperview()
-        }
-
-        loadBlock = { [weak self] in
-            AssertIsOnMainThread()
-
-            if stillImageView.image != nil {
-                owsFailDebug("Unexpectedly already loaded.")
-                return
-            }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidVideo else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                return attachmentStream.thumbnailImageLarge(success: { (image) in
-                    AssertIsOnMainThread()
-
-                    stillImageView.image = image
-                }, failure: {
-                    Logger.error("Could not load thumbnail")
-                })
-            },
-                                 applyMediaBlock: { (media) in
-                                    AssertIsOnMainThread()
-
-                                    guard let image = media as? UIImage else {
-                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                        return
-                                    }
-                                    stillImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
-=======
         if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
             applyReusableMediaView(reusableMediaView)
             return
->>>>>>> b43076603e... Reuse media views.
         }
 
         let mediaViewAdapter = MediaViewAdapterVideo(attachmentStream: attachmentStream)
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
     }
 
-    @objc
-    public static func buildVideoPlayButton(block: @escaping () -> Void) -> UIView {
-        let playVideoButton = OWSButton(block: block)
+//    @objc
+//    public static func buildVideoPlayButton(block: @escaping () -> Void) -> UIView {
+//        let playVideoButton = OWSButton(block: block)
+//
+//        let playVideoCircleView = OWSLayerView.circleView()
+//        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+//        playVideoCircleView.isUserInteractionEnabled = false
+//        playVideoButton.addSubview(playVideoCircleView)
+//
+//        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
+//                                                                  tintColor: UIColor.ows_white)
+//        playVideoIconView.isUserInteractionEnabled = false
+//        playVideoButton.addSubview(playVideoIconView)
+//
+//        let playVideoButtonWidth: CGFloat = 44
+//        let playVideoIconWidth: CGFloat = 20
+//        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
+//        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
+//        playVideoCircleView.autoPinEdgesToSuperviewEdges()
+//        playVideoIconView.autoCenterInSuperview()
+//
+//        return playVideoButton
+//    }
 
-        let playVideoCircleView = OWSLayerView.circleView()
-        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
-        playVideoCircleView.isUserInteractionEnabled = false
-        playVideoButton.addSubview(playVideoCircleView)
-
-        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
-                                                                  tintColor: UIColor.ows_white)
-        playVideoIconView.isUserInteractionEnabled = false
-        playVideoButton.addSubview(playVideoIconView)
-
-        let playVideoButtonWidth: CGFloat = 44
-        let playVideoIconWidth: CGFloat = 20
-        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
-        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
-        playVideoCircleView.autoPinEdgesToSuperviewEdges()
-        playVideoIconView.autoCenterInSuperview()
-
-        return playVideoButton
-    }
-
+//    if !addUploadProgressIfNecessary(stillImageView) {
+//    let videoPlayIcon = UIImage(named: "play_button")
+//    let videoPlayButton = UIImageView(image: videoPlayIcon)
+//    stillImageView.addSubview(videoPlayButton)
+//    videoPlayButton.autoCenterInSuperview()
+//    }
     private var hasBlurHash: Bool {
         return BlurHash.isValidBlurHash(attachment.blurHash)
     }
@@ -375,122 +271,7 @@ public class CVMediaView: UIView {
             return
         }
 
-<<<<<<< HEAD
-        Logger.verbose("media cache miss")
-
-        let threadSafeLoadState = self.threadSafeLoadState
-        CVMediaView.loadQueue.async {
-            guard threadSafeLoadState.get() == .loading else {
-                Logger.verbose("Skipping obsolete load.")
-                return
-            }
-
-            guard let media = loadMediaBlock() else {
-                Logger.info("Failed to load media.")
-
-                DispatchQueue.main.async {
-                    loadCompletion(nil)
-                }
-                return
-            }
-
-            DispatchQueue.main.async {
-                mediaCache.setObject(media, forKey: cacheKey as NSString)
-
-                loadCompletion(media)
-            }
-        }
-    }
-
-    // We use this queue to perform the media loads.
-    // These loads are expensive, so we want to:
-    //
-    // * Do them off the main thread.
-    // * Only do one at a time.
-    // * Avoid this work if possible (obsolete loads for
-    //   views that are no longer visible, redundant loads
-    //   of media already being loaded, don't retry media
-    //   that can't be loaded, etc.).
-    // * Do them in _reverse_ order. More recently enqueued
-    //   loads more closely reflect the current view state.
-    //   By processing in reverse order, we improve our
-    //   "skip rate" of obsolete loads.
-    private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
-
-    public func loadMedia() {
-        AssertIsOnMainThread()
-
-        switch loadState {
-        case .unloaded:
-            loadState = .loading
-
-            guard let loadBlock = loadBlock else {
-                return
-            }
-            loadBlock()
-        case .loading, .loaded, .failed:
-            break
-        }
-||||||| parent of b43076603e... Reuse media views.
-        Logger.verbose("media cache miss")
-
-        let threadSafeLoadState = self.threadSafeLoadState
-        ConversationMediaView.loadQueue.async {
-            guard threadSafeLoadState.get() == .loading else {
-                Logger.verbose("Skipping obsolete load.")
-                return
-            }
-
-            guard let media = loadMediaBlock() else {
-                Logger.info("Failed to load media.")
-
-                DispatchQueue.main.async {
-                    loadCompletion(nil)
-                }
-                return
-            }
-
-            DispatchQueue.main.async {
-                mediaCache.setObject(media, forKey: cacheKey as NSString)
-
-                loadCompletion(media)
-            }
-        }
-    }
-
-    // We use this queue to perform the media loads.
-    // These loads are expensive, so we want to:
-    //
-    // * Do them off the main thread.
-    // * Only do one at a time.
-    // * Avoid this work if possible (obsolete loads for
-    //   views that are no longer visible, redundant loads
-    //   of media already being loaded, don't retry media
-    //   that can't be loaded, etc.).
-    // * Do them in _reverse_ order. More recently enqueued
-    //   loads more closely reflect the current view state.
-    //   By processing in reverse order, we improve our
-    //   "skip rate" of obsolete loads.
-    private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
-
-    @objc
-    public func loadMedia() {
-        AssertIsOnMainThread()
-
-        switch loadState {
-        case .unloaded:
-            loadState = .loading
-
-            guard let loadBlock = loadBlock else {
-                return
-            }
-            loadBlock()
-        case .loading, .loaded, .failed:
-            break
-        }
-=======
         reusableMediaView.load()
->>>>>>> b43076603e... Reuse media views.
     }
 
     public func unloadMedia() {
