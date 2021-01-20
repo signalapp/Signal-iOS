@@ -48,41 +48,23 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             containerView.backgroundColor = nil
             containerView.layer.cornerRadius = 0
 
-            let isAnimated = attachmentStream.shouldBeRenderedByYY
-            componentView.isAnimated = isAnimated
-            if isAnimated {
-                containerView.addSubview(componentView.animatedImageView)
-                componentView.animatedImageView.autoPinEdgesToSuperviewEdges()
-
-                componentView.loadBlock = {
-                    guard let filePath = attachmentStream.originalFilePath else {
-                        owsFailDebug("Missing filePath.")
-                        return
-                    }
-                    guard let image = YYImage(contentsOfFile: filePath) else {
-                        owsFailDebug("Could not load image.")
-                        return
-                    }
-                    componentView.animatedImageView.image = image
-                }
+            let cacheKey = attachmentStream.uniqueId
+            let reusableMediaView: ReusableMediaView
+            if let cachedView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+                reusableMediaView = cachedView
             } else {
-                containerView.addSubview(componentView.stillmageView)
-                componentView.stillmageView.autoPinEdgesToSuperviewEdges()
-
-                componentView.loadBlock = {
-                    guard let filePath = attachmentStream.originalFilePath else {
-                        owsFailDebug("Missing filePath.")
-                        return
-                    }
-                    guard let image = UIImage(contentsOfFile: filePath) else {
-                        owsFailDebug("Could not load image.")
-                        return
-                    }
-                    componentView.stillmageView.image = image
-                }
+                let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream)
+                reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: cellMediaCache)
+                mediaViewCache.setValue(reusableMediaView, forKey: cacheKey)
             }
+
+            reusableMediaView.owner = componentView
+            componentView.reusableMediaView = reusableMediaView
+            reusableMediaView.mediaView.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+                                                                               comment: "Accessibility label for stickers.")
+            containerView.addSubview(reusableMediaView.mediaView)
+            reusableMediaView.mediaView.autoPinEdgesToSuperviewEdges()
         } else if let attachmentPointer = self.attachmentPointer {
-            componentView.loadBlock = {}
             containerView.backgroundColor = Theme.secondaryBackgroundColor
             containerView.layer.cornerRadius = 18
 
@@ -161,30 +143,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         fileprivate let containerView = UIView()
 
-        // TODO: We might want to:
-        //
-        // * Lazy-create these views.
-        // * Recycle these views (e.g. for animation continuity, for perf).
-        // * Ensure a given instance is only ever user for animated or still.
-        fileprivate lazy var animatedImageView = { () -> UIImageView in
-            let view = YYAnimatedImageView()
-            view.contentMode = .scaleAspectFit
-            view.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                        comment: "Accessibility label for stickers.")
-            return view
-        }()
-        fileprivate lazy var stillmageView = { () -> UIImageView in
-            let view = UIImageView()
-            view.contentMode = .scaleAspectFit
-            view.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                        comment: "Accessibility label for stickers.")
-            return view
-        }()
-
-        fileprivate var isAnimated = false
-
-        typealias LoadBlock = () -> Void
-        fileprivate var loadBlock: LoadBlock?
+        fileprivate var reusableMediaView: ReusableMediaView?
 
         public var isDedicatedCellView = false
 
@@ -194,22 +153,26 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
-                guard let loadBlock = loadBlock else {
-                    owsFailDebug("Missing loadBlock.")
-                    return
+                if let reusableMediaView = reusableMediaView,
+                   reusableMediaView.owner == self {
+                    reusableMediaView.load()
                 }
-                loadBlock()
             } else {
-                animatedImageView.image = nil
-                stillmageView.image = nil
+                if let reusableMediaView = reusableMediaView,
+                   reusableMediaView.owner == self {
+                    reusableMediaView.unload()
+                }
             }
         }
 
         public func reset() {
             containerView.removeAllSubviews()
-            animatedImageView.image = nil
-            stillmageView.image = nil
-            loadBlock = nil
+
+            if let reusableMediaView = reusableMediaView,
+               reusableMediaView.owner == self {
+                reusableMediaView.unload()
+                reusableMediaView.owner = nil
+            }
         }
     }
 }
