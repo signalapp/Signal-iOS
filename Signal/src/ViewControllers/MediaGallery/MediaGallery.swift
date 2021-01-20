@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -131,8 +131,6 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     }
 
     init(year: Int, month: Int) {
-        assert(month >= 1 && month <= 12)
-
         self.year = year
         self.month = month
     }
@@ -163,17 +161,15 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
 
     static let thisYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-
+        formatter.locale = .autoupdatingCurrent
+        formatter.setLocalizedDateFormatFromTemplate("MMMM")
         return formatter
     }()
 
     static let olderFormatter: DateFormatter = {
         let formatter = DateFormatter()
-
-        // FIXME localize for RTL, or is there a built in way to do this?
-        formatter.dateFormat = "MMMM yyyy"
-
+        formatter.locale = .autoupdatingCurrent
+        formatter.setLocalizedDateFormatFromTemplate("MMMMyyyy")
         return formatter
     }()
 
