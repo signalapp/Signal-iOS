@@ -426,6 +426,10 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)hasActiveCall
 {
+    if (!AppReadiness.isAppReady) {
+        OWSFailDebug(@"App is not ready.");
+        return NO;
+    }
     return AppEnvironment.shared.callService.hasCallInProgress;
 }
 
