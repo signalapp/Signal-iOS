@@ -147,9 +147,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                let vibrancyView = componentView.buildVibrancyView()
+                let vibrancyView = buildVibrancyView()
                 componentView.vibrancyView = vibrancyView
-                let blurView = componentView.buildBlurView(conversationStyle: conversationStyle)
+                let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
                 bubbleView = blurView
 
@@ -364,22 +364,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
             button?.removeFromSuperview()
             button = nil
-        }
-
-        public func buildVibrancyView() -> UIVisualEffectView {
-            let blurEffectStyle: UIBlurEffect.Style
-            if #available(iOS 13, *) {
-                blurEffectStyle = .systemThinMaterial
-            } else {
-                blurEffectStyle = .regular
-            }
-            return UIVisualEffectView(
-                effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurEffectStyle))
-            )
-        }
-
-        public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-            return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
         }
     }
 }

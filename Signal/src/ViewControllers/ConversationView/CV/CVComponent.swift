@@ -278,6 +278,26 @@ extension CVComponentBase {
 
 // MARK: -
 
+extension CVComponentBase {
+    public func buildVibrancyView() -> UIVisualEffectView {
+        let blurEffectStyle: UIBlurEffect.Style
+        if #available(iOS 13, *) {
+            blurEffectStyle = .systemThinMaterial
+        } else {
+            blurEffectStyle = .regular
+        }
+        return UIVisualEffectView(
+            effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurEffectStyle))
+        )
+    }
+
+    public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
+        return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
+    }
+}
+
+// MARK: -
+
 // Used for rendering some portion of an Conversation View item.
 // It could be the entire item or some part thereof.
 @objc
