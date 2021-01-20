@@ -30,6 +30,7 @@ public protocol MediaViewAdapter {
     var mediaView: UIView { get }
     var isLoaded: Bool { get }
     var cacheKey: String { get }
+    var isAnimated: Bool { get }
 
     func applyMedia(_ media: AnyObject)
     func unloadMedia()
@@ -54,7 +55,7 @@ public enum ReusableMediaError: Error {
 public class ReusableMediaView: NSObject {
 
     private let mediaViewAdapter: MediaViewAdapterSwift
-    private let mediaCache: NSCache<NSString, AnyObject>
+    private let mediaCache: CVMediaCache
 
     @objc
     public var mediaView: UIView {
@@ -92,7 +93,7 @@ public class ReusableMediaView: NSObject {
 
     @objc
     public required init(mediaViewAdapter: MediaViewAdapter,
-                         mediaCache: NSCache<NSString, AnyObject>) {
+                         mediaCache: CVMediaCache) {
         self.mediaViewAdapter = mediaViewAdapter as! MediaViewAdapterSwift
         self.mediaCache = mediaCache
     }
@@ -177,7 +178,7 @@ public class ReusableMediaView: NSObject {
         let mediaViewAdapter = self.mediaViewAdapter
         let cacheKey = mediaViewAdapter.cacheKey
         let mediaCache = self.mediaCache
-        if let media = mediaCache.object(forKey: cacheKey as NSString) {
+        if let media = mediaCache.getMedia(cacheKey, isAnimated: mediaViewAdapter.isAnimated) {
             Logger.verbose("media cache hit")
             loadCompletion(media)
             return
@@ -193,7 +194,7 @@ public class ReusableMediaView: NSObject {
             }
             return mediaViewAdapter.loadMedia()
         }.done(on: .main) { (media: AnyObject) in
-            mediaCache.setObject(media, forKey: cacheKey as NSString)
+            mediaCache.setMedia(media, forKey: cacheKey, isAnimated: mediaViewAdapter.isAnimated)
 
             loadCompletion(media)
         }.catch(on: .main) { (error: Error) in
@@ -213,6 +214,7 @@ public class ReusableMediaView: NSObject {
 
 class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 
+    public let isAnimated = false
     let blurHash: String
     let imageView = UIImageView()
 
@@ -262,6 +264,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 
 class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
+    public let isAnimated = true
     let attachmentStream: TSAttachmentStream
     let imageView = YYAnimatedImageView()
 
@@ -315,6 +318,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
 class MediaViewAdapterStill: MediaViewAdapterSwift {
 
+    public let isAnimated = false
     let attachmentStream: TSAttachmentStream
     let imageView = UIImageView()
 
@@ -373,6 +377,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
 
 class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
+    public let isAnimated = false
     let attachmentStream: TSAttachmentStream
     let imageView = UIImageView()
 
@@ -427,7 +432,7 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 @objc
 public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
 
-    let isAnimated: Bool
+    public let isAnimated: Bool
     let attachmentStream: TSAttachmentStream
     let imageView: UIImageView
 

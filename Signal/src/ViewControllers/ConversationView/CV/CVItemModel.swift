@@ -28,8 +28,7 @@ public class CVItemModel: NSObject {
     // and request a new one.
     private let coreState: CVCoreState
     public var conversationStyle: ConversationStyle { coreState.conversationStyle }
-    public var cellMediaCache: NSCache<NSString, AnyObject> { coreState.cellMediaCache }
-    public var mediaViewCache: CVMediaViewCache { coreState.mediaViewCache }
+    public var mediaCache: CVMediaCache { coreState.mediaCache }
 
     public var itemModel: CVItemModel {
         self

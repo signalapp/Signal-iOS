@@ -5,7 +5,17 @@
 import Foundation
 
 @objc
-public class CVMediaViewCache: NSObject {
+public class CVMediaCache: NSObject {
+
+    private static func buildMediaCache(countLimit: Int) -> NSCache<NSString, AnyObject> {
+        let cache = NSCache<NSString, AnyObject>()
+        cache.countLimit = countLimit
+        return cache
+    }
+
+    private let stillMediaCache = buildMediaCache(countLimit: 16)
+    private let animatedMediaCache = buildMediaCache(countLimit: 8)
+
     private let stillMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 12)
     private let animatedMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 6)
 
@@ -24,6 +34,18 @@ public class CVMediaViewCache: NSObject {
     }
 
     @objc
+    public func getMedia(_ key: String, isAnimated: Bool) -> AnyObject? {
+        let cache = isAnimated ? animatedMediaCache : stillMediaCache
+        return cache.object(forKey: key as NSString)
+    }
+
+    @objc
+    public func setMedia(_ value: AnyObject, forKey key: String, isAnimated: Bool) {
+        let cache = isAnimated ? animatedMediaCache : stillMediaCache
+        cache.setObject(value, forKey: key as NSString)
+    }
+
+    @objc
     public func getMediaView(_ key: String, isAnimated: Bool) -> ReusableMediaView? {
         let cache = isAnimated ? animatedMediaViewCache : stillMediaViewCache
         return cache.get(key)
@@ -38,6 +60,9 @@ public class CVMediaViewCache: NSObject {
     @objc
     public func removeAllObjects() {
         AssertIsOnMainThread()
+
+        stillMediaCache.removeAllObjects()
+        animatedMediaCache.removeAllObjects()
 
         stillMediaViewCache.removeAllObjects()
         animatedMediaViewCache.removeAllObjects()

@@ -14,8 +14,7 @@ public class CVMediaView: UIView {
 
     // MARK: -
 
-    private let mediaViewCache: CVMediaViewCache
-    private let mediaCache: NSCache<NSString, AnyObject>
+    private let mediaCache: CVMediaCache
     public let attachment: TSAttachment
     private let conversationStyle: ConversationStyle
     private let isOutgoing: Bool
@@ -26,14 +25,12 @@ public class CVMediaView: UIView {
 
     // MARK: - Initializers
 
-    public required init(mediaCache: NSCache<NSString, AnyObject>,
-                         mediaViewCache: CVMediaViewCache,
+    public required init(mediaCache: CVMediaCache,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
                          isBorderless: Bool,
                          conversationStyle: ConversationStyle) {
-        self.mediaViewCache = mediaViewCache
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
@@ -146,7 +143,7 @@ public class CVMediaView: UIView {
 
     private func createNewReusableMediaView(mediaViewAdapter: MediaViewAdapter, isAnimated: Bool) {
         let reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
-        mediaViewCache.setMediaView(reusableMediaView, forKey: mediaViewAdapter.cacheKey, isAnimated: isAnimated)
+        mediaCache.setMediaView(reusableMediaView, forKey: mediaViewAdapter.cacheKey, isAnimated: isAnimated)
         applyReusableMediaView(reusableMediaView)
     }
 
@@ -163,7 +160,7 @@ public class CVMediaView: UIView {
         // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = blurHash
         let isAnimated = false
-        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
@@ -175,7 +172,7 @@ public class CVMediaView: UIView {
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
         let isAnimated = attachmentStream.shouldBeRenderedByYY
-        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
@@ -187,7 +184,7 @@ public class CVMediaView: UIView {
     private func configureForStillImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
         let isAnimated = attachmentStream.shouldBeRenderedByYY
-        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
@@ -199,7 +196,7 @@ public class CVMediaView: UIView {
     private func configureForVideo(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
         let isAnimated = attachmentStream.shouldBeRenderedByYY
-        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+        if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }

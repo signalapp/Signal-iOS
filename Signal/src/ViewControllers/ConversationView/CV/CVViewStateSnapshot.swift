@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,7 @@ struct CVViewStateSnapshot {
     // and request a new one.
     let coreState: CVCoreState
     public var conversationStyle: ConversationStyle { coreState.conversationStyle }
-    public var cellMediaCache: NSCache<NSString, AnyObject> { coreState.cellMediaCache }
+    public var mediaCache: CVMediaCache { coreState.mediaCache }
 
     // TODO: We need to determine exactly what the desired behavior here is.
     let collapseCutoffDate = Date()
