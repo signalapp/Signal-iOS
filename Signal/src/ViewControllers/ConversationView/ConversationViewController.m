@@ -566,6 +566,7 @@ typedef enum : NSUInteger {
 {
     [self updateCellsVisible];
     [self.cellMediaCache removeAllObjects];
+    [self.mediaViewCache removeAllObjects];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -576,6 +577,7 @@ typedef enum : NSUInteger {
     [self saveDraft];
     [self markVisibleMessagesAsRead];
     [self.cellMediaCache removeAllObjects];
+    [self.mediaViewCache removeAllObjects];
     [self cancelReadTimer];
     [self dismissPresentedViewControllerIfNecessary];
     [self saveLastVisibleSortIdAndOnScreenPercentage];
@@ -1066,6 +1068,7 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
+    [self.mediaViewCache removeAllObjects];
     [self.inputToolbar clearDesiredKeyboard];
 
     self.isUserScrolling = NO;

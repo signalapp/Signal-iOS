@@ -35,6 +35,14 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
     }
 
     public func append(key: KeyType, value: ValueType) {
+        insert(key: key, value: value, isAppend: true)
+    }
+
+    public func prepend(key: KeyType, value: ValueType) {
+        insert(key: key, value: value, isAppend: false)
+    }
+
+    private func insert(key: KeyType, value: ValueType, isAppend: Bool) {
         if keyValueMap[key] != nil {
             owsFailDebug("Unexpected duplicate key in key map: \(key)")
         }
@@ -43,7 +51,12 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
         if orderedKeys.contains(key) {
             owsFailDebug("Unexpected duplicate key in key list: \(key)")
         } else {
-            orderedKeys.append(key)
+            if isAppend {
+                orderedKeys.append(key)
+            } else {
+                // Prepend
+                orderedKeys = [key ] + orderedKeys
+            }
         }
 
         if orderedKeys.count != keyValueMap.count {
@@ -66,8 +79,11 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
         }
     }
 
-    public func remove(key: KeyType) {
+    public func remove(key: KeyType, ignoreMissing: Bool = false) {
         if keyValueMap[key] == nil {
+            if ignoreMissing {
+                return
+            }
             owsFailDebug("Missing key in key map: \(key)")
         } else {
             keyValueMap.removeValue(forKey: key)
@@ -101,6 +117,28 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
             values.append(value)
         }
         return values
+    }
+
+    public func moveExistingKeyToFirst(_ key: KeyType) {
+        guard orderedKeys.contains(key) else {
+            owsFailDebug("Key not in dictionary.")
+            return
+        }
+
+        orderedKeys = [key ] + orderedKeys.filter { $0 != key }
+    }
+
+    public var firstKey: KeyType? {
+        orderedKeys.first
+    }
+
+    public var lastKey: KeyType? {
+        orderedKeys.last
+    }
+
+    public func removeAll() {
+        keyValueMap.removeAll()
+        orderedKeys.removeAll()
     }
 }
 

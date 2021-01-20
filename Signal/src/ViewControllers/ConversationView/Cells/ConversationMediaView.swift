@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 public class CVMediaView: UIView {
 
@@ -13,78 +14,32 @@ public class CVMediaView: UIView {
 
     // MARK: -
 
+    private let mediaViewCache: MediaViewCache
     private let mediaCache: NSCache<NSString, AnyObject>
     public let attachment: TSAttachment
     private let conversationStyle: ConversationStyle
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
-    private var loadBlock : (() -> Void)?
-    private var unloadBlock : (() -> Void)?
 
-    // MARK: - LoadState
-
-    // The loadState property allows us to:
-    //
-    // * Make sure we only have one load attempt
-    //   enqueued at a time for a given piece of media.
-    // * We never retry media that can't be loaded.
-    // * We skip media loads which are no longer
-    //   necessary by the time they reach the front
-    //   of the queue.
-
-    enum LoadState {
-        case unloaded
-        case loading
-        case loaded
-        case failed
-    }
-
-    // Thread-safe access to load state.
-    //
-    // We use a "box" class so that we can capture a reference
-    // to this box (rather than self) and a) safely access
-    // if off the main thread b) not prevent deallocation of
-    // self.
-    private class ThreadSafeLoadState {
-        private var value: LoadState
-
-        required init(_ value: LoadState) {
-            self.value = value
-        }
-
-        func get() -> LoadState {
-            objc_sync_enter(self)
-            let valueCopy = value
-            objc_sync_exit(self)
-            return valueCopy
-        }
-
-        func set(_ newValue: LoadState) {
-            objc_sync_enter(self)
-            value = newValue
-            objc_sync_exit(self)
-        }
-    }
-    private let threadSafeLoadState = ThreadSafeLoadState(.unloaded)
-    // Convenience accessors.
-    private var loadState: LoadState {
-        get {
-            return threadSafeLoadState.get()
-        }
-        set {
-            threadSafeLoadState.set(newValue)
-        }
-    }
+    private var reusableMediaView: ReusableMediaView?
 
     // MARK: - Initializers
 
     public required init(mediaCache: NSCache<NSString, AnyObject>,
+                         mediaViewCache: MediaViewCache,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
+<<<<<<< HEAD
                          isBorderless: Bool,
                          conversationStyle: ConversationStyle) {
+||||||| parent of b43076603e... Reuse media views.
+                         isBorderless: Bool) {
+=======
+                         isBorderless: Bool) {
+        self.mediaViewCache = mediaViewCache
+>>>>>>> b43076603e... Reuse media views.
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
@@ -105,19 +60,13 @@ public class CVMediaView: UIView {
         notImplemented()
     }
 
-    deinit {
-        AssertIsOnMainThread()
-
-        loadState = .unloaded
-    }
-
     // MARK: -
 
     private func createContents() {
         AssertIsOnMainThread()
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
-            return configureForUndownloadedImage()
+            return configureForUndownloadedMedia()
         }
         if attachmentStream.shouldBeRenderedByYY {
             configureForAnimatedImage(attachmentStream: attachmentStream)
@@ -131,7 +80,7 @@ public class CVMediaView: UIView {
         }
     }
 
-    private func configureForUndownloadedImage() {
+    private func configureForUndownloadedMedia() {
         tryToConfigureForBlurHash(attachment: attachment)
 
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
@@ -171,6 +120,43 @@ public class CVMediaView: UIView {
         return true
     }
 
+    private func configureImageView(_ imageView: UIImageView) {
+        // We need to specify a contentMode since the size of the image
+        // might not match the aspect ratio of the view.
+        imageView.contentMode = .scaleAspectFill
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
+    }
+
+    private func applyReusableMediaView(_ reusableMediaView: ReusableMediaView) {
+        reusableMediaView.owner = self
+        self.reusableMediaView = reusableMediaView
+        let mediaView = reusableMediaView.mediaView
+        addSubview(mediaView)
+        mediaView.autoPinEdgesToSuperviewEdges()
+        if let imageView = mediaView as? UIImageView {
+            configureImageView(imageView)
+        }
+        mediaView.backgroundColor = isBorderless ? .clear : Theme.washColor
+
+        if !addUploadProgressIfNecessary(mediaView) {
+            if reusableMediaView.isVideo {
+                let videoPlayIcon = UIImage(named: "play_button")
+                let videoPlayButton = UIImageView(image: videoPlayIcon)
+                addSubview(videoPlayButton)
+                videoPlayButton.autoCenterInSuperview()
+            }
+        }
+    }
+
+    private func createNewReusableMediaView(mediaViewAdapter: MediaViewAdapter) {
+        let reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
+        mediaViewCache.set(value: reusableMediaView, forKey: mediaViewAdapter.cacheKey)
+        applyReusableMediaView(reusableMediaView)
+    }
+
     private func tryToConfigureForBlurHash(attachment: TSAttachment) {
         guard let pointer = attachment as? TSAttachmentPointer else {
             owsFailDebug("Invalid attachment.")
@@ -180,160 +166,43 @@ public class CVMediaView: UIView {
             blurHash.count > 0 else {
                 return
         }
+        // NOTE: in the blurhash case, we use the blurHash itself as the
+        // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = blurHash
-        let stillImageView = UIImageView()
-        // We need to specify a contentMode since the size of the image
-        // might not match the aspect ratio of the view.
-        stillImageView.contentMode = .scaleAspectFill
-        // Use trilinear filters for better scaling quality at
-        // some performance cost.
-        stillImageView.layer.minificationFilter = .trilinear
-        stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.washColor
-        addSubview(stillImageView)
-        stillImageView.autoPinEdgesToSuperviewEdges()
-        loadBlock = { [weak self] in
-            AssertIsOnMainThread()
-
-            if stillImageView.image != nil {
-                owsFailDebug("Unexpectedly already loaded.")
-                return
-            }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard let image = BlurHash.image(for: blurHash) else {
-                    Logger.warn("Missing image for blurHash.")
-                    return nil
-                }
-                return image
-            },
-                                 applyMediaBlock: { (media) in
-                                    AssertIsOnMainThread()
-
-                                    guard let image = media as? UIImage else {
-                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                        return
-                                    }
-                                    stillImageView.image = image
-            },
-                                 cacheKey: cacheKey)
+        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+            applyReusableMediaView(reusableMediaView)
+            return
         }
-        unloadBlock = {
-            AssertIsOnMainThread()
 
-            stillImageView.image = nil
-        }
+        let mediaViewAdapter = MediaViewAdapterBlurHash(blurHash: blurHash)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        let animatedImageView = YYAnimatedImageView()
-        // We need to specify a contentMode since the size of the image
-        // might not match the aspect ratio of the view.
-        animatedImageView.contentMode = .scaleAspectFill
-        // Use trilinear filters for better scaling quality at
-        // some performance cost.
-        animatedImageView.layer.minificationFilter = .trilinear
-        animatedImageView.layer.magnificationFilter = .trilinear
-        animatedImageView.backgroundColor = isBorderless ? .clear : Theme.washColor
-        addSubview(animatedImageView)
-        animatedImageView.autoPinEdgesToSuperviewEdges()
-        _ = addUploadProgressIfNecessary(animatedImageView)
-
-        loadBlock = { [weak self] in
-            AssertIsOnMainThread()
-
-            guard let strongSelf = self else {
-                return
-            }
-
-            if animatedImageView.image != nil {
-                owsFailDebug("Unexpectedly already loaded.")
-                return
-            }
-            strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidImage else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                guard let filePath = attachmentStream.originalFilePath else {
-                    owsFailDebug("Attachment stream missing original file path.")
-                    return nil
-                }
-                let animatedImage = YYImage(contentsOfFile: filePath)
-                return animatedImage
-            },
-                                                        applyMediaBlock: { (media) in
-                                                            AssertIsOnMainThread()
-
-                                                            guard let image = media as? YYImage else {
-                                                                owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                                                return
-                                                            }
-                                                            animatedImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
+        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+            applyReusableMediaView(reusableMediaView)
+            return
         }
-        unloadBlock = {
-            AssertIsOnMainThread()
 
-            animatedImageView.image = nil
-        }
+        let mediaViewAdapter = MediaViewAdapterAnimated(attachmentStream: attachmentStream)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
     }
 
     private func configureForStillImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        let stillImageView = UIImageView()
-        // We need to specify a contentMode since the size of the image
-        // might not match the aspect ratio of the view.
-        stillImageView.contentMode = .scaleAspectFill
-        // Use trilinear filters for better scaling quality at
-        // some performance cost.
-        stillImageView.layer.minificationFilter = .trilinear
-        stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = isBorderless ? .clear : Theme.washColor
-        addSubview(stillImageView)
-        stillImageView.autoPinEdgesToSuperviewEdges()
-        _ = addUploadProgressIfNecessary(stillImageView)
-        loadBlock = { [weak self] in
-            AssertIsOnMainThread()
-
-            if stillImageView.image != nil {
-                owsFailDebug("Unexpectedly already loaded.")
-                return
-            }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidImage else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                return attachmentStream.thumbnailImageLarge(success: { (image) in
-                    AssertIsOnMainThread()
-
-                    stillImageView.image = image
-                }, failure: {
-                    Logger.error("Could not load thumbnail")
-                })
-            },
-                                 applyMediaBlock: { (media) in
-                                    AssertIsOnMainThread()
-
-                                    guard let image = media as? UIImage else {
-                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                        return
-                                    }
-                                    stillImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
+        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+            applyReusableMediaView(reusableMediaView)
+            return
         }
-        unloadBlock = {
-            AssertIsOnMainThread()
 
-            stillImageView.image = nil
-        }
+        let mediaViewAdapter = MediaViewAdapterStill(attachmentStream: attachmentStream)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
     }
 
     private func configureForVideo(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
+<<<<<<< HEAD
         let stillImageView = UIImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
@@ -384,12 +253,66 @@ public class CVMediaView: UIView {
                                     stillImageView.image = image
             },
                                                         cacheKey: cacheKey)
+||||||| parent of b43076603e... Reuse media views.
+        let stillImageView = UIImageView()
+        // We need to specify a contentMode since the size of the image
+        // might not match the aspect ratio of the view.
+        stillImageView.contentMode = .scaleAspectFill
+        // Use trilinear filters for better scaling quality at
+        // some performance cost.
+        stillImageView.layer.minificationFilter = .trilinear
+        stillImageView.layer.magnificationFilter = .trilinear
+        stillImageView.backgroundColor = Theme.washColor
+
+        addSubview(stillImageView)
+        stillImageView.autoPinEdgesToSuperviewEdges()
+
+        if !addUploadProgressIfNecessary(stillImageView) {
+            let videoPlayIcon = UIImage(named: "play_button")
+            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            stillImageView.addSubview(videoPlayButton)
+            videoPlayButton.autoCenterInSuperview()
         }
-        unloadBlock = {
+
+        loadBlock = { [weak self] in
             AssertIsOnMainThread()
 
-            stillImageView.image = nil
+            if stillImageView.image != nil {
+                owsFailDebug("Unexpectedly already loaded.")
+                return
+            }
+            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+                guard attachmentStream.isValidVideo else {
+                    Logger.warn("Ignoring invalid attachment.")
+                    return nil
+                }
+                return attachmentStream.thumbnailImageLarge(success: { (image) in
+                    AssertIsOnMainThread()
+
+                    stillImageView.image = image
+                }, failure: {
+                    Logger.error("Could not load thumbnail")
+                })
+            },
+                                 applyMediaBlock: { (media) in
+                                    AssertIsOnMainThread()
+
+                                    guard let image = media as? UIImage else {
+                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                                        return
+                                    }
+                                    stillImageView.image = image
+            },
+                                                        cacheKey: cacheKey)
+=======
+        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+            applyReusableMediaView(reusableMediaView)
+            return
+>>>>>>> b43076603e... Reuse media views.
         }
+
+        let mediaViewAdapter = MediaViewAdapterVideo(attachmentStream: attachmentStream)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
     }
 
     @objc
@@ -439,47 +362,20 @@ public class CVMediaView: UIView {
         iconView.autoCenterInSuperview()
     }
 
-    private func tryToLoadMedia(loadMediaBlock: @escaping () -> AnyObject?,
-                                applyMediaBlock: @escaping (AnyObject) -> Void,
-                                cacheKey: String) {
+    @objc
+    public func loadMedia() {
         AssertIsOnMainThread()
 
-        // It's critical that we update loadState once
-        // our load attempt is complete.
-        let loadCompletion: (AnyObject?) -> Void = { [weak self] (possibleMedia) in
-            AssertIsOnMainThread()
-
-            guard let strongSelf = self else {
-                return
-            }
-            guard strongSelf.loadState == .loading else {
-                Logger.verbose("Skipping obsolete load.")
-                return
-            }
-            guard let media = possibleMedia else {
-                strongSelf.loadState = .failed
-                // TODO:
-                //            [self showAttachmentErrorViewWithMediaView:mediaView];
-                return
-            }
-
-            applyMediaBlock(media)
-
-            strongSelf.loadState = .loaded
+        guard let reusableMediaView = reusableMediaView else {
+            owsFailDebug("Missing reusableMediaView.")
+            return
         }
-
-        guard loadState == .loading else {
-            owsFailDebug("Unexpected load state: \(loadState)")
+        guard reusableMediaView.owner == self else {
+            owsFailDebug("No longer owner of reusableMediaView.")
             return
         }
 
-        let mediaCache = self.mediaCache
-        if let media = mediaCache.object(forKey: cacheKey as NSString) {
-            Logger.verbose("media cache hit")
-            loadCompletion(media)
-            return
-        }
-
+<<<<<<< HEAD
         Logger.verbose("media cache miss")
 
         let threadSafeLoadState = self.threadSafeLoadState
@@ -535,16 +431,80 @@ public class CVMediaView: UIView {
         case .loading, .loaded, .failed:
             break
         }
+||||||| parent of b43076603e... Reuse media views.
+        Logger.verbose("media cache miss")
+
+        let threadSafeLoadState = self.threadSafeLoadState
+        ConversationMediaView.loadQueue.async {
+            guard threadSafeLoadState.get() == .loading else {
+                Logger.verbose("Skipping obsolete load.")
+                return
+            }
+
+            guard let media = loadMediaBlock() else {
+                Logger.info("Failed to load media.")
+
+                DispatchQueue.main.async {
+                    loadCompletion(nil)
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                mediaCache.setObject(media, forKey: cacheKey as NSString)
+
+                loadCompletion(media)
+            }
+        }
+    }
+
+    // We use this queue to perform the media loads.
+    // These loads are expensive, so we want to:
+    //
+    // * Do them off the main thread.
+    // * Only do one at a time.
+    // * Avoid this work if possible (obsolete loads for
+    //   views that are no longer visible, redundant loads
+    //   of media already being loaded, don't retry media
+    //   that can't be loaded, etc.).
+    // * Do them in _reverse_ order. More recently enqueued
+    //   loads more closely reflect the current view state.
+    //   By processing in reverse order, we improve our
+    //   "skip rate" of obsolete loads.
+    private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
+
+    @objc
+    public func loadMedia() {
+        AssertIsOnMainThread()
+
+        switch loadState {
+        case .unloaded:
+            loadState = .loading
+
+            guard let loadBlock = loadBlock else {
+                return
+            }
+            loadBlock()
+        case .loading, .loaded, .failed:
+            break
+        }
+=======
+        reusableMediaView.load()
+>>>>>>> b43076603e... Reuse media views.
     }
 
     public func unloadMedia() {
         AssertIsOnMainThread()
 
-        loadState = .unloaded
-
-        guard let unloadBlock = unloadBlock else {
+        guard let reusableMediaView = reusableMediaView else {
+            owsFailDebug("Missing reusableMediaView.")
             return
         }
-        unloadBlock()
+        guard reusableMediaView.owner == self else {
+            // No longer owner of reusableMediaView.
+            return
+        }
+
+        reusableMediaView.unload()
     }
 }

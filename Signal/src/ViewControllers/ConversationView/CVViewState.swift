@@ -103,6 +103,8 @@ public class CVViewState: NSObject {
 
     public var sendMessageController: SendMessageController?
 
+    public let mediaViewCache = MediaViewCache(maxSize: 12)
+    
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -342,6 +344,8 @@ extension ConversationViewController {
         get { viewState.sendMessageController }
         set { viewState.sendMessageController = newValue }
     }
+
+    var mediaViewCache: MediaViewCache { viewState.mediaViewCache }
 }
 
 // MARK: -
