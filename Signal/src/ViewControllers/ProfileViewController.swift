@@ -266,7 +266,8 @@ public class ProfileViewController: OWSTableViewController {
 
         var lastSection = namesSection
 
-        if mode.hasBio {
+        if mode.hasBio,
+           FeatureFlags.profileNameAndBioChanges {
             let aboutSection = OWSTableSection()
             aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
                                                          comment: "Header for the 'bio' section of the profile view.")
@@ -739,7 +740,7 @@ extension ProfileViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string.withoutBidiControlCharacters,
-            maxByteCount: OWSUserProfile.kMaxNameLengthBytes
+            maxByteCount: OWSUserProfile.maxNameLengthBytes
         )
     }
 

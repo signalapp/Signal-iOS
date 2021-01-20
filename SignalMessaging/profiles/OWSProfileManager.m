@@ -1920,7 +1920,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSAssertIsOnMainThread();
 
     NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
-    return nameData.length > OWSUserProfile.kMaxNameLengthBytes;
+    return nameData.length > (NSUInteger)OWSUserProfile.maxNameLengthBytes;
 }
 
 #pragma mark - Avatar Disk Cache
