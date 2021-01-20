@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,9 +12,9 @@ public class StickerView: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    static func stickerView(forStickerInfo stickerInfo: StickerInfo,
-                            dataSource: StickerPackDataSource,
-                            size: CGFloat? = nil) -> UIView? {
+    public static func stickerView(forStickerInfo stickerInfo: StickerInfo,
+                                   dataSource: StickerPackDataSource,
+                                   size: CGFloat? = nil) -> UIView? {
         guard let stickerMetadata = dataSource.metadata(forSticker: stickerInfo) else {
             Logger.warn("Missing sticker metadata.")
             return nil
@@ -22,8 +22,8 @@ public class StickerView: NSObject {
         return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
     }
 
-    static func stickerView(forInstalledStickerInfo stickerInfo: StickerInfo,
-                            size: CGFloat? = nil) -> UIView? {
+    public static func stickerView(forInstalledStickerInfo stickerInfo: StickerInfo,
+                                   size: CGFloat? = nil) -> UIView? {
         let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
         guard let stickerMetadata = metadata else {
             Logger.warn("Missing sticker metadata.")

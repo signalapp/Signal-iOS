@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -98,7 +98,7 @@ public class StickerPackCollectionView: UICollectionView {
         }
     }
 
-    func show(dataSource: StickerPackDataSource) {
+    public func show(dataSource: StickerPackDataSource) {
         AssertIsOnMainThread()
 
         self.stickerPackDataSource = dataSource

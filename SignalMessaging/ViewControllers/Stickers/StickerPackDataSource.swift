@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ public protocol StickerPackDataSourceDelegate: class {
 // MARK: -
 
 // Supplies sticker pack data
-protocol StickerPackDataSource: class {
+public protocol StickerPackDataSource: class {
     func add(delegate: StickerPackDataSourceDelegate)
 
     // This will be nil for the "recents" source.
@@ -42,7 +42,7 @@ public class BaseStickerPackDataSource: NSObject {
 
     private var delegates = [Weak<StickerPackDataSourceDelegate>]()
 
-    func add(delegate: StickerPackDataSourceDelegate) {
+    public func add(delegate: StickerPackDataSourceDelegate) {
         AssertIsOnMainThread()
 
         delegates.append(Weak(value: delegate))
@@ -209,35 +209,35 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 // MARK: -
 
 extension InstalledStickerPackDataSource: StickerPackDataSource {
-    var info: StickerPackInfo? {
+    public var info: StickerPackInfo? {
         return stickerPackInfo
     }
 
-    var title: String? {
+    public var title: String? {
         return stickerPack?.title
     }
 
-    var author: String? {
+    public var author: String? {
         return stickerPack?.author
     }
 
-    func getStickerPack() -> StickerPack? {
+    public func getStickerPack() -> StickerPack? {
         return stickerPack
     }
 
-    var installedCoverInfo: StickerInfo? {
+    public var installedCoverInfo: StickerInfo? {
         AssertIsOnMainThread()
 
         return coverInfo
     }
 
-    var installedStickerInfos: [StickerInfo] {
+    public var installedStickerInfos: [StickerInfo] {
         AssertIsOnMainThread()
 
         return stickerInfos
     }
 
-    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
+    public func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
         AssertIsOnMainThread()
 
         // This logic is perf-sensitive and on the main thread;
@@ -471,13 +471,13 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 // MARK: -
 
 extension TransientStickerPackDataSource: StickerPackDataSource {
-    var info: StickerPackInfo? {
+    public var info: StickerPackInfo? {
         AssertIsOnMainThread()
 
         return stickerPackInfo
     }
 
-    var title: String? {
+    public var title: String? {
         AssertIsOnMainThread()
 
         if let stickerPack = installedDataSource.getStickerPack() {
@@ -487,7 +487,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerPack?.title
     }
 
-    var author: String? {
+    public var author: String? {
         AssertIsOnMainThread()
 
         if let stickerPack = installedDataSource.getStickerPack() {
@@ -497,7 +497,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerPack?.author
     }
 
-    func getStickerPack() -> StickerPack? {
+    public func getStickerPack() -> StickerPack? {
         AssertIsOnMainThread()
 
         if let stickerPack = installedDataSource.getStickerPack() {
@@ -507,7 +507,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerPack
     }
 
-    var installedCoverInfo: StickerInfo? {
+    public var installedCoverInfo: StickerInfo? {
         AssertIsOnMainThread()
 
         if let coverInfo = installedDataSource.installedCoverInfo {
@@ -517,7 +517,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return coverInfo
     }
 
-    var installedStickerInfos: [StickerInfo] {
+    public var installedStickerInfos: [StickerInfo] {
         AssertIsOnMainThread()
 
         let installedStickerInfos = installedDataSource.installedStickerInfos
@@ -528,7 +528,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
+    public func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
         AssertIsOnMainThread()
 
         let key = stickerInfo.asKey()
@@ -586,38 +586,38 @@ public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 // MARK: -
 
 extension RecentStickerPackDataSource: StickerPackDataSource {
-    var info: StickerPackInfo? {
+    public var info: StickerPackInfo? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    var title: String? {
+    public var title: String? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    var author: String? {
+    public var author: String? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    func getStickerPack() -> StickerPack? {
+    public func getStickerPack() -> StickerPack? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    var installedCoverInfo: StickerInfo? {
+    public var installedCoverInfo: StickerInfo? {
         owsFailDebug("This method should never be called.")
         return nil
     }
 
-    var installedStickerInfos: [StickerInfo] {
+    public var installedStickerInfos: [StickerInfo] {
         AssertIsOnMainThread()
 
         return stickerInfos
     }
 
-    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
+    public func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
         AssertIsOnMainThread()
 
         // This logic is perf-sensitive and on the main thread;
