@@ -37,7 +37,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
         let contentView = componentView.contentView
 
-        if isBorderless {
+        if isBorderless && conversationStyle.hasWallpaper {
             contentView.layoutMargins = contentViewBorderlessMargins
             contentView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
             contentView.layer.cornerRadius = 11
