@@ -91,7 +91,7 @@ public class ManageStickersViewController: OWSTableViewController {
         StickerManager.refreshContents()
     }
 
-    private var pendingModalVC: ModalActivityIndicatorViewController? = nil
+    private var pendingModalVC: ModalActivityIndicatorViewController?
 
     private var needsStateUpdate = false {
         didSet {
@@ -108,7 +108,6 @@ public class ManageStickersViewController: OWSTableViewController {
             }
         }
     }
-
 
     private lazy var updateEvent: DebouncedEvent = {
         DebouncedEvent(maxFrequencySeconds: 0.75, onQueue: .main) { [weak self] in
