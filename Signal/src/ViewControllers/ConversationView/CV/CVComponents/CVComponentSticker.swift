@@ -55,7 +55,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             } else {
                 let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream)
                 reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: cellMediaCache)
-                mediaViewCache.setValue(reusableMediaView, forKey: cacheKey)
+                mediaViewCache.set(value: reusableMediaView, forKey: cacheKey)
             }
 
             reusableMediaView.owner = componentView

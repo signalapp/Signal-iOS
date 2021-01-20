@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -29,7 +29,7 @@ private enum LoadState {
 public protocol MediaViewAdapter {
     var mediaView: UIView { get }
     var isLoaded: Bool { get }
-    var cacheKey: String { get }
+    var cacheKey: MediaViewCache.KeyType { get }
 
     func applyMedia(_ media: AnyObject)
     func unloadMedia()
@@ -39,6 +39,13 @@ public protocol MediaViewAdapter {
 
 public protocol MediaViewAdapterSwift: MediaViewAdapter {
     func loadMedia() -> Promise<AnyObject>
+}
+
+// MARK: -
+
+public enum ReusableMediaError: Error {
+    case invalidMedia
+    case redundantLoad
 }
 
 // MARK: -
@@ -180,13 +187,9 @@ public class ReusableMediaView: NSObject {
 
         let loadState = self._loadState
 
-        enum ReusableMediaViewError: Error {
-            case redundantLoad
-        }
-
         firstly(on: Self.serialQueue) { () -> Promise<AnyObject> in
             guard loadState.get() == .loading else {
-                throw ReusableMediaViewError.redundantLoad
+                throw ReusableMediaError.redundantLoad
             }
             return mediaViewAdapter.loadMedia()
         }.done(on: .main) { (media: AnyObject) in
@@ -194,9 +197,11 @@ public class ReusableMediaView: NSObject {
 
             loadCompletion(media)
         }.catch(on: .main) { (error: Error) in
-            if case ReusableMediaViewError.redundantLoad = error {
-                // Ignore.
-            } else {
+            switch error {
+            case ReusableMediaError.redundantLoad,
+                 ReusableMediaError.invalidMedia:
+                Logger.warn("Error: \(error)")
+            default:
                 owsFailDebug("Error: \(error)")
             }
             loadCompletion(nil)
@@ -223,7 +228,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
+    var cacheKey: MediaViewCache.KeyType {
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         blurHash
@@ -272,13 +277,13 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
+    var cacheKey: MediaViewCache.KeyType {
         attachmentStream.uniqueId
     }
 
     func loadMedia() -> Promise<AnyObject> {
         guard attachmentStream.isValidImage else {
-            return Promise(error: OWSAssertionError("Ignoring invalid attachment."))
+            return Promise(error: ReusableMediaError.invalidMedia)
         }
         guard let filePath = attachmentStream.originalFilePath else {
             return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
@@ -325,13 +330,13 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
+    var cacheKey: MediaViewCache.KeyType {
         attachmentStream.uniqueId
     }
 
     func loadMedia() -> Promise<AnyObject> {
         guard attachmentStream.isValidImage else {
-            return Promise(error: OWSAssertionError("Ignoring invalid attachment."))
+            return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
         let possibleThumbnail = attachmentStream.thumbnailImageLarge(success: { (image) in
@@ -383,13 +388,13 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: String {
+    var cacheKey: MediaViewCache.KeyType {
         attachmentStream.uniqueId
     }
 
     func loadMedia() -> Promise<AnyObject> {
         guard attachmentStream.isValidVideo else {
-            return Promise(error: OWSAssertionError("Ignoring invalid attachment."))
+            return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
         attachmentStream.thumbnailImageLarge(success: { (image) in
@@ -448,14 +453,14 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    public var cacheKey: String {
+    public var cacheKey: MediaViewCache.KeyType {
         attachmentStream.uniqueId
     }
 
     public func loadMedia() -> Promise<AnyObject> {
 
         guard attachmentStream.isValidImage else {
-            return Promise(error: OWSAssertionError("Ignoring invalid attachment."))
+            return Promise(error: ReusableMediaError.invalidMedia)
         }
         guard let filePath = attachmentStream.originalFilePath else {
             return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
