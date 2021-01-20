@@ -84,7 +84,7 @@ public class BaseStickerPackDataSource: NSObject {
         didSet {
             AssertIsOnMainThread()
 
-            if oldValue == nil {
+            if oldValue == nil, coverInfo != nil {
                 fireDidChange()
             }
         }
@@ -95,10 +95,7 @@ public class BaseStickerPackDataSource: NSObject {
     fileprivate var stickerInfos = [StickerInfo]() {
         didSet {
             AssertIsOnMainThread()
-
-            let before = Set(oldValue.map { $0.asKey() })
-            let after = Set(stickerInfos.map { $0.asKey() })
-            if before != after {
+            if oldValue.count != stickerInfos.count {
                 fireDidChange()
             }
         }
@@ -122,9 +119,10 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         didSet {
             AssertIsOnMainThread()
 
-            ensureDownloads()
-
-            fireDidChange()
+            if oldValue == nil, stickerPack != nil {
+                ensureDownloads()
+                fireDidChange()
+            }
         }
     }
 
@@ -146,37 +144,78 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         ensureState()
     }
 
-    private func ensureState() {
-        databaseStorage.read { (transaction) in
-            // Update Sticker Pack.
-            guard let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: self.stickerPackInfo,
-                                                                    transaction: transaction) else {
-                                                                        self.stickerPack = nil
-                                                                        self.coverInfo = nil
-                                                                        self.stickerInfos = []
-                                                                        return
-            }
-            guard stickerPack.isInstalled else {
-                // Ignore sticker packs which are "saved" but not "installed".
+    func ensureState() {
+        databaseStorage.read { readTx in
+            let stateTuple = Self.fetchState(for: self.stickerPackInfo, readTx: readTx)
+
+            guard let stickerPack = stateTuple.stickerPack, stickerPack.isInstalled else {
                 self.stickerPack = nil
                 self.coverInfo = nil
                 self.stickerInfos = []
                 return
             }
-            self.stickerPack = stickerPack
 
-            // Update Stickers.
-            if self.coverInfo == nil {
-                let coverInfo = stickerPack.coverInfo
-                if StickerManager.isStickerInstalled(stickerInfo: coverInfo, transaction: transaction) {
-                    self.coverInfo = coverInfo
-                }
+            self.stickerPack = stickerPack
+            self.stickerInfos = stateTuple.installedStickers
+            if self.coverInfo == nil, let coverInfo = stateTuple.installedCoverInfo {
+                self.coverInfo = coverInfo
+            }
+        }
+    }
+
+    func ensureStateAsync(completion: (() -> Void)? = nil) {
+        DispatchQueue.sharedUserInitiated.async {
+            let stateTuple = self.databaseStorage.read { readTx in
+                return Self.fetchState(for: self.stickerPackInfo, readTx: readTx)
             }
 
-            self.stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack,
-                                                                 verifyExists: false,
-                                                                 transaction: transaction)
+            DispatchQueue.main.async {
+                guard let stickerPack = stateTuple.stickerPack, stickerPack.isInstalled else {
+                    self.stickerPack = nil
+                    self.coverInfo = nil
+                    self.stickerInfos = []
+                    return
+                }
+
+                self.stickerPack = stickerPack
+                self.stickerInfos = stateTuple.installedStickers
+                if self.coverInfo == nil, let coverInfo = stateTuple.installedCoverInfo {
+                    self.coverInfo = coverInfo
+                }
+
+                completion?()
+            }
         }
+    }
+
+    private static func fetchState(for stickerPackInfo: StickerPackInfo, readTx: SDSAnyReadTransaction) -> (
+        stickerPack: StickerPack?,
+        installedCoverInfo: StickerInfo?,
+        installedStickers: [StickerInfo]) {
+
+        // Update Sticker Pack.
+        guard let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo,
+                                                                transaction: readTx) else {
+            return (nil, nil, [])
+        }
+        guard stickerPack.isInstalled else {
+            // Ignore sticker packs which are "saved" but not "installed".
+            return (nil, nil, [])
+        }
+
+        // Update Stickers.
+
+        let coverInfo: StickerInfo?
+        if StickerManager.isStickerInstalled(stickerInfo: stickerPack.coverInfo, transaction: readTx) {
+            coverInfo = stickerPack.coverInfo
+        } else {
+            coverInfo = nil
+        }
+        let stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack,
+                                                            verifyExists: false,
+                                                            transaction: readTx)
+
+        return (stickerPack, coverInfo, stickerInfos)
     }
 
     private func ensureDownloads() {
@@ -194,15 +233,15 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
         Logger.verbose("")
 
-        ensureState()
+        ensureStateAsync()
     }
 
     @objc func didBecomeActive() {
         AssertIsOnMainThread()
 
-        ensureState()
-
-        ensureDownloads()
+        ensureStateAsync {
+            self.ensureDownloads()
+        }
     }
 }
 

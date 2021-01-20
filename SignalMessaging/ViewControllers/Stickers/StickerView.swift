@@ -41,8 +41,8 @@ public class StickerView: NSObject {
         guard let stickerView = self.stickerView(stickerInfo: stickerInfo,
                                                  stickerType: stickerMetadata.stickerType,
                                                  stickerDataUrl: stickerDataUrl) else {
-                                            owsFailDebug("Could not load sticker for display.")
-                                            return nil
+            Logger.warn("Could not load sticker for display.")
+            return nil
         }
         if let size = size {
             stickerView.autoSetDimensions(to: CGSize(square: size))
@@ -53,6 +53,11 @@ public class StickerView: NSObject {
     static func stickerView(stickerInfo: StickerInfo,
                             stickerType: StickerType,
                             stickerDataUrl: URL) -> UIView? {
+
+        guard OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) else {
+            Logger.warn("Sticker path does not exist: \(stickerDataUrl).")
+            return nil
+        }
 
         guard NSData.ows_isValidImage(at: stickerDataUrl, mimeType: stickerType.contentType) else {
             owsFailDebug("Invalid sticker.")
