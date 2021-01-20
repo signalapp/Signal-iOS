@@ -3411,6 +3411,8 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending sticker.");
 
+    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
+
     TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithInstalledSticker:stickerInfo thread:self.thread];
     [self messageWasSent:message];
 }
