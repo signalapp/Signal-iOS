@@ -146,7 +146,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
             let bubbleView: UIView
 
-            if conversationStyle.hasWallpaper {
+            if hasWallpaper {
                 let vibrancyView = componentView.buildVibrancyView()
                 componentView.vibrancyView = vibrancyView
                 let blurView = componentView.buildBlurView(conversationStyle: conversationStyle)
@@ -344,6 +344,20 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 outerStack.reset()
                 vStackView.reset()
                 hStackView.reset()
+
+                blurView?.removeFromSuperview()
+                blurView = nil
+
+                vibrancyView?.removeFromSuperview()
+                vibrancyView = nil
+
+                backgroundView?.removeFromSuperview()
+                backgroundView = nil
+
+                hasWallpaper = false
+                isDarkThemeEnabled = false
+                isFirstInCluster = false
+                isLastInCluster = false
             }
 
             titleLabel.text = nil

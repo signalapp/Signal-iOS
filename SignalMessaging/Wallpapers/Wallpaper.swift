@@ -174,8 +174,7 @@ fileprivate extension Wallpaper {
     }
 
     static func get(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Wallpaper? {
-        return .eden
-//        return get(for: key(for: thread), transaction: transaction)
+        return get(for: key(for: thread), transaction: transaction)
     }
 
     static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
