@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,6 +13,8 @@ public class GRDBReadTransaction: NSObject {
     public let database: Database
 
     public let isUIRead: Bool
+
+    public let startDate = Date()
 
     init(database: Database, isUIRead: Bool) {
         self.database = database
@@ -149,6 +151,14 @@ public class SDSAnyReadTransaction: NSObject, SPKProtocolReadContext {
     }
 
     public let readTransaction: ReadTransactionType
+    public var startDate: Date {
+        switch readTransaction {
+        case .yapRead:
+            owsFail("Invalid transaction.")
+        case .grdbRead(let grdbRead):
+            return grdbRead.startDate
+        }
+    }
 
     init(_ readTransaction: ReadTransactionType) {
         self.readTransaction = readTransaction
