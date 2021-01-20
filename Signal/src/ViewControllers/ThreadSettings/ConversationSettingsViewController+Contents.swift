@@ -69,7 +69,7 @@ extension ConversationSettingsViewController {
         buildDisappearingMessagesSection(to: mainSection)
 
         if !isNoteToSelf {
-            contents.addSection(buildNotificationsSection())
+            contents.addSection(buildSecondarySection())
         }
 
         if let groupModel = currentGroupModel,
@@ -352,7 +352,7 @@ extension ConversationSettingsViewController {
         }))
     }
 
-    private func buildNotificationsSection() -> OWSTableSection {
+    private func buildSecondarySection() -> OWSTableSection {
         let section = OWSTableSection()
         section.customHeaderHeight = 14
         section.customFooterHeight = 14
@@ -373,6 +373,29 @@ extension ConversationSettingsViewController {
             },
                                  actionBlock: { [weak self] in
                                     self?.showSoundSettingsView()
+        }))
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let hasWallpaper = self.databaseStorage.read { transaction in
+                return Wallpaper.exists(for: self.thread, transaction: transaction)
+            }
+
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsMessageSound, // TODO: real icon
+                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
+                                            comment: "Label for settings view that allows user to change the wallpaper."),
+                accessoryText: hasWallpaper ? CommonStrings.switchOn : CommonStrings.switchOff
+            )
+            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+            return cell
+            },
+                                 actionBlock: { [weak self] in
+                                    self?.showWallpaperSettingsView()
         }))
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in

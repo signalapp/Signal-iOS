@@ -82,6 +82,20 @@ public enum Wallpaper: String {
         }
     }
 
+    public static func clear(for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
+        owsAssertDebug(!Thread.isMainThread)
+
+        try set(nil, for: thread, transaction: transaction)
+    }
+
+    public static func resetAll(transaction: SDSAnyWriteTransaction) throws {
+        owsAssertDebug(!Thread.isMainThread)
+
+        enumStore.removeAll(transaction: transaction)
+        dimmingStore.removeAll(transaction: transaction)
+        try OWSFileSystem.deleteFileIfExists(url: wallpaperDirectory)
+    }
+
     public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -104,6 +118,14 @@ public enum Wallpaper: String {
         return true
     }
 
+    public static func dimInDarkMode(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> Bool {
+        guard let dimInDarkMode = getDimInDarkMode(for: thread, transaction: transaction) else {
+            if thread != nil { return self.dimInDarkMode(transaction: transaction) }
+            return false
+        }
+        return dimInDarkMode
+    }
+
     public static func view(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> UIView? {
         guard let wallpaper = get(for: thread, transaction: transaction) else {
             if thread != nil { return view(transaction: transaction)}
@@ -120,6 +142,8 @@ public enum Wallpaper: String {
             owsFailDebug("Missing photo for wallpaper \(wallpaper)")
             return nil
         }
+
+        // TODO: dimming
 
         return view(for: wallpaper, photo: photo)
     }
@@ -202,8 +226,8 @@ extension Wallpaper {
         }
     }
 
-    public static func getDimInDarkMode(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Bool {
-        return dimmingStore.getBool(key(for: thread), defaultValue: false, transaction: transaction)
+    fileprivate static func getDimInDarkMode(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Bool? {
+        return dimmingStore.getBool(key(for: thread), transaction: transaction)
     }
 }
 

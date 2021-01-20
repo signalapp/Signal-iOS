@@ -168,7 +168,8 @@ public class ProfileFetcherJob: NSObject {
                         Logger.warn("Error: \(error)")
                     }
                 default:
-                    owsFailDebug("Error: \(error)")
+                    break
+//                    owsFailDebug("Error: \(error)")
                 }
             }
         }

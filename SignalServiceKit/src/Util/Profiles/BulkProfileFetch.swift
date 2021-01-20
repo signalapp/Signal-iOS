@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -254,7 +254,7 @@ public class BulkProfileFetch: NSObject {
                     } else {
                         // TODO: We may need to handle more status codes.
                         if self.tsAccountManager.isRegisteredAndReady {
-                            owsFailDebug("Error: \(error)")
+//                            owsFailDebug("Error: \(error)")
                         } else {
                             Logger.warn("Error: \(error)")
                         }

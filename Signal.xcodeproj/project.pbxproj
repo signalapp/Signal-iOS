@@ -775,6 +775,9 @@
 		88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A941982409A391000E9700 /* LottieToggleButton.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
+		88ABAB8B25B8B3CD0008C78A /* WallpaperSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */; };
+		88ABAB8D25B8BE1E0008C78A /* SetWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */; };
+		88ABAB8F25B8BE3F0008C78A /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
 		88ABB8B52534070400229EAA /* CallHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B42534070400229EAA /* CallHeader.swift */; };
 		88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */; };
 		88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */; };
@@ -1885,6 +1888,9 @@
 		88A941982409A391000E9700 /* LottieToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieToggleButton.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
+		88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperSettingsViewController.swift; sourceTree = "<group>"; };
+		88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetWallpaperViewController.swift; sourceTree = "<group>"; };
+		88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWallpaperViewController.swift; sourceTree = "<group>"; };
 		88ABB8B42534070400229EAA /* CallHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHeader.swift; sourceTree = "<group>"; };
 		88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGrid.swift; sourceTree = "<group>"; };
 		88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
@@ -3513,6 +3519,9 @@
 				888B6D4425B2224E00E2A662 /* Wallpaper.swift */,
 				888B6D4825B2430700E2A662 /* Wallpaper+SolidColor.swift */,
 				888B6D4A25B2464F00E2A662 /* Wallpaper+Gradient.swift */,
+				88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */,
+				88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */,
+				88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */,
 			);
 			path = Wallpapers;
 			sourceTree = "<group>";
@@ -4866,6 +4875,7 @@
 				340872C92239563500CB25B0 /* AttachmentItemCollection.swift in Sources */,
 				34080EFE2225F96D0087E99F /* ImageEditorPaletteView.swift in Sources */,
 				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
+				88ABAB8B25B8B3CD0008C78A /* WallpaperSettingsViewController.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				3426A375256321190036407F /* OWSMessageTextView.m in Sources */,
@@ -5017,6 +5027,7 @@
 				34F0566A23DA209300265283 /* GroupsV2Changes.swift in Sources */,
 				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
+				88ABAB8F25B8BE3F0008C78A /* PreviewWallpaperViewController.swift in Sources */,
 				88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
 				88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */,
@@ -5032,6 +5043,7 @@
 				34AC0A1E211B39EA00997B47 /* ThreadViewHelper.m in Sources */,
 				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
 				88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */,
+				88ABAB8D25B8BE1E0008C78A /* SetWallpaperViewController.swift in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
