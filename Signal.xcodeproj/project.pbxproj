@@ -197,7 +197,6 @@
 		346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */; };
 		346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */; };
 		346E9D5421B040B700562252 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E9D5321B040B600562252 /* RegistrationController.swift */; };
-		346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */; };
 		346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA13250199A300E8AB6F /* MemberRequestView.swift */; };
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
@@ -287,6 +286,7 @@
 		3496957221A301A100DCFE74 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956921A301A100DCFE74 /* OWSBackup.m */; };
 		3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956A21A301A100DCFE74 /* OWSBackupJob.m */; };
 		3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */; };
+		349767DD25B8727400ECE1B0 /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349767DC25B8727400ECE1B0 /* SendMessageFlow.swift */; };
 		3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498A0A524DC81E100CA492C /* OWSContactsManager.swift */; };
 		3498A0A824DC936300CA492C /* ContactsViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498A0A724DC936200CA492C /* ContactsViewHelper.swift */; };
 		3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */; };
@@ -1196,7 +1196,6 @@
 		346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSettingsTableViewController.swift; sourceTree = "<group>"; };
 		346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadSettingsViewController.swift; sourceTree = "<group>"; };
 		346E9D5321B040B600562252 /* RegistrationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
-		346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
 		346EAA13250199A300E8AB6F /* MemberRequestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberRequestView.swift; sourceTree = "<group>"; };
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
@@ -1294,6 +1293,7 @@
 		3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupAPI.swift; sourceTree = "<group>"; };
 		3496956C21A301A100DCFE74 /* OWSBackupImportJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupImportJob.h; sourceTree = "<group>"; };
 		3496956D21A301A100DCFE74 /* OWSBackupIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupIO.h; sourceTree = "<group>"; };
+		349767DC25B8727400ECE1B0 /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
 		3498A0A524DC81E100CA492C /* OWSContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSContactsManager.swift; sourceTree = "<group>"; };
 		3498A0A724DC936200CA492C /* ContactsViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsViewHelper.swift; sourceTree = "<group>"; };
 		3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SignalMessaging.swift"; sourceTree = "<group>"; };
@@ -2791,7 +2791,6 @@
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
-				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				88F7EE92230253C5003ADF7D /* UsernameViewController.swift */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
@@ -3032,6 +3031,7 @@
 				34AC09C7211B39AF00997B47 /* ScreenLockViewController.m */,
 				34AC09D6211B39B100997B47 /* SelectThreadViewController.h */,
 				34AC09C3211B39AF00997B47 /* SelectThreadViewController.m */,
+				349767DC25B8727400ECE1B0 /* SendMessageFlow.swift */,
 				4C23A5F1215C4ADE00534937 /* SheetViewController.swift */,
 				344DC9AD226E483C004E7322 /* Stickers */,
 				3470249B238367E90078D72C /* TextApprovalViewController.swift */,
@@ -4995,6 +4995,7 @@
 				344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
 				34BB3C5E23C6644B001651FC /* GroupsV2ChangeSetImpl.swift in Sources */,
+				349767DD25B8727400ECE1B0 /* SendMessageFlow.swift in Sources */,
 				8821334E2304E72700353626 /* NonContactTableViewCell.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
@@ -5290,7 +5291,6 @@
 				34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */,
 				4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */,
 				348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */,
-				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
 				880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */,

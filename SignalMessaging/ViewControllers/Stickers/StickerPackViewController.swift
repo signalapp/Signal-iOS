@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
+import PromiseKit
 
 @objc
 public class StickerPackViewController: OWSViewController {
@@ -380,6 +381,9 @@ public class StickerPackViewController: OWSViewController {
         dismiss(animated: true)
     }
 
+    // We need to retain a link to this delegate during the send flow.
+    private var sendMessageController: SendMessageController?
+
     @objc
     func shareButtonPressed(sender: UIButton) {
         AssertIsOnMainThread()
@@ -388,9 +392,73 @@ public class StickerPackViewController: OWSViewController {
             owsFailDebug("Missing sticker pack.")
             return
         }
+        let packUrl = stickerPack.info.shareUrl()
 
-        StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
+//        // Try to include a link preview of the sticker pack.
+//        firstly { () -> Promise<OWSLinkPreviewDraft?> in
+//            guard let url = URL(string: packUrl) else {
+//                throw OWSAssertionError("Invalid url")
+//            }
+//            return firstly {
+//                linkPreviewManager.fetchLinkPreview(for: url)
+//            }.map(on: .global()) { draft in
+//                return draft
+//            }
+//        }.recover(on: .global()) { error -> Promise<OWSLinkPreviewDraft?> in
+//            // If link previews are disabled, just share the
+//            // sticker pack URL.
+//            if case LinkPreviewError.featureDisabled = error {
+//                return Promise.value(nil)
+//            }
+//            throw error
+//        }.done { [weak self] (linkPreviewDraft: OWSLinkPreviewDraft?) in
+//            guard let self = self else {
+//                return
+//            }
+//            self.shareAndDismiss(packUrl: packUrl,
+//                                 linkPreviewDraft: linkPreviewDraft)
+//        }.catch { [weak self] error in
+//            owsFailDebugUnlessNetworkFailure("Could not build link preview: \(error)")
+//
+//            guard let self = self else {
+//                return
+//            }
+//
+//            self.shareAndDismiss(thread: thread,
+//                                 packUrl: packUrl,
+//                                 linkPreviewDraft: nil)
+//        }
+//    }
+//
+//    // We need to retain a link to this delegate during the send flow.
+//    private var sendMessageController: SendMessageController?
+
+//    private func shareAndDismiss(packUrl: String,
+//                                 linkPreviewDraft: OWSLinkPreviewDraft?) {
+//        AssertIsOnMainThread()
+
+        let sendMessageController = SendMessageController(fromViewController: self)
+        self.sendMessageController = sendMessageController
+
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+
+        let messageBody = MessageBody(text: packUrl, ranges: .empty)
+        let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+        let sendMessageFlow = SendMessageFlow(flowType: .`default`,
+                                              unapprovedContent: unapprovedContent,
+                                              useConversationComposeForSingleRecipient: true,
+                                              navigationController: navigationController,
+                                              delegate: sendMessageController)
+        // Retain the flow until it is complete.
+        sendMessageController.sendMessageFlow.set(sendMessageFlow)
     }
+//
+//
+//        StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
+//    }
 
     @objc
     public func didChangeStatusBarFrame() {

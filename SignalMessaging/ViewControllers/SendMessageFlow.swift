@@ -650,3 +650,32 @@ public class SendMessageController: SendMessageDelegate {
         fromViewController.navigationController?.popToViewController(fromViewController, animated: true)
     }
 }
+
+// MARK: -
+
+extension TSAttachmentStream {
+    func cloneAsSignalAttachment() throws -> SignalAttachment {
+        guard let sourceUrl = originalMediaURL else {
+            throw OWSAssertionError("Missing originalMediaURL.")
+        }
+        guard let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) else {
+            throw OWSAssertionError("Missing dataUTI.")
+        }
+        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
+        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+
+        let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
+                                                             shouldDeleteOnDeallocation: true)
+        clonedDataSource.sourceFilename = sourceFilename
+
+        var signalAttachment: SignalAttachment
+        if isVoiceMessage {
+            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+        } else {
+            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI, imageQuality: .original)
+        }
+        signalAttachment.captionText = caption
+        signalAttachment.isBorderless = isBorderless
+        return signalAttachment
+    }
+}
