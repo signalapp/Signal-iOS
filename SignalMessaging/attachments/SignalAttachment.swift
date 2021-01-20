@@ -294,11 +294,18 @@ public class SignalAttachment: NSObject {
                                                              shouldDeleteOnDeallocation: true)
         clonedDataSource.sourceFilename = sourceFilename
 
-        let attachment = SignalAttachment(dataSource: clonedDataSource, dataUTI: self.dataUTI)
-        attachment.captionText = self.captionText
-        attachment.isViewOnceAttachment = self.isViewOnceAttachment
+        return self.replacingDataSource(with: clonedDataSource)
+    }
 
-        return attachment
+    private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
+        let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
+        result.captionText = captionText
+        result.isConvertibleToTextMessage = isConvertibleToTextMessage
+        result.isConvertibleToContactShare = isConvertibleToContactShare
+        result.isViewOnceAttachment = isViewOnceAttachment
+        result.isVoiceMessage = isVoiceMessage
+        result.isBorderless = isBorderless
+        return result
     }
 
     @objc
@@ -773,7 +780,7 @@ public class SignalAttachment: NSObject {
             if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
-                    return try removeImageMetadata(attachment: attachment)
+                    return try attachment.removingImageMetadata()
                 } catch {
                     Logger.verbose("Failed to remove metadata directly: \(error)")
                 }
@@ -863,8 +870,7 @@ public class SignalAttachment: NSObject {
 
             if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
                 dataSource.dataLength <= kMaxFileSizeImage {
-                let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-                recompressedAttachment.isBorderless = attachment.isBorderless
+                let recompressedAttachment = attachment.replacingDataSource(with: dataSource, dataUTI: dataUTI)
                 recompressedAttachment.cachedImage = dstImage
                 Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
                 return recompressedAttachment
@@ -974,8 +980,10 @@ public class SignalAttachment: NSObject {
         return 0.6
     }
 
-    private class func removeImageMetadata(attachment: SignalAttachment) throws -> SignalAttachment {
-        guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
+    private func removingImageMetadata() throws -> SignalAttachment {
+        owsAssertDebug(isImage)
+
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw SignalAttachmentError.missingData
         }
 
@@ -1020,17 +1028,15 @@ public class SignalAttachment: NSObject {
         ]
         guard CGImageDestinationCopyImageSource(destination, source, copyOptions, &error) else {
             let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
-            Logger.verbose("CGImageDestinationCopyImageSource failed for \(attachment.dataUTI): \(errorMessage)")
+            Logger.verbose("CGImageDestinationCopyImageSource failed for \(dataUTI): \(errorMessage)")
             throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
-        guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
+        guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: dataUTI) else {
             throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
-        let strippedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: attachment.dataUTI)
-        strippedAttachment.isBorderless = attachment.isBorderless
-        return strippedAttachment
+        return self.replacingDataSource(with: dataSource)
     }
 
     // MARK: Video Attachments
