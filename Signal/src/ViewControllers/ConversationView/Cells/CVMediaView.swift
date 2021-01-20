@@ -14,7 +14,7 @@ public class CVMediaView: UIView {
 
     // MARK: -
 
-    private let mediaViewCache: MediaViewCache
+    private let mediaViewCache: CVMediaViewCache
     private let mediaCache: NSCache<NSString, AnyObject>
     public let attachment: TSAttachment
     private let conversationStyle: ConversationStyle
@@ -27,7 +27,7 @@ public class CVMediaView: UIView {
     // MARK: - Initializers
 
     public required init(mediaCache: NSCache<NSString, AnyObject>,
-                         mediaViewCache: MediaViewCache,
+                         mediaViewCache: CVMediaViewCache,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
@@ -144,9 +144,9 @@ public class CVMediaView: UIView {
         }
     }
 
-    private func createNewReusableMediaView(mediaViewAdapter: MediaViewAdapter) {
+    private func createNewReusableMediaView(mediaViewAdapter: MediaViewAdapter, isAnimated: Bool) {
         let reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
-        mediaViewCache.set(value: reusableMediaView, forKey: mediaViewAdapter.cacheKey)
+        mediaViewCache.setMediaView(reusableMediaView, forKey: mediaViewAdapter.cacheKey, isAnimated: isAnimated)
         applyReusableMediaView(reusableMediaView)
     }
 
@@ -162,46 +162,50 @@ public class CVMediaView: UIView {
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = blurHash
-        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+        let isAnimated = false
+        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
 
         let mediaViewAdapter = MediaViewAdapterBlurHash(blurHash: blurHash)
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+        let isAnimated = attachmentStream.shouldBeRenderedByYY
+        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
 
         let mediaViewAdapter = MediaViewAdapterAnimated(attachmentStream: attachmentStream)
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
     private func configureForStillImage(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+        let isAnimated = attachmentStream.shouldBeRenderedByYY
+        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
 
         let mediaViewAdapter = MediaViewAdapterStill(attachmentStream: attachmentStream)
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
     private func configureForVideo(attachmentStream: TSAttachmentStream) {
         let cacheKey = attachmentStream.uniqueId
-        if let reusableMediaView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+        let isAnimated = attachmentStream.shouldBeRenderedByYY
+        if let reusableMediaView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
         }
 
         let mediaViewAdapter = MediaViewAdapterVideo(attachmentStream: attachmentStream)
-        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
+        createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
     private static func buildVideoPlayButton() -> UIView {

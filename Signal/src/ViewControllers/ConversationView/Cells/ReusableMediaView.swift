@@ -29,7 +29,7 @@ private enum LoadState {
 public protocol MediaViewAdapter {
     var mediaView: UIView { get }
     var isLoaded: Bool { get }
-    var cacheKey: MediaViewCache.KeyType { get }
+    var cacheKey: String { get }
 
     func applyMedia(_ media: AnyObject)
     func unloadMedia()
@@ -228,7 +228,7 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: MediaViewCache.KeyType {
+    var cacheKey: String {
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         blurHash
@@ -277,7 +277,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: MediaViewCache.KeyType {
+    var cacheKey: String {
         attachmentStream.uniqueId
     }
 
@@ -330,7 +330,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: MediaViewCache.KeyType {
+    var cacheKey: String {
         attachmentStream.uniqueId
     }
 
@@ -388,7 +388,7 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    var cacheKey: MediaViewCache.KeyType {
+    var cacheKey: String {
         attachmentStream.uniqueId
     }
 
@@ -453,7 +453,7 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         imageView.image != nil
     }
 
-    public var cacheKey: MediaViewCache.KeyType {
+    public var cacheKey: String {
         attachmentStream.uniqueId
     }
 

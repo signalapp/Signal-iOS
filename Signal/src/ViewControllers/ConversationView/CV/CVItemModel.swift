@@ -29,7 +29,7 @@ public class CVItemModel: NSObject {
     private let coreState: CVCoreState
     public var conversationStyle: ConversationStyle { coreState.conversationStyle }
     public var cellMediaCache: NSCache<NSString, AnyObject> { coreState.cellMediaCache }
-    public var mediaViewCache: MediaViewCache { coreState.mediaViewCache }
+    public var mediaViewCache: CVMediaViewCache { coreState.mediaViewCache }
 
     public var itemModel: CVItemModel {
         self

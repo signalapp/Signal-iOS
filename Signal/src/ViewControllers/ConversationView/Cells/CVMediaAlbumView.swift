@@ -25,7 +25,7 @@ public class CVMediaAlbumView: UIStackView {
     }
 
     public func configure(mediaCache: NSCache<NSString, AnyObject>,
-                          mediaViewCache: MediaViewCache,
+                          mediaViewCache: CVMediaViewCache,
                           items: [CVMediaAlbumItem],
                           isOutgoing: Bool,
                           isBorderless: Bool,

@@ -103,7 +103,7 @@ public class CVViewState: NSObject {
 
     public var sendMessageController: SendMessageController?
 
-    public let mediaViewCache = MediaViewCache(maxSize: 12)
+    public let mediaViewCache = CVMediaViewCache()
 
     // MARK: - Gestures
 
@@ -253,7 +253,7 @@ public extension ConversationViewController {
 
     var isMeasuringKeyboardHeight: Bool { inputToolbar?.isMeasuringKeyboardHeight ?? false }
 
-    var mediaViewCache: MediaViewCache { viewState.mediaViewCache }
+    var mediaViewCache: CVMediaViewCache { viewState.mediaViewCache }
 
     // MARK: - Gestures
 
@@ -356,7 +356,7 @@ extension ConversationViewController {
 struct CVCoreState {
     let conversationStyle: ConversationStyle
     let cellMediaCache: NSCache<NSString, AnyObject>
-    let mediaViewCache: MediaViewCache
+    let mediaViewCache: CVMediaViewCache
 }
 
 // MARK: -

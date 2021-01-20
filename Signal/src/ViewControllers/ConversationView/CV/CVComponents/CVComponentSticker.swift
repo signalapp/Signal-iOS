@@ -49,13 +49,14 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             containerView.layer.cornerRadius = 0
 
             let cacheKey = attachmentStream.uniqueId
+            let isAnimated = attachmentStream.shouldBeRenderedByYY
             let reusableMediaView: ReusableMediaView
-            if let cachedView = mediaViewCache.get(cacheKey) as? ReusableMediaView {
+            if let cachedView = mediaViewCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView
             } else {
                 let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream)
                 reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: cellMediaCache)
-                mediaViewCache.set(value: reusableMediaView, forKey: cacheKey)
+                mediaViewCache.setMediaView(reusableMediaView, forKey: cacheKey, isAnimated: isAnimated)
             }
 
             reusableMediaView.owner = componentView

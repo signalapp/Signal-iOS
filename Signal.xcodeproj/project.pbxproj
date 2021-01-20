@@ -274,7 +274,7 @@
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		348C686D246B0B110039705A /* ThreadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348C686C246B0B100039705A /* ThreadUtil.swift */; };
-		348EE28E25B897BF00814FC2 /* MediaViewCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28C25B897BF00814FC2 /* MediaViewCache.swift */; };
+		348EE28E25B897BF00814FC2 /* CVMediaViewCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28C25B897BF00814FC2 /* CVMediaViewCache.swift */; };
 		348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */; };
 		3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */; };
 		3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */; };
@@ -1277,7 +1277,7 @@
 		348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinderPerformanceTest.swift; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348C686C246B0B100039705A /* ThreadUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadUtil.swift; sourceTree = "<group>"; };
-		348EE28C25B897BF00814FC2 /* MediaViewCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaViewCache.swift; sourceTree = "<group>"; };
+		348EE28C25B897BF00814FC2 /* CVMediaViewCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaViewCache.swift; sourceTree = "<group>"; };
 		348EE28D25B897BF00814FC2 /* ReusableMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReusableMediaView.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkPromotionActionSheet.swift; sourceTree = "<group>"; };
@@ -2804,7 +2804,6 @@
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
-				349767DE25B8744600ECE1B0 /* Stickers */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				88F7EE92230253C5003ADF7D /* UsernameViewController.swift */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
@@ -2936,9 +2935,9 @@
 				3470C87F2555F25200F5847C /* CVContactShareView.swift */,
 				34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */,
 				3488F9352191CC4000E524CC /* CVMediaView.swift */,
+				348EE28C25B897BF00814FC2 /* CVMediaViewCache.swift */,
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
-				348EE28C25B897BF00814FC2 /* MediaViewCache.swift */,
 				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
 				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
 				34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */,
@@ -5118,7 +5117,7 @@
 				347C3829252CE69400F3D941 /* CVComponentState+GroupLink.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
 				34386A51207D0C01009F5D9C /* ConversationListViewController.m in Sources */,
-				348EE28E25B897BF00814FC2 /* MediaViewCache.swift in Sources */,
+				348EE28E25B897BF00814FC2 /* CVMediaViewCache.swift in Sources */,
 				4C4F5EBC22711EEB00F3DD01 /* SendMediaBottomButton.swift in Sources */,
 				343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */,
 				88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */,

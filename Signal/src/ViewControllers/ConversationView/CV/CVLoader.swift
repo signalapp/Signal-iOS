@@ -255,7 +255,7 @@ public class CVLoader: NSObject {
                                                   viewWidth: containerView.width)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     cellMediaCache: cellMediaCache,
-                                    mediaViewCache: MediaViewCache(maxSize: 1))
+                                    mediaViewCache: CVMediaViewCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                   thread: thread,
                                                   coreState: coreState,
