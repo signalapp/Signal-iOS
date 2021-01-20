@@ -137,8 +137,7 @@ public class CVMediaView: UIView {
 
         if !addUploadProgressIfNecessary(mediaView) {
             if reusableMediaView.isVideo {
-                let videoPlayIcon = UIImage(named: "play_button")
-                let videoPlayButton = UIImageView(image: videoPlayIcon)
+                let videoPlayButton = Self.buildVideoPlayButton()
                 addSubview(videoPlayButton)
                 videoPlayButton.autoCenterInSuperview()
             }
@@ -205,36 +204,29 @@ public class CVMediaView: UIView {
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter)
     }
 
-//    @objc
-//    public static func buildVideoPlayButton(block: @escaping () -> Void) -> UIView {
-//        let playVideoButton = OWSButton(block: block)
-//
-//        let playVideoCircleView = OWSLayerView.circleView()
-//        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
-//        playVideoCircleView.isUserInteractionEnabled = false
-//        playVideoButton.addSubview(playVideoCircleView)
-//
-//        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
-//                                                                  tintColor: UIColor.ows_white)
-//        playVideoIconView.isUserInteractionEnabled = false
-//        playVideoButton.addSubview(playVideoIconView)
-//
-//        let playVideoButtonWidth: CGFloat = 44
-//        let playVideoIconWidth: CGFloat = 20
-//        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
-//        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
-//        playVideoCircleView.autoPinEdgesToSuperviewEdges()
-//        playVideoIconView.autoCenterInSuperview()
-//
-//        return playVideoButton
-//    }
+    private static func buildVideoPlayButton() -> UIView {
+        let playVideoButton = UIView()
 
-//    if !addUploadProgressIfNecessary(stillImageView) {
-//    let videoPlayIcon = UIImage(named: "play_button")
-//    let videoPlayButton = UIImageView(image: videoPlayIcon)
-//    stillImageView.addSubview(videoPlayButton)
-//    videoPlayButton.autoCenterInSuperview()
-//    }
+        let playVideoCircleView = OWSLayerView.circleView()
+        playVideoCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+        playVideoCircleView.isUserInteractionEnabled = false
+        playVideoButton.addSubview(playVideoCircleView)
+
+        let playVideoIconView = UIImageView.withTemplateImageName("play-solid-32",
+                                                                  tintColor: UIColor.ows_white)
+        playVideoIconView.isUserInteractionEnabled = false
+        playVideoButton.addSubview(playVideoIconView)
+
+        let playVideoButtonWidth: CGFloat = 44
+        let playVideoIconWidth: CGFloat = 20
+        playVideoButton.autoSetDimensions(to: CGSize(square: playVideoButtonWidth))
+        playVideoIconView.autoSetDimensions(to: CGSize(square: playVideoIconWidth))
+        playVideoCircleView.autoPinEdgesToSuperviewEdges()
+        playVideoIconView.autoCenterInSuperview()
+
+        return playVideoButton
+    }
+
     private var hasBlurHash: Bool {
         return BlurHash.isValidBlurHash(attachment.blurHash)
     }
