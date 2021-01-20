@@ -251,7 +251,8 @@ public class CVLoader: NSObject {
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         let conversationStyle = ConversationStyle(type: .`default`,
                                                   thread: thread,
-                                                  viewWidth: containerView.width)
+                                                  viewWidth: containerView.width,
+                                                  hasWallpaper: false)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,

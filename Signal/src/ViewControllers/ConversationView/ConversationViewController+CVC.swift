@@ -639,7 +639,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let viewWidth = floor(collectionView.width)
             return ConversationStyle(type: type,
                                      thread: thread,
-                                     viewWidth: viewWidth)
+                                     viewWidth: viewWidth,
+                                     hasWallpaper: threadViewModel.hasWallpaper)
         }
 
         guard self.conversationStyle.type != .`default` else {
@@ -691,7 +692,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let viewWidth = floor(navigationViewWidth)
             return ConversationStyle(type: .placeholder,
                                      thread: thread,
-                                     viewWidth: viewWidth)
+                                     viewWidth: viewWidth,
+                                     hasWallpaper: threadViewModel.hasWallpaper)
         }
     }
 

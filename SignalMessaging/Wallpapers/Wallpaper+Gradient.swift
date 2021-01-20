@@ -418,6 +418,7 @@ extension Wallpaper {
             gradientLayer.position = view.center
         }
         layerView.layer.addSublayer(gradientLayer)
+        layerView.clipsToBounds = true
 
         return layerView
     }
@@ -831,6 +832,7 @@ extension Wallpaper {
             gradientLayer.position = view.center
         }
         layerView.layer.addSublayer(gradientLayer)
+        layerView.clipsToBounds = true
 
         return layerView
     }

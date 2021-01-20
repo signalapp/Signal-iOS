@@ -4,8 +4,8 @@
 
 import Foundation
 
-enum Wallpaper: String {
-    static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")
+public enum Wallpaper: String {
+    public static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")
 
     // Solid
     case blush
@@ -35,7 +35,7 @@ enum Wallpaper: String {
     // Custom
     case photo
 
-    static func warmCaches() {
+    public static func warmCaches() {
         owsAssertDebug(!Thread.isMainThread)
 
         let photoURLs: [URL]
@@ -82,40 +82,49 @@ enum Wallpaper: String {
         }
     }
 
-    static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
+    public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(!Thread.isMainThread)
 
         owsAssertDebug(wallpaper != .photo)
 
         try set(wallpaper, for: thread, transaction: transaction)
-
-        transaction.addAsyncCompletion {
-            NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
-        }
     }
 
-    static func setPhoto(_ photo: UIImage, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
+    public static func setPhoto(_ photo: UIImage, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(Thread.current != .main)
 
         try set(.photo, photo: photo, for: thread, transaction: transaction)
-
-        transaction.addAsyncCompletion {
-            NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
-        }
     }
 
-    static func view(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> UIView? {
+    public static func exists(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> Bool {
+        guard get(for: thread, transaction: transaction) != nil else {
+            if thread != nil { return exists(transaction: transaction) }
+            return false
+        }
+        return true
+    }
+
+    public static func view(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> UIView? {
         guard let wallpaper = get(for: thread, transaction: transaction) else {
             if thread != nil { return view(transaction: transaction)}
             return nil
         }
 
-        func view(color: UIColor) -> UIView {
-            let view = UIView()
-            view.backgroundColor = color
-            return view
+        let photo: UIImage? = {
+            guard case .photo = wallpaper else { return nil }
+            guard let photo = try? self.photo(for: thread) else { return nil }
+            return photo
+        }()
+
+        if case .photo = wallpaper, photo == nil {
+            owsFailDebug("Missing photo for wallpaper \(wallpaper)")
+            return nil
         }
 
+        return view(for: wallpaper, photo: photo)
+    }
+
+    public static func view(for wallpaper: Wallpaper, photo: UIImage? = nil) -> UIView? {
         if let solidColor = wallpaper.solidColor {
             let view = UIView()
             view.backgroundColor = solidColor
@@ -123,7 +132,7 @@ enum Wallpaper: String {
         } else if let gradientView = wallpaper.gradientView {
             return gradientView
         } else if case .photo = wallpaper {
-            guard let photo = try? photo(for: thread) else {
+            guard let photo = photo else {
                 owsFailDebug("Missing photo for wallpaper \(wallpaper)")
                 return nil
             }
@@ -158,10 +167,15 @@ fileprivate extension Wallpaper {
         if let photo = photo { try setPhoto(photo, for: thread) }
 
         enumStore.setString(wallpaper?.rawValue, key: key(for: thread), transaction: transaction)
+
+        transaction.addAsyncCompletion {
+            NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
+        }
     }
 
     static func get(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Wallpaper? {
-        return get(for: key(for: thread), transaction: transaction)
+        return .eden
+//        return get(for: key(for: thread), transaction: transaction)
     }
 
     static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
@@ -178,14 +192,18 @@ fileprivate extension Wallpaper {
 
 // MARK: -
 
-fileprivate extension Wallpaper {
+extension Wallpaper {
     private static let dimmingStore = SDSKeyValueStore(collection: "Wallpaper+Dimming")
 
-    static func setDimInDarkMode(_ dimInDarkMode: Bool, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
+    public static func setDimInDarkMode(_ dimInDarkMode: Bool, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
         dimmingStore.setBool(dimInDarkMode, key: key(for: thread), transaction: transaction)
+
+        transaction.addAsyncCompletion {
+            NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
+        }
     }
 
-    static func getDimInDarkMode(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Bool {
+    public static func getDimInDarkMode(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Bool {
         return dimmingStore.getBool(key(for: thread), defaultValue: false, transaction: transaction)
     }
 }

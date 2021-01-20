@@ -38,6 +38,9 @@ public class ConversationStyle: NSObject {
     @objc
     public let isDarkThemeEnabled: Bool
 
+    @objc
+    public let hasWallpaper: Bool
+
     private let dynamicBodyTypePointSize: CGFloat
     private let primaryTextColor: UIColor
 
@@ -78,11 +81,6 @@ public class ConversationStyle: NSObject {
 
     @objc
     public let contentWidth: CGFloat
-
-    @objc
-    public var selectableCenteredContentWidth: CGFloat {
-        viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing) - (Self.selectionViewWidth + Self.messageStackSpacing) * 2
-    }
 
     @objc
     public var headerViewContentWidth: CGFloat {
@@ -129,19 +127,21 @@ public class ConversationStyle: NSObject {
     @objc
     public required init(type: ConversationStyleType,
                          thread: TSThread,
-                         viewWidth: CGFloat) {
+                         viewWidth: CGFloat,
+                         hasWallpaper: Bool) {
 
         self.type = type
         self.conversationColor = ConversationStyle.conversationColor(thread: thread)
         self.viewWidth = viewWidth
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
+        self.hasWallpaper = hasWallpaper
 
         gutterLeading = thread.isGroupThread ? 12 : 16
         gutterTrailing = 16
 
-        fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
-        fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
+        fullWidthGutterLeading = 32
+        fullWidthGutterTrailing = 32
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 
@@ -358,6 +358,7 @@ public class ConversationStyle: NSObject {
             dynamicBodyTypePointSize == other.dynamicBodyTypePointSize &&
             conversationColor == other.conversationColor &&
             isDarkThemeEnabled == other.isDarkThemeEnabled &&
+            hasWallpaper == other.hasWallpaper &&
             maxMessageWidth == other.maxMessageWidth &&
             maxMediaMessageWidth == other.maxMediaMessageWidth &&
             textInsets == other.textInsets &&

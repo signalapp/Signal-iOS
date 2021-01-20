@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -140,7 +140,7 @@ extension CVRenderItem: ConversationViewLayoutItem {
                             || previousErrorMessage.errorType != errorMessage.errorType) {
                         return ConversationStyle.defaultMessageSpacing
                     }
-                    return ConversationStyle.compactMessageSpacing
+                    return 0
                 case .info:
                     if let infoMessage = interaction as? TSInfoMessage,
                        let previousInfoMessage = previousInteraction as? TSInfoMessage,
@@ -148,9 +148,9 @@ extension CVRenderItem: ConversationViewLayoutItem {
                             || previousInfoMessage.messageType != infoMessage.messageType) {
                         return ConversationStyle.defaultMessageSpacing
                     }
-                    return ConversationStyle.compactMessageSpacing
+                    return 0
                 case .call:
-                    return ConversationStyle.compactMessageSpacing
+                    return 0
                 default:
                     return ConversationStyle.defaultMessageSpacing
                 }

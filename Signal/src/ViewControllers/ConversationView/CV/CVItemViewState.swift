@@ -339,6 +339,69 @@ struct CVItemModelBuilder: CVItemBuilding {
                     itemViewState.shouldShowSenderAvatar = incomingSenderAddress != nextIncomingSenderAddress
                 }
             }
+        } else if [.call, .info, .error].contains(interaction.interactionType()) {
+            // clustering
+
+            if let previousItem = previousItem,
+               interaction.interactionType() == previousItem.interaction.interactionType() {
+
+                switch previousItem.interaction.interactionType() {
+                case .error:
+                    if let errorMessage = interaction as? TSErrorMessage,
+                       let previousErrorMessage = previousItem.interaction as? TSErrorMessage,
+                       (errorMessage.errorType == .nonBlockingIdentityChange
+                            || previousErrorMessage.errorType != errorMessage.errorType) {
+                        itemViewState.isFirstInCluster = true
+                    } else {
+                        itemViewState.isFirstInCluster = false
+                    }
+                case .info:
+                    if let infoMessage = interaction as? TSInfoMessage,
+                       let previousInfoMessage = previousItem.interaction as? TSInfoMessage,
+                       (infoMessage.messageType == .verificationStateChange
+                            || previousInfoMessage.messageType != infoMessage.messageType) {
+                        itemViewState.isFirstInCluster = true
+                    } else {
+                        itemViewState.isFirstInCluster = false
+                    }
+                case .call:
+                    itemViewState.isFirstInCluster = false
+                default:
+                    itemViewState.isFirstInCluster = true
+                }
+            } else {
+                itemViewState.isFirstInCluster = true
+            }
+
+            if let nextItem = nextItem,
+               interaction.interactionType() == nextItem.interaction.interactionType() {
+                switch nextItem.interaction.interactionType() {
+                case .error:
+                    if let errorMessage = interaction as? TSErrorMessage,
+                       let nextErrorMessage = nextItem.interaction as? TSErrorMessage,
+                       (errorMessage.errorType == .nonBlockingIdentityChange
+                            || nextErrorMessage.errorType != errorMessage.errorType) {
+                        itemViewState.isLastInCluster = true
+                    } else {
+                        itemViewState.isLastInCluster = false
+                    }
+                case .info:
+                    if let infoMessage = interaction as? TSInfoMessage,
+                       let nextInfoMessage = nextItem.interaction as? TSInfoMessage,
+                       (infoMessage.messageType == .verificationStateChange
+                            || nextInfoMessage.messageType != infoMessage.messageType) {
+                        itemViewState.isLastInCluster = true
+                    } else {
+                        itemViewState.isLastInCluster = false
+                    }
+                case .call:
+                    itemViewState.isLastInCluster = false
+                default:
+                    itemViewState.isLastInCluster = true
+                }
+            } else {
+                itemViewState.isLastInCluster = true
+            }
         }
 
         let collapseCutoffTimestamp = NSDate.ows_millisecondsSince1970(for: viewStateSnapshot.collapseCutoffDate)

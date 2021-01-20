@@ -61,11 +61,18 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     }
 
     private var vStackConfig: CVStackViewConfig {
-        let layoutMargins = UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)
+        let layoutMargins = UIEdgeInsets(hMargin: 10, vMargin: 8)
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .center,
                                  spacing: 12,
                                  layoutMargins: layoutMargins)
+    }
+
+    private var hStackConfig: CVStackViewConfig {
+        return CVStackViewConfig(axis: .horizontal,
+                                 alignment: .center,
+                                 spacing: 0,
+                                 layoutMargins: .zero)
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -82,12 +89,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         let outerStack = componentView.outerStack
         let vStackView = componentView.vStackView
+        let hStackView = componentView.hStackView
         let selectionView = componentView.selectionView
         let titleLabel = componentView.titleLabel
-        let backgroundView = componentView.backgroundView
-
-        backgroundView.backgroundColor = Theme.backgroundColor
-        backgroundView.isHidden = isShowingSelectionUI
 
         if isShowingSelectionUI {
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
@@ -100,10 +104,89 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         if !isReusing {
             outerStack.apply(config: outerStackConfig)
             vStackView.apply(config: vStackConfig)
+            hStackView.apply(config: hStackConfig)
 
             outerStack.addArrangedSubview(selectionView)
-            outerStack.addArrangedSubview(vStackView)
-            vStackView.addArrangedSubview(titleLabel)
+            outerStack.addArrangedSubview(hStackView)
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.vStretchingSpacer()
+
+            hStackView.addArrangedSubview(leadingSpacer)
+            hStackView.addArrangedSubview(vStackView)
+            hStackView.addArrangedSubview(trailingSpacer)
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        }
+
+        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
+        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
+
+        let hasWallpaper = conversationStyle.hasWallpaper
+        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
+        componentView.hasWallpaper = hasWallpaper
+
+        let isFirstInCluster = itemModel.itemViewState.isFirstInCluster
+        let isLastInCluster = itemModel.itemViewState.isLastInCluster
+        let hasClusteringChanges = componentView.isFirstInCluster != isFirstInCluster || componentView.isLastInCluster != isLastInCluster
+        componentView.isFirstInCluster = isFirstInCluster
+        componentView.isLastInCluster = isLastInCluster
+
+        if !isReusing || themeHasChanged || wallpaperModeHasChanged || hasClusteringChanges {
+            titleLabel.removeFromSuperview()
+
+            componentView.vibrancyView?.removeFromSuperview()
+            componentView.vibrancyView = nil
+
+            componentView.blurView?.removeFromSuperview()
+            componentView.blurView = nil
+
+            componentView.backgroundView?.removeFromSuperview()
+            componentView.backgroundView = nil
+
+            let bubbleView: UIView
+
+            if conversationStyle.hasWallpaper {
+                let vibrancyView = componentView.buildVibrancyView()
+                componentView.vibrancyView = vibrancyView
+                let blurView = componentView.buildBlurView(conversationStyle: conversationStyle)
+                componentView.blurView = blurView
+                bubbleView = blurView
+
+                vibrancyView.contentView.addSubview(titleLabel)
+                titleLabel.autoPinEdgesToSuperviewEdges()
+
+                vStackView.addArrangedSubview(vibrancyView)
+            } else {
+                let backgroundView = UIView()
+                componentView.backgroundView = backgroundView
+                bubbleView = backgroundView
+                backgroundView.backgroundColor = Theme.backgroundColor
+
+                vStackView.addArrangedSubview(titleLabel)
+            }
+
+            vStackView.insertSubview(bubbleView, at: 0)
+            bubbleView.autoPinVerticalEdges(toEdgesOf: hStackView)
+
+            if isFirstInCluster && isLastInCluster {
+                bubbleView.autoPinHorizontalEdges(toEdgesOf: vStackView)
+
+                bubbleView.layer.cornerRadius = 8
+                bubbleView.clipsToBounds = true
+            } else {
+                bubbleView.autoPinHorizontalEdges(toEdgesOf: hStackView)
+
+                if isFirstInCluster {
+                    bubbleView.layer.cornerRadius = 12
+                    bubbleView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+                    bubbleView.clipsToBounds = true
+                } else if isLastInCluster {
+                    bubbleView.layer.cornerRadius = 12
+                    bubbleView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+                    bubbleView.clipsToBounds = true
+                }
+            }
         }
 
         if let action = action, !itemViewState.shouldCollapseSystemMessageAction {
@@ -223,11 +306,20 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let outerStack = OWSStackView(name: "systemMessage.outerStack")
         fileprivate let vStackView = OWSStackView(name: "systemMessage.vStackView")
+        fileprivate let hStackView = OWSStackView(name: "systemMessage.hStackView")
         fileprivate let titleLabel = UILabel()
         fileprivate let selectionView = MessageSelectionView()
-        fileprivate lazy var backgroundView = outerStack.addBackgroundView(withBackgroundColor: .clear, cornerRadius: 8)
+
+        fileprivate var blurView: UIVisualEffectView?
+        fileprivate var vibrancyView: UIVisualEffectView?
+        fileprivate var backgroundView: UIView?
 
         fileprivate var button: OWSButton?
+
+        fileprivate var hasWallpaper = false
+        fileprivate var isDarkThemeEnabled = false
+        fileprivate var isFirstInCluster = false
+        fileprivate var isLastInCluster = false
 
         public var isDedicatedCellView = false
 
@@ -251,14 +343,29 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             if !isDedicatedCellView {
                 outerStack.reset()
                 vStackView.reset()
+                hStackView.reset()
             }
 
             titleLabel.text = nil
 
             button?.removeFromSuperview()
             button = nil
+        }
 
-            backgroundView.backgroundColor = .clear
+        public func buildVibrancyView() -> UIVisualEffectView {
+            let blurEffectStyle: UIBlurEffect.Style
+            if #available(iOS 13, *) {
+                blurEffectStyle = .systemThinMaterial
+            } else {
+                blurEffectStyle = .regular
+            }
+            return UIVisualEffectView(
+                effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurEffectStyle))
+            )
+        }
+
+        public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
+            return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
         }
     }
 }

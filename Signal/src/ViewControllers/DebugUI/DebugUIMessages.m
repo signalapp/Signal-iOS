@@ -1377,7 +1377,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
 
     ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeDefault
                                                                             thread:thread
-                                                                         viewWidth:0];
+                                                                         viewWidth:0
+                                                                      hasWallpaper:NO];
     [actions addObjectsFromArray:@[
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"

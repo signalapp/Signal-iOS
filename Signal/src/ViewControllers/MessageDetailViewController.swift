@@ -64,7 +64,8 @@ class MessageDetailViewController: OWSViewController {
         self.mode = mode
         self.conversationStyle = ConversationStyle(type: .`default`,
                                                    thread: thread,
-                                                   viewWidth: 0)
+                                                   viewWidth: 0,
+                                                   hasWallpaper: false)
 
         super.init()
     }
@@ -88,7 +89,8 @@ class MessageDetailViewController: OWSViewController {
         let viewWidth = navigationController?.view.width ?? view.width
         self.conversationStyle = ConversationStyle(type: .`default`,
                                                    thread: thread,
-                                                   viewWidth: viewWidth)
+                                                   viewWidth: viewWidth,
+                                                   hasWallpaper: false)
 
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
@@ -107,7 +109,8 @@ class MessageDetailViewController: OWSViewController {
 
         self.conversationStyle = ConversationStyle(type: .`default`,
                                                    thread: thread,
-                                                   viewWidth: view.width)
+                                                   viewWidth: view.width,
+                                                   hasWallpaper: false)
 
         updateMessageViewLayout()
     }

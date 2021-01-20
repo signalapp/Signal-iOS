@@ -165,7 +165,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
 
         self.conversationStyle = ConversationStyle(type: .`default`,
                                                    thread: thread,
-                                                   viewWidth: 0)
+                                                   viewWidth: 0,
+                                                   hasWallpaper: false)
 
         super.init(frame: .zero)
 
@@ -230,7 +231,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let viewWidth = max(bounds.size.width, kMinimumConversationWidth)
         self.conversationStyle = ConversationStyle(type: .`default`,
                                                    thread: self.thread,
-                                                   viewWidth: viewWidth)
+                                                   viewWidth: viewWidth,
+                                                   hasWallpaper: false)
 
         mockConversationView.subviews.forEach { $0.removeFromSuperview() }
 
