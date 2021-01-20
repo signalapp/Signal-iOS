@@ -426,7 +426,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)hasActiveCall
 {
-    return AppEnvironment.shared.callService.currentCall != nil;
+    return AppEnvironment.shared.callService.hasCallInProgress;
 }
 
 - (NSString *)debugLogsDirPath

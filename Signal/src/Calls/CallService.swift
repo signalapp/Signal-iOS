@@ -87,6 +87,7 @@ public final class CallService: NSObject {
 
     /// True whenever CallService has any call in progress.
     /// The call may not yet be visible to the user if we are still in the middle of signaling.
+    @objc
     public var hasCallInProgress: Bool {
         calls.count > 0
     }
@@ -98,10 +99,24 @@ public final class CallService: NSObject {
     /// which will let us know which one, if any, should become the "current call". But in the
     /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
     /// placing an outgoing call.
-    private var calls = Set<SignalCall>() {
-        didSet {
-            AssertIsOnMainThread()
+    private let _calls = AtomicValue<Set<SignalCall>>(Set())
+    private var calls: Set<SignalCall> {
+        get {
+            _calls.get()
         }
+    }
+
+    private func addCall(_ call: SignalCall) {
+        var calls = _calls.get()
+        calls.insert(call)
+        _calls.set(calls)
+    }
+
+    private func removeCall(_ call: SignalCall) -> Bool {
+        var calls = _calls.get()
+        let result = calls.remove(call)
+        _calls.set(calls)
+        return result != nil
     }
 
     public override init() {
@@ -380,7 +395,7 @@ public final class CallService: NSObject {
         // If call is for the current call, clear it out first.
         if call === currentCall { currentCall = nil }
 
-        if calls.remove(call) == nil {
+        if !removeCall(call) {
             owsFailDebug("unknown call: \(call)")
         }
 
@@ -466,7 +481,7 @@ public final class CallService: NSObject {
         guard !hasCallInProgress else { return nil }
 
         guard let call = SignalCall.groupCall(thread: thread) else { return nil }
-        calls.insert(call)
+        addCall(call)
 
         currentCall = call
 
@@ -504,7 +519,7 @@ public final class CallService: NSObject {
         let call = SignalCall.outgoingIndividualCall(localId: UUID(), remoteAddress: address)
         call.individualCall.offerMediaType = hasVideo ? .video : .audio
 
-        calls.insert(call)
+        addCall(call)
 
         return call
     }
@@ -531,7 +546,7 @@ public final class CallService: NSObject {
             offerMediaType: offerMediaType
         )
 
-        calls.insert(newCall)
+        addCall(newCall)
 
         return newCall
     }
