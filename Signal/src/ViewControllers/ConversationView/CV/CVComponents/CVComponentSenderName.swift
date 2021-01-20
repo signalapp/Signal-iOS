@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,6 +35,20 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
             return
         }
 
+        let contentView = componentView.contentView
+
+        if isBorderless {
+            contentView.layoutMargins = contentViewBorderlessMargins
+            contentView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            contentView.layer.cornerRadius = 11
+            contentView.clipsToBounds = true
+        } else {
+            contentView.layoutMargins = .zero
+            contentView.backgroundColor = .clear
+            contentView.layer.cornerRadius = 0
+            contentView.clipsToBounds = false
+        }
+
         labelConfig.applyForRendering(label: componentView.label)
     }
 
@@ -45,10 +59,21 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
                       lineBreakMode: .byTruncatingTail)
     }
 
+    private var contentViewBorderlessMargins: UIEdgeInsets {
+        UIEdgeInsets(hMargin: 12, vMargin: 3)
+    }
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
+        var maxWidth = maxWidth
+        if isBorderless { maxWidth -= contentViewBorderlessMargins.totalWidth }
+
+        var size = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
+
+        if isBorderless { size.height += contentViewBorderlessMargins.totalHeight }
+
+        return size
     }
 
     // MARK: -
@@ -59,11 +84,24 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
     public class CVComponentViewSenderName: NSObject, CVComponentView {
 
         fileprivate let label = UILabel()
+        fileprivate lazy var contentView: UIView = {
+            let contentView = UIView()
+            contentView.addSubview(label)
+            label.autoPinEdgesToSuperviewMargins()
+            return contentView
+        }()
+        fileprivate lazy var outerView: UIView = {
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.vStretchingSpacer()
+            let outerView = UIStackView(arrangedSubviews: [leadingSpacer, contentView, trailingSpacer])
+            outerView.axis = .horizontal
+            return outerView
+        }()
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            label
+            outerView
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}

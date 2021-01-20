@@ -80,11 +80,19 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         let outerStack = componentView.outerStack
         let innerStack = componentView.innerStack
+        let innerStackBackground = componentView.innerStackBackground
         outerStack.apply(config: outerStackConfig)
         innerStack.apply(config: innerStackConfig)
 
         var outerViews = [UIView]()
         var innerViews = [UIView]()
+
+        if isBorderless {
+            innerStackBackground.isHidden = false
+            innerStackBackground.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+        } else {
+            innerStackBackground.isHidden = true
+        }
 
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
             let tapForMoreLabel = componentView.tapForMoreLabel
@@ -250,10 +258,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     }
 
     private var innerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
+        let layoutMargins = isBorderless ? UIEdgeInsets(hMargin: 12, vMargin: 3) : .zero
+        return CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
                           spacing: CVComponentFooter.hSpacing,
-                          layoutMargins: .zero)
+                          layoutMargins: layoutMargins)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -319,6 +328,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let timestampLabel = UILabel()
         fileprivate let statusIndicatorImageView = UIImageView()
         fileprivate let messageTimerView = OWSMessageTimerView()
+        fileprivate lazy var innerStackBackground = innerStack.addBackgroundView(withBackgroundColor: .clear, cornerRadius: 11)
         fileprivate var vibrancyView: UIVisualEffectView?
 
         fileprivate var constraints = [NSLayoutConstraint]()
@@ -347,6 +357,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             outerStack.reset()
             innerStack.reset()
             vibrancyView = nil
+            innerStackBackground.isHidden = true
 
             tapForMoreLabel.text = nil
             timestampLabel.text = nil
