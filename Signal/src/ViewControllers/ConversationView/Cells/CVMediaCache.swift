@@ -36,7 +36,13 @@ public class CVMediaCache: NSObject {
     @objc
     public func getMedia(_ key: String, isAnimated: Bool) -> AnyObject? {
         let cache = isAnimated ? animatedMediaCache : stillMediaCache
-        return cache.object(forKey: key as NSString)
+        let result = cache.object(forKey: key as NSString)
+        if result != nil {
+            Logger.verbose("---- cache hit.")
+        } else {
+            Logger.verbose("---- cache  miss.")
+        }
+        return result
     }
 
     @objc
@@ -48,7 +54,13 @@ public class CVMediaCache: NSObject {
     @objc
     public func getMediaView(_ key: String, isAnimated: Bool) -> ReusableMediaView? {
         let cache = isAnimated ? animatedMediaViewCache : stillMediaViewCache
-        return cache.get(key)
+        let result = cache.get(key)
+        if result != nil {
+            Logger.verbose("---- cache hit.")
+        } else {
+            Logger.verbose("---- cache  miss.")
+        }
+        return result
     }
 
     @objc
