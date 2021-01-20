@@ -65,12 +65,7 @@ public class OWSAttachmentDownloads: NSObject {
         var message: TSMessage? { jobType.message }
 
         func loadLatestAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
-            switch jobType {
-            case .messageAttachment(let attachmentId, _):
-                return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
-            case .headlessAttachment(let attachmentPointer):
-                return attachmentPointer
-            }
+            return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
         }
     }
 
@@ -107,6 +102,8 @@ public class OWSAttachmentDownloads: NSObject {
     private var activeJobMap = [AttachmentId: Job]()
     // This property should only be accessed with unfairLock.
     private var jobQueue = [Job]()
+    // This property should only be accessed with unfairLock.
+    private var completeAttachmentMap = Set<AttachmentId>()
 
     @objc
     public override init() {
@@ -153,6 +150,9 @@ public class OWSAttachmentDownloads: NSObject {
             if let job = activeJobMap[attachmentId] {
                 return job.progress
             }
+            if completeAttachmentMap.contains(attachmentId) {
+                return 1.0
+            }
             return nil
         }
     }
@@ -187,12 +187,19 @@ public class OWSAttachmentDownloads: NSObject {
         }
     }
 
-    private func markJobComplete(_ job: Job) {
+    private func markJobComplete(_ job: Job, isAttachmentDownloaded: Bool) {
         Self.unfairLock.withLock {
-            owsAssertDebug(activeJobMap[job.attachmentId] != nil)
-            activeJobMap[job.attachmentId] = nil
-            cancellationRequestMap[job.attachmentId] = nil
-            owsAssertDebug(activeJobMap[job.attachmentId] == nil)
+            let attachmentId = job.attachmentId
+
+            owsAssertDebug(activeJobMap[attachmentId] != nil)
+            activeJobMap[attachmentId] = nil
+
+            cancellationRequestMap[attachmentId] = nil
+
+            if isAttachmentDownloaded {
+                owsAssertDebug(!completeAttachmentMap.contains(attachmentId))
+                completeAttachmentMap.insert(attachmentId)
+            }
         }
         tryToStartNextDownload()
     }
@@ -203,9 +210,9 @@ public class OWSAttachmentDownloads: NSObject {
                 return
             }
 
-            guard let attachmentPointer = Self.prepareDownload(job: job) else {
+            guard let attachmentPointer = self.prepareDownload(job: job) else {
                 // Abort.
-                self.markJobComplete(job)
+                self.markJobComplete(job, isAttachmentDownloaded: false)
                 return
             }
 
@@ -219,7 +226,7 @@ public class OWSAttachmentDownloads: NSObject {
         }
     }
 
-    private static func prepareDownload(job: Job) -> TSAttachmentPointer? {
+    private func prepareDownload(job: Job) -> TSAttachmentPointer? {
         Self.databaseStorage.write { transaction in
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
             guard let attachment = job.loadLatestAttachment(transaction: transaction) else {
@@ -237,6 +244,12 @@ public class OWSAttachmentDownloads: NSObject {
                 //
                 // * An attachment may have been re-enqueued for download while it was already being downloaded.
                 owsFailDebug("Attachment already downloaded.")
+
+                Self.unfairLock.withLock {
+                    owsAssertDebug(!self.completeAttachmentMap.contains(job.attachmentId))
+                    self.completeAttachmentMap.insert(job.attachmentId)
+                }
+
                 return nil
             }
 
@@ -250,7 +263,7 @@ public class OWSAttachmentDownloads: NSObject {
                     return nil
                 }
 
-                if isDownloadBlockedByPendingMessageRequest(job: job,
+                if self.isDownloadBlockedByPendingMessageRequest(job: job,
                                                             attachmentPointer: attachmentPointer,
                                                             message: message,
                                                             transaction: transaction) {
@@ -260,7 +273,7 @@ public class OWSAttachmentDownloads: NSObject {
                                                                    transaction: transaction)
                     return nil
                 }
-                if isDownloadBlockedByAutoDownloadSettingsSettings(job: job,
+                if self.isDownloadBlockedByAutoDownloadSettingsSettings(job: job,
                                                                    attachmentPointer: attachmentPointer,
                                                                    transaction: transaction) {
                     Logger.info("Skipping media download for thread due to auto-download settings.")
@@ -284,10 +297,10 @@ public class OWSAttachmentDownloads: NSObject {
         }
     }
 
-    private static func isDownloadBlockedByPendingMessageRequest(job: Job,
-                                                                 attachmentPointer: TSAttachmentPointer,
-                                                                 message: TSMessage,
-                                                                 transaction: SDSAnyReadTransaction) -> Bool {
+    private func isDownloadBlockedByPendingMessageRequest(job: Job,
+                                                          attachmentPointer: TSAttachmentPointer,
+                                                          message: TSMessage,
+                                                          transaction: SDSAnyReadTransaction) -> Bool {
 
         if DebugFlags.forceAttachmentDownloadPendingMessageRequest.get() {
             return true
@@ -320,9 +333,9 @@ public class OWSAttachmentDownloads: NSObject {
         return true
     }
 
-    private static func isDownloadBlockedByAutoDownloadSettingsSettings(job: Job,
-                                                                        attachmentPointer: TSAttachmentPointer,
-                                                                        transaction: SDSAnyReadTransaction) -> Bool {
+    private func isDownloadBlockedByAutoDownloadSettingsSettings(job: Job,
+                                                                 attachmentPointer: TSAttachmentPointer,
+                                                                 transaction: SDSAnyReadTransaction) -> Bool {
 
         if DebugFlags.forceAttachmentDownloadPendingManualDownload.get() {
             return true
@@ -376,11 +389,10 @@ public class OWSAttachmentDownloads: NSObject {
         // TODO: Should we fulfill() if the attachmentPointer no longer existed?
         job.resolver.fulfill(attachmentStream)
 
-        markJobComplete(job)
+        markJobComplete(job, isAttachmentDownloaded: true)
     }
 
-    private func downloadDidFail(error: Error,
-                                 job: Job) {
+    private func downloadDidFail(error: Error, job: Job) {
         Logger.error("Attachment download failed with error: \(error)")
 
         Self.databaseStorage.write { transaction in
@@ -391,7 +403,7 @@ public class OWSAttachmentDownloads: NSObject {
             }
             switch attachmentPointer.state {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
-                owsFailDebug("Unexepected state: \(attachmentPointer.state)")
+                owsFailDebug("Unexpected state: \(NSStringForTSAttachmentPointerState(attachmentPointer.state))")
             case .enqueued, .downloading:
                 // If the download was cancelled, mark as paused.                
                 if case AttachmentDownloadError.cancelled = error {
@@ -906,6 +918,14 @@ public extension OWSAttachmentDownloads {
                                                                       attachmentStreams: attachmentStreams)
                                  },
                                  failure: failure)
+
+                if touchMessageImmediately {
+                    Self.databaseStorage.asyncWrite { transaction in
+                        Self.databaseStorage.touch(interaction: message,
+                                                   shouldReindex: false,
+                                                   transaction: transaction)
+                    }
+                }
             }
         }
     }
@@ -980,7 +1000,11 @@ public extension OWSAttachmentDownloads {
             success(attachmentStreamsCopy)
         }.catch(on: Self.serialQueue) { error in
             Logger.warn("Attachment downloads failed.")
-            owsFailDebugUnlessNetworkFailure(error)
+            if case AttachmentDownloadError.cancelled = error {
+                // Do nothing.
+            } else {
+                owsFailDebugUnlessNetworkFailure(error)
+            }
 
             failure(error)
         }

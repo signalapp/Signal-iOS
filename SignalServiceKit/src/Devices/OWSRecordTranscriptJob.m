@@ -220,6 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:outgoingMessage.uniqueId
                 attachmentGroup:AttachmentGroupAllAttachmentsIncoming
                 downloadBehavior:AttachmentDownloadBehaviorBypassAll
+                touchMessageImmediately:NO
                 success:^(NSArray *attachmentStreams) {
                     NSString *_Nullable quotedThumbnailPointerId
                         = transcript.quotedMessage.thumbnailAttachmentPointerId;

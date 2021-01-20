@@ -1618,6 +1618,7 @@ typedef enum : NSUInteger {
     [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
         attachmentGroup:AttachmentGroupAllAttachmentsIncoming
         downloadBehavior:AttachmentDownloadBehaviorBypassAll
+        touchMessageImmediately:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
         }

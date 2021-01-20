@@ -534,16 +534,7 @@ public class OWSURLSession: NSObject {
 
 extension OWSURLSession: URLSessionDelegate {
 
-    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        Logger.info("Error: \(String(describing: error))")
-        Logger.flush()
-        Logger.flush()
-    }
-
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-//        Logger.info("Error: \(String(describing: error))")
-//        Logger.flush()
-//        Logger.flush()
         if let error = error {
             Logger.info("Error: \(error)")
             taskDidFail(task, error: error)

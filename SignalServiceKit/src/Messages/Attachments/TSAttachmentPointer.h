@@ -32,6 +32,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStatePendingManualDownload = 4,
 };
 
+NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
+
 #pragma mark -
 
 /**

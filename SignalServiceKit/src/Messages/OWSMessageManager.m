@@ -2267,6 +2267,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
             attachmentGroup:AttachmentGroupAllAttachmentsIncoming
             downloadBehavior:AttachmentDownloadBehaviorDefault
+            touchMessageImmediately:NO
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogDebug(@"Successfully fetched attachments: %lu for message: %@",
                     (unsigned long)attachmentStreams.count,

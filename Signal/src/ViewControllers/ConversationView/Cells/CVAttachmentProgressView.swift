@@ -101,7 +101,7 @@ public class CVAttachmentProgressView: UIView {
         case uploadUnknownProgress
         case downloadProgress(progress: CGFloat)
         case uploadProgress(progress: CGFloat)
-        
+
         var debugDescription: String {
             switch self {
             case .none:
@@ -371,6 +371,7 @@ public class CVAttachmentProgressView: UIView {
 
         guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             Logger.warn("No progress for attachment.")
+            stateView.state = .downloadUnknownProgress
             return
         }
         if progress == CGFloat.nan {
@@ -385,13 +386,16 @@ public class CVAttachmentProgressView: UIView {
     private func processUploadNotification(notification: Notification) {
         guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
             owsFailDebug("Missing notificationAttachmentId.")
+            stateView.state = .uploadUnknownProgress
             return
         }
         guard notificationAttachmentId == attachmentId else {
+            stateView.state = .uploadUnknownProgress
             return
         }
         guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
             owsFailDebug("Missing progress.")
+            stateView.state = .uploadUnknownProgress
             return
         }
 

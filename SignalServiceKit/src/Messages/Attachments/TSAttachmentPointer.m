@@ -10,6 +10,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
+{
+    switch (value) {
+        case TSAttachmentPointerStateEnqueued:
+            return @"Enqueued";
+        case TSAttachmentPointerStateDownloading:
+            return @"Downloading";
+        case TSAttachmentPointerStateFailed:
+            return @"Failed";
+        case TSAttachmentPointerStatePendingMessageRequest:
+            return @"PendingMessageRequest";
+        case TSAttachmentPointerStatePendingManualDownload:
+            return @"PendingManualDownload";
+        default:
+            OWSCFailDebug(@"Invalid value.");
+            return @"Invalid value";
+    }
+}
+
 @interface TSAttachmentStream (TSAttachmentPointer)
 
 - (CGSize)cachedMediaSize;
