@@ -124,7 +124,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         return nil;
     }
     // We should never hit this limit, given the max dimension above.
-    const NSUInteger kMaxLength = 500 * 1000;
+    const NSUInteger kMaxLength = 1024 * 1024 * 4;
     if (data.length > kMaxLength) {
         OWSLogVerbose(@"Group avatar data length: %lu (%@)",
                       (unsigned long)data.length,

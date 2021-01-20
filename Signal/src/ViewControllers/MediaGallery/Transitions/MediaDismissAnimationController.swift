@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 class MediaDismissAnimationController: NSObject {
-    private let galleryItem: MediaGalleryItem
+    private let item: Media
     public let interactionController: MediaInteractiveDismiss?
 
     var transitionView: UIView?
@@ -14,7 +14,12 @@ class MediaDismissAnimationController: NSObject {
     var pendingCompletion: (() -> Promise<Void>)?
 
     init(galleryItem: MediaGalleryItem, interactionController: MediaInteractiveDismiss? = nil) {
-        self.galleryItem = galleryItem
+        self.item = .gallery(galleryItem)
+        self.interactionController = interactionController
+    }
+
+    init(image: UIImage, interactionController: MediaInteractiveDismiss? = nil) {
+        self.item = .image(image)
         self.interactionController = interactionController
     }
 }
@@ -50,7 +55,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             return
         }
 
-        guard let fromMediaContext = fromContextProvider.mediaPresentationContext(galleryItem: galleryItem, in: containerView) else {
+        guard let fromMediaContext = fromContextProvider.mediaPresentationContext(item: item, in: containerView) else {
             owsFailDebug("fromPresentationContext was unexpectedly nil")
             transitionContext.completeTransition(false)
             return
@@ -99,9 +104,9 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             return
         }
 
-        let toMediaContext = toContextProvider.mediaPresentationContext(galleryItem: galleryItem, in: containerView)
+        let toMediaContext = toContextProvider.mediaPresentationContext(item: item, in: containerView)
 
-        guard let presentationImage = galleryItem.attachmentStream.originalImage else {
+        guard let presentationImage = item.image else {
             owsFailDebug("presentationImage was unexpectedly nil")
             // Complete transition immediately.
             fromContextProvider.mediaWillPresent(fromContext: fromMediaContext)
@@ -133,7 +138,6 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             containerView.addSubview(overlayView)
             overlayView.frame = overlayViewFrame
         } else {
-            owsFailDebug("expected overlay while dismissing media view")
             fromTransitionalOverlayView = nil
         }
 

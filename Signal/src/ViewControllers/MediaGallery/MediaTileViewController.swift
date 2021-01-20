@@ -767,9 +767,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 }
 
 extension MediaTileViewController: MediaPresentationContextProvider {
-    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         // First time presentation can occur before layout.
         view.layoutIfNeeded()
+
+        guard case let .gallery(galleryItem) = item else {
+            owsFailDebug("Unexpected media type")
+            return nil
+        }
 
         guard let indexPath = indexPath(galleryItem: galleryItem) else {
             owsFailDebug("galleryItemIndexPath was unexpectedly nil")

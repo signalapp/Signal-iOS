@@ -42,7 +42,7 @@ import SignalMessaging
     //
     // TODO: We could make this a parameter.
     var dstSizePixels: CGSize {
-        return CGSize(square: 210)
+        return CGSize(square: CGFloat(kOWSProfileManager_MaxAvatarDiameter))
     }
     var dstAspectRatio: CGFloat {
         return dstSizePixels.width / dstSizePixels.height
