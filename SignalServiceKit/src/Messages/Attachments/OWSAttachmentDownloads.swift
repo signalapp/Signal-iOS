@@ -422,7 +422,7 @@ public class OWSAttachmentDownloads: NSObject {
 
         job.resolver.reject(error)
 
-        markJobComplete(job)
+        markJobComplete(job, isAttachmentDownloaded: false)
     }
 
     private static func reloadAndTouchLatestVersionOfMessage(_ message: TSMessage,
@@ -710,6 +710,7 @@ public extension OWSAttachmentDownloads {
                 self.enqueueDownloadOfAttachments(forMessageId: message.uniqueId,
                                                   attachmentGroup: .allAttachmentsIncoming,
                                                   downloadBehavior: .default,
+                                                  touchMessageImmediately: false,
                                                   success: { downloadedAttachments in
                                                     unfairLock.withLock {
                                                         attachmentStreams.append(contentsOf: downloadedAttachments)
@@ -887,6 +888,7 @@ public extension OWSAttachmentDownloads {
     func enqueueDownloadOfAttachments(forMessageId messageId: String,
                                       attachmentGroup: AttachmentGroup,
                                       downloadBehavior: AttachmentDownloadBehavior,
+                                      touchMessageImmediately: Bool,
                                       success: @escaping ([TSAttachmentStream]) -> Void,
                                       failure: @escaping (Error) -> Void) {
 
