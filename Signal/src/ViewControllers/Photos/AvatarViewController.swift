@@ -23,6 +23,11 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         return imageView
     }()
 
+    private let closeButton: OWSButton = {
+        let button = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor)
+        return button
+    }()
+
     @objc
     init?(thread: TSThread, readTx: SDSAnyReadTransaction) {
         guard let avatarImage = OWSAvatarBuilder.buildImage(
@@ -53,8 +58,9 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
     override func loadView() {
         let view = UIView()
-        view.backgroundColor = .ows_black
+        view.backgroundColor = Theme.darkThemeBackgroundColor
         view.addSubview(imageView)
+        view.addSubview(closeButton)
 
         let imageRatio = CGFloat(avatarImage.pixelWidth()) / CGFloat(avatarImage.pixelHeight())
 
@@ -69,6 +75,9 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         imageView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
         imageView.autoSetDimension(.height, toSize: avatarSize.height, relation: .lessThanOrEqual)
 
+        closeButton.autoPinTopToSuperviewMargin(withInset: 8)
+        closeButton.autoPinLeadingToSuperviewMargin()
+
         self.view = view
     }
 
@@ -78,6 +87,9 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
         interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
         interactiveDismissal?.addGestureRecognizer(to: view)
+        closeButton.block = { [weak self] in
+            self?.performInteractiveDismissal(animated: true)
+        }
     }
 
     func performInteractiveDismissal(animated: Bool) {
