@@ -406,30 +406,59 @@ NS_ASSUME_NONNULL_BEGIN
             [snippetText append:@" "
                      attributes:@{
                          NSFontAttributeName : self.snippetFont.ows_semibold,
-                         NSForegroundColorAttributeName :
-                             (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
                      }];
         }
-        NSString *displayableText = thread.lastMessageText;
+
+        UIFont *snippetFont = (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont);
+        UIColor *snippetColor = (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
 
         if (thread.draftText.length > 0 && !hasUnreadMessages) {
-            displayableText = thread.draftText;
-
             [snippetText append:NSLocalizedString(
                                     @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
                      attributes:@{
                          NSFontAttributeName : self.snippetFont.ows_italic,
                          NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
                      }];
-        }
-
-        if (displayableText) {
-            [snippetText append:displayableText
+            [snippetText append:thread.draftText
                      attributes:@{
-                         NSFontAttributeName : (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont),
-                         NSForegroundColorAttributeName :
-                             (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
+                         NSFontAttributeName : snippetFont,
+                         NSForegroundColorAttributeName : snippetColor,
                      }];
+        } else {
+            TSInteraction *_Nullable lastMessageForInbox = thread.lastMessageForInbox;
+            NSString *displayableText = thread.lastMessageText.filterStringForDisplay;
+            NSString *_Nullable senderName = nil;
+            if (displayableText.length > 0 && thread.isGroupThread) {
+                if ([lastMessageForInbox isKindOfClass:TSIncomingMessage.class]) {
+                    senderName = @"Sender";
+                } else if ([lastMessageForInbox isKindOfClass:TSOutgoingMessage.class]) {
+                    senderName = NSLocalizedString(@"GROUP_MEMBER_LOCAL_USER", @"Label indicating the local user.");
+                }
+            }
+
+            if (displayableText.length > 0) {
+                if (senderName != nil) {
+                    [snippetText append:senderName
+                             attributes:@{
+                                 NSFontAttributeName : snippetFont,
+                                 NSForegroundColorAttributeName : snippetColor,
+                             }];
+                    [snippetText append:@":"
+                             attributes:@{
+                                 NSFontAttributeName : snippetFont,
+                             }];
+                    [snippetText append:@" "
+                             attributes:@{
+                                 NSFontAttributeName : snippetFont,
+                             }];
+                }
+
+                [snippetText append:displayableText
+                         attributes:@{
+                             NSFontAttributeName : snippetFont,
+                             NSForegroundColorAttributeName : snippetColor,
+                         }];
+            }
         }
     }
 
@@ -563,6 +592,8 @@ NS_ASSUME_NONNULL_BEGIN
         // typing indicator) in a UIStackView proved non-trivial since we're using
         // UIStackViewAlignmentLastBaseline.  Therefore we hide the _contents_ of the
         // snippet label using an empty string.
+        //
+        // Ensure that the snippet is at least two lines so that it is top-aligned.
         self.snippetLabel.text = @"\n\n";
         self.typingIndicatorView.hidden = NO;
         [self.typingIndicatorView startAnimation];
@@ -573,6 +604,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
+        // Ensure that the snippet is at least two lines so that it is top-aligned.
         attributedText = [attributedText stringByAppendingString:@"\n\n" attributes:@{}];
         self.snippetLabel.attributedText = attributedText;
 
