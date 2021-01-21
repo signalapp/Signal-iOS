@@ -50,7 +50,6 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFormat.h>
@@ -965,12 +964,14 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self autoLoadMoreIfNecessary];
-    [self updateV2GroupIfNecessary];
+    if (!SSKDebugFlags.reduceLogChatter) {
+        [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
+        [self updateV2GroupIfNecessary];
+    }
 
     if (!self.viewHasEverAppeared) {
         // To minimize time to initial apearance, we initially disable prefetching, but then
@@ -1021,7 +1022,9 @@ typedef enum : NSUInteger {
     if (!self.viewState.hasTriedToMigrateGroup) {
         self.viewState.hasTriedToMigrateGroup = YES;
 
-        [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+        if (!SSKDebugFlags.reduceLogChatter) {
+            [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+        }
     }
 
     [self viewDidAppearDidComplete];
@@ -1612,9 +1615,10 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+    [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
         attachmentGroup:AttachmentGroupAllAttachmentsIncoming
         downloadBehavior:AttachmentDownloadBehaviorBypassAll
+        touchMessageImmediately:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
         }

@@ -5,7 +5,8 @@
 import Foundation
 import PromiseKit
 
-public extension OWSAttachmentDownloads {
+@objc
+public class OWSAttachmentDownloads: NSObject {
 
     // MARK: - Dependencies
 
@@ -23,6 +24,444 @@ public extension OWSAttachmentDownloads {
 
     private class var reachabilityManager: SSKReachabilityManager {
         SSKEnvironment.shared.reachabilityManager
+    }
+
+    private class var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    // MARK: -
+
+    public typealias AttachmentId = String
+
+    private enum JobType {
+        case messageAttachment(attachmentId: AttachmentId, message: TSMessage)
+        case headlessAttachment(attachmentPointer: TSAttachmentPointer)
+
+        var attachmentId: AttachmentId {
+            switch self {
+            case .messageAttachment(let attachmentId, _):
+                return attachmentId
+            case .headlessAttachment(let attachmentPointer):
+                return attachmentPointer.uniqueId
+            }
+        }
+
+        var message: TSMessage? {
+            switch self {
+            case .messageAttachment(_, let message):
+                return message
+            case .headlessAttachment:
+                return nil
+            }
+        }
+    }
+
+    private struct JobRequest {
+        let jobType: JobType
+        let category: AttachmentCategory
+
+        var attachmentId: AttachmentId { jobType.attachmentId }
+        var message: TSMessage? { jobType.message }
+
+        func loadLatestAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
+            return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
+        }
+    }
+
+    private class Job {
+        let jobRequest: JobRequest
+        var jobType: JobType { jobRequest.jobType }
+        let downloadBehavior: AttachmentDownloadBehavior
+
+        let promise: Promise<TSAttachmentStream>
+        let resolver: Resolver<TSAttachmentStream>
+
+        var progress: CGFloat = 0
+        var attachmentId: AttachmentId { jobType.attachmentId }
+        var message: TSMessage? { jobType.message }
+        var category: AttachmentCategory { jobRequest.category }
+
+        init(jobRequest: JobRequest, downloadBehavior: AttachmentDownloadBehavior) {
+
+            self.jobRequest = jobRequest
+            self.downloadBehavior = downloadBehavior
+
+            let (promise, resolver) = Promise<TSAttachmentStream>.pending()
+            self.promise = promise
+            self.resolver = resolver
+        }
+
+        func loadLatestAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
+            jobRequest.loadLatestAttachment(transaction: transaction)
+        }
+    }
+
+    private static let unfairLock = UnfairLock()
+    // This property should only be accessed with unfairLock.
+    private var activeJobMap = [AttachmentId: Job]()
+    // This property should only be accessed with unfairLock.
+    private var jobQueue = [Job]()
+    // This property should only be accessed with unfairLock.
+    private var completeAttachmentMap = Set<AttachmentId>()
+
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(profileWhitelistDidChange(notification:)),
+                                               name: .profileWhitelistDidChange,
+                                               object: nil)
+    }
+
+    @objc
+    func profileWhitelistDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
+        // If a thread was newly whitelisted, try and start any
+        // downloads that were pending on a message request.
+        Self.databaseStorage.read { transaction in
+            guard let whitelistedThread = ({ () -> TSThread? in
+                if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+                   address.isValid,
+                   Self.profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
+                    return TSContactThread.getWithContactAddress(address, transaction: transaction)
+                }
+                if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,
+                   Self.profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction) {
+                    return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                }
+                return nil
+            }()) else {
+                return
+            }
+            self.enqueueDownloadOfAllAttachments(forThread: whitelistedThread,
+                                                 transaction: transaction)
+        }
+    }
+
+    // MARK: -
+
+    public func downloadProgress(forAttachmentId attachmentId: AttachmentId) -> CGFloat? {
+        Self.unfairLock.withLock {
+            if let job = activeJobMap[attachmentId] {
+                return job.progress
+            }
+            if completeAttachmentMap.contains(attachmentId) {
+                return 1.0
+            }
+            return nil
+        }
+    }
+
+    // MARK: -
+
+    private func enqueueJob(job: Job) {
+        Self.unfairLock.withLock {
+            jobQueue.append(job)
+        }
+
+        tryToStartNextDownload()
+    }
+
+    private func dequeueNextJob() -> Job? {
+        Self.unfairLock.withLock {
+            let kMaxSimultaneousDownloads = 4
+            guard activeJobMap.count < kMaxSimultaneousDownloads else {
+                return nil
+            }
+            guard let job = jobQueue.first else {
+                return nil
+            }
+            jobQueue.remove(at: 0)
+            guard activeJobMap[job.attachmentId] == nil else {
+                // Ensure we only have one download in flight at a time for a given attachment.
+                Logger.warn("Ignoring duplicate download.")
+                return nil
+            }
+            activeJobMap[job.attachmentId] = job
+            return job
+        }
+    }
+
+    private func markJobComplete(_ job: Job, isAttachmentDownloaded: Bool) {
+        Self.unfairLock.withLock {
+            let attachmentId = job.attachmentId
+
+            owsAssertDebug(activeJobMap[attachmentId] != nil)
+            activeJobMap[attachmentId] = nil
+
+            cancellationRequestMap[attachmentId] = nil
+
+            if isAttachmentDownloaded {
+                owsAssertDebug(!completeAttachmentMap.contains(attachmentId))
+                completeAttachmentMap.insert(attachmentId)
+            }
+        }
+        tryToStartNextDownload()
+    }
+
+    private func tryToStartNextDownload() {
+        Self.serialQueue.async {
+            guard let job = self.dequeueNextJob() else {
+                return
+            }
+
+            guard let attachmentPointer = self.prepareDownload(job: job) else {
+                // Abort.
+                self.markJobComplete(job, isAttachmentDownloaded: false)
+                return
+            }
+
+            firstly { () -> Promise<TSAttachmentStream> in
+                self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
+            }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
+                self.downloadDidSucceed(attachmentStream: attachmentStream, job: job)
+            }.catch(on: Self.serialQueue) { (error: Error) in
+                self.downloadDidFail(error: error, job: job)
+            }
+        }
+    }
+
+    private func prepareDownload(job: Job) -> TSAttachmentPointer? {
+        Self.databaseStorage.write { transaction in
+            // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
+            guard let attachment = job.loadLatestAttachment(transaction: transaction) else {
+                // This isn't necessarily a bug.  For example:
+                //
+                // * Receive an incoming message with an attachment.
+                // * Kick off download of that attachment.
+                // * Receive read receipt for that message, causing it to be disappeared immediately.
+                // * Try to download that attachment - but it's missing.
+                Logger.warn("Missing attachment.")
+                return nil
+            }
+            guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+                // This isn't necessarily a bug.
+                //
+                // * An attachment may have been re-enqueued for download while it was already being downloaded.
+                owsFailDebug("Attachment already downloaded.")
+
+                Self.unfairLock.withLock {
+                    owsAssertDebug(!self.completeAttachmentMap.contains(job.attachmentId))
+                    self.completeAttachmentMap.insert(job.attachmentId)
+                }
+
+                return nil
+            }
+
+            switch job.jobType {
+            case .messageAttachment(_, let message):
+                if DebugFlags.forceAttachmentDownloadFailures.get() {
+                    Logger.info("Skipping media download for thread with pending message request.")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .failed,
+                                                                   transaction: transaction)
+                    return nil
+                }
+
+                if self.isDownloadBlockedByPendingMessageRequest(job: job,
+                                                            attachmentPointer: attachmentPointer,
+                                                            message: message,
+                                                            transaction: transaction) {
+                    Logger.info("Skipping media download for thread with pending message request.")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .pendingMessageRequest,
+                                                                   transaction: transaction)
+                    return nil
+                }
+                if self.isDownloadBlockedByAutoDownloadSettingsSettings(job: job,
+                                                                   attachmentPointer: attachmentPointer,
+                                                                   transaction: transaction) {
+                    Logger.info("Skipping media download for thread due to auto-download settings.")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .pendingManualDownload,
+                                                                   transaction: transaction)
+                    return nil
+                }
+            case .headlessAttachment:
+                // We don't need to apply attachment download settings
+                // to headless attachments.
+                break
+            }
+
+            attachmentPointer.updateAttachmentPointerState(.downloading, transaction: transaction)
+
+            if let message = job.message {
+                Self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            }
+            return attachmentPointer
+        }
+    }
+
+    private func isDownloadBlockedByPendingMessageRequest(job: Job,
+                                                          attachmentPointer: TSAttachmentPointer,
+                                                          message: TSMessage,
+                                                          transaction: SDSAnyReadTransaction) -> Bool {
+
+        if DebugFlags.forceAttachmentDownloadPendingMessageRequest.get() {
+            return true
+        }
+
+        let hasPendingMessageRequest: Bool = {
+            guard !job.downloadBehavior.bypassPendingMessageRequest,
+                  !message.isOutgoing else {
+                return false
+            }
+            let thread = message.thread(transaction: transaction)
+            // If the message that created this attachment was the first message in the
+            // thread, the thread may not yet be marked visible. In that case, just check
+            // if the thread is whitelisted. We know we just received a message.
+            if !thread.shouldThreadBeVisible {
+                return !Self.profileManager.isThread(inProfileWhitelist: thread,
+                                                     transaction: transaction)
+            } else {
+                return GRDBThreadFinder.hasPendingMessageRequest(thread: thread,
+                                                                 transaction: transaction.unwrapGrdbRead)
+            }
+        }()
+
+        guard attachmentPointer.isVisualMedia,
+              hasPendingMessageRequest,
+              message.messageSticker == nil,
+              !message.isViewOnceMessage else {
+            return false
+        }
+        return true
+    }
+
+    private func isDownloadBlockedByAutoDownloadSettingsSettings(job: Job,
+                                                                 attachmentPointer: TSAttachmentPointer,
+                                                                 transaction: SDSAnyReadTransaction) -> Bool {
+
+        if DebugFlags.forceAttachmentDownloadPendingManualDownload.get() {
+            return true
+        }
+
+        guard !job.downloadBehavior.bypassPendingManualDownload else {
+            return false
+        }
+
+        let autoDownloadableMediaTypes = Self.autoDownloadableMediaTypes(transaction: transaction)
+
+        switch job.category {
+        case .bodyMediaImage:
+            return !autoDownloadableMediaTypes.contains(.photo)
+        case .bodyMediaVideo:
+            return !autoDownloadableMediaTypes.contains(.video)
+        case .bodyAudioVoiceMemo:
+            return false
+        case .bodyAudioOther:
+            return !autoDownloadableMediaTypes.contains(.audio)
+        case .bodyFile:
+            return !autoDownloadableMediaTypes.contains(.document)
+        case .stickerSmall:
+            return false
+        case .stickerLarge:
+            return autoDownloadableMediaTypes.contains(.photo)
+        case .quotedReplyThumbnail, .linkedPreviewThumbnail, .contactShareAvatar:
+            return false
+        case .other:
+            return false
+        }
+    }
+
+    private func downloadDidSucceed(attachmentStream: TSAttachmentStream,
+                                    job: Job) {
+        Logger.verbose("Attachment download succeeded.")
+
+        Self.databaseStorage.write { transaction in
+            guard let attachmentPointer = job.loadLatestAttachment(transaction: transaction) as? TSAttachmentPointer else {
+                Logger.warn("Attachment pointer no longer exists.")
+                return
+            }
+            attachmentPointer.anyRemove(transaction: transaction)
+            attachmentStream.anyInsert(transaction: transaction)
+
+            if let message = job.message {
+                Self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            }
+        }
+
+        // TODO: Should we fulfill() if the attachmentPointer no longer existed?
+        job.resolver.fulfill(attachmentStream)
+
+        markJobComplete(job, isAttachmentDownloaded: true)
+    }
+
+    private func downloadDidFail(error: Error, job: Job) {
+        Logger.error("Attachment download failed with error: \(error)")
+
+        Self.databaseStorage.write { transaction in
+            // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
+            guard let attachmentPointer = job.loadLatestAttachment(transaction: transaction) as? TSAttachmentPointer else {
+                Logger.warn("Attachment pointer no longer exists.")
+                return
+            }
+            switch attachmentPointer.state {
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                owsFailDebug("Unexpected state: \(NSStringForTSAttachmentPointerState(attachmentPointer.state))")
+            case .enqueued, .downloading:
+                // If the download was cancelled, mark as paused.                
+                if case AttachmentDownloadError.cancelled = error {
+                    attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)
+                } else {
+                    attachmentPointer.updateAttachmentPointerState(.failed, transaction: transaction)
+                }
+            @unknown default:
+                owsFailDebug("Invalid value.")
+            }
+
+            if let message = job.message {
+                Self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            }
+        }
+
+        job.resolver.reject(error)
+
+        markJobComplete(job, isAttachmentDownloaded: false)
+    }
+
+    private static func reloadAndTouchLatestVersionOfMessage(_ message: TSMessage,
+                                                             transaction: SDSAnyWriteTransaction) {
+        let messageToNotify: TSMessage
+        if message.sortId > 0 {
+            messageToNotify = message
+        } else {
+            // Ensure relevant sortId is loaded for touch to succeed.
+            guard let latestMessage = TSMessage.anyFetchMessage(uniqueId: message.uniqueId, transaction: transaction) else {
+                // This could be valid but should be very rare.
+                owsFailDebug("Message has been deleted.")
+                return
+            }
+            messageToNotify = latestMessage
+        }
+        // We need to re-index as we may have just downloaded an attachment
+        // that affects index content (e.g. oversize text attachment).
+        Self.databaseStorage.touch(interaction: messageToNotify, shouldReindex: true, transaction: transaction)
+    }
+
+    // MARK: - Cancellation
+
+    // This property should only be accessed with unfairLock.
+    private var cancellationRequestMap = [String: Date]()
+
+    public func cancelDownload(attachmentId: AttachmentId) {
+        Self.unfairLock.withLock {
+            cancellationRequestMap[attachmentId] = Date()
+        }
+    }
+
+    private func shouldCancelJob(downloadState: DownloadState) -> Bool {
+        Self.unfairLock.withLock {
+            guard let cancellationDate = cancellationRequestMap[downloadState.job.attachmentId] else {
+                return false
+            }
+            return cancellationDate > downloadState.startDate
+        }
     }
 }
 
@@ -161,7 +600,7 @@ public extension OWSAttachmentDownloads {
         return result
     }
 
-    static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
+    private static func autoDownloadableMediaTypes(transaction: SDSAnyReadTransaction) -> Set<MediaDownloadType> {
         let preferenceMap = loadMediaBandwidthPreferences(transaction: transaction)
         let hasWifiConnection = reachabilityManager.isReachable(via: .wifi)
         var result = Set<MediaDownloadType>()
@@ -185,15 +624,11 @@ public extension OWSAttachmentDownloads {
 
 public extension OWSAttachmentDownloads {
 
-    func downloadPromise(attachmentPointer: TSAttachmentPointer,
-                         category: AttachmentCategory,
-                         downloadBehavior: AttachmentDownloadBehavior) -> Promise<TSAttachmentStream> {
+    func enqueueHeadlessDownloadPromise(attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
         return Promise { resolver in
-            self.download(attachmentPointer: attachmentPointer,
-                          category: category,
-                          downloadBehavior: downloadBehavior,
-                          success: resolver.fulfill,
-                          failure: resolver.reject)
+            self.enqueueHeadlessDownload(attachmentPointer: attachmentPointer,
+                                         success: resolver.fulfill,
+                                         failure: resolver.reject)
         }.map { attachments in
             assert(attachments.count == 1)
             guard let attachment = attachments.first else {
@@ -203,41 +638,43 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    @objc(downloadAttachmentPointer:category:downloadBehavior:success:failure:)
-    func download(attachmentPointer: TSAttachmentPointer,
-                  category: AttachmentCategory,
-                  downloadBehavior: AttachmentDownloadBehavior,
-                  success: @escaping ([TSAttachmentStream]) -> Void,
-                  failure: @escaping (Error) -> Void) {
-        download(attachmentPointer: attachmentPointer,
-                 nullableMessage: nil,
-                 category: category,
-                 downloadBehavior: downloadBehavior,
-                 success: success,
-                 failure: failure)
+    @objc(enqueueHeadlessDownloadWithAttachmentPointer:success:failure:)
+    func enqueueHeadlessDownload(attachmentPointer: TSAttachmentPointer,
+                                 success: @escaping ([TSAttachmentStream]) -> Void,
+                                 failure: @escaping (Error) -> Void) {
+
+        // Headless downloads are always .other
+        let category: AttachmentCategory = .other
+        // Headless downloads always bypass.
+        let downloadBehavior: AttachmentDownloadBehavior = .bypassAll
+        let jobType: JobType = .headlessAttachment(attachmentPointer: attachmentPointer)
+        let jobRequest = JobRequest(jobType: jobType, category: category)
+        enqueueDownload(jobRequest: jobRequest,
+                        downloadBehavior: downloadBehavior,
+                        success: success,
+                        failure: failure)
     }
 
-    @objc(downloadAttachmentPointer:message:category:downloadBehavior:success:failure:)
-    func download(attachmentPointer: TSAttachmentPointer,
-                  message: TSMessage,
-                  category: AttachmentCategory,
-                  downloadBehavior: AttachmentDownloadBehavior,
-                  success: @escaping ([TSAttachmentStream]) -> Void,
-                  failure: @escaping (Error) -> Void) {
-        download(attachmentPointer: attachmentPointer,
-                 nullableMessage: message,
-                 category: category,
-                 downloadBehavior: downloadBehavior,
-                 success: success,
-                 failure: failure)
+    @objc(enqueueMessageDownloadWithAttachmentPointer:message:category:downloadBehavior:success:failure:)
+    func enqueueMessageDownload(attachmentPointer: TSAttachmentPointer,
+                                message: TSMessage,
+                                category: AttachmentCategory,
+                                downloadBehavior: AttachmentDownloadBehavior,
+                                success: @escaping ([TSAttachmentStream]) -> Void,
+                                failure: @escaping (Error) -> Void) {
+        let jobType: JobType = .messageAttachment(attachmentId: attachmentPointer.uniqueId,
+                                                  message: message)
+        let jobRequest = JobRequest(jobType: jobType, category: category)
+        enqueueDownload(jobRequest: jobRequest,
+                        downloadBehavior: downloadBehavior,
+                        success: success,
+                        failure: failure)
     }
 
-    private func download(attachmentPointer: TSAttachmentPointer,
-                          nullableMessage message: TSMessage?,
-                          category: AttachmentCategory,
-                          downloadBehavior: AttachmentDownloadBehavior,
-                          success: @escaping ([TSAttachmentStream]) -> Void,
-                          failure: @escaping (Error) -> Void) {
+    private func enqueueDownload(jobRequest: JobRequest,
+                                 downloadBehavior: AttachmentDownloadBehavior,
+                                 success: @escaping ([TSAttachmentStream]) -> Void,
+                                 failure: @escaping (Error) -> Void) {
 
         guard !CurrentAppContext().isRunningTests else {
             Self.serialQueue.async {
@@ -246,18 +683,20 @@ public extension OWSAttachmentDownloads {
             return
         }
 
-        let attachmentReference = AttachmentReference.attachmentPointer(attachmentPointer: attachmentPointer,
-                                                                        category: category)
-        enqueueJobs(forAttachmentReferences: [attachmentReference],
-                    message: message,
-                    downloadBehavior: downloadBehavior,
-                    success: success,
-                    failure: failure)
+        Self.serialQueue.async {
+            Self.databaseStorage.read { transaction in
+                self.enqueueJobs(jobRequests: [jobRequest],
+                                 downloadBehavior: downloadBehavior,
+                                 transaction: transaction,
+                                 success: success,
+                                 failure: failure)
+            }
+        }
     }
 
     @objc
-    func downloadAllAttachments(forThread thread: TSThread,
-                                transaction: SDSAnyReadTransaction) {
+    func enqueueDownloadOfAllAttachments(forThread thread: TSThread,
+                                         transaction: SDSAnyReadTransaction) {
 
         var promises = [Promise<Void>]()
         let unfairLock = UnfairLock()
@@ -268,18 +707,19 @@ public extension OWSAttachmentDownloads {
             try finder.enumerateMessagesWithAttachments(transaction: transaction.unwrapGrdbRead) { (message, _) in
                 let (promise, resolver) = Promise<Void>.pending()
                 promises.append(promise)
-                self.downloadAttachments(forMessageId: message.uniqueId,
-                                         attachmentGroup: .allAttachmentsIncoming,
-                                         downloadBehavior: .default,
-                                         success: { downloadedAttachments in
-                                            unfairLock.withLock {
-                                                attachmentStreams.append(contentsOf: downloadedAttachments)
-                                            }
-                                            resolver.fulfill(())
-                                         },
-                                         failure: { error in
-                                            resolver.reject(error)
-                                         })
+                self.enqueueDownloadOfAttachments(forMessageId: message.uniqueId,
+                                                  attachmentGroup: .allAttachmentsIncoming,
+                                                  downloadBehavior: .default,
+                                                  touchMessageImmediately: false,
+                                                  success: { downloadedAttachments in
+                                                    unfairLock.withLock {
+                                                        attachmentStreams.append(contentsOf: downloadedAttachments)
+                                                    }
+                                                    resolver.fulfill(())
+                                                  },
+                                                  failure: { error in
+                                                    resolver.reject(error)
+                                                  })
             }
 
             guard !promises.isEmpty else {
@@ -287,7 +727,7 @@ public extension OWSAttachmentDownloads {
             }
 
             // Block until _all_ promises have either succeeded or failed.
-            _ = firstly(on: .global()) {
+            _ = firstly(on: Self.serialQueue) {
                 when(fulfilled: promises)
             }.done(on: Self.serialQueue) { _ in
                 let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
@@ -343,28 +783,14 @@ public extension OWSAttachmentDownloads {
         case other
     }
 
-    private enum AttachmentReference {
-        case attachmentStream(attachmentStream: TSAttachmentStream, category: AttachmentCategory)
-        case attachmentPointer(attachmentPointer: TSAttachmentPointer, category: AttachmentCategory)
+    private class func buildJobRequests(forMessage message: TSMessage,
+                                        attachmentGroup: AttachmentGroup,
+                                        transaction: SDSAnyReadTransaction) -> [JobRequest] {
 
-        var category: AttachmentCategory {
-            switch self {
-            case .attachmentPointer(_, let category):
-                return category
-            case .attachmentStream(_, let category):
-                return category
-            }
-        }
-    }
+        var jobRequests = [JobRequest]()
+        var attachmentIds = Set<AttachmentId>()
 
-    private class func loadAttachmentReferences(forMessage message: TSMessage,
-                                                attachmentGroup: AttachmentGroup,
-                                                transaction: SDSAnyReadTransaction) -> [AttachmentReference] {
-
-        var references = [AttachmentReference]()
-        var attachmentIds = Set<String>()
-
-        func addReference(attachment: TSAttachment, category: AttachmentCategory) {
+        func addJobRequest(attachment: TSAttachment, category: AttachmentCategory) {
 
             if let attachmentPointer = attachment as? TSAttachmentPointer {
                 if attachmentPointer.pointerType == .restoring {
@@ -384,23 +810,17 @@ public extension OWSAttachmentDownloads {
                 return
             }
             attachmentIds.insert(attachmentId)
-
-            if let attachmentStream = attachment as? TSAttachmentStream {
-                references.append(.attachmentStream(attachmentStream: attachmentStream, category: category))
-            } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-                references.append(.attachmentPointer(attachmentPointer: attachmentPointer, category: category))
-            } else {
-                owsFailDebug("Invalid attachment: \(type(of: attachment))")
-            }
+            let jobType = JobType.messageAttachment(attachmentId: attachmentId, message: message)
+            jobRequests.append(JobRequest(jobType: jobType, category: category))
         }
 
-        func addReference(attachmentId: String, category: AttachmentCategory) {
+        func addJobRequest(attachmentId: AttachmentId, category: AttachmentCategory) {
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
                                                          transaction: transaction) else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
                 return
             }
-            addReference(attachment: attachment, category: category)
+            addJobRequest(attachment: attachment, category: category)
         }
 
         for attachmentId in message.attachmentIds {
@@ -422,28 +842,28 @@ public extension OWSAttachmentDownloads {
                     return .bodyFile
                 }
             }()
-            addReference(attachment: attachment, category: category)
+            addJobRequest(attachment: attachment, category: category)
         }
 
         guard !attachmentGroup.justBodyAttachments else {
-            return references
+            return jobRequests
         }
 
         if let quotedMessage = message.quotedMessage {
             for attachmentId in quotedMessage.thumbnailAttachmentStreamIds() {
-                addReference(attachmentId: attachmentId, category: .quotedReplyThumbnail)
+                addJobRequest(attachmentId: attachmentId, category: .quotedReplyThumbnail)
             }
             if let attachmentId = quotedMessage.thumbnailAttachmentPointerId() {
-                addReference(attachmentId: attachmentId, category: .quotedReplyThumbnail)
+                addJobRequest(attachmentId: attachmentId, category: .quotedReplyThumbnail)
             }
         }
 
         if let attachmentId = message.contactShare?.avatarAttachmentId {
-            addReference(attachmentId: attachmentId, category: .contactShareAvatar)
+            addJobRequest(attachmentId: attachmentId, category: .contactShareAvatar)
         }
 
         if let attachmentId = message.linkPreview?.imageAttachmentId {
-            addReference(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
+            addJobRequest(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
         }
 
         if let attachmentId = message.messageSticker?.attachmentId {
@@ -452,25 +872,25 @@ public extension OWSAttachmentDownloads {
                 owsAssertDebug(attachment.byteCount > 0)
                 let autoDownloadSizeThreshold: UInt32 = 100 * 1024
                 if attachment.byteCount > autoDownloadSizeThreshold {
-                    addReference(attachmentId: attachmentId, category: .stickerLarge)
+                    addJobRequest(attachmentId: attachmentId, category: .stickerLarge)
                 } else {
-                    addReference(attachmentId: attachmentId, category: .stickerSmall)
+                    addJobRequest(attachmentId: attachmentId, category: .stickerSmall)
                 }
             } else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
             }
         }
 
-        return references
+        return jobRequests
     }
 
-    // TODO: This replaces downloadAttachmentsForMessage().
     @objc
-    func downloadAttachments(forMessageId messageId: String,
-                             attachmentGroup: AttachmentGroup,
-                             downloadBehavior: AttachmentDownloadBehavior,
-                             success: @escaping ([TSAttachmentStream]) -> Void,
-                             failure: @escaping (Error) -> Void) {
+    func enqueueDownloadOfAttachments(forMessageId messageId: String,
+                                      attachmentGroup: AttachmentGroup,
+                                      downloadBehavior: AttachmentDownloadBehavior,
+                                      touchMessageImmediately: Bool,
+                                      success: @escaping ([TSAttachmentStream]) -> Void,
+                                      failure: @escaping (Error) -> Void) {
 
         Self.serialQueue.async {
             guard !CurrentAppContext().isRunningTests else {
@@ -482,38 +902,44 @@ public extension OWSAttachmentDownloads {
                     failure(Self.buildError())
                     return
                 }
-                let attachmentReferences = Self.loadAttachmentReferences(forMessage: message,
-                                                                         attachmentGroup: attachmentGroup,
-                                                                         transaction: transaction)
-                guard !attachmentReferences.isEmpty else {
+                let jobRequests = Self.buildJobRequests(forMessage: message,
+                                                        attachmentGroup: attachmentGroup,
+                                                        transaction: transaction)
+                guard !jobRequests.isEmpty else {
                     success([])
                     return
                 }
-                Self.serialQueue.async {
-                    self.enqueueJobs(forAttachmentReferences: attachmentReferences,
-                                     message: message,
-                                     downloadBehavior: downloadBehavior,
-                                     success: { attachmentStreams in
-                                        success(attachmentStreams)
+                self.enqueueJobs(jobRequests: jobRequests,
+                                 downloadBehavior: downloadBehavior,
+                                 transaction: transaction,
+                                 success: { attachmentStreams in
+                                    success(attachmentStreams)
 
-                                        Self.updateQuotedMessageThumbnail(messageId: messageId,
-                                                                          attachmentReferences: attachmentReferences,
-                                                                          attachmentStreams: attachmentStreams)
-                                     },
-                                     failure: failure)
+                                    Self.updateQuotedMessageThumbnail(messageId: messageId,
+                                                                      jobRequests: jobRequests,
+                                                                      attachmentStreams: attachmentStreams)
+                                 },
+                                 failure: failure)
+
+                if touchMessageImmediately {
+                    Self.databaseStorage.asyncWrite { transaction in
+                        Self.databaseStorage.touch(interaction: message,
+                                                   shouldReindex: false,
+                                                   transaction: transaction)
+                    }
                 }
             }
         }
     }
 
     private class func updateQuotedMessageThumbnail(messageId: String,
-                                                    attachmentReferences: [AttachmentReference],
+                                                    jobRequests: [JobRequest],
                                                     attachmentStreams: [TSAttachmentStream]) {
         guard !attachmentStreams.isEmpty else {
             // Don't bothe
             return
         }
-        let quotedMessageThumbnailDownloads = attachmentReferences.filter { $0.category == .quotedReplyThumbnail }
+        let quotedMessageThumbnailDownloads = jobRequests.filter { $0.category == .quotedReplyThumbnail }
         guard !quotedMessageThumbnailDownloads.isEmpty else {
             return
         }
@@ -533,160 +959,56 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private func enqueueJobs(forAttachmentReferences attachmentReferences: [AttachmentReference],
-                             message: TSMessage?,
+    private func enqueueJobs(jobRequests: [JobRequest],
                              downloadBehavior: AttachmentDownloadBehavior,
+                             transaction: SDSAnyReadTransaction,
                              success: @escaping ([TSAttachmentStream]) -> Void,
                              failure: @escaping (Error) -> Void) {
 
-        Self.serialQueue.async {
-            var hasPendingMessageRequest: Bool = false
-            var autoDownloadableMediaTypes = Set<MediaDownloadType>()
-            Self.databaseStorage.read { transaction in
-                hasPendingMessageRequest = {
-                    guard !downloadBehavior.bypassPendingMessageRequest,
-                          let message = message,
-                          !message.isOutgoing else {
-                        return false
-                    }
-                    let thread = message.thread(transaction: transaction)
-                    // If the message that created this attachment was the first message in the
-                    // thread, the thread may not yet be marked visible. In that case, just check
-                    // if the thread is whitelisted. We know we just received a message.
-                    if !thread.shouldThreadBeVisible {
-                        return !Self.profileManager.isThread(inProfileWhitelist: thread,
-                                                             transaction: transaction)
-                    } else {
-                        return GRDBThreadFinder.hasPendingMessageRequest(thread: thread,
-                                                                         transaction: transaction.unwrapGrdbRead)
-                    }
-                }()
-                autoDownloadableMediaTypes = Self.autoDownloadableMediaTypes(transaction: transaction)
+        let unfairLock = UnfairLock()
+        var attachmentStreams = [TSAttachmentStream]()
+        var promises = [Promise<Void>]()
+        for jobRequest in jobRequests {
+            if let attachmentStream = jobRequest.loadLatestAttachment(transaction: transaction) as? TSAttachmentStream {
+                unfairLock.withLock {
+                    attachmentStreams.append(attachmentStream)
+                }
+                continue
             }
-
-            func isDownloadBlockedByPendingMessageRequest(_ attachmentPointer: TSAttachmentPointer) -> Bool {
-
-                if DebugFlags.forceAttachmentDownloadPendingMessageRequest.get() {
-                    return true
-                }
-
-                guard attachmentPointer.isVisualMedia,
-                      hasPendingMessageRequest,
-                      let message = message,
-                      message.messageSticker == nil,
-                      !message.isViewOnceMessage else {
-                    return false
-                }
-                return true
-            }
-
-            func isDownloadBlockedByAutoDownloadSettingsSettings(_ attachmentPointer: TSAttachmentPointer,
-                                                                 category: AttachmentCategory) -> Bool {
-
-                if DebugFlags.forceAttachmentDownloadPendingManualDownload.get() {
-                    return true
-                }
-
-                guard !downloadBehavior.bypassPendingManualDownload else {
-                    return false
-                }
-                switch category {
-                case .bodyMediaImage:
-                    return !autoDownloadableMediaTypes.contains(.photo)
-                case .bodyMediaVideo:
-                    return !autoDownloadableMediaTypes.contains(.video)
-                case .bodyAudioVoiceMemo:
-                    return false
-                case .bodyAudioOther:
-                    return !autoDownloadableMediaTypes.contains(.audio)
-                case .bodyFile:
-                    return !autoDownloadableMediaTypes.contains(.document)
-                case .stickerSmall:
-                    return false
-                case .stickerLarge:
-                    return autoDownloadableMediaTypes.contains(.photo)
-                case .quotedReplyThumbnail, .linkedPreviewThumbnail, .contactShareAvatar:
-                    return false
-                case .other:
-                    return false
+            let job = Job(jobRequest: jobRequest, downloadBehavior: downloadBehavior)
+            self.enqueueJob(job: job)
+            let promise = firstly {
+                job.promise
+            }.map(on: Self.serialQueue) { attachmentStream in
+                unfairLock.withLock {
+                    attachmentStreams.append(attachmentStream)
                 }
             }
+            promises.append(promise)
+        }
 
-            let unfairLock = UnfairLock()
-            var promises = [Promise<Void>]()
-            var attachmentStreams = [TSAttachmentStream]()
-            for attachmentReference in attachmentReferences {
-                switch attachmentReference {
-                case .attachmentStream(let attachmentStream, _):
-                    unfairLock.withLock {
-                        attachmentStreams.append(attachmentStream)
-                    }
-                case .attachmentPointer(let attachmentPointer, let category):
+        guard !promises.isEmpty else {
+            success(attachmentStreams)
+            return
+        }
 
-                    if DebugFlags.forceAttachmentDownloadFailures.get() {
-                        Logger.info("Skipping media download for thread with pending message request.")
-                        Self.databaseStorage.write { transaction in
-                            attachmentPointer.updateAttachmentPointerState(from: .enqueued,
-                                                                           to: .failed,
-                                                                           transaction: transaction)
-                        }
-                        continue
-                    }
+        // Block until _all_ promises have either succeeded or failed.
+        _ = firstly(on: Self.serialQueue) {
+            when(fulfilled: promises)
+        }.done(on: Self.serialQueue) { _ in
+            let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
+            Logger.info("Attachment downloads succeeded: \(attachmentStreamsCopy.count).")
 
-                    if isDownloadBlockedByPendingMessageRequest(attachmentPointer) {
-                        Logger.info("Skipping media download for thread with pending message request.")
-                        Self.databaseStorage.write { transaction in
-                            attachmentPointer.updateAttachmentPointerState(from: .enqueued,
-                                                                           to: .pendingMessageRequest,
-                                                                           transaction: transaction)
-                        }
-                        continue
-                    }
-                    if isDownloadBlockedByAutoDownloadSettingsSettings(attachmentPointer, category: category) {
-                        Logger.info("Skipping media download for thread due to auto-download settings.")
-                        Self.databaseStorage.write { transaction in
-                            attachmentPointer.updateAttachmentPointerState(from: .enqueued,
-                                                                           to: .pendingManualDownload,
-                                                                           transaction: transaction)
-                        }
-                        continue
-                    }
-
-                    let (promise, resolver) = Promise<Void>.pending()
-                    promises.append(promise)
-                    self.enqueueJob(forAttachmentId: attachmentPointer.uniqueId,
-                                    message: message,
-                                    success: { attachmentStream in
-                                        unfairLock.withLock {
-                                            attachmentStreams.append(attachmentStream)
-                                        }
-                                        resolver.fulfill(())
-                                    },
-                                    failure: { error in
-                                        resolver.reject(error)
-                                    })
-                }
-            }
-
-            guard !promises.isEmpty else {
-                success(attachmentStreams)
-                return
-            }
-
-            // Block until _all_ promises have either succeeded or failed.
-            _ = firstly(on: .global()) {
-                when(fulfilled: promises)
-            }.done(on: Self.serialQueue) { _ in
-                let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
-                Logger.info("Attachment downloads succeeded: \(attachmentStreamsCopy.count).")
-
-                success(attachmentStreamsCopy)
-            }.catch(on: Self.serialQueue) { error in
-                Logger.warn("Attachment downloads failed.")
+            success(attachmentStreamsCopy)
+        }.catch(on: Self.serialQueue) { error in
+            Logger.warn("Attachment downloads failed.")
+            if case AttachmentDownloadError.cancelled = error {
+                // Do nothing.
+            } else {
                 owsFailDebugUnlessNetworkFailure(error)
-
-                failure(error)
             }
+
+            failure(error)
         }
     }
 
@@ -709,27 +1031,13 @@ public extension OWSAttachmentDownloads {
     // We want to avoid large downloads from a compromised or buggy service.
     private static let maxDownloadSize = 150 * 1024 * 1024
 
-    @objc
-    func retrieveAttachment(job: OWSAttachmentDownloadJob,
-                            attachmentPointer: TSAttachmentPointer,
-                            success: @escaping (TSAttachmentStream) -> Void,
-                            failure: @escaping (Error) -> Void) {
-        firstly {
-            Self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
-        }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
-            success(attachmentStream)
-        }.catch(on: Self.serialQueue) { (error: Error) in
-            failure(error)
-        }
-    }
-
-    private class func retrieveAttachment(job: OWSAttachmentDownloadJob,
-                                          attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
+    private func retrieveAttachment(job: Job,
+                                    attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "retrieveAttachment")
 
         return firstly(on: Self.serialQueue) { () -> Promise<URL> in
-            Self.download(job: job, attachmentPointer: attachmentPointer)
+            self.download(job: job, attachmentPointer: attachmentPointer)
         }.then(on: Self.serialQueue) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
             Self.decrypt(encryptedFileUrl: encryptedFileUrl,
                          attachmentPointer: attachmentPointer)
@@ -743,43 +1051,44 @@ public extension OWSAttachmentDownloads {
     }
 
     private class DownloadState {
-        let job: OWSAttachmentDownloadJob
+        let job: Job
         let attachmentPointer: TSAttachmentPointer
+        let startDate = Date()
 
-        required init(job: OWSAttachmentDownloadJob, attachmentPointer: TSAttachmentPointer) {
+        required init(job: Job, attachmentPointer: TSAttachmentPointer) {
             self.job = job
             self.attachmentPointer = attachmentPointer
         }
     }
 
-    func test() {}
-
-    private class func download(job: OWSAttachmentDownloadJob,
-                                attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
+    private func download(job: Job, attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
 
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
         return firstly(on: Self.serialQueue) { () -> Promise<URL> in
-            Self.downloadAttempt(downloadState: downloadState)
+            self.downloadAttempt(downloadState: downloadState)
         }
     }
 
-    private class func downloadAttempt(downloadState: DownloadState,
-                                       resumeData: Data? = nil,
-                                       attemptIndex: UInt = 0) -> Promise<URL> {
+    private func downloadAttempt(downloadState: DownloadState,
+                                 resumeData: Data? = nil,
+                                 attemptIndex: UInt = 0) -> Promise<URL> {
 
-        return firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
+        let (promise, resolver) = Promise<URL>.pending()
+
+        firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
-            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
+            let urlSession = Self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
             let urlPath = try Self.urlPath(for: downloadState)
             let headers: [String: String] = [
                 "Content-Type": OWSMimeTypeApplicationOctetStream
             ]
 
             let progress = { (task: URLSessionTask, progress: Progress) in
-                Self.handleDownloadProgress(downloadState: downloadState,
+                self.handleDownloadProgress(downloadState: downloadState,
                                             task: task,
-                                            progress: progress)
+                                            progress: progress,
+                                            resolver: resolver)
             }
 
             if let resumeData = resumeData {
@@ -821,7 +1130,13 @@ public extension OWSAttachmentDownloads {
             } else {
                 throw error
             }
+        }.done(on: Self.serialQueue) { url in
+            resolver.fulfill(url)
+        }.catch(on: Self.serialQueue) { error in
+            resolver.reject(error)
         }
+
+        return promise
     }
 
     private class func urlPath(for downloadState: DownloadState) throws -> String {
@@ -839,16 +1154,30 @@ public extension OWSAttachmentDownloads {
         return urlPath
     }
 
-    private class func handleDownloadProgress(downloadState: DownloadState,
-                                              task: URLSessionTask,
-                                              progress: Progress) {
+    private enum AttachmentDownloadError: Error {
+        case cancelled
+        case oversize
+    }
+
+    private func handleDownloadProgress(downloadState: DownloadState,
+                                        task: URLSessionTask,
+                                        progress: Progress,
+                                        resolver: Resolver<URL>) {
+
+        guard !self.shouldCancelJob(downloadState: downloadState) else {
+            Logger.info("Cancelling job.")
+            task.cancel()
+            resolver.reject(AttachmentDownloadError.cancelled)
+            return
+        }
+
         // Don't do anything until we've received at least one byte of data.
         guard progress.completedUnitCount > 0 else {
             return
         }
 
-        guard progress.totalUnitCount <= maxDownloadSize,
-              progress.completedUnitCount <= maxDownloadSize else {
+        guard progress.totalUnitCount <= Self.maxDownloadSize,
+              progress.completedUnitCount <= Self.maxDownloadSize else {
             // A malicious service might send a misleading content length header,
             // so....
             //
@@ -856,6 +1185,7 @@ public extension OWSAttachmentDownloads {
             // exceed the max download size, abort the download.
             owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
             task.cancel()
+            resolver.reject(AttachmentDownloadError.oversize)
             return
         }
 
@@ -917,7 +1247,7 @@ public extension OWSAttachmentDownloads {
     @objc
     static let attachmentDownloadAttachmentIDKey = "attachmentDownloadAttachmentIDKey"
 
-    private class func fireProgressNotification(progress: Double, attachmentId: String) {
+    private class func fireProgressNotification(progress: Double, attachmentId: AttachmentId) {
         NotificationCenter.default.postNotificationNameAsync(attachmentDownloadProgressNotification,
                                                              object: nil,
                                                              userInfo: [

@@ -10,7 +10,6 @@
 #import "MimeTypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
-#import "OWSAttachmentDownloads.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
@@ -1443,10 +1442,11 @@ NS_ASSUME_NONNULL_BEGIN
     // transaction is committed or attachmentDownloads might race
     // and not be able to find the attachment(s)/message/thread.
     [transaction addAsyncCompletionOffMain:^{
-        [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
-            category:AttachmentCategoryOther
-            downloadBehavior:AttachmentDownloadBehaviorBypassAll
+        [self.attachmentDownloads enqueueHeadlessDownloadWithAttachmentPointer:avatarPointer
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogVerbose(@"envelope: %@", envelope.debugDescription);
+                OWSLogVerbose(@"dataMessage: %@", dataMessage.debugDescription);
+
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
                 NSData *_Nullable avatarData = attachmentStream.validStillImageData;
@@ -2264,9 +2264,10 @@ NS_ASSUME_NONNULL_BEGIN
     // transaction is committed or attachmentDownloads might race
     // and not be able to find the attachment(s)/message/thread.
     [transaction addAsyncCompletionOffMain:^{
-        [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+        [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
             attachmentGroup:AttachmentGroupAllAttachmentsIncoming
             downloadBehavior:AttachmentDownloadBehaviorDefault
+            touchMessageImmediately:NO
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogDebug(@"Successfully fetched attachments: %lu for message: %@",
                     (unsigned long)attachmentStreams.count,

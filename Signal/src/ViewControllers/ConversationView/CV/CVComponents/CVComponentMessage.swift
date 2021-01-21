@@ -612,25 +612,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                of: outerContentView,
                                                withOffset: -reactionsVOverlap)
         }
-
-        for componentAndView in activeComponentAndViews(messageView: componentView) {
-            let subcomponent = componentAndView.component
-            let subcomponentView = componentAndView.componentView
-            guard let incompleteAttachmentInfo = subcomponent.incompleteAttachmentInfo(componentView: subcomponentView) else {
-                continue
-            }
-            let attachment = incompleteAttachmentInfo.attachment
-            let attachmentView = incompleteAttachmentInfo.attachmentView
-            let shouldShowDownloadProgress = incompleteAttachmentInfo.shouldShowDownloadProgress
-            guard let progressViewToken = addProgressViewsIfNecessary(attachment: attachment,
-                                                                      attachmentView: attachmentView,
-                                                                      hostView: outerContentView,
-                                                                      shouldShowDownloadProgress: shouldShowDownloadProgress) else {
-                Logger.warn("Could not add progress view(s).")
-                continue
-            }
-            componentView.progressViewTokens.append(progressViewToken)
-        }
     }
 
     private var cellLayoutMargins: UIEdgeInsets {
@@ -1055,8 +1036,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate var layoutConstraints = [NSLayoutConstraint]()
 
-        fileprivate var progressViewTokens = [ProgressViewToken]()
-
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
@@ -1221,11 +1200,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             NSLayoutConstraint.deactivate(layoutConstraints)
             layoutConstraints = []
-
-            for progressViewToken in progressViewTokens {
-                progressViewToken.reset()
-            }
-            progressViewTokens = []
         }
 
         fileprivate func removeSwipeToReplyAnimations() {

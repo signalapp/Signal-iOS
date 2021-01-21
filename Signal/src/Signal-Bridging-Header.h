@@ -9,7 +9,6 @@
 #import "AVAudioSession+OWS.h"
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
-#import "AttachmentUploadView.h"
 #import "AvatarViewHelper.h"
 #import "ConversationCollectionView.h"
 #import "ConversationInputToolbar.h"

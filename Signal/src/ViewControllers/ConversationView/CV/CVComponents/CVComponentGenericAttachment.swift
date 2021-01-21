@@ -78,11 +78,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         hStackView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
     }
 
-    public override func incompleteAttachmentInfo(componentView: CVComponentView) -> IncompleteAttachmentInfo? {
-        return incompleteAttachmentInfoIfNecessary(attachment: attachment,
-                                                   attachmentView: componentView.rootView)
-    }
-
     private var hStackLayoutMargins: UIEdgeInsets {
         return UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)
     }
@@ -186,25 +181,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return nil
         }
 
-        let downloadViewSize = min(iconSize.width, iconSize.height)
-        switch attachmentPointer.state {
-        case .enqueued, .downloading:
-            break
-        case .failed, .pendingMessageRequest, .pendingManualDownload:
-            let iconView = UIImageView.withTemplateImageName("arrow-down-24",
-                                                             tintColor: Theme.accentBlueColor)
-            iconView.autoSetDimensions(to: CGSize.square(20))
-            let progressView = CircularProgressView(thickness: 0.1)
-            progressView.progress = 0.0
-            progressView.autoSetDimensions(to: CGSize(square: downloadViewSize))
-            progressView.addSubview(iconView)
-            iconView.autoCenterInSuperview()
-            return progressView
-        @unknown default:
-            owsFailDebug("Invalid value.")
-            return nil
-        }
-
         switch attachmentPointer.pointerType {
         case .restoring:
             // TODO: Show "restoring" indicator and possibly progress.
@@ -215,14 +191,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             owsFailDebug("Invalid value.")
             return nil
         }
-        let attachmentId = attachmentPointer.uniqueId
 
-        let radius = downloadViewSize * 0.5
-        let downloadView = MediaDownloadView(attachmentId: attachmentId, radius: radius)
-        downloadView.autoSetDimensions(to: CGSize(square: downloadViewSize))
-        downloadView.setCompressionResistanceHigh()
-        downloadView.setContentHuggingHigh()
-        return downloadView
+        let downloadViewSize = min(iconSize.width, iconSize.height)
+        let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                    style: .withoutCircle(diameter: downloadViewSize),
+                                                    conversationStyle: conversationStyle)
+        return progressView
     }
 
     private let hSpacing: CGFloat = 8

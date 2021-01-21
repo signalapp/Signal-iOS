@@ -28,7 +28,8 @@ public class CVMediaAlbumView: UIStackView {
                           items: [CVMediaAlbumItem],
                           isOutgoing: Bool,
                           isBorderless: Bool,
-                          cellMeasurement: CVCellMeasurement) {
+                          cellMeasurement: CVCellMeasurement,
+                          conversationStyle: ConversationStyle) {
 
         guard let maxMessageWidth = cellMeasurement.value(key: Self.maxMessageWidthKey) else {
             owsFailDebug("Missing maxMessageWidth.")
@@ -38,10 +39,11 @@ public class CVMediaAlbumView: UIStackView {
         self.items = items
         self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map {
             CVMediaView(mediaCache: mediaCache,
-                                  attachment: $0.attachment,
-                                  isOutgoing: isOutgoing,
-                                  maxMessageWidth: maxMessageWidth,
-                                  isBorderless: isBorderless)
+                        attachment: $0.attachment,
+                        isOutgoing: isOutgoing,
+                        maxMessageWidth: maxMessageWidth,
+                        isBorderless: isBorderless,
+                        conversationStyle: conversationStyle)
         }
         self.isBorderless = isBorderless
 
@@ -288,7 +290,7 @@ public class CVMediaAlbumView: UIStackView {
 
                 let mediaSize = mediaAlbumItem.mediaSize
                 guard mediaSize.width > 0 && mediaSize.height > 0 else {
-                    owsFailDebug("Invalid mediaSize.")
+                    // This could be a pending or invalid attachment.
                     return nil
                 }
                 // Honor the content aspect ratio for single media.
@@ -416,7 +418,7 @@ public class CVMediaAlbumView: UIStackView {
 public struct CVMediaAlbumItem: Equatable {
     public let attachment: TSAttachment
 
-    // This property will only be set if the attachment is downloaded.
+    // This property will only be set if the attachment is downloaded and valid.
     public let attachmentStream: TSAttachmentStream?
 
     public let caption: String?

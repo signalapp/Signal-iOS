@@ -23,8 +23,16 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateDownloading = 1,
     TSAttachmentPointerStateFailed = 2,
     TSAttachmentPointerStatePendingMessageRequest = 3,
+    // Either:
+    //
+    // * Download of this attachment is blocking by the auto-download
+    //   preferences.
+    // * Download was manually paused/stopped and needs to be manually
+    //   resumed.
     TSAttachmentPointerStatePendingManualDownload = 4,
 };
+
+NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
 
 #pragma mark -
 

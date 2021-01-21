@@ -4,7 +4,6 @@
 
 #import "OWSRecordTranscriptJob.h"
 #import "FunctionalUtil.h"
-#import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSReadReceiptManager.h"
@@ -218,9 +217,10 @@ NS_ASSUME_NONNULL_BEGIN
         // transaction is committed or attachmentDownloads might race
         // and not be able to find the attachment(s)/message/thread.
         [transaction addAsyncCompletionOffMain:^{
-            [self.attachmentDownloads downloadAttachmentsForMessageId:outgoingMessage.uniqueId
+            [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:outgoingMessage.uniqueId
                 attachmentGroup:AttachmentGroupAllAttachmentsIncoming
                 downloadBehavior:AttachmentDownloadBehaviorBypassAll
+                touchMessageImmediately:NO
                 success:^(NSArray *attachmentStreams) {
                     NSString *_Nullable quotedThumbnailPointerId
                         = transcript.quotedMessage.thumbnailAttachmentPointerId;
