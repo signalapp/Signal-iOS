@@ -28,6 +28,12 @@ extension ConversationViewController {
     func updateWallpaper() {
         let hadWallpaper = threadViewModel.hasWallpaper
 
+        func applyWallpaperChange(hasWallpaper: Bool) {
+            guard hasWallpaper != hadWallpaper else { return }
+            viewState.threadViewModel = databaseStorage.read { ThreadViewModel(thread: thread, transaction: $0) }
+            updateConversationStyle()
+        }
+
         var wallpaperView: UIView?
         let thread = self.thread
         databaseStorage.asyncRead { transaction in
@@ -37,11 +43,11 @@ extension ConversationViewController {
 
             guard let wallpaperView = wallpaperView else {
                 self.viewState.wallpaperContainer.backgroundColor = Theme.backgroundColor
-                if hadWallpaper { self.loadCoordinator.enqueueReload() }
+                applyWallpaperChange(hasWallpaper: false)
                 return
             }
 
-            if !hadWallpaper { self.loadCoordinator.enqueueReload() }
+            applyWallpaperChange(hasWallpaper: true)
 
             self.viewState.wallpaperContainer.backgroundColor = .clear
 

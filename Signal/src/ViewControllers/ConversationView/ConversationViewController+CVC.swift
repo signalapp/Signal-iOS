@@ -640,7 +640,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return ConversationStyle(type: type,
                                      thread: thread,
                                      viewWidth: viewWidth,
-                                     hasWallpaper: threadViewModel.hasWallpaper)
+                                     hasWallpaper: viewState.threadViewModel.hasWallpaper)
         }
 
         guard self.conversationStyle.type != .`default` else {
@@ -693,7 +693,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return ConversationStyle(type: .placeholder,
                                      thread: thread,
                                      viewWidth: viewWidth,
-                                     hasWallpaper: threadViewModel.hasWallpaper)
+                                     hasWallpaper: viewState.threadViewModel.hasWallpaper)
         }
     }
 
