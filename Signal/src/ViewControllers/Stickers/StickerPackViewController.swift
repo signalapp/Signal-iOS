@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -380,6 +380,9 @@ public class StickerPackViewController: OWSViewController {
         dismiss(animated: true)
     }
 
+    // We need to retain a link to the send flow during the send flow.
+    private var sendMessageFlow: SendMessageFlow?
+
     @objc
     func shareButtonPressed(sender: UIButton) {
         AssertIsOnMainThread()
@@ -388,8 +391,20 @@ public class StickerPackViewController: OWSViewController {
             owsFailDebug("Missing sticker pack.")
             return
         }
+        let packUrl = stickerPack.info.shareUrl()
 
-        StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
+        let navigationController = OWSNavigationController()
+        let messageBody = MessageBody(text: packUrl, ranges: .empty)
+        let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+        let sendMessageFlow = SendMessageFlow(flowType: .`default`,
+                                              unapprovedContent: unapprovedContent,
+                                              useConversationComposeForSingleRecipient: true,
+                                              navigationController: navigationController,
+                                              delegate: self)
+        // Retain the flow until it is complete.
+        self.sendMessageFlow = sendMessageFlow
+
+        present(navigationController, animated: true)
     }
 
     @objc
@@ -503,5 +518,26 @@ extension StickerPackViewController: StickerPackCollectionViewDelegate {
 
     public func stickerPreviewHasOverlay() -> Bool {
         return true
+    }
+}
+
+// MARK: -
+
+extension StickerPackViewController: SendMessageDelegate {
+
+    public func sendMessageFlowDidComplete(threads: [TSThread]) {
+        AssertIsOnMainThread()
+
+        sendMessageFlow = nil
+
+        dismiss(animated: true)
+    }
+
+    public func sendMessageFlowDidCancel() {
+        AssertIsOnMainThread()
+
+        sendMessageFlow = nil
+
+        dismiss(animated: true)
     }
 }

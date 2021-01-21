@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -443,12 +443,29 @@ public class ManageStickersViewController: OWSTableViewController {
         packView.present(from: self, animated: true)
     }
 
+    // We need to retain a link to the send flow during the send flow.
+    private var sendMessageFlow: SendMessageFlow?
+
     private func share(packInfo: StickerPackInfo) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
-        StickerSharingViewController.shareStickerPack(packInfo, from: self)
+        let packUrl = packInfo.shareUrl()
+
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        let messageBody = MessageBody(text: packUrl, ranges: .empty)
+        let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+        let sendMessageFlow = SendMessageFlow(flowType: .`default`,
+                                              unapprovedContent: unapprovedContent,
+                                              useConversationComposeForSingleRecipient: true,
+                                              navigationController: navigationController,
+                                              delegate: self)
+        // Retain the flow until it is complete.
+        self.sendMessageFlow = sendMessageFlow
     }
 
     private func install(stickerPack: StickerPack) {
@@ -508,5 +525,26 @@ extension ManageStickersViewController: StickerPackDataSourceDelegate {
         AssertIsOnMainThread()
 
         updateTableContents()
+    }
+}
+
+// MARK: -
+
+extension ManageStickersViewController: SendMessageDelegate {
+
+    public func sendMessageFlowDidComplete(threads: [TSThread]) {
+        AssertIsOnMainThread()
+
+        sendMessageFlow = nil
+
+        navigationController?.popToViewController(self, animated: true)
+    }
+
+    public func sendMessageFlowDidCancel() {
+        AssertIsOnMainThread()
+
+        sendMessageFlow = nil
+
+        navigationController?.popToViewController(self, animated: true)
     }
 }
