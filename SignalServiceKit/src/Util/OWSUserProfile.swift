@@ -9,9 +9,7 @@ public extension OWSUserProfile {
 
     // The max bytes for a user's profile name, encoded in UTF8.
     // Before encrypting and submitting we NULL pad the name data to this length.
-    static var maxNameLengthBytes: Int {
-        FeatureFlags.profileNameAndBioChanges ? 128 : 26
-    }
+    static var maxNameLengthBytes: Int = 128
 
     static let kMaxBioLengthChars: Int = 100
     static let kMaxBioLengthBytes: Int = 512
@@ -119,15 +117,9 @@ public extension OWSUserProfile {
         let totalNameMaxLength = Int(maxNameLengthBytes) * 2 + 1
         let paddedLengths: [Int]
         let validBase64Lengths: [Int]
-        if FeatureFlags.profileNameAndBioChanges {
-            owsAssertDebug(totalNameMaxLength == 257)
-            paddedLengths = [53, 257 ]
-            validBase64Lengths = [108, 380 ]
-        } else {
-            owsAssertDebug(totalNameMaxLength == 53)
-            paddedLengths = [53 ]
-            validBase64Lengths = [108 ]
-        }
+        owsAssertDebug(totalNameMaxLength == 257)
+        paddedLengths = [53, 257 ]
+        validBase64Lengths = [108, 380 ]
 
         // All encrypted profile names should be the same length on the server,
         // so we pad out the length with null bytes to the maximum length.

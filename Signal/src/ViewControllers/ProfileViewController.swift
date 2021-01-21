@@ -266,8 +266,7 @@ public class ProfileViewController: OWSTableViewController {
 
         var lastSection = namesSection
 
-        if mode.hasBio,
-           FeatureFlags.profileNameAndBioChanges {
+        if mode.hasBio {
             let aboutSection = OWSTableSection()
             aboutSection.headerTitle = NSLocalizedString("PROFILE_VIEW_BIO_SECTION_HEADER",
                                                          comment: "Header for the 'bio' section of the profile view.")
