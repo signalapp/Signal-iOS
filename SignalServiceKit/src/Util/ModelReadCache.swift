@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -204,7 +204,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     private func readValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ValueType? {
         if let value = adapter.read(key: cacheKey.key, transaction: transaction) {
             #if TESTABLE_BUILD
-            if !isExcluded(cacheKey: cacheKey),
+            if !isExcluded(cacheKey: cacheKey, transaction: transaction),
                 canUseCache(cacheKey: cacheKey, transaction: transaction) {
                 // NOTE: We don't need to update the cache; the SDS
                 // model extensions will populate the cache for us.
@@ -217,7 +217,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             #endif
             return value
         }
-        if !isExcluded(cacheKey: cacheKey),
+        if !isExcluded(cacheKey: cacheKey, transaction: transaction),
             canUseCache(cacheKey: cacheKey, transaction: transaction) {
             // Update cache.
             writeToCache(cacheKey: cacheKey, value: nil)
@@ -231,7 +231,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             return
         }
         performSync {
-            if !isExcluded(cacheKey: cacheKey),
+            if !isExcluded(cacheKey: cacheKey, transaction: transaction),
                 canUseCache(cacheKey: cacheKey, transaction: transaction) {
                 writeToCache(cacheKey: cacheKey, value: value)
             }
@@ -239,11 +239,11 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     }
 
     // This method should only be called within performSync().
-    private func cachedValue(for cacheKey: ModelCacheKey<KeyType>) -> ModelCacheValueBox<ValueType>? {
+    private func cachedValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ModelCacheValueBox<ValueType>? {
         guard isCacheReady else {
             return nil
         }
-        guard !isExcluded(cacheKey: cacheKey) else {
+        guard !isExcluded(cacheKey: cacheKey, transaction: transaction) else {
             // Read excluded.
             return nil
         }
@@ -269,7 +269,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         #endif
 
         return performSync {
-            if let cachedValue = self.cachedValue(for: cacheKey) {
+            if let cachedValue = self.cachedValue(for: cacheKey, transaction: transaction) {
 
                 #if TESTABLE_BUILD
                 cacheStats.recordCacheHit(self)
@@ -461,14 +461,23 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     // Note that we use a map with counters so that the async
     // completion of one write doesn't interfere with exclusion
     // from a subsequent write to the same entity.
-    private var excludedKeyMap = [KeyType: UInt]()
+    private var exclusionCountMap = [KeyType: Int]()
+    private var exclusionDateMap = [KeyType: Date]()
 
     // This method should only be called within performSync().
-    private func isExcluded(cacheKey: ModelCacheKey<KeyType>) -> Bool {
+    private func isExcluded(cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> Bool {
         guard mode == .read else {
             return false
         }
-        if excludedKeyMap[cacheKey.key] != nil {
+
+        if let exclusionDate = exclusionDateMap[cacheKey.key] {
+
+            if exclusionDate > transaction.startDate {
+                return true
+            }
+        }
+
+        if exclusionCountMap[cacheKey.key] != nil {
             return true
         }
         return false
@@ -479,10 +488,10 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         assert(mode == .read)
 
         let key = cacheKey.key
-        if let value = self.excludedKeyMap[key] {
-            self.excludedKeyMap[key] = value + 1
+        if let value = self.exclusionCountMap[key] {
+            self.exclusionCountMap[key] = value + 1
         } else {
-            self.excludedKeyMap[key] = 1
+            self.exclusionCountMap[key] = 1
         }
     }
 
@@ -491,15 +500,18 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         assert(mode == .read)
 
         let key = cacheKey.key
-        guard let value = self.excludedKeyMap[key] else {
+
+        self.exclusionDateMap[key] = Date()
+
+        guard let value = self.exclusionCountMap[key] else {
             owsFailDebug("Missing exclusion key.")
             return
         }
         guard value > 1 else {
-            self.excludedKeyMap.removeValue(forKey: key)
+            self.exclusionCountMap.removeValue(forKey: key)
             return
         }
-        self.excludedKeyMap[key] = value - 1
+        self.exclusionCountMap[key] = value - 1
     }
 
     // We can't use a serial queue due to GRDB's scheduling watchdog.
