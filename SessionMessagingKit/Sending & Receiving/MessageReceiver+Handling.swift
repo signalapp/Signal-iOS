@@ -11,7 +11,7 @@ extension MessageReceiver {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
-        case let message as ClosedGroupUpdate: handleClosedGroupUpdateV2(message, using: transaction)
+        case let message as ClosedGroupControlMessage: handleClosedGroupControlMessage(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
@@ -226,15 +226,19 @@ extension MessageReceiver {
         return tsIncomingMessageID
     }
 
-    private static func handleClosedGroupUpdateV2(_ message: ClosedGroupUpdate, using transaction: Any) {
+    private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
-        case .new: handleNewGroupV2(message, using: transaction)
-        case .update: handleGroupUpdateV2(message, using: transaction)
-        case .encryptionKeyPair: handleGroupEncryptionKeyPair(message, using: transaction)
+        case .new: handleNewClosedGroup(message, using: transaction)
+        case .update: handleClosedGroupUpdated(message, using: transaction)
+        case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
+        case .nameChange: handleClosedGroupNameChanged(message, using: transaction)
+        case .usersAdded: handleClosedGroupMembersAdded(message, using: transaction)
+        case .usersRemoved: handleClosedGroupMembersRemoved(message, using: transaction)
+        case .userLeft: handleClosedGroupMemberLeft(message, using: transaction)
         }
     }
     
-    private static func handleNewGroupV2(_ message: ClosedGroupUpdate, using transaction: Any) {
+    private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -264,7 +268,7 @@ extension MessageReceiver {
         infoMessage.save(with: transaction)
     }
     
-    private static func handleGroupUpdateV2(_ message: ClosedGroupUpdate, using transaction: Any) {
+    private static func handleClosedGroupUpdated(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .update(name, membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -323,7 +327,7 @@ extension MessageReceiver {
         }
     }
 
-    private static func handleGroupEncryptionKeyPair(_ message: ClosedGroupUpdate, using transaction: Any) {
+    private static func handleClosedGroupEncryptionKeyPair(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .encryptionKeyPair(wrappers) = message.kind, let groupPublicKey = message.groupPublicKey else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -348,9 +352,9 @@ extension MessageReceiver {
             return SNLog("Couldn't decrypt closed group encryption key pair.")
         }
         // Parse it
-        let proto: SNProtoDataMessageClosedGroupUpdateV2KeyPair
+        let proto: SNProtoDataMessageClosedGroupControlMessageKeyPair
         do {
-            proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.parseData(plaintext)
+            proto = try SNProtoDataMessageClosedGroupControlMessageKeyPair.parseData(plaintext)
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }
@@ -363,5 +367,21 @@ extension MessageReceiver {
         // Store it
         Storage.shared.addClosedGroupEncryptionKeyPair(keyPair, for: groupPublicKey, using: transaction)
         SNLog("Received a new closed group encryption key pair.")
+    }
+    
+    private static func handleClosedGroupNameChanged(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        
+    }
+    
+    private static func handleClosedGroupMembersAdded(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        
+    }
+    
+    private static func handleClosedGroupMembersRemoved(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        
+    }
+    
+    private static func handleClosedGroupMemberLeft(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        
     }
 }

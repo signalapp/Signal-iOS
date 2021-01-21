@@ -3,7 +3,7 @@ import SessionProtocolKit
 
 extension MessageSender {
 
-    public static func createV2ClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
+    public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
         var members = members
         let userPublicKey = getUserHexEncodedPublicKey()
@@ -27,10 +27,10 @@ extension MessageSender {
             guard member != userPublicKey else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
-            let closedGroupUpdateKind = ClosedGroupUpdate.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
+            let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
                 encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
-            let closedGroupUpdate = ClosedGroupUpdate(kind: closedGroupUpdateKind)
-            let promise = MessageSender.sendNonDurably(closedGroupUpdate, in: thread, using: transaction)
+            let closedGroupControlMessage = ClosedGroupControlMessage(kind: closedGroupControlMessageKind)
+            let promise = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction)
             promises.append(promise)
         }
         // Add the group to the user's set of public keys to poll for
@@ -46,7 +46,7 @@ extension MessageSender {
         return when(fulfilled: promises).map2 { thread }
     }
     
-    public static func updateV2(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
+    public static func update(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
         // Prepare
         let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -81,9 +81,9 @@ extension MessageSender {
             }
         }
         // Send the update to the group
-        let mainClosedGroupUpdate = ClosedGroupUpdate(kind: .update(name: name, members: membersAsData))
+        let mainClosedGroupControlMessage = ClosedGroupControlMessage(kind: .update(name: name, members: membersAsData))
         if isUserLeaving {
-            let _ = MessageSender.sendNonDurably(mainClosedGroupUpdate, in: thread, using: transaction).done {
+            let _ = MessageSender.sendNonDurably(mainClosedGroupControlMessage, in: thread, using: transaction).done {
                 SNMessagingKitConfiguration.shared.storage.write { transaction in
                     // Remove the group from the database and unsubscribe from PNs
                     Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
@@ -92,7 +92,7 @@ extension MessageSender {
                 }
             }
         } else {
-            MessageSender.send(mainClosedGroupUpdate, in: thread, using: transaction)
+            MessageSender.send(mainClosedGroupControlMessage, in: thread, using: transaction)
             // Generate and distribute a new encryption key pair if needed
             if wasAnyUserRemoved && isCurrentUserAdmin {
                 try generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members.subtracting(newMembers), using: transaction)
@@ -101,10 +101,10 @@ extension MessageSender {
             for member in newMembers {
                 let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                 thread.save(with: transaction)
-                let closedGroupUpdateKind = ClosedGroupUpdate.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
+                let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
                     encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
-                let closedGroupUpdate = ClosedGroupUpdate(kind: closedGroupUpdateKind)
-                MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
+                let closedGroupControlMessage = ClosedGroupControlMessage(kind: closedGroupControlMessageKind)
+                MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
             }
         }
         // Update the group
@@ -117,7 +117,7 @@ extension MessageSender {
     }
 
     @objc(leaveClosedGroupWithPublicKey:using:error:)
-    public static func leaveV2(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
+    public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
@@ -133,7 +133,7 @@ extension MessageSender {
         } else {
             newMembers = [] // If the admin leaves the group is destroyed
         }
-        return try updateV2(groupPublicKey, with: newMembers, name: group.groupName!, transaction: transaction)
+        return try update(groupPublicKey, with: newMembers, name: group.groupName!, transaction: transaction)
     }
 
     public static func generateAndSendNewEncryptionKeyPair(for groupPublicKey: String, to targetMembers: Set<String>, using transaction: Any) throws {
@@ -152,15 +152,15 @@ extension MessageSender {
         // Generate the new encryption key pair
         let newKeyPair = Curve25519.generateKeyPair()
         // Distribute it
-        let proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.builder(publicKey: newKeyPair.publicKey,
+        let proto = try SNProtoDataMessageClosedGroupControlMessageKeyPair.builder(publicKey: newKeyPair.publicKey,
             privateKey: newKeyPair.privateKey).build()
         let plaintext = try proto.serializedData()
-        let wrappers = try targetMembers.compactMap { publicKey -> ClosedGroupUpdate.KeyPairWrapper in
+        let wrappers = try targetMembers.compactMap { publicKey -> ClosedGroupControlMessage.KeyPairWrapper in
             let ciphertext = try MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey)
-            return ClosedGroupUpdate.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
+            return ClosedGroupControlMessage.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
         }
-        let closedGroupUpdate = ClosedGroupUpdate(kind: .encryptionKeyPair(wrappers))
-        let _ = MessageSender.sendNonDurably(closedGroupUpdate, in: thread, using: transaction).done { // FIXME: It'd be great if we could make this a durable operation
+        let closedGroupControlMessage = ClosedGroupControlMessage(kind: .encryptionKeyPair(wrappers))
+        let _ = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction).done { // FIXME: It'd be great if we could make this a durable operation
             // Store it * after * having sent out the message to the group
             SNMessagingKitConfiguration.shared.storage.write { transaction in
                 Storage.shared.addClosedGroupEncryptionKeyPair(newKeyPair, for: groupPublicKey, using: transaction)

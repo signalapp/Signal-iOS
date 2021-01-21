@@ -379,7 +379,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                         do {
-                            try MessageSender.leaveV2(groupPublicKey, using: transaction)
+                            try MessageSender.leave(groupPublicKey, using: transaction)
                         } catch {
                             // TODO: Handle
                         }

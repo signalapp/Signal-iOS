@@ -23,45 +23,6 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     }
 }
 
-SNProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
-{
-    switch (verificationState) {
-        case OWSVerificationStateDefault:
-            return SNProtoVerifiedStateDefault;
-        case OWSVerificationStateVerified:
-            return SNProtoVerifiedStateVerified;
-        case OWSVerificationStateNoLongerVerified:
-            return SNProtoVerifiedStateUnverified;
-    }
-}
-
-SNProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
-    NSData *identityKey,
-    OWSVerificationState verificationState,
-    NSUInteger paddingBytesLength)
-{
-
-    SNProtoVerifiedBuilder *verifiedBuilder = [SNProtoVerified builderWithDestination:destinationRecipientId];
-    verifiedBuilder.identityKey = identityKey;
-    verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
-
-    if (paddingBytesLength > 0) {
-        // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so
-        // that the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage.
-        // We pad the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be
-        // *additionally* padded by the superclass while being sent. The end result is we send a NullMessage of a
-        // non-distinct size, and a verification sync which is ~1-512 bytes larger then that.
-        verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:paddingBytesLength];
-    }
-
-    NSError *error;
-    SNProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
-    if (error || !verifiedProto) {
-        return nil;
-    }
-    return verifiedProto;
-}
-
 @interface OWSRecipientIdentity ()
 
 @property (atomic) OWSVerificationState verificationState;
