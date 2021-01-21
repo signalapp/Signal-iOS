@@ -142,15 +142,25 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     public static func view(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> UIView? {
-        guard let wallpaper = get(for: thread, transaction: transaction) else {
-            if thread != nil { return view(transaction: transaction)}
-            return nil
-        }
+        guard let wallpaper: Wallpaper = {
+            if let wallpaper = get(for: thread, transaction: transaction) {
+                return wallpaper
+            } else if thread != nil, let wallpaper = get(for: nil, transaction: transaction) {
+                return wallpaper
+            } else {
+                return nil
+            }
+        }() else { return nil }
 
         let photo: UIImage? = {
             guard case .photo = wallpaper else { return nil }
-            guard let photo = try? self.photo(for: thread) else { return nil }
-            return photo
+            if let photo = try? self.photo(for: thread) {
+                return photo
+            } else if thread != nil, let photo = try? self.photo(for: nil) {
+                return photo
+            } else {
+                return nil
+            }
         }()
 
         if case .photo = wallpaper, photo == nil {
@@ -258,7 +268,7 @@ extension Wallpaper {
 
 fileprivate extension Wallpaper {
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
-    static let wallpaperDirectory = URL(fileURLWithPath: "wallpapers", isDirectory: true, relativeTo: appSharedDataDirectory)
+    static let wallpaperDirectory = URL(fileURLWithPath: "Wallpapers", isDirectory: true, relativeTo: appSharedDataDirectory)
     static let cache = NSCache<NSString, UIImage>()
 
     static func ensureWallpaperDirectory() throws {

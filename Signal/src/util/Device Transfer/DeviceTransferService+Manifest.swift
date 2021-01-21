@@ -54,7 +54,7 @@ extension DeviceTransferService {
 
         // Attachments, Avatars, and Stickers
 
-        let foldersToTransfer = ["Attachments/", "ProfileAvatars/", "StickerManager/"]
+        let foldersToTransfer = ["Attachments/", "ProfileAvatars/", "StickerManager/", "Wallpapers/"]
         let filesToTransfer = try foldersToTransfer.flatMap { folder -> [String] in
             let url = URL(fileURLWithPath: folder, relativeTo: DeviceTransferService.appSharedDataDirectory)
             return try OWSFileSystem.recursiveFilesInDirectory(url.path)
