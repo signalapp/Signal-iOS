@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -76,7 +76,7 @@ public class StickerManager: NSObject {
     public static let store = SDSKeyValueStore(collection: "recentStickers")
     public static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
 
-    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
+    private static let unfairLock = UnfairLock()
 
     @objc
     public enum InstallMode: Int {
@@ -343,7 +343,9 @@ public class StickerManager: NSObject {
             stickerPack.anyInsert(transaction: transaction)
         }
 
-        self.shared.stickerPackWasInstalled(transaction: transaction)
+        if stickerPack.isInstalled {
+            self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
+        }
 
         if stickerPack.isInstalled, wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
@@ -389,6 +391,8 @@ public class StickerManager: NSObject {
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+
+        Self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
 
         if wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
@@ -1056,10 +1060,16 @@ public class StickerManager: NSObject {
     }
 
     private let kShouldShowTooltipKey = "shouldShowTooltip"
-    // This property should only be accessed on serialQueue.
+    // This property should only be accessed using unfairLock.
     private var tooltipState = TooltipState.unknown
 
-    private func stickerPackWasInstalled(transaction: SDSAnyWriteTransaction) {
+    private func stickerPackWasInstalled(stickerPack: StickerPack,
+                                         transaction: SDSAnyWriteTransaction) {
+        if let defaultStickerPack = DefaultStickerPack.getDefaultStickerPack(stickerPackInfo: stickerPack.info),
+           defaultStickerPack.shouldAutoInstall {
+            // Don't show tooltip for default sticker packs that auto-install.
+            return
+        }
         setTooltipState(.shouldShowTooltip, transaction: transaction)
     }
 
@@ -1071,7 +1081,7 @@ public class StickerManager: NSObject {
     @objc
     public func setTooltipState(_ value: TooltipState, transaction: SDSAnyWriteTransaction) {
         var shouldSet = false
-        StickerManager.serialQueue.sync {
+        Self.unfairLock.withLock {
             // Don't "downgrade" this state; only raise to higher values.
             guard self.tooltipState.rawValue < value.rawValue else {
                 return
@@ -1088,7 +1098,7 @@ public class StickerManager: NSObject {
 
     @objc
     public var shouldShowStickerTooltip: Bool {
-        return StickerManager.serialQueue.sync {
+        return Self.unfairLock.withLock {
             return self.tooltipState == .shouldShowTooltip
         }
     }
@@ -1098,7 +1108,7 @@ public class StickerManager: NSObject {
             return StickerManager.store.getUInt(self.kShouldShowTooltipKey, defaultValue: TooltipState.unknown.rawValue, transaction: transaction)
         }
 
-        StickerManager.serialQueue.sync {
+        Self.unfairLock.withLock {
             if let tooltipState = TooltipState(rawValue: value) {
                 self.tooltipState = tooltipState
             }
