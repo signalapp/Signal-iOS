@@ -190,12 +190,16 @@ extension Storage {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection)
     }
 
-    public func getIDForMessage(withServerID serverID: UInt64) -> UInt64? {
-        var result: UInt64? = nil
+    public func getIDForMessage(withServerID serverID: UInt64) -> String? {
+        var result: String? = nil
         Storage.read { transaction in
-            result = transaction.object(forKey: String(serverID), inCollection: Storage.openGroupMessageIDCollection) as? UInt64
+            result = transaction.object(forKey: String(serverID), inCollection: Storage.openGroupMessageIDCollection) as? String
         }
         return result
+    }
+    
+    public func setIDForMessage(withServerID serverID: UInt64, to messageID: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(messageID, forKey: String(serverID), inCollection: Storage.openGroupMessageIDCollection)
     }
     
     public func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any) {

@@ -342,15 +342,21 @@ public final class MessageSender : NSObject {
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        tsMessage.save(with: transaction)
+        if let serverID = message.openGroupServerMessageID {
+            storage.setIDForMessage(withServerID: serverID, to: tsMessage.uniqueId!, using: transaction)
+        }
         var recipients = [ message.recipient! ]
         if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
-            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction as! YapDatabaseReadTransaction), thread.isClosedGroup {
+            let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
             recipients = thread.groupModel.groupMemberIds
         }
         recipients.forEach { recipient in
-            tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction as! YapDatabaseReadWriteTransaction)
+            tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
         }
-        OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction as! YapDatabaseReadWriteTransaction)
+        OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
     }
 
     public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {

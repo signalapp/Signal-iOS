@@ -205,7 +205,7 @@ public final class OpenGroupAPI : DotNetAPI {
                         }
                         let lastDeletionServerID = storage.getLastDeletionServerID(for: channel, on: server)
                         if serverID > (lastDeletionServerID ?? 0) {
-                            storage.writeSync { transaction in
+                            storage.write { transaction in
                                 storage.setLastDeletionServerID(for: channel, on: server, to: serverID, using: transaction)
                             }
                         }
@@ -218,13 +218,13 @@ public final class OpenGroupAPI : DotNetAPI {
 
     @objc(deleteMessageWithID:forGroup:onServer:isSentByUser:)
     public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
-        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
+        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, wasSentByUser: isSentByUser))
     }
     
-    public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, isSentByUser: Bool) -> Promise<Void> {
-        let isModerationRequest = !isSentByUser
+    public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, wasSentByUser: Bool) -> Promise<Void> {
+        let isModerationRequest = !wasSentByUser
         SNLog("Deleting message with ID: \(messageID) for open group channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
-        let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
+        let urlAsString = wasSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
             getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
                 getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
