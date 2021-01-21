@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -223,60 +223,53 @@ struct MediaGalleryRecord: Codable, FetchableRecord, PersistableRecord {
 extension GRDBMediaGalleryFinder: MediaGalleryFinder {
     typealias ReadTransaction = GRDBReadTransaction
 
-    func mostRecentMediaAttachment(transaction: GRDBReadTransaction) -> TSAttachment? {
-        let sql = """
-            SELECT \(AttachmentRecord.databaseTableName).*
+    private enum Order: String, CustomStringConvertible {
+        case ascending = "ASC"
+        case descending = "DESC"
+
+        var description: String { self.rawValue }
+    }
+
+    /// An **unsanitized** interface for building queries against the `media_gallery_items` table
+    /// and the associated AttachmentRecord and InteractionRecord tables.
+    private static func itemsQuery(result: String = "\(AttachmentRecord.databaseTableName).*",
+                                   order: Order = .ascending,
+                                   limit: Int? = nil,
+                                   offset: Int? = nil) -> String {
+        let limitModifier = limit.map { "LIMIT \($0)" } ?? ""
+        let offsetModifier = offset.map { "OFFSET \($0)" } ?? ""
+
+        return """
+            SELECT \(result)
             FROM "media_gallery_items"
             INNER JOIN \(AttachmentRecord.databaseTableName)
-                ON media_gallery_items.attachmentId = model_TSAttachment.id
+                ON media_gallery_items.attachmentId = \(attachmentColumnFullyQualified: .id)
                 AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
             INNER JOIN \(InteractionRecord.databaseTableName)
                 ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
                 AND \(interactionColumn: .isViewOnceMessage) = FALSE
             WHERE media_gallery_items.threadId = ?
             ORDER BY
-                media_gallery_items.albumMessageId DESC,
-                media_gallery_items.originalAlbumOrder DESC
-            LIMIT 1
+                media_gallery_items.albumMessageId \(order),
+                media_gallery_items.originalAlbumOrder \(order)
+            \(limitModifier)
+            \(offsetModifier)
         """
+    }
 
+    func mostRecentMediaAttachment(transaction: GRDBReadTransaction) -> TSAttachment? {
+        let sql = Self.itemsQuery(order: .descending, limit: 1)
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         return try! cursor.next()
     }
 
     func mediaCount(transaction: GRDBReadTransaction) -> UInt {
-        let sql = """
-            SELECT COUNT(*)
-            FROM "media_gallery_items"
-            INNER JOIN \(AttachmentRecord.databaseTableName)
-                ON media_gallery_items.attachmentId = model_TSAttachment.id
-                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
-            INNER JOIN \(InteractionRecord.databaseTableName)
-                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
-                AND \(interactionColumn: .isViewOnceMessage) = FALSE
-            WHERE media_gallery_items.threadId = ?
-        """
-
+        let sql = Self.itemsQuery(result: "COUNT(*)")
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadId]) ?? 0
     }
 
-    func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: @escaping (TSAttachment) -> Void) {
-        let sql = """
-            SELECT \(AttachmentRecord.databaseTableName).*
-            FROM "media_gallery_items"
-            INNER JOIN \(AttachmentRecord.databaseTableName)
-                ON media_gallery_items.attachmentId = model_TSAttachment.id
-                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
-            INNER JOIN \(InteractionRecord.databaseTableName)
-                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
-                AND \(interactionColumn: .isViewOnceMessage) = FALSE
-            WHERE media_gallery_items.threadId = ?
-            ORDER BY
-                media_gallery_items.albumMessageId,
-                media_gallery_items.originalAlbumOrder
-            LIMIT \(range.length)
-            OFFSET \(range.lowerBound)
-        """
+    func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: (TSAttachment) -> Void) {
+        let sql = Self.itemsQuery(limit: range.length, offset: range.lowerBound)
 
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         while let next = try! cursor.next() {
@@ -297,7 +290,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
                 media_gallery_items.attachmentId
             FROM media_gallery_items
             INNER JOIN \(AttachmentRecord.databaseTableName)
-                ON media_gallery_items.attachmentId = model_TSAttachment.id
+                ON media_gallery_items.attachmentId = \(attachmentColumnFullyQualified: .id)
                 AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
             INNER JOIN \(InteractionRecord.databaseTableName)
                 ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
