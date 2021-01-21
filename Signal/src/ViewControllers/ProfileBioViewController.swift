@@ -43,6 +43,8 @@ class ProfileBioViewController: OWSTableViewController {
 
         self.bioTextField.text = bio
         self.bioEmojiLabel.text = bioEmoji
+
+        self.shouldAvoidKeyboard = true
     }
 
     // MARK: - Orientation
