@@ -5,6 +5,17 @@
 import Foundation
 
 class SetWallpaperViewController: OWSTableViewController {
+    lazy var collectionView = WallpaperCollectionView { [weak self] wallpaper in
+        guard let self = self else { return }
+        self.databaseStorage.asyncWrite { transaction in
+            do {
+                try Wallpaper.setBuiltIn(wallpaper, for: self.thread, transaction: transaction)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+    }
+
     let thread: TSThread?
     public init(thread: TSThread? = nil) {
         self.thread = thread
@@ -26,6 +37,16 @@ class SetWallpaperViewController: OWSTableViewController {
         updateTableContents()
     }
 
+    private var referenceFrame: CGRect = .zero
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        guard view.frame != referenceFrame else { return }
+        referenceFrame = view.frame
+        collectionView.updateLayout(reference: view)
+        updateTableContents()
+    }
+
     @objc
     func updateTableContents() {
         let contents = OWSTableContents()
@@ -35,7 +56,8 @@ class SetWallpaperViewController: OWSTableViewController {
 
         let choosePhotoItem = OWSTableItem.disclosureItem(
             icon: .settingsAllMedia,
-            name: "Choose from Photos",
+            name: NSLocalizedString("SET_WALLPAPER_CHOOSE_PHOTO",
+                                    comment: "Title for the wallpaper choose from photos option"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "choose_photo")
         ) { [weak self] in
             guard let self = self else { return }
@@ -48,6 +70,21 @@ class SetWallpaperViewController: OWSTableViewController {
         photosSection.add(choosePhotoItem)
 
         contents.addSection(photosSection)
+
+        let presetsSection = OWSTableSection()
+        presetsSection.headerTitle = NSLocalizedString("SET_WALLPAPER_PRESETS",
+                                                       comment: "Title for the wallpaper presets section")
+
+        let presetsItem = OWSTableItem { [weak self] in
+            let cell = OWSTableItem.newCell()
+            guard let self = self else { return cell }
+            cell.contentView.addSubview(self.collectionView)
+            self.collectionView.autoPinEdgesToSuperviewEdges()
+            return cell
+        } actionBlock: {}
+        presetsSection.add(presetsItem)
+
+        contents.addSection(presetsSection)
 
         self.contents = contents
     }
@@ -62,6 +99,8 @@ extension SetWallpaperViewController: UIImagePickerControllerDelegate, UINavigat
             return owsFailDebug("Missing image")
         }
 
+        picker.dismiss(animated: true, completion: nil)
+
         databaseStorage.asyncWrite { transaction in
             do {
                 try Wallpaper.setPhoto(rawImage, for: self.thread, transaction: transaction)
@@ -73,5 +112,107 @@ extension SetWallpaperViewController: UIImagePickerControllerDelegate, UINavigat
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+class WallpaperCollectionView: UICollectionView {
+    let flowLayout = UICollectionViewFlowLayout()
+    let selectionHandler: (Wallpaper) -> Void
+    lazy var heightConstraint = autoSetDimension(.height, toSize: 0)
+
+    init(selectionHandler: @escaping (Wallpaper) -> Void) {
+        self.selectionHandler = selectionHandler
+
+        flowLayout.minimumLineSpacing = 4
+        flowLayout.minimumInteritemSpacing = 2
+
+        super.init(frame: .zero, collectionViewLayout: flowLayout)
+
+        delegate = self
+        dataSource = self
+        contentInset = UIEdgeInsets(hMargin: 16, vMargin: 16)
+        isScrollEnabled = false
+        backgroundColor = .clear
+
+        register(WallpaperCell.self, forCellWithReuseIdentifier: WallpaperCell.reuseIdentifier)
+    }
+
+    func updateLayout(reference: UIView) {
+        AssertIsOnMainThread()
+
+        let numberOfColumns: CGFloat = 3
+        let numberOfRows = CGFloat(Wallpaper.defaultWallpapers.count) / numberOfColumns
+
+        let availableWidth = reference.width - contentInset.totalWidth - 8 - reference.safeAreaInsets.totalWidth
+
+        let itemWidth = availableWidth / numberOfColumns
+        let itemHeight = itemWidth / CurrentAppContext().frame.size.aspectRatio
+
+        flowLayout.itemSize = CGSize(width: itemWidth, height: itemHeight)
+        flowLayout.invalidateLayout()
+
+        heightConstraint.constant = numberOfRows * itemHeight + ((numberOfRows - 1) * flowLayout.minimumLineSpacing) + contentInset.totalHeight
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension WallpaperCollectionView: UICollectionViewDataSource, UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        Wallpaper.defaultWallpapers.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: WallpaperCell.reuseIdentifier,
+            for: indexPath
+        )
+
+        guard let wallpaperCell = cell as? WallpaperCell else {
+            owsFailDebug("Dequeued unexpected cell")
+            return cell
+        }
+
+        guard let wallpaper = Wallpaper.defaultWallpapers[safe: indexPath.row] else {
+            owsFailDebug("Missing wallpaper for index \(indexPath.row)")
+            return cell
+        }
+
+        wallpaperCell.configure(for: wallpaper)
+
+        return wallpaperCell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let wallpaper = Wallpaper.defaultWallpapers[safe: indexPath.row] else {
+            return owsFailDebug("Missing wallpaper for index \(indexPath.row)")
+        }
+
+        selectionHandler(wallpaper)
+    }
+}
+
+class WallpaperCell: UICollectionViewCell {
+    static let reuseIdentifier = "WallpaperCell"
+
+    var wallpaperView: UIView?
+    var wallpaper: Wallpaper?
+
+    func configure(for wallpaper: Wallpaper) {
+        guard wallpaper != self.wallpaper else { return }
+
+        self.wallpaper = wallpaper
+        wallpaperView?.removeFromSuperview()
+        wallpaperView = Wallpaper.view(for: wallpaper)
+
+        guard let wallpaperView = wallpaperView else {
+            return owsFailDebug("Missing wallpaper view")
+        }
+
+        contentView.addSubview(wallpaperView)
+        contentView.clipsToBounds = true
+        wallpaperView.autoPinEdgesToSuperviewEdges()
     }
 }

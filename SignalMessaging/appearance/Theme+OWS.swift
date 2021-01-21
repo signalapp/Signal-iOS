@@ -31,6 +31,7 @@ public enum ThemeIcon: UInt {
     case settingsAddToGroup
     case settingsMention
     case settingsLink
+    case settingsWallpaper
 
     case stickerButton
     case cameraButton
@@ -188,6 +189,8 @@ public extension Theme {
             return "mention-24"
         case .settingsLink:
             return "link-24"
+        case .settingsWallpaper:
+            return isDarkThemeEnabled ? "wallpaper-solid-24" : "wallpaper-outline-24"
 
         // Input Toolbar
         case .stickerButton:

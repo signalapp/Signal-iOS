@@ -69,7 +69,7 @@ extension ConversationSettingsViewController {
         buildDisappearingMessagesSection(to: mainSection)
 
         if !isNoteToSelf {
-            contents.addSection(buildSecondarySection())
+            contents.addSection(buildNotificationsSection())
         }
 
         if let groupModel = currentGroupModel,
@@ -148,6 +148,24 @@ extension ConversationSettingsViewController {
                 self?.tappedConversationSearch()
             }))
         }
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsWallpaper,
+                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
+                                            comment: "Label for settings view that allows user to change the wallpaper."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+            )
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.showWallpaperSettingsView()
+        }))
 
         if !isNoteToSelf && !isGroupThread && thread.hasSafetyNumbers() {
             // Safety Numbers
@@ -352,7 +370,7 @@ extension ConversationSettingsViewController {
         }))
     }
 
-    private func buildSecondarySection() -> OWSTableSection {
+    private func buildNotificationsSection() -> OWSTableSection {
         let section = OWSTableSection()
         section.customHeaderHeight = 14
         section.customFooterHeight = 14
@@ -373,29 +391,6 @@ extension ConversationSettingsViewController {
             },
                                  actionBlock: { [weak self] in
                                     self?.showSoundSettingsView()
-        }))
-
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let hasWallpaper = self.databaseStorage.read { transaction in
-                return Wallpaper.exists(for: self.thread, transaction: transaction)
-            }
-
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(
-                icon: .settingsMessageSound, // TODO: real icon
-                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
-                                            comment: "Label for settings view that allows user to change the wallpaper."),
-                accessoryText: hasWallpaper ? CommonStrings.switchOn : CommonStrings.switchOff
-            )
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "wallpaper")
-            return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showWallpaperSettingsView()
         }))
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in

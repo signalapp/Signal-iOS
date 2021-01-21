@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum Wallpaper: String {
+public enum Wallpaper: String, CaseIterable {
     public static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")
 
     // Solid
@@ -35,6 +35,8 @@ public enum Wallpaper: String {
     // Custom
     case photo
 
+    public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo } }
+
     public static func warmCaches() {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -53,7 +55,10 @@ public enum Wallpaper: String {
 
         SDSDatabaseStorage.shared.read { transaction in
             for url in photoURLs {
-                let key = url.lastPathComponent
+                guard let key = url.lastPathComponent.removingPercentEncoding else {
+                    owsFailDebug("Failed to remove percent encoding in key")
+                    continue
+                }
                 guard case .photo = get(for: key, transaction: transaction) else {
                     orphanedKeys.append(key)
                     continue
@@ -85,7 +90,13 @@ public enum Wallpaper: String {
     public static func clear(for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(!Thread.isMainThread)
 
-        try set(nil, for: thread, transaction: transaction)
+        enumStore.removeValue(forKey: key(for: thread), transaction: transaction)
+        dimmingStore.removeValue(forKey: key(for: thread), transaction: transaction)
+        try OWSFileSystem.deleteFileIfExists(url: photoURL(for: thread))
+
+        transaction.addAsyncCompletion {
+            NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
+        }
     }
 
     public static func resetAll(transaction: SDSAnyWriteTransaction) throws {
@@ -94,6 +105,10 @@ public enum Wallpaper: String {
         enumStore.removeAll(transaction: transaction)
         dimmingStore.removeAll(transaction: transaction)
         try OWSFileSystem.deleteFileIfExists(url: wallpaperDirectory)
+
+        transaction.addAsyncCompletion {
+            NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: nil)
+        }
     }
 
     public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
@@ -143,9 +158,16 @@ public enum Wallpaper: String {
             return nil
         }
 
-        // TODO: dimming
+        guard let view = view(for: wallpaper, photo: photo) else { return nil }
 
-        return view(for: wallpaper, photo: photo)
+        if Theme.isDarkThemeEnabled && dimInDarkMode(for: thread, transaction: transaction) {
+            let dimmingView = UIView()
+            dimmingView.backgroundColor = .ows_blackAlpha20
+            view.addSubview(dimmingView)
+            dimmingView.autoPinEdgesToSuperviewEdges()
+        }
+
+        return view
     }
 
     public static func view(for wallpaper: Wallpaper, photo: UIImage? = nil) -> UIView? {
@@ -161,7 +183,8 @@ public enum Wallpaper: String {
                 return nil
             }
             let imageView = UIImageView(image: photo)
-            imageView.contentMode = .scaleAspectFit
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
             return imageView
         } else {
             owsFailDebug("Unexpected wallpaper type \(wallpaper)")
@@ -249,12 +272,12 @@ fileprivate extension Wallpaper {
 
         cache.setObject(photo, forKey: key(for: thread) as NSString)
 
-        guard let data = photo.pngData() else {
+        guard let data = photo.jpegData(compressionQuality: 1) else {
             throw OWSAssertionError("Failed to get png data for wallpaper photo")
         }
-        guard !OWSFileSystem.fileOrFolderExists(url: photoURL(for: thread)) else { return }
+        guard !OWSFileSystem.fileOrFolderExists(url: try photoURL(for: thread)) else { return }
         try ensureWallpaperDirectory()
-        try data.write(to: photoURL(for: thread), options: .atomic)
+        try data.write(to: try photoURL(for: thread), options: .atomic)
     }
 
     static func photo(for thread: TSThread?) throws -> UIImage? {
@@ -265,9 +288,9 @@ fileprivate extension Wallpaper {
     static func photo(for key: String) throws -> UIImage? {
         if let photo = cache.object(forKey: key as NSString) { return photo }
 
-        guard OWSFileSystem.fileOrFolderExists(url: photoURL(for: key)) else { return nil }
+        guard OWSFileSystem.fileOrFolderExists(url: try photoURL(for: key)) else { return nil }
 
-        let data = try Data(contentsOf: photoURL(for: key))
+        let data = try Data(contentsOf: try photoURL(for: key))
 
         guard let photo = UIImage(data: data) else {
             owsFailDebug("Failed to initialize wallpaper photo from data")
@@ -288,14 +311,17 @@ fileprivate extension Wallpaper {
         owsAssertDebug(!Thread.isMainThread)
 
         cache.removeObject(forKey: key as NSString)
-        try OWSFileSystem.deleteFileIfExists(url: photoURL(for: key))
+        try OWSFileSystem.deleteFileIfExists(url: try photoURL(for: key))
     }
 
-    static func photoURL(for thread: TSThread?) -> URL {
-        return photoURL(for: key(for: thread))
+    static func photoURL(for thread: TSThread?) throws -> URL {
+        return try photoURL(for: key(for: thread))
     }
 
-    static func photoURL(for key: String) -> URL {
-        return URL(fileURLWithPath: key, relativeTo: wallpaperDirectory)
+    static func photoURL(for key: String) throws -> URL {
+        guard let filename = key.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
+            throw OWSAssertionError("Failed to percent encode filename")
+        }
+        return URL(fileURLWithPath: filename, relativeTo: wallpaperDirectory)
     }
 }
