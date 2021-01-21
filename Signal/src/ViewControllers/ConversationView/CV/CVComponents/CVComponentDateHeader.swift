@@ -84,7 +84,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             hStackView.apply(config: hStackConfig)
 
             let leadingSpacer = UIView.hStretchingSpacer()
-            let trailingSpacer = UIView.vStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
 
             hStackView.addArrangedSubview(leadingSpacer)
             hStackView.addArrangedSubview(contentView)
@@ -99,12 +99,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
-            componentView.vibrancyView?.removeFromSuperview()
-            componentView.vibrancyView = nil
-
             if hasWallpaper {
-                let vibrancyView = buildVibrancyView()
-                componentView.vibrancyView = vibrancyView
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
 
@@ -114,10 +109,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                 blurView.clipsToBounds = true
                 blurView.layer.cornerRadius = 8
 
-                vibrancyView.contentView.addSubview(titleLabel)
-
-                blurView.contentView.addSubview(vibrancyView)
-                vibrancyView.autoPinEdgesToSuperviewEdges()
+                blurView.contentView.addSubview(titleLabel)
             } else {
                 contentView.addSubview(titleLabel)
             }
@@ -181,7 +173,6 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = UILabel()
 
         fileprivate var blurView: UIVisualEffectView?
-        fileprivate var vibrancyView: UIVisualEffectView?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -209,9 +200,6 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
                 blurView?.removeFromSuperview()
                 blurView = nil
-
-                vibrancyView?.removeFromSuperview()
-                vibrancyView = nil
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false

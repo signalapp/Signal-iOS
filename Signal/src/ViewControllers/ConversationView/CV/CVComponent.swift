@@ -279,20 +279,13 @@ extension CVComponentBase {
 // MARK: -
 
 extension CVComponentBase {
-    public func buildVibrancyView() -> UIVisualEffectView {
-        let blurEffectStyle: UIBlurEffect.Style
-        if #available(iOS 13, *) {
-            blurEffectStyle = .systemThinMaterial
-        } else {
-            blurEffectStyle = .regular
-        }
-        return UIVisualEffectView(
-            effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurEffectStyle))
-        )
-    }
-
     public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-        return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
+        let blurView = UIVisualEffectView(effect: Theme.barBlurEffect)
+        let blurOverlay = UIView()
+        blurOverlay.backgroundColor = conversationStyle.bubbleColor(isIncoming: true).withAlphaComponent(0.7)
+        blurView.contentView.addSubview(blurOverlay)
+        blurOverlay.autoPinEdgesToSuperviewEdges()
+        return blurView
     }
 }
 

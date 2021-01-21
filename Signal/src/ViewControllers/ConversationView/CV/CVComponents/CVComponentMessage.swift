@@ -168,7 +168,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else if componentState.isSticker {
             return true
         } else if isBorderlessViewOnceMessage {
-            return true
+            return false
         } else {
             return isBorderless
         }
@@ -370,13 +370,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return
         }
 
-        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
-        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
-
-        let hasWallpaper = conversationStyle.hasWallpaper
-        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
-        componentView.hasWallpaper = hasWallpaper
-
         let isReusing = componentView.rootView.superview != nil
         guard !isReusing else {
             // This "dedicated" component already has the correct
@@ -431,18 +424,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 bubbleView.strokeThickness = 0
             }
             outerBubbleView = bubbleView
-
-            if !isReusing || wallpaperModeHasChanged || themeHasChanged || componentView.blurView == nil {
-                componentView.blurView?.removeFromSuperview()
-                componentView.blurView = nil
-
-                if hasWallpaper && wasRemotelyDeleted {
-                    let blurView = buildBlurView(conversationStyle: conversationStyle)
-                    componentView.blurView = blurView
-                    bubbleView.addSubview(blurView)
-                    blurView.autoPinEdgesToSuperviewEdges()
-                }
-            }
         }
 
         func configureStackView(_ stackView: OWSStackView,
@@ -659,8 +640,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var bubbleBackgroundColor: UIColor {
-        if wasRemotelyDeleted {
-            return conversationStyle.hasWallpaper ? .clear : Theme.backgroundColor
+        if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
+            return Theme.backgroundColor
         }
         if isBubbleTransparent {
             return .clear
@@ -669,10 +650,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var bubbleStrokeColor: UIColor? {
-        if wasRemotelyDeleted {
+        if wasRemotelyDeleted || isBorderlessViewOnceMessage {
             return conversationStyle.hasWallpaper ? nil : Theme.outlineColor
-        } else if isBorderlessViewOnceMessage {
-            return Theme.outlineColor
         } else {
             return nil
         }
@@ -1042,11 +1021,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let bubbleView = OWSBubbleView()
         fileprivate let contentStackView = OWSStackView(name: "contentStackView")
 
-        fileprivate var blurView: UIVisualEffectView?
-
-        fileprivate var hasWallpaper = false
-        fileprivate var isDarkThemeEnabled = false
-
         // We use these stack views when there is a mixture of subcomponents,
         // some of which are full-width and some of which are not.
         fileprivate let topFullWidthStackView = OWSStackView(name: "topFullWidthStackView")
@@ -1189,12 +1163,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 topNestedStackView.reset()
                 bottomFullWidthStackView.reset()
                 bottomNestedStackView.reset()
-
-                blurView?.removeFromSuperview()
-                blurView = nil
-
-                hasWallpaper = false
-                isDarkThemeEnabled = false
             }
 
             avatarView.image = nil

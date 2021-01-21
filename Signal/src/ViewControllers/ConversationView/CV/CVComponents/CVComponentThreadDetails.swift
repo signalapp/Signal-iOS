@@ -66,14 +66,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         hStackView.apply(config: hStackConfig)
         contentStackView.apply(config: contentStackConfig)
 
-        let leadingSpacer = UIView.hStretchingSpacer()
-        let trailingSpacer = UIView.vStretchingSpacer()
-
-        hStackView.addArrangedSubview(leadingSpacer)
         hStackView.addArrangedSubview(vStackView)
-        hStackView.addArrangedSubview(trailingSpacer)
-
-        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
 
         let avatarView = AvatarImageView(image: self.avatarImage)
         componentView.avatarView = avatarView
@@ -83,9 +76,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         vStackView.addArrangedSubview(avatarView)
         vStackView.addArrangedSubview(UIView.spacer(withHeight: 1))
 
+        vStackView.addArrangedSubview(contentStackView)
+
         if conversationStyle.hasWallpaper {
-            let vibrancyView = buildVibrancyView()
-            componentView.vibrancyView = vibrancyView
             let blurView = buildBlurView(conversationStyle: conversationStyle)
             componentView.blurView = blurView
 
@@ -94,13 +87,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             blurView.clipsToBounds = true
             blurView.layer.cornerRadius = 12
-
-            vibrancyView.contentView.addSubview(contentStackView)
-            contentStackView.autoPinEdgesToSuperviewEdges()
-
-            vStackView.addArrangedSubview(vibrancyView)
-        } else {
-            vStackView.addArrangedSubview(contentStackView)
         }
 
         let titleLabel = componentView.titleLabel
@@ -438,7 +424,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let contentStackView = OWSStackView(name: "threadDetails.contentStackView")
 
         fileprivate var blurView: UIVisualEffectView?
-        fileprivate var vibrancyView: UIVisualEffectView?
 
         public var isDedicatedCellView = false
 
@@ -463,9 +448,6 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             blurView?.removeFromSuperview()
             blurView = nil
-
-            vibrancyView?.removeFromSuperview()
-            vibrancyView = nil
         }
     }
 }

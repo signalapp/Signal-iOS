@@ -66,13 +66,17 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             vStackView.addArrangedSubview(hStackView)
 
             let leadingSpacer = UIView.hStretchingSpacer()
-            let trailingSpacer = UIView.vStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
 
             hStackView.addArrangedSubview(leadingSpacer)
             hStackView.addArrangedSubview(contentView)
             hStackView.addArrangedSubview(trailingSpacer)
 
             leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+
+            contentView.addSubview(titleLabel)
+            titleLabel.autoPinWidthToSuperview(withMargin: titleHMargin)
+            titleLabel.autoPinHeightToSuperview(withMargin: titleVMargin)
         }
 
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
@@ -92,8 +96,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             componentView.vibrancyView = nil
 
             if hasWallpaper {
-                let vibrancyView = buildVibrancyView()
-                componentView.vibrancyView = vibrancyView
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
 
@@ -102,17 +104,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
                 blurView.clipsToBounds = true
                 blurView.layer.cornerRadius = 8
-
-                vibrancyView.contentView.addSubview(titleLabel)
-
-                blurView.contentView.addSubview(vibrancyView)
-                vibrancyView.autoPinEdgesToSuperviewEdges()
-            } else {
-                contentView.addSubview(titleLabel)
             }
-
-            titleLabel.autoPinWidthToSuperview(withMargin: titleHMargin)
-            titleLabel.autoPinHeightToSuperview(withMargin: titleVMargin)
         }
     }
 

@@ -37,7 +37,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
         let contentView = componentView.contentView
 
-        if isBorderless && conversationStyle.hasWallpaper {
+        if isBorderlessWithWallpaper {
             contentView.layoutMargins = contentViewBorderlessMargins
             contentView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
             contentView.layer.cornerRadius = 11
@@ -50,6 +50,10 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         }
 
         labelConfig.applyForRendering(label: componentView.label)
+    }
+
+    private var isBorderlessWithWallpaper: Bool {
+        return isBorderless && conversationStyle.hasWallpaper
     }
 
     private var labelConfig: CVLabelConfig {
@@ -67,11 +71,11 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         owsAssertDebug(maxWidth > 0)
 
         var maxWidth = maxWidth
-        if isBorderless { maxWidth -= contentViewBorderlessMargins.totalWidth }
+        if isBorderlessWithWallpaper { maxWidth -= contentViewBorderlessMargins.totalWidth }
 
         var size = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
 
-        if isBorderless { size.height += contentViewBorderlessMargins.totalHeight }
+        if isBorderlessWithWallpaper { size.height += contentViewBorderlessMargins.totalHeight }
 
         return size
     }
@@ -92,7 +96,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         }()
         fileprivate lazy var outerView: UIView = {
             let leadingSpacer = UIView.hStretchingSpacer()
-            let trailingSpacer = UIView.vStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
             let outerView = UIStackView(arrangedSubviews: [leadingSpacer, contentView, trailingSpacer])
             outerView.axis = .horizontal
             return outerView

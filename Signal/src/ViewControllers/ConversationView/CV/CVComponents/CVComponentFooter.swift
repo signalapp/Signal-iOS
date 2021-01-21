@@ -102,19 +102,15 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             outerViews.append(tapForMoreLabel)
         }
 
-        if conversationStyle.hasWallpaper && wasRemotelyDeleted {
-            componentView.vibrancyView = buildVibrancyView()
-        }
-
         // We always use a stretching spacer.
         outerViews.append(UIView.hStretchingSpacer())
         outerViews.append(innerStack)
 
         let timestampLabel = componentView.timestampLabel
         let textColor: UIColor
-        if wasRemotelyDeleted {
+        if wasRemotelyDeleted && !conversationStyle.hasWallpaper {
             owsAssertDebug(!isOverlayingMedia)
-            textColor = conversationStyle.hasWallpaper ? Theme.secondaryTextAndIconColor : Theme.primaryTextColor
+            textColor = Theme.primaryTextColor
         } else if isOverlayingMedia {
             textColor = .ows_white
         } else if isOutsideBubble && !conversationStyle.hasWallpaper {
@@ -329,22 +325,13 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let statusIndicatorImageView = UIImageView()
         fileprivate let messageTimerView = OWSMessageTimerView()
         fileprivate lazy var innerStackBackground = innerStack.addBackgroundView(withBackgroundColor: .clear, cornerRadius: 11)
-        fileprivate var vibrancyView: UIVisualEffectView?
 
         fileprivate var constraints = [NSLayoutConstraint]()
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            if let vibrancyView = vibrancyView {
-                if outerStack.superview != vibrancyView.contentView {
-                    vibrancyView.contentView.addSubview(outerStack)
-                    outerStack.autoPinEdgesToSuperviewEdges()
-                }
-                return vibrancyView
-            } else {
-                return outerStack
-            }
+            outerStack
         }
 
         override required init() {
@@ -356,7 +343,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         public func reset() {
             outerStack.reset()
             innerStack.reset()
-            vibrancyView = nil
             innerStackBackground.isHidden = true
 
             tapForMoreLabel.text = nil

@@ -259,22 +259,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private func configureForRemotelyDeleted(componentView: CVComponentViewBodyText) {
-        if conversationStyle.hasWallpaper {
-            if componentView.vibrancyView == nil {
-                componentView.vibrancyView = buildVibrancyView()
-            }
-        } else {
-            componentView.vibrancyView = nil
-        }
-
         // TODO: Set accessibilityLabel.
         _ = configureForLabel(componentView: componentView,
                           labelConfig: labelConfigForRemotelyDeleted)
     }
 
     private func configureForOversizeTextDownloading(componentView: CVComponentViewBodyText) {
-        componentView.vibrancyView = nil
-
         // TODO: Set accessibilityLabel.
         _ = configureForLabel(componentView: componentView,
                           labelConfig: labelConfigForOversizeTextDownloading)
@@ -298,8 +288,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func configureForBodyText(componentView: CVComponentViewBodyText,
                                      displayableText: DisplayableText) {
-        componentView.vibrancyView = nil
-
         switch textConfig(displayableText: displayableText) {
         case .labelConfig(let labelConfig):
             let label = configureForLabel(componentView: componentView, labelConfig: labelConfig)
@@ -532,7 +520,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         public weak var componentDelegate: CVComponentDelegate?
 
         fileprivate let hStackView = OWSStackView(name: "bodyText")
-        fileprivate var vibrancyView: UIVisualEffectView?
 
         private var _textView: OWSMessageTextView?
         fileprivate var possibleTextView: OWSMessageTextView? { _textView }
@@ -560,15 +547,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            if let vibrancyView = vibrancyView {
-                if hStackView.superview != vibrancyView.contentView {
-                    vibrancyView.contentView.addSubview(hStackView)
-                    hStackView.autoPinEdgesToSuperviewEdges()
-                }
-                return vibrancyView
-            } else {
-                return hStackView
-            }
+            hStackView
         }
 
         required init(componentDelegate: CVComponentDelegate) {
@@ -588,7 +567,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         public func reset() {
             if !isDedicatedCellView {
                 hStackView.reset()
-                vibrancyView = nil
             }
 
             _textView?.text = nil

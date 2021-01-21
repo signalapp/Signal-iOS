@@ -110,13 +110,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             outerStack.addArrangedSubview(hStackView)
 
             let leadingSpacer = UIView.hStretchingSpacer()
-            let trailingSpacer = UIView.vStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
 
             hStackView.addArrangedSubview(leadingSpacer)
             hStackView.addArrangedSubview(vStackView)
             hStackView.addArrangedSubview(trailingSpacer)
 
             leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+
+            vStackView.addArrangedSubview(titleLabel)
         }
 
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
@@ -133,11 +135,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         componentView.isLastInCluster = isLastInCluster
 
         if !isReusing || themeHasChanged || wallpaperModeHasChanged || hasClusteringChanges {
-            titleLabel.removeFromSuperview()
-
-            componentView.vibrancyView?.removeFromSuperview()
-            componentView.vibrancyView = nil
-
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
 
@@ -147,23 +144,14 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             let bubbleView: UIView
 
             if hasWallpaper {
-                let vibrancyView = buildVibrancyView()
-                componentView.vibrancyView = vibrancyView
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
                 bubbleView = blurView
-
-                vibrancyView.contentView.addSubview(titleLabel)
-                titleLabel.autoPinEdgesToSuperviewEdges()
-
-                vStackView.addArrangedSubview(vibrancyView)
             } else {
                 let backgroundView = UIView()
                 componentView.backgroundView = backgroundView
                 bubbleView = backgroundView
                 backgroundView.backgroundColor = Theme.backgroundColor
-
-                vStackView.addArrangedSubview(titleLabel)
             }
 
             vStackView.insertSubview(bubbleView, at: 0)
@@ -201,7 +189,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 button.backgroundColor = UIColor.ows_accentGreen
             } else {
                 button.setTitleColor(Theme.conversationButtonTextColor, for: .normal)
-                button.backgroundColor = Theme.conversationButtonBackgroundColor
+                if isDarkThemeEnabled && hasWallpaper {
+                    button.backgroundColor = .ows_gray65
+                } else {
+                    button.backgroundColor = Theme.conversationButtonBackgroundColor
+                }
             }
             button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
             button.layer.cornerRadius = buttonHeight / 2
@@ -311,7 +303,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let selectionView = MessageSelectionView()
 
         fileprivate var blurView: UIVisualEffectView?
-        fileprivate var vibrancyView: UIVisualEffectView?
         fileprivate var backgroundView: UIView?
 
         fileprivate var button: OWSButton?
@@ -347,9 +338,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
                 blurView?.removeFromSuperview()
                 blurView = nil
-
-                vibrancyView?.removeFromSuperview()
-                vibrancyView = nil
 
                 backgroundView?.removeFromSuperview()
                 backgroundView = nil

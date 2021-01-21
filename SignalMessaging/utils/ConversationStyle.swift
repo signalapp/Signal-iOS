@@ -266,7 +266,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
-        if message.wasRemotelyDeleted {
+        if message.wasRemotelyDeleted && !hasWallpaper {
             return primaryTextColor
         } else if message is TSIncomingMessage {
             return bubbleTextColorIncoming
