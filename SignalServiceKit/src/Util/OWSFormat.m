@@ -34,13 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     // NOTE: These values are not localized.
     if (fileSize > kOneGigabyte * 1) {
-        int gbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneGigabyte));
-        return [NSString stringWithFormat:@"%lu GB", (unsigned long)gbSize];
+        CGFloat gbSize = MAX((CGFloat)1.0, (CGFloat)fileSize / (CGFloat)kOneGigabyte);
+        return [NSString stringWithFormat:@"%0.1f GB", mbSize];
     } else if (fileSize > kOneMegabyte * 1) {
-        int mbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneMegabyte));
-        return [NSString stringWithFormat:@"%lu MB", (unsigned long)mbSize];
+        CGFloat mbSize = MAX((CGFloat)1.0, (CGFloat)fileSize / (CGFloat)kOneMegabyte);
+        return [NSString stringWithFormat:@"%0.1f MB", mbSize];
     } else {
-        int kbSize = MIN(1, (int)round(fileSize / (CGFloat)kOneKilobyte));
+        int kbSize = MAX(1, (int)round(fileSize / (CGFloat)kOneKilobyte));
         return [NSString stringWithFormat:@"%lu KB", (unsigned long)kbSize];
     }
 }
