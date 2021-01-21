@@ -901,46 +901,36 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     const CGFloat cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20.f);
     const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(14.f, 16.f);
     NSString *arrowHead = @"\uf104";
-    [cancelString
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:arrowHead
-                                       attributes:@{
-                                           NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
-                                           NSBaselineOffsetAttributeName : @(-1.f),
-                                       }]];
-    [cancelString
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:@"  "
-                                       attributes:@{
-                                           NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
-                                           NSBaselineOffsetAttributeName : @(-1.f),
-                                       }]];
-    [cancelString
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS",
-                                                      @"Indicates how to cancel a voice message.")
-                                       attributes:@{
-                                           NSFontAttributeName : [UIFont ows_semiboldFontWithSize:cancelFontSize],
-                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
-                                       }]];
-    [cancelString
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:@"  "
-                                       attributes:@{
-                                           NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
-                                           NSBaselineOffsetAttributeName : @(-1.f),
-                                       }]];
-    [cancelString
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:arrowHead
-                                       attributes:@{
-                                           NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
-                                           NSBaselineOffsetAttributeName : @(-1.f),
-                                       }]];
+    [cancelString append:arrowHead
+              attributes:@{
+                  NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
+                  NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
+                  NSBaselineOffsetAttributeName : @(-1.f),
+              }];
+    [cancelString append:@"  "
+              attributes:@{
+                  NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
+                  NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
+                  NSBaselineOffsetAttributeName : @(-1.f),
+              }];
+    [cancelString append:NSLocalizedString(@"VOICE_MESSAGE_CANCEL_INSTRUCTIONS",
+                                           @"Indicates how to cancel a voice message.")
+              attributes:@{
+                  NSFontAttributeName : [UIFont ows_semiboldFontWithSize:cancelFontSize],
+                  NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
+              }];
+    [cancelString append:@"  "
+              attributes:@{
+                  NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
+                  NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
+                  NSBaselineOffsetAttributeName : @(-1.f),
+              }];
+    [cancelString append:arrowHead
+              attributes:@{
+                  NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
+                  NSForegroundColorAttributeName : UIColor.ows_accentRedColor,
+                  NSBaselineOffsetAttributeName : @(-1.f),
+              }];
     UILabel *cancelLabel = [UILabel new];
     self.voiceMemoCancelLabel = cancelLabel;
     cancelLabel.attributedText = cancelString;
