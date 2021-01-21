@@ -134,7 +134,7 @@ public class ConversationListInfo: NSObject {
                 lastMessageSenderName = Self.contactsManager.displayName(forGroupMember: incomingMessage.authorAddress,
                                                                          inGroup: groupThread.groupModel,
                                                                          transaction: transaction)
-            } else if nil != lastMessageForInbox as? TSOutgoingMessage {
+            } else if lastMessageForInbox is TSOutgoingMessage {
                 lastMessageSenderName = NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                           comment: "Label indicating the local user.")
             }
