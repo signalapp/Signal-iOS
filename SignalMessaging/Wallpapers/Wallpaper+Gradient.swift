@@ -859,8 +859,8 @@ fileprivate extension CALayer {
             // If we rotated by some multiple of 90º that's *not* a multiple
             // of 180º, the aspect ratio of the bounding box is the inverse
             // of the aspect ratio of the fill bounds. We just need to determine
-            // the longest side of the fill bounds in order to know which way
-            // we must increase.
+            // the longest side of the fill bounds in order to know the shortest
+            // side of the bounding rect.
 
             let aspectRatio = fillBounds.width / fillBounds.height
 

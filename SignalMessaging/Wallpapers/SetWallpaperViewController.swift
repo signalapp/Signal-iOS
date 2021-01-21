@@ -37,14 +37,29 @@ class SetWallpaperViewController: OWSTableViewController {
         updateTableContents()
     }
 
-    private var referenceFrame: CGRect = .zero
+    private var previousReferenceSize: CGSize = .zero
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        guard view.frame != referenceFrame else { return }
-        referenceFrame = view.frame
-        collectionView.updateLayout(reference: view)
-        updateTableContents()
+        let referenceSize = view.bounds.size
+        guard referenceSize != previousReferenceSize else { return }
+        previousReferenceSize = referenceSize
+        updateCollectionViewSize(reference: referenceSize)
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate { _ in
+            self.updateCollectionViewSize(reference: size)
+        } completion: { _ in
+
+        }
+    }
+
+    func updateCollectionViewSize(reference: CGSize) {
+        collectionView.updateLayout(reference: reference)
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .none)
     }
 
     @objc
@@ -137,13 +152,13 @@ class WallpaperCollectionView: UICollectionView {
         register(WallpaperCell.self, forCellWithReuseIdentifier: WallpaperCell.reuseIdentifier)
     }
 
-    func updateLayout(reference: UIView) {
+    func updateLayout(reference: CGSize) {
         AssertIsOnMainThread()
 
         let numberOfColumns: CGFloat = 3
         let numberOfRows = CGFloat(Wallpaper.defaultWallpapers.count) / numberOfColumns
 
-        let availableWidth = reference.width - contentInset.totalWidth - 8 - reference.safeAreaInsets.totalWidth
+        let availableWidth = reference.width - contentInset.totalWidth - 8 - safeAreaInsets.totalWidth
 
         let itemWidth = availableWidth / numberOfColumns
         let itemHeight = itemWidth / CurrentAppContext().frame.size.aspectRatio
