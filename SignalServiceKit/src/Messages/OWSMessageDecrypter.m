@@ -751,14 +751,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                    deviceId:envelope.sourceDevice
                                                 transaction:transaction];
 
-                // Always notify the user that we have performed an automatic archive.
-                BOOL isVerified = ([self.identityManager verificationStateForAddress:envelope.sourceAddress
-                                                                         transaction:transaction]
-                    == OWSVerificationStateVerified);
-                SessionRefreshType sessionRefreshType
-                    = (isVerified ? SessionRefreshTypeWasVerified : SessionRefreshTypeWasNotVerified);
                 errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope
-                                                       sessionRefreshType:sessionRefreshType
                                                           withTransaction:transaction];
 
                 NSDate *_Nullable lastNullMessageDate = [self.keyValueStore getDate:senderId transaction:transaction];

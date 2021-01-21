@@ -29,11 +29,6 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageSessionRefresh
 };
 
-typedef NS_ENUM(int32_t, SessionRefreshType) {
-    SessionRefreshTypeWasNotVerified = 0,
-    SessionRefreshTypeWasVerified,
-};
-
 extern NSUInteger TSErrorMessageSchemaVersion;
 
 @interface ThreadlessErrorMessage : NSObject <OWSPreviewText>
@@ -121,16 +116,17 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
-                        sessionRefreshType:(SessionRefreshType)sessionRefreshType
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
+                                          address:(SignalServiceAddress *)address
+                              wasIdentityVerified:(BOOL)wasIdentityVerified;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) SignalServiceAddress *recipientAddress;
 
-// This property only applies if errorType == TSErrorMessageSessionRefresh.
-@property (nonatomic, readonly) SessionRefreshType sessionRefreshType;
+// This property only applies if errorType == .nonBlockingIdentityChange.
+@property (nonatomic, readonly) BOOL wasIdentityVerified;
 
 @end
 

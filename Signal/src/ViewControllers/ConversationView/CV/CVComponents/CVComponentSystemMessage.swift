@@ -670,10 +670,16 @@ extension CVComponentSystemMessage {
                 return nil
             }
 
-            return CVMessageAction(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                                            comment: "Label for button to verify a user's safety number."),
-                                   accessibilityIdentifier: "verify_safety_number",
-                                   action: .cvc_didTapNonBlockingIdentityChange(address: address))
+            if message.wasIdentityVerified {
+                return CVMessageAction(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                                                comment: "Label for button to verify a user's safety number."),
+                                       accessibilityIdentifier: "verify_safety_number",
+                                       action: .cvc_didTapNonBlockingIdentityChange(address: address))
+            } else {
+                return CVMessageAction(title: CommonStrings.learnMore,
+                                       accessibilityIdentifier: "learn_more",
+                                       action: .cvc_didTapNonBlockingIdentityChange(address: address))
+            }
         case .wrongTrustedIdentityKey:
             guard let message = message as? TSInvalidIdentityKeyErrorMessage else {
                 owsFailDebug("Invalid interaction.")
@@ -692,19 +698,9 @@ extension CVComponentSystemMessage {
                           accessibilityIdentifier: "reset_session",
                           action: .cvc_didTapCorruptedMessage(errorMessage: message))
         case .sessionRefresh:
-            switch message.sessionRefreshType {
-            case .wasVerified:
-                return Action(title: CommonStrings.learnMore,
-                              accessibilityIdentifier: "learn_more",
-                              action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
-            case .wasNotVerified:
-                return Action(title: CommonStrings.learnMore,
-                              accessibilityIdentifier: "learn_more",
-                              action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
-            @unknown default:
-                owsFailDebug("Unknown sessionRefreshType.")
-                return nil
-            }
+            return Action(title: CommonStrings.learnMore,
+                          accessibilityIdentifier: "learn_more",
+                          action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
         case .duplicateMessage,
              .invalidVersion:
             return nil

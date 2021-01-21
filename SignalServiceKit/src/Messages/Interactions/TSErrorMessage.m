@@ -18,9 +18,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 
-// This property only applies if errorType == TSErrorMessageSessionRefresh.
-@property (nonatomic) SessionRefreshType sessionRefreshType;
-
 @end
 
 #pragma mark -
@@ -110,7 +107,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     _errorType = errorMessageBuilder.errorType;
     _recipientAddress = errorMessageBuilder.recipientAddress;
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
-    _sessionRefreshType = errorMessageBuilder.sessionRefreshType;
+    _wasIdentityVerified = errorMessageBuilder.wasIdentityVerified;
 
     if (self.isDynamicInteraction) {
         self.read = YES;
@@ -268,22 +265,21 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 + (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
-                        sessionRefreshType:(SessionRefreshType)sessionRefreshType
                            withTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSErrorMessageBuilder *builder =
-        [TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageSessionRefresh
-                                                       envelope:envelope
-                                                    transaction:transaction];
-    builder.sessionRefreshType = sessionRefreshType;
-    return [builder build];
+    return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageSessionRefresh
+                                                           envelope:envelope
+                                                        transaction:transaction] build];
 }
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
+                                          address:(SignalServiceAddress *)address
+                              wasIdentityVerified:(BOOL)wasIdentityVerified
 {
     TSErrorMessageBuilder *builder =
         [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageNonBlockingIdentityChange];
     builder.recipientAddress = address;
+    builder.wasIdentityVerified = wasIdentityVerified;
     return [builder build];
 }
 

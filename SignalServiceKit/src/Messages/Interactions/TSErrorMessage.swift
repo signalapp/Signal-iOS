@@ -15,7 +15,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
     @objc
     public var recipientAddress: SignalServiceAddress?
     @objc
-    public var sessionRefreshType: SessionRefreshType
+    public var wasIdentityVerified: Bool
 
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
@@ -30,11 +30,11 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
                          isViewOnceMessage: Bool = false,
                          errorType: TSErrorMessageType,
                          recipientAddress: SignalServiceAddress? = nil,
-                         sessionRefreshType: SessionRefreshType = .wasNotVerified) {
+                         wasIdentityVerified: Bool = false) {
 
         self.errorType = errorType
         self.recipientAddress = recipientAddress
-        self.sessionRefreshType = sessionRefreshType
+        self.wasIdentityVerified = wasIdentityVerified
 
         super.init(thread: thread,
                    timestamp: timestamp,

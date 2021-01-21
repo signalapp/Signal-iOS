@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -261,13 +261,16 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     if (![existingIdentity.identityKey isEqual:identityKey]) {
         OWSVerificationState verificationState;
+        BOOL wasIdentityVerified;
         switch (existingIdentity.verificationState) {
             case OWSVerificationStateDefault:
                 verificationState = OWSVerificationStateDefault;
+                wasIdentityVerified = NO;
                 break;
             case OWSVerificationStateVerified:
             case OWSVerificationStateNoLongerVerified:
                 verificationState = OWSVerificationStateNoLongerVerified;
+                wasIdentityVerified = YES;
                 break;
         }
 
@@ -275,7 +278,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
             accountId,
             OWSVerificationStateToString(existingIdentity.verificationState),
             OWSVerificationStateToString(verificationState));
-        [self createIdentityChangeInfoMessageForAccountId:accountId transaction:transaction];
+
+        [self createIdentityChangeInfoMessageForAccountId:accountId
+                                      wasIdentityVerified:wasIdentityVerified
+                                              transaction:transaction];
 
         [[[OWSRecipientIdentity alloc] initWithAccountId:accountId
                                              identityKey:identityKey
@@ -554,6 +560,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 }
 
 - (void)createIdentityChangeInfoMessageForAccountId:(NSString *)accountId
+                                wasIdentityVerified:(BOOL)wasIdentityVerified
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *_Nullable address = [[OWSAccountIdFinder new] addressForAccountId:accountId
@@ -564,10 +571,13 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         return;
     }
 
-    [self createIdentityChangeInfoMessageForAddress:address transaction:transaction];
+    [self createIdentityChangeInfoMessageForAddress:address
+                                wasIdentityVerified:wasIdentityVerified
+                                        transaction:transaction];
 }
 
 - (void)createIdentityChangeInfoMessageForAddress:(SignalServiceAddress *)address
+                              wasIdentityVerified:(BOOL)wasIdentityVerified
                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -579,11 +589,15 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                                               transaction:transaction];
     OWSAssertDebug(contactThread != nil);
 
-    TSErrorMessage *errorMessage = [TSErrorMessage nonblockingIdentityChangeInThread:contactThread address:address];
+    TSErrorMessage *errorMessage = [TSErrorMessage nonblockingIdentityChangeInThread:contactThread
+                                                                             address:address
+                                                                 wasIdentityVerified:wasIdentityVerified];
     [messages addObject:errorMessage];
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithAddress:address transaction:transaction]) {
-        [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread address:address]];
+        [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread
+                                                                      address:address
+                                                          wasIdentityVerified:wasIdentityVerified]];
     }
 
     // MJK TODO - why not save immediately, why build up this array?
