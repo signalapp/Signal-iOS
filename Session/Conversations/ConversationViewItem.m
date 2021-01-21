@@ -1162,28 +1162,43 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)userCanDeleteGroupMessage
 {
     if (!self.isGroupThread) return false;
-    
-    // Ensure the thread is a public chat and not an RSS feed
     TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
     
     // Only allow deletion on incoming and outgoing messages
     OWSInteractionType interationType = self.interaction.interactionType;
     if (interationType != OWSInteractionType_OutgoingMessage && interationType != OWSInteractionType_IncomingMessage) return false;
     
-    // Make sure it's a public chat message
+    // Make sure it's an open group message
     TSMessage *message = (TSMessage *)self.interaction;
     if (!message.isOpenGroupMessage) return true;
     
     // Ensure we have the details needed to contact the server
-    SNOpenGroup *publicChat = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
-    if (publicChat == nil) return true;
+    SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
+    if (openGroup == nil) return true;
     
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
-        return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:publicChat.channel onServer:publicChat.server];
+        return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
     } else {
         return YES;
     }
+}
+
+- (BOOL)userHasModerationPermission
+{
+    if (!self.isGroupThread) return false;
+    TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+    
+    // Make sure it's an open group message
+    TSMessage *message = (TSMessage *)self.interaction;
+    if (!message.isOpenGroupMessage) return false;
+    
+    // Ensure we have the details needed to contact the server
+    SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
+    if (openGroup == nil) return false;
+    
+    // Check that we're a moderator
+    return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
 }
 
 @end

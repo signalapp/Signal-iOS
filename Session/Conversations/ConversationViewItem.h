@@ -67,6 +67,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly) BOOL isGroupThread;
 @property (nonatomic, readonly) BOOL userCanDeleteGroupMessage;
+@property (nonatomic, readonly) BOOL userHasModerationPermission;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
 

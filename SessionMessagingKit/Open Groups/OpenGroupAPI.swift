@@ -218,13 +218,13 @@ public final class OpenGroupAPI : DotNetAPI {
 
     @objc(deleteMessageWithID:forGroup:onServer:isSentByUser:)
     public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
-        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
+        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, wasSentByUser: isSentByUser))
     }
     
-    public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, isSentByUser: Bool) -> Promise<Void> {
-        let isModerationRequest = !isSentByUser
+    public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, wasSentByUser: Bool) -> Promise<Void> {
+        let isModerationRequest = !wasSentByUser
         SNLog("Deleting message with ID: \(messageID) for open group channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
-        let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
+        let urlAsString = wasSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
             getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
                 getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
@@ -234,6 +234,33 @@ public final class OpenGroupAPI : DotNetAPI {
                     return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
                         SNLog("Deleted message with ID: \(messageID) on server: \(server).")
                     }
+                }
+            }.handlingInvalidAuthTokenIfNeeded(for: server)
+        }
+    }
+    
+    // MARK: Banning
+    @objc(banPublicKey:fromServer:)
+    public static func objc_ban(_ publicKey: String, from server: String) -> AnyPromise {
+        return AnyPromise.from(ban(publicKey, from: server))
+    }
+    
+    public static func ban(_ publicKey: String, from server: String) -> Promise<Void> {
+        SNLog("Banning user with ID: \(publicKey) from server: \(server).")
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                    let url = URL(string: "\(server)/loki/v1/moderation/blacklist/@\(publicKey)")!
+                    let request = TSRequest(url: url, method: "POST", parameters: [:])
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false)
+                    promise.done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
+                        SNLog("Banned user with ID: \(publicKey) from server: \(server).")
+                    }
+                    promise.catch(on: DispatchQueue.main) { error in
+                        print(error)
+                    }
+                    return promise.map { _ in }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }

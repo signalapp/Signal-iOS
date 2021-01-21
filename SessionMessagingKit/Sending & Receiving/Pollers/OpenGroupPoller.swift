@@ -19,7 +19,7 @@ public final class OpenGroupPoller : NSObject {
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
-    private let pollForDeletedMessagesInterval: TimeInterval = 60
+    private let pollForDeletedMessagesInterval: TimeInterval = 30
     private let pollForModeratorsInterval: TimeInterval = 10 * 60
 
     // MARK: Lifecycle
@@ -193,9 +193,10 @@ public final class OpenGroupPoller : NSObject {
         let openGroup = self.openGroup
         let _ = OpenGroupAPI.getDeletedMessageServerIDs(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
             let deletedMessageIDs = deletedMessageServerIDs.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0)) }
-            SNMessagingKitConfiguration.shared.storage.writeSync { transaction in
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
                 deletedMessageIDs.forEach { messageID in
-                    TSMessage.fetch(uniqueId: String(messageID))?.remove(with: transaction as! YapDatabaseReadWriteTransaction)
+                    let transaction = transaction as! YapDatabaseReadWriteTransaction
+                    TSMessage.fetch(uniqueId: messageID, transaction: transaction)?.remove(with: transaction)
                 }
             }
         }
