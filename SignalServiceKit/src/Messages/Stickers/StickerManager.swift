@@ -462,7 +462,7 @@ public class StickerManager: NSObject {
                 }
             )
         }
-        return when(fulfilled: fetches).done {
+        return when(fulfilled: fetches).ensure {
             if needsNotify {
                 stickersDidChangeEvent.requestNotify()
             }

@@ -95,8 +95,14 @@ public class BaseStickerPackDataSource: NSObject {
     fileprivate var stickerInfos = [StickerInfo]() {
         didSet {
             AssertIsOnMainThread()
+
             if oldValue.count != stickerInfos.count {
                 fireDidChange()
+            } else {
+                let oldKeySet = oldValue.map { $0.packId }
+                if !stickerInfos.allSatisfy({ oldKeySet.contains($0.packId) }) {
+                    fireDidChange()
+                }
             }
         }
     }
@@ -146,7 +152,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
     func ensureState() {
         databaseStorage.read { readTx in
-            let stateTuple = Self.fetchState(for: self.stickerPackInfo, readTx: readTx)
+            let stateTuple = Self.fetchInstalledState(for: self.stickerPackInfo, readTx: readTx)
 
             guard let stickerPack = stateTuple.stickerPack, stickerPack.isInstalled else {
                 self.stickerPack = nil
@@ -166,7 +172,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     func ensureStateAsync(completion: (() -> Void)? = nil) {
         DispatchQueue.sharedUserInitiated.async {
             let stateTuple = self.databaseStorage.read { readTx in
-                return Self.fetchState(for: self.stickerPackInfo, readTx: readTx)
+                return Self.fetchInstalledState(for: self.stickerPackInfo, readTx: readTx)
             }
 
             DispatchQueue.main.async {
@@ -188,7 +194,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         }
     }
 
-    private static func fetchState(for stickerPackInfo: StickerPackInfo, readTx: SDSAnyReadTransaction) -> (
+    private static func fetchInstalledState(for stickerPackInfo: StickerPackInfo, readTx: SDSAnyReadTransaction) -> (
         stickerPack: StickerPack?,
         installedCoverInfo: StickerInfo?,
         installedStickers: [StickerInfo]) {

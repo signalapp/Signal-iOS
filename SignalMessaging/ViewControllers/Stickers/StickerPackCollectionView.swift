@@ -171,11 +171,7 @@ public class StickerPackCollectionView: UICollectionView {
         hidePreview()
 
         guard let stickerView = imageView(forStickerInfo: stickerInfo) else {
-            if dataSource is TransientStickerPackDataSource {
-                Logger.warn("Couldn't generate sticker view for transient source.")
-            } else {
-                owsFailDebug("Couldn't load sticker for display")
-            }
+            Logger.warn("Couldn't load sticker for display")
             return
         }
         guard let stickerDelegate = stickerDelegate else {
@@ -265,11 +261,7 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
             return cell
         }
         guard let stickerView = imageView(forStickerInfo: stickerInfo) else {
-            if stickerPackDataSource is TransientStickerPackDataSource {
-                Logger.warn("Couldn't generate sticker view for transient source.")
-            } else {
-                owsFailDebug("Couldn't load sticker for display")
-            }
+            Logger.warn("Couldn't load sticker for display")
             return cell
         }
 
