@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -194,6 +194,8 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 @property (nonatomic) BOOL useThemeBackgroundColors;
 
 @property (nonatomic, nullable) UIColor *customSectionHeaderFooterBackgroundColor;
+
+@property (nonatomic) BOOL shouldAvoidKeyboard;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

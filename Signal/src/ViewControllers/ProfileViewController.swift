@@ -73,6 +73,8 @@ public class ProfileViewController: OWSTableViewController {
         self.completionHandler = completionHandler
 
         super.init()
+
+        self.shouldAvoidKeyboard = true
     }
 
     // MARK: - Orientation
