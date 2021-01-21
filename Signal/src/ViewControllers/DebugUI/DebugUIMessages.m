@@ -3631,10 +3631,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(blockingSNChangeMessage);
     [result addObject:blockingSNChangeMessage];
 
-    [result addObject:[[TSErrorMessage alloc]
-                             initWithThread:thread
-                          failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                    address:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]]];
+    TSErrorMessageBuilder *builder =
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageNonBlockingIdentityChange];
+    builder.recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
+    [result addObject:[builder build]];
 
     return result;
 }

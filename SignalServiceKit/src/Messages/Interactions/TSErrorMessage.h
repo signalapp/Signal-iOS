@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoEnvelope;
 @class SignalServiceAddress;
+@class TSErrorMessageBuilder;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -27,6 +28,13 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageGroupCreationFailed,
     TSErrorMessageSessionRefresh
 };
+
+typedef NS_ENUM(int32_t, SessionRefreshType) {
+    SessionRefreshTypeWasNotVerified = 0,
+    SessionRefreshTypeWasVerified,
+};
+
+extern NSUInteger TSErrorMessageSchemaVersion;
 
 @interface ThreadlessErrorMessage : NSObject <OWSPreviewText>
 
@@ -60,24 +68,10 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
+- (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_DESIGNATED_INITIALIZER
+    NS_SWIFT_NAME(init(errorMessageWithBuilder:));
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
-                 withTransaction:(SDSAnyWriteTransaction *)transaction
-               failedMessageType:(TSErrorMessageType)errorMessageType;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
-                          address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithThread:(TSThread *)thread
-             failedMessageType:(TSErrorMessageType)errorMessageType
-                       address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -127,12 +121,16 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
+                        sessionRefreshType:(SessionRefreshType)sessionRefreshType
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) SignalServiceAddress *recipientAddress;
+
+// This property only applies if errorType == TSErrorMessageSessionRefresh.
+@property (nonatomic, readonly) SessionRefreshType sessionRefreshType;
 
 @end
 

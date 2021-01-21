@@ -692,9 +692,19 @@ extension CVComponentSystemMessage {
                           accessibilityIdentifier: "reset_session",
                           action: .cvc_didTapCorruptedMessage(errorMessage: message))
         case .sessionRefresh:
-            return Action(title: CommonStrings.learnMore,
-                          accessibilityIdentifier: "learn_more",
-                          action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
+            switch message.sessionRefreshType {
+            case .wasVerified:
+                return Action(title: CommonStrings.learnMore,
+                              accessibilityIdentifier: "learn_more",
+                              action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
+            case .wasNotVerified:
+                return Action(title: CommonStrings.learnMore,
+                              accessibilityIdentifier: "learn_more",
+                              action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
+            @unknown default:
+                owsFailDebug("Unknown sessionRefreshType.")
+                return nil
+            }
         case .duplicateMessage,
              .invalidVersion:
             return nil
