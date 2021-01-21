@@ -97,7 +97,8 @@ extern NSUInteger TSErrorMessageSchemaVersion;
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:));
+             wasIdentityVerified:(BOOL)wasIdentityVerified
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:wasIdentityVerified:));
 
 // clang-format on
 

@@ -93,6 +93,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addGroupCallMessage2
         case addGroupCallEraIdIndex
         case addProfileBio
+        case addWasIdentityVerified
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -907,6 +908,16 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "model_OWSUserProfile") { table in
                     table.add(column: "bio", .text)
                     table.add(column: "bioEmoji", .text)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addWasIdentityVerified.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { table in
+                    table.add(column: "wasIdentityVerified", .boolean)
                 }
             } catch {
                 owsFail("Error: \(error)")
