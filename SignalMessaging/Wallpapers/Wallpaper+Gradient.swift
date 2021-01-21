@@ -843,86 +843,92 @@ extension CGAffineTransform {
 }
 
 fileprivate extension CALayer {
-    func aspectFillInBounds(_ fillBounds: CGRect, with transform: CGAffineTransform) {
+    func aspectFillInBounds(_ fillBounds: CGRect, with layerTransform: CGAffineTransform) {
         bounds = fillBounds
 
-        self.transform = CATransform3DIdentity
+        transform = CATransform3DIdentity
         let untransformedLayerFrame = frame
 
-        self.transform = CATransform3DMakeAffineTransform(transform)
-        let transformedLayerFrame = frame
+        let boundingRectSize: CGSize
 
-        // If we rotated some multiple of 90º, we just need to make sure
-        // the gradients bounds can contain the view's bounds.
-        if transform.rotation.truncatingRemainder(dividingBy: .halfPi) == 0 {
-            let aspectRatio = transformedLayerFrame.width / transformedLayerFrame.height
+        if layerTransform.rotation.truncatingRemainder(dividingBy: .pi) == 0 {
+            // If we rotated by some multiple of 180º, the bounding box is
+            // just the fill bounds.
+            boundingRectSize = fillBounds.size
+        } else if layerTransform.rotation.truncatingRemainder(dividingBy: .halfPi) == 0 {
+            // If we rotated by some multiple of 90º that's *not* a multiple
+            // of 180º, the aspect ratio of the bounding box is the inverse
+            // of the aspect ratio of the fill bounds. We just need to determine
+            // the longest side of the fill bounds in order to know which way
+            // we must increase.
+
+            let aspectRatio = fillBounds.width / fillBounds.height
 
             if fillBounds.height > fillBounds.width {
-                bounds = bounds.insetBy(
-                    dx: transformedLayerFrame.width - (aspectRatio * fillBounds.height),
-                    dy: transformedLayerFrame.height - fillBounds.height
+                boundingRectSize = CGSize(
+                    width: fillBounds.height / aspectRatio,
+                    height: fillBounds.height
                 )
             } else {
-                bounds = bounds.insetBy(
-                    dx: transformedLayerFrame.width - fillBounds.width,
-                    dy: transformedLayerFrame.height - (fillBounds.width / aspectRatio)
+                boundingRectSize = CGSize(
+                    width: fillBounds.width,
+                    height: fillBounds.width * aspectRatio
                 )
             }
         } else {
-            // If we rotated something that is *not* a multiple of 90º, we need
-            // to solve several triangles in order to determine the appropriate
-            // bounding rect such that the rotated gradient layer fully contains
-            // our bounds.
+            // Since we know the angle of rotation, we can determine the
+            // size of the bounding rectangle for the rotated layer such
+            // that the layer is *exactly* large enough to completly
+            // encompass our viewBounds when they share the same center.
 
-            // First, we calculate both sides of the gradient after transform.
+            // First, we calculate both sides of the gradient after transform,
+            // each side is the hypotenuse of one of the right triangles we will
+            // need to solve in order to determine the height and width of the
+            // bounding box.
 
-            let transformedOrigin = untransformedLayerFrame.origin.applying(transform)
+            let transformedOrigin = untransformedLayerFrame.origin.applying(layerTransform)
             let transformedMaxXMinY = CGPoint(
                 x: untransformedLayerFrame.maxX,
                 y: untransformedLayerFrame.minY
-            ).applying(transform)
+            ).applying(layerTransform)
             let transformedMinXMaxY = CGPoint(
                 x: untransformedLayerFrame.minX,
                 y: untransformedLayerFrame.maxY
-            ).applying(transform)
+            ).applying(layerTransform)
 
             let transformedWidth = transformedOrigin.distance(transformedMaxXMinY)
             let transformedHeight = transformedOrigin.distance(transformedMinXMaxY)
 
-            let aspectRatio = transformedWidth / transformedHeight
+            // Next we solve for both triangles, wherein either the height or width
+            // is the hypotenuse and the angle of rotation lives between leg B and
+            // the hypotenuse.
 
-            // Next, we solve for the right triangle where leg A = bounds.height
-            // and β = transform.rotation in order to determine leg B, the distance
-            // between the top edge of the view and the side of the gradient view.
-            let firstTriangleHypotenuse = fillBounds.height / cos(transform.rotation)
-            let firstTriangleLegA = fillBounds.height
-            let firstTriangleLegB = sqrt(pow(firstTriangleHypotenuse, 2) - pow(firstTriangleLegA, 2))
+            // We normalize the angle of rotation to be:
+            // * not negative
+            // * not more than 360º
+            //
+            // We can do this because the bounding box from rotation 20º and -20º
+            // are always equivalent.
 
-            // We then solve for the second right triangle, where our new found leg B
-            // plus the bounds.width is the hypotenuse and the width of the gradient
-            // view scaled up to encompass our bounds is the leg B
-            let secondTriangleHypotenuse = firstTriangleLegB + fillBounds.width
-            let secondTriangleLegA = secondTriangleHypotenuse * sin(transform.rotation)
-            let secondTriangleLegB = sqrt(pow(secondTriangleHypotenuse, 2) - pow(secondTriangleLegA, 2))
+            let normalizedRotation = abs(layerTransform.rotation).truncatingRemainder(dividingBy: .pi * 2)
 
-            // Then, given our scaled gradient width we can use the aspect ratio
-            // to compute the gradient height.
-            let gradientWidth = secondTriangleLegB
-            let gradientHeight = gradientWidth / aspectRatio
+            let firstTriangleLegA = transformedWidth * sin(normalizedRotation)
+            let firstTriangleLegB = sqrt(pow(transformedWidth, 2) - pow(firstTriangleLegA, 2))
 
-            // Finally, we solve one more triangle to find the height of
-            // the bounding rectangle.
-            let thirdTriangleLegA = gradientHeight * sin(transform.rotation)
-            let thirdTriangleLegB = sqrt(pow(gradientHeight, 2) - pow(thirdTriangleLegA, 2))
+            let secondTriangleLegA = transformedHeight * sin(normalizedRotation)
+            let secondTriangleLegB = sqrt(pow(transformedHeight, 2) - pow(secondTriangleLegA, 2))
 
-            let boundingHeight = secondTriangleLegA + thirdTriangleLegB
+            // Using the legs of these two triangles, we now know the bounding
+            // rect for our layer!
 
-            bounds = bounds.insetBy(
-                dx: bounds.width - (aspectRatio * boundingHeight),
-                dy: bounds.height - boundingHeight
+            boundingRectSize = CGSize(
+                width: firstTriangleLegB + secondTriangleLegA,
+                height: firstTriangleLegA + secondTriangleLegB
             )
         }
 
+        transform = CATransform3DMakeAffineTransform(layerTransform)
+        bounds.size = boundingRectSize
         position = fillBounds.center
     }
 }
