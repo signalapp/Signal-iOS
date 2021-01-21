@@ -21,6 +21,7 @@ class AppUpdateNag: NSObject {
     public func showAppUpgradeNagIfNecessary() {
         return
         
+        /*
         guard let currentVersion = self.currentVersion else {
             owsFailDebug("currentVersion was unexpectedly nil")
             return
@@ -49,6 +50,7 @@ class AppUpdateNag: NSObject {
         }.catch { error in
             Logger.error("failed with error: \(error)")
         }.retainUntilComplete()
+         */
     }
 
     // MARK: - Internal
@@ -110,7 +112,7 @@ class AppUpdateNag: NSObject {
 
         // Only show nag if we are "at rest" in the home view or registration view without any
         // alerts or dialogs showing.
-        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+        guard UIApplication.shared.frontmostViewController != nil else {
             owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }

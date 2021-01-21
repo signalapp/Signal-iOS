@@ -311,6 +311,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
         case .failed:
             Logger.debug("failed")
             unhighlightAllActionViews()
+        default: break
         }
     }
 

@@ -180,7 +180,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
                 guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber())")
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
@@ -199,7 +199,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if tsAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber())")
 
                 // We don't need to use the TSSocketManager in the SAE.
 
@@ -258,7 +258,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppReadiness.setAppIsReady()
 
         if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber)")
+            Logger.info("localNumber: \(TSAccountManager.localNumber())")
 
             // We don't need to use messageFetcherJob in the SAE.
 
@@ -290,7 +290,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("")
 
         if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber)")
+            Logger.info("localNumber: \(TSAccountManager.localNumber())")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
@@ -659,12 +659,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         var visualMediaItemProviders = [NSItemProvider]()
         var hasNonVisualMedia = false
         for attachment in attachments {
-            guard let itemProvider = attachment as? NSItemProvider else {
-                owsFailDebug("Unexpected attachment type: \(String(describing: attachment))")
-                continue
-            }
-            if isVisualMediaItem(itemProvider: itemProvider) {
-                visualMediaItemProviders.append(itemProvider)
+            if isVisualMediaItem(itemProvider: attachment) {
+                visualMediaItemProviders.append(attachment)
             } else {
                 hasNonVisualMedia = true
             }
@@ -690,15 +686,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             return isUrlItem(itemProvider: itemProvider)
         }) {
-            if let itemProvider = preferredAttachment as? NSItemProvider {
-                return [itemProvider]
-            } else {
-                owsFailDebug("Unexpected attachment type: \(String(describing: preferredAttachment))")
-            }
+            return [preferredAttachment]
         }
 
         // else return whatever is available
-        if let itemProvider = inputItem.attachments?.first as? NSItemProvider {
+        if let itemProvider = inputItem.attachments?.first {
             return [itemProvider]
         } else {
             owsFailDebug("Missing attachment.")
