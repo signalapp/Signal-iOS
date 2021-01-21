@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MainAppContext.h"
@@ -422,6 +422,15 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 - (BOOL)didLastLaunchNotTerminate
 {
     return SignalApp.sharedApp.didLastLaunchNotTerminate;
+}
+
+- (BOOL)hasActiveCall
+{
+    if (!AppReadiness.isAppReady) {
+        OWSFailDebug(@"App is not ready.");
+        return NO;
+    }
+    return AppEnvironment.shared.callService.hasCallInProgress;
 }
 
 - (NSString *)debugLogsDirPath

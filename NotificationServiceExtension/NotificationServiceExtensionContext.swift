@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,6 +17,7 @@ class NotificationServiceExtensionContext: NSObject, AppContext {
     var hasUI: Bool { false }
     func canPresentNotifications() -> Bool { true }
     var didLastLaunchNotTerminate: Bool { false }
+    var hasActiveCall: Bool { false }
 
     let appLaunchTime = Date()
     lazy var buildTime: Date = {

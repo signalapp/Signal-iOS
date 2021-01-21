@@ -263,10 +263,17 @@ public class OWSAttachmentDownloads: NSObject {
                     return nil
                 }
 
+                if self.isDownloadBlockedByActiveCall(job: job) {
+                    Logger.info("Skipping media download due to active call.")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .pendingManualDownload,
+                                                                   transaction: transaction)
+                    return nil
+                }
                 if self.isDownloadBlockedByPendingMessageRequest(job: job,
-                                                            attachmentPointer: attachmentPointer,
-                                                            message: message,
-                                                            transaction: transaction) {
+                                                                 attachmentPointer: attachmentPointer,
+                                                                 message: message,
+                                                                 transaction: transaction) {
                     Logger.info("Skipping media download for thread with pending message request.")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingMessageRequest,
@@ -274,8 +281,8 @@ public class OWSAttachmentDownloads: NSObject {
                     return nil
                 }
                 if self.isDownloadBlockedByAutoDownloadSettingsSettings(job: job,
-                                                                   attachmentPointer: attachmentPointer,
-                                                                   transaction: transaction) {
+                                                                        attachmentPointer: attachmentPointer,
+                                                                        transaction: transaction) {
                     Logger.info("Skipping media download for thread due to auto-download settings.")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .pendingManualDownload,
@@ -295,6 +302,32 @@ public class OWSAttachmentDownloads: NSObject {
             }
             return attachmentPointer
         }
+    }
+
+    private func isDownloadBlockedByActiveCall(job: Job) -> Bool {
+
+        guard !job.downloadBehavior.bypassPendingManualDownload else {
+            return false
+        }
+
+        switch job.category {
+        case .bodyMediaImage, .bodyMediaVideo:
+            break
+        case .bodyAudioVoiceMemo:
+            return false
+        case .bodyAudioOther, .bodyFile:
+            break
+        case .stickerSmall:
+            return false
+        case .stickerLarge:
+            break
+        case .quotedReplyThumbnail, .linkedPreviewThumbnail, .contactShareAvatar:
+            return false
+        case .other:
+            return false
+        }
+
+        return CurrentAppContext().hasActiveCall
     }
 
     private func isDownloadBlockedByPendingMessageRequest(job: Job,
