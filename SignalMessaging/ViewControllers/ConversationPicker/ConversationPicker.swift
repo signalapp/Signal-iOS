@@ -32,7 +32,7 @@ open class ConversationPickerViewController: OWSViewController {
         case recents, signalContacts, groups
     }
 
-    let kMaxPickerSelection = 32
+    let kMaxPickerSelection = 5
 
     private let tableView = UITableView()
     private let footerView = ApprovalFooterView()
