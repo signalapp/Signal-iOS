@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationListCell.h"
@@ -100,8 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
-    self.snippetLabel.numberOfLines = 1;
-    self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.snippetLabel.numberOfLines = 2;
+    self.snippetLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
@@ -112,9 +112,24 @@ NS_ASSUME_NONNULL_BEGIN
         self.snippetLabel,
         self.messageStatusView,
     ]];
-
+    // snippetLabel is two lines.
+    // The message status should be vertically aligned with the
+    // center of the _first line_ of the snippet label.
+    // Therefore we:
+    //
+    // * Top align everything in the bottom row.
+    // * Ensure messageStatusView has _half_ the height of the
+    //   bottom row.
+    // * Internally the messageStatusView will v-center its icon.
+    [[NSLayoutConstraint constraintWithItem:self.messageStatusView
+                                  attribute:NSLayoutAttributeHeight
+                                  relatedBy:NSLayoutRelationEqual
+                                     toItem:bottomRowView
+                                  attribute:NSLayoutAttributeHeight
+                                 multiplier:0.5
+                                   constant:0] autoInstall];
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
-    bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
+    bottomRowView.alignment = UIStackViewAlignmentTop;
     bottomRowView.spacing = 6.f;
 
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ topRowView, bottomRowView ]];
@@ -205,6 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = [self snippetFont];
+    self.snippetLabel.textColor = UIColor.ows_gray45Color;
 
     [self updatePreview];
 
@@ -276,9 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        // TODO: Theme, Review with design.
-        UIColor *messageStatusViewTintColor
-            = (Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray45Color]);
+        UIColor *messageStatusViewTintColor = [UIColor ows_gray45Color];
         BOOL shouldAnimateStatusIcon = NO;
         BOOL shouldHideStatusIndicator = NO;
 
@@ -426,28 +440,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)unreadFont
 {
-    return [UIFont ows_dynamicTypeCaption1Font].ows_semibold;
+    return [UIFont ows_dynamicTypeCaption1ClampedFont].ows_semibold;
 }
 
 - (UIFont *)dateTimeFont
 {
-    return [UIFont ows_dynamicTypeCaption1Font];
+    return [UIFont ows_dynamicTypeCaption1ClampedFont];
 }
 
 - (UIFont *)snippetFont
 {
-    return [UIFont ows_dynamicTypeSubheadlineFont];
+    return [UIFont ows_dynamicTypeSubheadlineClampedFont];
 }
 
 - (UIFont *)nameFont
 {
-    return [UIFont ows_dynamicTypeBodyFont].ows_semibold;
+    return [UIFont ows_dynamicTypeBodyClampedFont].ows_semibold;
 }
 
 // Used for profile names.
 - (UIFont *)nameSecondaryFont
 {
-    return [UIFont ows_dynamicTypeBodyFont].ows_italic;
+    return [UIFont ows_dynamicTypeBodyClampedFont].ows_italic;
 }
 
 - (NSUInteger)avatarSize
@@ -549,15 +563,19 @@ NS_ASSUME_NONNULL_BEGIN
         // typing indicator) in a UIStackView proved non-trivial since we're using
         // UIStackViewAlignmentLastBaseline.  Therefore we hide the _contents_ of the
         // snippet label using an empty string.
-        self.snippetLabel.text = @" ";
+        self.snippetLabel.text = @"\n\n";
         self.typingIndicatorView.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {
+        NSAttributedString *attributedText;
         if (self.overrideSnippet) {
-            self.snippetLabel.attributedText = self.overrideSnippet;
+            attributedText = self.overrideSnippet;
         } else {
-            self.snippetLabel.attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
+            attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
+        attributedText = [attributedText stringByAppendingString:@"\n\n" attributes:@{}];
+        self.snippetLabel.attributedText = attributedText;
+
         self.typingIndicatorView.hidden = YES;
         [self.typingIndicatorView stopAnimation];
     }
