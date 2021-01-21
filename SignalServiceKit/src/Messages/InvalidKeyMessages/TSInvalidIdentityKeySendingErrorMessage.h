@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -17,11 +17,6 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
 @property (nonatomic, readonly) NSString *messageId;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
-                          address:(nullable SignalServiceAddress *)address NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
