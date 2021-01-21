@@ -751,8 +751,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                    deviceId:envelope.sourceDevice
                                                 transaction:transaction];
 
-                errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope
-                                                          withTransaction:transaction];
+                // Always notify the user that we have performed an automatic archive.
+                errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope withTransaction:transaction];
 
                 NSDate *_Nullable lastNullMessageDate = [self.keyValueStore getDate:senderId transaction:transaction];
 
