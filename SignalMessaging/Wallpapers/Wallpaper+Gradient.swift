@@ -11,6 +11,7 @@ extension Wallpaper {
 
     var lightGradientView: UIView? {
         let gradientLayer = CAGradientLayer()
+        let transform: CGAffineTransform
 
         switch self {
         case .starshipGradient:
@@ -56,7 +57,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 1, c: -1, d: 0.21, tx: 0.5, ty: -0.11))
+            transform = CGAffineTransform(a: 1, b: 1, c: -1, d: 0.21, tx: 0.5, ty: -0.11)
         case .woodsmokeGradient:
             gradientLayer.colors = [
 
@@ -100,7 +101,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .coralGradient:
             gradientLayer.colors = [
 
@@ -144,7 +145,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11))
+            transform = CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11)
         case .ceruleanGradient:
             gradientLayer.colors = [
 
@@ -188,7 +189,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .roseGradient:
             gradientLayer.colors = [
 
@@ -232,7 +233,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: -1, b: 1, c: -2, d: -0.43, tx: 2, ty: 0.21))
+            transform = CGAffineTransform(a: -1, b: 1, c: -2, d: -0.43, tx: 2, ty: 0.21)
         case .aquamarineGradient:
             gradientLayer.colors = [
 
@@ -276,7 +277,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .tropicalGradient:
             gradientLayer.colors = [
 
@@ -320,7 +321,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1.69, d: 0, tx: 1.34, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1.69, d: 0, tx: 1.34, ty: 0)
         case .blueGradient:
             gradientLayer.colors = [
 
@@ -364,7 +365,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .bisqueGradient:
             gradientLayer.colors = [
 
@@ -408,14 +409,13 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11))
+            transform = CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11)
         default:
             return nil
         }
 
         let layerView = OWSLayerView(frame: .zero) { view in
-            gradientLayer.bounds = view.bounds.insetBy(dx: -0.5*view.bounds.size.width, dy: -0.5*view.bounds.size.height)
-            gradientLayer.position = view.center
+            gradientLayer.aspectFillInBounds(view.bounds, with: transform)
         }
         layerView.layer.addSublayer(gradientLayer)
         layerView.clipsToBounds = true
@@ -425,6 +425,7 @@ extension Wallpaper {
 
     var darkGradientView: UIView? {
         let gradientLayer = CAGradientLayer()
+        let transform: CGAffineTransform
 
         switch self {
         case .starshipGradient:
@@ -470,7 +471,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 1, b: 1, c: -1, d: 0.21, tx: 0.5, ty: -0.11))
+            transform = CGAffineTransform(a: 1, b: 1, c: -1, d: 0.21, tx: 0.5, ty: -0.11)
         case .woodsmokeGradient:
             gradientLayer.colors = [
 
@@ -514,7 +515,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .coralGradient:
             gradientLayer.colors = [
 
@@ -558,7 +559,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11))
+            transform = CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11)
         case .ceruleanGradient:
             gradientLayer.colors = [
 
@@ -602,7 +603,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .roseGradient:
             gradientLayer.colors = [
 
@@ -646,7 +647,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: -1, b: 1, c: -2, d: -0.43, tx: 2, ty: 0.21))
+            transform = CGAffineTransform(a: -1, b: 1, c: -2, d: -0.43, tx: 2, ty: 0.21)
         case .aquamarineGradient:
             gradientLayer.colors = [
 
@@ -690,7 +691,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .tropicalGradient:
             gradientLayer.colors = [
 
@@ -734,7 +735,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1.69, d: 0, tx: 1.34, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1.69, d: 0, tx: 1.34, ty: 0)
         case .blueGradient:
             gradientLayer.colors = [
 
@@ -778,7 +779,7 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0))
+            transform = CGAffineTransform(a: 0, b: 1, c: -1, d: 0, tx: 1, ty: 0)
         case .bisqueGradient:
             gradientLayer.colors = [
 
@@ -822,18 +823,106 @@ extension Wallpaper {
 
             gradientLayer.endPoint = CGPoint(x: 0.75, y: 0.5)
 
-            gradientLayer.transform = CATransform3DMakeAffineTransform(CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11))
+            transform = CGAffineTransform(a: -1, b: 1, c: -1, d: -0.21, tx: 1.5, ty: 0.11)
         default:
             return nil
         }
 
         let layerView = OWSLayerView(frame: .zero) { view in
-            gradientLayer.bounds = view.bounds.insetBy(dx: -0.5*view.bounds.size.width, dy: -0.5*view.bounds.size.height)
-            gradientLayer.position = view.center
+            gradientLayer.aspectFillInBounds(view.bounds, with: transform)
         }
         layerView.layer.addSublayer(gradientLayer)
         layerView.clipsToBounds = true
 
         return layerView
+    }
+}
+
+extension CGAffineTransform {
+    var rotation: CGFloat { atan2(b, a) }
+}
+
+fileprivate extension CALayer {
+    func aspectFillInBounds(_ fillBounds: CGRect, with transform: CGAffineTransform) {
+        bounds = fillBounds
+
+        self.transform = CATransform3DIdentity
+        let untransformedLayerFrame = frame
+
+        self.transform = CATransform3DMakeAffineTransform(transform)
+        let transformedLayerFrame = frame
+
+        // If we rotated some multiple of 90º, we just need to make sure
+        // the gradients bounds can contain the view's bounds.
+        if transform.rotation.truncatingRemainder(dividingBy: .halfPi) == 0 {
+            let aspectRatio = transformedLayerFrame.width / transformedLayerFrame.height
+
+            if fillBounds.height > fillBounds.width {
+                bounds = bounds.insetBy(
+                    dx: transformedLayerFrame.width - (aspectRatio * fillBounds.height),
+                    dy: transformedLayerFrame.height - fillBounds.height
+                )
+            } else {
+                bounds = bounds.insetBy(
+                    dx: transformedLayerFrame.width - fillBounds.width,
+                    dy: transformedLayerFrame.height - (fillBounds.width / aspectRatio)
+                )
+            }
+        } else {
+            // If we rotated something that is *not* a multiple of 90º, we need
+            // to solve several triangles in order to determine the appropriate
+            // bounding rect such that the rotated gradient layer fully contains
+            // our bounds.
+
+            // First, we calculate both sides of the gradient after transform.
+
+            let transformedOrigin = untransformedLayerFrame.origin.applying(transform)
+            let transformedMaxXMinY = CGPoint(
+                x: untransformedLayerFrame.maxX,
+                y: untransformedLayerFrame.minY
+            ).applying(transform)
+            let transformedMinXMaxY = CGPoint(
+                x: untransformedLayerFrame.minX,
+                y: untransformedLayerFrame.maxY
+            ).applying(transform)
+
+            let transformedWidth = transformedOrigin.distance(transformedMaxXMinY)
+            let transformedHeight = transformedOrigin.distance(transformedMinXMaxY)
+
+            let aspectRatio = transformedWidth / transformedHeight
+
+            // Next, we solve for the right triangle where leg A = bounds.height
+            // and β = transform.rotation in order to determine leg B, the distance
+            // between the top edge of the view and the side of the gradient view.
+            let firstTriangleHypotenuse = fillBounds.height / cos(transform.rotation)
+            let firstTriangleLegA = fillBounds.height
+            let firstTriangleLegB = sqrt(pow(firstTriangleHypotenuse, 2) - pow(firstTriangleLegA, 2))
+
+            // We then solve for the second right triangle, where our new found leg B
+            // plus the bounds.width is the hypotenuse and the width of the gradient
+            // view scaled up to encompass our bounds is the leg B
+            let secondTriangleHypotenuse = firstTriangleLegB + fillBounds.width
+            let secondTriangleLegA = secondTriangleHypotenuse * sin(transform.rotation)
+            let secondTriangleLegB = sqrt(pow(secondTriangleHypotenuse, 2) - pow(secondTriangleLegA, 2))
+
+            // Then, given our scaled gradient width we can use the aspect ratio
+            // to compute the gradient height.
+            let gradientWidth = secondTriangleLegB
+            let gradientHeight = gradientWidth / aspectRatio
+
+            // Finally, we solve one more triangle to find the height of
+            // the bounding rectangle.
+            let thirdTriangleLegA = gradientHeight * sin(transform.rotation)
+            let thirdTriangleLegB = sqrt(pow(gradientHeight, 2) - pow(thirdTriangleLegA, 2))
+
+            let boundingHeight = secondTriangleLegA + thirdTriangleLegB
+
+            bounds = bounds.insetBy(
+                dx: bounds.width - (aspectRatio * boundingHeight),
+                dy: bounds.height - boundingHeight
+            )
+        }
+
+        position = fillBounds.center
     }
 }
