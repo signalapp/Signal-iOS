@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -219,7 +219,9 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     transaction: transaction) else {
                 return false
             }
-            let newThreadViewModel = ThreadViewModel(thread: newThread, transaction: transaction)
+            let newThreadViewModel = ThreadViewModel(thread: newThread,
+                                                     forConversationList: false,
+                                                     transaction: transaction)
             self.threadViewModel = newThreadViewModel
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
             self.groupViewHelper.delegate = self

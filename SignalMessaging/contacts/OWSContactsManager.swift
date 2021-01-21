@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,6 +81,51 @@ public extension OWSContactsManager {
                                    comparableAddress: address.stringForDisplay)
         }
         return sort(sortableAddresses)
+    }
+
+    // MARK: -
+
+    func displayName(forGroupMember groupMember: SignalServiceAddress,
+                     inGroup groupModel: TSGroupModel,
+                     transaction: SDSAnyReadTransaction) -> String? {
+
+        let fullName = displayName(for: groupMember, transaction: transaction)
+        guard let nameComponents = nameComponents(for: groupMember,
+                                                  transaction: transaction) else {
+            owsFailDebug("Missing name components for group member.")
+            return fullName
+        }
+
+        // Try to return just the given name unless the group contains another
+        // member with the same given name.
+
+        guard let givenName = nameComponents.givenName,
+              !givenName.isEmpty,
+              givenName != fullName else {
+            // Don't bother trying to use just the given name
+            // if they don't have one or it is their full name.
+            return fullName
+        }
+
+        for otherMember in groupModel.groupMembership.fullMembers {
+            guard otherMember != groupMember else {
+                continue
+            }
+            // Use the full name if the member's given name matches
+            // another member's full or given name.
+            let otherFullName = displayName(for: otherMember, transaction: transaction)
+            guard otherFullName != givenName else {
+                return fullName
+            }
+            guard let otherNameComponents = self.nameComponents(for: otherMember,
+                                                                transaction: transaction) else {
+                continue
+            }
+            guard otherNameComponents.givenName != givenName else {
+                return fullName
+            }
+        }
+        return givenName
     }
 }
 

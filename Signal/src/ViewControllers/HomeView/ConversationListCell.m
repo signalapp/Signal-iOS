@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updatePreview];
 
-    NSDate *_Nullable labelDate = overrideDate ?: thread.lastMessageDate;
+    NSDate *_Nullable labelDate = overrideDate ?: thread.conversationListInfo.lastMessageDate;
     if (labelDate != nil) {
         self.dateTimeLabel.text = [DateUtil formatDateShort:labelDate];
     } else {
@@ -376,10 +376,11 @@ NS_ASSUME_NONNULL_BEGIN
         // If you haven't accepted the message request for this thread, don't show the latest message
 
         // For group threads, show who we think added you (if we know)
-        if (thread.addedToGroupByName != nil) {
+        NSString *_Nullable addedToGroupByName = thread.conversationListInfo.addedToGroupByName;
+        if (addedToGroupByName != nil) {
             NSString *addedToGroupFormat = NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
                 @"Table cell subtitle label for a group the user has been added to. {Embeds inviter name}");
-            [snippetText append:[NSString stringWithFormat:addedToGroupFormat, thread.addedToGroupByName]
+            [snippetText append:[NSString stringWithFormat:addedToGroupFormat, addedToGroupByName]
                      attributes:@{
                          NSFontAttributeName : self.snippetFont.ows_semibold,
                          NSForegroundColorAttributeName : Theme.primaryTextColor,
@@ -411,32 +412,24 @@ NS_ASSUME_NONNULL_BEGIN
 
         UIFont *snippetFont = (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont);
         UIColor *snippetColor = (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
+        NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
-        if (thread.draftText.length > 0 && !hasUnreadMessages) {
+        if (draftText.length > 0 && !hasUnreadMessages) {
             [snippetText append:NSLocalizedString(
                                     @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
                      attributes:@{
                          NSFontAttributeName : self.snippetFont.ows_italic,
                          NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
                      }];
-            [snippetText append:thread.draftText
+            [snippetText append:draftText
                      attributes:@{
                          NSFontAttributeName : snippetFont,
                          NSForegroundColorAttributeName : snippetColor,
                      }];
         } else {
-            TSInteraction *_Nullable lastMessageForInbox = thread.lastMessageForInbox;
-            NSString *displayableText = thread.lastMessageText.filterStringForDisplay;
-            NSString *_Nullable senderName = nil;
-            if (displayableText.length > 0 && thread.isGroupThread) {
-                if ([lastMessageForInbox isKindOfClass:TSIncomingMessage.class]) {
-                    senderName = @"Sender";
-                } else if ([lastMessageForInbox isKindOfClass:TSOutgoingMessage.class]) {
-                    senderName = NSLocalizedString(@"GROUP_MEMBER_LOCAL_USER", @"Label indicating the local user.");
-                }
-            }
-
-            if (displayableText.length > 0) {
+            NSString *lastMessageText = thread.conversationListInfo.lastMessageText.filterStringForDisplay;
+            if (lastMessageText.length > 0) {
+                NSString *_Nullable senderName = thread.conversationListInfo.lastMessageSenderName;
                 if (senderName != nil) {
                     [snippetText append:senderName
                              attributes:@{
@@ -453,7 +446,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
                 }
 
-                [snippetText append:displayableText
+                [snippetText append:lastMessageText
                          attributes:@{
                              NSFontAttributeName : snippetFont,
                              NSForegroundColorAttributeName : snippetColor,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -67,7 +67,9 @@ public class AddToGroupViewController: OWSTableViewController {
         let groupThreads = databaseStorage.read { transaction in
             return self.threadViewHelper.threads.filter { thread -> Bool in
                 guard let groupThread = thread as? TSGroupThread else { return false }
-                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: groupThread,
+                                                      forConversationList: false,
+                                                      transaction: transaction)
                 let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
                 return groupViewHelper.canEditConversationMembership
             } as? [TSGroupThread] ?? []
