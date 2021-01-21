@@ -192,7 +192,7 @@ class DebugUINotifications: DebugUIPage {
 
     func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
         return delayedNotificationDispatch {
-            let builder = TSErrorMessageBuilder.init(thread: thread, errorType: .invalidMessage)
+            let builder = TSErrorMessageBuilder(thread: thread, errorType: .invalidMessage)
             let errorMessage = TSErrorMessage(errorMessageWithBuilder: builder)
 
             self.databaseStorage.write { transaction in
