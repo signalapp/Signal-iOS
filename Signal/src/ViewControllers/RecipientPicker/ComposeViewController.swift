@@ -115,6 +115,9 @@ extension ComposeViewController: RecipientPickerDelegate {
                          attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
         switch recipient.identifier {
         case .address(let address):
+            guard !address.isLocalAddress else {
+                return nil
+            }
             if let bioForDisplay = (Self.databaseStorage.read { transaction in
                 Self.profileManager.profileBioForDisplay(for: address, transaction: transaction)
                }) {
