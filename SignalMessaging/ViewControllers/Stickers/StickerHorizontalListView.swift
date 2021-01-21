@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
 
     public var view: UIView {
         guard let view = StickerView.stickerView(forInstalledStickerInfo: stickerInfo) else {
-            owsFailDebug("Could not load sticker for display.")
+            Logger.warn("Could not load sticker for display.")
             return UIView()
         }
         view.layer.minificationFilter = .trilinear
