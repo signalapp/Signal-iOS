@@ -172,7 +172,9 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         conversationListVC.lastViewedThread = thread
 
         let threadViewModel = databaseStorage.uiRead {
-            return ThreadViewModel(thread: thread, transaction: $0)
+            return ThreadViewModel(thread: thread,
+                                   forConversationList: false,
+                                   transaction: $0)
         }
         let vc = ConversationViewController(threadViewModel: threadViewModel, action: action, focusMessageId: focusMessageId)
 

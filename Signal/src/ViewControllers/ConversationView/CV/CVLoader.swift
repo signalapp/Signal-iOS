@@ -63,7 +63,9 @@ public class CVLoader: NSObject {
                         // If thread has been deleted from the database, use last known model.
                         return prevRenderState.threadViewModel
                     }
-                    return ThreadViewModel(thread: thread, transaction: transaction)
+                    return ThreadViewModel(thread: thread,
+                                           forConversationList: false,
+                                           transaction: transaction)
                 }
                 let threadViewModel = loadThreadViewModel()
 
@@ -265,7 +267,9 @@ public class CVLoader: NSObject {
                                                   transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         AssertIsOnMainThread()
 
-        let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+        let threadViewModel = ThreadViewModel(thread: thread,
+                                              forConversationList: false,
+                                              transaction: transaction)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
         let itemBuildingContext = CVItemBuildingContextImpl(threadViewModel: threadViewModel,

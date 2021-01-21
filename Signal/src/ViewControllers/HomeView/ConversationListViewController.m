@@ -1158,7 +1158,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     __block ThreadViewModel *_Nullable newThreadViewModel;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord transaction:transaction];
+        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
+                                                 forConversationList:YES
+                                                         transaction:transaction];
     }];
     [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
     return newThreadViewModel;
