@@ -439,6 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [snippetText append:@":"
                              attributes:@{
                                  NSFontAttributeName : snippetFont,
+                                 NSForegroundColorAttributeName : snippetColor,
                              }];
                     [snippetText append:@" "
                              attributes:@{
