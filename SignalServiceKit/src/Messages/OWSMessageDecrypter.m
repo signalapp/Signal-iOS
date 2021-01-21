@@ -753,6 +753,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 // Always notify the user that we have performed an automatic archive.
                 errorMessage = [TSErrorMessage sessionRefreshWithEnvelope:envelope withTransaction:transaction];
+                OWSAssertDebug(errorMessage != nil);
 
                 NSDate *_Nullable lastNullMessageDate = [self.keyValueStore getDate:senderId transaction:transaction];
 
@@ -805,6 +806,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         } else {
             OWSFailDebug(@"Received envelope missing UUID %@.%d", envelope.sourceAddress, envelope.sourceDevice);
             errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
+            OWSAssertDebug(errorMessage != nil);
         }
 
         // Log the error appropriately.
@@ -824,7 +826,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
         }
 
-        OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage anyInsertWithTransaction:transaction];
             [self notifyUserForErrorMessage:errorMessage contactThread:contactThread transaction:transaction];
