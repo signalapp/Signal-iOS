@@ -197,7 +197,6 @@ public class CVLoadCoordinator: NSObject {
     func localProfileDidChange() {
         AssertIsOnMainThread()
 
-        //        self.conversationProfileState = nil;
         enqueueReload(canReuseInteractionModels: true,
                       canReuseComponentStates: false)
     }
