@@ -7,13 +7,8 @@ import Foundation
 class SetWallpaperViewController: OWSTableViewController {
     lazy var collectionView = WallpaperCollectionView { [weak self] wallpaper in
         guard let self = self else { return }
-        self.databaseStorage.asyncWrite { transaction in
-            do {
-                try Wallpaper.setBuiltIn(wallpaper, for: self.thread, transaction: transaction)
-            } catch {
-                owsFailDebug("Error: \(error)")
-            }
-        }
+        let vc = PreviewWallpaperViewController(mode: .preset(selectedWallpaper: wallpaper), thread: self.thread)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 
     let thread: TSThread?
@@ -114,14 +109,10 @@ extension SetWallpaperViewController: UIImagePickerControllerDelegate, UINavigat
             return owsFailDebug("Missing image")
         }
 
-        picker.dismiss(animated: true, completion: nil)
+        let vc = PreviewWallpaperViewController(mode: .photo(selectedPhoto: rawImage), thread: thread)
 
-        databaseStorage.asyncWrite { transaction in
-            do {
-                try Wallpaper.setPhoto(rawImage, for: self.thread, transaction: transaction)
-            } catch {
-                owsFailDebug("Failed to set photo \(error)")
-            }
+        picker.dismiss(animated: true) {
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 

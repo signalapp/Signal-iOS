@@ -628,7 +628,11 @@ fileprivate extension CVComponentState.Builder {
                                                                               currentCallThreadId: currentCallThreadId,
                                                                               transaction: transaction)
             return build()
-        case .unreadIndicator, .dateHeader:
+        case .unreadIndicator:
+            unreadIndicator = CVComponentState.UnreadIndicator()
+            return build()
+        case .dateHeader:
+            dateHeader = CVComponentState.DateHeader()
             return build()
         case .incomingMessage, .outgoingMessage:
             guard let message = interaction as? TSMessage else {
