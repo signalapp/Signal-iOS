@@ -257,6 +257,9 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
                 return showError(title: "Couldn't Update Group", message: "Can't leave while adding or removing other members.")
             }
         }
+        guard members.count <= 100 else {
+            return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
+        }
         Storage.write(with: { [weak self] transaction in
             do {
                 if !members.contains(getUserHexEncodedPublicKey()) {

@@ -16,6 +16,12 @@ extension MessageReceiver {
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
+        // Touch the thread to update the home screen preview
+        let storage = SNMessagingKitConfiguration.shared.storage
+        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+        thread.touch(with: transaction)
     }
 
     private static func handleReadReceipt(_ message: ReadReceipt, using transaction: Any) {

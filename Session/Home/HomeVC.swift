@@ -1,30 +1,24 @@
 
-final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
-    private var threadViewModelCache: [String:ThreadViewModel] = [:]
-    private var isObservingDatabase = true
-    private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
+// See https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions and
+// https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
+// more information on database handling.
+
+final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewControllerPreviewingDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+    private var threads: YapDatabaseViewMappings!
+    private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
-    private var wasDatabaseModifiedExternally = false
     
-    private var threads: YapDatabaseViewMappings = {
-        let result = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName)
-        result.setIsReversed(true, forGroup: TSInboxGroup)
-        return result
-    }()
+    private var threadCount: UInt {
+        threads.numberOfItems(inGroup: TSInboxGroup)
+    }
     
-    private let uiDatabaseConnection: YapDatabaseConnection = {
+    private lazy var dbConnection: YapDatabaseConnection = {
         let result = OWSPrimaryStorage.shared().newDatabaseConnection()
         result.objectCacheLimit = 500
         return result
     }()
     
-    private let editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-
-    private var threadCount: UInt {
-        threads.numberOfItems(inGroup: TSInboxGroup)
-    }
-    
-    // MARK: Components
+    // MARK: UI Components
     private lazy var seedReminderView: SeedReminderView = {
         let result = SeedReminderView(hasContinueButton: true)
         let title = "You're almost finished! 80%"
@@ -36,9 +30,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         result.delegate = self
         return result
     }()
-    
-    private lazy var searchBar = SearchBar()
-    
+        
     private lazy var tableView: UITableView = {
         let result = UITableView()
         result.backgroundColor = .clear
@@ -86,23 +78,26 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Threads (part 1)
+        dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
+        // Preparation
         SignalApp.shared().homeViewController = self
+        // Gradient & nav bar
         setUpGradientBackground()
         if navigationController?.navigationBar != nil {
             setUpNavBarStyle()
         }
-        updateNavigationBarButtons()
+        updateNavBarButtons()
         setNavBarTitle("Messages")
-        // Set up seed reminder view if needed
-        let userDefaults = UserDefaults.standard
-        let hasViewedSeed = userDefaults[.hasViewedSeed]
+        // Recovery phrase reminder
+        let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
         if !hasViewedSeed {
             view.addSubview(seedReminderView)
             seedReminderView.pin(.leading, to: .leading, of: view)
             seedReminderView.pin(.top, to: .top, of: view)
             seedReminderView.pin(.trailing, to: .trailing, of: view)
         }
-        // Set up table view
+        // Table view
         tableView.dataSource = self
         tableView.delegate = self
         view.addSubview(tableView)
@@ -120,52 +115,59 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         fadeView.pin(.top, to: .top, of: view, withInset: topInset)
         fadeView.pin(.trailing, to: .trailing, of: view)
         fadeView.pin(.bottom, to: .bottom, of: view)
-        // Set up empty state view
+        // Empty state view
         view.addSubview(emptyStateView)
         emptyStateView.center(.horizontal, in: view)
         let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
-        // Set up new conversation button set
+        // New conversation button set
         view.addSubview(newConversationButtonSet)
         newConversationButtonSet.center(.horizontal, in: view)
         newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
-        // Set up previewing
+        // Previewing
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: tableView)
         }
-        // Listen for notifications
+        // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedNotification(_:)), name: .YapDatabaseModified, object: OWSPrimaryStorage.shared().dbNotificationObject)
-        notificationCenter.addObserver(self, selector: #selector(handleApplicationDidBecomeActiveNotification(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleApplicationWillResignActiveNotification(_:)), name: .OWSApplicationWillResignActive, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
-        // Set up public chats and RSS feeds if needed
+        // Threads (part 2)
+        threads = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
+        threads.setIsReversed(true, forGroup: TSInboxGroup)
+        dbConnection.read { transaction in
+            self.threads.update(with: transaction) // Perform the initial update
+        }
+        // Pollers
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
             appDelegate.startClosedGroupPollerIfNeeded()
             appDelegate.startOpenGroupPollersIfNeeded()
         }
-        // Populate onion request path countries cache
+        // Onion request path countries cache
         DispatchQueue.global(qos: .utility).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
-        // Do initial update
-        reload()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        isViewVisible = true
+        reload()
         UserDefaults.standard[.hasLaunchedOnce] = true
-        showKeyPairMigrationNudgeIfNeeded()
+        showKeyPairMigrationModalIfNeeded()
         showKeyPairMigrationSuccessModalIfNeeded()
     }
     
-    private func showKeyPairMigrationNudgeIfNeeded() {
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: Migration
+    private func showKeyPairMigrationModalIfNeeded() {
         guard !KeyPairUtilities.hasV2KeyPair() else { return }
         let sheet = KeyPairMigrationSheet()
         sheet.modalPresentationStyle = .overFullScreen
@@ -183,16 +185,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         UserDefaults.standard[.isMigratingToV2KeyPair] = false
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        isViewVisible = false
-        super.viewWillDisappear(animated)
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    // MARK: Data
+    // MARK: Table View Data Source
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Int(threadCount)
     }
@@ -204,44 +197,29 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
         
     // MARK: Updating
-    private func updateIsObservingDatabase() {
-        isObservingDatabase = isViewVisible && CurrentAppContext().isAppForegroundAndActive()
-    }
-    
     private func reload() {
         AssertIsOnMainThread()
-        uiDatabaseConnection.beginLongLivedReadTransaction()
-        uiDatabaseConnection.read { transaction in
+        dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
+        dbConnection.read { transaction in
             self.threads.update(with: transaction)
         }
         threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
     }
-
-    @objc private func handleYapDatabaseModifiedNotification(_ notification: Notification) {
+    
+    @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
         AssertIsOnMainThread()
-        let notifications = uiDatabaseConnection.beginLongLivedReadTransaction()
-        let ext = uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
+        let notifications = dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
+        guard !notifications.isEmpty else { return }
+        let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
         let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
-        guard isObservingDatabase else {
-            wasDatabaseModifiedExternally = hasChanges
-            return
-        }
-        guard hasChanges else {
-            uiDatabaseConnection.read { transaction in
-                self.threads.update(with: transaction)
-            }
-            return
-        }
-        // If changes were made in a different process (e.g. the Notification Service Extension) the thread mapping can be out of date
-        // at this point, causing the app to crash. The code below prevents that by force syncing the database before proceeding.
-        if notifications.count > 0 {
-            if let firstChangeSet = notifications[0].userInfo {
-                let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
-                if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
-                    return reload()
-                }
+        guard hasChanges else { return }
+        guard !notifications.isEmpty else { return }
+        if let firstChangeSet = notifications[0].userInfo {
+            let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
+            if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
+                return reload() // The code below will crash if we try to process multiple commits at once
             }
         }
         var sectionChanges = NSArray()
@@ -254,13 +232,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             let key = rowChange.collectionKey.key
             threadViewModelCache[key] = nil
             switch rowChange.type {
-            case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.fade)
-            case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.fade)
-            case .move:
-                tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.fade)
-                tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.fade)
-            case .update:
-                tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.none)
+            case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
+            case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
+            case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
+            case .update: tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
             default: break
             }
         }
@@ -268,24 +243,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         emptyStateView.isHidden = (threadCount != 0)
     }
     
-    @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {
-        updateIsObservingDatabase()
-        if wasDatabaseModifiedExternally {
-            reload()
-            wasDatabaseModifiedExternally = false
-        }
-    }
-    
-    @objc private func handleApplicationWillResignActiveNotification(_ notification: Notification) {
-        updateIsObservingDatabase()
-    }
-    
     @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
         tableView.reloadData() // TODO: Just reload the affected cell
     }
     
     @objc private func handleLocalProfileDidChangeNotification(_ notification: Notification) {
-        updateNavigationBarButtons()
+        updateNavBarButtons()
     }
     
     @objc private func handleSeedViewedNotification(_ notification: Notification) {
@@ -298,7 +261,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         self.tableView.reloadData() // TODO: Just reload the affected cell
     }
     
-    private func updateNavigationBarButtons() {
+    private func updateNavBarButtons() {
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.accessibilityLabel = "Settings button"
@@ -351,10 +314,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let seedVC = SeedVC()
         let navigationController = OWSNavigationController(rootViewController: seedVC)
         present(navigationController, animated: true, completion: nil)
-    }
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        searchBar.resignFirstResponder()
     }
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
@@ -473,8 +432,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
     
     @objc func joinOpenGroup() {
-        let joinPublicChatVC = JoinPublicChatVC()
-        let navigationController = OWSNavigationController(rootViewController: joinPublicChatVC)
+        let joinOpenGroupVC = JoinPublicChatVC()
+        let navigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
         present(navigationController, animated: true, completion: nil)
     }
     
@@ -493,8 +452,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     // MARK: Convenience
     private func thread(at index: Int) -> TSThread? {
         var thread: TSThread? = nil
-        uiDatabaseConnection.read { transaction in
-            thread = ((transaction as YapDatabaseReadTransaction).ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction).object(atRow: UInt(index), inSection: 0, with: self.threads) as! TSThread?
+        dbConnection.read { transaction in
+            let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            thread = ext.object(atRow: UInt(index), inSection: 0, with: self.threads) as! TSThread?
         }
         return thread
     }
@@ -505,7 +465,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             return cachedThreadViewModel
         } else {
             var threadViewModel: ThreadViewModel? = nil
-            uiDatabaseConnection.read { transaction in
+            dbConnection.read { transaction in
                 threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
             }
             threadViewModelCache[thread.uniqueId!] = threadViewModel
