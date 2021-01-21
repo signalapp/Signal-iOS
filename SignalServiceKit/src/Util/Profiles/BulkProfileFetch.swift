@@ -254,7 +254,7 @@ public class BulkProfileFetch: NSObject {
                     } else {
                         // TODO: We may need to handle more status codes.
                         if self.tsAccountManager.isRegisteredAndReady {
-//                            owsFailDebug("Error: \(error)")
+                            owsFailDebug("Error: \(error)")
                         } else {
                             Logger.warn("Error: \(error)")
                         }

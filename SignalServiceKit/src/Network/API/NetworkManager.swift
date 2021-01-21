@@ -169,6 +169,6 @@ public func owsFailDebugUnlessNetworkFailure(_ error: Error,
         // Log but otherwise ignore network failures.
         Logger.warn("Error: \(error)", file: file, function: function, line: line)
     } else {
-//        owsFailDebug("Error: \(error)", file: file, function: function, line: line)
+        owsFailDebug("Error: \(error)", file: file, function: function, line: line)
     }
 }
