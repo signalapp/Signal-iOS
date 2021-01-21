@@ -11,7 +11,7 @@ extension MessageReceiver {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
-        case let message as ClosedGroupUpdateV2: handleClosedGroupUpdateV2(message, using: transaction)
+        case let message as ClosedGroupUpdate: handleClosedGroupUpdateV2(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
@@ -226,7 +226,7 @@ extension MessageReceiver {
         return tsIncomingMessageID
     }
 
-    private static func handleClosedGroupUpdateV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleClosedGroupUpdateV2(_ message: ClosedGroupUpdate, using transaction: Any) {
         switch message.kind! {
         case .new: handleNewGroupV2(message, using: transaction)
         case .update: handleGroupUpdateV2(message, using: transaction)
@@ -234,7 +234,7 @@ extension MessageReceiver {
         }
     }
     
-    private static func handleNewGroupV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleNewGroupV2(_ message: ClosedGroupUpdate, using transaction: Any) {
         // Prepare
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -264,7 +264,7 @@ extension MessageReceiver {
         infoMessage.save(with: transaction)
     }
     
-    private static func handleGroupUpdateV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleGroupUpdateV2(_ message: ClosedGroupUpdate, using transaction: Any) {
         // Prepare
         guard case let .update(name, membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -323,7 +323,7 @@ extension MessageReceiver {
         }
     }
 
-    private static func handleGroupEncryptionKeyPair(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleGroupEncryptionKeyPair(_ message: ClosedGroupUpdate, using transaction: Any) {
         // Prepare
         guard case let .encryptionKeyPair(wrappers) = message.kind, let groupPublicKey = message.groupPublicKey else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction

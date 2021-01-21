@@ -1,7 +1,7 @@
 import SessionProtocolKit
 import SessionUtilitiesKit
 
-public final class ClosedGroupUpdateV2 : ControlMessage {
+public final class ClosedGroupUpdate : ControlMessage {
     public var kind: Kind?
 
     public override var ttl: UInt64 {
@@ -14,14 +14,23 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
         case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data])
+        /// - Note: Deprecated in favor of more explicit group updates.
         case update(name: String, members: [Data])
         case encryptionKeyPair([KeyPairWrapper]) // The new encryption key pair encrypted for each member individually
+        case nameChange(name: String)
+        case usersAdded(members: [Data])
+        case usersRemoved(members: [Data])
+        case userLeft
 
         public var description: String {
             switch self {
             case .new: return "new"
             case .update: return "update"
             case .encryptionKeyPair: return "encryptionKeyPair"
+            case .nameChange: return "nameChange"
+            case .usersAdded: return "usersAdded"
+            case .usersRemoved: return "usersRemoved"
+            case .userLeft: return "userLeft"
             }
         }
     }
@@ -83,6 +92,10 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case .update(let name, _):
             return !name.isEmpty
         case .encryptionKeyPair: return true
+        case .nameChange(let name): return !name.isEmpty
+        case .usersAdded(let members): return !members.isEmpty
+        case .usersRemoved(let members): return !members.isEmpty
+        case .userLeft: return true
         }
     }
 
@@ -105,6 +118,17 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case "encryptionKeyPair":
             guard let wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper] else { return nil }
             self.kind = .encryptionKeyPair(wrappers)
+        case "nameChange":
+            guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
+            self.kind = .nameChange(name: name)
+        case "usersAdded":
+            guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
+            self.kind = .usersAdded(members: members)
+        case "usersRemoved":
+            guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
+            self.kind = .usersRemoved(members: members)
+        case "userLeft":
+            self.kind = .userLeft
         default: return nil
         }
     }
@@ -127,11 +151,22 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case .encryptionKeyPair(let wrappers):
             coder.encode("encryptionKeyPair", forKey: "kind")
             coder.encode(wrappers, forKey: "wrappers")
+        case .nameChange(let name):
+            coder.encode("nameChange", forKey: "kind")
+            coder.encode(name, forKey: "name")
+        case .usersAdded(let members):
+            coder.encode("usersAdded", forKey: "kind")
+            coder.encode(members, forKey: "members")
+        case .usersRemoved(let members):
+            coder.encode("usersRemoved", forKey: "kind")
+            coder.encode(members, forKey: "members")
+        case .userLeft:
+            coder.encode("userLeft", forKey: "kind")
         }
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdateV2? {
+    public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdate? {
         guard let closedGroupUpdateProto = proto.dataMessage?.closedGroupUpdateV2 else { return nil }
         let kind: Kind
         switch closedGroupUpdateProto.type {
@@ -152,8 +187,17 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case .encryptionKeyPair:
             let wrappers = closedGroupUpdateProto.wrappers.compactMap { KeyPairWrapper.fromProto($0) }
             kind = .encryptionKeyPair(wrappers)
+        case .nameChange:
+            guard let name = closedGroupUpdateProto.name else { return nil }
+            kind = .nameChange(name: name)
+        case .usersAdded:
+            kind = .usersAdded(members: closedGroupUpdateProto.members)
+        case .usersRemoved:
+            kind = .usersRemoved(members: closedGroupUpdateProto.members)
+        case .userLeft:
+            kind = .userLeft
         }
-        return ClosedGroupUpdateV2(kind: kind)
+        return ClosedGroupUpdate(kind: kind)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
@@ -184,6 +228,17 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
             case .encryptionKeyPair(let wrappers):
                 closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .encryptionKeyPair)
                 closedGroupUpdate.setWrappers(wrappers.compactMap { $0.toProto() })
+            case .nameChange(let name):
+                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .nameChange)
+                closedGroupUpdate.setName(name)
+            case .usersAdded(let members):
+                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .usersAdded)
+                closedGroupUpdate.setMembers(members)
+            case .usersRemoved(let members):
+                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .usersRemoved)
+                closedGroupUpdate.setMembers(members)
+            case .userLeft:
+                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .userLeft)
             }
             let contentProto = SNProtoContent.builder()
             let dataMessageProto = SNProtoDataMessage.builder()

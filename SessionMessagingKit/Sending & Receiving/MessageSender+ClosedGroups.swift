@@ -27,9 +27,9 @@ extension MessageSender {
             guard member != userPublicKey else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
-            let closedGroupUpdateKind = ClosedGroupUpdateV2.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
+            let closedGroupUpdateKind = ClosedGroupUpdate.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
                 encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
-            let closedGroupUpdate = ClosedGroupUpdateV2(kind: closedGroupUpdateKind)
+            let closedGroupUpdate = ClosedGroupUpdate(kind: closedGroupUpdateKind)
             let promise = MessageSender.sendNonDurably(closedGroupUpdate, in: thread, using: transaction)
             promises.append(promise)
         }
@@ -81,7 +81,7 @@ extension MessageSender {
             }
         }
         // Send the update to the group
-        let mainClosedGroupUpdate = ClosedGroupUpdateV2(kind: .update(name: name, members: membersAsData))
+        let mainClosedGroupUpdate = ClosedGroupUpdate(kind: .update(name: name, members: membersAsData))
         if isUserLeaving {
             let _ = MessageSender.sendNonDurably(mainClosedGroupUpdate, in: thread, using: transaction).done {
                 SNMessagingKitConfiguration.shared.storage.write { transaction in
@@ -101,9 +101,9 @@ extension MessageSender {
             for member in newMembers {
                 let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                 thread.save(with: transaction)
-                let closedGroupUpdateKind = ClosedGroupUpdateV2.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
+                let closedGroupUpdateKind = ClosedGroupUpdate.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
                     encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
-                let closedGroupUpdate = ClosedGroupUpdateV2(kind: closedGroupUpdateKind)
+                let closedGroupUpdate = ClosedGroupUpdate(kind: closedGroupUpdateKind)
                 MessageSender.send(closedGroupUpdate, in: thread, using: transaction)
             }
         }
@@ -155,11 +155,11 @@ extension MessageSender {
         let proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.builder(publicKey: newKeyPair.publicKey,
             privateKey: newKeyPair.privateKey).build()
         let plaintext = try proto.serializedData()
-        let wrappers = try targetMembers.compactMap { publicKey -> ClosedGroupUpdateV2.KeyPairWrapper in
+        let wrappers = try targetMembers.compactMap { publicKey -> ClosedGroupUpdate.KeyPairWrapper in
             let ciphertext = try MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey)
-            return ClosedGroupUpdateV2.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
+            return ClosedGroupUpdate.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)
         }
-        let closedGroupUpdate = ClosedGroupUpdateV2(kind: .encryptionKeyPair(wrappers))
+        let closedGroupUpdate = ClosedGroupUpdate(kind: .encryptionKeyPair(wrappers))
         let _ = MessageSender.sendNonDurably(closedGroupUpdate, in: thread, using: transaction).done { // FIXME: It'd be great if we could make this a durable operation
             // Store it * after * having sent out the message to the group
             SNMessagingKitConfiguration.shared.storage.write { transaction in
