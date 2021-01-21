@@ -10,7 +10,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     let avatarImage: UIImage
 
     @objc
-    var avatarSize: CGSize {
+    var maxAvatarPointSize: CGSize {
         let currentScale = avatarImage.scale
         let desiredScale = UIScreen.main.scale
         let factor = currentScale / desiredScale
@@ -32,7 +32,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     init?(thread: TSThread, readTx: SDSAnyReadTransaction) {
         guard let avatarImage = OWSAvatarBuilder.buildImage(
                 thread: thread,
-                diameter: UInt(UIScreen.main.bounds.width),
+                diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
                 transaction: readTx) else { return nil }
 
         self.avatarImage = avatarImage
@@ -46,7 +46,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     init?(address: SignalServiceAddress, readTx: SDSAnyReadTransaction) {
         guard let avatarImage = OWSContactAvatarBuilder.buildImage(
                 address: address,
-                diameter: UInt(UIScreen.main.bounds.width),
+                diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
                 transaction: readTx) else { return nil }
 
         self.avatarImage = avatarImage
@@ -69,11 +69,11 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
         imageView.autoMatch(.width, to: .width, of: view).priority = .defaultHigh
         imageView.autoMatch(.width, to: .width, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        imageView.autoSetDimension(.width, toSize: avatarSize.width, relation: .lessThanOrEqual)
+        imageView.autoSetDimension(.width, toSize: maxAvatarPointSize.width, relation: .lessThanOrEqual)
 
         imageView.autoMatch(.height, to: .height, of: view).priority = .defaultHigh
         imageView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        imageView.autoSetDimension(.height, toSize: avatarSize.height, relation: .lessThanOrEqual)
+        imageView.autoSetDimension(.height, toSize: maxAvatarPointSize.height, relation: .lessThanOrEqual)
 
         closeButton.autoPinTopToSuperviewMargin(withInset: 8)
         closeButton.autoPinLeadingToSuperviewMargin()

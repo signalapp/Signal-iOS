@@ -309,22 +309,19 @@ class ConversationSettingsViewController: OWSTableViewController {
     // MARK: - Actions
 
     @objc func conversationNameTouched(sender: UIGestureRecognizer) {
-        if !canEditConversationAttributes {
-            owsFailDebug("failure: !self.canEditConversationAttributes")
-            return
-        }
+        guard sender.state == .recognized else { return }
         guard let avatarView = avatarView else {
             owsFailDebug("Missing avatarView.")
             return
         }
 
-        if sender.state == .recognized {
-            let didTapAvatar = avatarView.containsGestureLocation(sender)
-            let hasValidAvatar = !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil
+        let didTapAvatar = avatarView.containsGestureLocation(sender)
+        let hasValidAvatar = !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil
 
-            if didTapAvatar, hasValidAvatar {
-                presentAvatarViewController()
-            } else if didTapAvatar, isGroupThread {
+        if didTapAvatar, hasValidAvatar {
+            presentAvatarViewController()
+        } else if canEditConversationAttributes {
+            if didTapAvatar, isGroupThread {
                 showGroupAttributesView(editAction: .avatar)
             } else if isGroupThread {
                 showGroupAttributesView(editAction: .name)
@@ -613,11 +610,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             return
         }
 
-        if vc.avatarSize.width > avatarView.width, vc.avatarSize.height > avatarView.height {
-            // Don't even bother presenting if the avatar we're displaying is big enough
-            // to fit in its current view
-            present(vc, animated: true)
-        }
+        present(vc, animated: true)
     }
 
     private func presentAddToContactViewController(address: SignalServiceAddress) {
