@@ -92,7 +92,6 @@ public extension OWSContactsManager {
         let fullName = displayName(for: groupMember, transaction: transaction)
         guard let nameComponents = nameComponents(for: groupMember,
                                                   transaction: transaction) else {
-            owsFailDebug("Missing name components for group member.")
             return fullName
         }
 
