@@ -1184,6 +1184,23 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+- (BOOL)userHasModerationPermission
+{
+    if (!self.isGroupThread) return false;
+    TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+    
+    // Make sure it's an open group message
+    TSMessage *message = (TSMessage *)self.interaction;
+    if (!message.isOpenGroupMessage) return false;
+    
+    // Ensure we have the details needed to contact the server
+    SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:groupThread.uniqueId];
+    if (openGroup == nil) return false;
+    
+    // Check that we're a moderator
+    return [SNOpenGroupAPI isUserModerator:[SNGeneralUtilities getUserPublicKey] forChannel:openGroup.channel onServer:openGroup.server];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

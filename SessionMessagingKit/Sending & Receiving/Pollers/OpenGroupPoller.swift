@@ -19,7 +19,7 @@ public final class OpenGroupPoller : NSObject {
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
-    private let pollForDeletedMessagesInterval: TimeInterval = 60
+    private let pollForDeletedMessagesInterval: TimeInterval = 30
     private let pollForModeratorsInterval: TimeInterval = 10 * 60
 
     // MARK: Lifecycle

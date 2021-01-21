@@ -1528,15 +1528,17 @@ typedef enum : NSUInteger {
     [self showDetailViewForViewItem:conversationViewItem];
 }
 
-- (void)report:(id<ConversationViewItem>)conversationViewItem
+- (void)banUser:(id<ConversationViewItem>)conversationViewItem
 {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Report?" message:@"If the message is found to violate the Session Public Chat code of conduct it will be removed." preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        uint64_t messageID = 0;
-        if ([conversationViewItem.interaction isKindOfClass:TSMessage.class]) {
-            messageID = ((TSMessage *)conversationViewItem.interaction).openGroupServerMessageID;
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Ban This User?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        NSString* publicKey;
+        if ([conversationViewItem.interaction isKindOfClass:TSIncomingMessage.class]) {
+            publicKey = ((TSIncomingMessage *)conversationViewItem.interaction).authorId;
         }
-        [SNOpenGroupAPI reportMessageWithID:messageID inChannel:1 onServer:@"https://chat.getsession.org"];
+        SNOpenGroup *openGroup = [LKStorage.shared getOpenGroupForThreadID:self.thread.uniqueId];
+        if (openGroup == nil) return;
+        [[SNOpenGroupAPI banPublicKey:publicKey fromServer:openGroup.server] retainUntilComplete];
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
