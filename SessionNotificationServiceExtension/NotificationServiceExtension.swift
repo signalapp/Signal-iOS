@@ -2,8 +2,6 @@ import UserNotifications
 import SessionMessagingKit
 import SignalUtilitiesKit
 
-// TODO: Group notifications
-
 public final class NotificationServiceExtension : UNNotificationServiceExtension {
     private var didPerformSetup = false
     private var areVersionMigrationsComplete = false

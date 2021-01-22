@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 protocol MessageActionsDelegate: class {
-    func report(_ conversationViewItem: ConversationViewItem)
+    func banUser(_ conversationViewItem: ConversationViewItem)
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
     func copyPublicKey(for conversationViewItem: ConversationViewItem)
@@ -45,20 +45,20 @@ struct MessageActionBuilder {
                           block: { [weak delegate] _ in delegate?.messageActionsShowDetailsForItem(conversationViewItem) }
         )
     }
-    
-    static func report(_ conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
-        return MenuAction(image: #imageLiteral(resourceName: "Flag"),
-                          title: NSLocalizedString("Report", comment: ""),
-                          subtitle: nil,
-                          block: { [weak delegate] _ in delegate?.report(conversationViewItem) }
-        )
-    }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
         return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
                           title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                           subtitle: nil,
                           block: { _ in conversationViewItem.deleteAction() }
+        )
+    }
+    
+    static func banUser(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MenuAction {
+        return MenuAction(image: #imageLiteral(resourceName: "ic_block"),
+                          title: "Ban User",
+                          subtitle: nil,
+                          block: { [weak delegate] _ in delegate?.banUser(conversationViewItem) }
         )
     }
 
@@ -108,10 +108,9 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
-        if isGroup && conversationViewItem.interaction.thread.name() == "Loki Public Chat"
-            || conversationViewItem.interaction.thread.name() == "Session Public Chat" {
-            let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
-            actions.append(reportAction)
+        if isGroup && conversationViewItem.interaction is TSIncomingMessage && conversationViewItem.userHasModerationPermission {
+            let banAction = MessageActionBuilder.banUser(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(banAction)
         }
         
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
@@ -152,10 +151,9 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
-        if isGroup && conversationViewItem.interaction.thread.name() == "Loki Public Chat"
-            || conversationViewItem.interaction.thread.name() == "Session Public Chat" {
-            let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
-            actions.append(reportAction)
+        if isGroup && conversationViewItem.interaction is TSIncomingMessage && conversationViewItem.userHasModerationPermission {
+            let banAction = MessageActionBuilder.banUser(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(banAction)
         }
         
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
@@ -185,10 +183,9 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
-        if isGroup && conversationViewItem.interaction.thread.name() == "Loki Public Chat"
-            || conversationViewItem.interaction.thread.name() == "Session Public Chat" {
-            let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
-            actions.append(reportAction)
+        if isGroup && conversationViewItem.interaction is TSIncomingMessage && conversationViewItem.userHasModerationPermission {
+            let banAction = MessageActionBuilder.banUser(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(banAction)
         }
         
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)

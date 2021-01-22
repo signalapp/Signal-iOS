@@ -17,6 +17,12 @@ extension MessageReceiver {
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
+        // Touch the thread to update the home screen preview
+        let storage = SNMessagingKitConfiguration.shared.storage
+        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+        thread.touch(with: transaction)
     }
 
     private static func handleReadReceipt(_ message: ReadReceipt, using transaction: Any) {
@@ -226,6 +232,10 @@ extension MessageReceiver {
         if isMainAppAndActive {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
+        // Keep track of the open group server message ID ↔ message ID relationship
+        if let serverID = message.openGroupServerMessageID {
+            storage.setIDForMessage(withServerID: serverID, to: tsIncomingMessageID, using: transaction)
+        }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
@@ -289,7 +299,7 @@ extension MessageReceiver {
         let group = thread.groupModel
         let oldMembers = group.groupMemberIds
         // Check that the message isn't from before the group was created
-        guard Double(message.sentTimestamp!) > thread.creationDate.timeIntervalSince1970 else {
+        guard Double(message.sentTimestamp!) > thread.creationDate.timeIntervalSince1970 * 1000 else {
             return SNLog("Ignoring closed group update from before thread was created.")
         }
         // Check that the sender is a member of the group (before the update)

@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-public extension CGPoint {
+extension CGPoint {
     public func offsetBy(dx: CGFloat) -> CGPoint {
         return CGPoint(x: x + dx, y: y)
     }
