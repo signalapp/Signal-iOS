@@ -84,20 +84,7 @@ public class WallpaperSettingsViewController: OWSTableViewController {
                                     comment: "Clear wallpaper action in wallpaper settings view."),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "clear_wallpaper")
         ) { [weak self] in
-            guard let self = self else { return }
-            self.databaseStorage.asyncWrite { transaction in
-                do {
-                    try Wallpaper.clear(for: self.thread, transaction: transaction)
-                } catch {
-                    owsFailDebug("Failed to clear wallpaper with error: \(error)")
-                    DispatchQueue.main.async {
-                        OWSActionSheets.showErrorAlert(
-                            message: NSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_CLEAR",
-                                                       comment: "An error indicating to the user that we failed to clear the wallpaper.")
-                        )
-                    }
-                }
-            }
+            self?.didPressClearWallpaper()
         }
         resetSection.add(clearWallpaperItem)
 
@@ -107,20 +94,7 @@ public class WallpaperSettingsViewController: OWSTableViewController {
                                         comment: "Reset all wallpapers action in wallpaper settings view."),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_all_wallpapers")
             ) { [weak self] in
-                guard let self = self else { return }
-                self.databaseStorage.asyncWrite { transaction in
-                    do {
-                        try Wallpaper.resetAll(transaction: transaction)
-                    } catch {
-                        owsFailDebug("Failed to reset all wallpapers with error: \(error)")
-                        DispatchQueue.main.async {
-                            OWSActionSheets.showErrorAlert(
-                                message: NSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_RESET",
-                                                           comment: "An error indicating to the user that we failed to reset all wallpapers.")
-                            )
-                        }
-                    }
-                }
+                self?.didPressResetAllWallpapers()
             }
             resetSection.add(resetAllWallpapersItem)
         }
@@ -137,6 +111,68 @@ public class WallpaperSettingsViewController: OWSTableViewController {
                 try Wallpaper.setDimInDarkMode(sender.isOn, for: self.thread, transaction: transaction)
             } catch {
                 owsFailDebug("Failed to set dim in dark mode \(error)")
+            }
+        }
+    }
+
+    func didPressClearWallpaper() {
+        let title: String
+        if thread != nil {
+            title = NSLocalizedString(
+                "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION",
+                comment: "Confirmation dialog when clearing the wallpaper for a specific chat."
+            )
+        } else {
+            title = NSLocalizedString(
+                "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION",
+                comment: "Confirmation dialog when clearing the global wallpaper."
+            )
+        }
+
+        OWSActionSheets.showConfirmationAlert(title: title) { _ in
+            self.clearWallpaper()
+        }
+    }
+
+    func clearWallpaper() {
+        databaseStorage.asyncWrite { transaction in
+            do {
+                try Wallpaper.clear(for: self.thread, transaction: transaction)
+            } catch {
+                owsFailDebug("Failed to clear wallpaper with error: \(error)")
+                DispatchQueue.main.async {
+                    OWSActionSheets.showErrorAlert(
+                        message: NSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_CLEAR",
+                                                   comment: "An error indicating to the user that we failed to clear the wallpaper.")
+                    )
+                }
+            }
+        }
+    }
+
+    func didPressResetAllWallpapers() {
+        OWSActionSheets.showConfirmationAlert(
+            title: NSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION",
+                comment: "Confirmation dialog when resetting all wallpapers."
+            )
+        ) { _ in
+            self.resetAllWallpapers()
+        }
+    }
+
+    func resetAllWallpapers() {
+        databaseStorage.asyncWrite { transaction in
+            do {
+                try Wallpaper.resetAll(transaction: transaction)
+            } catch {
+                owsFailDebug("Failed to reset all wallpapers with error: \(error)")
+                DispatchQueue.main.async {
+                    OWSActionSheets.showErrorAlert(
+                        message: NSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_RESET",
+                                                   comment: "An error indicating to the user that we failed to reset all wallpapers.")
+                    )
+                }
             }
         }
     }
