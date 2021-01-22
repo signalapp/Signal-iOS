@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -593,7 +593,10 @@ extension MessageSender {
             guard let localAddress = tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing localAddress.").asUnretryableError
             }
-            guard let thread = message.threadWithSneakyTransaction else {
+            let possibleThread = Self.databaseStorage.read { transaction in
+                TSThread.anyFetch(uniqueId: message.uniqueThreadId, transaction: transaction)
+            }
+            guard let thread = possibleThread else {
                 Logger.warn("Skipping send due to missing thread.")
                 throw MessageSenderError.threadMissing.asUnretryableError
             }
