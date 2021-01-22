@@ -9,9 +9,9 @@ if [ "${PROJECT_DIR}" = "" ]; then
 fi
 
 # Capture hash & comment from last WebRTC git commit.
-cd $PROJECT_DIR/ThirdParty/WebRTC/
+cd "${PROJECT_DIR}"/ThirdParty/WebRTC/
 _git_commit=`git log --pretty=oneline | head -1`
-cd $PROJECT_DIR
+cd "${PROJECT_DIR}"
 
 # Remove existing .plist entry, if any.
 /usr/libexec/PlistBuddy -c "Delete BuildDetails" Signal/Signal-Info.plist || true
