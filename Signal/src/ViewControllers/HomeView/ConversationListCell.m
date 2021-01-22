@@ -154,7 +154,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.muteIconWrapper addSubview:self.muteIconView];
     [self.muteIconView autoPinWidthToSuperview];
     [self.muteIconView autoVCenterInSuperview];
-    //    [self.muteIconView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:snippetFirstLineView];
 
     self.messageStatusIconView = [UIImageView new];
     [self.messageStatusIconView setContentHuggingHorizontalHigh];
@@ -242,14 +241,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.snippetLabel.font = self.snippetFont;
     self.snippetStrut.font = self.snippetFont.ows_semibold;
     self.snippetLabel.textColor = UIColor.ows_gray45Color;
-    CGFloat snippetHeight = ceil(MAX((self.snippetFont.ows_semibold.lineHeight * 2),
-        [self.snippetStrut sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].height));
+
+    // UILabel appears to have an issue where it's height is
+    // too large if its text is just a series of newlines,
+    // so we need to clamp it to max two lines of height.
+    //
+    // We pad the measurement to avoid clipping.
+    CGFloat snippetHeight = ceil(1.1
+        * MAX((self.snippetFont.ows_semibold.lineHeight * 2),
+            [self.snippetStrut sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].height));
+
     [self.viewConstraints addObjectsFromArray:@[
         [self.muteIconView autoSetDimension:ALDimensionWidth toSize:self.snippetFont.lineHeight],
         [self.muteIconView autoSetDimension:ALDimensionHeight toSize:self.snippetFont.lineHeight],
 
-        // UILabel appears to have an issue where it's height is
-        // too large if its text is just a series of newlines.
         [self.snippetLabel autoSetDimension:ALDimensionHeight toSize:snippetHeight],
 
         // These views should align with the first (of two) of the snippet,
@@ -631,8 +636,12 @@ NS_ASSUME_NONNULL_BEGIN
         // typing indicator) in a UIStackView proved non-trivial since we're using
         // UIStackViewAlignmentLastBaseline.  Therefore we hide the _contents_ of the
         // snippet label using an empty string.
-        self.snippetLabel.text = @"";
-        self.typingIndicatorWrapper.hidden = NO;
+        //
+        // Ensure that the snippet is at least two lines so that it is top-aligned.
+        self.snippetLabel.attributedText = [@"\n\n" asAttributedStringWithAttributes:@{
+            NSFontAttributeName : self.snippetFont,
+        }];
+        self.typingIndicatorView.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {
         NSAttributedString *attributedText;
@@ -641,6 +650,8 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
+        // Ensure that the snippet is at least two lines so that it is top-aligned.
+        attributedText = [attributedText stringByAppendingString:@"\n\n" attributes:@{}];
         self.snippetLabel.attributedText = attributedText;
 
         self.typingIndicatorWrapper.hidden = YES;
