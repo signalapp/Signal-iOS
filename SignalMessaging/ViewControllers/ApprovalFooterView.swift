@@ -127,9 +127,9 @@ public class ApprovalFooterView: UIView {
     }()
 
     lazy var proceedButton: OWSButton = {
-		let button = OWSButton.sendButton(
-			imageName: self.approvalMode.proceedButtonImageName
-		) { [weak self] in
+        let button = OWSButton.sendButton(
+            imageName: self.approvalMode.proceedButtonImageName
+        ) { [weak self] in
             guard let self = self else { return }
             self.delegate?.approvalFooterDelegateDidRequestProceed(self)
         }
@@ -138,25 +138,25 @@ public class ApprovalFooterView: UIView {
     }()
 
     private func updateContents() {
-		proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
-		proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
+        proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
+        proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
     }
 }
 
 fileprivate extension ApprovalMode {
-	var proceedButtonAccessibilityLabel: String {
-		switch self {
-		case .next: return CommonStrings.nextButton
-		case .send: return MessageStrings.sendButton
-		}
-	}
+    var proceedButtonAccessibilityLabel: String {
+        switch self {
+        case .next: return CommonStrings.nextButton
+        case .send: return MessageStrings.sendButton
+        }
+    }
 
-	var proceedButtonImageName: String {
-		switch self {
-		case .next:
-			return "arrow-right-24"
-		case .send:
-			return "send-solid-24"
-		}
-	}
+    var proceedButtonImageName: String {
+        switch self {
+        case .next:
+            return "arrow-right-24"
+        case .send:
+            return "send-solid-24"
+        }
+    }
 }
