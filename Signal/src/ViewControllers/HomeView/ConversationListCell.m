@@ -20,7 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
-@property (nonatomic) MessageStatusView *messageStatusView;
+@property (nonatomic) UIImageView *messageStatusIconView;
+@property (nonatomic) UIView *messageStatusWrapper;
 @property (nonatomic) TypingIndicatorView *typingIndicatorView;
 
 @property (nonatomic) UIView *unreadBadge;
@@ -86,9 +87,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
     [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
 
-    self.messageStatusView = [MessageStatusView new];
-    [self.messageStatusView setContentHuggingHorizontalHigh];
-    [self.messageStatusView setCompressionResistanceHorizontalHigh];
+    self.messageStatusWrapper = [UIView new];
+    [self.messageStatusWrapper setContentHuggingHorizontalHigh];
+    [self.messageStatusWrapper setCompressionResistanceHorizontalHigh];
 
     UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
@@ -105,31 +106,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
-    self.typingIndicatorView = [TypingIndicatorView new];
-    [self.contentView addSubview:self.typingIndicatorView];
-
     UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.snippetLabel,
-        self.messageStatusView,
+        self.messageStatusWrapper,
     ]];
-    // snippetLabel is two lines.
-    // The message status should be vertically aligned with the
-    // center of the _first line_ of the snippet label.
-    // Therefore we:
-    //
-    // * Top align everything in the bottom row.
-    // * Ensure messageStatusView has _half_ the height of the
-    //   bottom row.
-    // * Internally the messageStatusView will v-center its icon.
-    [[NSLayoutConstraint constraintWithItem:self.messageStatusView
-                                  attribute:NSLayoutAttributeHeight
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:bottomRowView
-                                  attribute:NSLayoutAttributeHeight
-                                 multiplier:0.5
-                                   constant:0] autoInstall];
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
-    bottomRowView.alignment = UIStackViewAlignmentTop;
+    bottomRowView.alignment = UIStackViewAlignmentFill;
     bottomRowView.spacing = 6.f;
 
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ topRowView, bottomRowView ]];
@@ -144,6 +126,30 @@ NS_ASSUME_NONNULL_BEGIN
     [vStackView autoPinTrailingToSuperviewMargin];
 
     vStackView.userInteractionEnabled = NO;
+
+    // The typing indicators and "message send" status indicator
+    // should v-align with the _first line_ of the snippet view.
+    // We use an invisible view which is pinned to _half_ the height
+    // of the snippet view; these other views can align their h-axis
+    // with this view.
+    UIView *snippetFirstLineView = [UIView new];
+    [self.contentView addSubview:snippetFirstLineView];
+    [snippetFirstLineView autoSetDimension:ALDimensionWidth toSize:0];
+    [snippetFirstLineView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.snippetLabel];
+    [[NSLayoutConstraint constraintWithItem:snippetFirstLineView
+                                  attribute:NSLayoutAttributeHeight
+                                  relatedBy:NSLayoutRelationEqual
+                                     toItem:self.snippetLabel
+                                  attribute:NSLayoutAttributeHeight
+                                 multiplier:0.5
+                                   constant:0] autoInstall];
+
+    self.messageStatusIconView = [UIImageView new];
+    [self.messageStatusIconView setContentHuggingHorizontalHigh];
+    [self.messageStatusIconView setCompressionResistanceHorizontalHigh];
+    [self.messageStatusWrapper addSubview:self.messageStatusIconView];
+    [self.messageStatusIconView autoPinWidthToSuperview];
+    [self.messageStatusIconView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:snippetFirstLineView];
 
     self.unreadLabel = [UILabel new];
     self.unreadLabel.textColor = [UIColor ows_whiteColor];
@@ -161,8 +167,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.contentView addSubview:self.unreadBadge];
 
+    self.typingIndicatorView = [TypingIndicatorView new];
+    [self.contentView addSubview:self.typingIndicatorView];
     [self.typingIndicatorView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.snippetLabel];
-    [self.typingIndicatorView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.snippetLabel];
+    [self.typingIndicatorView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:snippetFirstLineView];
 }
 
 - (void)dealloc
@@ -244,12 +252,12 @@ NS_ASSUME_NONNULL_BEGIN
         // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
-        self.messageStatusView.hidden = YES;
+        self.messageStatusWrapper.hidden = YES;
     } else if (thread.hasUnreadMessages) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
         self.unreadBadge.hidden = NO;
-        self.messageStatusView.hidden = YES;
+        self.messageStatusWrapper.hidden = YES;
 
         NSUInteger unreadCount = thread.unreadCount;
         if (unreadCount > 0) {
@@ -327,9 +335,10 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
             }
         }
-        self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.messageStatusView.tintColor = messageStatusViewTintColor;
-        self.messageStatusView.hidden = shouldHideStatusIndicator || statusIndicatorImage == nil;
+        self.messageStatusIconView.image =
+            [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.messageStatusIconView.tintColor = messageStatusViewTintColor;
+        self.messageStatusWrapper.hidden = shouldHideStatusIndicator || statusIndicatorImage == nil;
         self.unreadBadge.hidden = YES;
         if (shouldAnimateStatusIcon) {
             CABasicAnimation *animation;
@@ -339,9 +348,9 @@ NS_ASSUME_NONNULL_BEGIN
             animation.duration = kPeriodSeconds;
             animation.cumulative = YES;
             animation.repeatCount = HUGE_VALF;
-            [self.messageStatusView.layer addAnimation:animation forKey:@"animation"];
+            [self.messageStatusIconView.layer addAnimation:animation forKey:@"animation"];
         } else {
-            [self.messageStatusView.layer removeAllAnimations];
+            [self.messageStatusIconView.layer removeAllAnimations];
         }
     }
 }
@@ -511,7 +520,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.overrideSnippet = nil;
     self.avatarView.image = nil;
-    self.messageStatusView.hidden = NO;
+    self.messageStatusWrapper.hidden = NO;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -589,7 +598,9 @@ NS_ASSUME_NONNULL_BEGIN
         // snippet label using an empty string.
         //
         // Ensure that the snippet is at least two lines so that it is top-aligned.
-        self.snippetLabel.text = @"\n\n";
+        self.snippetLabel.attributedText = [@"\n\n" asAttributedStringWithAttributes:@{
+            NSFontAttributeName : self.snippetFont,
+        }];
         self.typingIndicatorView.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {

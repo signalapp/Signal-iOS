@@ -583,7 +583,6 @@
 		4C10B1BC23176D250099396B /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
 		4C10B1C723176DD60099396B /* SDSPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */; };
 		4C10B1C9231778880099396B /* PerformanceBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10B1C8231778880099396B /* PerformanceBaseTest.swift */; };
-		4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */; };
 		4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
 		4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C19A0FB227B356F007A0C7F /* DebugUIMessages+OWS.swift */; };
@@ -1620,7 +1619,6 @@
 		4C10B1C323176D250099396B /* SignalPerformanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalPerformanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSPerformanceTest.swift; sourceTree = "<group>"; };
 		4C10B1C8231778880099396B /* PerformanceBaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceBaseTest.swift; sourceTree = "<group>"; };
-		4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStatusView.swift; sourceTree = "<group>"; };
 		4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGridViewCell.swift; sourceTree = "<group>"; };
 		4C19A0FB227B356F007A0C7F /* DebugUIMessages+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugUIMessages+OWS.swift"; sourceTree = "<group>"; };
@@ -2341,7 +2339,6 @@
 				34386A4D207D0C01009F5D9C /* ConversationListViewController.m */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
-				4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */,
 			);
 			path = HomeView;
 			sourceTree = "<group>";
@@ -5456,7 +5453,6 @@
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
-				4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */,
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
