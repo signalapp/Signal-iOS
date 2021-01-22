@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     // NOTE: These values are not localized.
     if (fileSize > kOneGigabyte * 1) {
         CGFloat gbSize = MAX((CGFloat)1.0, (CGFloat)fileSize / (CGFloat)kOneGigabyte);
-        return [NSString stringWithFormat:@"%0.1f GB", mbSize];
+        return [NSString stringWithFormat:@"%0.1f GB", gbSize];
     } else if (fileSize > kOneMegabyte * 1) {
         CGFloat mbSize = MAX((CGFloat)1.0, (CGFloat)fileSize / (CGFloat)kOneMegabyte);
         return [NSString stringWithFormat:@"%0.1f MB", mbSize];
