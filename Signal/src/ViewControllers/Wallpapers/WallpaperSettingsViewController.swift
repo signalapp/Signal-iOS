@@ -35,6 +35,7 @@ public class WallpaperSettingsViewController: OWSTableViewController {
                                                        comment: "Title for the wallpaper settings preview section.")
         let previewItem = OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
             guard let self = self else { return cell }
             let miniPreview = MiniPreviewView(thread: self.thread)
             cell.contentView.addSubview(miniPreview)
