@@ -266,9 +266,8 @@ public class CVLoader: NSObject {
                                                  thread: TSThread,
                                                  conversationStyle: ConversationStyle,
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
-        let cellMediaCache = NSCache<NSString, AnyObject>()
         let coreState = CVCoreState(conversationStyle: conversationStyle,
-                                    cellMediaCache: cellMediaCache)
+                                    mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                   thread: thread,
                                                   coreState: coreState,
