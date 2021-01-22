@@ -321,7 +321,7 @@ class ThreadMapping: NSObject {
                                               updatedItemIds: updatedItemIds,
                                               transaction: transaction)
         } catch {
-//            owsFailDebug("error: \(error)")
+            owsFailDebug("error: \(error)")
             return nil
         }
     }
@@ -597,7 +597,7 @@ class ThreadMapping: NSObject {
             logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
             logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
             logThreadIds(movedThreadIds, name: "movedThreadIds")
-            throw OWSGenericError("Could not reorder pinned contents.")
+            throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
         guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
@@ -614,7 +614,7 @@ class ThreadMapping: NSObject {
             logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
             logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
             logThreadIds(movedThreadIds, name: "movedThreadIds")
-            throw OWSGenericError("Could not reorder unpinned contents.")
+            throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 
         // 4. Updates
