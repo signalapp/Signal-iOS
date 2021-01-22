@@ -742,7 +742,8 @@ extension ConversationSettingsViewController {
 
                 if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
-                } else if let bioForDisplay = (Self.databaseStorage.read { transaction in
+                } else if !memberAddress.isLocalAddress,
+                          let bioForDisplay = (Self.databaseStorage.read { transaction in
                     Self.profileManager.profileBioForDisplay(for: memberAddress, transaction: transaction)
                 }) {
                     cell.setAttributedSubtitle(NSAttributedString(string: bioForDisplay))

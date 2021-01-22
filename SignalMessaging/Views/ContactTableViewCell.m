@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactTableViewCell.h"
@@ -114,6 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle
 {
     [self.cellView setAttributedSubtitle:attributedSubtitle];
+}
+
+- (void)setSubtitle:(nullable NSString *)subtitle
+{
+    [self.cellView setSubtitle:subtitle];
 }
 
 - (void)setCustomName:(nullable NSString *)customName

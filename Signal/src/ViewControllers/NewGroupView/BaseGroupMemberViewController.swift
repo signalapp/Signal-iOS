@@ -568,6 +568,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
 
         func defaultSubtitle() -> NSAttributedString? {
             Self.databaseStorage.read { transaction in
+                guard !address.isLocalAddress else {
+                    return nil
+                }
                 guard let bioForDisplay = Self.profileManager.profileBioForDisplay(for: address,
                                                                                    transaction: transaction) else {
                     return nil

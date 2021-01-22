@@ -218,7 +218,8 @@ extension ConversationSettingsViewController {
         var builder = HeaderBuilder(viewController: self,
                                     transaction: transaction)
 
-        if let bioText = profileManager.profileBioForDisplay(for: contactThread.contactAddress,
+        if !contactThread.contactAddress.isLocalAddress,
+            let bioText = profileManager.profileBioForDisplay(for: contactThread.contactAddress,
                                                              transaction: transaction) {
             builder.addSubtitleLabel(text: bioText)
         }

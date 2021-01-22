@@ -69,6 +69,10 @@ public extension NSString {
     var asAttributedString: NSAttributedString {
         return NSAttributedString(string: self as String)
     }
+
+    func asAttributedString(attributes: [NSAttributedString.Key: Any] = [:]) -> NSAttributedString {
+        NSAttributedString(string: self as String, attributes: attributes)
+    }
 }
 
 // MARK: - Attributed String Concatentation

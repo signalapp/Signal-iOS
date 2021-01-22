@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -226,15 +226,13 @@ NS_ASSUME_NONNULL_BEGIN
                     NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                     NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
                 }];
-        [attributedFooter appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
-        [attributedFooter appendAttributedString:
-                              [[NSAttributedString alloc]
-                                  initWithString:CommonStrings.learnMore
-                                      attributes:@{
-                                          NSLinkAttributeName : [NSURL
-                                              URLWithString:@"https://support.signal.org/hc/articles/360007059792"],
-                                          NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
-                                      }]];
+        [attributedFooter appendAttributedString:@" ".asAttributedString];
+        [attributedFooter append:CommonStrings.learnMore
+                      attributes:@{
+                          NSLinkAttributeName : [NSURL
+                                                 URLWithString:@"https://support.signal.org/hc/articles/360007059792"],
+                          NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                      }];
         pinsSection.footerAttributedTitle = attributedFooter;
 
         [pinsSection
@@ -394,16 +392,14 @@ NS_ASSUME_NONNULL_BEGIN
                 NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                 NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
             }];
-    [unidentifiedDeliveryFooterText appendAttributedString:[[NSAttributedString alloc] initWithString:@" "
-                                                                                           attributes:@{}]];
-    [unidentifiedDeliveryFooterText
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:CommonStrings.learnMore
-                                       attributes:@{
-                                           NSLinkAttributeName :
-                                               [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"],
-                                           NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
-                                       }]];
+    [unidentifiedDeliveryFooterText append:@" "
+                                attributes:@{}];
+    [unidentifiedDeliveryFooterText append:CommonStrings.learnMore
+                                attributes:@{
+                                    NSLinkAttributeName :
+                                        [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"],
+                                    NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                                }];
 
     unidentifiedDeliveryIndicatorsSection.footerAttributedTitle = unidentifiedDeliveryFooterText;
     [contents addSection:unidentifiedDeliveryIndicatorsSection];
