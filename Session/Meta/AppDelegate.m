@@ -32,7 +32,6 @@
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
 
-@import WebRTC;
 @import Intents;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
@@ -371,8 +370,6 @@ static NSTimeInterval launchStartedAt;
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        RTCInitializeSSL();
-
         if ([self.tsAccountManager isRegistered]) {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block

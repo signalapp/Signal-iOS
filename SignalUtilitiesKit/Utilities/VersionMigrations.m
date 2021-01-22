@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!previousVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         OWSDatabaseMigrationRunner *runner = [[OWSDatabaseMigrationRunner alloc] init];
-        [runner assumeAllExistingMigrationsRun];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
         });
