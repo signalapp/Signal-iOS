@@ -339,6 +339,10 @@ public class SelectionHighlightView: UIView {
             } else {
                 let highlight = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
                 highlight.frame = frame
+                let overlay = UIView()
+                overlay.backgroundColor = Theme.selectedConversationCellColor
+                highlight.contentView.addSubview(overlay)
+                overlay.frame = highlight.bounds
                 addSubview(highlight)
             }
         }

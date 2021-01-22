@@ -48,9 +48,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private var cellLayoutMargins: UIEdgeInsets {
         UIEdgeInsets(top: 0,
-                     leading: conversationStyle.fullWidthGutterLeading + 20,
+                     leading: conversationStyle.fullWidthGutterLeading,
                      bottom: 0,
-                     trailing: conversationStyle.fullWidthGutterTrailing + 20)
+                     trailing: conversationStyle.fullWidthGutterTrailing)
     }
 
     private var outerStackConfig: CVStackViewConfig {
@@ -107,7 +107,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             hStackView.apply(config: hStackConfig)
 
             outerStack.addArrangedSubview(selectionView)
+            outerStack.addArrangedSubview(.spacer(withWidth: 4))
             outerStack.addArrangedSubview(hStackView)
+            outerStack.addArrangedSubview(.spacer(withWidth: 4))
 
             let leadingSpacer = UIView.hStretchingSpacer()
             let trailingSpacer = UIView.hStretchingSpacer()
@@ -224,6 +226,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             // Account for selection UI when doing measurement.
             availableWidth -= ConversationStyle.selectionViewWidth + outerStackConfig.spacing
         }
+
+        // Padding around the hStack
+        availableWidth -= (outerStackConfig.spacing * 2 + 4) * 2
 
         var height: CGFloat = 0
 
