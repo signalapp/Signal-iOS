@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -69,11 +69,8 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
         imageView.autoMatch(.width, to: .width, of: view).priority = .defaultHigh
         imageView.autoMatch(.width, to: .width, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        imageView.autoSetDimension(.width, toSize: maxAvatarPointSize.width, relation: .lessThanOrEqual)
-
         imageView.autoMatch(.height, to: .height, of: view).priority = .defaultHigh
         imageView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        imageView.autoSetDimension(.height, toSize: maxAvatarPointSize.height, relation: .lessThanOrEqual)
 
         closeButton.autoPinTopToSuperviewMargin(withInset: 8)
         closeButton.autoPinLeadingToSuperviewMargin()
