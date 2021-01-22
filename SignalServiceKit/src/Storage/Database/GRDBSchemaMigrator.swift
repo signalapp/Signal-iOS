@@ -129,7 +129,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 17
+    public static let grdbSchemaVersionLatest: UInt = 18
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -919,6 +919,8 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "model_TSInteraction") { table in
                     table.add(column: "wasIdentityVerified", .boolean)
                 }
+
+                try db.execute(sql: "UPDATE model_TSInteraction SET wasIdentityVerified = 0")
             } catch {
                 owsFail("Error: \(error)")
             }
