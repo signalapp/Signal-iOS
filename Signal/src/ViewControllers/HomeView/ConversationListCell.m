@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TypingIndicatorView *typingIndicatorView;
 @property (nonatomic) UIView *typingIndicatorWrapper;
 @property (nonatomic) UIImageView *muteIconView;
+@property (nonatomic) UIView *muteIconWrapper;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
@@ -98,16 +99,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageStatusWrapper setContentHuggingHorizontalHigh];
     [self.messageStatusWrapper setCompressionResistanceHorizontalHigh];
 
+    self.muteIconWrapper = [UIView containerView];
+    [self.muteIconWrapper setContentHuggingHorizontalHigh];
+    [self.muteIconWrapper setCompressionResistanceHorizontalHigh];
+
     self.muteIconView = [UIImageView withTemplateImageName:@"bell-disabled-outline-24"
                                                  tintColor:Theme.primaryTextColor];
     [self.muteIconView setContentHuggingHorizontalHigh];
     [self.muteIconView setCompressionResistanceHorizontalHigh];
+    [self.muteIconWrapper addSubview:self.muteIconView];
+    [self.muteIconView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, 2, 0)];
 
     UIView *topRowSpacer = UIView.hStretchingSpacer;
 
     UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
-        self.muteIconView,
+        self.muteIconWrapper,
         topRowSpacer,
         self.dateTimeLabel,
     ]];
@@ -235,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = self.snippetFont;
     self.snippetStrut.font = self.snippetFont.ows_semibold;
-    self.snippetLabel.textColor = self.currentTextColor;
+    self.snippetLabel.textColor = self.currentColor;
 
     // UILabel appears to have an issue where it's height is
     // too large if its text is just a series of newlines,
@@ -275,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
     }
-    self.dateTimeLabel.textColor = self.currentTextColor;
+    self.dateTimeLabel.textColor = self.currentColor;
 
     if (overrideSnippet) {
         // If we're using the conversation list cell to render search results,
@@ -438,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         UIFont *snippetFont = self.snippetFont;
-        UIColor *currentTextColor = self.currentTextColor;
+        UIColor *currentColor = self.currentColor;
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
         if (draftText.length > 0 && !self.hasUnreadStyle) {
@@ -451,7 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
             [snippetText append:draftText
                      attributes:@{
                          NSFontAttributeName : snippetFont,
-                         NSForegroundColorAttributeName : currentTextColor,
+                         NSForegroundColorAttributeName : currentColor,
                      }];
         } else {
             NSString *lastMessageText = thread.conversationListInfo.lastMessageText.filterStringForDisplay;
@@ -461,12 +468,12 @@ NS_ASSUME_NONNULL_BEGIN
                     [snippetText append:senderName
                              attributes:@{
                                  NSFontAttributeName : snippetFont,
-                                 NSForegroundColorAttributeName : currentTextColor,
+                                 NSForegroundColorAttributeName : currentColor,
                              }];
                     [snippetText append:@":"
                              attributes:@{
                                  NSFontAttributeName : snippetFont,
-                                 NSForegroundColorAttributeName : currentTextColor,
+                                 NSForegroundColorAttributeName : currentColor,
                              }];
                     [snippetText append:@" "
                              attributes:@{
@@ -477,7 +484,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [snippetText append:lastMessageText
                          attributes:@{
                              NSFontAttributeName : snippetFont,
-                             NSForegroundColorAttributeName : currentTextColor,
+                             NSForegroundColorAttributeName : currentColor,
                          }];
             }
         }
@@ -533,7 +540,7 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
-- (UIColor *)currentTextColor
+- (UIColor *)currentColor
 {
     return (self.hasUnreadStyle ? Theme.primaryTextColor : UIColor.ows_gray45Color);
 }
@@ -656,8 +663,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self.typingIndicatorView stopAnimation];
     }
 
-    self.muteIconView.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
-    self.muteIconView.tintColor = (self.hasUnreadStyle ? Theme.primaryTextColor : UIColor.ows_gray45Color);
+    self.muteIconWrapper.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
+    self.muteIconView.tintColor = self.currentColor;
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
