@@ -2932,7 +2932,7 @@ typedef enum : NSUInteger {
     // make sure toolbar extends below iPhoneX home button.
     self.view.backgroundColor = Theme.toolbarBackgroundColor;
 
-    [self updateWallpaper];
+    [self updateWallpaperView];
 
     [self updateNavigationTitle];
     [self updateNavigationBarSubtitleLabel];

@@ -15,36 +15,37 @@ extension ConversationViewController {
             object: nil
         )
 
-        updateWallpaper()
+        updateWallpaperView()
     }
 
     @objc
     func wallpaperDidChange(_ notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
-        updateWallpaper()
+        updateWallpaperView()
+
+        let hasWallpaper = databaseStorage.read { transaction in
+            Wallpaper.exists(for: self.thread, transaction: transaction)
+        }
+
+        updateConversationStyle(hasWallpaper: hasWallpaper)
     }
 
     @objc
-    func updateWallpaper() {
-        var wallpaperView: UIView?
-        let thread = self.thread
-        databaseStorage.asyncRead { transaction in
-            wallpaperView = Wallpaper.view(for: thread, transaction: transaction)
-        } completion: {
-            self.viewState.wallpaperContainer.removeAllSubviews()
+    func updateWallpaperView() {
+        AssertIsOnMainThread()
 
-            guard let wallpaperView = wallpaperView else {
-                self.viewState.wallpaperContainer.backgroundColor = Theme.backgroundColor
-                self.updateConversationStyle(hasWallpaper: false)
-                return
-            }
+        viewState.wallpaperContainer.removeAllSubviews()
 
-            self.updateConversationStyle(hasWallpaper: true)
-
-            self.viewState.wallpaperContainer.backgroundColor = .clear
-
-            self.viewState.wallpaperContainer.addSubview(wallpaperView)
-            wallpaperView.autoPinEdgesToSuperviewEdges()
+        guard let wallpaperView = databaseStorage.read(block: { transaction in
+            Wallpaper.view(for: self.thread, transaction: transaction)
+        }) else {
+            viewState.wallpaperContainer.backgroundColor = Theme.backgroundColor
+            return
         }
+
+        viewState.wallpaperContainer.backgroundColor = .clear
+
+        viewState.wallpaperContainer.addSubview(wallpaperView)
+        wallpaperView.autoPinEdgesToSuperviewEdges()
     }
 }

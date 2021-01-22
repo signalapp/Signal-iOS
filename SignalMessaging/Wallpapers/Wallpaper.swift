@@ -142,6 +142,8 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     public static func view(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> UIView? {
+        AssertIsOnMainThread()
+
         guard let wallpaper: Wallpaper = {
             if let wallpaper = get(for: thread, transaction: transaction) {
                 return wallpaper
@@ -181,6 +183,8 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     public static func view(for wallpaper: Wallpaper, photo: UIImage? = nil) -> UIView? {
+        AssertIsOnMainThread()
+
         if let solidColor = wallpaper.solidColor {
             let view = UIView()
             view.backgroundColor = solidColor
