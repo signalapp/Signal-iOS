@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoEnvelope;
 @class SignalServiceAddress;
+@class TSErrorMessageBuilder;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -27,6 +28,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageGroupCreationFailed,
     TSErrorMessageSessionRefresh
 };
+
+extern NSUInteger TSErrorMessageSchemaVersion;
 
 @interface ThreadlessErrorMessage : NSObject <OWSPreviewText>
 
@@ -60,24 +63,10 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
+- (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_DESIGNATED_INITIALIZER
+    NS_SWIFT_NAME(init(errorMessageWithBuilder:));
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
-                 withTransaction:(SDSAnyWriteTransaction *)transaction
-               failedMessageType:(TSErrorMessageType)errorMessageType;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
-                          address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithThread:(TSThread *)thread
-             failedMessageType:(TSErrorMessageType)errorMessageType
-                       address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -108,7 +97,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:));
+             wasIdentityVerified:(BOOL)wasIdentityVerified
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:wasIdentityVerified:));
 
 // clang-format on
 
@@ -129,10 +119,15 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 + (instancetype)sessionRefreshWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
+                                          address:(SignalServiceAddress *)address
+                              wasIdentityVerified:(BOOL)wasIdentityVerified;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) SignalServiceAddress *recipientAddress;
+
+// This property only applies if errorType == .nonBlockingIdentityChange.
+@property (nonatomic, readonly) BOOL wasIdentityVerified;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
@@ -58,10 +58,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                                                          thread:(TSThread *)thread
                                                incomingEnvelope:(SSKProtoEnvelope *)envelope
 {
-    self = [self initWithTimestamp:timestamp
-                            thread:thread
-                 failedMessageType:TSErrorMessageWrongTrustedIdentityKey
-                           address:nil];
+    TSErrorMessageBuilder *builder =
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageWrongTrustedIdentityKey];
+    builder.timestamp = timestamp;
+    self = [super initErrorMessageWithBuilder:builder];
     if (!self) {
         return self;
     }
@@ -107,6 +107,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+             wasIdentityVerified:(BOOL)wasIdentityVerified
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
 {
@@ -132,7 +133,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                 wasRemotelyDeleted:wasRemotelyDeleted
                          errorType:errorType
                               read:read
-                  recipientAddress:recipientAddress];
+                  recipientAddress:recipientAddress
+               wasIdentityVerified:wasIdentityVerified];
 
     if (!self) {
         return self;
@@ -230,6 +232,13 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         // for existing messages before we were storing author id.
         return self.envelope.sourceE164;
     }
+}
+
+- (SignalServiceAddress *)theirSignalAddress
+{
+    OWSAssertDebug(self.envelope.sourceAddress != nil);
+
+    return self.envelope.sourceAddress;
 }
 
 @end

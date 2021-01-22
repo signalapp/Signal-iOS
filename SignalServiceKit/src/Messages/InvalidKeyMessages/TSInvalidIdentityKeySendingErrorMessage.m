@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
@@ -63,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+             wasIdentityVerified:(BOOL)wasIdentityVerified
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
@@ -88,7 +89,8 @@ NS_ASSUME_NONNULL_BEGIN
                 wasRemotelyDeleted:wasRemotelyDeleted
                          errorType:errorType
                               read:read
-                  recipientAddress:recipientAddress];
+                  recipientAddress:recipientAddress
+               wasIdentityVerified:wasIdentityVerified];
 
     if (!self) {
         return self;
@@ -126,6 +128,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SignalServiceAddress *)theirSignalAddress
 {
+    OWSAssertDebug(self.recipientAddress != nil);
+
     return self.recipientAddress;
 }
 

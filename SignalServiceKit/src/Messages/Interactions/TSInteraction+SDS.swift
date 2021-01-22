@@ -86,6 +86,7 @@ public struct InteractionRecord: SDSRecord {
     public let hasEnded: Bool?
     public let creatorUuid: String?
     public let joinedMemberUuids: Data?
+    public let wasIdentityVerified: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -149,6 +150,7 @@ public struct InteractionRecord: SDSRecord {
         case hasEnded
         case creatorUuid
         case joinedMemberUuids
+        case wasIdentityVerified
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -233,6 +235,7 @@ public extension InteractionRecord {
         hasEnded = row[58]
         creatorUuid = row[59]
         joinedMemberUuids = row[60]
+        wasIdentityVerified = row[61]
     }
 }
 
@@ -517,6 +520,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
 
             return OWSUnknownContactBlockOfferMessage(grdbId: recordId,
                                                       uniqueId: uniqueId,
@@ -540,7 +544,8 @@ extension TSInteraction {
                                                       wasRemotelyDeleted: wasRemotelyDeleted,
                                                       errorType: errorType,
                                                       read: read,
-                                                      recipientAddress: recipientAddress)
+                                                      recipientAddress: recipientAddress,
+                                                      wasIdentityVerified: wasIdentityVerified)
 
         case .unknownProtocolVersionMessage:
 
@@ -740,6 +745,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
 
             return TSErrorMessage(grdbId: recordId,
                                   uniqueId: uniqueId,
@@ -763,7 +769,8 @@ extension TSInteraction {
                                   wasRemotelyDeleted: wasRemotelyDeleted,
                                   errorType: errorType,
                                   read: read,
-                                  recipientAddress: recipientAddress)
+                                  recipientAddress: recipientAddress,
+                                  wasIdentityVerified: wasIdentityVerified)
 
         case .incomingMessage:
 
@@ -939,6 +946,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
 
             return TSInvalidIdentityKeyErrorMessage(grdbId: recordId,
                                                     uniqueId: uniqueId,
@@ -962,7 +970,8 @@ extension TSInteraction {
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                     errorType: errorType,
                                                     read: read,
-                                                    recipientAddress: recipientAddress)
+                                                    recipientAddress: recipientAddress,
+                                                    wasIdentityVerified: wasIdentityVerified)
 
         case .invalidIdentityKeyReceivingErrorMessage:
 
@@ -997,6 +1006,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
             let authorId: String = try SDSDeserialization.required(record.authorId, name: "authorId")
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
 
@@ -1023,6 +1033,7 @@ extension TSInteraction {
                                                              errorType: errorType,
                                                              read: read,
                                                              recipientAddress: recipientAddress,
+                                                             wasIdentityVerified: wasIdentityVerified,
                                                              authorId: authorId,
                                                              envelopeData: envelopeData)
 
@@ -1059,6 +1070,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
             let messageId: String = try SDSDeserialization.required(record.messageId, name: "messageId")
             let preKeyBundleSerialized: Data? = record.preKeyBundle
             let preKeyBundle: PreKeyBundle = try SDSDeserialization.unarchive(preKeyBundleSerialized, name: "preKeyBundle")
@@ -1086,6 +1098,7 @@ extension TSInteraction {
                                                            errorType: errorType,
                                                            read: read,
                                                            recipientAddress: recipientAddress,
+                                                           wasIdentityVerified: wasIdentityVerified,
                                                            messageId: messageId,
                                                            preKeyBundle: preKeyBundle)
 
@@ -2573,6 +2586,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
             let messageId: String = modelToCopy.messageId
             // NOTE: If this generates build errors, you made need to
             // implement DeepCopyable for this type in DeepCopy.swift.
@@ -2601,6 +2615,7 @@ extension TSInteraction: DeepCopyable {
                                                            errorType: errorType,
                                                            read: read,
                                                            recipientAddress: recipientAddress,
+                                                           wasIdentityVerified: wasIdentityVerified,
                                                            messageId: messageId,
                                                            preKeyBundle: preKeyBundle)
         }
@@ -2703,6 +2718,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
             let authorId: String = modelToCopy.authorId
             let envelopeData: Data? = modelToCopy.envelopeData
 
@@ -2729,6 +2745,7 @@ extension TSInteraction: DeepCopyable {
                                                              errorType: errorType,
                                                              read: read,
                                                              recipientAddress: recipientAddress,
+                                                             wasIdentityVerified: wasIdentityVerified,
                                                              authorId: authorId,
                                                              envelopeData: envelopeData)
         }
@@ -2831,6 +2848,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
 
             return TSInvalidIdentityKeyErrorMessage(grdbId: id,
                                                     uniqueId: uniqueId,
@@ -2854,7 +2872,8 @@ extension TSInteraction: DeepCopyable {
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                     errorType: errorType,
                                                     read: read,
-                                                    recipientAddress: recipientAddress)
+                                                    recipientAddress: recipientAddress,
+                                                    wasIdentityVerified: wasIdentityVerified)
         }
 
         if let modelToCopy = self as? OWSUnknownContactBlockOfferMessage {
@@ -2955,6 +2974,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
 
             return OWSUnknownContactBlockOfferMessage(grdbId: id,
                                                       uniqueId: uniqueId,
@@ -2978,7 +2998,8 @@ extension TSInteraction: DeepCopyable {
                                                       wasRemotelyDeleted: wasRemotelyDeleted,
                                                       errorType: errorType,
                                                       read: read,
-                                                      recipientAddress: recipientAddress)
+                                                      recipientAddress: recipientAddress,
+                                                      wasIdentityVerified: wasIdentityVerified)
         }
 
         if let modelToCopy = self as? TSErrorMessage {
@@ -3079,6 +3100,7 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
 
             return TSErrorMessage(grdbId: id,
                                   uniqueId: uniqueId,
@@ -3102,7 +3124,8 @@ extension TSInteraction: DeepCopyable {
                                   wasRemotelyDeleted: wasRemotelyDeleted,
                                   errorType: errorType,
                                   read: read,
-                                  recipientAddress: recipientAddress)
+                                  recipientAddress: recipientAddress,
+                                  wasIdentityVerified: wasIdentityVerified)
         }
 
         if let modelToCopy = self as? TSMessage {
@@ -3359,6 +3382,7 @@ extension TSInteractionSerializer {
     static let hasEndedColumn = SDSColumnMetadata(columnName: "hasEnded", columnType: .int, isOptional: true)
     static let creatorUuidColumn = SDSColumnMetadata(columnName: "creatorUuid", columnType: .unicodeString, isOptional: true)
     static let joinedMemberUuidsColumn = SDSColumnMetadata(columnName: "joinedMemberUuids", columnType: .blob, isOptional: true)
+    static let wasIdentityVerifiedColumn = SDSColumnMetadata(columnName: "wasIdentityVerified", columnType: .int, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -3425,7 +3449,8 @@ extension TSInteractionSerializer {
         eraIdColumn,
         hasEndedColumn,
         creatorUuidColumn,
-        joinedMemberUuidsColumn
+        joinedMemberUuidsColumn,
+        wasIdentityVerifiedColumn
         ])
 }
 
@@ -3913,8 +3938,9 @@ class TSInteractionSerializer: SDSSerializer {
         let hasEnded: Bool? = nil
         let creatorUuid: String? = nil
         let joinedMemberUuids: Data? = nil
+        let wasIdentityVerified: Bool? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified)
     }
 }
 

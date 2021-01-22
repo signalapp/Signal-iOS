@@ -108,6 +108,7 @@ CREATE
             ,"hasEnded" BOOLEAN
             ,"creatorUuid" TEXT
             ,"joinedMemberUuids" BLOB
+            ,"wasIdentityVerified" BOOLEAN
         )
 ;
 

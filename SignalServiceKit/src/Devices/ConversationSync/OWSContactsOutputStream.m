@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsOutputStream.h"
@@ -49,6 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (recipientIdentity != nil) {
+        if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
+            // We only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+            // will figure that out on it's own.
+            return;
+        }
+
         SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithAddress(signalAccount.recipientAddress,
             [recipientIdentity.identityKey prependKeyType],
             recipientIdentity.verificationState,
