@@ -334,11 +334,10 @@ public class StickerPackViewController: OWSViewController {
                                                             StickerManager.installStickerPack(stickerPack: stickerPack,
                                                                                               wasLocallyInitiated: true,
                                                                                               transaction: transaction)
-                                                        }
-
-                                                        DispatchQueue.main.async {
-                                                            modal.dismiss {
-                                                                self.dismiss(animated: true)
+                                                            transaction.addAsyncCompletion {
+                                                                modal.dismiss {
+                                                                    self.dismiss(animated: true)
+                                                                }
                                                             }
                                                         }
         }
@@ -361,11 +360,10 @@ public class StickerPackViewController: OWSViewController {
                                                             StickerManager.uninstallStickerPack(stickerPackInfo: stickerPackInfo,
                                                                                                 wasLocallyInitiated: true,
                                                                                                 transaction: transaction)
-                                                        }
-
-                                                        DispatchQueue.main.async {
-                                                            modal.dismiss {
-                                                                self.dismiss(animated: true)
+                                                            transaction.addAsyncCompletion {
+                                                                modal.dismiss {
+                                                                    self.dismiss(animated: true)
+                                                                }
                                                             }
                                                         }
         }

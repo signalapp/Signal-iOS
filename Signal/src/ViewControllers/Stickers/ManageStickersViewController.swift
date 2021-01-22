@@ -82,8 +82,8 @@ public class ManageStickersViewController: OWSTableViewController {
         super.viewDidLoad()
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.stickersOrPacksDidChange,
+                                               selector: #selector(packsDidChange),
+                                               name: StickerManager.packsDidChange,
                                                object: nil)
 
         updateState()
@@ -91,11 +91,44 @@ public class ManageStickersViewController: OWSTableViewController {
         StickerManager.refreshContents()
     }
 
+    private var pendingModalVC: ModalActivityIndicatorViewController?
+
+    private var needsStateUpdate = false {
+        didSet {
+            if needsStateUpdate {
+                updateEvent.requestNotify()
+            }
+        }
+    }
+
+    private var needsTableUpdate = false {
+        didSet {
+            if needsTableUpdate {
+                updateEvent.requestNotify()
+            }
+        }
+    }
+
+    private lazy var updateEvent: DebouncedEvent = {
+        DebouncedEvent(maxFrequencySeconds: 0.75, onQueue: .main) { [weak self] in
+            guard let self = self else { return }
+            if self.needsStateUpdate {
+                self.updateState()
+            } else if self.needsTableUpdate {
+                self.buildTable()
+            }
+        }
+    }()
+
     private var installedStickerPackSources = [StickerPackDataSource]()
     private var availableBuiltInStickerPackSources = [StickerPackDataSource]()
     private var knownStickerPackSources = [StickerPackDataSource]()
 
     private func updateState() {
+        // If we're presenting a modal because the user tapped install, dismiss it.
+        pendingModalVC?.dismiss {}
+        pendingModalVC = nil
+
         // We need to recyle data sources to maintain continuity.
         var oldInstalledSources = [StickerPackInfo: StickerPackDataSource]()
         var oldTransientSources = [StickerPackInfo: StickerPackDataSource]()
@@ -165,10 +198,11 @@ public class ManageStickersViewController: OWSTableViewController {
         self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
             .map { transientSource($0.info) }
 
-        updateTableContents()
+        needsStateUpdate = false
+        buildTable()
     }
 
-    private func updateTableContents() {
+    private func buildTable() {
         let contents = OWSTableContents()
 
         let installedSection = OWSTableSection()
@@ -263,6 +297,7 @@ public class ManageStickersViewController: OWSTableViewController {
         contents.addSection(knownSection)
 
         self.contents = contents
+        needsTableUpdate = false
     }
 
     private func buildTableCell(installedStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
@@ -473,30 +508,36 @@ public class ManageStickersViewController: OWSTableViewController {
 
         Logger.verbose("")
 
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false,
-                                                     presentationDelay: 0) { modal in
+        let modalVC = ModalActivityIndicatorViewController(canCancel: false, presentationDelay: 0)
+        modalVC.modalPresentationStyle = .overFullScreen
+        present(modalVC, animated: false, completion: nil)
 
-                                                        self.databaseStorage.write { (transaction) in
-                                                            StickerManager.installStickerPack(stickerPack: stickerPack,
-                                                                                              wasLocallyInitiated: true,
-                                                                                              transaction: transaction)
-                                                        }
+        // This will be dismissed once we receive a sticker pack update notification from StickerManager
+        pendingModalVC = modalVC
+        self.databaseStorage.asyncWrite { transaction in
+            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                              wasLocallyInitiated: true,
+                                              transaction: transaction)
+        }
 
-                                                        DispatchQueue.main.async {
-                                                            modal.dismiss {
-                                                                // Do nothing.
-                                                            }
-                                                        }
+        // or... if 6s have passed. just to be safe.
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(6)) { [weak self] in
+            // If the current modal isn't the one we created, we can ignore it
+            guard modalVC == self?.pendingModalVC else { return }
+
+            if self?.reachabilityManager.isReachable == true {
+                owsFailDebug("Expected to hear back from StickerManager about a newly installed sticker pack")
+            }
+            self?.updateState()
         }
     }
 
-    @objc func stickersOrPacksDidChange() {
+    @objc func packsDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
-        updateState()
+        needsStateUpdate = true
     }
 
     @objc
@@ -523,8 +564,7 @@ public class ManageStickersViewController: OWSTableViewController {
 extension ManageStickersViewController: StickerPackDataSourceDelegate {
     public func stickerPackDataDidChange() {
         AssertIsOnMainThread()
-
-        updateTableContents()
+        needsTableUpdate = true
     }
 }
 

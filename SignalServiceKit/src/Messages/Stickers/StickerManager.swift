@@ -38,11 +38,20 @@ public class StickerManager: NSObject {
     // MARK: - Notifications
 
     @objc
+    public static let packsDidChange = Notification.Name("packsDidChange")
+    @objc
     public static let stickersOrPacksDidChange = Notification.Name("stickersOrPacksDidChange")
     @objc
     public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
 
-    private static var stickersOrPacksDidChangeEvent: DebouncedEvent {
+    private static var packsDidChangeEvent: DebouncedEvent {
+        DebouncedEvent(maxFrequencySeconds: 0.5) {
+            NotificationCenter.default.postNotificationNameAsync(packsDidChange, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        }
+    }
+
+    private static var stickersDidChangeEvent: DebouncedEvent {
         DebouncedEvent(maxFrequencySeconds: 0.5) {
             NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
         }
@@ -246,7 +255,7 @@ public class StickerManager: NSObject {
         }
 
         transaction.addAsyncCompletion {
-            stickersOrPacksDidChangeEvent.requestNotify()
+            packsDidChangeEvent.requestNotify()
         }
     }
 
@@ -354,43 +363,48 @@ public class StickerManager: NSObject {
         }
 
         // If the pack is already installed, make sure all stickers are installed.
+        let promise: Promise<Void>
         if stickerPack.isInstalled {
-            installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+            promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
         } else {
             switch installMode {
             case .doNotInstall:
-                break
+                promise = .value
             case .install:
-                self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
-                                                     wasLocallyInitiated: wasLocallyInitiated,
-                                                     transaction: transaction)
+                promise = self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
+                                                               wasLocallyInitiated: wasLocallyInitiated,
+                                                               transaction: transaction)
             case .installIfUnsaved:
                 if !wasSaved {
-                    self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
-                                                         wasLocallyInitiated: wasLocallyInitiated,
-                                                         transaction: transaction)
+                    promise = self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
+                                                                   wasLocallyInitiated: wasLocallyInitiated,
+                                                                   transaction: transaction)
+                } else {
+                    promise = .value
                 }
             }
         }
 
         transaction.addAsyncCompletion {
-            stickersOrPacksDidChangeEvent.requestNotify()
+            _ = promise.ensure {
+                packsDidChangeEvent.requestNotify()
+            }
         }
     }
 
     private class func markSavedStickerPackAsInstalled(stickerPack: StickerPack,
                                                        wasLocallyInitiated: Bool,
-                                                       transaction: SDSAnyWriteTransaction) {
+                                                       transaction: SDSAnyWriteTransaction) -> Promise<Void> {
 
         if stickerPack.isInstalled {
-            return
+            return .value
         }
 
         Logger.verbose("Installing sticker pack: \(stickerPack.info).")
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
-        installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
+        let promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
         Self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
 
@@ -399,18 +413,29 @@ public class StickerManager: NSObject {
                                       packs: [stickerPack.info],
                                       transaction: transaction)
         }
+        return promise
     }
 
-    @discardableResult
     private class func installStickerPackContents(stickerPack: StickerPack,
                                                   transaction: SDSAnyReadTransaction,
                                                   onlyInstallCover: Bool = false) -> Promise<Void> {
         // Note: It's safe to kick off downloads of stickers that are already installed.
-
         var fetches = [Promise<Void>]()
+        var needsNotify = false
 
         // The cover.
-        fetches.append(tryToDownloadAndInstallSticker(stickerPack: stickerPack, item: stickerPack.cover, transaction: transaction))
+        let coverFetch = firstly {
+            tryToDownloadAndInstallSticker(
+                stickerPack: stickerPack,
+                item: stickerPack.cover,
+                transaction: transaction)
+        }.done { shouldNotify in
+            if shouldNotify {
+                stickersDidChangeEvent.requestNotify()
+                needsNotify = false
+            }
+        }
+        fetches.append(coverFetch)
 
         guard !onlyInstallCover else {
             return when(fulfilled: fetches)
@@ -418,9 +443,30 @@ public class StickerManager: NSObject {
 
         // The stickers.
         for item in stickerPack.items {
-            fetches.append(tryToDownloadAndInstallSticker(stickerPack: stickerPack, item: item, transaction: transaction))
+            fetches.append(
+                firstly {
+                    tryToDownloadAndInstallSticker(
+                        stickerPack: stickerPack,
+                        item: item,
+                        transaction: transaction)
+                }.done { shouldNotify in
+                    if shouldNotify, coverFetch.isResolved {
+                        // We should only notify for changes once we've fetched the cover
+                        // Some views will assume that an installed pack always has a cover
+                        // and faildebug otherwise
+                        stickersDidChangeEvent.requestNotify()
+                        needsNotify = false
+                    } else if shouldNotify {
+                        needsNotify = true
+                    }
+                }
+            )
         }
-        return when(fulfilled: fetches)
+        return when(fulfilled: fetches).ensure {
+            if needsNotify {
+                stickersDidChangeEvent.requestNotify()
+            }
+        }
     }
 
     private class func tryToDownloadDefaultStickerPacks() {
@@ -657,85 +703,78 @@ public class StickerManager: NSObject {
     public class func installSticker(stickerInfo: StickerInfo,
                                      stickerData: Data,
                                      contentType: String?,
-                                     emojiString: String?,
-                                     completion: (() -> Void)? = nil) {
+                                     emojiString: String?) -> Bool {
         assert(stickerData.count > 0)
 
         guard nil == fetchInstalledStickerWithSneakyTransaction(stickerInfo: stickerInfo) else {
             // Sticker already installed, skip.
-            return
+            return false
         }
 
         Logger.verbose("Installing sticker: \(stickerInfo).")
 
-        DispatchQueue.global().async {
-            let installedSticker = InstalledSticker(info: stickerInfo,
-                                                    contentType: contentType,
-                                                    emojiString: emojiString)
+        let installedSticker = InstalledSticker(info: stickerInfo,
+                                                contentType: contentType,
+                                                emojiString: emojiString)
 
-            guard let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: false) else {
-                owsFailDebug("Could not generate sticker data URL.")
-                completion?()
-                return
+        guard let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: false) else {
+            owsFailDebug("Could not generate sticker data URL.")
+            return false
+        }
+
+        do {
+            try stickerData.write(to: stickerDataUrl, options: .atomic)
+        } catch let error as NSError {
+            owsFailDebug("File write failed: \(error)")
+            return false
+        }
+
+        return databaseStorage.write { (transaction) -> Bool in
+            guard nil == fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
+                // RACE: sticker has already been installed between now and when we last checked.
+                //
+                // Initially we check for a stickers presence with a read transaction, to avoid opening
+                // an unecessary write transaction. However, it's possible a race has occurred and the
+                // sticker has since been installed, in which case there's nothing more for us to do.
+                return false
             }
 
-            do {
-                try stickerData.write(to: stickerDataUrl, options: .atomic)
-            } catch let error as NSError {
-                owsFailDebug("File write failed: \(error)")
-                return
+            installedSticker.anyInsert(transaction: transaction)
+
+            #if DEBUG
+            guard self.isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
+                owsFailDebug("Skipping redundant sticker install.")
+                return false
             }
-
-            databaseStorage.write { (transaction) in
-                guard nil == fetchInstalledSticker(stickerInfo: stickerInfo, transaction: transaction) else {
-                    // RACE: sticker has already been installed between now and when we last checked.
-                    //
-                    // Initially we check for a stickers presence with a read transaction, to avoid opening
-                    // an unecessary write transaction. However, it's possible a race has occurred and the
-                    // sticker has since been installed, in which case there's nothing more for us to do.
-                    return
-                }
-
-                installedSticker.anyInsert(transaction: transaction)
-
-                #if DEBUG
-                guard self.isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
-                    owsFailDebug("Skipping redundant sticker install.")
-                    return
-                }
-                if !OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
-                    owsFailDebug("Missing sticker data for installed sticker.")
-                }
-                #endif
-
-                self.addStickerToEmojiMap(installedSticker, transaction: transaction)
-
-                transaction.addAsyncCompletion {
-                    stickersOrPacksDidChangeEvent.requestNotify()
-                }
+            if !OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
+                owsFailDebug("Missing sticker data for installed sticker.")
+                return false
             }
+            #endif
 
-            completion?()
+            self.addStickerToEmojiMap(installedSticker, transaction: transaction)
+            return true
         }
     }
 
     private class func tryToDownloadAndInstallSticker(stickerPack: StickerPack,
                                                       item: StickerPackItem,
-                                                      transaction: SDSAnyReadTransaction) -> Promise<Void> {
+                                                      transaction: SDSAnyReadTransaction) -> Promise<Bool> {
         let stickerInfo: StickerInfo = item.stickerInfo(with: stickerPack)
         let emojiString = item.emojiString
 
         guard !self.isStickerInstalled(stickerInfo: stickerInfo, transaction: transaction) else {
             // Skipping redundant sticker install.
-            return Promise.value(())
+            return .value(false)
         }
 
-        return tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-            .done(on: DispatchQueue.global()) { (stickerData) in
-                self.installSticker(stickerInfo: stickerInfo,
-                                    stickerData: stickerData,
-                                    contentType: item.contentType,
-                                    emojiString: emojiString)
+        return firstly {
+            tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+        }.map(on: .global()) { stickerData in
+            self.installSticker(stickerInfo: stickerInfo,
+                                stickerData: stickerData,
+                                contentType: item.contentType,
+                                emojiString: emojiString)
         }
     }
 

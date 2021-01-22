@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -49,14 +49,11 @@ class StickerManagerTest: SSKBaseTestSwift {
         let stickerInfo = StickerInfo.defaultValue
         let stickerData = Randomness.generateRandomBytes(1)
 
-        let expectation = self.expectation(description: "Wait for sticker to be installed.")
-        StickerManager.installSticker(stickerInfo: stickerInfo,
-                                      stickerData: stickerData,
-                                      contentType: OWSMimeTypeImageWebp,
-                                      emojiString: "🌼🇨🇦") {
-                                        expectation.fulfill()
-        }
-        waitForExpectations(timeout: 1.0, handler: nil)
+        let success = StickerManager.installSticker(stickerInfo: stickerInfo,
+                                                    stickerData: stickerData,
+                                                    contentType: OWSMimeTypeImageWebp,
+                                                    emojiString: "🌼🇨🇦")
+        XCTAssertTrue(success)
 
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "").count)
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
@@ -73,8 +70,8 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         databaseStorage.write { (transaction) in
             // Don't bother calling completion.
-            _ = StickerManager.uninstallSticker(stickerInfo: stickerInfo,
-                                                transaction: transaction)
+            StickerManager.uninstallSticker(stickerInfo: stickerInfo,
+                                            transaction: transaction)
         }
 
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "").count)
@@ -98,14 +95,11 @@ class StickerManagerTest: SSKBaseTestSwift {
         let stickerInfo = StickerInfo.defaultValue
         let stickerData = Randomness.generateRandomBytes(1)
 
-        let expectation = self.expectation(description: "Wait for sticker to be installed.")
-        StickerManager.installSticker(stickerInfo: stickerInfo,
-                                      stickerData: stickerData,
-                                      contentType: OWSMimeTypeImageWebp,
-                                      emojiString: "🌼🇨🇦") {
-                                        expectation.fulfill()
-        }
-        waitForExpectations(timeout: 1.0, handler: nil)
+        let success = StickerManager.installSticker(stickerInfo: stickerInfo,
+                                                    stickerData: stickerData,
+                                                    contentType: OWSMimeTypeImageWebp,
+                                                    emojiString: "🌼🇨🇦")
+        XCTAssertTrue(success)
 
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "").count)
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
@@ -122,8 +116,8 @@ class StickerManagerTest: SSKBaseTestSwift {
 
         databaseStorage.write { (transaction) in
             // Don't bother calling completion.
-            _ = StickerManager.uninstallSticker(stickerInfo: stickerInfo,
-                                                transaction: transaction)
+            StickerManager.uninstallSticker(stickerInfo: stickerInfo,
+                                            transaction: transaction)
         }
 
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "").count)
