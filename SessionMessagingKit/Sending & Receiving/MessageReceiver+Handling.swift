@@ -328,13 +328,13 @@ extension MessageReceiver {
     private static func handleClosedGroupMembersAdded(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .membersAdded(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let members = membersAsData.map { $0.toHexString() }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             // Update the group
-            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            let members = Set(group.groupMemberIds).union(membersAsData.map { $0.toHexString() })
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
-            guard Set(members) != Set(group.groupMemberIds) else { return }
+            guard members != Set(group.groupMemberIds) else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
             let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
             infoMessage.save(with: transaction)
@@ -344,11 +344,11 @@ extension MessageReceiver {
     private static func handleClosedGroupMembersRemoved(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .membersRemoved(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let members = membersAsData.map { $0.toHexString() }
         guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
-            // Check that the admin wasn't removed unless the group was destroyed entirely
-            guard members.contains(group.groupAdminIds.first!) || members.isEmpty else {
+            // Check that the admin wasn't removed
+            let members = Set(group.groupMemberIds).subtracting(membersAsData.map { $0.toHexString() })
+            guard members.contains(group.groupAdminIds.first!) else {
                 return SNLog("Ignoring invalid closed group update.")
             }
             // If the current user was removed:
@@ -364,7 +364,7 @@ extension MessageReceiver {
             }
             // Generate and distribute a new encryption key pair if needed
             let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
-            if isCurrentUserAdmin && !wasCurrentUserRemoved {
+            if isCurrentUserAdmin {
                 do {
                     try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: Set(members), using: transaction)
                 } catch {
@@ -372,10 +372,10 @@ extension MessageReceiver {
                 }
             }
             // Update the group
-            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
-            guard Set(members) != Set(group.groupMemberIds) else { return }
+            guard members != Set(group.groupMemberIds) else { return }
             let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .typeGroupQuit : .typeGroupUpdate
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
             let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType, customMessage: updateInfo)
@@ -388,7 +388,8 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
-            let members = Set(group.groupMemberIds).subtracting([ message.sender! ])
+            let didAdminLeave = group.groupAdminIds.contains(message.sender!)
+            let members: Set<String> = didAdminLeave ? [] : Set(group.groupMemberIds).subtracting([ message.sender! ]) // If the admin leaves the group is disbanded
             // Guard against self-sends
             guard message.sender != getUserHexEncodedPublicKey() else {
                 return SNLog("Ignoring invalid closed group update.")
@@ -435,6 +436,10 @@ extension MessageReceiver {
         // Perform the update
         update(groupID, thread, group)
     }
+    
+    
+    
+    // MARK: - Deprecated
     
     /// - Note: Deprecated.
     private static func handleClosedGroupUpdated(_ message: ClosedGroupControlMessage, using transaction: Any) {
