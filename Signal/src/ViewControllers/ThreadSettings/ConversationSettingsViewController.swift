@@ -177,10 +177,19 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     func updateNavigationBar() {
-        if isGroupThread, canEditConversationAttributes {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_GROUP",
-                                                                                         comment: "Label for the 'edit group' button in conversation settings view."),
-                                                                style: .plain, target: self, action: #selector(editGroupButtonWasPressed))
+        guard canEditConversationAttributes else {
+            navigationItem.rightBarButtonItem = nil
+            return
+        }
+
+        if isGroupThread || contactsManager.isSystemContactsAuthorized {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT",
+                                         comment: "Label for the 'edit' button in conversation settings view."),
+                style: .plain,
+                target: self,
+                action: #selector(editButtonWasPressed))
+
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -971,8 +980,14 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     @objc
-    func editGroupButtonWasPressed(_ sender: Any) {
-        showGroupAttributesView(editAction: .none)
+    func editButtonWasPressed(_ sender: Any) {
+        owsAssertDebug(canEditConversationAttributes)
+
+        if isGroupThread {
+            showGroupAttributesView(editAction: .none)
+        } else {
+            presentContactViewController()
+        }
     }
 
     // MARK: - Notifications
