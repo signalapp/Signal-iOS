@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOperation.h"
@@ -19,7 +19,9 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId canUseV3:(BOOL)canUseV3 NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId
+                          messageIds:(NSArray<NSString *> *)messageIds
+                            canUseV3:(BOOL)canUseV3 NS_DESIGNATED_INITIALIZER;
 
 @end
 

@@ -135,7 +135,9 @@ public class CVAttachmentProgressView: UIView {
 
         var state: State = .none {
             didSet {
-                applyState(oldState: oldValue, newState: state)
+                if oldValue != state {
+                    applyState(oldState: oldValue, newState: state)
+                }
             }
         }
 
@@ -288,6 +290,11 @@ public class CVAttachmentProgressView: UIView {
                 return
             }
 
+            // The lottie progres animations currently end on an
+            // empty frame. Until we fix that, we clamp the progress
+            // to avoid hitting the last frame.
+            let progress = min(0.95, progress)
+
             // We DO NOT play this animation; we "scrub" it to reflect
             // attachment upload/download progress.
             progressView.currentFrame = progress.lerp(animation.startFrame,
@@ -328,8 +335,10 @@ public class CVAttachmentProgressView: UIView {
 
     private func configureState() {
         switch direction {
-        case .upload:
+        case .upload(let attachmentStream):
             stateView.state = .uploadUnknownProgress
+
+            updateUploadProgress(attachmentStream: attachmentStream)
 
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(processUploadNotification(notification:)),
@@ -358,6 +367,7 @@ public class CVAttachmentProgressView: UIView {
     @objc
     private func processDownloadNotification(notification: Notification) {
         guard let attachmentId = notification.userInfo?[OWSAttachmentDownloads.attachmentDownloadAttachmentIDKey] as? String else {
+            owsFailDebug("Missing notificationAttachmentId.")
             return
         }
         guard attachmentId == self.attachmentId else {
@@ -377,8 +387,10 @@ public class CVAttachmentProgressView: UIView {
         if progress == CGFloat.nan {
             owsFailDebug("Progress is nan.")
             stateView.state = .downloadUnknownProgress
-        } else {
+        } else if progress > 0 {
             stateView.state = .downloadProgress(progress: CGFloat(progress))
+        } else {
+            stateView.state = .downloadUnknownProgress
         }
     }
 
@@ -386,11 +398,9 @@ public class CVAttachmentProgressView: UIView {
     private func processUploadNotification(notification: Notification) {
         guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
             owsFailDebug("Missing notificationAttachmentId.")
-            stateView.state = .uploadUnknownProgress
             return
         }
         guard notificationAttachmentId == attachmentId else {
-            stateView.state = .uploadUnknownProgress
             return
         }
         guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
@@ -399,11 +409,39 @@ public class CVAttachmentProgressView: UIView {
             return
         }
 
+        switch direction {
+        case .upload(let attachmentStream):
+            guard !attachmentStream.isUploaded else {
+                stateView.state = .uploadProgress(progress: 1)
+                return
+            }
+        case .download:
+            owsFailDebug("Invalid attachment.")
+            stateView.state = .uploadUnknownProgress
+            return
+        @unknown default:
+            owsFailDebug("Invalid value.")
+            stateView.state = .uploadUnknownProgress
+            return
+        }
+
         if progress.floatValue == Float.nan {
             owsFailDebug("Progress is nan.")
             stateView.state = .uploadUnknownProgress
-        } else {
+        } else if progress.floatValue > 0 {
             stateView.state = .uploadProgress(progress: CGFloat(progress.floatValue))
+        } else {
+            stateView.state = .uploadUnknownProgress
+        }
+    }
+
+    private func updateUploadProgress(attachmentStream: TSAttachmentStream) {
+        AssertIsOnMainThread()
+
+        if attachmentStream.isUploaded {
+            stateView.state = .uploadProgress(progress: 1)
+        } else {
+            stateView.state = .uploadUnknownProgress
         }
     }
 }
