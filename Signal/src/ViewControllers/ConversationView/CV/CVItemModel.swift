@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,7 +28,7 @@ public class CVItemModel: NSObject {
     // and request a new one.
     private let coreState: CVCoreState
     public var conversationStyle: ConversationStyle { coreState.conversationStyle }
-    public var cellMediaCache: NSCache<NSString, AnyObject> { coreState.cellMediaCache }
+    public var mediaCache: CVMediaCache { coreState.mediaCache }
 
     public var itemModel: CVItemModel {
         self

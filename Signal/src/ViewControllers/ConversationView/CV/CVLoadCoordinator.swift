@@ -61,7 +61,7 @@ public class CVLoadCoordinator: NSObject {
     private weak var componentDelegate: CVComponentDelegate?
 
     private let viewState: CVViewState
-    private var cellMediaCache: NSCache<NSString, AnyObject> { viewState.cellMediaCache }
+    private var mediaCache: CVMediaCache { viewState.mediaCache }
 
     private let threadUniqueId: String
 

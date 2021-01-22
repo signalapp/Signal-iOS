@@ -61,7 +61,7 @@ extension CVItemBuildingContext {
     var thread: TSThread { threadViewModel.threadRecord }
     var threadUniqueId: String { thread.uniqueId }
     var conversationStyle: ConversationStyle { viewStateSnapshot.conversationStyle }
-    var cellMediaCache: NSCache<NSString, AnyObject> { viewStateSnapshot.cellMediaCache }
+    var mediaCache: CVMediaCache { viewStateSnapshot.mediaCache }
 }
 
 // MARK: -
@@ -87,7 +87,7 @@ extension CVItemBuilding {
     var thread: TSThread { itemBuildingContext.thread }
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
-    var cellMediaCache: NSCache<NSString, AnyObject> { itemBuildingContext.cellMediaCache }
+    var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }
     var transaction: SDSAnyReadTransaction { itemBuildingContext.transaction }
     var avatarBuilder: CVAvatarBuilder { itemBuildingContext.avatarBuilder }
 }

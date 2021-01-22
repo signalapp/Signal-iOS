@@ -205,7 +205,7 @@ extension CVComponentBase: CVNode {
     public var itemViewState: CVItemViewState { itemModel.itemViewState }
     public var messageCellType: CVMessageCellType { componentState.messageCellType }
     public var conversationStyle: ConversationStyle { itemModel.conversationStyle }
-    public var cellMediaCache: NSCache<NSString, AnyObject> { itemModel.cellMediaCache }
+    public var mediaCache: CVMediaCache { itemModel.mediaCache }
     public var isDarkThemeEnabled: Bool { conversationStyle.isDarkThemeEnabled }
 
     public var isGroupThread: Bool {
