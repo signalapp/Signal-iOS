@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
-@property (nonatomic) UILabel *snippetStrut;
 @property (nonatomic) UILabel *dateTimeLabel;
 @property (nonatomic) UIImageView *messageStatusIconView;
 @property (nonatomic) UIView *messageStatusWrapper;
@@ -85,7 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.nameLabel.font = self.nameFont;
     [self.nameLabel setContentHuggingHorizontalLow];
-    [self.nameLabel setCompressionResistanceHorizontalLow];
 
     self.dateTimeLabel = [UILabel new];
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
@@ -127,13 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.snippetLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
-
-    // We use this "strut" to measure worst-case snippet height.
-    // This works around a bug in UILabel.
-    self.snippetStrut = [UILabel new];
-    self.snippetStrut.text = @"\n\n\n\n";
-    self.snippetStrut.numberOfLines = 2;
-    self.snippetStrut.lineBreakMode = NSLineBreakByWordWrapping;
 
     UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.typingIndicatorWrapper,
@@ -241,7 +232,6 @@ NS_ASSUME_NONNULL_BEGIN
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = self.snippetFont;
-    self.snippetStrut.font = self.snippetFont.ows_semibold;
     self.snippetLabel.textColor = self.currentColor;
 
     // UILabel appears to have an issue where it's height is
@@ -249,9 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
     // so we need to clamp it to max two lines of height.
     //
     // We pad the measurement to avoid clipping.
-    CGFloat snippetHeight = ceil(1.1
-        * MAX((self.snippetFont.ows_semibold.lineHeight * 2),
-            [self.snippetStrut sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].height));
+    CGFloat snippetLineHeight = ceil(1.1 * self.snippetFont.ows_semibold.lineHeight);
 
     CGFloat muteIconSize = 16;
 
@@ -259,13 +247,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self.muteIconView autoSetDimension:ALDimensionWidth toSize:muteIconSize],
         [self.muteIconView autoSetDimension:ALDimensionHeight toSize:muteIconSize],
 
-        [self.snippetLabel autoSetDimension:ALDimensionHeight toSize:snippetHeight],
-
         // These views should align with the first (of two) of the snippet,
-        // so their a v-center within wrappers with half the height of the
-        // snippet label.
-        [self.messageStatusWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
-        [self.typingIndicatorWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
+        // so their a v-center within wrappers with the height of a single
+        // snippet line.
+        [self.messageStatusWrapper autoSetDimension:ALDimensionHeight toSize:snippetLineHeight],
+        [self.typingIndicatorWrapper autoSetDimension:ALDimensionHeight toSize:snippetLineHeight],
     ]];
 
     [self updatePreview];
@@ -635,16 +621,16 @@ NS_ASSUME_NONNULL_BEGIN
     // We use "override snippets" to show "message" search results.
     // We don't want to show typing indicators in that case.
     if (self.shouldShowTypingIndicators) {
-        // If we hide snippetLabel, our layout will break since UIStackView will remove
-        // it from the layout.  Wrapping the preview views (the snippet label and the
-        // typing indicator) in a UIStackView proved non-trivial since we're using
-        // UIStackViewAlignmentLastBaseline.  Therefore we hide the _contents_ of the
-        // snippet label using an empty string.
+        // We want to be able to show/hide the typing indicators without
+        // any "jitter" in the cell layout.
         //
-        // Ensure that the snippet is at least two lines so that it is top-aligned.
-        self.snippetLabel.attributedText = [@"\n\n" asAttributedStringWithAttributes:@{
+        // Therefore we do not hide the snippet label, but use it to
+        // display two lines of non-rendering text so that it retains its
+        // full height.
+        self.snippetLabel.attributedText = [@" \n " asAttributedStringWithAttributes:@{
             NSFontAttributeName : self.snippetFont,
         }];
+        self.snippetLabel.textColor = Theme.backgroundColor;
         self.typingIndicatorWrapper.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {
@@ -655,7 +641,7 @@ NS_ASSUME_NONNULL_BEGIN
             attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
         // Ensure that the snippet is at least two lines so that it is top-aligned.
-        attributedText = [attributedText stringByAppendingString:@"\n\n" attributes:@{}];
+        attributedText = [attributedText stringByAppendingString:@"\n \n" attributes:@{}];
         self.snippetLabel.attributedText = attributedText;
 
         self.typingIndicatorWrapper.hidden = YES;
