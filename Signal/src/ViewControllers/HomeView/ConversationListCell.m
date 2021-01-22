@@ -84,7 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.nameLabel.font = self.nameFont;
     [self.nameLabel setContentHuggingHorizontalLow];
-    [self.nameLabel setCompressionResistanceHorizontalLow];
 
     self.dateTimeLabel = [UILabel new];
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
