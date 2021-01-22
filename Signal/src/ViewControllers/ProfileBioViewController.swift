@@ -271,9 +271,6 @@ class ProfileBioViewController: OWSTableViewController {
             DefaultBio(emoji: "☕",
                        bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER",
                                               comment: "The 'Coffee lover' default bio in the profile bio view.")),
-            DefaultBio(emoji: "✈️",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER",
-                                              comment: "The 'Globetrotter' default bio in the profile bio view.")),
             DefaultBio(emoji: "📵",
                        bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK",
                                               comment: "The 'Taking a break' default bio in the profile bio view.")),
@@ -282,7 +279,13 @@ class ProfileBioViewController: OWSTableViewController {
                                               comment: "The 'Be kind' default bio in the profile bio view.")),
             DefaultBio(emoji: "🚀",
                        bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW",
-                                              comment: "The 'Working on something new' default bio in the profile bio view."))
+                                              comment: "The 'Working on something new' default bio in the profile bio view.")),
+            DefaultBio(emoji: "👋",
+                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY",
+                                              comment: "The 'Speak Freely' default bio in the profile bio view.")),
+            DefaultBio(emoji: "🤐",
+                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED",
+                                              comment: "The 'Encrypted' default bio in the profile bio view."))
         ]
     }
 
