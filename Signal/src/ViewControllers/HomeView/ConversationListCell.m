@@ -19,9 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
+@property (nonatomic) UILabel *snippetStrut;
 @property (nonatomic) UILabel *dateTimeLabel;
-@property (nonatomic) MessageStatusView *messageStatusView;
+@property (nonatomic) UIImageView *messageStatusIconView;
+@property (nonatomic) UIView *messageStatusWrapper;
 @property (nonatomic) TypingIndicatorView *typingIndicatorView;
+@property (nonatomic) UIView *typingIndicatorWrapper;
+@property (nonatomic) UIImageView *muteIconView;
+@property (nonatomic) UIView *muteIconWrapper;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
@@ -73,8 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -86,12 +91,31 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
     [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
 
-    self.messageStatusView = [MessageStatusView new];
-    [self.messageStatusView setContentHuggingHorizontalHigh];
-    [self.messageStatusView setCompressionResistanceHorizontalHigh];
+    self.typingIndicatorWrapper = [UIView containerView];
+    [self.typingIndicatorWrapper setContentHuggingHorizontalHigh];
+    [self.typingIndicatorWrapper setCompressionResistanceHorizontalHigh];
+
+    self.messageStatusWrapper = [UIView containerView];
+    [self.messageStatusWrapper setContentHuggingHorizontalHigh];
+    [self.messageStatusWrapper setCompressionResistanceHorizontalHigh];
+
+    self.muteIconWrapper = [UIView containerView];
+    [self.muteIconWrapper setContentHuggingHorizontalHigh];
+    [self.muteIconWrapper setCompressionResistanceHorizontalHigh];
+
+    self.muteIconView = [UIImageView withTemplateImageName:@"bell-disabled-outline-24"
+                                                 tintColor:Theme.primaryTextColor];
+    [self.muteIconView setContentHuggingHorizontalHigh];
+    [self.muteIconView setCompressionResistanceHorizontalHigh];
+    [self.muteIconWrapper addSubview:self.muteIconView];
+    [self.muteIconView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, 2, 0)];
+
+    UIView *topRowSpacer = UIView.hStretchingSpacer;
 
     UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
+        self.muteIconWrapper,
+        topRowSpacer,
         self.dateTimeLabel,
     ]];
     topRowView.axis = UILayoutConstraintAxisHorizontal;
@@ -99,35 +123,23 @@ NS_ASSUME_NONNULL_BEGIN
     topRowView.spacing = 6.f;
 
     self.snippetLabel = [UILabel new];
-    self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.numberOfLines = 2;
     self.snippetLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
-    self.typingIndicatorView = [TypingIndicatorView new];
-    [self.contentView addSubview:self.typingIndicatorView];
+    // We use this "strut" to measure worst-case snippet height.
+    // This works around a bug in UILabel.
+    self.snippetStrut = [UILabel new];
+    self.snippetStrut.text = @"\n\n\n\n";
+    self.snippetStrut.numberOfLines = 2;
+    self.snippetStrut.lineBreakMode = NSLineBreakByWordWrapping;
 
     UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.typingIndicatorWrapper,
         self.snippetLabel,
-        self.messageStatusView,
+        self.messageStatusWrapper,
     ]];
-    // snippetLabel is two lines.
-    // The message status should be vertically aligned with the
-    // center of the _first line_ of the snippet label.
-    // Therefore we:
-    //
-    // * Top align everything in the bottom row.
-    // * Ensure messageStatusView has _half_ the height of the
-    //   bottom row.
-    // * Internally the messageStatusView will v-center its icon.
-    [[NSLayoutConstraint constraintWithItem:self.messageStatusView
-                                  attribute:NSLayoutAttributeHeight
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:bottomRowView
-                                  attribute:NSLayoutAttributeHeight
-                                 multiplier:0.5
-                                   constant:0] autoInstall];
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
     bottomRowView.alignment = UIStackViewAlignmentTop;
     bottomRowView.spacing = 6.f;
@@ -139,11 +151,18 @@ NS_ASSUME_NONNULL_BEGIN
     [vStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [vStackView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:9 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:9 relation:NSLayoutRelationGreaterThanOrEqual];
     [vStackView autoPinTrailingToSuperviewMargin];
 
     vStackView.userInteractionEnabled = NO;
+
+    self.messageStatusIconView = [UIImageView new];
+    [self.messageStatusIconView setContentHuggingHorizontalHigh];
+    [self.messageStatusIconView setCompressionResistanceHorizontalHigh];
+    [self.messageStatusWrapper addSubview:self.messageStatusIconView];
+    [self.messageStatusIconView autoPinWidthToSuperview];
+    [self.messageStatusIconView autoVCenterInSuperview];
 
     self.unreadLabel = [UILabel new];
     self.unreadLabel.textColor = [UIColor ows_whiteColor];
@@ -161,8 +180,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.contentView addSubview:self.unreadBadge];
 
-    [self.typingIndicatorView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.snippetLabel];
-    [self.typingIndicatorView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.snippetLabel];
+    self.typingIndicatorView = [TypingIndicatorView new];
+    [self.typingIndicatorView setContentHuggingHorizontalHigh];
+    [self.typingIndicatorView setCompressionResistanceHorizontalHigh];
+    [self.typingIndicatorWrapper addSubview:self.typingIndicatorView];
+    [self.typingIndicatorView autoPinWidthToSuperview];
+    [self.typingIndicatorView autoVCenterInSuperview];
 }
 
 - (void)dealloc
@@ -204,8 +227,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.overrideSnippet = overrideSnippet;
     self.isBlocked = isBlocked;
 
-    BOOL hasUnreadMessages = thread.hasUnreadMessages;
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationNameOtherUsersProfileDidChange
@@ -219,8 +240,33 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
-    self.snippetLabel.font = [self snippetFont];
-    self.snippetLabel.textColor = UIColor.ows_gray45Color;
+    self.snippetLabel.font = self.snippetFont;
+    self.snippetStrut.font = self.snippetFont.ows_semibold;
+    self.snippetLabel.textColor = self.currentColor;
+
+    // UILabel appears to have an issue where it's height is
+    // too large if its text is just a series of newlines,
+    // so we need to clamp it to max two lines of height.
+    //
+    // We pad the measurement to avoid clipping.
+    CGFloat snippetHeight = ceil(1.1
+        * MAX((self.snippetFont.ows_semibold.lineHeight * 2),
+            [self.snippetStrut sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].height));
+
+    CGFloat muteIconSize = 16;
+
+    [self.viewConstraints addObjectsFromArray:@[
+        [self.muteIconView autoSetDimension:ALDimensionWidth toSize:muteIconSize],
+        [self.muteIconView autoSetDimension:ALDimensionHeight toSize:muteIconSize],
+
+        [self.snippetLabel autoSetDimension:ALDimensionHeight toSize:snippetHeight],
+
+        // These views should align with the first (of two) of the snippet,
+        // so their a v-center within wrappers with half the height of the
+        // snippet label.
+        [self.messageStatusWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
+        [self.typingIndicatorWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
+    ]];
 
     [self updatePreview];
 
@@ -231,25 +277,23 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateTimeLabel.text = nil;
     }
 
-    UIColor *textColor = Theme.secondaryTextAndIconColor;
-    if (hasUnreadMessages && overrideSnippet == nil) {
-        textColor = Theme.primaryTextColor;
+    if (self.hasUnreadStyle) {
         self.dateTimeLabel.font = self.dateTimeFont.ows_semibold;
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
     }
-    self.dateTimeLabel.textColor = textColor;
+    self.dateTimeLabel.textColor = self.currentColor;
 
     if (overrideSnippet) {
         // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
-        self.messageStatusView.hidden = YES;
-    } else if (thread.hasUnreadMessages) {
+        self.messageStatusWrapper.hidden = YES;
+    } else if (self.hasUnreadStyle) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
         self.unreadBadge.hidden = NO;
-        self.messageStatusView.hidden = YES;
+        self.messageStatusWrapper.hidden = YES;
 
         NSUInteger unreadCount = thread.unreadCount;
         if (unreadCount > 0) {
@@ -292,8 +336,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        UIColor *messageStatusViewTintColor
-            = (Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray45Color]);
+        UIColor *messageStatusViewTintColor = UIColor.ows_gray45Color;
         BOOL shouldAnimateStatusIcon = NO;
         BOOL shouldHideStatusIndicator = NO;
 
@@ -327,9 +370,10 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
             }
         }
-        self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.messageStatusView.tintColor = messageStatusViewTintColor;
-        self.messageStatusView.hidden = shouldHideStatusIndicator || statusIndicatorImage == nil;
+        self.messageStatusIconView.image =
+            [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.messageStatusIconView.tintColor = messageStatusViewTintColor;
+        self.messageStatusWrapper.hidden = shouldHideStatusIndicator || statusIndicatorImage == nil;
         self.unreadBadge.hidden = YES;
         if (shouldAnimateStatusIcon) {
             CABasicAnimation *animation;
@@ -339,11 +383,16 @@ NS_ASSUME_NONNULL_BEGIN
             animation.duration = kPeriodSeconds;
             animation.cumulative = YES;
             animation.repeatCount = HUGE_VALF;
-            [self.messageStatusView.layer addAnimation:animation forKey:@"animation"];
+            [self.messageStatusIconView.layer addAnimation:animation forKey:@"animation"];
         } else {
-            [self.messageStatusView.layer removeAllAnimations];
+            [self.messageStatusIconView.layer removeAllAnimations];
         }
     }
+}
+
+- (BOOL)hasUnreadStyle
+{
+    return (self.thread.hasUnreadMessages && self.overrideSnippet == nil);
 }
 
 - (void)updateAvatarView
@@ -362,15 +411,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    BOOL hasUnreadMessages = thread.hasUnreadMessages;
-
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
         // If thread is blocked, don't show a snippet or mute status.
         [snippetText append:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONVERSATION",
                                 @"Table cell subtitle label for a conversation the user has blocked.")
                  attributes:@{
-                     NSFontAttributeName : self.snippetFont.ows_semibold,
+                     NSFontAttributeName : self.snippetFont,
                      NSForegroundColorAttributeName : Theme.primaryTextColor,
                  }];
     } else if (thread.hasPendingMessageRequest) {
@@ -383,7 +430,7 @@ NS_ASSUME_NONNULL_BEGIN
                 @"Table cell subtitle label for a group the user has been added to. {Embeds inviter name}");
             [snippetText append:[NSString stringWithFormat:addedToGroupFormat, addedToGroupByName]
                      attributes:@{
-                         NSFontAttributeName : self.snippetFont.ows_semibold,
+                         NSFontAttributeName : self.snippetFont,
                          NSForegroundColorAttributeName : Theme.primaryTextColor,
                      }];
 
@@ -392,40 +439,26 @@ NS_ASSUME_NONNULL_BEGIN
             [snippetText append:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
                                     @"Table cell subtitle label for a conversation the user has not accepted.")
                      attributes:@{
-                         NSFontAttributeName : self.snippetFont.ows_semibold,
+                         NSFontAttributeName : self.snippetFont,
                          NSForegroundColorAttributeName : Theme.primaryTextColor,
                      }];
         }
     } else {
-        if ([thread isMuted]) {
-            [snippetText
-                appendTemplatedImageNamed:@"bell-disabled-outline-24"
-                                     font:self.snippetFont
-                               attributes:@{
-                                   NSForegroundColorAttributeName :
-                                       (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
-                               }];
-            [snippetText append:@" "
-                     attributes:@{
-                         NSFontAttributeName : self.snippetFont.ows_semibold,
-                     }];
-        }
-
-        UIFont *snippetFont = (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont);
-        UIColor *snippetColor = (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
+        UIFont *snippetFont = self.snippetFont;
+        UIColor *currentColor = self.currentColor;
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
-        if (draftText.length > 0 && !hasUnreadMessages) {
+        if (draftText.length > 0 && !self.hasUnreadStyle) {
             [snippetText append:NSLocalizedString(
                                     @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
                      attributes:@{
                          NSFontAttributeName : self.snippetFont.ows_italic,
-                         NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
+                         NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                      }];
             [snippetText append:draftText
                      attributes:@{
                          NSFontAttributeName : snippetFont,
-                         NSForegroundColorAttributeName : snippetColor,
+                         NSForegroundColorAttributeName : currentColor,
                      }];
         } else {
             NSString *lastMessageText = thread.conversationListInfo.lastMessageText.filterStringForDisplay;
@@ -435,12 +468,12 @@ NS_ASSUME_NONNULL_BEGIN
                     [snippetText append:senderName
                              attributes:@{
                                  NSFontAttributeName : snippetFont,
-                                 NSForegroundColorAttributeName : snippetColor,
+                                 NSForegroundColorAttributeName : currentColor,
                              }];
                     [snippetText append:@":"
                              attributes:@{
                                  NSFontAttributeName : snippetFont,
-                                 NSForegroundColorAttributeName : snippetColor,
+                                 NSForegroundColorAttributeName : currentColor,
                              }];
                     [snippetText append:@" "
                              attributes:@{
@@ -451,13 +484,20 @@ NS_ASSUME_NONNULL_BEGIN
                 [snippetText append:lastMessageText
                          attributes:@{
                              NSFontAttributeName : snippetFont,
-                             NSForegroundColorAttributeName : snippetColor,
+                             NSForegroundColorAttributeName : currentColor,
                          }];
             }
         }
     }
 
     return snippetText;
+}
+
+- (BOOL)shouldShowMuteIndicatorForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
+{
+    OWSAssertDebug(thread);
+
+    return (!self.hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest && thread.isMuted);
 }
 
 #pragma mark - Constants
@@ -499,6 +539,11 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
+- (UIColor *)currentColor
+{
+    return (self.hasUnreadStyle ? Theme.primaryTextColor : UIColor.ows_gray45Color);
+}
+
 #pragma mark - Reuse
 
 - (void)prepareForReuse
@@ -511,7 +556,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.overrideSnippet = nil;
     self.avatarView.image = nil;
-    self.messageStatusView.hidden = NO;
+    self.messageStatusWrapper.hidden = NO;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -573,15 +618,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Typing Indicators
 
+- (BOOL)hasOverrideSnippet
+{
+    return self.overrideSnippet != nil;
+}
+
+- (BOOL)shouldShowTypingIndicators
+{
+    return (!self.hasOverrideSnippet && [self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil);
+}
+
 - (void)updatePreview
 {
     OWSAssertIsOnMainThread();
 
     // We use "override snippets" to show "message" search results.
     // We don't want to show typing indicators in that case.
-    BOOL isShowingOverrideSnippet = self.overrideSnippet != nil;
-    if (!isShowingOverrideSnippet &&
-        [self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil) {
+    if (self.shouldShowTypingIndicators) {
         // If we hide snippetLabel, our layout will break since UIStackView will remove
         // it from the layout.  Wrapping the preview views (the snippet label and the
         // typing indicator) in a UIStackView proved non-trivial since we're using
@@ -589,8 +642,10 @@ NS_ASSUME_NONNULL_BEGIN
         // snippet label using an empty string.
         //
         // Ensure that the snippet is at least two lines so that it is top-aligned.
-        self.snippetLabel.text = @"\n\n";
-        self.typingIndicatorView.hidden = NO;
+        self.snippetLabel.attributedText = [@"\n\n" asAttributedStringWithAttributes:@{
+            NSFontAttributeName : self.snippetFont,
+        }];
+        self.typingIndicatorWrapper.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {
         NSAttributedString *attributedText;
@@ -603,9 +658,12 @@ NS_ASSUME_NONNULL_BEGIN
         attributedText = [attributedText stringByAppendingString:@"\n\n" attributes:@{}];
         self.snippetLabel.attributedText = attributedText;
 
-        self.typingIndicatorView.hidden = YES;
+        self.typingIndicatorWrapper.hidden = YES;
         [self.typingIndicatorView stopAnimation];
     }
+
+    self.muteIconWrapper.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
+    self.muteIconView.tintColor = self.currentColor;
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification

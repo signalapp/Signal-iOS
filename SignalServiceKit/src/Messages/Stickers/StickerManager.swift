@@ -353,7 +353,9 @@ public class StickerManager: NSObject {
         }
 
         if stickerPack.isInstalled {
-            self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
+            self.shared.stickerPackWasInstalled(stickerPack: stickerPack,
+                                                wasLocallyInitiated: wasLocallyInitiated,
+                                                transaction: transaction)
         }
 
         if stickerPack.isInstalled, wasLocallyInitiated {
@@ -406,7 +408,9 @@ public class StickerManager: NSObject {
 
         let promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
-        Self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
+        Self.shared.stickerPackWasInstalled(stickerPack: stickerPack,
+                                            wasLocallyInitiated: wasLocallyInitiated,
+                                            transaction: transaction)
 
         if wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
@@ -1103,7 +1107,11 @@ public class StickerManager: NSObject {
     private var tooltipState = TooltipState.unknown
 
     private func stickerPackWasInstalled(stickerPack: StickerPack,
+                                         wasLocallyInitiated: Bool,
                                          transaction: SDSAnyWriteTransaction) {
+        guard !wasLocallyInitiated else {
+            return
+        }
         if let defaultStickerPack = DefaultStickerPack.getDefaultStickerPack(stickerPackInfo: stickerPack.info),
            defaultStickerPack.shouldAutoInstall {
             // Don't show tooltip for default sticker packs that auto-install.
