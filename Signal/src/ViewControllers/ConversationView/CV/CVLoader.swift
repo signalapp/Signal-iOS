@@ -251,9 +251,24 @@ public class CVLoader: NSObject {
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         let conversationStyle = ConversationStyle(type: .`default`,
                                                   thread: thread,
-                                                  viewWidth: containerView.width)
+                                                  viewWidth: containerView.width,
+                                                  hasWallpaper: false)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
+        return CVLoader.buildStandaloneRenderItem(interaction: interaction,
+                                                  thread: thread,
+                                                  coreState: coreState,
+                                                  transaction: transaction)
+    }
+
+    @objc
+    public static func buildStandaloneRenderItem(interaction: TSInteraction,
+                                                 thread: TSThread,
+                                                 conversationStyle: ConversationStyle,
+                                                 transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+        let cellMediaCache = NSCache<NSString, AnyObject>()
+        let coreState = CVCoreState(conversationStyle: conversationStyle,
+                                    cellMediaCache: cellMediaCache)
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                   thread: thread,
                                                   coreState: coreState,

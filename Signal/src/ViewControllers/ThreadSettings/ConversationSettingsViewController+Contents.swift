@@ -149,6 +149,24 @@ extension ConversationSettingsViewController {
             }))
         }
 
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsWallpaper,
+                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
+                                            comment: "Label for settings view that allows user to change the wallpaper."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+            )
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.showWallpaperSettingsView()
+        }))
+
         if !isNoteToSelf && !isGroupThread && thread.hasSafetyNumbers() {
             // Safety Numbers
             section.add(OWSTableItem(customCellBlock: { [weak self] in

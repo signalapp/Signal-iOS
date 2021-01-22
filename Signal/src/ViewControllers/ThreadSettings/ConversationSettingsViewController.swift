@@ -354,6 +354,11 @@ class ConversationSettingsViewController: OWSTableViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    func showWallpaperSettingsView() {
+        let vc = WallpaperSettingsViewController(thread: thread)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
     func showAllGroupMembers() {
         isShowingAllGroupMembers = true
         updateTableContents()

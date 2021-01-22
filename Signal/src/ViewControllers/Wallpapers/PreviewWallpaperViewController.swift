@@ -1,0 +1,403 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+
+class PreviewWallpaperViewController: UIViewController {
+    enum Mode {
+        case preset(selectedWallpaper: Wallpaper)
+        case photo(selectedPhoto: UIImage)
+    }
+    private(set) var mode: Mode { didSet { modeDidChange() }}
+    let thread: TSThread?
+
+    let pageViewController = UIPageViewController(
+        transitionStyle: .scroll,
+        navigationOrientation: .horizontal,
+        options: [:]
+    )
+
+    lazy var mockConversationView = MockConversationView(
+        mode: buildMockConversationMode(),
+        hasWallpaper: true
+    )
+
+    init(mode: Mode, thread: TSThread? = nil) {
+        self.mode = mode
+        self.thread = thread
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = UIView()
+
+        view.backgroundColor = Theme.backgroundColor
+
+        view.addSubview(mockConversationView)
+        mockConversationView.autoPinWidthToSuperview()
+        mockConversationView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 20)
+        mockConversationView.isUserInteractionEnabled = false
+
+        modeDidChange()
+
+        let buttonStack = UIStackView()
+        buttonStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        buttonStack.axis = .horizontal
+
+        view.addSubview(buttonStack)
+        buttonStack.autoPinWidthToSuperview()
+        buttonStack.autoPinEdge(toSuperviewSafeArea: .bottom)
+        buttonStack.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
+
+        let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        cancelButton.setTitleColor(Theme.primaryTextColor, for: .normal)
+        buttonStack.addArrangedSubview(cancelButton)
+
+        let divider = UIView()
+        let dividerLine = UIView()
+        dividerLine.backgroundColor = UIColor(rgbHex: 0xc4c4c4)
+        divider.addSubview(dividerLine)
+        dividerLine.autoPinWidthToSuperview()
+        dividerLine.autoPinHeightToSuperview(withMargin: 8)
+        dividerLine.autoSetDimension(.width, toSize: 1)
+
+        buttonStack.addArrangedSubview(divider)
+
+        let setButton = OWSButton(
+            title: NSLocalizedString(
+                "WALLPAPER_PREVIEW_SET_BUTTON",
+                comment: "The text for the set button on wallpaper preview view."
+            )
+        ) { [weak self] in
+            self?.setCurrentWallpaperAndDismiss()
+        }
+        setButton.setTitleColor(Theme.primaryTextColor, for: .normal)
+        buttonStack.addArrangedSubview(setButton)
+
+        cancelButton.autoMatch(.width, to: .width, of: setButton)
+
+        let safeAreaCover = UIView()
+        safeAreaCover.backgroundColor = Theme.backgroundColor
+        view.addSubview(safeAreaCover)
+        safeAreaCover.autoPinEdge(toSuperviewEdge: .bottom)
+        safeAreaCover.autoPinWidthToSuperview()
+        safeAreaCover.autoPinEdge(.top, to: .bottom, of: buttonStack)
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        navigationItem.hidesBackButton = true
+        title = NSLocalizedString("WALLPAPER_PREVIEW_TITLE", comment: "Title for the wallpaper preview view.")
+    }
+
+    func setCurrentWallpaperAndDismiss() {
+        databaseStorage.asyncWrite { transaction in
+            do {
+                switch self.mode {
+                case .photo:
+                    guard let standalonePage = self.standalonePage else {
+                        return owsFailDebug("Missing standalone page for photo")
+                    }
+                    guard let croppedAndScaledPhoto = standalonePage.view.renderAsImage() else {
+                        return owsFailDebug("Failed to snapshot cropped and scaled photo")
+                    }
+                    try Wallpaper.setPhoto(croppedAndScaledPhoto, for: self.thread, transaction: transaction)
+                case .preset(let selectedWallpaper):
+                    try Wallpaper.setBuiltIn(selectedWallpaper, for: self.thread, transaction: transaction)
+                }
+            } catch {
+                owsFailDebug("Failed to set wallpaper \(error)")
+            }
+
+            transaction.addAsyncCompletion {
+                guard let wallpaperSettingsVC = self.navigationController?.viewControllers.first(
+                    where: { $0 is WallpaperSettingsViewController }
+                ) else {
+                    return owsFailDebug("Missing wallpaper settings in view hierarchy")
+                }
+                self.navigationController?.popToViewController(wallpaperSettingsVC, animated: true)
+            }
+        }
+    }
+
+    private var standalonePage: UIViewController?
+    func modeDidChange() {
+        switch mode {
+        case .photo(let selectedPhoto):
+            owsAssertDebug(self.standalonePage == nil)
+            let standalonePage = WallpaperPage(wallpaper: .photo, photo: selectedPhoto)
+            self.standalonePage = standalonePage
+            view.insertSubview(standalonePage.view, at: 0)
+            addChild(standalonePage)
+            standalonePage.view.autoPinEdgesToSuperviewEdges()
+        case .preset(let selectedWallpaper):
+            if pageViewController.view.superview == nil {
+                view.insertSubview(pageViewController.view, at: 0)
+                addChild(pageViewController)
+                pageViewController.view.autoPinEdgesToSuperviewEdges()
+                pageViewController.dataSource = self
+                pageViewController.delegate = self
+            }
+
+            currentPage = WallpaperPage(wallpaper: selectedWallpaper)
+        }
+
+        mockConversationView.mode = buildMockConversationMode()
+    }
+
+    func buildMockConversationMode() -> MockConversationView.Mode {
+        let outgoingText: String = {
+            guard let thread = thread else {
+                return NSLocalizedString(
+                    "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS",
+                    comment: "The outgoing bubble text when setting a wallpaper for all chats."
+                )
+            }
+
+            let formatString = NSLocalizedString(
+                "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT",
+                comment: "The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}}"
+            )
+            let displayName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            return String(format: formatString, displayName)
+        }()
+
+        let incomingText: String
+        switch mode {
+        case .photo:
+            incomingText = NSLocalizedString(
+                "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO",
+                comment: "The incoming bubble text when setting a photo"
+            )
+        case .preset:
+            incomingText = NSLocalizedString(
+                "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET",
+                comment: "The incoming bubble text when setting a preset"
+            )
+        }
+
+        return .dateIncomingOutgoing(
+            incomingText: incomingText,
+            outgoingText: outgoingText
+        )
+    }
+}
+
+extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
+        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper))
+    }
+
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
+        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper))
+    }
+
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        didFinishAnimating finished: Bool,
+        previousViewControllers: [UIViewController],
+        transitionCompleted completed: Bool
+    ) {
+        guard let currentPage = currentPage else {
+            return owsFailDebug("Missing current page after transition")
+        }
+
+        DispatchQueue.main.async {
+            self.mode = .preset(selectedWallpaper: currentPage.wallpaper)
+        }
+    }
+
+    fileprivate var currentPage: WallpaperPage? {
+        set {
+            let viewControllers: [UIViewController]
+            if let newValue = newValue {
+                viewControllers = [newValue]
+            } else {
+                viewControllers = []
+            }
+            pageViewController.setViewControllers(viewControllers, direction: .forward, animated: false)
+        }
+        get { pageViewController.viewControllers?.first as? WallpaperPage }
+    }
+
+    func wallpaper(after: Wallpaper) -> Wallpaper {
+        guard let index = Wallpaper.defaultWallpapers.firstIndex(where: { $0 == after }) else {
+            owsFailDebug("Unexpectedly missing index for wallpaper \(after)")
+            return Wallpaper.defaultWallpapers.first!
+        }
+
+        if index == Wallpaper.defaultWallpapers.count - 1 {
+            return Wallpaper.defaultWallpapers.first!
+        } else {
+            return Wallpaper.defaultWallpapers[index + 1]
+        }
+    }
+
+    func wallpaper(before: Wallpaper) -> Wallpaper {
+        guard let index = Wallpaper.defaultWallpapers.firstIndex(where: { $0 == before }) else {
+            owsFailDebug("Unexpectedly missing index for wallpaper \(before)")
+            return Wallpaper.defaultWallpapers.first!
+        }
+
+        if index == 0 {
+            return Wallpaper.defaultWallpapers.last!
+        } else {
+            return Wallpaper.defaultWallpapers[index - 1]
+        }
+    }
+}
+
+private class WallpaperPage: UIViewController {
+    let wallpaper: Wallpaper
+    weak var photo: UIImage?
+    init(wallpaper: Wallpaper, photo: UIImage? = nil) {
+        self.wallpaper = wallpaper
+        self.photo = photo
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    var wallpaperViewHeightPriorityConstraints = [NSLayoutConstraint]()
+    var wallpaperViewWidthPriorityConstraints = [NSLayoutConstraint]()
+    var wallpaperViewHeightAndWidthPriorityConstraints = [NSLayoutConstraint]()
+
+    weak var wallpaperView: UIView?
+    override func loadView() {
+        view = UIView()
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+
+        guard let wallpaperView = Wallpaper.view(for: wallpaper, photo: photo) else {
+            return owsFailDebug("Failed to create photo wallpaper view")
+        }
+
+        self.wallpaperView = wallpaperView
+
+        // If this is a photo, embed it in a scrollView for pinch & zoom
+        if case .photo = wallpaper, let photo = photo {
+            let scrollView = UIScrollView()
+            scrollView.minimumZoomScale = 1.0
+            scrollView.maximumZoomScale = 6.0
+            scrollView.contentInsetAdjustmentBehavior = .never
+            scrollView.delegate = self
+            view.addSubview(scrollView)
+            scrollView.autoPinEdgesToSuperviewEdges()
+            scrollView.addSubview(wallpaperView)
+
+            wallpaperView.autoPinEdgesToSuperviewEdges()
+
+            wallpaperViewWidthPriorityConstraints = [
+                wallpaperView.autoMatch(
+                    .width,
+                    to: .width,
+                    of: scrollView
+                ),
+                wallpaperView.autoMatch(
+                    .height,
+                    to: .width,
+                    of: scrollView,
+                    withMultiplier: 1 / photo.size.aspectRatio
+                )
+            ]
+            wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
+
+            wallpaperViewHeightPriorityConstraints = [
+                wallpaperView.autoMatch(
+                    .height,
+                    to: .height,
+                    of: scrollView
+                ),
+                wallpaperView.autoMatch(
+                    .width,
+                    to: .height,
+                    of: scrollView,
+                    withMultiplier: photo.size.aspectRatio
+                )
+            ]
+            wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
+
+            wallpaperViewHeightAndWidthPriorityConstraints = [
+                wallpaperView.autoMatch(
+                    .height,
+                    to: .height,
+                    of: scrollView
+                ),
+                wallpaperView.autoMatch(
+                    .width,
+                    to: .width,
+                    of: scrollView
+                )
+            ]
+            wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = false }
+
+            updateWallpaperConstraints(reference: view.bounds.size)
+        } else {
+            view.addSubview(wallpaperView)
+            wallpaperView.autoPinEdgesToSuperviewEdges()
+        }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            self.updateWallpaperConstraints(reference: size)
+        } completion: { _ in
+
+        }
+    }
+
+    private var previousReferenceSize: CGSize = .zero
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        let referenceSize = view.bounds.size
+        guard referenceSize != previousReferenceSize else { return }
+        previousReferenceSize = referenceSize
+        updateWallpaperConstraints(reference: referenceSize)
+    }
+
+    func updateWallpaperConstraints(reference: CGSize) {
+        guard let imageSize = photo?.size else { return }
+
+        wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
+        wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
+        wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = false }
+
+        let imageSizeMatchingReferenceHeight = CGSize(
+            width: reference.height * imageSize.aspectRatio,
+            height: reference.height
+        )
+
+        let imageSizeMatchingReferenceWidth = CGSize(
+            width: reference.width,
+            height: reference.width / imageSize.aspectRatio
+        )
+
+        if imageSizeMatchingReferenceHeight.width >= reference.width {
+            wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = true }
+        } else if imageSizeMatchingReferenceWidth.height >= reference.height {
+            wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = true }
+        } else {
+            wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = true }
+        }
+    }
+}
+
+extension WallpaperPage: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return wallpaperView
+    }
+}

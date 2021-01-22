@@ -6,9 +6,13 @@ import Foundation
 
 extension SignalApp {
     @objc
-    func warmAvailableEmojiCacheAsync() {
+    func warmCachesAsync() {
         DispatchQueue.global(qos: .background).async {
             Emoji.warmAvailableCache()
+        }
+
+        DispatchQueue.global(qos: .background).async {
+            Wallpaper.warmCaches()
         }
     }
 

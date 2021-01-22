@@ -630,8 +630,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier)
     }
 
-    private func buildConversationStyle() -> ConversationStyle {
+    private func buildConversationStyle(hasWallpaper: Bool? = nil) -> ConversationStyle {
         AssertIsOnMainThread()
+
+        let hasWallpaper = hasWallpaper ?? viewState.threadViewModel.hasWallpaper
 
         func buildDefaultConversationStyle(type: ConversationStyleType) -> ConversationStyle {
             // Treat all styles as "initial" (not to be trusted) until
@@ -639,7 +641,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let viewWidth = floor(collectionView.width)
             return ConversationStyle(type: type,
                                      thread: thread,
-                                     viewWidth: viewWidth)
+                                     viewWidth: viewWidth,
+                                     hasWallpaper: hasWallpaper)
         }
 
         guard self.conversationStyle.type != .`default` else {
@@ -691,17 +694,22 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let viewWidth = floor(navigationViewWidth)
             return ConversationStyle(type: .placeholder,
                                      thread: thread,
-                                     viewWidth: viewWidth)
+                                     viewWidth: viewWidth,
+                                     hasWallpaper: hasWallpaper)
         }
     }
 
     @objc
     @discardableResult
-    public func updateConversationStyle() -> Bool {
+    @available(swift, obsoleted: 1.0)
+    public func updateConversationStyle() -> Bool { updateConversationStyle(hasWallpaper: nil) }
+
+    @discardableResult
+    public func updateConversationStyle(hasWallpaper: Bool? = nil) -> Bool {
         AssertIsOnMainThread()
 
         let oldConversationStyle = self.conversationStyle
-        let newConversationStyle = buildConversationStyle()
+        let newConversationStyle = buildConversationStyle(hasWallpaper: hasWallpaper)
 
         let didChange = !newConversationStyle.isEqualForCellRendering(oldConversationStyle)
         if !didChange {

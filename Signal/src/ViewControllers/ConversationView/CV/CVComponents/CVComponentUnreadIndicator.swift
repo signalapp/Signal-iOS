@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,16 +50,61 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             return
         }
 
+        let vStackView = componentView.vStackView
+        let hStackView = componentView.hStackView
+        let contentView = componentView.contentView
         let strokeView = componentView.strokeView
         let titleLabel = componentView.titleLabel
         titleLabelConfig.applyForRendering(label: titleLabel)
 
-        let isReusing = titleLabel.superview != nil
+        let isReusing = componentView.rootView.superview != nil
         if !isReusing {
-            let stackView = componentView.stackView
-            stackView.apply(config: stackViewConfig)
-            stackView.addArrangedSubview(strokeView)
-            stackView.addArrangedSubview(titleLabel)
+            vStackView.apply(config: vStackConfig)
+            hStackView.apply(config: hStackConfig)
+
+            vStackView.addArrangedSubview(strokeView)
+            vStackView.addArrangedSubview(hStackView)
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
+
+            hStackView.addArrangedSubview(leadingSpacer)
+            hStackView.addArrangedSubview(contentView)
+            hStackView.addArrangedSubview(trailingSpacer)
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+
+            contentView.addSubview(titleLabel)
+            titleLabel.autoPinWidthToSuperview(withMargin: titleHMargin)
+            titleLabel.autoPinHeightToSuperview(withMargin: titleVMargin)
+        }
+
+        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
+        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
+
+        let hasWallpaper = conversationStyle.hasWallpaper
+        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
+        componentView.hasWallpaper = hasWallpaper
+
+        if !isReusing || themeHasChanged || wallpaperModeHasChanged {
+            titleLabel.removeFromSuperview()
+
+            componentView.blurView?.removeFromSuperview()
+            componentView.blurView = nil
+
+            componentView.vibrancyView?.removeFromSuperview()
+            componentView.vibrancyView = nil
+
+            if hasWallpaper {
+                let blurView = buildBlurView(conversationStyle: conversationStyle)
+                componentView.blurView = blurView
+
+                contentView.addSubview(blurView)
+                blurView.autoPinEdgesToSuperviewEdges()
+
+                blurView.clipsToBounds = true
+                blurView.layer.cornerRadius = 8
+            }
         }
     }
 
@@ -73,11 +118,21 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
-    private var stackViewConfig: CVStackViewConfig {
+    private var vStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .fill,
                           spacing: 12,
                           layoutMargins: cellLayoutMargins)
+    }
+
+    private var titleHMargin: CGFloat { 10 }
+    private var titleVMargin: CGFloat { 4 }
+
+    private var hStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .horizontal,
+                          alignment: .center,
+                          spacing: 0,
+                          layoutMargins: .zero)
     }
 
     private var cellLayoutMargins: UIEdgeInsets {
@@ -91,7 +146,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         let width = maxWidth
 
         let titleHeight = titleLabelConfig.font.lineHeight
-        let height = (strokeHeight + stackViewConfig.spacing + titleHeight + cellLayoutMargins.totalHeight)
+        let height = (strokeHeight + vStackConfig.spacing + titleHeight + cellLayoutMargins.totalHeight + (titleVMargin * 2))
 
         return CGSizeCeil(CGSize(width: width, height: height))
     }
@@ -105,16 +160,24 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewUnreadIndicator: NSObject, CVComponentView {
 
-        fileprivate let stackView = OWSStackView(name: "UnreadIndicator")
+        fileprivate let vStackView = OWSStackView(name: "unreadIndicator.vStackView")
+        fileprivate let hStackView = OWSStackView(name: "unreadIndicator.hStackView")
 
+        fileprivate let contentView = UIView()
         fileprivate let titleLabel = UILabel()
+
+        fileprivate var blurView: UIVisualEffectView?
+        fileprivate var vibrancyView: UIVisualEffectView?
+
+        fileprivate var hasWallpaper = false
+        fileprivate var isDarkThemeEnabled = false
 
         fileprivate let strokeView = UIView()
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            stackView
+            vStackView
         }
 
         // MARK: -
@@ -132,7 +195,17 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             titleLabel.text = nil
 
             if !isDedicatedCellView {
-                stackView.reset()
+                vStackView.reset()
+                hStackView.reset()
+
+                blurView?.removeFromSuperview()
+                blurView = nil
+
+                vibrancyView?.removeFromSuperview()
+                vibrancyView = nil
+
+                hasWallpaper = false
+                isDarkThemeEnabled = false
             }
         }
     }

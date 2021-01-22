@@ -166,7 +166,8 @@ typedef enum : NSUInteger {
 
     ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeInitial
                                                                             thread:threadViewModel.threadRecord
-                                                                         viewWidth:0];
+                                                                         viewWidth:0
+                                                                      hasWallpaper:threadViewModel.hasWallpaper];
     _viewState = [[CVViewState alloc] initWithThreadViewModel:threadViewModel conversationStyle:conversationStyle];
     self.viewState.delegate = self;
 
@@ -446,6 +447,12 @@ typedef enum : NSUInteger {
     _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
     self.layout.delegate = self.loadCoordinator;
 
+    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
+    [self.view addSubview:wallpaperContainer];
+    [wallpaperContainer autoPinEdgesToSuperviewEdges];
+
+    [self setupWallpaper];
+
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
     //
@@ -460,6 +467,7 @@ typedef enum : NSUInteger {
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.allowsMultipleSelection = YES;
+    self.collectionView.backgroundColor = UIColor.clearColor;
 
     // To minimize time to initial apearance, we initially disable prefetching, but then
     // re-enable it once the view has appeared.
@@ -2923,7 +2931,8 @@ typedef enum : NSUInteger {
 
     // make sure toolbar extends below iPhoneX home button.
     self.view.backgroundColor = Theme.toolbarBackgroundColor;
-    self.collectionView.backgroundColor = Theme.backgroundColor;
+
+    [self updateWallpaper];
 
     [self updateNavigationTitle];
     [self updateNavigationBarSubtitleLabel];

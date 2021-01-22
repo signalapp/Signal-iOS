@@ -288,7 +288,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func configureForBodyText(componentView: CVComponentViewBodyText,
                                      displayableText: DisplayableText) {
-
         switch textConfig(displayableText: displayableText) {
         case .labelConfig(let labelConfig):
             let label = configureForLabel(componentView: componentView, labelConfig: labelConfig)

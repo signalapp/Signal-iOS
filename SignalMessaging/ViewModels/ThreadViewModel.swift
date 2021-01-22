@@ -16,6 +16,7 @@ public class ThreadViewModel: NSObject {
     @objc public let hasPendingMessageRequest: Bool
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     @objc public let groupCallInProgress: Bool
+    @objc public let hasWallpaper: Bool
 
     public var isContactThread: Bool {
         return !isGroupThread
@@ -67,6 +68,8 @@ public class ThreadViewModel: NSObject {
         } else {
             conversationListInfo = nil
         }
+
+        self.hasWallpaper = Wallpaper.exists(for: thread, transaction: transaction)
     }
 
     @objc

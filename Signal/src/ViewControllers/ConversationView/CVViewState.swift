@@ -135,6 +135,9 @@ public class CVViewState: NSObject {
     public let presentationStatusBenchSteps = BenchSteps(title: "presentationStatusBenchSteps")
     #endif
 
+    @objc
+    public var wallpaperContainer = UIView()
+
     // MARK: - 
 
     @objc

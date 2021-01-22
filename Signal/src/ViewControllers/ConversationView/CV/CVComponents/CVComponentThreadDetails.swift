@@ -58,8 +58,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return
         }
 
+        let outerView = componentView.outerView
+        outerView.insetsLayoutMarginsFromSafeArea = false
+        outerView.layoutMargins = outerViewLayoutMargins
+
         let stackView = componentView.stackView
+        stackView.insetsLayoutMarginsFromSafeArea = false
         stackView.apply(config: stackViewConfig)
+
+        outerView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
 
         let avatarView = AvatarImageView(image: self.avatarImage)
         componentView.avatarView = avatarView
@@ -68,6 +76,17 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         avatarView.setCompressionResistanceHigh()
         stackView.addArrangedSubview(avatarView)
         stackView.addArrangedSubview(UIView.spacer(withHeight: 1))
+
+        if conversationStyle.hasWallpaper {
+            let blurView = buildBlurView(conversationStyle: conversationStyle)
+            componentView.blurView = blurView
+
+            stackView.insertSubview(blurView, at: 0)
+            blurView.autoPinEdgesToSuperviewEdges()
+
+            blurView.clipsToBounds = true
+            blurView.layer.cornerRadius = 12
+        }
 
         let titleLabel = componentView.titleLabel
         titleLabelConfig.applyForRendering(label: titleLabel)
@@ -328,13 +347,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         CVStackViewConfig(axis: .vertical,
                           alignment: .center,
                           spacing: 3,
-                          layoutMargins: UIEdgeInsets(top: 8, leading: 16, bottom: 28, trailing: 16))
+                          layoutMargins: UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16))
     }
+
+    private var outerViewLayoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 16, right: 32)
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let maxContentWidth = maxWidth - (stackViewConfig.layoutMargins.left + stackViewConfig.layoutMargins.right)
+        let maxContentWidth = maxWidth - (stackViewConfig.layoutMargins.totalWidth + outerViewLayoutMargins.totalWidth)
 
         var subviewSizes = [CGSize]()
         subviewSizes.append(CGSize(square: avatarDiameter))
@@ -364,7 +385,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             subviewSizes.append(mutualGroupsSize)
         }
 
-        return CVStackView.measure(config: stackViewConfig, subviewSizes: subviewSizes).ceil
+        var size = CVStackView.measure(config: stackViewConfig, subviewSizes: subviewSizes)
+        size.height += outerViewLayoutMargins.totalHeight
+        size.width += outerViewLayoutMargins.totalWidth
+        return size.ceil
     }
 
     // MARK: -
@@ -383,11 +407,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let mutualGroupsLabel = UILabel()
 
         fileprivate let stackView = OWSStackView(name: "threadDetails")
+        fileprivate let outerView = UIView()
+
+        fileprivate var blurView: UIVisualEffectView?
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            stackView
+            outerView
         }
 
         // MARK: -
@@ -396,11 +423,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         public func reset() {
             stackView.reset()
+
             titleLabel.text = nil
             bioLabel.text = nil
             detailsLabel.text = nil
             mutualGroupsLabel.text = nil
             avatarView = nil
+
+            blurView?.removeFromSuperview()
+            blurView = nil
         }
     }
 }

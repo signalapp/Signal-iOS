@@ -168,7 +168,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else if componentState.isSticker {
             return true
         } else if isBorderlessViewOnceMessage {
-            return true
+            return false
         } else {
             return isBorderless
         }
@@ -640,7 +640,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var bubbleBackgroundColor: UIColor {
-        if wasRemotelyDeleted {
+        if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
             return Theme.backgroundColor
         }
         if isBubbleTransparent {
@@ -651,7 +651,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var bubbleStrokeColor: UIColor? {
         if wasRemotelyDeleted || isBorderlessViewOnceMessage {
-            return Theme.outlineColor
+            return conversationStyle.hasWallpaper ? nil : Theme.outlineColor
         } else {
             return nil
         }
