@@ -282,8 +282,8 @@ fileprivate extension Wallpaper {
 
         cache.setObject(photo, forKey: key(for: thread) as NSString)
 
-        guard let data = photo.jpegData(compressionQuality: 1) else {
-            throw OWSAssertionError("Failed to get png data for wallpaper photo")
+        guard let data = photo.jpegData(compressionQuality: 0.8) else {
+            throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
         }
         guard !OWSFileSystem.fileOrFolderExists(url: try photoURL(for: thread)) else { return }
         try ensureWallpaperDirectory()

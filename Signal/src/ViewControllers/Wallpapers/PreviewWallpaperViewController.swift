@@ -291,6 +291,7 @@ private class WallpaperPage: UIViewController {
             let scrollView = UIScrollView()
             scrollView.minimumZoomScale = 1.0
             scrollView.maximumZoomScale = 6.0
+            scrollView.contentInsetAdjustmentBehavior = .never
             scrollView.delegate = self
             view.addSubview(scrollView)
             scrollView.autoPinEdgesToSuperviewEdges()
