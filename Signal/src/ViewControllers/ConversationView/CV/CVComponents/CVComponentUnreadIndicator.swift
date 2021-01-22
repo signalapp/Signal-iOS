@@ -87,19 +87,14 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         componentView.hasWallpaper = hasWallpaper
 
         if !isReusing || themeHasChanged || wallpaperModeHasChanged {
-            titleLabel.removeFromSuperview()
-
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
-
-            componentView.vibrancyView?.removeFromSuperview()
-            componentView.vibrancyView = nil
 
             if hasWallpaper {
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
 
-                contentView.addSubview(blurView)
+                contentView.insertSubview(blurView, at: 0)
                 blurView.autoPinEdgesToSuperviewEdges()
 
                 blurView.clipsToBounds = true
@@ -167,7 +162,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = UILabel()
 
         fileprivate var blurView: UIVisualEffectView?
-        fileprivate var vibrancyView: UIVisualEffectView?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -183,7 +177,7 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-            strokeView.backgroundColor = UIColor.ows_gray45
+            strokeView.backgroundColor = UIColor(rgbHex: 0x222222).withAlphaComponent(0.6)
             strokeView.autoSetDimension(.height, toSize: 1)
         }
 
@@ -200,9 +194,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
                 blurView?.removeFromSuperview()
                 blurView = nil
-
-                vibrancyView?.removeFromSuperview()
-                vibrancyView = nil
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false

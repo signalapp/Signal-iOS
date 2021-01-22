@@ -417,6 +417,10 @@ public extension CGSize {
         return CGSizeCeil(self)
     }
 
+    var floor: CGSize {
+        return CGSizeFloor(self)
+    }
+
     var round: CGSize {
         return CGSizeRound(self)
     }

@@ -126,6 +126,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_turnScreenSecurityOnForExistingUsers
         case dataMigration_disableLinkPreviewForExistingUsers
         case dataMigration_groupIdMapping
+        case dataMigration_disableSharingSuggestionsForExistingUsers
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1070,6 +1071,12 @@ public class GRDBSchemaMigrator: NSObject {
                                                 forGroupId: groupThread.groupModel.groupId,
                                                 transaction: transaction.asAnyWrite)
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_disableSharingSuggestionsForExistingUsers.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            SSKPreferences.setAreSharingSuggestionsEnabled(false, transaction: transaction.asAnyWrite)
         }
     }
 }

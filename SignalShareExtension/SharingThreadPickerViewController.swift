@@ -11,15 +11,17 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     weak var shareViewDelegate: ShareViewDelegate?
 
-    let attachments: [SignalAttachment]
+    var attachments: [SignalAttachment]? {
+        didSet { updateApprovalMode() }
+    }
 
     lazy var isTextMessage: Bool = {
-        guard attachments.count == 1, let attachment = attachments.first else { return false }
+        guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToTextMessage && attachment.dataLength < kOversizeTextMessageSizeThreshold
     }()
 
     lazy var isContactShare: Bool = {
-        guard attachments.count == 1, let attachment = attachments.first else { return false }
+        guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToContactShare
     }()
 
@@ -35,11 +37,18 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var selectedConversations: [ConversationItem] = []
 
     @objc
-    public init(attachments: [SignalAttachment], shareViewDelegate: ShareViewDelegate) {
-        self.attachments = attachments
+    public init(shareViewDelegate: ShareViewDelegate) {
         self.shareViewDelegate = shareViewDelegate
         super.init()
         delegate = self
+    }
+
+    public func presentActionSheetOnNavigationController(_ alert: ActionSheetController) {
+        if let navigationController = shareViewDelegate?.shareViewNavigationController {
+            navigationController.presentActionSheet(alert)
+        } else {
+            super.presentActionSheet(alert)
+        }
     }
 }
 
@@ -49,27 +58,37 @@ extension SharingThreadPickerViewController {
 
     func approve() {
         do {
-            try showApprovalUI()
+            let vc = try buildApprovalViewController()
+            navigationController?.pushViewController(vc, animated: true)
         } catch {
             shareViewDelegate?.shareViewFailed(error: error)
         }
     }
 
-    func showApprovalUI() throws {
-        guard let firstAttachment = attachments.first else {
+    func buildApprovalViewController(for thread: TSThread) throws -> UIViewController {
+        AssertIsOnMainThread()
+        loadViewIfNeeded()
+        guard let conversationItem = conversation(for: thread) else {
+            throw OWSAssertionError("Unexpectedly missing conversation for selected thread")
+        }
+        selectedConversations.append(conversationItem)
+        return try buildApprovalViewController()
+    }
+
+    func buildApprovalViewController() throws -> UIViewController {
+        guard let attachments = attachments, let firstAttachment = attachments.first else {
             throw OWSAssertionError("Unexpectedly missing attachments")
         }
-        guard let navigationController = navigationController else {
-            throw OWSAssertionError("Unexpectedly missing navigationController")
-        }
+
+        let approvalVC: UIViewController
 
         if isTextMessage {
             guard let messageText = String(data: firstAttachment.data, encoding: .utf8)?.filterForDisplay else {
                 throw OWSAssertionError("Missing or invalid message text for text attachment")
             }
             let approvalView = TextApprovalViewController(messageBody: MessageBody(text: messageText, ranges: .empty))
+            approvalVC = approvalView
             approvalView.delegate = self
-            navigationController.pushViewController(approvalView, animated: true)
 
         } else if isContactShare {
             guard let cnContact = Contact.cnContact(withVCardData: firstAttachment.data),
@@ -93,14 +112,16 @@ extension SharingThreadPickerViewController {
 
             let contactShare = ContactShareViewModel(contactShareRecord: contactShareRecord, avatarImageData: avatarImageData)
             let approvalView = ContactShareApprovalViewController(contactShare: contactShare)
+            approvalVC = approvalView
             approvalView.delegate = self
-            navigationController.pushViewController(approvalView, animated: true)
 
         } else {
             let approvalView = AttachmentApprovalViewController(options: .hasCancel, sendButtonImageName: "send-solid-24", attachmentApprovalItems: attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) })
+            approvalVC = approvalView
             approvalView.approvalDelegate = self
-            navigationController.pushViewController(approvalView, animated: true)
         }
+
+        return approvalVC
     }
 }
 
@@ -230,7 +251,7 @@ extension SharingThreadPickerViewController {
         }
         actionSheet.addAction(cancelAction)
 
-        presentActionSheet(actionSheet)
+        presentActionSheetOnNavigationController(actionSheet)
 
         let progressFormat = NSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
@@ -424,7 +445,7 @@ extension SharingThreadPickerViewController {
             }
             actionSheet.addAction(confirmAction)
 
-            presentActionSheet(actionSheet)
+            presentActionSheetOnNavigationController(actionSheet)
         } else {
             let actionSheet = ActionSheetController(title: failureTitle)
             actionSheet.addAction(cancelAction)
@@ -434,7 +455,7 @@ extension SharingThreadPickerViewController {
             }
             actionSheet.addAction(retryAction)
 
-            presentActionSheet(actionSheet)
+            presentActionSheetOnNavigationController(actionSheet)
         }
     }
 
@@ -487,7 +508,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
     }
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
-        return .next
+        return attachments?.isEmpty != false ? .loading : .next
     }
 }
 
