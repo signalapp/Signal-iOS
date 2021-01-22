@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = self.snippetFont;
     self.snippetStrut.font = self.snippetFont.ows_semibold;
-    self.snippetLabel.textColor = UIColor.ows_gray45Color;
+    self.snippetLabel.textColor = self.snippetColor;
 
     // UILabel appears to have an issue where it's height is
     // too large if its text is just a series of newlines,
@@ -445,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         UIFont *snippetFont = self.snippetFont;
-        UIColor *snippetColor = (self.hasUnreadStyle ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
+        UIColor *snippetColor = self.snippetColor;
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
         if (draftText.length > 0 && !self.hasUnreadStyle) {
@@ -538,6 +538,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)avatarHSpacing
 {
     return 12.f;
+}
+
+- (UIColor *)snippetColor
+{
+    return (self.hasUnreadStyle ? Theme.primaryTextColor : UIColor.ows_gray45Color);
 }
 
 #pragma mark - Reuse
