@@ -1104,11 +1104,11 @@ struct SessionProtos_DataMessage {
       case nameChange // = 4
 
       /// members
-      case usersAdded // = 5
+      case membersAdded // = 5
 
       /// members
-      case usersRemoved // = 6
-      case userLeft // = 7
+      case membersRemoved // = 6
+      case memberLeft // = 7
 
       init() {
         self = .new
@@ -1120,9 +1120,9 @@ struct SessionProtos_DataMessage {
         case 2: self = .update
         case 3: self = .encryptionKeyPair
         case 4: self = .nameChange
-        case 5: self = .usersAdded
-        case 6: self = .usersRemoved
-        case 7: self = .userLeft
+        case 5: self = .membersAdded
+        case 6: self = .membersRemoved
+        case 7: self = .memberLeft
         default: return nil
         }
       }
@@ -1133,9 +1133,9 @@ struct SessionProtos_DataMessage {
         case .update: return 2
         case .encryptionKeyPair: return 3
         case .nameChange: return 4
-        case .usersAdded: return 5
-        case .usersRemoved: return 6
-        case .userLeft: return 7
+        case .membersAdded: return 5
+        case .membersRemoved: return 6
+        case .memberLeft: return 7
         }
       }
 
@@ -3094,9 +3094,9 @@ extension SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum: SwiftPro
     2: .same(proto: "UPDATE"),
     3: .same(proto: "ENCRYPTION_KEY_PAIR"),
     4: .same(proto: "NAME_CHANGE"),
-    5: .same(proto: "USERS_ADDED"),
-    6: .same(proto: "USERS_REMOVED"),
-    7: .same(proto: "USER_LEFT"),
+    5: .same(proto: "MEMBERS_ADDED"),
+    6: .same(proto: "MEMBERS_REMOVED"),
+    7: .same(proto: "MEMBER_LEFT"),
   ]
 }
 

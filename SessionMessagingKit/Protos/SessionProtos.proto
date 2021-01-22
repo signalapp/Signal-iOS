@@ -166,9 +166,9 @@ message DataMessage {
       UPDATE              = 2; // name, members
       ENCRYPTION_KEY_PAIR = 3; // wrappers
       NAME_CHANGE         = 4; // name
-      USERS_ADDED         = 5; // members
-      USERS_REMOVED       = 6; // members
-      USER_LEFT           = 7;
+      MEMBERS_ADDED       = 5; // members
+      MEMBERS_REMOVED     = 6; // members
+      MEMBER_LEFT         = 7;
     }
 
     message KeyPair {

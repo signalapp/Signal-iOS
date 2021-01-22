@@ -232,9 +232,9 @@ extension MessageReceiver {
         case .update: handleClosedGroupUpdated(message, using: transaction) // Deprecated
         case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
         case .nameChange: handleClosedGroupNameChanged(message, using: transaction)
-        case .usersAdded: handleClosedGroupMembersAdded(message, using: transaction)
-        case .usersRemoved: handleClosedGroupMembersRemoved(message, using: transaction)
-        case .userLeft: handleClosedGroupMemberLeft(message, using: transaction)
+        case .membersAdded: handleClosedGroupMembersAdded(message, using: transaction)
+        case .membersRemoved: handleClosedGroupMembersRemoved(message, using: transaction)
+        case .memberLeft: handleClosedGroupMemberLeft(message, using: transaction)
         }
     }
     
@@ -326,7 +326,7 @@ extension MessageReceiver {
     }
     
     private static func handleClosedGroupMembersAdded(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        guard case let .usersAdded(membersAsData) = message.kind else { return }
+        guard case let .membersAdded(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let members = membersAsData.map { $0.toHexString() }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
@@ -342,7 +342,7 @@ extension MessageReceiver {
     }
     
     private static func handleClosedGroupMembersRemoved(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        guard case let .usersRemoved(membersAsData) = message.kind else { return }
+        guard case let .membersRemoved(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let members = membersAsData.map { $0.toHexString() }
         guard let groupPublicKey = message.groupPublicKey else { return }
@@ -384,7 +384,7 @@ extension MessageReceiver {
     }
     
     private static func handleClosedGroupMemberLeft(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        guard case .userLeft = message.kind else { return }
+        guard case .memberLeft = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in

@@ -2407,9 +2407,9 @@ extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataM
         case update = 2
         case encryptionKeyPair = 3
         case nameChange = 4
-        case usersAdded = 5
-        case usersRemoved = 6
-        case userLeft = 7
+        case membersAdded = 5
+        case membersRemoved = 6
+        case memberLeft = 7
     }
 
     private class func SNProtoDataMessageClosedGroupControlMessageTypeWrap(_ value: SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum) -> SNProtoDataMessageClosedGroupControlMessageType {
@@ -2418,9 +2418,9 @@ extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataM
         case .update: return .update
         case .encryptionKeyPair: return .encryptionKeyPair
         case .nameChange: return .nameChange
-        case .usersAdded: return .usersAdded
-        case .usersRemoved: return .usersRemoved
-        case .userLeft: return .userLeft
+        case .membersAdded: return .membersAdded
+        case .membersRemoved: return .membersRemoved
+        case .memberLeft: return .memberLeft
         }
     }
 
@@ -2430,9 +2430,9 @@ extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataM
         case .update: return .update
         case .encryptionKeyPair: return .encryptionKeyPair
         case .nameChange: return .nameChange
-        case .usersAdded: return .usersAdded
-        case .usersRemoved: return .usersRemoved
-        case .userLeft: return .userLeft
+        case .membersAdded: return .membersAdded
+        case .membersRemoved: return .membersRemoved
+        case .memberLeft: return .memberLeft
         }
     }
 

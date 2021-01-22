@@ -18,9 +18,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case update(name: String, members: [Data])
         case encryptionKeyPair([KeyPairWrapper]) // The new encryption key pair encrypted for each member individually
         case nameChange(name: String)
-        case usersAdded(members: [Data])
-        case usersRemoved(members: [Data])
-        case userLeft
+        case membersAdded(members: [Data])
+        case membersRemoved(members: [Data])
+        case memberLeft
 
         public var description: String {
             switch self {
@@ -28,9 +28,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
             case .update: return "update"
             case .encryptionKeyPair: return "encryptionKeyPair"
             case .nameChange: return "nameChange"
-            case .usersAdded: return "usersAdded"
-            case .usersRemoved: return "usersRemoved"
-            case .userLeft: return "userLeft"
+            case .membersAdded: return "membersAdded"
+            case .membersRemoved: return "membersRemoved"
+            case .memberLeft: return "memberLeft"
             }
         }
     }
@@ -93,9 +93,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
             return !name.isEmpty
         case .encryptionKeyPair: return true
         case .nameChange(let name): return !name.isEmpty
-        case .usersAdded(let members): return !members.isEmpty
-        case .usersRemoved(let members): return !members.isEmpty
-        case .userLeft: return true
+        case .membersAdded(let members): return !members.isEmpty
+        case .membersRemoved(let members): return !members.isEmpty
+        case .memberLeft: return true
         }
     }
 
@@ -121,14 +121,14 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case "nameChange":
             guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
             self.kind = .nameChange(name: name)
-        case "usersAdded":
+        case "membersAdded":
             guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
-            self.kind = .usersAdded(members: members)
-        case "usersRemoved":
+            self.kind = .membersAdded(members: members)
+        case "membersRemoved":
             guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
-            self.kind = .usersRemoved(members: members)
-        case "userLeft":
-            self.kind = .userLeft
+            self.kind = .membersRemoved(members: members)
+        case "memberLeft":
+            self.kind = .memberLeft
         default: return nil
         }
     }
@@ -154,14 +154,14 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case .nameChange(let name):
             coder.encode("nameChange", forKey: "kind")
             coder.encode(name, forKey: "name")
-        case .usersAdded(let members):
-            coder.encode("usersAdded", forKey: "kind")
+        case .membersAdded(let members):
+            coder.encode("membersAdded", forKey: "kind")
             coder.encode(members, forKey: "members")
-        case .usersRemoved(let members):
-            coder.encode("usersRemoved", forKey: "kind")
+        case .membersRemoved(let members):
+            coder.encode("membersRemoved", forKey: "kind")
             coder.encode(members, forKey: "members")
-        case .userLeft:
-            coder.encode("userLeft", forKey: "kind")
+        case .memberLeft:
+            coder.encode("memberLeft", forKey: "kind")
         }
     }
 
@@ -190,12 +190,12 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case .nameChange:
             guard let name = closedGroupControlMessageProto.name else { return nil }
             kind = .nameChange(name: name)
-        case .usersAdded:
-            kind = .usersAdded(members: closedGroupControlMessageProto.members)
-        case .usersRemoved:
-            kind = .usersRemoved(members: closedGroupControlMessageProto.members)
-        case .userLeft:
-            kind = .userLeft
+        case .membersAdded:
+            kind = .membersAdded(members: closedGroupControlMessageProto.members)
+        case .membersRemoved:
+            kind = .membersRemoved(members: closedGroupControlMessageProto.members)
+        case .memberLeft:
+            kind = .memberLeft
         }
         return ClosedGroupControlMessage(kind: kind)
     }
@@ -231,14 +231,14 @@ public final class ClosedGroupControlMessage : ControlMessage {
             case .nameChange(let name):
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .nameChange)
                 closedGroupControlMessage.setName(name)
-            case .usersAdded(let members):
-                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .usersAdded)
+            case .membersAdded(let members):
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .membersAdded)
                 closedGroupControlMessage.setMembers(members)
-            case .usersRemoved(let members):
-                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .usersRemoved)
+            case .membersRemoved(let members):
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .membersRemoved)
                 closedGroupControlMessage.setMembers(members)
-            case .userLeft:
-                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .userLeft)
+            case .memberLeft:
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .memberLeft)
             }
             let contentProto = SNProtoContent.builder()
             let dataMessageProto = SNProtoDataMessage.builder()
