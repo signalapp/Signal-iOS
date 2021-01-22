@@ -136,7 +136,7 @@ public enum Wallpaper: String, CaseIterable {
     public static func dimInDarkMode(for thread: TSThread? = nil, transaction: SDSAnyReadTransaction) -> Bool {
         guard let dimInDarkMode = getDimInDarkMode(for: thread, transaction: transaction) else {
             if thread != nil { return self.dimInDarkMode(transaction: transaction) }
-            return false
+            return true
         }
         return dimInDarkMode
     }
