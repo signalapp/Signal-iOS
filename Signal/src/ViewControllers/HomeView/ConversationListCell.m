@@ -19,10 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
+@property (nonatomic) UILabel *snippetStrut;
 @property (nonatomic) UILabel *dateTimeLabel;
 @property (nonatomic) UIImageView *messageStatusIconView;
 @property (nonatomic) UIView *messageStatusWrapper;
 @property (nonatomic) TypingIndicatorView *typingIndicatorView;
+@property (nonatomic) UIView *typingIndicatorWrapper;
+@property (nonatomic) UIImageView *muteIconView;
+@property (nonatomic) UIView *muteIconWrapper;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
@@ -87,9 +91,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
     [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
 
-    self.messageStatusWrapper = [UIView new];
+    self.typingIndicatorWrapper = [UIView containerView];
+    [self.typingIndicatorWrapper setContentHuggingHorizontalHigh];
+    [self.typingIndicatorWrapper setCompressionResistanceHorizontalHigh];
+
+    self.messageStatusWrapper = [UIView containerView];
     [self.messageStatusWrapper setContentHuggingHorizontalHigh];
     [self.messageStatusWrapper setCompressionResistanceHorizontalHigh];
+
+    self.muteIconWrapper = [UIView containerView];
+    [self.muteIconWrapper setContentHuggingHorizontalHigh];
+    [self.muteIconWrapper setCompressionResistanceHorizontalHigh];
 
     UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
@@ -100,18 +112,26 @@ NS_ASSUME_NONNULL_BEGIN
     topRowView.spacing = 6.f;
 
     self.snippetLabel = [UILabel new];
-    self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.numberOfLines = 2;
     self.snippetLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
+    // We use this "strut" to measure worst-case snippet height.
+    // This works around a bug in UILabel.
+    self.snippetStrut = [UILabel new];
+    self.snippetStrut.text = @"\n\n\n\n";
+    self.snippetStrut.numberOfLines = 2;
+    self.snippetStrut.lineBreakMode = NSLineBreakByWordWrapping;
+
     UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.typingIndicatorWrapper,
+        self.muteIconWrapper,
         self.snippetLabel,
         self.messageStatusWrapper,
     ]];
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
-    bottomRowView.alignment = UIStackViewAlignmentFill;
+    bottomRowView.alignment = UIStackViewAlignmentTop;
     bottomRowView.spacing = 6.f;
 
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ topRowView, bottomRowView ]];
@@ -127,29 +147,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     vStackView.userInteractionEnabled = NO;
 
-    // The typing indicators and "message send" status indicator
-    // should v-align with the _first line_ of the snippet view.
-    // We use an invisible view which is pinned to _half_ the height
-    // of the snippet view; these other views can align their h-axis
-    // with this view.
-    UIView *snippetFirstLineView = [UIView new];
-    [self.contentView addSubview:snippetFirstLineView];
-    [snippetFirstLineView autoSetDimension:ALDimensionWidth toSize:0];
-    [snippetFirstLineView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.snippetLabel];
-    [[NSLayoutConstraint constraintWithItem:snippetFirstLineView
-                                  attribute:NSLayoutAttributeHeight
-                                  relatedBy:NSLayoutRelationEqual
-                                     toItem:self.snippetLabel
-                                  attribute:NSLayoutAttributeHeight
-                                 multiplier:0.5
-                                   constant:0] autoInstall];
+    self.muteIconView = [UIImageView withTemplateImageName:@"bell-disabled-outline-24"
+                                                 tintColor:Theme.primaryTextColor];
+    [self.muteIconView setContentHuggingHorizontalHigh];
+    [self.muteIconView setCompressionResistanceHorizontalHigh];
+    [self.muteIconWrapper addSubview:self.muteIconView];
+    [self.muteIconView autoPinWidthToSuperview];
+    [self.muteIconView autoVCenterInSuperview];
+    //    [self.muteIconView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:snippetFirstLineView];
 
     self.messageStatusIconView = [UIImageView new];
     [self.messageStatusIconView setContentHuggingHorizontalHigh];
     [self.messageStatusIconView setCompressionResistanceHorizontalHigh];
     [self.messageStatusWrapper addSubview:self.messageStatusIconView];
     [self.messageStatusIconView autoPinWidthToSuperview];
-    [self.messageStatusIconView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:snippetFirstLineView];
+    [self.messageStatusIconView autoVCenterInSuperview];
 
     self.unreadLabel = [UILabel new];
     self.unreadLabel.textColor = [UIColor ows_whiteColor];
@@ -168,9 +180,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.unreadBadge];
 
     self.typingIndicatorView = [TypingIndicatorView new];
-    [self.contentView addSubview:self.typingIndicatorView];
-    [self.typingIndicatorView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.snippetLabel];
-    [self.typingIndicatorView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:snippetFirstLineView];
+    [self.typingIndicatorView setContentHuggingHorizontalHigh];
+    [self.typingIndicatorView setCompressionResistanceHorizontalHigh];
+    [self.typingIndicatorWrapper addSubview:self.typingIndicatorView];
+    [self.typingIndicatorView autoPinWidthToSuperview];
+    [self.typingIndicatorView autoVCenterInSuperview];
 }
 
 - (void)dealloc
@@ -227,8 +241,26 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
-    self.snippetLabel.font = [self snippetFont];
+    self.snippetLabel.font = self.snippetFont;
+    self.snippetStrut.font = self.snippetFont.ows_semibold;
     self.snippetLabel.textColor = UIColor.ows_gray45Color;
+    CGFloat snippetHeight = ceil(MAX((self.snippetFont.ows_semibold.lineHeight * 2),
+        [self.snippetStrut sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)].height));
+    [self.viewConstraints addObjectsFromArray:@[
+        [self.muteIconView autoSetDimension:ALDimensionWidth toSize:self.snippetFont.lineHeight],
+        [self.muteIconView autoSetDimension:ALDimensionHeight toSize:self.snippetFont.lineHeight],
+
+        // UILabel appears to have an issue where it's height is
+        // too large if its text is just a series of newlines.
+        [self.snippetLabel autoSetDimension:ALDimensionHeight toSize:snippetHeight],
+
+        // These views should align with the first (of two) of the snippet,
+        // so their a v-center within wrappers with half the height of the
+        // snippet label.
+        [self.messageStatusWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
+        [self.typingIndicatorWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
+        [self.muteIconWrapper autoSetDimension:ALDimensionHeight toSize:snippetHeight * 0.5],
+    ]];
 
     [self updatePreview];
 
@@ -253,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
         self.messageStatusWrapper.hidden = YES;
-    } else if (thread.hasUnreadMessages) {
+    } else if (hasUnreadMessages) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
         self.unreadBadge.hidden = NO;
@@ -406,20 +438,6 @@ NS_ASSUME_NONNULL_BEGIN
                      }];
         }
     } else {
-        if ([thread isMuted]) {
-            [snippetText
-                appendTemplatedImageNamed:@"bell-disabled-outline-24"
-                                     font:self.snippetFont
-                               attributes:@{
-                                   NSForegroundColorAttributeName :
-                                       (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
-                               }];
-            [snippetText append:@" "
-                     attributes:@{
-                         NSFontAttributeName : self.snippetFont.ows_semibold,
-                     }];
-        }
-
         UIFont *snippetFont = (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont);
         UIColor *snippetColor = (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
@@ -467,6 +485,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return snippetText;
+}
+
+- (BOOL)shouldShowMuteIndicatorForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
+{
+    OWSAssertDebug(thread);
+
+    return (!self.hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest
+        && !self.shouldShowTypingIndicators && thread.isMuted);
 }
 
 #pragma mark - Constants
@@ -582,26 +608,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Typing Indicators
 
+- (BOOL)hasOverrideSnippet
+{
+    return self.overrideSnippet != nil;
+}
+
+- (BOOL)shouldShowTypingIndicators
+{
+    return (!self.hasOverrideSnippet && [self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil);
+}
+
 - (void)updatePreview
 {
     OWSAssertIsOnMainThread();
 
     // We use "override snippets" to show "message" search results.
     // We don't want to show typing indicators in that case.
-    BOOL isShowingOverrideSnippet = self.overrideSnippet != nil;
-    if (!isShowingOverrideSnippet &&
-        [self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil) {
+    if (self.shouldShowTypingIndicators) {
         // If we hide snippetLabel, our layout will break since UIStackView will remove
         // it from the layout.  Wrapping the preview views (the snippet label and the
         // typing indicator) in a UIStackView proved non-trivial since we're using
         // UIStackViewAlignmentLastBaseline.  Therefore we hide the _contents_ of the
         // snippet label using an empty string.
-        //
-        // Ensure that the snippet is at least two lines so that it is top-aligned.
-        self.snippetLabel.attributedText = [@"\n\n" asAttributedStringWithAttributes:@{
-            NSFontAttributeName : self.snippetFont,
-        }];
-        self.typingIndicatorView.hidden = NO;
+        self.snippetLabel.text = @"";
+        self.typingIndicatorWrapper.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {
         NSAttributedString *attributedText;
@@ -610,13 +640,15 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
-        // Ensure that the snippet is at least two lines so that it is top-aligned.
-        attributedText = [attributedText stringByAppendingString:@"\n\n" attributes:@{}];
         self.snippetLabel.attributedText = attributedText;
 
-        self.typingIndicatorView.hidden = YES;
+        self.typingIndicatorWrapper.hidden = YES;
         [self.typingIndicatorView stopAnimation];
     }
+
+    self.muteIconWrapper.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
+    self.muteIconView.tintColor
+        = (self.thread.hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
