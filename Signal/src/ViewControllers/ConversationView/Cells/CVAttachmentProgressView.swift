@@ -290,11 +290,6 @@ public class CVAttachmentProgressView: UIView {
                 return
             }
 
-            // The lottie progres animations currently end on an
-            // empty frame. Until we fix that, we clamp the progress
-            // to avoid hitting the last frame.
-            let progress = min(0.95, progress)
-
             // We DO NOT play this animation; we "scrub" it to reflect
             // attachment upload/download progress.
             progressView.currentFrame = progress.lerp(animation.startFrame,
