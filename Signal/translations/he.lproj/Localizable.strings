@@ -4663,6 +4663,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "אבטחת מסך";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "הראה בהצעות";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "התכתבויות של Signal מוצגות כהצעות בעת שיתוף מיישומים אחרים.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "נעילת הרשמה";
 
@@ -4737,6 +4743,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "שתף ב־Signal";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "נכשל בהשבתת הצעות שיתוף.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "התכתבויות של Signal יכולות עכשיו להיות מוצגות כהצעות בעת שיתוף מיישומים אחרים.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "שיתוף נהיה קל יותר";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "השבת";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "אפשר";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "הראה מספר ביטחון";

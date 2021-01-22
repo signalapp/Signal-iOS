@@ -4663,6 +4663,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Bảo mật Màn hình";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Hiện trong Gợi ý";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Cuộc trò chuyện Signal được hiện làm gợi ý khi được chia sẻ từ các ứng dụng khác.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Khoá Đăng ký";
 
@@ -4737,6 +4743,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Chia sẻ với Signal";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Không thể tắt gợi ý chia sẻ.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Cuộc trò chuyện Signal bây giờ đã có thể được hiện làm gợi ý khi chỉa sẻ từ các ứng dụng khác.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Chia sẻ Dễ dàng hơn";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Tắt";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Bật";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Hiển thị Số An toàn";

@@ -4663,6 +4663,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Segurança de ecrã";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Mostrar nas sugestões";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "As conversas do Signal são exibidas como sugestões quando partilhadas a partir de outras aplicações.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de registo";
 
@@ -4737,6 +4743,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Partilhar pelo Signal";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Não foi possível desativar a partilha de sugestões.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "As conversas do Signal podem ser exibidas como sugestões quando partilhadas a partir de outras aplicações.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Partilha facilitada";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Desativar";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Ativar";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Mostrar número de segurança ";

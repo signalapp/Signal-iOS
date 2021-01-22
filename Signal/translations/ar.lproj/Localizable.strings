@@ -428,7 +428,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اﻷعضاء المتواجدين يمكنهم إضافتك للمجموعة مرة أُخرى.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الإتصال بك أو الإرسال برسالة إليك.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الاتصال بك أو الإرسال برسالة إليك.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "جديد: اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
@@ -968,7 +968,7 @@
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "إظهار جميع الأعضاء";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "هذا المُستخدم موجود في جهات اتصالك";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "المُستخدم مُسجّل في جهات اتصالك";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "مُشاركة الملف الشخصي";
@@ -2249,7 +2249,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "هناك عضو واحد لا يدعم المجموعات من الطراز الجديد، لذا ستكون هذه المجموعة من الطراز القديم. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@أعضاء لا يدعمون المجموعات من الطراز الجديد، لذا ستكون المجموعة من الطراز القديم. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "عدد %1$@ عضو لا يدعمون المجموعات الجديدة، لذا ستكون المجموعة من الطراز القديم. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. إن الميزات مثل خاصية المشرفين على المجموعة، متاحة فقط في المجموعات الجديدة. %@";
@@ -4289,13 +4289,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "تم إنعاش جلسة المحادثة";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "أختر من الصور";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "الخيارات الافتراضية";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "تعيين خلفية";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "حول";
@@ -4355,10 +4355,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الخطأ";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "إظهار صور جهات إتصال النظام إذا كانت مُتاحة";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "إظهار صور جهات اتصال النظام إن كانت مُتاحة";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "إستخدم صور جهات إتصال النظام";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استخدم صور جهات اتصال النظام";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "السمة";
@@ -4418,7 +4418,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "نجح النسخ الاحتياطي";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "أضف مستخدما محظورا";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "أضف مستخدماً محظوراً";
 
 /* An explanation of the 'blocked' setting */
 "SETTINGS_BLOCK_LIST_FOOTER" = "قائمة جهات الاتصال والمجموعات التي قمت بحظرها.";
@@ -4430,7 +4430,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا توجد نتائج لبحثك";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "تم الحظر";
+"SETTINGS_BLOCK_LIST_TITLE" = "محظورة";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "مناوبة المكالمات الهاتفية دوماً";
@@ -4448,7 +4448,7 @@
 "SETTINGS_DATA" = "استخدام البيانات";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "استخدم بيانات أقل";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "يُحسِّن استخدام بيانات أقل جودة المكالمات في الشبكات الضعيفة";
@@ -4493,7 +4493,7 @@
 "SETTINGS_INFORMATION_HEADER" = "معلومات";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "دعوة أصدقائك";
+"SETTINGS_INVITE_TITLE" = "ادعو أصدقائك";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "يمكنك التواصل معي بواسطة @signalapp.  احصل عليه الآن : https://signal.org/download/";
@@ -4502,7 +4502,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صوت الرسالة";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "خلفية المحادثة";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "الشروط وسياسة الخصوصية";
@@ -4663,6 +4663,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "تأمين الشاشة";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "أظهره في الإقتراحات";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "تُعرَض محادثات Signal كاقتراحات عند المشاركة من تطبيقات أخرى.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "تأمين التسجيل";
 
@@ -4737,6 +4743,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "شارك في Signal";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "فشل تعطيل إقتراحات المشاركة.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "يمكن الآن عرض محادثات سيغنال كإقتراحات عند المشاركة من تطبيقات أخرى.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "أصبحت المشاركة أسهل";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "تعطيل";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "تفعيل";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "عرض رقم الأمان";
@@ -5159,58 +5180,58 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "إكمال الإعداد على نسخة سطح المكتب من Signal.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "اسم جهة الاتصال";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "وسع للتكبير، اسحب للتعديل.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "اسحب لمُعاينة المزيد من الخلفيات.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيين خلفية لجميع المُحادثات.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيين خلفية لـ %@.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "تعيين";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "مُعاينة";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "مسح الخلفية";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "مسح الخلفية لهذه المُحادثة؟";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "مسح الخلفية؟ هذا لن يؤدي إلى مسح الخلفيات المُخصصة التي قد قمت بتعيينها لمُحادثاتك.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النمط الداكن يعتّم الخلفية";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "يتعذّر مسح الخلفية، الرجاء المحاولة في وقت لاحق أو تواصل مع الدعم في حال استمرار المشكلة.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "يتعذّر إعادة تعيين جميع الخلفيات، الرجاء المحاولة في وقت لاحق أو تواصل مع الدعم في حال استمرار المشكلة.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "مُعاينة";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "إعادة تعيين جميع الخلفيات";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "إعادة تعيين جميع الخلفيات، بما في ذلك الخلفيات المُخصصة التي قد قمت بتعيينها لمُحادثاتك؟";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "تعيين خلفية";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "خلفية المحادثة";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "لقد حذفت هذه الرسالة.";

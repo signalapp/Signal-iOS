@@ -4663,6 +4663,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "திரை பாதுகாப்பு";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "பரிந்துரைகளில் காட்டு";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal பகிர்வதில் அரட்டைகள் பரிந்துரைகளாக காட்டப்படும் மற்றவை பயன்பாடுகள்.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "பதிவு பூட்டு";
 
@@ -4737,6 +4743,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal லுடன் பகிரவும்";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "தோல்வி முடக்கு பரிந்துரைகளைப் பகிர்தல்.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal பகிர்வதில் அரட்டைகளை இப்போது பரிந்துரைகளாகக் காட்டலாம் மற்றவை பயன்பாடுகள்.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "பகிர்வு எளிதானது";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "முடக்கு";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "இயக்கு";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "பாதுகாப்பு எண்ணைக் காட்டு";
