@@ -497,8 +497,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    return (!self.hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest
-        && !self.shouldShowTypingIndicators && thread.isMuted);
+    return (!self.hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest && thread.isMuted);
 }
 
 #pragma mark - Constants
@@ -646,7 +645,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.snippetLabel.attributedText = [@"\n\n" asAttributedStringWithAttributes:@{
             NSFontAttributeName : self.snippetFont,
         }];
-        self.typingIndicatorView.hidden = NO;
+        self.typingIndicatorWrapper.hidden = NO;
         [self.typingIndicatorView startAnimation];
     } else {
         NSAttributedString *attributedText;
