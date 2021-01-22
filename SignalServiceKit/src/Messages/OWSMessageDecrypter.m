@@ -784,20 +784,23 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                     [self.keyValueStore setDate:[NSDate new] key:senderId transaction:transaction];
 
-                    OWSOutgoingNullMessage *nullMessage =
-                        [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread];
-                    [self.messageSender sendMessage:nullMessage.asPreparer
-                        success:^{
-                            OWSLogInfo(
-                                @"Successfully sent null message after session reset for undecryptable message from %@",
-                                senderId);
-                        }
-                        failure:^(NSError *error) {
-                            OWSFailDebug(@"Failed to send null message after session reset for undecryptable message "
-                                         @"from %@ (%@)",
-                                senderId,
-                                error.localizedDescription);
-                        }];
+                    [transaction addAsyncCompletion:^{
+                        OWSOutgoingNullMessage *nullMessage =
+                            [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread];
+                        [self.messageSender sendMessage:nullMessage.asPreparer
+                            success:^{
+                                OWSLogInfo(@"Successfully sent null message after session reset for undecryptable "
+                                           @"message from %@",
+                                    senderId);
+                            }
+                            failure:^(NSError *error) {
+                                OWSFailDebug(
+                                    @"Failed to send null message after session reset for undecryptable message "
+                                    @"from %@ (%@)",
+                                    senderId,
+                                    error.localizedDescription);
+                            }];
+                    }];
                 }
             } else {
                 OWSLogWarn(@"Skipping session reset for undecryptable message from %@, already reset during this batch",
