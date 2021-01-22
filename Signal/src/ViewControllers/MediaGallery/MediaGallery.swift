@@ -125,7 +125,10 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
 
     init(message: TSMessage) {
         let date = message.receivedAtDate()
+        self.init(date: date)
+    }
 
+    init(date: Date) {
         self.year = Calendar.current.component(.year, from: date)
         self.month = Calendar.current.component(.month, from: date)
     }
@@ -150,6 +153,10 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
         components.year = self.year
 
         return Calendar.current.date(from: components)!
+    }
+
+    public var asInterval: DateInterval {
+        return Calendar.current.dateInterval(of: .month, for: date)!
     }
 
     private var isThisYear: Bool {
@@ -517,6 +524,95 @@ class MediaGallery {
 
         ensureGalleryItemsLoaded(.before, item: mostRecentItem, amount: 50, shouldLoadAlbumRemainder: false)
         return mostRecentItem
+    }
+
+    // MARK: - Section-based API
+
+    func numberOfItemsInSection(for date: GalleryDate) -> Int {
+        return databaseStorage.uiRead { transaction in
+            Int(mediaGalleryFinder.grdbAdapter.mediaCount(in: date.asInterval, transaction: transaction.unwrapGrdbRead))
+        }
+    }
+
+    func loadGalleryItems(_ items: inout [MediaGalleryItem?],
+                          for date: GalleryDate,
+                          near index: Int,
+                          direction: GalleryDirection) {
+        owsAssertDebug(items.indices.contains(index))
+        let count = 50
+
+        let lowerBound: Int
+        let upperBound: Int
+        switch direction {
+        case .before:
+            lowerBound = (index - count + 1).clamp(0, items.count)
+            upperBound = index
+        case .after:
+            lowerBound = index
+            upperBound = (index + count - 1).clamp(0, items.count)
+        case .around:
+            lowerBound = (index - count / 2).clamp(0, items.count)
+            upperBound = (index + count / 2 - 1).clamp(0, items.count)
+        }
+        let nsRange = NSRange(lowerBound...upperBound)
+
+        databaseStorage.uiRead { transaction in
+            let finder = self.mediaGalleryFinder.grdbAdapter
+            finder.enumerateMediaAttachments(in: date.asInterval,
+                                             range: nsRange,
+                                             transaction: transaction.unwrapGrdbRead) { i, attachment in
+                guard !self.deletedAttachments.contains(attachment) else {
+                    Logger.debug("skipping \(attachment) which has been deleted.")
+                    return
+                }
+
+                guard let item: MediaGalleryItem = self.buildGalleryItem(attachment: attachment,
+                                                                         transaction: transaction) else {
+                    owsFailDebug("unexpectedly failed to buildGalleryItem")
+                    return
+                }
+                items[i] = item
+            }
+        }
+    }
+
+    func loadEarlierSections() -> Range<Int> {
+        var newDates: Set<GalleryDate> = []
+        let earliestDate = sectionDates.first?.date ?? .distantFutureForMillisecondTimestamp
+        databaseStorage.uiRead { transaction in
+            let finder = self.mediaGalleryFinder.grdbAdapter
+            let result = finder.enumerateTimestamps(before: earliestDate, count: 50,
+                                                    transaction: transaction.unwrapGrdbRead) { timestamp in
+                newDates.insert(GalleryDate(date: timestamp))
+            }
+            if result == .reachedEnd {
+                hasFetchedOldest = true
+            }
+        }
+        let sortedDates = newDates.sorted()
+        owsAssertDebug(sectionDates.isEmpty || sortedDates.isEmpty || sortedDates.last! < sectionDates.first!)
+        sectionDates.insert(contentsOf: sortedDates, at: 0)
+        return 0..<sortedDates.count
+    }
+
+    func loadLaterSections() -> Range<Int> {
+        var newDates: Set<GalleryDate> = []
+        let latestDate = sectionDates.last?.asInterval.end ?? Date(millisecondsSince1970: 0)
+        databaseStorage.uiRead { transaction in
+            let finder = self.mediaGalleryFinder.grdbAdapter
+            let result = finder.enumerateTimestamps(after: latestDate, count: 50,
+                                                    transaction: transaction.unwrapGrdbRead) { timestamp in
+                newDates.insert(GalleryDate(date: timestamp))
+            }
+            if result == .reachedEnd {
+                hasFetchedMostRecent = true
+            }
+        }
+        let sortedDates = newDates.sorted()
+        owsAssertDebug(sectionDates.isEmpty || sortedDates.isEmpty || sectionDates.last! < sortedDates.first!)
+        let oldCount = sectionDates.count
+        sectionDates.append(contentsOf: sortedDates)
+        return oldCount..<sectionDates.count
     }
 
     // MARK: -

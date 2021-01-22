@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -53,5 +53,13 @@ public extension Date {
 
     init(millisecondsSince1970: UInt64) {
         self = NSDate.ows_date(withMillisecondsSince1970: millisecondsSince1970) as Date
+    }
+
+    static var distantFutureForMillisecondTimestamp: Date {
+        // Pick a value that's representable as both a UInt64 and an NSTimeInterval.
+        let millis: UInt64 = 1 << 50
+        let result = Date(millisecondsSince1970: millis)
+        owsAssertDebug(millis == result.ows_millisecondsSince1970)
+        return result
     }
 }

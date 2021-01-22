@@ -4,12 +4,19 @@
 
 import Foundation
 
+fileprivate extension IndexSet {
+    func shifted(startingAt index: Int? = nil, by amount: Int) -> IndexSet {
+        var result = self
+        result.shift(startingAt: index ?? self.first ?? 0, by: amount)
+        return result
+    }
+}
+
 @objc
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
 
-    private var galleryItems: [GalleryDate: [MediaGalleryItem]] { return mediaGallery.sections }
     private var galleryDates: [GalleryDate] { return mediaGallery.sectionDates }
-    public lazy var focusedItem = mediaGallery.ensureLoadedForMostRecentTileView()
+    private var loadedGalleryItems: [GalleryDate: [MediaGalleryItem?]] = [:]
 
     private let thread: TSThread
     private lazy var mediaGallery: MediaGallery = {
@@ -93,7 +100,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         guard let sectionIdx = galleryDates.firstIndex(of: galleryItem.galleryDate) else {
             return nil
         }
-        guard let rowIdx = galleryItems[galleryItem.galleryDate]!.firstIndex(of: galleryItem) else {
+        guard let rowIdx = loadedGalleryItems[galleryItem.galleryDate]?.firstIndex(of: galleryItem) else {
             return nil
         }
 
@@ -101,21 +108,17 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        guard let focusedItem = self.focusedItem else {
-            return
-        }
-
-        guard let indexPath = self.indexPath(galleryItem: focusedItem) else {
-            owsFailDebug("unexpectedly unable to find indexPath for focusedItem: \(focusedItem)")
-            return
-        }
-
-        Logger.debug("scrolling to focused item at indexPath: \(indexPath)")
+        Logger.debug("no items loaded yet, scrolling to end")
+        _ = self.mediaGallery.loadEarlierSections()
         self.view.layoutIfNeeded()
-        self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-        self.autoLoadMoreIfNecessary()
+        let lastSectionItemCount = self.collectionView(self.collectionView!,
+                                                       numberOfItemsInSection: self.galleryDates.count)
+        // FIXME: This actually stops in the middle of the last row, but so did the old logic.
+        self.collectionView.scrollToItem(at: IndexPath(item: lastSectionItemCount - 1,
+                                                       section: self.galleryDates.count),
+                                         at: .bottom,
+                                         animated: false)
+        super.viewWillAppear(animated)
     }
 
     override public func viewWillTransition(to size: CGSize,
@@ -149,14 +152,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     override public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.autoLoadMoreIfNecessary()
-    }
-
-    override public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        self.isUserScrolling = true
-    }
-
-    override public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        self.isUserScrolling = false
     }
 
     override public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -241,12 +236,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
     }
 
-    private var isUserScrolling: Bool = false {
-        didSet {
-            autoLoadMoreIfNecessary()
-        }
-    }
-
     // MARK: UICollectionViewDataSource
 
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -256,7 +245,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         }
 
         // One for each galleryDate plus a "loading older" and "loading newer" section
-        return galleryItems.keys.count + 2
+        return galleryDates.count + 2
     }
 
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
@@ -281,12 +270,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return 0
         }
 
-        guard let section = self.galleryItems[sectionDate] else {
-            owsFailDebug("no section for date: \(sectionDate)")
-            return 0
+        if let loadedItems = self.loadedGalleryItems[sectionDate] {
+            return loadedItems.count
         }
 
-        return section.count
+        let result = mediaGallery.numberOfItemsInSection(for: sectionDate)
+        self.loadedGalleryItems[sectionDate] = Array(repeating: nil, count: result)
+        return result
     }
 
     override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -392,17 +382,37 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return nil
         }
 
-        guard let sectionItems = self.galleryItems[sectionDate] else {
+        guard let sectionItems = self.loadedGalleryItems[sectionDate] else {
             owsFailDebug("no section for date: \(sectionDate)")
             return nil
         }
 
-        guard let galleryItem = sectionItems[safe: indexPath.row] else {
-            owsFailDebug("no message for row: \(indexPath.row)")
+        guard let galleryItem = sectionItems[safe: indexPath.item] else {
+            owsFailDebug("no message for row: \(indexPath.item)")
             return nil
         }
 
-        return galleryItem
+        if let loadedGalleryItem = galleryItem {
+            return loadedGalleryItem
+        }
+
+        let direction: GalleryDirection
+        if case .some(.some(_)) = sectionItems[safe: indexPath.item - 1] {
+            // Have we loaded the immediate previous item already? Then we probably want later items too.
+            direction = .after
+        } else if case .some(.some(_)) = sectionItems[safe: indexPath.item + 1] {
+            // Have we loaded the immediate next item already? Then we probably want later items too.
+            direction = .before
+        } else {
+            direction = .around
+        }
+
+        // Pass this directly to avoid a copy-on-write.
+        mediaGallery.loadGalleryItems(&self.loadedGalleryItems[sectionDate]!,
+                                      for: sectionDate,
+                                      near: indexPath.item,
+                                      direction: direction)
+        return self.loadedGalleryItems[sectionDate]![indexPath.item]!
     }
 
     func updateVisibleCells() {
@@ -653,25 +663,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     // MARK: Lazy Loading
 
-    // This should be substantially larger than one screen size so we don't have to call it
-    // multiple times in a rapid succession, but not so large that loading get's really chopping
-    let kMediaTileViewLoadBatchSize: UInt = 40
-    var oldestLoadedItem: MediaGalleryItem? {
-        guard let oldestDate = galleryDates.first else {
-            return nil
-        }
-
-        return galleryItems[oldestDate]?.first
-    }
-
-    var mostRecentLoadedItem: MediaGalleryItem? {
-        guard let mostRecentDate = galleryDates.last else {
-            return nil
-        }
-
-        return galleryItems[mostRecentDate]?.last
-    }
-
     var isFetchingMoreData: Bool = false
 
     let kLoadOlderSectionIdx = 0
@@ -682,10 +673,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     public func autoLoadMoreIfNecessary() {
         let kEdgeThreshold: CGFloat = 800
 
-        if self.isUserScrolling {
-            return
-        }
-
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
@@ -693,75 +680,52 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         let contentOffsetY = collectionView.contentOffset.y
         let oldContentHeight = collectionView.contentSize.height
+        let direction: GalleryDirection
 
         if contentOffsetY < kEdgeThreshold {
             // Near the top, load older content
-
-            guard let oldestLoadedItem = self.oldestLoadedItem else {
-                Logger.debug("no oldest item")
-                return
-            }
-
             guard !mediaGallery.hasFetchedOldest else {
                 return
             }
 
-            guard !isFetchingMoreData else {
-                Logger.debug("already fetching more data")
-                return
-            }
-            isFetchingMoreData = true
-
-            // mediaTileViewLayout will adjust content offset to compensate for the change in content height so that
-            // the same content is visible after the update. I considered doing something like setContentOffset in the
-            // batchUpdate completion block, but it caused a distinct flicker, which I was able to avoid with the
-            // `CollectionViewLayout.prepare` based approach.
-            mediaTileViewLayout.isInsertingCellsToTop = true
-            mediaTileViewLayout.contentSizeBeforeInsertingToTop = collectionView.contentSize
-            UIView.performWithoutAnimation {
-                collectionView.performBatchUpdates({
-                    self.mediaGallery.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
-                        Logger.debug("insertingSections: \(addedSections) items: \(addedItems)")
-
-                        collectionView.insertSections(addedSections)
-                        collectionView.insertItems(at: addedItems)
-                    }
-                }, completion: { finished in
-                    Logger.debug("performBatchUpdates finished: \(finished)")
-                    self.isFetchingMoreData = false
-                })
-            }
+            mediaTileViewLayout.recordContentSizeBeforeInsertingToTop()
+            direction = .before
 
         } else if oldContentHeight - contentOffsetY < kEdgeThreshold {
             // Near the bottom, load newer content
-
-            guard let mostRecentLoadedItem = self.mostRecentLoadedItem else {
-                Logger.debug("no mostRecent item")
-                return
-            }
-
             guard !mediaGallery.hasFetchedMostRecent else {
                 return
             }
 
-            guard !isFetchingMoreData else {
-                Logger.debug("already fetching more data")
-                return
-            }
-            isFetchingMoreData = true
+            direction = .after
 
-            UIView.performWithoutAnimation {
-                collectionView.performBatchUpdates({
-                    self.mediaGallery.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
-                        Logger.debug("insertingSections: \(addedSections), items: \(addedItems)")
-                        collectionView.insertSections(addedSections)
-                        collectionView.insertItems(at: addedItems)
-                    }
-                }, completion: { finished in
-                    Logger.debug("performBatchUpdates finished: \(finished)")
-                    self.isFetchingMoreData = false
-                })
-            }
+        } else {
+            return
+        }
+
+        guard !isFetchingMoreData else {
+            Logger.debug("already fetching more data")
+            return
+        }
+        isFetchingMoreData = true
+
+        UIView.performWithoutAnimation {
+            collectionView.performBatchUpdates({
+                let newSections: Range<Int>
+                switch direction {
+                case .before:
+                    newSections = mediaGallery.loadEarlierSections()
+                case .after:
+                    newSections = mediaGallery.loadLaterSections()
+                case .around:
+                    preconditionFailure() // unused
+                }
+                Logger.debug("found new sections: \(newSections)")
+                collectionView.insertSections(IndexSet(newSections).shifted(by: 1))
+            }, completion: { finished in
+                Logger.debug("performBatchUpdates finished: \(finished)")
+                self.isFetchingMoreData = false
+            })
         }
     }
 }
@@ -814,22 +778,19 @@ extension MediaTileViewController: MediaPresentationContextProvider {
 // into the top of a collectionView. There are multiple ways to solve this problem, but this
 // is the only one which avoided a perceptible flicker.
 private class MediaTileViewLayout: UICollectionViewFlowLayout {
+    private var contentSizeBeforeInsertingToTop: CGSize?
 
-    fileprivate var isInsertingCellsToTop: Bool = false
-    fileprivate var contentSizeBeforeInsertingToTop: CGSize?
+    func recordContentSizeBeforeInsertingToTop() {
+        contentSizeBeforeInsertingToTop = collectionViewContentSize
+    }
 
     override public func prepare() {
         super.prepare()
 
-        if isInsertingCellsToTop {
-            if let collectionView = collectionView, let oldContentSize = contentSizeBeforeInsertingToTop {
-                let newContentSize = collectionViewContentSize
-                let contentOffsetY = collectionView.contentOffset.y + (newContentSize.height - oldContentSize.height)
-                let newOffset = CGPoint(x: collectionView.contentOffset.x, y: contentOffsetY)
-                collectionView.setContentOffset(newOffset, animated: false)
-            }
+        if let collectionView = collectionView, let oldContentSize = contentSizeBeforeInsertingToTop {
+            let newContentSize = collectionViewContentSize
+            collectionView.contentOffset.y += newContentSize.height - oldContentSize.height
             contentSizeBeforeInsertingToTop = nil
-            isInsertingCellsToTop = false
         }
     }
 }
