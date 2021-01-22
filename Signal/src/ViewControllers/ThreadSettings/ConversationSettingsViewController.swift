@@ -309,26 +309,24 @@ class ConversationSettingsViewController: OWSTableViewController {
     // MARK: - Actions
 
     @objc func conversationNameTouched(sender: UIGestureRecognizer) {
-        if !canEditConversationAttributes {
-            owsFailDebug("failure: !self.canEditConversationAttributes")
-            return
-        }
+        guard sender.state == .recognized else { return }
         guard let avatarView = avatarView else {
             owsFailDebug("Missing avatarView.")
             return
         }
 
-        if sender.state == .recognized {
-            if isGroupThread {
-                if avatarView.containsGestureLocation(sender) {
-                    showGroupAttributesView(editAction: .avatar)
-                } else {
-                    showGroupAttributesView(editAction: .name)
-                }
-            } else {
-                if contactsManager.supportsContactEditing {
-                    presentContactViewController()
-                }
+        let didTapAvatar = avatarView.containsGestureLocation(sender)
+        let hasValidAvatar = !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil
+
+        if didTapAvatar, hasValidAvatar {
+            presentAvatarViewController()
+        } else if canEditConversationAttributes {
+            if didTapAvatar, isGroupThread {
+                showGroupAttributesView(editAction: .avatar)
+            } else if isGroupThread {
+                showGroupAttributesView(editAction: .name)
+            } else if contactsManager.supportsContactEditing {
+                presentContactViewController()
             }
         }
     }
@@ -595,13 +593,24 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
 
         guard let contactViewController =
-            contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
-                owsFailDebug("Unexpectedly missing contact VC")
-                return
+                contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
+            owsFailDebug("Unexpectedly missing contact VC")
+            return
         }
 
         contactViewController.delegate = self
         navigationController?.pushViewController(contactViewController, animated: true)
+    }
+
+    func presentAvatarViewController() {
+        guard let avatarView = avatarView, avatarView.image != nil else { return }
+        guard let vc = databaseStorage.uiRead(block: { readTx in
+            AvatarViewController(thread: self.thread, readTx: readTx)
+        }) else {
+            return
+        }
+
+        present(vc, animated: true)
     }
 
     private func presentAddToContactViewController(address: SignalServiceAddress) {
@@ -1182,5 +1191,23 @@ extension ConversationSettingsViewController: GroupViewHelperDelegate {
 extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate {
     func replaceAdmin(uuid: UUID) {
         showLeaveGroupConfirmAlert(replacementAdminUuid: uuid)
+    }
+}
+
+extension ConversationSettingsViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard let avatarView = self.avatarView, let superview = avatarView.superview else {
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(avatarView.frame, from: superview)
+        return MediaPresentationContext(
+            mediaView: avatarView,
+            presentationFrame: presentationFrame,
+            cornerRadius: presentationFrame.width / 2)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return nil
     }
 }

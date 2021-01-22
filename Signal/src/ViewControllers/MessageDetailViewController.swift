@@ -623,7 +623,11 @@ extension MessageDetailViewController: LongTextViewDelegate {
 }
 
 extension MessageDetailViewController: MediaPresentationContextProvider {
-    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard case let .gallery(galleryItem) = item else {
+            owsFailDebug("Unexpected media type")
+            return nil
+        }
 
         guard let mediaView = cellView.albumItemView(forAttachment: galleryItem.attachmentStream) else {
             owsFailDebug("itemView was unexpectedly nil")

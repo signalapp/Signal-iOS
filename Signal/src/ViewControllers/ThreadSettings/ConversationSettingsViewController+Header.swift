@@ -148,9 +148,8 @@ extension ConversationSettingsViewController {
             header.layoutMargins = UIEdgeInsets(top: 8, leading: 18, bottom: 16, trailing: 18)
             header.isLayoutMarginsRelativeArrangement = true
 
-            if viewController.canEditConversationAttributes {
-                header.addGestureRecognizer(UITapGestureRecognizer(target: viewController, action: #selector(conversationNameTouched)))
-            }
+            header.addGestureRecognizer(UITapGestureRecognizer(target: viewController, action: #selector(conversationNameTouched)))
+
             header.isUserInteractionEnabled = true
             header.accessibilityIdentifier = UIView.accessibilityIdentifier(in: viewController, name: "mainSectionHeader")
             header.addBackgroundView(withBackgroundColor: ConversationSettingsViewController.headerBackgroundColor)
