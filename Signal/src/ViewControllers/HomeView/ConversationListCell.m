@@ -78,8 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -141,8 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
     [vStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [vStackView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:8 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:12 relation:NSLayoutRelationGreaterThanOrEqual];
     [vStackView autoPinTrailingToSuperviewMargin];
 
     vStackView.userInteractionEnabled = NO;
@@ -226,8 +226,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.overrideSnippet = overrideSnippet;
     self.isBlocked = isBlocked;
 
-    BOOL hasUnreadMessages = thread.hasUnreadMessages;
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationNameOtherUsersProfileDidChange
@@ -272,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UIColor *textColor = Theme.secondaryTextAndIconColor;
-    if (hasUnreadMessages && overrideSnippet == nil) {
+    if (self.hasUnreadStyle) {
         textColor = Theme.primaryTextColor;
         self.dateTimeLabel.font = self.dateTimeFont.ows_semibold;
     } else {
@@ -285,7 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
         self.messageStatusWrapper.hidden = YES;
-    } else if (hasUnreadMessages) {
+    } else if (self.hasUnreadStyle) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
         self.unreadBadge.hidden = NO;
@@ -387,6 +385,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)hasUnreadStyle
+{
+    return (self.thread.hasUnreadMessages && self.overrideSnippet == nil);
+}
+
 - (void)updateAvatarView
 {
     ThreadViewModel *thread = self.thread;
@@ -402,8 +405,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
 {
     OWSAssertDebug(thread);
-
-    BOOL hasUnreadMessages = thread.hasUnreadMessages;
 
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
@@ -438,11 +439,11 @@ NS_ASSUME_NONNULL_BEGIN
                      }];
         }
     } else {
-        UIFont *snippetFont = (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont);
-        UIColor *snippetColor = (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
+        UIFont *snippetFont = self.snippetFont;
+        UIColor *snippetColor = (self.hasUnreadStyle ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
-        if (draftText.length > 0 && !hasUnreadMessages) {
+        if (draftText.length > 0 && !self.hasUnreadStyle) {
             [snippetText append:NSLocalizedString(
                                     @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
                      attributes:@{
@@ -647,8 +648,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.muteIconWrapper.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
-    self.muteIconView.tintColor
-        = (self.thread.hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
+    self.muteIconView.tintColor = (self.hasUnreadStyle ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor);
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
