@@ -402,7 +402,6 @@
 		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
 		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
 		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
-		34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758DC228DD81C00802527 /* StickerTooltip.swift */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
@@ -1427,7 +1426,6 @@
 		34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "test-mp3.mp3"; sourceTree = "<group>"; };
 		34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "test-mp4.mp4"; sourceTree = "<group>"; };
 		34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg.jpg"; sourceTree = "<group>"; };
-		34C758DC228DD81C00802527 /* StickerTooltip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerTooltip.swift; sourceTree = "<group>"; };
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
@@ -2941,7 +2939,6 @@
 		34C758DB228DD81C00802527 /* Tooltips */ = {
 			isa = PBXGroup;
 			children = (
-				34C758DC228DD81C00802527 /* StickerTooltip.swift */,
 				34123C5D239AA3E900782788 /* TooltipView.swift */,
 				34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */,
 				889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */,
@@ -5010,7 +5007,6 @@
 				340872CB2239563500CB25B0 /* AttachmentPrepViewController.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
 				3476236224081F8900D4FB6F /* GroupManager+SignalMessaging.swift in Sources */,
-				34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */,
 				34AC0A16211B39EA00997B47 /* OWSNavigationBar.swift in Sources */,
 				34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */,
 				34AC0A1A211B39EA00997B47 /* CommonStrings.swift in Sources */,
