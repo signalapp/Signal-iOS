@@ -329,8 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        UIColor *messageStatusViewTintColor
-            = (Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray45Color]);
+        UIColor *messageStatusViewTintColor = UIColor.ows_gray45Color;
         BOOL shouldAnimateStatusIcon = NO;
         BOOL shouldHideStatusIndicator = NO;
 
