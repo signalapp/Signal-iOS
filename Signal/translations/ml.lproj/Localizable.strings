@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "കോൺടാക്ട് പങ്കുവയ്ക്കുക";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "ഡൌൺലോഡ് ചെയ്യാൻ ടാപ് ചെയ്യുക";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "വീഡിയോ കോൾ";
@@ -104,7 +104,7 @@
 "ALERT_DISCARD_BUTTON" = "കളയുക";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "സേവ് ചെയ്യരുത്";
+"ALERT_DONT_SAVE" = "സംരക്ഷിക്കരുത്";
 
 /* Generic error indicator. */
 "ALERT_ERROR_TITLE" = "പിഴവ്";
@@ -119,7 +119,7 @@
 "APN_Message" = "പുതിയ മെസേജ്";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ലോഞ്ച് ചെയ്യാൻ കഴിയില്ല. ദയവായി support@signal.org ലേക്ക് ഒരു ഡീബഗ് ലോഗ് അയയ്ക്കുക, അങ്ങനെ നമുക്ക് ഈ പ്രശ്നത്തിനു പരിഹാരം കാണാൻ കഴിയും.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ലോഞ്ച് ചെയ്യാൻ കഴിയുന്നില്ല. ദയവായി support@signal.org ലേക്ക് ഒരു ഡീബഗ് ലോഗ് അയയ്ക്കുക, നമുക്ക് ഈ പ്രശ്നത്തിനൊരു പരിഹാരം കാണാൻ വേണ്ടി.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "പിഴവ്";
@@ -134,7 +134,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "തിരിച്ചറിയാനാകാത്ത ഡാറ്റാബേസ് വേർഷൻ";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "നിങ്ങളുടെ പഴയ ഡിവൈസിൽ നിന്ന് മാറ്റം ചെയ്ത ഡാറ്റ റീസ്റ്റോർ ചെയ്യാൻ കഴിയുന്നില്ല.  ദയവായി support@signal.org ലേക്ക് ഒരു ഡീബഗ് ലോഗ് അയയ്ക്കുക, അങ്ങനെ നമുക്ക് ഈ പ്രശ്നത്തിനു പരിഹാരം കാണാൻ കഴിയും.  നിങ്ങൾ Signal റീഇൻസ്റ്റാൾ ചെയ്യുകയാണെങ്കിൽ, നിങ്ങളുടെ സന്ദേശ ചരിത്രം ചിലപ്പോൾ നഷ്ടപ്പെട്ടേക്കാം.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "നിങ്ങളുടെ പഴയ ഡിവൈസിൽ നിന്ന് മാറ്റം ചെയ്ത ഡാറ്റ റീസ്റ്റോർ ചെയ്യാൻ കഴിയുന്നില്ല.  ദയവായി support@signal.org ലേക്ക് ഒരു ഡീബഗ് ലോഗ് അയയ്ക്കുക, നമുക്ക് ഈ പ്രശ്നത്തിനൊരു പരിഹാരം കാണാൻ വേണ്ടി.  നിങ്ങൾ Signal റീഇൻസ്റ്റാൾ ചെയ്യുകയാണെങ്കിൽ, നിങ്ങളുടെ സന്ദേശ ചരിത്രം നഷ്ടപ്പെട്ടേക്കാം.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "കൈമാറ്റം പൂർത്തീകരിക്കാൻ കഴിയുന്നില്ല";
@@ -182,7 +182,7 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "അറ്റാച്ച്‌മെന്റ് എക്സ്‌പോർട്ട് ചെയ്യാൻ പരാജയപ്പെട്ടു";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "സേവ് ചെയ്യാൻ പരാജയപ്പെട്ടു";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "സംരക്ഷിക്കാൻ പരാജയപെട്ടു ";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ഫയൽ ടൈപ്പ്: %@";
@@ -191,7 +191,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "സൈസ്: %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "സേവ് ചെയ്തു";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "സംരക്ഷിച്ചു";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = " %@നുള്ള മെസേജ്";
@@ -359,7 +359,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "അപ്രതീക്ഷിതമായ ബാക്കപ്പ് പിഴവ്";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ബാനർ അടയ്‌ക്കുക";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ഈ ഗ്രൂപ്പിൽ നിന്ന് നിങ്ങൾക്ക് മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
@@ -368,7 +368,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "ബ്ലോക്ക്";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = " \"%@\" ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്തു ലീവ് ചെയ്യണോ?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = " \"%@\" ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്തു വിട്ടുപോവണോ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = " %@നെ ബ്ലോക്ക് ചെയ്യണോ?";
@@ -432,9 +432,6 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "പുതിയത്: മുഖങ്ങൾ മങ്ങിക്കുക അല്ലെങ്കിൽ മങ്ങിക്കാൻ എവിടെയെങ്കിലും വരയ്ക്കുക";
-
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "ബ്രൌസ് ചെയ്യുക";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "ചേർക്കുക";
@@ -503,10 +500,10 @@
 "CALL_USER_ALERT_TITLE" = "കോൾ?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 ഇൻകമിംഗ് വീഡിയോ കോൾ...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "നഷ്‌ടമായ വീഡിയോ കോൾ";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "വീഡിയോ ഇല്ലാതെ ഉത്തരം നൽകുക";
@@ -584,7 +581,7 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "നിങ്ങളുടെ iCloud അക്കൌണ്ട് ബാ‍ക്കപ്പ് ചെയ്യാൻ Signal ന് അക്സസ് നിഷേധിച്ചു. iCloud അക്കൌണ്ട് ഇല്ല. നിങ്ങളുടെ Signal ഡാറ്റ ബാക്കപ്പ് ചെയ്യുന്നതിന് iOS സെറ്റിംഗ്സ് ആപ്പിലെ iCloud അക്കൌണ്ടിൽ Signalന് അക്സസ് നൽകുക.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "ഈ ചാറ്റിൽ ഔട്ട്ഗോയിംഗ് സന്ദേശങ്ങളുടെ നിറം തിരഞ്ഞെടുക്കുക.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന നിറം മാത്രമേ നിങ്ങൾ കാണൂ.";
@@ -596,7 +593,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "ക്ലിപ്പ്‌ബോർഡുമായി താരതമ്യം ചെയ്യുക";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "ഒരു ചാറ്റ് ആരംഭിക്കാൻ ഒരു സിഗ്നൽ ഉപയോക്താവിനെ തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ തിരയുക.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "രചിക്കുക";
@@ -632,7 +629,7 @@
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "നിങ്ങൾക്ക് ഈ ഗ്രൂപ്പിൽ മെസേജുകൾ അയയ്ക്കാനോ സ്വീകരിക്കാനോ കഴിയില്ല.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "നിങ്ങൾക്ക് ശരിക്കും ലീവ് ചെയ്യണോ?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "നിങ്ങൾക്ക് ശരിക്കും വിട്ടുപോവണോ?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "പുതിയ ഡിവൈസ് ലിങ്ക് ചെയ്യുക";
@@ -698,7 +695,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "സ്ഥാപനം";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "നിങ്ങളുടെ ചാറ്റുകളിൽ കോൺ‌ടാക്റ്റ് നാമങ്ങളും ഫോട്ടോകളും കാണുന്നതിന്:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "ചുവടെയുള്ള “ക്രമീകരണങ്ങളിലേക്ക് പോകുക” ടാപ്പുചെയ്യുക";
@@ -830,7 +827,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ആർക്കെല്ലാം ഗ്രൂപ്പിന്റെ പേര് , ഫോട്ടോ, അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങളുടെ ടൈമർ എന്നിവ മാറ്റാൻ കഴിയുക എന്ന് തിരഞ്ഞെടുക്കുക.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "ഈ ഗ്രൂപ്പിൽ നിന്ന് നിങ്ങൾക്ക് മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "ഈ ഗ്രൂപ്പിൽ നിന്ന് നിങ്ങൾക്ക് മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
@@ -869,7 +866,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "അഡ്‌മിൻ‌മാർക്ക് മാത്രം";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "ഈ ഗ്രൂപ്പിലേക്ക് ആർക്കൊക്കെ അംഗങ്ങളെ ചേർക്കാൻ കഴിയുമെന്ന് തിരഞ്ഞെടുക്കുക:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
@@ -881,13 +878,13 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "അഡ്‌മിൻ ആക്കുക";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "ഈ ഗ്രൂപ്പിനെയും അതിന്റെ അംഗങ്ങളെയും എഡിറ്റുചെയ്യാൻ %@-ന് കഴിയും.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "അംഗ ക്ഷണങ്ങൾ";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "അംഗ അഭ്യർത്ഥനകളും ക്ഷണങ്ങളും";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "അംഗങ്ങൾ";
@@ -899,13 +896,13 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "എല്ലായ്പ്പോഴും അറിയിക്കുക";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "നിശാംബ്ദമാണെകിൽ അറിയിക്കാതിരിക്കുക";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "നിശബ്ദമാക്കിയ ചാറ്റുകളിൽ നിങ്ങളെ പരാമർശിക്കുമ്പോൾ അറിയിപ്പുകൾ ലഭിക്കണോ?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "പരാമർശിക്കുന്നു";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "പരാമർശങ്ങൾ";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "നിശബ്ദമാക്കുക";
@@ -959,13 +956,13 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "യൂസറിനെ അൺബ്ലോക്ക് ചെയ്യുക";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "അൺമ്യൂട്ട് ചെയ്യുക";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "ശബ്‌ദിപ്പിക്കുക";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "ഈ ചാറ്റിൽ നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സംരക്ഷിക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "സേവ് ചെയ്യാത്ത മാറ്റങ്ങൾ";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "സംരക്ഷിക്കാത്ത മാറ്റങ്ങൾ";
 
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "എല്ലാ അംഗങ്ങളെയും കാണുക";
@@ -1064,7 +1061,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ഗിട്ട്ഹബ്ബ് റീഡയറക്ഷൻ";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "ഡീബഗ് ലോഗുകളെക്കുറിച്ചുള്ള വിവരങ്ങൾ";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "ചാറ്റിലെ  എല്ലാ സന്ദേശങ്ങളും ഇല്ലാതാക്കണോ?";
@@ -1169,7 +1166,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "നിങ്ങളുടെ മറ്റെ ഡിവസിൻ്റെ ഫ്രെയിമിൽ ഈ QR കോഡ് ക്രമീകരിക്കുക.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "നിങ്ങളുടെ പഴയ ഉപകരണത്തിൽ പ്രോംപ്റ്റ് കാണുന്നില്ലേ?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "മറ്റെ ഡിവൈസിന് വേണ്ടി കാത്തിരിക്കുന്നു...";
@@ -1199,10 +1196,10 @@
 "DISAPPEARING_MESSAGES" = "അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങൾ";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ഈ ചാറ്റിലെ സന്ദേശങ്ങൾ %@ ശേഷം അപ്രത്യക്ഷമാകും.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "പ്രവർത്തനക്ഷമമാക്കുമ്പോൾ, ഈ ചാറ്റിൽ അയച്ചതും സ്വീകരിച്ചതുമായ സന്ദേശങ്ങൾ കണ്ടുകഴിഞ്ഞാൽ അവ അപ്രത്യക്ഷമാകും.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "നിലവിൽ സന്ദേശങ്ങൾ %@ശേഷം അപ്രത്യക്ഷമാകും";
@@ -1232,7 +1229,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ഈ യൂസറിനെ അവർ Signal അപ്ഗ്രേഡ് ചെയ്യുന്നത് വരെ ഗ്രൂപ്പിൽ ചേർക്കാൻ കഴിയുകയില്ല.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "%@ അംഗങ്ങളുടെ പരമാവധി ഗ്രൂപ്പ് വലുപ്പം എത്തി.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "അസാധുവായ ഫോട്ടോ";
@@ -1247,19 +1244,19 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "നിങ്ങൾ ഈ ഗ്രൂപ്പിൽ വരുത്തിയ മാറ്റങ്ങൾ നിങ്ങൾക്ക് സേവ് ചെയ്യണമെന്നുണ്ടോ?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "സേവ് ചെയ്യാത്ത മാറ്റങ്ങൾ";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "സംരക്ഷിക്കാത്ത മാറ്റങ്ങൾ";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "കോപ്പി ചെയ്യുക";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "ഹേയ്,\n\nഅടുത്തിടെയായി ഞാൻ എൻ്റെ ഐഫോണിലെ സംഭാഷണങ്ങൾ സ്വകാര്യമായി സൂക്ഷിക്കാൻ Signal ഉപയോഗിക്കുന്നു.  നിങ്ങളും അത് ഇൻസ്റ്റാൾ ചെയ്യണമെന്ന് ഞാൻ ആഗ്രഹിക്കുന്നു, അങ്ങനെയായാൽ നമ്മുടെ സന്ദേശങ്ങൾ വായിക്കാനും നമ്മുടെ കോളുകൾ കേൾക്കാനും നമുക്ക് മാത്രമെ സാധിക്കുകയുള്ളൂ എന്ന് നമുക്ക് വിശ്വസിക്കാനാകും.\n\nSignal ഐഫോണുകൾക്കും ആൻഡ്രോയിഡിനും ലഭ്യമാണ്.  ഇവിടെ നിന്നും ലഭിക്കും: %@\n\nSignal നിങ്ങളുടെ നിലവിലെ മെസേജിംഗ് ആപ്പ് പോലെ പ്രവർത്തിക്കുന്നു.  നമുക്ക് ചിത്രങ്ങളും വീഡിയോകളും അയയ്ക്കാം, കോളുകൾ ചെയ്യാം, ഗ്രൂപ്പ് ചാറ്റുകൾ തുടങ്ങാം.  ഏറ്റവും മെച്ചപ്പെട്ട കാര്യമെന്താന്ന് വച്ചാൽ, ഇവയൊന്നും മറ്റാർക്കും കാണാൻ സാധിക്കില്ല, Signal നിർമ്മിച്ചിരിക്കുന്ന ആളുകൾക്ക് പോലും!\n\nSignal ൻ്റെ സൃഷ്ടികർത്താക്കളായ ഓപ്പൺ വിസ്പർ സിസ്റ്റംസ് നെ പറ്റി കൂടുതലായി നിങ്ങൾക്ക് ഇവിടെ വായിക്കാം: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "നമുക്ക് Signal ലേക്ക് മാറാം";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "ഇമെയിൽ അയയ്‌ക്കുന്നതിന് നിങ്ങളുടെ ഉപകരണം കോൺഫിഗർ ചെയ്‌തിട്ടില്ല. ഒരു പിന്തുണ അഭ്യർത്ഥന അയയ്‌ക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിലോ ഇമെയിലിലോ ഇമെയിൽ സജ്ജമാക്കുകsupport@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "ഇമെയിൽ ലഭ്യമല്ല";
@@ -1310,7 +1307,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "കോൺടാക്ടുകൾ അക്സസ് ചെയ്യാൻ കഴിഞ്ഞില്ല.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "വീഡിയോ സേവ് ചെയ്യാനായില്ല.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "വീഡിയോ സംരക്ഷിക്കാനായില്ല.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "സന്ദേശം അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടു.";
@@ -1319,10 +1316,10 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "ഇമെയിൽ അപ്ലിക്കേഷൻ തുറക്കുന്നതിൽ പരാജയപ്പെട്ടു";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "പിന്തുണ അഭ്യർത്ഥന സൃഷ്ടിക്കാൻ കഴിഞ്ഞില്ല";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "ലോഗുകൾ അപ്‌ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "സ്റ്റെയിൽ പ്രീകീ ഡാറ്റ കാരണം അയയ്ക്കാനായില്ല.";
@@ -1385,7 +1382,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = " %@ ന്റെ ഒപ്പമുള്ള നിങ്ങളുടെ സേഫ്റ്റി നമ്പർ മാറ്റിയിരിക്കുന്നു.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "ചാറ്റ് സെഷൻ പുതുക്കി";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "അറിയാത്ത ഒരു തകരാർ സംഭവിച്ചിരിക്കുന്നു.";
@@ -1409,7 +1406,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "അൺരജിസ്ട്രേഡ് യൂസർ: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "നിങ്ങളുടെ Signal-ന്റെ പതിപ്പ് കാലഹരണപ്പെട്ടു! ഏറ്റവും പുതിയ പതിപ്പിലേക്ക് അപ്‌ഡേറ്റുചെയ്യാൻ ടാപ്പുചെയ്യുക.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "നിങ്ങളുടെ Signal-ന്റെ പതിപ്പ് %d ദിവസത്തിനുള്ളിൽ കാലഹരണപ്പെടും. ഏറ്റവും പുതിയ പതിപ്പിലേക്ക് അപ്‌ഡേറ്റുചെയ്യാൻ ടാപ്പുചെയ്യുക.";
@@ -1442,7 +1439,7 @@
 "FORWARD_MESSAGE" = "സന്ദേശം ഫോർവേഡ് ചെയ്യുക";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "ഈ ചാറ്റിൽ നിങ്ങൾക്ക് മീഡിയകളൊന്നുമില്ല.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "പുതിയ മീഡിയ ലോഡുചെയ്യുന്നു…";
@@ -1459,7 +1456,7 @@
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "സുഹൃത്തുക്കളെ ക്ഷണിക്കുക";
 
-/* 'Get Started' button directing users to create a group' */
+/* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "പുതിയ ഗ്രൂപ്പ്";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
@@ -1529,10 +1526,10 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "\"%@\" കൊണ്ട് ഗ്രൂപ്പ് മെംബർഷിപ്പ് മാറ്റാനാകും.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "അഡ്‌മിനുകൾക്ക് മാത്രമേ ഈ ഓപ്‌ഷൻ മാറ്റാൻ കഴിയൂ";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "നിങ്ങൾക്ക് അവരുടെ ഓഡിയോ വീഡിയോയോ കോളുകൾ ലഭിക്കില്ല, അവർക്ക് നിങ്ങളുടേതും .";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@- - നെ തടഞ്ഞിരിക്കുന്നു";
@@ -1550,10 +1547,10 @@
 "GROUP_CALL_ERROR_DETAILS" = "കൂടുതൽ വിവരങ്ങൾ";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "ഈ കോളിലെ പരമാവധി എണ്ണമായ %ldആയിരിക്കുന്നു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "ഈ കോളിലെ പരമാവധി എണ്ണമായിരിക്കുന്നു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "കോൾ നിറഞ്ഞു";
@@ -1568,16 +1565,16 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "ഈ  കോളിൽ - %ld ആളുകളുണ്ട് ";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@- ഉം, %2$@ - ഉം പിന്നെ %3$@ ആളുകളും ഈ കോളിലുണ്ട്";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ - ൽ നിന്ന് ഓഡിയോയും വീഡിയോയും സ്വീകരിക്കാൻ കഴിയുന്നില്ല ";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "നിങ്ങളുടെ സുരക്ഷാ നമ്പർ മാറ്റം അവർ സ്ഥിരീകരിക്കാത്തതിനാലോ അവരുടെ ഉപകരണത്തിൽ ഒരു പ്രശ്നമുണ്ടായതിനാലോ അവർ നിങ്ങളെ തടഞ്ഞതിനാലോ ആയിരിക്കാം ഇത്.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ - ൽ നിന്ന് ഓഡിയോ & വീഡിയോ സ്വീകരിക്കാൻ കഴിയുന്നില്ല ";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "മറ്റാരുമില്ല";
@@ -1586,10 +1583,10 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "ഇതുവരെ ആരും ഈ കോളിൽ ഇല്ല.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@- ഉം, %@ - ഉം പിന്നെ %ld ആളുകളും ഈ കോളിൽ ചേർന്നു";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@,%@, മറ്റ് %ld പേരും കോൾ ഉപേക്ഷിച്ചു";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ കോളിൽ ചേർന്നു";
@@ -1598,19 +1595,19 @@
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ കോൾ ഉപേക്ഷിച്ചു";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ ഉം %@ ഉം ഈ കോളിൽ ചേർന്നു";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ ഉം %@ ഉം കോൾ ഉപേക്ഷിച്ചു";
 
 /* String indicating one person is currently in the call */
 "GROUP_CALL_ONE_IN_THIS_CALL" = "ഈ  കോളിൽ - 1 ആളുണ്ട് ";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ ഈ കോളിൽ ഉണ്ട്";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "റീകണക്ടിംഗ്";
 
 /* notification body when a group call participant joins with an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "മാറ്റിയ സുരക്ഷാ നമ്പറുമായി ആരോ ഈ കോളിൽ ചേർന്നിട്ടുണ്ട്.";
@@ -1634,13 +1631,13 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ ഒരു ഗ്രൂപ്പ് കോൾ ആരംഭിച്ചു";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, പിന്നെ മറ്റേരാളും ഈ കോളിലുണ്ട്";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ ഉം %2$@ഉം ഈ കോളിലുണ്ട്";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "നിങ്ങളെ കോളിൽ നിന്ന് വിച്ഛേദിച്ചിരിക്കുന്നു. ദയവായി നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "നിങ്ങൾ";
@@ -1670,40 +1667,40 @@
 "GROUP_CREATION_FAILED" = "എല്ലാ അംഗങ്ങളെയും ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിയില്ല.  വീണ്ടും ശ്രമിക്കുന്നതിന് ടാപ് ചെയ്യുക.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "അസാധുവായ ഒരു ക്ഷണം ചേർത്തിരിക്കുന്നു.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "നിങ്ങള്‍ അസാധുവായ ഒരു ക്ഷണം ചേർത്തിരിക്കുന്നു.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "നിങ്ങൾ അസാധുവായ ക്ഷണങ്ങൾ ചേർത്തിരിക്കുന്നു.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ഒരു അസാധുവായ ക്ഷണം ചേർത്തു.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@അസാധുവായ ക്ഷണങ്ങൾ ചേർത്തു.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "അസാധുവായ ക്ഷണങ്ങൾ ചേർത്തിരിക്കുന്നു.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "ഒരു അസാധുവായ ക്ഷണം റദ്ധാക്കപെട്ടു.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "താങ്കൾ ഒരു അസാധുവായ ക്ഷണം റദ്ധാക്കി.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "താങ്കൾ അസാധുവായ ക്ഷണങ്ങൾ റദ്ധാക്കി.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ ഒരു അസാധുവായ ക്ഷണം റദ്ധാക്കി.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ അസാധുവായ കഷണങ്ങൾ റദ്ധാക്കി.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "അസാധുവായ കഷണങ്ങൾ റദ്ധാക്കപെട്ടു.";
 
 /* Message indicating that the group invite link was disabled. */
 "GROUP_INVITE_LINK_DISABLED" = "ഗ്രൂപ്പ് ലിങ്ക് ഓഫാക്കി.";
@@ -1712,7 +1709,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് ലിങ്ക് ഓഫാക്കി";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ഗ്രൂപ്പ് ലിങ്ക് ഓഫാക്കി";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
@@ -1772,7 +1769,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "ഈ യൂസർമാരെ  സ്വമേധയാ ഈ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ നിങ്ങൾക്ക് കഴിയില്ല.  അവരെ അംഗത്വമെടുക്കാൻ ക്ഷണിക്കേണ്ടതുണ്ട്, അവർ അത് സ്വീകരിക്കുന്നത് വരെ ഗ്രൂപ്പ് സന്ദേശങ്ങളൊന്നും കാണാൻ സാധിക്കുകയില്ല.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "അംഗ ക്ഷണങ്ങൾ";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
@@ -1805,7 +1802,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "അസാധുവായ ലിങ്ക്";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "ഈ ഗ്രൂപ്പിൽ ജോയിൻ ചെയ്യാൻ Signal ഈ ഉപകരണത്തിൽ അപ്ഡേറ്റ് ചെയ്യുക";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ഗ്രൂപ്പ് ലിങ്ക് വഴി ചേരുന്ന പുതിയ അംഗങ്ങളെ അംഗീകരിക്കുന്നതിന് ഒരു അഡ്മിൻ ആവശ്യമാണ്.";
@@ -1814,19 +1811,19 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "പുതിയ അംഗങ്ങളെ അംഗീകരിക്കുക";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "പ്രവർത്തനക്ഷമമാക്കി ലിങ്ക് പങ്കിടുക";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "ലിങ്ക് പങ്കിടുക";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "പെട്ടന്ന് ജോയിൻ ചെയ്യാൻ ഈ ലിങ്ക് സുഹൃത്തുക്കളുമായി പങ്കുവെക്കുക";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "സുഹൃത്തുക്കളെ ക്ഷണിക്കുക";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "സുഹൃത്തുക്കളെ ഗ്രൂപ്പ് ലിങ്ക് ഉപയോഗിച്ചു് നിങ്ങളുടെ ഗ്രൂപ്പിലേക്ക് ക്ഷണിക്കുക";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ഈ കോഡ് സ്കാൻ ചെയ്യുന്ന ആളുകൾക്ക് നിങ്ങളുടെ ഗ്രൂപ്പിൽ ചേരാനാകും. നിങ്ങൾക്ക് ആ ക്രമീകരണം ഓണാണെങ്കിൽ അഡ്മിൻമാർക്ക് പുതിയ അംഗങ്ങളെ അംഗീകരിക്കേണ്ടിവരും.";
@@ -1847,7 +1844,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "ഗ്രൂപ്പ് ലിങ്ക്";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "ക്രമീകരണവും പങ്കുവെക്കലും";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ഗ്രൂപ്പ് ലിങ്ക് വഴി ചേരുന്ന പുതിയ അംഗങ്ങളെ അംഗീകരിക്കുന്നതിന് ഒരു അഡ്മിൻ ആവശ്യമാണ്.";
@@ -2072,7 +2069,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള %@-യുടെ അഭ്യർത്ഥന നിരസിച്ചു.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
@@ -2087,7 +2084,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "ഗ്രൂപ്പ് ലിങ്ക് വഴി ചേരാൻ %@ അഭ്യർത്ഥിച്ചു.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ ന്റെ അഡ്‌മിൻ വിശേഷാധികാരങ്ങൾ നീക്കിയിരിക്കുന്നു.";
@@ -2102,10 +2099,10 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "അംഗ അഭ്യർത്ഥനകൾ";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "ശേഷിക്കുന്ന ക്ഷണങ്ങൾ";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "അംഗ അഭ്യർത്ഥനകളും ക്ഷണങ്ങളും";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്‌തു.";
@@ -2120,13 +2117,13 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ഫോട്ടോ നീക്കംചെയ്തു";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "ഗ്രൂപ്പ് ഫോട്ടോ അപ്‌ഡേറ്റുചെയ്‌തു";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "നിങ്ങൾ ഫോട്ടോ അപ്‌ഡേറ്റുചെയ്‌തു.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ഫോട്ടോ അപ്‌ഡേറ്റുചെയ്‌തു.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്‌തു.";
@@ -2219,7 +2216,7 @@
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യാൻ കഴിയില്ല";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
@@ -2348,13 +2345,13 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "അപ്ഗ്രേഡ് പൂർത്തിയാക്കാൻ കഴിഞ്ഞില്ല";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "പുതിയ ഗ്രൂപ്പിലേക്ക് അപ്‌ഗ്രേഡുചെയ്യുക";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ഈ ഗ്രൂപ്പ് അപ്‌ഗ്രേഡുചെയ്യുക";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "നിങ്ങൾ പുറത്ത് പോകുന്നതിന് മുൻപ് ഈ ഗ്രൂപ്പിനായി ഒരു പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കൂ.";
@@ -2372,22 +2369,22 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "ശുപാർശ ചെയ്യുന്ന അംഗ പരിധി എത്തി";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "എന്തായാലും അംഗത്തെ ചേർക്കണോ?";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "അഭ്യർത്ഥന കാണുക ";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "View Requests";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "അഭ്യർത്ഥനകൾ കാണുക";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "ഞങ്ങളെ സമീപിക്കുക";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "പിന്തുണാ കേന്ദ്രം";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "ആർക്കൈവുചെയ്‌ത ചാറ്റുകൾ";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "ബ്ലോക്കു ചെയ്തു";
@@ -2408,7 +2405,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "നിങ്ങളുടെ കോൺടാക്ടുകളിൽ കുറച്ച് പേർ, %@ ഉം %@ ഉം %@ഉം ഉൾപ്പെടെ, Signal ലിൽ ഉണ്ട്.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "നിങ്ങളുടെ ആദ്യ ചാറ്റ് ഇവിടെ ആരംഭിക്കുക.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ നിങ്ങളെ ഗ്രൂപ്പിലേക്ക് ചേർത്തു";
@@ -2438,13 +2435,13 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "നിങ്ങൾക്ക് %@ ഇനങ്ങളിൽ കൂടുതൽ പങ്കിടാൻ കഴിയില്ല.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "ഫോട്ടോകൾ മാറ്റുക";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "നിങ്ങളുടെ ഫോട്ടോകൾ കാണാൻ കഴിയുന്നില്ലേ?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "അറ്റാച്ച്മെൻ്റ് തിരഞ്ഞെടുക്കുന്നതിൽ പരാജയപ്പെട്ടു.";
@@ -2468,10 +2465,10 @@
 "IN_CALL_RINGING" = "റിംഗിംഗ്...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "ഓഡിയോ കോൾ";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "വീഡിയോ കോൾ";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "ഉത്തരം നൽകി. സെക്വറിംഗ്...";
@@ -2486,7 +2483,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ നിങ്ങളെ വിളിച്ചു";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -2534,13 +2531,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "എല്ലാ മീഡിയകളിലേക്കും പോകുക";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "ചാറ്റ് ആർക്കൈവുചെയ്യുക";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "അറ്റാച്ച്‌മെൻ്റുകൾ കാണിക്കുക";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "ചാറ്റ് ഇൻഫോയിലേക്ക് പോകുക";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "ഇൻപുട്ട് ബാർ ഫോക്കസ് ചെയ്യുക";
@@ -2555,7 +2552,7 @@
 "KEY_COMMAND_NEW_MESSAGE" = "പുതിയ സന്ദേശം";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "അടുത്ത ചാറ്റിലേക്ക് പോകുക";
 
 /* A keyboard command to jump to the previous conversation in the list. */
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
@@ -2633,7 +2630,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "സഹായം ആവശ്യമുണ്ടോ?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "ഓരോ ഉപകരണത്തിലും, ക്രമീകരണങ്ങൾ തുറക്കുക";
 
 /* Third step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
@@ -2657,7 +2654,7 @@
 "LONG_TEXT_VIEW_TITLE" = "സന്ദേശം";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+"MANY_GROUPS_IN_COMMON" = "സാമാന്യമായി %@ ഗ്രൂപ്പുകൾ ഉണ്ട്";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "എല്ലാ മീഡിയകളും";
@@ -2675,10 +2672,10 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "സന്ദേശം ഇല്ലാതാക്കുക";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Photos";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ ഫോട്ടോകൾ";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ ഇനങ്ങൾ";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2795,28 +2792,28 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = " %@നെ ബ്ലോക്ക് ചെയ്യണോ?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "നിങ്ങൾ ഈ ഗ്രൂപ്പിൽ നിന്ന് പുറത്തുപോകും, ​​മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "നിങ്ങൾ ഈ ഗ്രൂപ്പ് വിട്ടുപോകും, ​​മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = " %@ ബ്ലോക്ക് ചെയ്ത് ലീവ് ചെയ്യുക?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = " %@ ബ്ലോക്ക് ചെയ്ത് വിട്ടുപോവണോ?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "ഇല്ലാതാക്കുക ";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഈ ചാറ്റ് ഇല്ലാതാക്കപ്പെടും.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "ചാറ്റ് ഇല്ലാതാക്കണോ?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ഡിലീറ്റ് ചെയ്ത് ലീവ് ചെയ്യുക";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ഡിലീറ്റ് ചെയ്ത് വിട്ടുപോവുക";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "നിങ്ങൾ ഈ ഗ്രൂപ്പ് ഉപേക്ഷിക്കും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കപ്പെടും.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "നിങ്ങൾ ഈ ഗ്രൂപ്പ് വിട്ടുപോകും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കപ്പെടും.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ഗ്രൂപ്പ് ഡിലീറ്റ് ചെയ്ത് ലീവ് ചെയ്യുന്നു?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ഗ്രൂപ്പ് ഡിലീറ്റ് ചെയ്ത് വിട്ടുപോവണോ?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
@@ -2882,7 +2879,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "അഭ്യർത്ഥന റദ്ദാക്കുക";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള നിങ്ങളുടെ അഭ്യർത്ഥന റദ്ദാക്കണോ?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
@@ -2969,16 +2966,28 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "നിങ്ങൾ ഇപ്പോൾ നിങ്ങളുടെ ലിങ്കുമായി ബന്ധിപ്പിക്കാവുന്ന ഉപകരണങ്ങളുടെ പരമാവധിയിൽ എത്തി. ദയവായി ഒരു ഉപകരണം നീക്കം ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക: ";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "നിങ്ങൾ നിശബ്ദമാക്കിയ സംഭാഷണങ്ങൾക്ക് അറിയിപ്പുകൾ ലഭിക്കില്ല.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "നിശബ്ദമാക്കി";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ഒഴിവാക്കുക";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "ദയവായി നിങ്ങൾ ഓൺ‌ലൈൻ ആണോ എന്ന് പരിശോധിച്ചതിനു ശേഷം വീണ്ടും ശ്രമിക്കുക.";
+
+/* String representing only the cellular interface */
+"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+
+/* String representing the 'never' condition of having no supported network interfaces */
+"NETWORK_INTERFACE_SET_NEVER" = "ഒരിക്കലും വേണ്ട";
+
+/* String representing only the wifi interface */
+"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
+
+/* String representing both wifi and cellular interfaces */
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "വൈഫൈ & സെല്ലുലാർ";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ഫോൺ നമ്പർ ഉപയോഗിച്ച് കണ്ടെത്തുക";
@@ -2999,7 +3008,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "പുതിയ ഗ്രൂപ്പ് സൃഷ്ടിക്കാൻ സാധ്യമല്ല.  നിങ്ങളുടെ ഇൻ്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "പുതിയ ഗ്രൂപ്പുകൾ അനുവദനീയമല്ല";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "ഗ്രൂപ്പിന് ഒരു പേര് ആവശ്യമാണ്.";
@@ -3026,7 +3035,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "ഈ മാറ്റങ്ങൾ നിങ്ങൾക്ക് നിരാകരിക്കണമെന്നുണ്ടോ?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "സേവ് ചെയ്യാത്ത മാറ്റങ്ങൾ";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "സംരക്ഷിക്കാത്ത മാറ്റങ്ങൾ";
 
 /* No comment provided by engineer. */
 "new_message" = "പുതിയ സന്ദേശം";
@@ -3086,7 +3095,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "അറിയിപ്പുകൾ ഓണാക്കണോ?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "“Mark as Read,” “Reply,” കൂടാതെ “Call Back\" എന്നിവയും ആക്ഷനുകളിൽ ഉൾപ്പെടുന്നു.";
@@ -3275,13 +3284,13 @@
 "OUTAGE_WARNING" = "Signal ചില സാങ്കേതിക പ്രശ്നങ്ങൾ നേരിടുകയാണ്.  കഴിയുന്നതും വേഗം സേവനം പുനസ്ഥാപിക്കാൻ ഞങ്ങൾ കഠിനപ്രയത്നം നടത്തുകയാണ്.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "നിങ്ങൾ %@-നെ വിളിച്ചു ";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\"--നെ ഗ്രൂപ്പിലേക്ക് ചേർക്കണോ?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
@@ -3296,19 +3305,19 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ %2$@ ആളുകളെ ക്ഷണിച്ചിരിക്കുന്നു";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "ശേഷിക്കുന്ന അംഗ അഭ്യര്‍ത്ഥനകള്‍ ഇല്ല";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "കാണിക്കാൻ ക്ഷണം ഒന്നുമില്ല";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\"--നെ ചേർത്തു";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ശേഷിക്കുന്ന അംഗ അഭ്യര്‍ത്ഥനകള്‍";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "അഭ്യർത്ഥനകൾ കാണുക";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
@@ -3347,7 +3356,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "മറ്റ് ഗ്രൂപ്പ് അംഗങ്ങളുടെ ക്ഷണങ്ങൾ";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "ശേഷിക്കുന്ന അംഗ അഭ്യര്‍ത്ഥനകള്‍ ";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "നിങ്ങൾ ക്ഷണിച്ച ആളുകൾ";
@@ -3377,7 +3386,7 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "കണ്ടു";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "എല്ലാവരും";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
@@ -3392,13 +3401,13 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ഉദാഹരണം: %@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "എന്റെ കോൺ‌ടാക്റ്റുകൾ";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "നിങ്ങളുടെ കോൺ‌ടാക്റ്റുകൾ‌ മാത്രമേ നിങ്ങളുടെ ഫോൺ‌ നമ്പർ‌ Signal - ൽ‌ കാണൂ.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "എല്ലാവരും";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
@@ -3407,7 +3416,7 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "ആരുംതന്നെയില്ല";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Signal-ൽ നിങ്ങളുടെ ഫോൺ നമ്പർ ആരും കാണില്ല.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3458,7 +3467,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "പേരില്ലാത്ത ആൽബം";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "പിൻചെയ്യു";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ൽ കുറഞ്ഞത് 4 അക്കങ്ങൾ/അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം";
@@ -3497,7 +3506,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN-ഉകൾ / പിന്നുകൾ (സിഗ്നൽ ഉപയോഗിച്ച് സംഭരിച്ചിരിക്കുന്ന) വിവരങ്ങൾ എൻ‌ക്രിപ്റ്റ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് മാത്രമേ ഇത് ആക്സസ് ചെയ്യാൻ കഴിയൂ. നിങ്ങൾ വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ നിങ്ങളുടെ പ്രൊഫൈൽ, ക്രമീകരണങ്ങൾ, കോൺടാക്റ്റുകൾ എന്നിവ പുന.സ്ഥാപിക്കും. അപ്ലിക്കേഷൻ തുറക്കാൻ നിങ്ങളുടെ PIN (പിൻ) ആവശ്യം വരില്ല. ";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "PIN-കളെക്കുറിച്ച് കൂടുതലറിയുക";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN കൾ പൊരുത്തപ്പെടുന്നില്ല. വീണ്ടും പരിശ്രമിക്കുക.";
@@ -3578,7 +3587,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN കുറഞ്ഞത് 4 അക്കങ്ങളെങ്കിലും ആയിരിക്കണം";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "നിങ്ങൾക്ക് 4 ചാറ്റുകൾ മാത്രമേ പിൻ ചെയ്യാൻ കഴിയൂ";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "പിൻ ചെയ്‌തു";
@@ -3641,7 +3650,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "സ്കാൻ ചെയ്ത കോഡ് ഒരു സുരക്ഷാ നമ്പർ പോലെ അല്ല.  നിങ്ങൾ രണ്ട് പേരും Signal ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പിലാണോ?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "നിങ്ങൾക്ക് %@ മായിട്ടുള്ള നിങ്ങളുടെ എൻഡ്-ടു-എൻഡ് എൻക്രിപ്ഷൻ്റെ സുരക്ഷ വിലയിരുത്തണമെന്നുണ്ടെങ്കിൽ, മുകളിലെ നമ്പരുകൾ അവരുടെ ഡിവൈസിലെ നമ്പരുകളുമായി ഒത്ത് നോക്കുക.\n\nകൂടാതെ, നിങ്ങൾക്ക് അവരുടെ ഫോണിലെ കോഡ് സ്കാൻ ചെയ്യാവുന്നതാണ്, അല്ലെങ്കിൽ അവരോട് നിങ്ങളുടെ കോഡ് സ്കാൻ ചെയ്യാൻ ആവശ്യപ്പെടുക.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "നിങ്ങൾക്ക് %@ മായിട്ടുള്ള നിങ്ങളുടെ ആദ്യാവസാന-എൻക്രിപ്ഷൻ സുരക്ഷ വിലയിരുത്തണമെന്നുണ്ടെങ്കിൽ, മുകളിലെ നമ്പരുകൾ അവരുടെ ഡിവൈസിലെ നമ്പരുകളുമായി ഒത്ത് നോക്കുക.\n\nകൂടാതെ, നിങ്ങൾക്ക് അവരുടെ ഫോണിലെ കോഡ് സ്കാൻ ചെയ്യാവുന്നതാണ്, അല്ലെങ്കിൽ അവരോട് നിങ്ങളുടെ കോഡ് സ്കാൻ ചെയ്യാൻ ആവശ്യപ്പെടുക.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "സുരക്ഷാ നമ്പർ പരിശോധിക്കുക";
@@ -3652,14 +3661,47 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "തുടരുക";
 
+/* Placeholder text for the bio field of the profile bio view. */
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "നിങ്ങളെ പറ്റി രണ്ടുവാക്ക് എഴുതൂ...";
+
+/* The 'Be kind' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Be kind";
+
+/* The 'Coffee lover' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
+
+/* The 'free to chat' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
+
+/* The 'Globetrotter' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "ലോകസഞ്ചാരി";
+
+/* The 'Taking a break' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
+
+/* The 'Working on something new' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Working on something new";
+
+/* Title for the profile bio view. */
+"PROFILE_BIO_VIEW_TITLE" = "കുറിച്ച്";
+
+/* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "About (%@)";
+
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
 
+/* Button to add a 'bio' to the user's profile in the profile view. */
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Add to Profile";
+
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "പ്രൊഫൈൽ ഫോട്ടോ സജ്ജമാക്കുക";
+
+/* Header for the 'bio' section of the profile view. */
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "കുറിച്ച്";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "ഫോട്ടോ ഇല്ലാതാക്കുക";
@@ -3905,7 +3947,7 @@
 "REREGISTER_FOR_PUSH" = "പുഷ് നോട്ടിഫിക്കേഷനുകൾക്ക് വേണ്ടി  റീ-രജിസ്റ്റർ ചെയ്യുക";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "ഭൂമിയിലെ മികച്ച സന്ദേശമയയ്‌ക്കൽ അപ്ലിക്കേഷനായി Signal - നെ മാറ്റുന്നതിന്, നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് കേൾക്കാൻ ഞങ്ങൾ ആഗ്രഹിക്കുന്നു.";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "നിങ്ങളുടെ അഭിപ്രായം Signal - നോട് പറയുക";
@@ -4241,10 +4283,19 @@
 "SEND_SMS_INVITE_TITLE" = "താഴെ പറയുന്ന നമ്പറിനെ Signal ലേക്ക് ക്ഷണിക്കാൻ നിങ്ങൾക്ക് താത്പര്യമുണ്ടോ:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal ആദ്യാവസാന-എൻക്രിപ്ഷൻ ഉപയോക്കുന്നതിനാൽ ചിലപ്പോൾ മുമ്പത്തെ ചാറ്റുകൾ പുതുക്കേണ്ടി വരും. ഇത് ചാറ്റിന്റെ സുരക്ഷയെ ബാധിക്കില്ല, പക്ഷെ ഈ കോണ്ടാക്ടിൽ നിന്നുള്ളൊരു മെസ്സേജ്  നിങ്ങൾക്ക് നഷ്ടപെട്ടിരിക്കാം, എങ്കിൽ അതവരോട് നിങ്ങൾക്ക് വീണ്ടുമയക്കാൻ പറയാം.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "ചാറ്റ് സെഷൻ പുതുക്കി";
+
+/* Title for the wallpaper choose from photos option */
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+
+/* Title for the wallpaper presets section */
+"SET_WALLPAPER_PRESETS" = "Presets";
+
+/* Title for the set wallpaper settings view. */
+"SET_WALLPAPER_TITLE" = "Set Wallpaper";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "കുറിച്ച്";
@@ -4280,10 +4331,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "ഡീബഗ് ലോഗ് പ്രാപ്തമാക്കുക";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "വിപുലമായ PIN ക്രമീകരണങ്ങൾ";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "വിപുലമായ PIN ക്രമീകരണങ്ങൾ";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "പിൻ അപ്രാപ്‌തമാക്കുക";
@@ -4394,7 +4445,16 @@
 "SETTINGS_COPYRIGHT" = "പകർപ്പവകാശം Signal മെസഞ്ചർ\nGPLv3 ന് കീഴിൽ ലൈസൻസ് ഉള്ളത്";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "ഡാറ്റ ഉപയോഗം";
+
+/* Item title for the low bandwidth call setting */
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+
+/* Section footer for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "കുറഞ്ഞ ഡാറ്റ ഉപയോഗിക്കുന്നത് ബലഹീന നെറ്വർക്കിൽ ഗുണമേന്മ ഉയർത്തിയേക്കാം.";
+
+/* Section header for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "കോളുകൾ";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
@@ -4406,7 +4466,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "ഡാറ്റ ഉപയോഗം";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "അക്കൗണ്ട് ഇല്ലാതാക്കുക";
@@ -4441,6 +4501,9 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "സന്ദേശ ശബ്ദം";
 
+/* Label for settings view that allows user to change the wallpaper. */
+"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "നിബന്ധനകളും സ്വകാര്യതാ നയവും";
 
@@ -4454,7 +4517,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "ഒരിക്കലും വേണ്ട";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "വൈഫൈ & സെല്ലുലാർ";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
@@ -4478,7 +4541,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "ക്രമീകരണങ്ങൾ";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "നിശബ്ദമാക്കിയ ചാറ്റുകൾ എണ്ണുക";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
@@ -4499,16 +4562,16 @@
 "SETTINGS_NOTIFICATIONS" = "അറിയിപ്പുകൾ";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "ഫോൺ നമ്പർ ഉപയോഗിച്ച് കണ്ടെത്തുക";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "ഫോൺ നമ്പർ ഉപയോഗിച്ച് കണ്ടെത്തുക";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "എന്റെ ഫോൺ നമ്പർ കാണുക";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "എന്റെ ഫോൺ നമ്പർ കാണുക";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "ഓർമ്മപ്പെടുത്തലുകൾ ഓഫാക്കുക";
@@ -4679,7 +4742,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "സുരക്ഷാ നമ്പർ കാണിക്കുക";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "ചാറ്റ് കാണിക്കുക";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal ഇൻസ്റ്റാൾ ചെയ്യാൻ ഞാൻ നിങ്ങളെ ക്ഷണിക്കുന്നു! ലിങ്ക് ഇതാ ഇവിടെ:";
@@ -4738,9 +4801,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "സ്റ്റിക്കർ പാക്ക്";
 
-/* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "സ്റ്റിക്കർ പാക്ക് പങ്കിടുക";
-
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "സ്റ്റിക്കർ പാക്ക്";
 
@@ -4778,10 +4838,10 @@
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- പിന്തുണാ വിവരങ്ങൾ ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS പതിപ്പ്: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
 "SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
@@ -4790,7 +4850,7 @@
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "സിഗ്നൽ പതിപ്പ്: %@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
@@ -4802,7 +4862,7 @@
 "SUPPORT_FAQ_PROMPT" = "നിങ്ങൾ ഞങ്ങളുടെ പതിവുചോദ്യങ്ങൾ വായിച്ചിട്ടുണ്ടോ?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "ഡീബഗ് ലോഗ് ഉൾപ്പെടുത്തുക.";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ലോഡിംഗ്";
@@ -4868,13 +4928,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ മിനിറ്റ്";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ സെക്കൻഡ്";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ ആഴ്ച";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ വർഷം";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ ആഴ്ചകൾ";
@@ -4883,10 +4943,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ വർഷങ്ങൾ";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 സെക്കൻഡ്";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "റദ്ദാക്കുക";
@@ -4976,19 +5036,19 @@
 "UNSUPPORTED_FEATURE_ERROR" = "നിങ്ങളുടെ ഡിവൈസ് ഈ ഫീച്ചർ സപ്പോർട്ട് ചെയ്യുന്നില്ല.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "കോൺ‌ടാക്റ്റ് അപ്ഡേറ്റ് ചെയ്യുക";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റ് ചെയ്യാനാകുന്നില്ല.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്യാനായില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "നിങ്ങളുടെ പിൻ സൃഷ്ടിക്കുക";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN-കളെക്കുറിച്ച് കൂടുതലറിയുക";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-ഉകൾ / പിന്നുകൾ (സിഗ്നൽ ഉപയോഗിച്ച് സംഭരിച്ചിരിക്കുന്ന) വിവരങ്ങൾ എൻ‌ക്രിപ്റ്റ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് മാത്രമേ ഇത് ആക്സസ് ചെയ്യാൻ കഴിയൂ. നിങ്ങൾ വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ നിങ്ങളുടെ പ്രൊഫൈൽ, ക്രമീകരണങ്ങൾ, കോൺടാക്റ്റുകൾ എന്നിവ പുന.സ്ഥാപിക്കും. അപ്ലിക്കേഷൻ തുറക്കാൻ നിങ്ങളുടെ PIN (പിൻ) ആവശ്യം വരില്ല. ";
@@ -5097,6 +5157,60 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop സെറ്റ്അപ്പ് പൂർത്തിയാക്കുക.";
+
+/* Placeholder text for header of the wallpaper mini preview */
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+
+/* The incoming bubble text when setting a photo */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+
+/* The incoming bubble text when setting a preset */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+
+/* The outgoing bubble text when setting a wallpaper for all chats. */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+
+/* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+
+/* The text for the set button on wallpaper preview view. */
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+
+/* Title for the wallpaper preview view. */
+"WALLPAPER_PREVIEW_TITLE" = "Preview";
+
+/* Clear wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+
+/* Confirmation dialog when clearing the wallpaper for a specific chat. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+
+/* Confirmation dialog when clearing the global wallpaper. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+
+/* Dim wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+
+/* An error indicating to the user that we failed to clear the wallpaper. */
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+
+/* An error indicating to the user that we failed to reset all wallpapers. */
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+
+/* Title for the wallpaper settings preview section. */
+"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+
+/* Confirmation dialog when resetting all wallpapers. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+
+/* Set wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+
+/* Title for the wallpaper settings view. */
+"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "നിങ്ങൾ ഈ സന്ദേശം ഇല്ലാതാക്കി.";

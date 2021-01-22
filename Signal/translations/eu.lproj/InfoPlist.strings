@@ -1,7 +1,7 @@
 NSAppleMusicUsageDescription = "Signal-ek Apple Music behar du medio eranskinak erreproduzitu ahal izateko.";
 NSCameraUsageDescription = "Signal-ek zure kamera erabiltzen du argazkiak ateratzeko eta bideo deiak egiteko.";
 NSContactsUsageDescription = "Signal-ek zure kontaktuak erabiltzen ditu ezagutzen dituzun erabiltzaileak topatzeko. Ez dugu zure kontaktuak zerbitzarian gordetzen.";
-NSFaceIDUsageDescription = "Signal-en Pantaila Blokeoa Face ID erabiltzen du.";
+NSFaceIDUsageDescription = "Signal-en Pantaila Blokeoak Face ID erabiltzen du.";
 NSLocationWhenInUseUsageDescription = "Signal-ek zure kokapenean sartzeko baimena behar du zure kokapena partekatu ahal izateko.";
 NSMicrophoneUsageDescription = "Signal-ek zure mikrofonoa erabiltzeko baimena behar du deiak jaso ahal izateko eta ahots mezuak grabatu ahal izateko.";
 NSPhotoLibraryAddUsageDescription = "Signal-ek argazkiak gordeko ditu zure liburutegian.";

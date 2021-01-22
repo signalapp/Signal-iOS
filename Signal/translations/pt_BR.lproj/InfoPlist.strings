@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal requer acesso à sua localização
 NSMicrophoneUsageDescription = "Signal requer acesso ao microfone para realizar e receber chamadas e gravar mensagens de voz. ";
 NSPhotoLibraryAddUsageDescription = "Signal irá salvar as imagens na sua biblioteca. ";
 NSPhotoLibraryUsageDescription = "Signal permite que você escolha quais imagens da sua biblioteca serão enviadas. ";
-NSLocalNetworkUsageDescription = "O Signal utiliza a rede local para permitir que você transfira diretamente sua conta para um novo telefone. Ele não será utilizado a menos que você opte explicitamente por iniciar uma transferência para um novo dispositivo.";
+NSLocalNetworkUsageDescription = "O Signal usa a rede local para permitir que você transfira diretamente sua conta para um novo telefone. Ela não será utilizada a menos que você opte explicitamente por iniciar uma transferência para um novo dispositivo.";

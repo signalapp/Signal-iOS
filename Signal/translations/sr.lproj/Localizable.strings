@@ -38,7 +38,7 @@
 "ACTION_SHARE_CONTACT" = "Поделите контакт";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Tap to download";
+"ACTION_TAP_TO_DOWNLOAD" = "Кликните за преузимање";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Видео позив";
@@ -433,9 +433,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Ново: замутите лица и друге делове фотографије.";
 
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Изабери";
-
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Додај";
 
@@ -470,10 +467,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Позови поново";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Долазни позив...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Пропуштен позив";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Како бисте могли вршити позиве и снимати гласовне поруке, дозволите Signal-у коришћење микрофона у iOS апликацији за подешавања.";
@@ -503,10 +500,10 @@
 "CALL_USER_ALERT_TITLE" = "Позови?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Долазни видео позив...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Пропуштен видео позив";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
@@ -542,7 +539,7 @@
 "CALLBACK_BUTTON_TITLE" = "Позови";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Ваша камера је искључена";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal корисник";
@@ -590,7 +587,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Изабрана боја ће бити видљива само вама.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Боја ћаскања";
+"COLOR_PICKER_SHEET_TITLE" = "Боја преписке";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Упореди са клипбордом";
@@ -779,7 +776,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Избришите преписку?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
@@ -845,7 +842,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Подаци о контакту";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Боја ћаскања";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Боја преписке";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Ко може мењати опис групе";
@@ -998,7 +995,7 @@
 "CORRUPTED_SESSION_DESCRIPTION" = "Ресетовање сесије омогућава примање будићих порука од %@, али не може повратити постојеће оштећене поруке.";
 
 /* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "Изаберите код државе";
+"COUNTRYCODE_SELECT_TITLE" = "Изаберите позивни број државе";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Помери и промени величину";
@@ -1166,7 +1163,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Отворите Signal на вашем старом уређају, приближите га и укључите Wi-Fi и Bluetooth на оба уређаја.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Поставите овај QR код унутар оквира на другом уређају.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Поставите овај QR кôд унутар оквира на другом уређају.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
@@ -1184,7 +1181,7 @@
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Успостављање везе...";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поставите QR код унутар круга";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поставите QR кôд унутар круга";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Ставите ваш нови уређај пред камеру";
@@ -1298,7 +1295,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Зашто не позовете некога?";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Грешка при омогућавању пријавног кода.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Грешка при омогућавању закључавања регистрације.";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Заузето";
@@ -1385,7 +1382,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваш сигурносни број са %@ је промењен.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Чет сесија је освежена";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Дошло је до непознате грешке.";
@@ -1459,7 +1456,7 @@
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Позивница пријатељима";
 
-/* 'Get Started' button directing users to create a group' */
+/* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Нова група";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
@@ -1535,10 +1532,10 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ је блокиран";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ је блокиран";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
@@ -1559,7 +1556,7 @@
 "GROUP_CALL_IS_FULL" = "Call is Full";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Придружи се позиву";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
@@ -1622,7 +1619,7 @@
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "Започети позив";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "Додирните овде да бисте започели групни позив";
@@ -1967,7 +1964,7 @@
 "GROUP_MEMBERS_CALL" = "Аудио позив";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Можете додати или попозвати пријатеље након креирања групе.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Чланови";
@@ -2153,7 +2150,7 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Име групе је сада „%@”.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "Ова група је ажурирана у нову групу";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
@@ -2330,7 +2327,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Овај члан не може да се придруже новим групама и биће уклоњени из групе:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Ови чланови не могу да се придруже новим групама и биће уклоњени из групе:";
@@ -2384,7 +2381,7 @@
 "HELP_CONTACT_US" = "Контактирајте нас";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Центар за подршку";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивиране преписке";
@@ -2585,7 +2582,7 @@
 "LEAVE_GROUP_FAILED" = "Дошло је до грешке при напуштању групе.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Овај QR код није исправан. Проверите да ли скенирате QR код приказан на уређају који желите да повежете.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Овај QR кôд није исправан. Проверите да ли скенирате QR код приказан на уређају који желите да повежете.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Повезивање уређаја није успело";
@@ -2600,10 +2597,10 @@
 "LINK_DEVICE_RESTART" = "Покушај поново";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Скенирајте QR код приказан на уређају који желите да повежете.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Скенирајте QR кôд приказан на уређају који желите да повежете.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Скенирајте QR код";
+"LINK_NEW_DEVICE_SUBTITLE" = "Скенирајте QR кôд";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Повежите нови уређај";
@@ -2807,7 +2804,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Chat?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Избришите преписку?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Избриши и напусти";
@@ -2980,6 +2977,18 @@
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Проверите да ли сте повезани на интернет и покушајте поново.";
 
+/* String representing only the cellular interface */
+"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+
+/* String representing the 'never' condition of having no supported network interfaces */
+"NETWORK_INTERFACE_SET_NEVER" = "Никад";
+
+/* String representing only the wifi interface */
+"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
+
+/* String representing both wifi and cellular interfaces */
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi and Cellular";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Пронађите по броју телефона";
 
@@ -3041,7 +3050,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Пронађите контакт по броју телефона";
 
 /* A string describing that the user has no groups in common with another user */
-"NO_GROUPS_IN_COMMON" = "No groups in common";
+"NO_GROUPS_IN_COMMON" = "Нема заједничких група";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Започните преписку одабиром дописника или групе.";
@@ -3215,7 +3224,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Нетачан PIN";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Унесите PIN вашег налога. Овај није исти као и ваш SMS верификациони број.";
+"ONBOARDING_PIN_EXPLANATION" = "Унесите PIN вашег налога. Овај није исти као и ваш SMS верификациони кôд.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Унесите ваш PIN";
@@ -3230,22 +3239,22 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Погрешан број?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Нисам примио/ла код (доступно за %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Нисам примио/ла кôд (доступно за %@)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
 "ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Контактирајте Signal подршку";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "Унет је нетачан код";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Унет је нетачан кôд";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Нисам примио/ла код";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Нисам примио/ла кôд";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Проверите да ли је телефонска мрежа доступна и да ли имате могућност примања SMS порука.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Нисте примили код?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Нисте примили кôд?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Пошаљи поново";
@@ -3254,13 +3263,13 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Назови ме";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Још увек нисте примили код?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Још увек нисте примили кôд?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Унесите код послат на %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Унесите кôд послат на %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Поново смо послали код на %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Поново смо послали кôд на %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Подешавања";
@@ -3524,7 +3533,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Искључи пријавни код?";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Искључи закључавање регистрације?";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Disable PIN";
@@ -3638,10 +3647,10 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Ваш дописник користи застарелу верзију Signal-а. Пре овере је мора ажурирати.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Скенирани код не личи на сигурносни број. Да ли ви и ваш дописник користите најновију верзију Signal-а?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Скенирани кôд не личи на сигурносни број. Да ли ви и ваш дописник користите најновију верзију Signal-а?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Да потврдите ваљаност потпуне енкрипције са %@, упоредите бројеве изнад са бројевима на њиховом уређају.\n\nТакође. можете скенирати њихов код, или их замолити да они скенирају ваш код.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Да потврдите ваљаност потпуне енкрипције са %@, упоредите бројеве изнад са бројевима на њиховом уређају.\n\nТакође. можете скенирати њихов код, или их замолити да они скенирају ваш кôд.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Оверите сигурносни број";
@@ -3652,14 +3661,47 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Настави";
 
+/* Placeholder text for the bio field of the profile bio view. */
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Write a few words about yourself…";
+
+/* The 'Be kind' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Be kind";
+
+/* The 'Coffee lover' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
+
+/* The 'free to chat' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
+
+/* The 'Globetrotter' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Globetrotter";
+
+/* The 'Taking a break' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
+
+/* The 'Working on something new' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Working on something new";
+
+/* Title for the profile bio view. */
+"PROFILE_BIO_VIEW_TITLE" = "О контакту";
+
+/* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "About (%@)";
+
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
 
+/* Button to add a 'bio' to the user's profile in the profile view. */
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Add to Profile";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Поставите слику профила";
+
+/* Header for the 'bio' section of the profile view. */
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "О контакту";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Уклони слику";
@@ -3806,13 +3848,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Потребна вам је помоћ?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ваш PIN је код од 4 или више цифре или алфанумеричка карактера који сте раније направили. Ако се не сећате вашег PIN-а, мораћете сачекати 7 дана за поновну регистрацију налогa.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ваш PIN је кôд од 4 или више цифре или алфанумеричка карактера који сте раније направили. Ако се не сећате вашег PIN-а, мораћете сачекати 7 дана за поновну регистрацију налогa.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN је код од 4 или више цифре или алфанумеричка карактера који сте раније направили. Ако се не сећате вашег PIN-а, можете направити нови. Регистрација новог налогa је дозвољена, али ћете изгубити нека подешавања као што су личне информације профила.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN је кôд од 4 или више цифре или алфанумеричка карактера који сте раније направили. Ако се не сећате вашег PIN-а, можете направити нови. Регистрација новог налогa је дозвољена, али ћете изгубити нека подешавања као што су личне информације профила.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Ваш PIN је код од 4 или више цифре који сте раније направили. Ако се не сећате вашег PIN-а, мораћете сачекати 7 дана за поновну регистрацију налогa.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Ваш PIN је кôд од 4 или више цифре који сте раније направили. Ако се не сећате вашег PIN-а, мораћете сачекати 7 дана за поновну регистрацију налогa.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Преостаје вам %lu покушаја. Уколико искористите све покушаје, моћи ћете да направите нови PIN. Регистрација новог налогa је дозвољена, али ћете изгубити нека подешавања као што су личне информације профила.";
@@ -3851,7 +3893,7 @@
 "REGISTRATION_BODY" = "Грешка при поновној пријави на сервис за обавештења.";
 
 /* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Код државе";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Позивни број државе";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Унесите број";
@@ -3860,7 +3902,7 @@
 "REGISTRATION_ERROR" = "Грешка при регистрацији";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Не можемо активирати ваш налог док не потврдите код који смо вам послали.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Не можемо активирати ваш налог док не потврдите кôд који смо вам послали.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Формат овог броја телефона није подржан. Молимо вас да контактирате подршку.";
@@ -3878,7 +3920,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Број који сте унели се не подудара са оним који смо вам послали. Молимо вас да га проверите.";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Нетачан PIN пријавни код.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Нетачан PIN за закључавање регистрације.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Унесите исправан број телефона да се региструјете.";
@@ -3959,10 +4001,10 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ваш сигурносни број са %@ је промењен. Препоручујемо да га оверите.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Скенирајте QR код приказан на уређају вашег контакта.";
+"SCAN_CODE_INSTRUCTIONS" = "Скенирајте QR кôд приказан на уређају вашег контакта.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Скенирајте QR код";
+"SCAN_QR_CODE_VIEW_TITLE" = "Скенирајте QR кôд";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Тренутно";
@@ -4148,7 +4190,7 @@
 "SEARCH_SECTION_MESSAGES" = "Поруке";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Грешка при преузимању кода за повезивање";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Грешка при преузимању кôда за повезивање";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Ажурирајте Signal на овом уређају како бисте га могли повезати са вашим телефоном.";
@@ -4157,7 +4199,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Неподржана верзија";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Ваш други уређај има застарелу верзију Signal-а која не подржава скенирање QR кодова за iPad. Молимо вас да ажурирате Signal на најновију верзију и покушате поново.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Ваш други уређај има застарелу верзију Signal-а која не подржава скенирање QR кôдова за iPad. Молимо вас да ажурирате Signal на најновију верзију и покушате поново.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Ажурирајте скенирани уређај";
@@ -4190,13 +4232,13 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Инсталирајте Signal на вашем телефону";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Кликните на вашу слику профила да отворите Signal подешавања на вашем телефону, затим идите у „Повезани уређаји” и кликните на „Повежи нови уређај” да скенирате овај код вашим телефоном:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Кликните на вашу слику профила да отворите Signal подешавања на вашем телефону, затим идите у „Повезани уређаји” и кликните на „Повежи нови уређај” да скенирате овај кôд вашим телефоном:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Помоћ за повезивње iPad-а";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Скенирајте QR код на вашем телефону";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Скенирајте QR кôд на вашем телефону";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Покрените Signal на вашем старом iPad-у да бисте пренели ваш налог";
@@ -4244,7 +4286,16 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "Чет сесија је освежена";
+
+/* Title for the wallpaper choose from photos option */
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+
+/* Title for the wallpaper presets section */
+"SET_WALLPAPER_PRESETS" = "Presets";
+
+/* Title for the set wallpaper settings view. */
+"SET_WALLPAPER_TITLE" = "Set Wallpaper";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "О контакту";
@@ -4396,6 +4447,15 @@
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Data Usage";
 
+/* Item title for the low bandwidth call setting */
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+
+/* Section footer for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks";
+
+/* Section header for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Позиви";
+
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
 
@@ -4440,6 +4500,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук поруке";
+
+/* Label for settings view that allows user to change the wallpaper. */
+"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Услови коришћења и правила о приватности";
@@ -4556,7 +4619,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Искључи";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Искључи пријавни код?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Искључи закључавање регистрације?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Укључи";
@@ -4565,7 +4628,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Ако се не сећате вашег Signal PIN-а када се поново региструјете на Signal, ваш налог ће бити закључан 7 дана.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Укључи пријавни код?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Укључи закључавање регистрације?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Поново повежи";
@@ -4601,10 +4664,10 @@
 "SETTINGS_SECURITY_TITLE" = "Безбедност екрана";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Закључај пријавним кодом";
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Закључавање регистрације";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Укључите закључавање пријавним кодом за додатну безбедност. При поновној регистрацији вашег броја телефона на Signal, биће потребно унети ваш Signal PIN.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Укључите закључавање регистрације за додатну безбедност. При поновној регистрацији вашег броја телефона на Signal, биће потребно унети ваш Signal PIN.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Индикатори куцања";
@@ -4706,7 +4769,7 @@
 "STICKER_MESSAGE_PREVIEW" = "Налепница";
 
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Комплет налепница је додат";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Пакет налепница је додат";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Додај";
@@ -4718,7 +4781,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Налепнице које сте примили";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Неки комплети налепница нису учитани";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Неки пакети налепница нису учитани";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Додате налепнице";
@@ -4736,16 +4799,13 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "Налепнице";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Комплет налепница";
-
-/* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Поделите комплет налепница";
+"STICKERS_PACK_DEFAULT_TITLE" = "Пакет налепница";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Комплет налепница";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Пакет налепница";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Комплет налепница није учитан";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Пакет налепница није учитан";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Уклони";
@@ -5097,6 +5157,60 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Довршите поставку на Signal Desktop-у.";
+
+/* Placeholder text for header of the wallpaper mini preview */
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+
+/* The incoming bubble text when setting a photo */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+
+/* The incoming bubble text when setting a preset */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+
+/* The outgoing bubble text when setting a wallpaper for all chats. */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+
+/* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+
+/* The text for the set button on wallpaper preview view. */
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+
+/* Title for the wallpaper preview view. */
+"WALLPAPER_PREVIEW_TITLE" = "Preview";
+
+/* Clear wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+
+/* Confirmation dialog when clearing the wallpaper for a specific chat. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+
+/* Confirmation dialog when clearing the global wallpaper. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+
+/* Dim wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+
+/* An error indicating to the user that we failed to clear the wallpaper. */
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+
+/* An error indicating to the user that we failed to reset all wallpapers. */
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+
+/* Title for the wallpaper settings preview section. */
+"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+
+/* Confirmation dialog when resetting all wallpapers. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+
+/* Set wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+
+/* Title for the wallpaper settings view. */
+"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Избрисали сте ову поруку.";
