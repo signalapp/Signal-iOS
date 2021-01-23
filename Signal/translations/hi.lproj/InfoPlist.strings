@@ -1,0 +1,9 @@
+NSAppleMusicUsageDescription = "मीडिया अनुलग्नकों को चलाने के लिए Signal को Apple म्यूजिक का उपयोग करने की आवश्यकता है।";
+NSCameraUsageDescription = "Signal आपके Camera का उपयोग फोटो लेने और Video कॉल के लिए करता है।";
+NSContactsUsageDescription = "Signal आपके संपर्कों का उपयोग उन उपयोगकर्ताओं को खोजने के लिए करता है जिन्हें आप जानते हैं। हम सर्वर पर आपके संपर्कों को store नहीं करते हैं।";
+NSFaceIDUsageDescription = "Signal का स्क्रीन लॉक फेस आईडी का उपयोग करता है।";
+NSLocationWhenInUseUsageDescription = "अपने वर्तमान स्थान को शेयर करने के लिए Signal को आपके स्थान की अनुमति की आवश्यकता है।";
+NSMicrophoneUsageDescription = "Signal को फ़ोन कॉल करने और प्राप्त करने और ध्वनि संदेश रिकॉर्ड करने के लिए आपके microphone की अनुमति की आवश्यकता होती है।";
+NSPhotoLibraryAddUsageDescription = "Signal आपकी लाइब्रेरी में फ़ोटो रखेगा।";
+NSPhotoLibraryUsageDescription = "Signal आपको चुनने देगा कि आपकी लाइब्रेरी में से कौन से फ़ोटोज़ को भेजना है।";
+NSLocalNetworkUsageDescription = "Signal आपको आपके खाते को एक नए फोन में सीधा ट्रांसफर करने देने के लिए स्थानीय नेटवर्क का उपयोग करती है। इसका उपयोग नहीं किया जाएगा जब तक आप स्पष्ट रूप से किसी नए डिवाइस में ट्रांसफर को शुरू नहीं करते।";
