@@ -190,7 +190,7 @@ public class OWSURLSession: NSObject {
     }
 
     private lazy var session: URLSession = {
-        URLSession(configuration: configuration, delegate: self, delegateQueue: Self.operationQueue)
+        URLSession(configuration: configuration, delegate: delegateBox, delegateQueue: Self.operationQueue)
     }()
 
     @objc
@@ -221,6 +221,16 @@ public class OWSURLSession: NSObject {
         self.extraHeaders = extraHeaders
 
         super.init()
+    }
+
+    deinit {
+        // From NSURLSession.h
+        // If you do not invalidate the session by calling the invalidateAndCancel() or
+        // finishTasksAndInvalidate() method, your app leaks memory until it exits
+        //
+        // Even though there will be no reference cycle, underlying NSURLSession metadata
+        // is malloced and kept around as a root leak.
+        session.invalidateAndCancel()
     }
 
     private struct RequestConfig {
@@ -449,12 +459,17 @@ public class OWSURLSession: NSObject {
     // MARK: - TaskState
 
     private let lock = UnfairLock()
+    lazy private var delegateBox = URLSessionDelegateBox(delegate: self)
 
     typealias TaskIdentifier = Int
     public typealias ProgressBlock = (URLSessionTask, Progress) -> Void
 
     private typealias TaskStateMap = [TaskIdentifier: TaskState]
-    private var taskStateMap = TaskStateMap()
+    private var taskStateMap = TaskStateMap() {
+        didSet {
+            delegateBox.isRetaining = (taskStateMap.count > 0)
+        }
+    }
 
     private func addTask(_ task: URLSessionTask, taskState: TaskState) {
         lock.withLock {
@@ -930,4 +945,60 @@ private class UploadTaskState: TaskState {
     func reject(error: Error) {
         resolver.reject(error)
     }
+}
+
+// NSURLSession maintains a strong reference to its delegate until explicitly invalidated
+// OWSURLSession acts as its own delegate, and may be retained by any number of owners
+// We don't really know when to invalidate our session, because a caller may decide to reuse a session
+// at any time.
+//
+// So here's the plan:
+// - While we have any outstanding tasks, a strong reference cycle is maintained. Promise holders
+//   don't need to hold on to the session while waiting for a promise to resolve.
+//   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
+//              ^-----------------------(strongDelegate)-------------------|
+//
+// - Once all outstanding tasks have been resolved, the box breaks its reference. If there are no
+//   external references to the OWSURLSession, then everything cleans itself up.
+//   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
+//                                                x-----(weakDelegate)-----|
+//
+private typealias BoxedType = (URLSessionDelegate & URLSessionTaskDelegate & URLSessionDownloadDelegate)
+private class URLSessionDelegateBox: NSObject, BoxedType {
+
+    private weak var weakDelegate: BoxedType?
+    private var strongDelegate: BoxedType?
+
+    init(delegate: BoxedType) {
+        self.weakDelegate = delegate
+    }
+
+    var isRetaining: Bool {
+        get {
+            strongDelegate != nil
+        }
+        set {
+            strongDelegate = newValue ? weakDelegate : nil
+        }
+    }
+
+    // Any of the optional methods will be forwarded using objc selector forwarding
+    // If all goes according to plan, weakDelegate will only go nil once everything is being dealloced
+    // But just in case, let's make sure we provide a fallback implementation to the only non-optional method we've conformed to
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        weakDelegate?.urlSession(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
+    }
+
+    override func responds(to aSelector: Selector!) -> Bool {
+        return super.responds(to: aSelector) || (weakDelegate?.responds(to: aSelector) == true)
+    }
+
+    override func forwardingTarget(for aSelector: Selector!) -> Any? {
+        if weakDelegate?.responds(to: aSelector) == true {
+            return weakDelegate
+        } else {
+            return nil
+        }
+    }
+
 }
