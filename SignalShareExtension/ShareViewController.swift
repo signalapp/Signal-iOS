@@ -190,7 +190,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
                 // We don't need to use the TSSocketManager in the SAE.
 
-                Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+                // TODO: Re-enable when system contact fetching uses less memory.
+                // Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // We don't need to fetch messages in the SAE.
 
