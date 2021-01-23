@@ -65,43 +65,23 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                                                                comment: "Accessibility label for stickers.")
             containerView.addSubview(reusableMediaView.mediaView)
             reusableMediaView.mediaView.autoPinEdgesToSuperviewEdges()
+
+            if isOutgoing, !attachmentStream.isUploaded {
+                let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
+                                                            style: .withCircle,
+                                                            conversationStyle: conversationStyle)
+                containerView.addSubview(progressView)
+                progressView.autoCenterInSuperview()
+            }
         } else if let attachmentPointer = self.attachmentPointer {
             containerView.backgroundColor = Theme.secondaryBackgroundColor
             containerView.layer.cornerRadius = 18
 
-            switch attachmentPointer.state {
-            case .enqueued, .downloading:
-                break
-            case .failed, .pendingManualDownload, .pendingMessageRequest:
-                let downloadStack = UIStackView()
-                downloadStack.axis = .horizontal
-                downloadStack.alignment = .center
-                downloadStack.spacing = 8
-                downloadStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
-                downloadStack.isLayoutMarginsRelativeArrangement = true
-
-                let pillView = OWSLayerView.pillView()
-                pillView.backgroundColor = Theme.washColor.withAlphaComponent(0.8)
-                downloadStack.addSubview(pillView)
-                pillView.autoPinEdgesToSuperviewEdges()
-
-                let iconView = UIImageView.withTemplateImageName("arrow-down-24",
-                                                                 tintColor: Theme.accentBlueColor)
-                iconView.autoSetDimensions(to: CGSize.square(20))
-                downloadStack.addArrangedSubview(iconView)
-
-                let downloadLabel = UILabel()
-                downloadLabel.text = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                       comment: "Accessibility label for stickers.")
-                downloadLabel.textColor = Theme.accentBlueColor
-                downloadLabel.font = .ows_dynamicTypeCaption1
-                downloadStack.addArrangedSubview(downloadLabel)
-
-                containerView.addSubview(downloadStack)
-                downloadStack.autoCenterInSuperview()
-            @unknown default:
-                break
-            }
+            let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                        style: .withCircle,
+                                                        conversationStyle: conversationStyle)
+            containerView.addSubview(progressView)
+            progressView.autoCenterInSuperview()
         } else {
             owsFailDebug("Invalid attachment.")
             return
