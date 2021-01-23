@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
     }
-    self.dateTimeLabel.textColor = self.snippetColor;
+    self.dateTimeLabel.textColor = Theme.primaryTextColor;
 
     BOOL shouldHideStatusIndicator = NO;
 
