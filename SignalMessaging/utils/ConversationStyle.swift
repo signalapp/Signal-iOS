@@ -194,7 +194,7 @@ public class ConversationStyle: NSObject {
     @objc
     private var defaultBubbleColorIncoming: UIColor {
         if hasWallpaper {
-            return isDarkThemeEnabled ? .black : .white
+            return isDarkThemeEnabled ? .ows_gray95 : .white
         } else {
             return isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
         }

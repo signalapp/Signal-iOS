@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -675,52 +675,19 @@ public class ImageEditorCanvasView: UIView {
     // MARK: - Blur
 
     private func prepareBlurredImage() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+        guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: self.model) else {
+            return owsFailDebug("Could not load src image.")
+        }
+
+        // we use a very strong blur radius to ensure adequate coverage of large and small faces
+        srcImage.cgImageWithGausianBlur(radius: 25).done(on: .main) { [weak self] blurredImage in
             guard let self = self else { return }
-
-            guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
-                return owsFailDebug("Failed to create blur filter")
-            }
-
-            // we use a very strong blur radius to ensure adequate coverage of large and small faces
-            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: 25]) else {
-                return owsFailDebug("Failed to create blur filter")
-            }
-
-            guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: self.model) else {
-                return owsFailDebug("Could not load src image.")
-            }
-
-            guard let resizedImage = srcImage.resized(withMaxDimensionPixels: 300), let resizedCGImage = resizedImage.cgImage else {
-                return owsFailDebug("Failed to downsize image for blur")
-            }
-
-            // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
-            let inputImage = CIImage(cgImage: resizedCGImage)
-            clampFilter.setDefaults()
-            clampFilter.setValue(inputImage, forKey: kCIInputImageKey)
-
-            guard let clampOutput = clampFilter.outputImage else {
-                return owsFailDebug("Failed to clamp src image")
-            }
-
-            blurFilter.setValue(clampOutput, forKey: kCIInputImageKey)
-
-            guard let blurredOutput = blurFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
-                return owsFailDebug("Failed to blur clamped image")
-            }
-
-            let context = CIContext(options: nil)
-            guard let blurredImage = context.createCGImage(blurredOutput, from: inputImage.extent) else {
-                return owsFailDebug("Failed to create CGImage from blurred output")
-            }
-
             self.model.blurredSourceImage = blurredImage
 
             // Once the blur is ready, update any content in case the user already blurred
-            DispatchQueue.main.async { [weak self] in
-                self?.updateAllContent()
-            }
+            self.updateAllContent()
+        }.catch { _ in
+            owsFailDebug("Failed to blur src image")
         }
     }
 

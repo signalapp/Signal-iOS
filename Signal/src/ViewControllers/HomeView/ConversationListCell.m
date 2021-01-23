@@ -274,18 +274,18 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
     }
-    self.dateTimeLabel.textColor = self.snippetColor;
+    self.dateTimeLabel.textColor = Theme.primaryTextColor;
+
+    BOOL shouldHideStatusIndicator = NO;
 
     if (overrideSnippet) {
         // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
-        self.messageStatusWrapper.hidden = YES;
+        shouldHideStatusIndicator = YES;
     } else if (self.hasUnreadStyle) {
         // If there are unread messages, show the "unread badge."
-        // The "message status" indicators is redundant.
         self.unreadBadge.hidden = NO;
-        self.messageStatusWrapper.hidden = YES;
 
         NSUInteger unreadCount = thread.unreadCount;
         if (unreadCount > 0) {
@@ -327,46 +327,47 @@ NS_ASSUME_NONNULL_BEGIN
                                  ]];
                              }];
     } else {
+        self.unreadBadge.hidden = YES;
+    }
+
+    if (!shouldHideStatusIndicator && [self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
         UIImage *_Nullable statusIndicatorImage = nil;
         UIColor *messageStatusViewTintColor = self.snippetColor;
         BOOL shouldAnimateStatusIcon = NO;
-        BOOL shouldHideStatusIndicator = NO;
 
-        if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
 
-            MessageReceiptStatus messageStatus =
-                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
-            switch (messageStatus) {
-                case MessageReceiptStatusUploading:
-                case MessageReceiptStatusSending:
-                    statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
-                    shouldAnimateStatusIcon = YES;
-                    break;
-                case MessageReceiptStatusSent:
-                case MessageReceiptStatusSkipped:
-                    statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
-                    shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
-                    break;
-                case MessageReceiptStatusDelivered:
-                    statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
-                    shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
-                    break;
-                case MessageReceiptStatusRead:
-                    statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
-                    shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
-                    break;
-                case MessageReceiptStatusFailed:
-                    statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
-                    messageStatusViewTintColor = UIColor.ows_accentRedColor;
-                    break;
-            }
+        MessageReceiptStatus messageStatus =
+            [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+        switch (messageStatus) {
+            case MessageReceiptStatusUploading:
+            case MessageReceiptStatusSending:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                shouldAnimateStatusIcon = YES;
+                break;
+            case MessageReceiptStatusSent:
+            case MessageReceiptStatusSkipped:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
+                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
+                break;
+            case MessageReceiptStatusDelivered:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
+                break;
+            case MessageReceiptStatusRead:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
+                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
+                break;
+            case MessageReceiptStatusFailed:
+                statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
+                messageStatusViewTintColor = UIColor.ows_accentRedColor;
+                break;
         }
+
         self.messageStatusIconView.image =
             [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         self.messageStatusIconView.tintColor = messageStatusViewTintColor;
         self.messageStatusWrapper.hidden = shouldHideStatusIndicator || statusIndicatorImage == nil;
-        self.unreadBadge.hidden = YES;
         if (shouldAnimateStatusIcon) {
             CABasicAnimation *animation;
             animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
@@ -379,6 +380,8 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [self.messageStatusIconView.layer removeAllAnimations];
         }
+    } else {
+        self.messageStatusWrapper.hidden = YES;
     }
 }
 
