@@ -956,7 +956,7 @@ private class UploadTaskState: TaskState {
 // - While we have any outstanding tasks, a strong reference cycle is maintained. Promise holders
 //   don't need to hold on to the session while waiting for a promise to resolve.
 //   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
-//              ^-----------------------(strongDelegate)-------------------|
+//              ^-----------------------(strongReference)-------------------|
 //
 // - Once all outstanding tasks have been resolved, the box breaks its reference. If there are no
 //   external references to the OWSURLSession, then everything cleans itself up.
@@ -967,7 +967,7 @@ private typealias BoxedType = (URLSessionDelegate & URLSessionTaskDelegate & URL
 private class URLSessionDelegateBox: NSObject, BoxedType {
 
     private weak var weakDelegate: BoxedType?
-    private var strongDelegate: BoxedType?
+    private var strongReference: BoxedType?
 
     init(delegate: BoxedType) {
         self.weakDelegate = delegate
@@ -975,10 +975,10 @@ private class URLSessionDelegateBox: NSObject, BoxedType {
 
     var isRetaining: Bool {
         get {
-            strongDelegate != nil
+            strongReference != nil
         }
         set {
-            strongDelegate = newValue ? weakDelegate : nil
+            strongReference = newValue ? weakDelegate : nil
         }
     }
 
