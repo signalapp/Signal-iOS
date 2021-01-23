@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 extension ConversationViewController: MessageActionsDelegate {
@@ -15,8 +15,7 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
 
-        let detailVC = MessageDetailViewController(itemViewModel: itemViewModel,
-                                                   message: message,
+        let detailVC = MessageDetailViewController(message: message,
                                                    thread: thread,
                                                    mode: .focusOnMetadata)
         detailVC.delegate = self

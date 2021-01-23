@@ -25,14 +25,10 @@ class MessageDetailViewController: OWSViewController {
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
-    let itemViewModel: CVItemViewModelImpl
     var message: TSMessage
     var wasDeleted: Bool = false
 
     let cellView = CVCellView()
-
-    var messageViewWidthLayoutConstraint: NSLayoutConstraint?
-    var messageViewHeightLayoutConstraint: NSLayoutConstraint?
 
     var scrollView: UIScrollView!
     var contentView: UIView?
@@ -47,25 +43,17 @@ class MessageDetailViewController: OWSViewController {
         return self.preferences.shouldShowUnidentifiedDeliveryIndicators()
     }()
 
-    var conversationStyle: ConversationStyle
-
     private var contactShareViewHelper: ContactShareViewHelper!
 
     private var databaseUpdateTimer: Timer?
 
     // MARK: Initializers
 
-    required init(itemViewModel: CVItemViewModelImpl,
-                  message: TSMessage,
+    required init(message: TSMessage,
                   thread: TSThread,
                   mode: MessageMetadataViewMode) {
-        self.itemViewModel = itemViewModel
         self.message = message
         self.mode = mode
-        self.conversationStyle = ConversationStyle(type: .`default`,
-                                                   thread: thread,
-                                                   viewWidth: 0,
-                                                   hasWallpaper: false)
 
         super.init()
     }
@@ -77,27 +65,14 @@ class MessageDetailViewController: OWSViewController {
         self.contactShareViewHelper = ContactShareViewHelper()
         contactShareViewHelper.delegate = self
 
-        do {
-            try updateMessageToLatest()
-        } catch DetailViewError.messageWasDeleted {
-            self.delegate?.detailViewMessageWasDeleted(self)
-        } catch {
-            owsFailDebug("unexpected error")
-        }
-
-        // We use the navigation controller's width here as ours may not be calculated yet.
-        let viewWidth = navigationController?.view.width ?? view.width
-        self.conversationStyle = ConversationStyle(type: .`default`,
-                                                   thread: thread,
-                                                   viewWidth: viewWidth,
-                                                   hasWallpaper: false)
-
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
 
         createViews()
 
         self.view.layoutIfNeeded()
+
+        refreshContent()
 
         databaseStorage.appendUIDatabaseSnapshotDelegate(self)
     }
@@ -107,18 +82,15 @@ class MessageDetailViewController: OWSViewController {
 
         super.viewWillTransition(to: size, with: coordinator)
 
-        self.conversationStyle = ConversationStyle(type: .`default`,
-                                                   thread: thread,
-                                                   viewWidth: view.width,
-                                                   hasWallpaper: false)
-
-        updateMessageViewLayout()
+        coordinator.animate(alongsideTransition: { _ in
+        },
+        completion: { [weak self] _ in
+            self?.refreshContent()
+        })
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        updateMessageViewLayout()
 
         if mode == .focusOnMetadata {
             if let bubbleView = self.bubbleView {
@@ -193,21 +165,19 @@ class MessageDetailViewController: OWSViewController {
         } else {
             scrollView.autoPinEdge(toSuperviewEdge: .bottom)
         }
-
-        updateContent()
     }
 
-    lazy var thread: TSThread = {
-        var thread: TSThread?
-        databaseStorage.uiRead { transaction in
-            thread = self.message.thread(transaction: transaction)
-        }
-        return thread!
-    }()
+    private var thread: TSThread? {
+        renderItem?.itemModel.thread
+    }
 
     private func updateContent() {
         guard let contentView = contentView else {
-            owsFailDebug("Missing contentView")
+            owsFailDebug("Missing contentView.")
+            return
+        }
+        guard let thread = thread else {
+            owsFailDebug("Missing thread.")
             return
         }
 
@@ -355,16 +325,43 @@ class MessageDetailViewController: OWSViewController {
         contentView.addSubview(rowStack)
         rowStack.autoPinEdgesToSuperviewMargins()
         contentView.layoutIfNeeded()
-        updateMessageViewLayout()
     }
 
     let bubbleViewHMargin: CGFloat = 10
 
+    public static func buildRenderItem(interactionId: String,
+                                       containerView: UIView) -> CVRenderItem? {
+        databaseStorage.uiRead { transaction in
+            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
+                                                           transaction: transaction) else {
+                owsFailDebug("Missing interaction.")
+                return nil
+            }
+            guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
+                                                 transaction: transaction) else {
+                owsFailDebug("Missing thread.")
+                return nil
+            }
+            return CVLoader.buildStandaloneRenderItem(interaction: interaction,
+                                                      thread: thread,
+                                                      containerView: containerView,
+                                                      transaction: transaction)
+        }
+    }
+
+    private var renderItem: CVRenderItem?
+
     private func contentRows() -> [UIView] {
+
+        guard let renderItem = renderItem else {
+            owsFailDebug("Missing renderItem.")
+            return []
+        }
+
+        cellView.reset()
+
         var rows = [UIView]()
 
-        let renderItem = itemViewModel.renderItem
-        cellView.reset()
         cellView.configure(renderItem: renderItem, componentDelegate: self)
         cellView.isCellVisible = true
         cellView.autoSetDimension(.height, toSize: renderItem.cellSize.height)
@@ -380,9 +377,6 @@ class MessageDetailViewController: OWSViewController {
         let isIncoming = self.message as? TSIncomingMessage != nil
         cellView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
 
-        // TODO: Adjust layout.
-//        self.messageViewWidthLayoutConstraint = messageView.autoSetDimension(.width, toSize: 0)
-//        self.messageViewHeightLayoutConstraint = messageView.autoSetDimension(.height, toSize: 0)
         rows.append(row)
 
         if rows.isEmpty {
@@ -513,22 +507,6 @@ class MessageDetailViewController: OWSViewController {
         case messageWasDeleted
     }
 
-    // This method should be called after self.databaseConnection.beginLongLivedReadTransaction().
-    private func updateMessageToLatest() throws {
-
-        AssertIsOnMainThread()
-
-        try databaseStorage.uiReadThrows { transaction in
-            let uniqueId = self.message.uniqueId
-            guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
-                Logger.error("Message was deleted")
-                throw DetailViewError.messageWasDeleted
-            }
-            self.message = newMessage
-            self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
-        }
-    }
-
     private func string(for messageReceiptStatus: MessageReceiptStatus) -> String {
         switch messageReceiptStatus {
         case .uploading:
@@ -553,23 +531,6 @@ class MessageDetailViewController: OWSViewController {
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
                                      comment: "Status label for messages which were skipped.")
         }
-    }
-
-    // MARK: - Message Bubble Layout
-
-    private func updateMessageViewLayout() {
-        // TODO: updateMessageViewLayout()
-        // cellView
-//        guard let messageViewWidthLayoutConstraint = messageViewWidthLayoutConstraint else {
-//            return
-//        }
-//        guard let messageViewHeightLayoutConstraint = messageViewHeightLayoutConstraint else {
-//            return
-//        }
-//
-//        let messageBubbleSize = messageView.measureSize()
-//        messageViewWidthLayoutConstraint.constant = messageBubbleSize.width
-//        messageViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }
 }
 
@@ -749,16 +710,33 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
         }
 
         do {
-            try updateMessageToLatest()
+            try databaseStorage.uiReadThrows { transaction in
+                let uniqueId = self.message.uniqueId
+                guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId,
+                                                              transaction: transaction) as? TSMessage else {
+                    Logger.error("Message was deleted")
+                    throw DetailViewError.messageWasDeleted
+                }
+                self.message = newMessage
+                self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
+            }
+
+            guard let renderItem = Self.buildRenderItem(interactionId: message.uniqueId,
+                                                        containerView: self.view) else {
+                owsFailDebug("Could not build renderItem.")
+                throw DetailViewError.messageWasDeleted
+            }
+            self.renderItem = renderItem
+
+            updateContent()
         } catch DetailViewError.messageWasDeleted {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.delegate?.detailViewMessageWasDeleted(self)
             }
-            return
         } catch {
             owsFailDebug("unexpected error: \(error)")
         }
-        updateContent()
     }
 }
 
@@ -834,6 +812,10 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
                          attachmentStream: TSAttachmentStream,
                          imageView: UIView) {
+        guard let thread = thread else {
+            owsFailDebug("Missing thread.")
+            return
+        }
         let mediaPageVC = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
@@ -960,6 +942,11 @@ extension MessageDetailViewController: CVComponentDelegate {
                                        newNameComponents: PersonNameComponents) {}
 
     func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {
+        guard let renderItem = renderItem else {
+            owsFailDebug("Missing renderItem.")
+            return
+        }
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
         ViewOnceMessageViewController.tryToPresent(interaction: itemViewModel.interaction,
                                                    from: self)
     }
