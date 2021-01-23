@@ -328,12 +328,22 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else if hasSendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
             let sendFailureBadge = UIImageView()
+            sendFailureBadge.contentMode = .center
             sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: .ows_accentRed)
             sendFailureBadge.autoSetDimensions(to: CGSize(square: sendFailureBadgeSize))
             cellView.addSubview(sendFailureBadge)
             sendFailureBadge.autoPinEdge(toSuperviewMargin: .trailing)
-            let sendFailureBadgeBottomMargin = round(conversationStyle.lastTextLineAxis - sendFailureBadgeSize * 0.5)
-            sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView, withOffset: -sendFailureBadgeBottomMargin)
+
+            if conversationStyle.hasWallpaper {
+                sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+                sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
+                sendFailureBadge.clipsToBounds = true
+
+                sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView)
+            } else {
+                let sendFailureBadgeBottomMargin = round(conversationStyle.lastTextLineAxis - sendFailureBadgeSize * 0.5)
+                sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView, withOffset: -sendFailureBadgeBottomMargin)
+            }
 
             rootView.autoPinEdge(.trailing, to: .leading, of: sendFailureBadge, withOffset: -sendFailureBadgeSpacing)
         } else {
@@ -351,7 +361,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var selectionViewSpacing: CGFloat { ConversationStyle.messageStackSpacing }
     private var selectionViewWidth: CGFloat { ConversationStyle.selectionViewWidth }
-    private let sendFailureBadgeSize: CGFloat = 24
+    private var sendFailureBadgeSize: CGFloat { conversationStyle.hasWallpaper ? 40 : 24 }
     private var sendFailureBadgeSpacing: CGFloat { ConversationStyle.messageStackSpacing }
 
     // The "message" contents of this component are vertically
