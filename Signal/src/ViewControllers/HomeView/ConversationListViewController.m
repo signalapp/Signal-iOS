@@ -2359,16 +2359,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.inviteFlow presentWithIsAnimated:YES isModal:YES completion:nil];
 }
 
-- (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner
+- (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner animated:(BOOL)isAnimated
 {
-    [UIView animateWithDuration:0.5
-        animations:^{ self.getStartedBanner.view.alpha = 0; }
-        completion:^(BOOL finished) {
-            [self.getStartedBanner.view removeFromSuperview];
-            [self.getStartedBanner removeFromParentViewController];
+    void (^dismissBlock)(void) = ^{
+        [self.getStartedBanner.view removeFromSuperview];
+        [self.getStartedBanner removeFromParentViewController];
+        self.getStartedBanner = nil;
+    };
 
-            self.getStartedBanner = nil;
-        }];
+    if (isAnimated) {
+        [UIView animateWithDuration:0.5
+            animations:^{ self.getStartedBanner.view.alpha = 0; }
+            completion:^(BOOL finished) { dismissBlock(); }];
+    } else {
+        dismissBlock();
+    }
 }
 
 @end
