@@ -238,9 +238,15 @@ public class CVAttachmentProgressView: UIView {
         private func presentProgress(progress: CGFloat) {
             reset()
 
-            let animationName = (isIncoming && !isDarkThemeEnabled
+            let animationName: String
+            switch style {
+            case .withCircle:
+                animationName = "determinate_spinner"
+            case .withoutCircle:
+                animationName = (isIncoming && !isDarkThemeEnabled
                                     ? "determinate_spinner_blue"
                                     : "determinate_spinner")
+            }
             let animationView = ensureAnimationView(progressView, animationName: animationName)
             progressView = animationView
             animationView.backgroundBehavior = .pause
@@ -256,9 +262,15 @@ public class CVAttachmentProgressView: UIView {
         private func presentUnknownProgress() {
             reset()
 
-            let animationName = (isIncoming && !isDarkThemeEnabled
+            let animationName: String
+            switch style {
+            case .withCircle:
+                animationName = "indeterminate_spinner"
+            case .withoutCircle:
+                animationName = (isIncoming && !isDarkThemeEnabled
                                     ? "indeterminate_spinner_blue"
                                     : "indeterminate_spinner")
+            }
             let animationView = ensureAnimationView(unknownProgressView, animationName: animationName)
             unknownProgressView = animationView
             animationView.backgroundBehavior = .pauseAndRestore

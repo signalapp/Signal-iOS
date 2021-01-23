@@ -1004,12 +1004,6 @@ typedef enum : NSUInteger {
             if (!self.requestView) {
                 [self popKeyBoard];
             }
-
-            // When we programmatically pop the keyboard here,
-            // the scroll position gets into a weird state and
-            // content is hidden behind the keyboard so we restore
-            // it to the default position.
-            [self scrollToInitialPositionAnimated:YES];
             break;
         case ConversationViewActionAudioCall:
             [self startIndividualAudioCall];
@@ -1023,6 +1017,11 @@ typedef enum : NSUInteger {
         case ConversationViewActionNewGroupActionSheet:
             dispatch_async(dispatch_get_main_queue(), ^{ [self showGroupLinkPromotionActionSheet]; });
             break;
+    }
+
+    [self scrollToInitialPositionAnimated:NO];
+    if (self.viewState.hasAppliedFirstLoad) {
+        [self clearInitialScrollState];
     }
 
     // Clear the "on open" state after the view has been presented.

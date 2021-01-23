@@ -90,7 +90,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // This will get cleared by updateViewToReflectLoad().
         owsAssertDebug(viewState.scrollContinuityMap == nil)
-        viewState.scrollContinuityMap = buildScrollContinuityMap(forRenderState: renderState)
+        if hasViewWillAppearEverBegun,
+           !renderState.isFirstLoad {
+            viewState.scrollContinuityMap = buildScrollContinuityMap(forRenderState: renderState)
+        }
 
         return CVUpdateToken(isScrolledToBottom: self.isScrolledToBottom,
                              lastMessageForInboxSortId: threadViewModel.lastMessageForInbox?.sortId)
@@ -100,8 +103,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                   scrollAction: CVScrollAction,
                                   updateToken: CVUpdateToken) {
         AssertIsOnMainThread()
-
-        owsAssertDebug(self.viewState.scrollContinuityMap != nil)
 
         guard hasViewWillAppearEverBegun else {
             // It's safe to ignore updates before viewWillAppear
@@ -240,7 +241,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // Do not discard scrollContinuityMap if it corresponds to a
         // subsequent load. Animated and non-animated loads might
         // land in any order and thus complete out of order.
-        owsAssertDebug(viewState.scrollContinuityMap != nil)
         self.viewState.scrollContinuityMap = nil
 
         self.loadCoordinator.loadDidLand()
@@ -377,7 +377,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         benchSteps.step("2")
 
         scrollToInitialPosition(animated: false)
-        clearInitialScrollState()
+        if self.hasViewDidAppearEverCompleted {
+            clearInitialScrollState()
+        }
 
         benchSteps.step("3")
 
@@ -403,7 +405,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return
         }
         viewState.hasAppliedFirstLoad = true
-        clearInitialScrollState()
+        if self.hasViewDidAppearEverCompleted {
+            clearInitialScrollState()
+        }
     }
 
     private func updateReloadingAll(renderState: CVRenderState,

@@ -232,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = self.snippetFont;
-    self.snippetLabel.textColor = self.currentColor;
+    self.snippetLabel.textColor = UIColor.ows_gray45Color;
 
     // UILabel appears to have an issue where it's height is
     // too large if its text is just a series of newlines,
@@ -404,7 +404,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 @"Table cell subtitle label for a conversation the user has blocked.")
                  attributes:@{
                      NSFontAttributeName : self.snippetFont,
-                     NSForegroundColorAttributeName : Theme.primaryTextColor,
+                     NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                  }];
     } else if (thread.hasPendingMessageRequest) {
         // If you haven't accepted the message request for this thread, don't show the latest message
@@ -417,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
             [snippetText append:[NSString stringWithFormat:addedToGroupFormat, addedToGroupByName]
                      attributes:@{
                          NSFontAttributeName : self.snippetFont,
-                         NSForegroundColorAttributeName : Theme.primaryTextColor,
+                         NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                      }];
 
             // Otherwise just show a generic "message request" message
@@ -426,12 +426,12 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"Table cell subtitle label for a conversation the user has not accepted.")
                      attributes:@{
                          NSFontAttributeName : self.snippetFont,
-                         NSForegroundColorAttributeName : Theme.primaryTextColor,
+                         NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                      }];
         }
     } else {
         UIFont *snippetFont = self.snippetFont;
-        UIColor *currentColor = self.currentColor;
+        UIColor *currentColor = UIColor.ows_gray45Color;
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
         if (draftText.length > 0 && !self.hasUnreadStyle) {
@@ -453,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if (senderName != nil) {
                     [snippetText append:senderName
                              attributes:@{
-                                 NSFontAttributeName : snippetFont,
+                                 NSFontAttributeName : snippetFont.ows_medium,
                                  NSForegroundColorAttributeName : currentColor,
                              }];
                     [snippetText append:@":"
@@ -649,7 +649,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.muteIconWrapper.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
-    self.muteIconView.tintColor = self.currentColor;
+    self.muteIconView.tintColor = UIColor.ows_gray45Color;
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
