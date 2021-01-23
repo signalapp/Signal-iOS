@@ -12,7 +12,7 @@ public class StickerPackViewController: OWSViewController {
 
     private let stickerPackInfo: StickerPackInfo
 
-    private let stickerCollectionView = StickerPackCollectionView()
+    private let stickerCollectionView = StickerPackCollectionView(placeholderColor: .ows_blackAlpha60)
 
     private let dataSource: StickerPackDataSource
 
@@ -205,7 +205,7 @@ public class StickerPackViewController: OWSViewController {
     }
 
     private let dismissButton = UIButton()
-    private let coverView = UIView()
+    private let coverView = StickerReusableView()
     private let titleLabel = UILabel()
     private let authorLabel = UILabel()
     private let defaultPackIconView = UIImageView()
@@ -273,16 +273,19 @@ public class StickerPackViewController: OWSViewController {
     }
 
     private func updateCover() {
-        for subview in coverView.subviews {
-            subview.removeFromSuperview()
-        }
+        guard !coverView.hasStickerView else { return }
+
         guard let stickerPack = dataSource.getStickerPack() else { return }
         let coverInfo = stickerPack.coverInfo
-        guard let stickerView = StickerView.stickerView(forStickerInfo: coverInfo, dataSource: dataSource) else {
+        guard let stickerView = StickerView.stickerView(
+            forStickerInfo: coverInfo,
+            dataSource: dataSource
+        ) else {
+            coverView.showPlaceholder(color: .ows_blackAlpha60)
             return
         }
-        coverView.addSubview(stickerView)
-        stickerView.autoPinEdgesToSuperviewEdges()
+
+        coverView.configure(with: stickerView)
     }
 
     private func updateInsets() {
