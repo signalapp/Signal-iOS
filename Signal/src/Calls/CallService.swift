@@ -351,7 +351,7 @@ public final class CallService: NSObject {
         case let .group(call):
             call.updateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
         case let .individual(call) where call.state == .connected:
-            callManager.setLowBandwidthMode(enabled: useLowBandwidth)
+            callManager.udpateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
         default:
             // Do nothing. We'll reapply the bandwidth mode once connected
             break

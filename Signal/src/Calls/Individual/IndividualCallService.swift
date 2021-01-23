@@ -544,8 +544,12 @@ import SignalMessaging
 
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
+            // TODO: Get the stored setting to populate useLowBandwidth correctly.
+            let useLowBandwidth = false
+            Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
+
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, bandwidthMode: useLowBandwidth ? .low : .normal)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.callService.currentCall else {
