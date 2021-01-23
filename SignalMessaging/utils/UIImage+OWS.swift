@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import CoreImage
+import PromiseKit
 
 extension UIImage {
     @objc
@@ -69,5 +70,48 @@ extension UIImage {
         UIGraphicsEndImageContext()
 
         return newImage
+    }
+
+    public func withGausianBlur(radius: CGFloat) -> Promise<UIImage> {
+        return cgImageWithGausianBlur(radius: radius).map(on: .sharedUserInteractive) { UIImage(cgImage: $0) }
+    }
+
+    public func cgImageWithGausianBlur(radius: CGFloat) -> Promise<CGImage> {
+        return firstly(on: .sharedUserInteractive) {
+            guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
+                throw OWSAssertionError("Failed to create blur filter")
+            }
+
+            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: radius]) else {
+                throw OWSAssertionError("Failed to create blur filter")
+            }
+
+            guard let resizedImage = self.resized(withMaxDimensionPixels: 300),
+                  let resizedCGImage = resizedImage.cgImage else {
+                throw OWSAssertionError("Failed to downsize image for blur")
+            }
+
+            // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
+            let inputImage = CIImage(cgImage: resizedCGImage)
+            clampFilter.setDefaults()
+            clampFilter.setValue(inputImage, forKey: kCIInputImageKey)
+
+            guard let clampOutput = clampFilter.outputImage else {
+                throw OWSAssertionError("Failed to clamp image")
+            }
+
+            blurFilter.setValue(clampOutput, forKey: kCIInputImageKey)
+
+            guard let blurredOutput = blurFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
+                throw OWSAssertionError("Failed to blur clamped image")
+            }
+
+            let context = CIContext(options: nil)
+            guard let blurredImage = context.createCGImage(blurredOutput, from: inputImage.extent) else {
+                throw OWSAssertionError("Failed to create CGImage from blurred output")
+            }
+
+            return blurredImage
+        }
     }
 }

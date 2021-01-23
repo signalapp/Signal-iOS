@@ -370,51 +370,11 @@ private class WallpaperPage: UIViewController {
 
     private var blurredPhoto: UIImage?
     private func prepareBlurredPhoto() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            guard let self = self else { return }
-
-            guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
-                return owsFailDebug("Failed to create blur filter")
-            }
-
-            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: 3]) else {
-                return owsFailDebug("Failed to create blur filter")
-            }
-
-            guard let photo = self.photo else {
-                return owsFailDebug("Could not load src image.")
-            }
-
-            guard let resizedPhoto = photo.resized(withMaxDimensionPixels: 300), let resizedCGPhoto = resizedPhoto.cgImage else {
-                return owsFailDebug("Failed to downsize image for blur")
-            }
-
-            // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
-            let inputPhoto = CIImage(cgImage: resizedCGPhoto)
-            clampFilter.setDefaults()
-            clampFilter.setValue(inputPhoto, forKey: kCIInputImageKey)
-
-            guard let clampOutput = clampFilter.outputImage else {
-                return owsFailDebug("Failed to clamp src image")
-            }
-
-            blurFilter.setValue(clampOutput, forKey: kCIInputImageKey)
-
-            guard let blurredOutput = blurFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
-                return owsFailDebug("Failed to blur clamped image")
-            }
-
-            let context = CIContext(options: nil)
-            guard let blurredPhoto = context.createCGImage(blurredOutput, from: inputPhoto.extent) else {
-                return owsFailDebug("Failed to create CGImage from blurred output")
-            }
-
-            self.blurredPhoto = UIImage(cgImage: blurredPhoto)
-
-            // Once the blur is ready, update any content in case the user already blurred
-            DispatchQueue.main.async { [weak self] in
-                self?.updatePhoto()
-            }
+        photo?.withGausianBlur(radius: 3).done(on: .main) { [weak self] blurredPhoto in
+            self?.blurredPhoto = blurredPhoto
+            self?.updatePhoto()
+        }.catch { error in
+            owsFailDebug("Failed to blur image \(error)")
         }
     }
 
