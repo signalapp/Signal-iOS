@@ -825,8 +825,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private func buildAttachments(loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> {
-        let attachmentPromises = loadedItems.map {
-            buildAttachment(loadedItem: $0)
+        var attachmentPromises = [Promise<SignalAttachment>]()
+        for loadedItem in loadedItems {
+            attachmentPromises.append(firstly(on: .sharedUserInitiated) { () -> Promise<SignalAttachment> in
+                self.buildAttachment(loadedItem: loadedItem)
+            })
         }
         return when(fulfilled: attachmentPromises)
     }
