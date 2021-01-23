@@ -137,12 +137,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ topRowView, bottomRowView ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.spacing = 1.f;
 
     [self.contentView addSubview:vStackView];
     [vStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [vStackView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:9 relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:7 relation:NSLayoutRelationGreaterThanOrEqual];
     [vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:9 relation:NSLayoutRelationGreaterThanOrEqual];
     [vStackView autoPinTrailingToSuperviewMargin];
 
@@ -177,6 +178,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.typingIndicatorWrapper addSubview:self.typingIndicatorView];
     [self.typingIndicatorView autoPinWidthToSuperview];
     [self.typingIndicatorView autoVCenterInSuperview];
+}
+
+- (UIColor *)snippetColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray45Color;
 }
 
 - (void)dealloc
@@ -232,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = self.snippetFont;
-    self.snippetLabel.textColor = UIColor.ows_gray45Color;
+    self.snippetLabel.textColor = self.snippetColor;
 
     // UILabel appears to have an issue where it's height is
     // too large if its text is just a series of newlines,
@@ -268,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
     }
-    self.dateTimeLabel.textColor = self.currentColor;
+    self.dateTimeLabel.textColor = self.snippetColor;
 
     if (overrideSnippet) {
         // If we're using the conversation list cell to render search results,
@@ -322,7 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        UIColor *messageStatusViewTintColor = UIColor.ows_gray45Color;
+        UIColor *messageStatusViewTintColor = self.snippetColor;
         BOOL shouldAnimateStatusIcon = NO;
         BOOL shouldHideStatusIndicator = NO;
 
@@ -404,7 +410,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 @"Table cell subtitle label for a conversation the user has blocked.")
                  attributes:@{
                      NSFontAttributeName : self.snippetFont,
-                     NSForegroundColorAttributeName : UIColor.ows_gray45Color,
+                     NSForegroundColorAttributeName : self.snippetColor,
                  }];
     } else if (thread.hasPendingMessageRequest) {
         // If you haven't accepted the message request for this thread, don't show the latest message
@@ -417,7 +423,7 @@ NS_ASSUME_NONNULL_BEGIN
             [snippetText append:[NSString stringWithFormat:addedToGroupFormat, addedToGroupByName]
                      attributes:@{
                          NSFontAttributeName : self.snippetFont,
-                         NSForegroundColorAttributeName : UIColor.ows_gray45Color,
+                         NSForegroundColorAttributeName : self.snippetColor,
                      }];
 
             // Otherwise just show a generic "message request" message
@@ -426,12 +432,12 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"Table cell subtitle label for a conversation the user has not accepted.")
                      attributes:@{
                          NSFontAttributeName : self.snippetFont,
-                         NSForegroundColorAttributeName : UIColor.ows_gray45Color,
+                         NSForegroundColorAttributeName : self.snippetColor,
                      }];
         }
     } else {
         UIFont *snippetFont = self.snippetFont;
-        UIColor *currentColor = UIColor.ows_gray45Color;
+        UIColor *currentColor = self.snippetColor;
         NSString *_Nullable draftText = thread.conversationListInfo.draftText;
 
         if (draftText.length > 0 && !self.hasUnreadStyle) {
@@ -439,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
                      attributes:@{
                          NSFontAttributeName : self.snippetFont.ows_italic,
-                         NSForegroundColorAttributeName : UIColor.ows_gray45Color,
+                         NSForegroundColorAttributeName : currentColor,
                      }];
             [snippetText append:draftText
                      attributes:@{
@@ -458,7 +464,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
                     [snippetText append:@":"
                              attributes:@{
-                                 NSFontAttributeName : snippetFont,
+                                 NSFontAttributeName : snippetFont.ows_medium,
                                  NSForegroundColorAttributeName : currentColor,
                              }];
                     [snippetText append:@" "
@@ -523,11 +529,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)avatarHSpacing
 {
     return 12.f;
-}
-
-- (UIColor *)currentColor
-{
-    return (self.hasUnreadStyle ? Theme.primaryTextColor : UIColor.ows_gray45Color);
 }
 
 #pragma mark - Reuse
@@ -649,7 +650,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.muteIconWrapper.hidden = ![self shouldShowMuteIndicatorForThread:self.thread isBlocked:self.isBlocked];
-    self.muteIconView.tintColor = UIColor.ows_gray45Color;
+    self.muteIconView.tintColor = self.snippetColor;
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
