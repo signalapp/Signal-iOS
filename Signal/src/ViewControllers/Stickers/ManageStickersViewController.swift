@@ -123,7 +123,7 @@ public class ManageStickersViewController: OWSTableViewController {
     private var installedStickerPackSources = [StickerPackDataSource]()
     private var availableBuiltInStickerPackSources = [StickerPackDataSource]()
     private var knownStickerPackSources = [StickerPackDataSource]()
-    private var coverInfoViewCache = [Data: UIView]()
+    private var coverInfoViewCache = NSCache<NSData, UIView>()
 
     private func updateState() {
         // If we're presenting a modal because the user tapped install, dismiss it.
@@ -344,11 +344,11 @@ public class ManageStickersViewController: OWSTableViewController {
         let authorNameValue: String? = dataSource.author?.filterForDisplay
 
         let iconView: UIView
-        if let stickerInfo = stickerInfo, let cachedView = coverInfoViewCache[stickerInfo.packId] {
+        if let stickerInfo = stickerInfo, let cachedView = coverInfoViewCache.object(forKey: stickerInfo.packId as NSData) {
             iconView = cachedView
         } else if let stickerInfo = stickerInfo, let coverView = imageView(forStickerInfo: stickerInfo, dataSource: dataSource) {
             iconView = coverView
-            coverInfoViewCache[stickerInfo.packId] = coverView
+            coverInfoViewCache.setObject(coverView, forKey: stickerInfo.packId as NSData)
         } else {
             iconView = UIView()
         }
