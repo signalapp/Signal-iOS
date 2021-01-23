@@ -280,9 +280,9 @@ extension CVComponentBase {
 
 extension CVComponentBase {
     public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-        let blurView = UIVisualEffectView(effect: Theme.barBlurEffect)
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         let blurOverlay = UIView()
-        blurOverlay.backgroundColor = conversationStyle.bubbleColor(isIncoming: true).withAlphaComponent(0.7)
+        blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
         blurView.contentView.addSubview(blurOverlay)
         blurOverlay.autoPinEdgesToSuperviewEdges()
         return blurView
