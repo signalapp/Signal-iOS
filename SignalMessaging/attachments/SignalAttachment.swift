@@ -787,7 +787,7 @@ public class SignalAttachment: NSObject {
             }
 
             let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
-            Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
+            Logger.verbose("Rebuilding image attachment of type: \(attachment.mimeType), size: \(size)")
 
             return convertAndCompressImage(image: image,
                                            attachment: attachment,
