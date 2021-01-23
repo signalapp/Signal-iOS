@@ -85,46 +85,32 @@ public extension OWSContactsManager {
 
     // MARK: -
 
-    func displayName(forGroupMember groupMember: SignalServiceAddress,
-                     inGroup groupModel: TSGroupModel,
-                     transaction: SDSAnyReadTransaction) -> String? {
+    func shortestDisplayName(
+        forGroupMember groupMember: SignalServiceAddress,
+        inGroup groupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> String {
 
         let fullName = displayName(for: groupMember, transaction: transaction)
-        guard let nameComponents = nameComponents(for: groupMember,
-                                                  transaction: transaction) else {
-            return fullName
-        }
+        let shortName = shortDisplayName(for: groupMember, transaction: transaction)
+        guard shortName != fullName else { return fullName }
 
-        // Try to return just the given name unless the group contains another
-        // member with the same given name.
-
-        guard let givenName = nameComponents.givenName,
-              !givenName.isEmpty,
-              givenName != fullName else {
-            // Don't bother trying to use just the given name
-            // if they don't have one or it is their full name.
-            return fullName
-        }
+        // Try to return just the short name unless the group contains another
+        // member with the same short name.
 
         for otherMember in groupModel.groupMembership.fullMembers {
-            guard otherMember != groupMember else {
-                continue
-            }
-            // Use the full name if the member's given name matches
-            // another member's full or given name.
+            guard otherMember != groupMember else { continue }
+
+            // Use the full name if the member's short name matches
+            // another member's full or short name.
             let otherFullName = displayName(for: otherMember, transaction: transaction)
-            guard otherFullName != givenName else {
-                return fullName
-            }
-            guard let otherNameComponents = self.nameComponents(for: otherMember,
-                                                                transaction: transaction) else {
-                continue
-            }
-            guard otherNameComponents.givenName != givenName else {
-                return fullName
-            }
+            guard otherFullName != shortName else { return fullName }
+
+            let otherShortName = shortDisplayName(for: otherMember, transaction: transaction)
+            guard otherShortName != shortName else { return fullName }
         }
-        return givenName
+
+        return shortName
     }
 }
 
