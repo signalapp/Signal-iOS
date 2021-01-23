@@ -803,6 +803,7 @@ public extension UIStackView {
 
 // This works around a UIStackView bug where hidden subviews
 // sometimes re-appear.
+@objc
 public extension UIView {
     var isHiddenInStackView: Bool {
         get { isHidden }

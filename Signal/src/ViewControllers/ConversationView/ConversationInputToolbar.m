@@ -69,6 +69,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
+@property (nonatomic, readonly) NSCache<StickerInfo *, StickerReusableView *> *suggestedStickerViewCache;
 @property (nonatomic, readonly) UIStackView *outerStack;
 @property (nonatomic, readonly) UIStackView *mediaAndSendStack;
 
@@ -121,6 +122,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     _conversationStyle = conversationStyle;
     _receivedSafeAreaInsets = UIEdgeInsetsZero;
+    _suggestedStickerViewCache = [NSCache new];
 
     self.inputToolbarDelegate = inputToolbarDelegate;
 
@@ -356,7 +358,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     const UIEdgeInsets stickerListContentInset
         = UIEdgeInsetsMake(suggestedStickerSpacing, 24, suggestedStickerSpacing, 24);
     self.suggestedStickerView.contentInset = stickerListContentInset;
-    self.suggestedStickerView.hidden = YES;
+    self.suggestedStickerView.isHiddenInStackView = YES;
     [self.suggestedStickerView
         autoSetDimension:ALDimensionHeight
                   toSize:suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top];
@@ -1470,7 +1472,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)updateSuggestedStickerView
 {
     if (self.suggestedStickerInfos.count < 1) {
-        self.suggestedStickerView.hidden = YES;
+        self.suggestedStickerView.isHiddenInStackView = YES;
         [self layoutIfNeeded];
         return;
     }
@@ -1480,12 +1482,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     for (StickerInfo *stickerInfo in self.suggestedStickerInfos) {
         [items addObject:[[StickerHorizontalListViewItemSticker alloc]
                              initWithStickerInfo:stickerInfo
-                                  didSelectBlock:^{
-                                      [weakSelf didSelectSuggestedSticker:stickerInfo];
-                                  }]];
+                                  didSelectBlock:^{ [weakSelf didSelectSuggestedSticker:stickerInfo]; }
+                                           cache:self.suggestedStickerViewCache]];
     }
     self.suggestedStickerView.items = items;
-    self.suggestedStickerView.hidden = NO;
+    self.suggestedStickerView.isHiddenInStackView = NO;
     [self layoutIfNeeded];
     if (shouldReset) {
         self.suggestedStickerView.contentOffset

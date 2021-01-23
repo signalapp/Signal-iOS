@@ -123,7 +123,6 @@ public class ManageStickersViewController: OWSTableViewController {
     private var installedStickerPackSources = [StickerPackDataSource]()
     private var availableBuiltInStickerPackSources = [StickerPackDataSource]()
     private var knownStickerPackSources = [StickerPackDataSource]()
-    private var coverInfoViewCache = NSCache<NSData, UIView>()
 
     private func updateState() {
         // If we're presenting a modal because the user tapped install, dismiss it.
@@ -328,6 +327,30 @@ public class ManageStickersViewController: OWSTableViewController {
         }
     }
 
+    private let reusableCoverViewCache = NSCache<NSData, StickerReusableView>()
+    private func reusableCoverView(forDataSource dataSource: StickerPackDataSource) -> StickerReusableView? {
+        guard let packId = dataSource.info?.packId else { return nil }
+
+        let view: StickerReusableView = {
+            if let view = reusableCoverViewCache.object(forKey: packId as NSData) { return view }
+            let view = StickerReusableView()
+            reusableCoverViewCache.setObject(view, forKey: packId as NSData)
+            return view
+        }()
+
+        guard !view.hasStickerView else { return view }
+
+        guard let stickerInfo = dataSource.installedCoverInfo,
+              let imageView = imageView(forStickerInfo: stickerInfo, dataSource: dataSource) else {
+            view.showPlaceholder()
+            return view
+        }
+
+        view.configure(with: imageView)
+
+        return view
+    }
+
     private func buildTableCell(dataSource: StickerPackDataSource,
                                 actionIconName: String?,
                                 block: @escaping () -> Void) -> UITableViewCell {
@@ -339,19 +362,10 @@ public class ManageStickersViewController: OWSTableViewController {
             return cell
         }
 
-        let stickerInfo: StickerInfo? = dataSource.installedCoverInfo
-        let titleValue: String? = dataSource.title?.filterForDisplay
-        let authorNameValue: String? = dataSource.author?.filterForDisplay
+        let titleValue = dataSource.title?.filterForDisplay
+        let authorNameValue = dataSource.author?.filterForDisplay
 
-        let iconView: UIView
-        if let stickerInfo = stickerInfo, let cachedView = coverInfoViewCache.object(forKey: stickerInfo.packId as NSData) {
-            iconView = cachedView
-        } else if let stickerInfo = stickerInfo, let coverView = imageView(forStickerInfo: stickerInfo, dataSource: dataSource) {
-            iconView = coverView
-            coverInfoViewCache.setObject(coverView, forKey: stickerInfo.packId as NSData)
-        } else {
-            iconView = UIView()
-        }
+        let iconView = reusableCoverView(forDataSource: dataSource) ?? UIView()
         let iconSize: CGFloat = 64
         iconView.autoSetDimensions(to: CGSize(square: iconSize))
 

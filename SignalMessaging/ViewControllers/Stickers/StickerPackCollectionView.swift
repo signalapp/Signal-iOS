@@ -53,9 +53,12 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     private let cellReuseIdentifier = "cellReuseIdentifier"
+    private let placeholderColor: UIColor
 
     @objc
-    public required init() {
+    public required init(placeholderColor: UIColor = .ows_gray45) {
+        self.placeholderColor = placeholderColor
+
         super.init(frame: .zero, collectionViewLayout: StickerPackCollectionView.buildLayout())
 
         delegate = self
@@ -113,14 +116,27 @@ public class StickerPackCollectionView: UICollectionView {
     private func reloadStickers() {
         AssertIsOnMainThread()
 
+        defer { reloadData() }
+
         guard let stickerPackDataSource = stickerPackDataSource else {
             stickerInfos = []
             return
         }
 
-        stickerInfos = stickerPackDataSource.installedStickerInfos
+        let installedStickerInfos = stickerPackDataSource.installedStickerInfos
 
-        reloadData()
+        if stickerPackDataSource is TransientStickerPackDataSource {
+            guard let allStickerInfos = stickerPackDataSource.getStickerPack()?.stickerInfos else {
+                stickerInfos = []
+                owsAssertDebug(installedStickerInfos.isEmpty)
+                return
+            }
+
+            stickerInfos = allStickerInfos
+            owsAssertDebug(stickerInfos.count >= installedStickerInfos.count)
+        } else {
+            stickerInfos = installedStickerInfos
+        }
     }
 
     @objc
@@ -218,6 +234,27 @@ public class StickerPackCollectionView: UICollectionView {
         }
         return StickerView.stickerView(forStickerInfo: stickerInfo, dataSource: stickerPackDataSource)
     }
+
+    private let reusableStickerViewCache = NSCache<StickerInfo, StickerReusableView>()
+    private func reusableStickerView(forStickerInfo stickerInfo: StickerInfo) -> StickerReusableView {
+        let view: StickerReusableView = {
+            if let view = reusableStickerViewCache.object(forKey: stickerInfo) { return view }
+            let view = StickerReusableView()
+            reusableStickerViewCache.setObject(view, forKey: stickerInfo)
+            return view
+        }()
+
+        guard !view.hasStickerView else { return view }
+
+        guard let imageView = imageView(forStickerInfo: stickerInfo) else {
+            view.showPlaceholder(color: placeholderColor)
+            return view
+        }
+
+        view.configure(with: imageView)
+
+        return view
+    }
 }
 
 // MARK: - UICollectionViewDelegate
@@ -248,29 +285,17 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // We could eventually use cells that lazy-load the sticker views
-        // when the cells becomes visible and eagerly unload them.
-        // But we probably won't need to do that.
         let cell = dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
-        for subview in cell.contentView.subviews {
-            subview.removeFromSuperview()
-        }
+        cell.contentView.removeAllSubviews()
 
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
             return cell
         }
-        guard let stickerView = imageView(forStickerInfo: stickerInfo) else {
-            Logger.warn("Couldn't load sticker for display")
-            return cell
-        }
 
-        cell.contentView.addSubview(stickerView)
-        stickerView.autoPinEdgesToSuperviewEdges()
-
-        let accessibilityName = "sticker." + stickerInfo.asKey()
-        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: accessibilityName + ".cell")
-        stickerView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: accessibilityName + ".item")
+        let cellView = reusableStickerView(forStickerInfo: stickerInfo)
+        cell.contentView.addSubview(cellView)
+        cellView.autoPinEdgesToSuperviewEdges()
 
         return cell
     }
