@@ -267,7 +267,6 @@ public class CVMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let reusableMediaView = reusableMediaView else {
-            owsFailDebug("Missing reusableMediaView.")
             return
         }
         guard reusableMediaView.owner == self else {
@@ -282,7 +281,6 @@ public class CVMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let reusableMediaView = reusableMediaView else {
-            owsFailDebug("Missing reusableMediaView.")
             return
         }
         guard reusableMediaView.owner == self else {
