@@ -787,7 +787,7 @@ public class SignalAttachment: NSObject {
             }
 
             let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
-            Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
+            Logger.verbose("Rebuilding image attachment of type: \(attachment.mimeType), size: \(size)")
 
             return convertAndCompressImage(image: image,
                                            attachment: attachment,
@@ -819,13 +819,43 @@ public class SignalAttachment: NSObject {
         var imageUploadQuality = imageQuality.imageQualityTier()
 
         while true {
+            let outcome = convertAndCompressImageAttempt(image: image,
+                                                         attachment: attachment,
+                                                         filename: filename,
+                                                         imageQuality: imageQuality,
+                                                         imageUploadQuality: imageUploadQuality)
+            switch outcome {
+            case .signalAttachment(let signalAttachment):
+                return signalAttachment
+            case .error(let error):
+                attachment.error = error
+                return attachment
+            case .reduceQuality(let imageQualityTier):
+                imageUploadQuality = imageQualityTier
+            }
+        }
+    }
+
+    private enum ConvertAndCompressOutcome {
+        case signalAttachment(signalAttachment: SignalAttachment)
+        case reduceQuality(imageQualityTier: TSImageQualityTier)
+        case error(error: SignalAttachmentError)
+    }
+
+    private class func convertAndCompressImageAttempt(image: UIImage,
+                                                      attachment: SignalAttachment,
+                                                      filename: String?,
+                                                      imageQuality: TSImageQuality,
+                                                      imageUploadQuality: TSImageQualityTier) -> ConvertAndCompressOutcome {
+        autoreleasepool {  () -> ConvertAndCompressOutcome in
+            owsAssertDebug(attachment.error == nil)
+
             let maxSize = maxSizeForImage(image: image, imageUploadQuality: imageUploadQuality)
             var dstImage: UIImage! = image
             if image.size.width > maxSize ||
                 image.size.height > maxSize {
                 guard let resizedImage = imageScaled(image, toMaxSize: maxSize) else {
-                    attachment.error = .couldNotResizeImage
-                    return attachment
+                    return .error(error: .couldNotResizeImage)
                 }
                 dstImage = resizedImage
             }
@@ -837,8 +867,7 @@ public class SignalAttachment: NSObject {
 
             if image.cgImage?.hasAlpha == true {
                 guard let pngImageData = dstImage.pngData() else {
-                    attachment.error = .couldNotConvertImage
-                    return attachment
+                    return .error(error: .couldNotConvertImage)
                 }
 
                 dataUTI = kUTTypePNG as String
@@ -849,8 +878,7 @@ public class SignalAttachment: NSObject {
                 guard let jpgImageData = dstImage.jpegData(
                     compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)
                 ) else {
-                    attachment.error = .couldNotConvertImage
-                    return attachment
+                    return .error(error: .couldNotConvertImage)
                 }
 
                 dataUTI = kUTTypeJPEG as String
@@ -859,9 +887,13 @@ public class SignalAttachment: NSObject {
                 imageData = jpgImageData
             }
 
-            guard let dataSource = DataSourceValue.dataSource(with: imageData, fileExtension: dataFileExtension) else {
-                attachment.error = .couldNotConvertImage
-                return attachment
+            let dataSource: DataSource
+            do {
+                let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
+                try imageData.write(to: tempFileUrl)
+                dataSource = try DataSourcePath.dataSource(with: tempFileUrl, shouldDeleteOnDeallocation: false)
+            } catch {
+                return .error(error: .couldNotConvertImage)
             }
 
             let baseFilename = filename?.filenameWithoutExtension
@@ -872,8 +904,8 @@ public class SignalAttachment: NSObject {
                 dataSource.dataLength <= kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: dataSource, dataUTI: dataUTI)
                 recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
-                return recompressedAttachment
+                Logger.verbose("Converted \(attachment.mimeType), size: \(dataSource.dataLength) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
+                return .signalAttachment(signalAttachment: recompressedAttachment)
             }
 
             // If the image output is larger than the file size limit,
@@ -881,18 +913,17 @@ public class SignalAttachment: NSObject {
             // image upload quality.
             switch imageUploadQuality {
             case .original:
-                imageUploadQuality = .high
+                return .reduceQuality(imageQualityTier: .high)
             case .high:
-                imageUploadQuality = .mediumHigh
+                return .reduceQuality(imageQualityTier: .mediumHigh)
             case .mediumHigh:
-                imageUploadQuality = .medium
+                return .reduceQuality(imageQualityTier: .medium)
             case .medium:
-                imageUploadQuality = .mediumLow
+                return .reduceQuality(imageQualityTier: .mediumLow)
             case .mediumLow:
-                imageUploadQuality = .low
+                return .reduceQuality(imageQualityTier: .low)
             case .low:
-                attachment.error = .fileSizeTooLarge
-                return attachment
+                return .error(error: .fileSizeTooLarge)
             }
         }
     }
@@ -901,48 +932,51 @@ public class SignalAttachment: NSObject {
     // crashes reliably in the share extension after screen lock's auth UI has been presented.
     // Resizing using a CGContext seems to work fine.
     private class func imageScaled(_ uiImage: UIImage, toMaxSize maxSize: CGFloat) -> UIImage? {
-        guard let cgImage = uiImage.cgImage else {
-            owsFailDebug("UIImage missing cgImage.")
-            return nil
+        autoreleasepool {
+            Logger.verbose("maxSize: \(maxSize)")
+            guard let cgImage = uiImage.cgImage else {
+                owsFailDebug("UIImage missing cgImage.")
+                return nil
+            }
+
+            // It's essential that we work consistently in "CG" coordinates (which are
+            // pixels and don't reflect orientation), not "UI" coordinates (which
+            // are points and do reflect orientation).
+            let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
+            var maxSizeRect = CGRect.zero
+            maxSizeRect.size = CGSize(square: maxSize)
+            let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size.floor
+            assert(newSize.width <= maxSize)
+            assert(newSize.height <= maxSize)
+
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let bitmapInfo: CGBitmapInfo = [
+                CGBitmapInfo(rawValue: CGImageByteOrderInfo.orderDefault.rawValue),
+                CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)]
+            guard let context = CGContext(data: nil,
+                                          width: Int(newSize.width),
+                                          height: Int(newSize.height),
+                                          bitsPerComponent: 8,
+                                          bytesPerRow: 0,
+                                          space: colorSpace,
+                                          bitmapInfo: bitmapInfo.rawValue) else {
+                owsFailDebug("could not create CGContext.")
+                return nil
+            }
+            context.interpolationQuality = .high
+
+            var drawRect = CGRect.zero
+            drawRect.size = newSize
+            context.draw(cgImage, in: drawRect)
+
+            guard let newCGImage = context.makeImage() else {
+                owsFailDebug("could not create new CGImage.")
+                return nil
+            }
+            return UIImage(cgImage: newCGImage,
+                           scale: uiImage.scale,
+                           orientation: uiImage.imageOrientation)
         }
-
-        // It's essential that we work consistently in "CG" coordinates (which are
-        // pixels and don't reflect orientation), not "UI" coordinates (which
-        // are points and do reflect orientation).
-        let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
-        var maxSizeRect = CGRect.zero
-        maxSizeRect.size = CGSize(square: maxSize)
-        let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size.floor
-        assert(newSize.width <= maxSize)
-        assert(newSize.height <= maxSize)
-
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo: CGBitmapInfo = [
-            CGBitmapInfo(rawValue: CGImageByteOrderInfo.orderDefault.rawValue),
-            CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)]
-        guard let context = CGContext.init(data: nil,
-                                           width: Int(newSize.width),
-                                           height: Int(newSize.height),
-                                           bitsPerComponent: 8,
-                                           bytesPerRow: 0,
-                                           space: colorSpace,
-                                           bitmapInfo: bitmapInfo.rawValue) else {
-                                            owsFailDebug("could not create CGContext.")
-            return nil
-        }
-        context.interpolationQuality = .high
-
-        var drawRect = CGRect.zero
-        drawRect.size = newSize
-        context.draw(cgImage, in: drawRect)
-
-        guard let newCGImage = context.makeImage() else {
-            owsFailDebug("could not create new CGImage.")
-            return nil
-        }
-        return UIImage(cgImage: newCGImage,
-                       scale: uiImage.scale,
-                       orientation: uiImage.imageOrientation)
     }
 
     private class func doesImageHaveAcceptableFileSize(dataSource: DataSource, imageQuality: TSImageQuality) -> Bool {

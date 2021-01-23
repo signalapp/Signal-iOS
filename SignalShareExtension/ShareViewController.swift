@@ -190,7 +190,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
                 // We don't need to use the TSSocketManager in the SAE.
 
-                Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+                // TODO: Re-enable when system contact fetching uses less memory.
+                // Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // We don't need to fetch messages in the SAE.
 
@@ -678,6 +679,26 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case contact(_ contactData: Data)
             case text(_ text: String)
             case pdf(_ data: Data)
+
+            var debugDescription: String {
+                switch self {
+                case .fileUrl:
+                    return "fileUrl"
+                case .inMemoryImage:
+                    return "inMemoryImage"
+                case .webUrl:
+                    return "webUrl"
+                case .contact:
+                    return "contact"
+                case .text:
+                    return "text"
+                case .pdf:
+                    return "pdf"
+                @unknown default:
+                    owsFailDebug("Unknown value.")
+                    return "unknown"
+                }
+            }
         }
 
         let itemProvider: NSItemProvider
@@ -693,6 +714,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             } else {
                 return false
             }
+        }
+
+        var debugDescription: String {
+            payload.debugDescription
         }
     }
 
@@ -800,8 +825,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private func buildAttachments(loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> {
-        let attachmentPromises = loadedItems.map {
-            buildAttachment(loadedItem: $0)
+        var attachmentPromises = [Promise<SignalAttachment>]()
+        for loadedItem in loadedItems {
+            attachmentPromises.append(firstly(on: .sharedUserInitiated) { () -> Promise<SignalAttachment> in
+                self.buildAttachment(loadedItem: loadedItem)
+            })
         }
         return when(fulfilled: attachmentPromises)
     }
