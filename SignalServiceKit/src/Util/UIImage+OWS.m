@@ -305,7 +305,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (CGSize)pixelSize {
-    return CGSizeMake(self.pixelWidth, self.pixelHeight);
+    UIImage *normalizedImage = self.normalizedImage;
+    return CGSizeMake(normalizedImage.pixelWidth, normalizedImage.pixelHeight);
 }
 
 @end
