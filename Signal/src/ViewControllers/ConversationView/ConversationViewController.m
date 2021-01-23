@@ -447,12 +447,6 @@ typedef enum : NSUInteger {
     _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
     self.layout.delegate = self.loadCoordinator;
 
-    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
-    [self.view addSubview:wallpaperContainer];
-    [wallpaperContainer autoPinEdgesToSuperviewEdges];
-
-    [self setupWallpaper];
-
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
     //
@@ -483,6 +477,17 @@ typedef enum : NSUInteger {
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
     [self registerReuseIdentifiers];
+
+    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
+    [self.view addSubview:wallpaperContainer];
+    [wallpaperContainer autoPinEdgesToSuperviewEdges];
+    [self setupWallpaper];
+
+    // The view controller will only automatically adjust content insets for a
+    // scrollView at index 0, so we need the collection view to remain subview index 0.
+    // But the wallpaper should appear visually behind the collection view.
+    wallpaperContainer.layer.zPosition = -1;
+    wallpaperContainer.userInteractionEnabled = NO;
 
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
