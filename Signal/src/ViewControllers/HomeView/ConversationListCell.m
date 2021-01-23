@@ -271,10 +271,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.hasUnreadStyle) {
         self.dateTimeLabel.font = self.dateTimeFont.ows_semibold;
+        self.dateTimeLabel.textColor = Theme.primaryTextColor;
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
+        self.dateTimeLabel.textColor = self.snippetColor;
     }
-    self.dateTimeLabel.textColor = Theme.primaryTextColor;
 
     BOOL shouldHideStatusIndicator = NO;
 
