@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -90,7 +90,7 @@ public class EarlyMessageManager: NSObject {
                 wasReceivedByUD: wasReceivedByUD,
                 serverDeliveryTimestamp: serverDeliveryTimestamp
             ))
-            pendingEnvelopes[identifier] = envelopes
+            pendingEnvelopes.appendByReplacingIfNeeded(key: identifier, value: envelopes)
 
             while pendingEnvelopes.count >= Self.maxQueuedMessages, let droppedEarlyIdentifier = pendingEnvelopes.orderedKeys.first {
                 pendingEnvelopes.remove(key: droppedEarlyIdentifier)
@@ -145,7 +145,7 @@ public class EarlyMessageManager: NSObject {
             }
 
             receipts.append(earlyReceipt)
-            pendingReceipts[identifier] = receipts
+            pendingReceipts.appendByReplacingIfNeeded(key: identifier, value: receipts)
 
             while pendingReceipts.count >= Self.maxQueuedMessages, let droppedEarlyIdentifier = pendingReceipts.orderedKeys.first {
                 pendingReceipts.remove(key: droppedEarlyIdentifier)
@@ -173,11 +173,8 @@ public class EarlyMessageManager: NSObject {
         }
 
         serialQueue.sync {
-            earlyReceipts = pendingReceipts[identifier]
-            pendingReceipts[identifier] = nil
-
-            earlyEnvelopes = pendingEnvelopes[identifier]
-            pendingEnvelopes[identifier] = nil
+            earlyReceipts = pendingReceipts.remove(key: identifier)
+            earlyEnvelopes = pendingEnvelopes.remove(key: identifier)
         }
 
         // Apply any early receipts for this message
@@ -227,12 +224,8 @@ public class EarlyMessageManager: NSObject {
 }
 
 extension OrderedDictionary {
-    subscript(_ key: KeyType) -> ValueType? {
-        set {
-            if hasValue(forKey: key) { remove(key: key) }
-            guard let newValue = newValue else { return }
-            append(key: key, value: newValue)
-        }
-        get { value(forKey: key) }
+    fileprivate mutating func appendByReplacingIfNeeded(key: KeyType, value: ValueType) {
+        remove(key: key)
+        append(key: key, value: value)
     }
 }

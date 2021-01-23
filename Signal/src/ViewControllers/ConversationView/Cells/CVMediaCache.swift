@@ -86,7 +86,7 @@ private class MediaInnerCache<KeyType: Hashable, ValueType> {
 
     private let maxSize: UInt
 
-    private let cache = OrderedDictionary<KeyType, ValueType>()
+    private var cache = OrderedDictionary<KeyType, ValueType>()
 
     @objc
     public required init(maxSize: UInt = 0) {
@@ -100,7 +100,7 @@ private class MediaInnerCache<KeyType: Hashable, ValueType> {
     func get(_ key: KeyType) -> ValueType? {
         AssertIsOnMainThread()
 
-        guard let value = cache.value(forKey: key) else {
+        guard let value = cache[key] else {
             return nil
         }
         cache.moveExistingKeyToFirst(key)
@@ -114,12 +114,10 @@ private class MediaInnerCache<KeyType: Hashable, ValueType> {
             return
         }
 
-        cache.remove(key: key, ignoreMissing: true)
+        cache.remove(key: key)
         cache.prepend(key: key, value: value)
-
-        while cache.count > maxSize,
-            let lastKey = cache.lastKey {
-                cache.remove(key: lastKey)
+        if cache.count > maxSize {
+            cache.removeSubrange(Int(maxSize)...)
         }
     }
 

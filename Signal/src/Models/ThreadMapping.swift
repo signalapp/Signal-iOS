@@ -110,7 +110,7 @@ class ThreadMapping: NSObject {
     var inboxCount: UInt = 0
 
     @objc
-    var hasPinnedAndUnpinnedThreads: Bool { !pinnedThreads.orderedKeys.isEmpty && !unpinnedThreads.isEmpty }
+    var hasPinnedAndUnpinnedThreads: Bool { !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty }
 
     @objc
     var pinnedThreadIds: [String] { pinnedThreads.orderedKeys }
@@ -142,7 +142,7 @@ class ThreadMapping: NSObject {
     func thread(indexPath: IndexPath) -> TSThread? {
         switch indexPath.section {
         case pinnedSection:
-            return pinnedThreads.orderedValues[safe: indexPath.item]
+            return pinnedThreads[safe: indexPath.item]?.value
         case unpinnedSection:
             return unpinnedThreads[safe: indexPath.item]
         default:
