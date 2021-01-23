@@ -506,7 +506,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Gemiste video-oproep";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder eigen camera aan te zetten";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Beantwoorden";
@@ -2462,7 +2462,7 @@
 "IN_CALL_RECONNECTING" = "Opnieuw verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Bellen …";
+"IN_CALL_RINGING" = "Gaat over …";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Audio-oproep …";
@@ -3671,13 +3671,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Koffieliefhebber";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Versleuteld";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Beschikbaar om te spreken";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Spreek vrijuit";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Ik heb even pauze";
@@ -5183,7 +5183,7 @@
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Naam van contactpersoon";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Afbeelding vervagen";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Knijp met twee vingers om te vergroten of te draaien, sleep met één vinger om te verschuiven.";

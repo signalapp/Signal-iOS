@@ -431,7 +431,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Las personas bloqueadas no podrán llamarte ni enviarte mensajes.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nuevo: Enturbia caras o partes de la foto.";
+"BLUR_TOOLTIP" = "Nuevo: Difumina caras o partes de la foto.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Añadir";
@@ -2423,13 +2423,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Toca sobre una parte de la foto para enturbiar";
+"IMAGE_EDITOR_BLUR_HINT" = "Toca sobre una parte de la foto para difuminar";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Enturbiar caras";
+"IMAGE_EDITOR_BLUR_SETTING" = "Difuminar caras";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Toca sobre una parte de la foto para enturbiar más caras o zonas";
+"IMAGE_EDITOR_BLUR_TOAST" = "Toca sobre una parte de la foto para difuminar más caras o zonas";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No se pueden compartir más de %@ objetos.";
@@ -3671,13 +3671,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Amante del café";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Cifrado";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Libre para chatear";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Habla con libertad";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Tomando un descanso";
@@ -5180,10 +5180,10 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio Signal Desktop.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nombre de contacto";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nombre";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Difuminar";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pellizca y arrastra para ajustar.";
@@ -5207,7 +5207,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Eliminar fondo";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "¿Elimiar el fondo de este chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "¿Eliminar el fondo de este chat?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "¿Eliminar fondo? Esto no modificará los fondos individuales de tus chats.";
@@ -5234,7 +5234,7 @@
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Establecer fondo de chat";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Fondo del chat";
+"WALLPAPER_SETTINGS_TITLE" = "Fondo de chat";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Has eliminado este mensaje.";

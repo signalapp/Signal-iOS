@@ -3671,13 +3671,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Kaffeeliebhaber";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Verschlüsselt";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Frei für Unterhaltungen";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Sprich offen";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Mache eine Pause";
@@ -5183,10 +5183,10 @@
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kontaktname";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Foto verwischen";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Führe zum Vergrößern zwei Finger aufeinander zu, rotiere das Bild durch Drehbewegungen mit zwei Fingern oder verschiebe es zum Anpassen des Bildausschnitts mit einem Finger.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Passe die Vergrößerung des Fotos mit zwei Fingern oder den Bildausschnitt mit einem Finger an. ";
 
 /* The incoming bubble text when setting a preset */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Wische, um dir weitere Hintergründe anzusehen.";

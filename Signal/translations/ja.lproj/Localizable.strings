@@ -1373,7 +1373,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "このバージョンと互換性のないメッセージを受信しました。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "この連絡先とのセッションはありません";
+"ERROR_MESSAGE_NO_SESSION" = "この連絡先とのセッションはありません。";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "安全番号が変わりました。";
@@ -1427,7 +1427,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "検証済みにする";
 
 /* Label for button to reset a session. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "セッションをリセットする";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "セッションをリセット";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "グループ作成を完了する";
@@ -3671,13 +3671,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "コーヒー大好き";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "暗号化済み";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "チャット歓迎";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "気軽に話しかけて";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "休憩中";
@@ -4667,10 +4667,10 @@
 "SETTINGS_SECURITY_TITLE" = "画面のセキュリティ";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "提案に表示";
+"SETTINGS_SHARING_SUGGESTIONS" = "サジェストで表示する";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signalのチャットが、他のアプリでは提案として表示されます";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "他のアプリから共有する際に、Signalチャットをサジェスト表示します。";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "登録ロック";
@@ -4748,13 +4748,13 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Signalと共有";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "提案を共有禁止にできませんでした";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "サジェストの共有を無効にできませんでした。";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signalのチャットが今後、他のアプリで提案として表示されます";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "他のアプリから共有する際に、Signalチャットをサジェスト表示できるようになりました。";
 
 /* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "共有を簡単に";
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "共有をもっと簡単に";
 
 /* Disable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "無効にする";
@@ -5183,7 +5183,7 @@
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "連絡先名";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "写真をぼかす";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ピンチして拡大、ドラッグして調整します。";
