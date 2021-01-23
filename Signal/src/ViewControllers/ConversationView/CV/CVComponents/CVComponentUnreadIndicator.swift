@@ -99,6 +99,10 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
                 blurView.clipsToBounds = true
                 blurView.layer.cornerRadius = 8
+
+                strokeView.backgroundColor = .ows_blackAlpha80
+            } else {
+                strokeView.backgroundColor = .ows_gray45
             }
         }
     }
@@ -177,7 +181,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-            strokeView.backgroundColor = UIColor(rgbHex: 0x222222).withAlphaComponent(0.6)
             strokeView.autoSetDimension(.height, toSize: 1)
         }
 
