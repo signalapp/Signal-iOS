@@ -556,14 +556,30 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         componentView.swipeToReplyContentView = swipeToReplyContentView
         let swipeToReplyIconView = componentView.swipeToReplyIconView
-        swipeToReplyIconView.setTemplateImageName("reply-outline-24",
-                                                  tintColor: .ows_gray45)
-        swipeToReplyIconView.contentMode = .scaleAspectFit
+        swipeToReplyIconView.contentMode = .center
         swipeToReplyIconView.alpha = 0
         cellHStack.addSubview(swipeToReplyIconView)
         cellHStack.sendSubviewToBack(swipeToReplyIconView)
         swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeToReplyContentView)
         swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeToReplyContentView, withOffset: 8)
+
+        if conversationStyle.hasWallpaper {
+            swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+            swipeToReplyIconView.layer.cornerRadius = 17
+            swipeToReplyIconView.clipsToBounds = true
+            swipeToReplyIconView.autoSetDimensions(to: CGSize(square: 34))
+
+            swipeToReplyIconView.setTemplateImageName("reply-outline-20",
+                                                      tintColor: .ows_gray45)
+        } else {
+            swipeToReplyIconView.backgroundColor = .clear
+            swipeToReplyIconView.layer.cornerRadius = 0
+            swipeToReplyIconView.clipsToBounds = false
+            swipeToReplyIconView.autoSetDimensions(to: CGSize(square: 24))
+
+            swipeToReplyIconView.setTemplateImageName("reply-outline-24",
+                                                      tintColor: .ows_gray45)
+        }
 
         if let reactions = self.reactions {
             let reactionsView = configureSubcomponentView(messageView: componentView,
