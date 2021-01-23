@@ -297,16 +297,37 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (size_t)pixelWidth {
-    return CGImageGetWidth(self.CGImage);
+    switch (self.imageOrientation) {
+        case UIImageOrientationUp:
+        case UIImageOrientationDown:
+        case UIImageOrientationUpMirrored:
+        case UIImageOrientationDownMirrored:
+            return CGImageGetWidth(self.CGImage);
+        case UIImageOrientationLeft:
+        case UIImageOrientationRight:
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRightMirrored:
+            return CGImageGetHeight(self.CGImage);
+    }
 }
 
 - (size_t)pixelHeight {
-    return CGImageGetHeight(self.CGImage);
+    switch (self.imageOrientation) {
+        case UIImageOrientationUp:
+        case UIImageOrientationDown:
+        case UIImageOrientationUpMirrored:
+        case UIImageOrientationDownMirrored:
+            return CGImageGetHeight(self.CGImage);
+        case UIImageOrientationLeft:
+        case UIImageOrientationRight:
+        case UIImageOrientationLeftMirrored:
+        case UIImageOrientationRightMirrored:
+            return CGImageGetWidth(self.CGImage);
+    }
 }
 
 - (CGSize)pixelSize {
-    UIImage *normalizedImage = self.normalizedImage;
-    return CGSizeMake(normalizedImage.pixelWidth, normalizedImage.pixelHeight);
+    return CGSizeMake(self.pixelWidth, self.pixelHeight);
 }
 
 @end
