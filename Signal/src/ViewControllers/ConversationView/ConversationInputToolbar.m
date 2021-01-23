@@ -358,7 +358,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     const UIEdgeInsets stickerListContentInset
         = UIEdgeInsetsMake(suggestedStickerSpacing, 24, suggestedStickerSpacing, 24);
     self.suggestedStickerView.contentInset = stickerListContentInset;
-    self.suggestedStickerView.hidden = YES;
+    self.suggestedStickerView.isHiddenInStackView = YES;
     [self.suggestedStickerView
         autoSetDimension:ALDimensionHeight
                   toSize:suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top];
@@ -1472,7 +1472,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)updateSuggestedStickerView
 {
     if (self.suggestedStickerInfos.count < 1) {
-        self.suggestedStickerView.hidden = YES;
+        self.suggestedStickerView.isHiddenInStackView = YES;
         [self layoutIfNeeded];
         return;
     }
@@ -1486,7 +1486,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                                            cache:self.suggestedStickerViewCache]];
     }
     self.suggestedStickerView.items = items;
-    self.suggestedStickerView.hidden = NO;
+    self.suggestedStickerView.isHiddenInStackView = NO;
     [self layoutIfNeeded];
     if (shouldReset) {
         self.suggestedStickerView.contentOffset
