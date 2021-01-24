@@ -72,11 +72,11 @@ extension UIImage {
         return newImage
     }
 
-    public func withGausianBlur(radius: CGFloat) -> Promise<UIImage> {
-        return cgImageWithGausianBlur(radius: radius).map(on: .sharedUserInteractive) { UIImage(cgImage: $0) }
+    public func withGausianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<UIImage> {
+        return cgImageWithGausianBlur(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension).map(on: .sharedUserInteractive) { UIImage(cgImage: $0) }
     }
 
-    public func cgImageWithGausianBlur(radius: CGFloat) -> Promise<CGImage> {
+    public func cgImageWithGausianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<CGImage> {
         return firstly(on: .sharedUserInteractive) {
             guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
                 throw OWSAssertionError("Failed to create blur filter")
@@ -86,7 +86,7 @@ extension UIImage {
                 throw OWSAssertionError("Failed to create blur filter")
             }
 
-            guard let resizedImage = self.resized(withMaxDimensionPixels: 300),
+            guard let resizedImage = self.resized(withMaxDimensionPixels: resizeToMaxPixelDimension),
                   let resizedCGImage = resizedImage.cgImage else {
                 throw OWSAssertionError("Failed to downsize image for blur")
             }

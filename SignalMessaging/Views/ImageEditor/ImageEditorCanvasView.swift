@@ -680,7 +680,10 @@ public class ImageEditorCanvasView: UIView {
         }
 
         // we use a very strong blur radius to ensure adequate coverage of large and small faces
-        srcImage.cgImageWithGausianBlur(radius: 25).done(on: .main) { [weak self] blurredImage in
+        srcImage.cgImageWithGausianBlur(
+            radius: 25,
+            resizeToMaxPixelDimension: 300
+        ).done(on: .main) { [weak self] blurredImage in
             guard let self = self else { return }
             self.model.blurredSourceImage = blurredImage
 
