@@ -3665,7 +3665,7 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Γράψε δυο πράγματα για σένα...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Αγάπη μόνο";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Κάνε το καλό και ρίξτο στο γιαλό";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Πίνω καφεδάκι";
