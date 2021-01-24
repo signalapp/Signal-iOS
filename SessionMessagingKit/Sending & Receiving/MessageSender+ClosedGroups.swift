@@ -78,6 +78,25 @@ extension MessageSender {
         }
     }
     
+    public static func v2_update(_ groupPublicKey: String, with members: Set<String>, name: String, transaction: YapDatabaseReadWriteTransaction) throws {
+        // Get the group, check preconditions & prepare
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        let threadID = TSGroupThread.threadId(fromGroupId: groupID)
+        guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
+            SNLog("Can't update nonexistent closed group.")
+            throw Error.noThread
+        }
+        let group = thread.groupModel
+        // Update name if needed
+        if name != group.groupName { setName(to: name, for: groupPublicKey, using: transaction) }
+        // Add members if needed
+        let addedMembers = members.subtracting(group.groupMemberIds)
+        if !addedMembers.isEmpty { addMembers(addedMembers, to: groupPublicKey, using: transaction) }
+        // Remove members if needed
+        let removedMembers = Set(group.groupMemberIds).subtracting(members)
+        if !removedMembers.isEmpty { removeMembers(addedMembers, to: groupPublicKey, using: transaction) }
+    }
+    
     public static func setName(to name: String, for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
         // Get the group, check preconditions & prepare
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
