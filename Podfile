@@ -105,6 +105,7 @@ post_install do |installer|
   configure_warning_flags(installer)
   configure_testable_build(installer)
   disable_bitcode(installer)
+  disable_non_development_pod_warnings(installer)
   copy_acknowledgements
 end
 
@@ -121,7 +122,8 @@ def enable_extension_support_for_purelayout(installer)
   installer.pods_project.targets.each do |target|
     if target.name.end_with? "PureLayout"
       target.build_configurations.each do |build_configuration|
-         build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) PURELAYOUT_APP_EXTENSIONS=1'
+         build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited)'
+         build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << ' PURELAYOUT_APP_EXTENSIONS=1'
       end
     end
   end
@@ -149,17 +151,22 @@ end
 def configure_testable_build(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |build_configuration|
-      next unless ["Testable Release", "Debug"].include?(build_configuration.name)
+      next unless ["Testable Release", "Debug", "Profiling"].include?(build_configuration.name)
+      build_configuration.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
 
-      build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
-      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
+      next unless ["Testable Release", "Debug"].include?(build_configuration.name)
+      build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited)'
+      build_configuration.build_settings['OTHER_CFLAGS'] << ' -DTESTABLE_BUILD'
+
+      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
+      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] << ' -DTESTABLE_BUILD'
       if target.name.end_with? "PureLayout"
         # Avoid overwriting the PURELAYOUT_APP_EXTENSIONS.
       else
-       build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) TESTABLE_BUILD=1'
+        build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited)'
+        build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << ' TESTABLE_BUILD=1'
       end
       build_configuration.build_settings['ENABLE_TESTABILITY'] = 'YES'
-      build_configuration.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
     end
   end
 end
@@ -169,6 +176,38 @@ def disable_bitcode(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['ENABLE_BITCODE'] = 'NO'
+    end
+  end
+end
+
+# Disable warnings on any Pod not currently being modified
+def disable_non_development_pod_warnings(installer)
+  non_development_targets = installer.pod_targets.select do |target|
+    !installer.development_pod_targets.include?(target)
+  end
+
+  # ZKGroup is security sensitive and is going to be around for the foreseeable
+  # future. Let's always warn for it to keep an eye on the warnings
+  # (and also fix the warnings)
+  always_warn_names = ['ZKGroup']
+
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |build_configuration|
+      # Only suppress warnings for the debug configuration
+      # If we're building for release, continue to display warnings for all projects
+      next if build_configuration.name != "Debug"
+
+      next unless non_development_targets.any? do |non_dev_target|
+        target.name.include?(non_dev_target.name)
+      end
+
+      next if always_warn_names.any? do |warnable_target_name|
+        target.name.include?(warnable_target_name)
+      end
+
+      build_configuration.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
+      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
+      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] << ' -suppress-warnings'
     end
   end
 end
