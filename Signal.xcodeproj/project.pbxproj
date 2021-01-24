@@ -7196,7 +7196,6 @@
 				OTHER_CFLAGS = "-fobjc-arc-exceptions";
 				OTHER_SWIFT_FLAGS = "-DTESTABLE_BUILD -DNEW_CV_ARCHITECTURE";
 				SDKROOT = iphoneos;
-				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
@@ -7306,6 +7305,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
