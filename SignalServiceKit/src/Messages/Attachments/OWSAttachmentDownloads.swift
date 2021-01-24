@@ -256,7 +256,7 @@ public class OWSAttachmentDownloads: NSObject {
             switch job.jobType {
             case .messageAttachment(_, let message):
                 if DebugFlags.forceAttachmentDownloadFailures.get() {
-                    Logger.info("Skipping media download for thread with pending message request.")
+                    Logger.info("Skipping media download for thread due to debug settings.")
                     attachmentPointer.updateAttachmentPointerState(from: .enqueued,
                                                                    to: .failed,
                                                                    transaction: transaction)
@@ -335,13 +335,16 @@ public class OWSAttachmentDownloads: NSObject {
                                                           message: TSMessage,
                                                           transaction: SDSAnyReadTransaction) -> Bool {
 
+        guard !job.downloadBehavior.bypassPendingMessageRequest else {
+            return false
+        }
+
         if DebugFlags.forceAttachmentDownloadPendingMessageRequest.get() {
             return true
         }
 
         let hasPendingMessageRequest: Bool = {
-            guard !job.downloadBehavior.bypassPendingMessageRequest,
-                  !message.isOutgoing else {
+            guard !message.isOutgoing else {
                 return false
             }
             let thread = message.thread(transaction: transaction)
@@ -370,12 +373,12 @@ public class OWSAttachmentDownloads: NSObject {
                                                                  attachmentPointer: TSAttachmentPointer,
                                                                  transaction: SDSAnyReadTransaction) -> Bool {
 
-        if DebugFlags.forceAttachmentDownloadPendingManualDownload.get() {
-            return true
-        }
-
         guard !job.downloadBehavior.bypassPendingManualDownload else {
             return false
+        }
+
+        if DebugFlags.forceAttachmentDownloadPendingManualDownload.get() {
+            return true
         }
 
         let autoDownloadableMediaTypes = Self.autoDownloadableMediaTypes(transaction: transaction)

@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Unterhaltungsfarbe";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Bearbeiten";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Gruppendetails bearbeiten";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle Mitglieder";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Bearbeiten";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Mitglieder hinzufügen";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Kaffeeliebhaber";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Verschlüsselt";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Frei für Unterhaltungen";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Globetrotter";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Sprich offen";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Mache eine Pause";
@@ -4289,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Unterhaltungssitzung aktualisiert";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Aus Fotos auswählen";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "Standardhintergründe";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Hintergrund festlegen";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Über";
@@ -4448,7 +4451,7 @@
 "SETTINGS_DATA" = "Datennutzung";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Datenverbrauch reduzieren";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Das Reduzieren des Datenverbrauchs kann Anrufe bei schlechtem Netz verbessern";
@@ -4493,7 +4496,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Informationen";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Deine Freunde einladen";
+"SETTINGS_INVITE_TITLE" = "Freunde einladen";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Du kannst mich über @signalapp erreichen. Hol dir jetzt die kostenlose App: https://signal.org/download/";
@@ -4502,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Nachrichtenton";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "Hintergrund";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Bedingungen & Datenschutzerklärung";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Bildschirmschutz";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "In Vorschlägen anzeigen";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Beim Teilen durch andere Apps werden Signal-Unterhaltungen als Vorschläge angezeigt.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registrierungssperre";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Mit Signal teilen";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Vorschläge für das Teilen konnten nicht deaktiviert werden.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal-Unterhaltungen können nun beim Teilen durch andere Apps als Vorschläge angezeigt werden.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Teilen einfacher gemacht";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Deaktivieren";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Aktivieren";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Sicherheitsnummer anzeigen";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker-Nachricht";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker-Set installiert";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installieren";
@@ -5159,58 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Schließe die Einrichtung von Signal Desktop ab.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kontaktname";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Foto verwischen";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Passe die Vergrößerung des Fotos mit zwei Fingern oder den Bildausschnitt mit einem Finger an. ";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Wische, um dir weitere Hintergründe anzusehen.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Leg den Hintergrund für alle Unterhaltungen fest.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Leg den Hintergrund für %@ fest.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Festlegen";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "Vorschau";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Hintergrund entfernen";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Hintergrund für diese Unterhaltung entfernen?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Hintergrund entfernen? Es werden keine personalisierten Hintergründe entfernt, die du für deine Unterhaltungen festgelegt hast.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dunkles Design dunkelt Hintergrund ab";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Der Hintergrund konnte nicht entfernt werden. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem fortbesteht.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Es konnten nicht alle Hintergründe zurückgesetzt werden. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem fortbesteht.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "Vorschau";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Alle Hintergründe zurücksetzen";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Alle Hintergründe zurücksetzen, einschließlich personalisierter Hintergründe, die du für deine Unterhaltungen festgelegt hast?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Hintergrund festlegen";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "Hintergrund";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Du hast diese Nachricht gelöscht.";

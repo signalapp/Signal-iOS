@@ -105,10 +105,6 @@ public class StickerManager: NSObject {
         super.init()
 
         // Resume sticker and sticker pack downloads when app is ready.
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            // Warm the caches.
-            StickerManager.shared.warmTooltipState()
-        }
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             StickerManager.cleanupOrphans()
 
@@ -352,10 +348,6 @@ public class StickerManager: NSObject {
             stickerPack.anyInsert(transaction: transaction)
         }
 
-        if stickerPack.isInstalled {
-            self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
-        }
-
         if stickerPack.isInstalled, wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
                                       packs: [stickerPack.info],
@@ -405,8 +397,6 @@ public class StickerManager: NSObject {
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
         let promise = installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
-
-        Self.shared.stickerPackWasInstalled(stickerPack: stickerPack, transaction: transaction)
 
         if wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
@@ -1087,71 +1077,6 @@ public class StickerManager: NSObject {
             result.append(installedSticker.info)
         }
         return result
-    }
-
-    // MARK: - Tooltips
-
-    @objc
-    public enum TooltipState: UInt {
-        case unknown = 1
-        case shouldShowTooltip = 2
-        case hasShownTooltip = 3
-    }
-
-    private let kShouldShowTooltipKey = "shouldShowTooltip"
-    // This property should only be accessed using unfairLock.
-    private var tooltipState = TooltipState.unknown
-
-    private func stickerPackWasInstalled(stickerPack: StickerPack,
-                                         transaction: SDSAnyWriteTransaction) {
-        if let defaultStickerPack = DefaultStickerPack.getDefaultStickerPack(stickerPackInfo: stickerPack.info),
-           defaultStickerPack.shouldAutoInstall {
-            // Don't show tooltip for default sticker packs that auto-install.
-            return
-        }
-        setTooltipState(.shouldShowTooltip, transaction: transaction)
-    }
-
-    @objc
-    public func stickerTooltipWasShown(transaction: SDSAnyWriteTransaction) {
-        setTooltipState(.hasShownTooltip, transaction: transaction)
-    }
-
-    @objc
-    public func setTooltipState(_ value: TooltipState, transaction: SDSAnyWriteTransaction) {
-        var shouldSet = false
-        Self.unfairLock.withLock {
-            // Don't "downgrade" this state; only raise to higher values.
-            guard self.tooltipState.rawValue < value.rawValue else {
-                return
-            }
-            self.tooltipState = value
-            shouldSet = true
-        }
-        guard shouldSet else {
-            return
-        }
-
-        StickerManager.store.setUInt(value.rawValue, key: kShouldShowTooltipKey, transaction: transaction)
-    }
-
-    @objc
-    public var shouldShowStickerTooltip: Bool {
-        return Self.unfairLock.withLock {
-            return self.tooltipState == .shouldShowTooltip
-        }
-    }
-
-    private func warmTooltipState() {
-        let value = databaseStorage.read { transaction in
-            return StickerManager.store.getUInt(self.kShouldShowTooltipKey, defaultValue: TooltipState.unknown.rawValue, transaction: transaction)
-        }
-
-        Self.unfairLock.withLock {
-            if let tooltipState = TooltipState(rawValue: value) {
-                self.tooltipState = tooltipState
-            }
-        }
     }
 
     // MARK: - Misc.

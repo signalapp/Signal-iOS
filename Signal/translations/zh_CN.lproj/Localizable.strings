@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "聊天颜色";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "编辑";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "谁能修改群介绍";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "所有群成员";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "编辑";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "谁能添加成员";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "咖啡爱好者";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "已加密";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "陪聊不收费";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "四处旅行者";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "畅所欲言";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "休息一下下";
@@ -4289,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "聊天会话已刷新";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "从图片中选择";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "预设";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "设置墙纸";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "关于";
@@ -4448,7 +4451,7 @@
 "SETTINGS_DATA" = "数据使用量";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "使用更少数据";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "网络较差时，使用更少数据可能改善通话";
@@ -4502,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "消息提示音";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "聊天墙纸";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "条款和隐私政策";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "屏幕安全";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "在建议中显示";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "其他应用分享时，建议中显示 Signal 聊天。";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "注册锁定";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "分享到 Signal";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "禁用分享建议失败。";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "其他应用分享时，建议中现在可显示 Signal 聊天。";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "分享更轻松";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "关闭";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "启用";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "显示安全码";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "表情信息";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "已安装表情包";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "安装";
@@ -5159,58 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "请完成 Signal 桌面版设置。";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "联系人名字";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "模糊图片";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "捏合缩放，拖拉调整。";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "轻扫预览更多墙纸。";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "对全部聊天设置墙纸。";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "对 %@ 设置墙纸。";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "设置";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "预览";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "清除墙纸";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "对该聊天清除墙纸？";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "是否清除墙纸？这不会清除你的自定义聊天墙纸。";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "深色主题暗淡墙纸";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "无法清除该墙纸，请稍后重试。如果该错误仍然存在，请联系支持人员。";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "无法重置全部墙纸，请稍后重试。如果该错误仍然存在，请联系支持人员。";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "预览";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "重置全部墙纸";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "是否重置全部墙纸，包括你的自定义聊天墙纸？";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "设置墙纸";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "聊天墙纸";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "您删除了此消息。";

@@ -11,6 +11,7 @@ class PreviewWallpaperViewController: UIViewController {
     }
     private(set) var mode: Mode { didSet { modeDidChange() }}
     let thread: TSThread?
+    lazy var blurButton = BlurButton { [weak self] shouldBlur in self?.standalonePage?.shouldBlur = shouldBlur }
 
     let pageViewController = UIPageViewController(
         transitionStyle: .scroll,
@@ -90,6 +91,10 @@ class PreviewWallpaperViewController: UIViewController {
         safeAreaCover.autoPinEdge(toSuperviewEdge: .bottom)
         safeAreaCover.autoPinWidthToSuperview()
         safeAreaCover.autoPinEdge(.top, to: .bottom, of: buttonStack)
+
+        view.addSubview(blurButton)
+        blurButton.autoPinEdge(.bottom, to: .top, of: buttonStack, withOffset: -24)
+        blurButton.autoHCenterInSuperview()
     }
 
     override func viewDidLoad() {
@@ -129,7 +134,7 @@ class PreviewWallpaperViewController: UIViewController {
         }
     }
 
-    private var standalonePage: UIViewController?
+    private var standalonePage: WallpaperPage?
     func modeDidChange() {
         switch mode {
         case .photo(let selectedPhoto):
@@ -139,6 +144,7 @@ class PreviewWallpaperViewController: UIViewController {
             view.insertSubview(standalonePage.view, at: 0)
             addChild(standalonePage)
             standalonePage.view.autoPinEdgesToSuperviewEdges()
+            blurButton.isHidden = false
         case .preset(let selectedWallpaper):
             if pageViewController.view.superview == nil {
                 view.insertSubview(pageViewController.view, at: 0)
@@ -149,6 +155,7 @@ class PreviewWallpaperViewController: UIViewController {
             }
 
             currentPage = WallpaperPage(wallpaper: selectedWallpaper)
+            blurButton.isHidden = true
         }
 
         mockConversationView.mode = buildMockConversationMode()
@@ -260,11 +267,15 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
 
 private class WallpaperPage: UIViewController {
     let wallpaper: Wallpaper
-    weak var photo: UIImage?
+    let photo: UIImage?
+    var shouldBlur = false { didSet { updatePhoto() } }
+
     init(wallpaper: Wallpaper, photo: UIImage? = nil) {
         self.wallpaper = wallpaper
         self.photo = photo
         super.init(nibName: nil, bundle: nil)
+
+        if photo != nil { prepareBlurredPhoto() }
     }
 
     required init?(coder: NSCoder) {
@@ -350,13 +361,31 @@ private class WallpaperPage: UIViewController {
         }
     }
 
+    private func updatePhoto() {
+        guard let wallpaperImageView = wallpaperView as? UIImageView else { return }
+        UIView.transition(with: wallpaperImageView, duration: 0.2, options: .transitionCrossDissolve) {
+            wallpaperImageView.image = self.shouldBlur ? self.blurredPhoto : self.photo
+        } completion: { _ in }
+    }
+
+    private var blurredPhoto: UIImage?
+    private func prepareBlurredPhoto() {
+        photo?.withGausianBlur(
+            radius: 10,
+            resizeToMaxPixelDimension: 1024
+        ).done(on: .main) { [weak self] blurredPhoto in
+            self?.blurredPhoto = blurredPhoto
+            self?.updatePhoto()
+        }.catch { error in
+            owsFailDebug("Failed to blur image \(error)")
+        }
+    }
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate { _ in
             self.updateWallpaperConstraints(reference: size)
-        } completion: { _ in
-
-        }
+        } completion: { _ in }
     }
 
     private var previousReferenceSize: CGSize = .zero
@@ -399,5 +428,78 @@ private class WallpaperPage: UIViewController {
 extension WallpaperPage: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return wallpaperView
+    }
+}
+
+class BlurButton: UIButton {
+    let checkImageView = UIImageView()
+    let label = UILabel()
+    let action: (Bool) -> Void
+    let backgroundView: UIView = {
+        if UIAccessibility.isReduceTransparencyEnabled {
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = .ows_blackAlpha80
+            return backgroundView
+        } else {
+            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+            return blurView
+        }
+    }()
+
+    init(action: @escaping (Bool) -> Void) {
+        self.action = action
+        super.init(frame: .zero)
+
+        addTarget(self, action: #selector(didTap), for: .touchUpInside)
+
+        layoutMargins = UIEdgeInsets(top: 3, leading: 10, bottom: 3, trailing: 12)
+        autoSetDimension(.height, toSize: 28, relation: .greaterThanOrEqual)
+
+        backgroundView.clipsToBounds = true
+        backgroundView.isUserInteractionEnabled = false
+        addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
+
+        addSubview(checkImageView)
+        checkImageView.autoPinEdge(toSuperviewMargin: .leading)
+        checkImageView.autoPinHeightToSuperviewMargins()
+        checkImageView.autoSetDimension(.width, toSize: 16)
+        checkImageView.contentMode = .scaleAspectFit
+        checkImageView.isUserInteractionEnabled = false
+
+        label.font = .ows_semiboldFont(withSize: 14)
+        label.textColor = .white
+        label.text = NSLocalizedString("WALLPAPER_PREVIEW_BLUR_BUTTON",
+                                       comment: "Blur button on wallpaper preview.")
+        addSubview(label)
+        label.autoPinHeightToSuperviewMargins()
+        label.autoPinEdge(toSuperviewMargin: .trailing)
+        label.autoPinEdge(.leading, to: .trailing, of: checkImageView, withOffset: 10)
+        label.isUserInteractionEnabled = false
+
+        isSelected = false
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        backgroundView.layer.cornerRadius = height / 2
+    }
+
+    override var isSelected: Bool {
+        didSet {
+            UIView.transition(with: checkImageView, duration: 0.15, options: .transitionCrossDissolve) {
+                self.checkImageView.image = self.isSelected ? #imageLiteral(resourceName: "check-circle-filled-16") : #imageLiteral(resourceName: "circle-outline-16")
+            } completion: { _ in }
+        }
+    }
+
+    @objc
+    func didTap() {
+        isSelected = !isSelected
+        action(isSelected)
     }
 }

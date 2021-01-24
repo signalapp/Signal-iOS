@@ -428,7 +428,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اﻷعضاء المتواجدين يمكنهم إضافتك للمجموعة مرة أُخرى.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الإتصال بك أو الإرسال برسالة إليك.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الاتصال بك أو الإرسال برسالة إليك.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "جديد: اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "لون المحادثة";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "تحرير";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "من يستطيع تحرير معلومات المجموعة";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "جميع الأعضاء";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "تحرير";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "من يمكنه إضافة أعضاء";
@@ -968,7 +968,7 @@
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "إظهار جميع الأعضاء";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "هذا المُستخدم موجود في جهات اتصالك";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "المُستخدم مُسجّل في جهات اتصالك";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "مُشاركة الملف الشخصي";
@@ -2249,163 +2249,163 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "هناك عضو واحد لا يدعم المجموعات من الطراز الجديد، لذا ستكون هذه المجموعة من الطراز القديم. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@أعضاء لا يدعمون المجموعات من الطراز الجديد، لذا ستكون المجموعة من الطراز القديم. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "عدد %1$@ عضو لا يدعمون المجموعات الجديدة، لذا ستكون المجموعة من الطراز القديم. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. إن الميزات مثل خاصية المشرفين على المجموعة، متاحة فقط في المجموعات الجديدة. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. إن الميزات مثل خاصية المشرفين مُتاحة فقط في المجموعات الجديدة. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "هذه المجموعة من الطراز القديم ليست جاهزة بعد للترقية إلى مجموعة جديدة. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "هذه المجموعة القديم ليست جاهزة بعد لكي تترقى إلى مجموعة جديدة. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة القديمة الطراز إلى مجموعة جديدة لأنها كبيرة جدا. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة القديمة إلى مجموعة جديدة لأنها كبيرة جداً. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "هذه مجموعة من الطراز القديم. للوصول إلى ميزات مثل ‎@mentions‏ والمشرفين، %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "هذه مجموعة من الطراز القديم. للوصول إلى الميزات الجديدة مثل تضمين الاسم @ والمشرفين، %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "تعذرت إضافة عضو واحد للمرة ثانية إلى المجموعة الجديدة. ألديك نية ﻹضافة الشخص الآن ؟";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "تعذّرت إعادة إضافة عضو واحد إلى المجموعة الجديدة. هل تريد إضافته الآن؟";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "تعذرت إضافة %@ عضو للمرة ثانية إلى المجموعة الجديدة. ألديك نية ﻹضافتهم الآن ؟";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "تعذّرت إعادة إضافة عدد %@ عضو إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "مجموعة من الطراز القديم";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "قبول دعوة الانضمام إلى هذه المجموعة مرة أخرى ضروري، ولن تصلك أي رسائل من المجموعة إلى حين موافقتك علي الانضمام إليها.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "يجب عليك قبول دعوة للإنضمام لهذه المجموعة مجدداً، لن تستلم أي رسائل من المجموعة حتى تقبل.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ترقية المجموعة";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "للوصول إلى الميزات الجديدة مثل ‎@mentions والمشرفين، قم بترقية هذه المجموعة.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "للوصل إلى ميزات جديدة مثل تضمين الاسم @ والمشرفين، عليك بترقية هذه المجموعة.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "ما هي المجموعات الجديدة ؟";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "ما هي المجموعات الجديدة؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "تم الاحتفاظ بكل محفوظات الرسائل والوسائط قبل الترقية.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "تم حفظ كافة سجلات الرسائل والوسائط قبل الترقية.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "تحوي المجموعات الجديدة ميزات كـ ‎@mentions‎ ومشرفين على المجموعة، كما ستدعم مستقبلا المزيد من الميزات.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "تحوي المجموعات الجديدة على ميزات مثل تضمين الاسم @ والمشرفين، أيضاً ستدعم المزيد من الميزات مستقبلاً.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "مجموعة جديدة";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "مجموعات جديدة";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "إضافة أعضاء";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "إضافة عضو ؟";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "إضافة عضو؟";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "إضافة أعضاء ؟";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "إضافة أعضاء؟";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "إضافة أعضاء";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "لا يمكن إضافة هؤلاء الأعضاء تلقائيا إلى المجموعة الجديدة عندما تمت ترقيتها :";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "هذا العضو تتعذّر إضافته للمجموعة الجديدة بشكل تقائي بعد أن تم ترقيتها:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "لا يمكن إضافة هؤلاء الأعضاء تلقائيا إلى المجموعة الجديدة عندما تمت ترقيتها :";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "هؤلاء الأعضاء تتعذّر إضافتهم للمجموعة الجديدة بشكل تقائي بعد أن تم ترقيتها:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "تم الاحتفاظ بكل محفوظات الرسائل والوسائط قبل الترقية.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "تم حفظ كافة سجلات الرسائل والوسائط قبل الترقية.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "تمت إزالة هذا العضو من المجموعة ولن يتمكن من الانضمام إليها مرة أخرى حتى يقوم بالترقية :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "هذا العضو تمت إزالته من المجموعة ولن يتمكن من إعادة الانضمام إليها مرة أُخرى حتى يقوم بالترقية:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "تمت إزالة هذا العضو من المجموعة ولن يتمكن من إعادة الانضمام إليها مرة أخرى حتى يقوم بالترقية :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "هؤلاء الأعضاء تمت إزالتهم من المجموعة ولن يتمكنوا من إعادة الانضمام إليها مرة أُخرى حتى يقوموا بالترقية:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "يحتاج هذا العضو قبول دعوة الانضمام إلى هذه المجموعة مرة أخرى، ولن تصله أي رسائل من المجموعة إلى حين موافقته على الانضمام إليها.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "يتوجب على هذا العضو قبول دعوة لمُعاودة الانضمام لهذه المجموعة مرة أُخرى، لن يتمكن من إستلام أي رسائل من المجموعة حتى يقبل:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "يحتاج هؤﻻء اﻷعضاء قبول دعوة الانضمام إلى هذه المجموعة مرة أخرى، ولن تصلهم أي رسائل من المجموعة إلى حين موافقتهم على الانضمام إليها.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "يتوجب على هؤلاء الأعضاء قبول دعوة لمُعاودة الانضمام لهذه المجموعة مرة أُخرى، لن يتمكنوا من إستلام أي رسائل من المجموعة حتى يقبلوا:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "لم يتمكن هذا العضو من الانضمام إلى المجموعات الجديدة، لذا سوف تتم إزالته من المجموعة :";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "هذه العضو غير قادر على الانضمام لمجموعات جديدة، ستتم إزالته من المجموعة:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "لم يتمكن هؤﻻء اﻷعضاء من اﻹ";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "هؤلاء الأعضاء غير قادرين على الانضمام لمجموعات جديدة، ستتم إزالتهم من المجموعة:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "قم بالترقية إلى مجموعة جديدة";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "رقِّي إلى مجموعة جديدة";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ترقية هذه المجموعة";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "رقِّي هذه المجموعة";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "تعذرت اﻵن ترقية هذه المجموعة إلى مجموعة جديدة.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "يتعذّر الآن ترقية هذه المجموعة إلى مجموعة جديدة.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "لا يمكن ترقية هذه المجموعة القديمة الطراز إلى مجموعة جديدة لأنك على غير اتصال بالانترنت. يُرجى المحاولة ﻻحقا.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "يتعذّر ترقية هذه المجموعة إلى مجموعة جديدة بسبب عدم اتصالك بالانترنت. حاول مرة أُخرى لاحقاً.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "تعذر إتمام الترقية";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "تعذّر إتمام الترقية";
 
 /* Message indicating the group update succeeded. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "رُقّيَت إلى المجموعة المجموعة.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ترقية هذه المجموعة";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "رقِّي هذه المجموعة";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "قبل أن تغادر، اختر مشرفا جديدا لهذه المجموعة.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "قبل أن تُغادر، اختر مشرفاً جديداً لهذه المجموعة.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "اختر مشرفا جديدا";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "اختر مشرفاً جديداً";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "اختر مشرفا جديدا";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "اختر مشرفاً جديداً";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "تعمل مجموعات Signal بشكل أفضل مع %@ عضوا أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى ظهور تأخر في إرسال الرسائل واستلامها.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "تعمل مجموعات Signal بشكل أفضل مع عدد %@ عضو أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تم وصول الأعضاء إلى الحد المُوصى به";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "وصل عدد الأعضاء إلى الحدّ المُوصى به";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "إضافة عضو في كل اﻷحوال ؟";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "إضافة عضو على كل حال؟";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "إظهار الطلب";
+"GROUPS_VIEW_REQUEST_BUTTON" = "عَرض الطلب";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "إظهار الطلبات";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "عَرض الطلبات";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "وسائل الأتصال";
+"HELP_CONTACT_US" = "تواصل معنا";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "مركز الدعم";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "المحادثات المؤرشفة";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "المُحادثات المؤرشفة";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "تم الحظر";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "بحث";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "البحث";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "مسودة :";
+"HOME_VIEW_DRAFT_PREFIX" = "مُسوَّدَة:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "تستخدم إحدى جهات اتصالك Signal، بما فيهم %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "تستخدم إحدى جهات اتصالك Signal، بما فيهم %@ و%@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@ و%@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "تستخدم إحدى جهات اتصالك Signal، بما فيهم %@ و %@ و%@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@، %@ و%@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "يُرجى بدء أول محادثتك من هنا.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "أبدأ أوَّلَ مُحادثةٍ لكَ مِن هُنا.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "أضافك %@ إلى المجموعة";
@@ -2480,7 +2480,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إن هذه المحادثات مؤرشفة و سوف تظهر فقط في علبة البريد الوارد إذا استلمت رسائل جديدة.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "لا توجد أي مُحادثات حتى الآن.\nابدأ بمُراسلة أحد الأصدقاء.";
+"INBOX_VIEW_EMPTY_INBOX" = "لا تُوجَدُ أيُّ مُحَادَثاتٍ حَتَّى الآن.\nإبدأ بِمُراسَلةِ أحدِ الأصدِقاء.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "قام %@ بالاتصال بك";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "محب للقهوة";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُعمَّى";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "لديّ وقت للتحدث";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "أحبُّ السفر";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "ما عليك إلا التحدث بكل حرية";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "آخذ استراحة";
@@ -4289,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "تم إنعاش جلسة المحادثة";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "أختر من الصور";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "الخيارات الافتراضية";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "تعيين خلفية";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "حول";
@@ -4355,10 +4358,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الخطأ";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "إظهار صور جهات إتصال النظام إذا كانت مُتاحة";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "إظهار صور جهات اتصال النظام إن كانت مُتاحة";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "إستخدم صور جهات إتصال النظام";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استخدم صور جهات اتصال النظام";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "السمة";
@@ -4418,7 +4421,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "نجح النسخ الاحتياطي";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "أضف مستخدما محظورا";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "أضف مستخدماً محظوراً";
 
 /* An explanation of the 'blocked' setting */
 "SETTINGS_BLOCK_LIST_FOOTER" = "قائمة جهات الاتصال والمجموعات التي قمت بحظرها.";
@@ -4430,7 +4433,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا توجد نتائج لبحثك";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "تم الحظر";
+"SETTINGS_BLOCK_LIST_TITLE" = "محظورة";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "مناوبة المكالمات الهاتفية دوماً";
@@ -4448,7 +4451,7 @@
 "SETTINGS_DATA" = "استخدام البيانات";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "استخدم بيانات أقل";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "يُحسِّن استخدام بيانات أقل جودة المكالمات في الشبكات الضعيفة";
@@ -4493,7 +4496,7 @@
 "SETTINGS_INFORMATION_HEADER" = "معلومات";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "دعوة أصدقائك";
+"SETTINGS_INVITE_TITLE" = "ادعو أصدقائك";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "يمكنك التواصل معي بواسطة @signalapp.  احصل عليه الآن : https://signal.org/download/";
@@ -4502,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صوت الرسالة";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "خلفية المحادثة";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "الشروط وسياسة الخصوصية";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "تأمين الشاشة";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "أظهره في الإقتراحات";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "تُعرَض محادثات Signal كاقتراحات عند المشاركة من تطبيقات أخرى.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "تأمين التسجيل";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "شارك في Signal";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "فشل تعطيل إقتراحات المشاركة.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "يمكن الآن عرض محادثات سيغنال كإقتراحات عند المشاركة من تطبيقات أخرى.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "أصبحت المشاركة أسهل";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "تعطيل";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "تفعيل";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "عرض رقم الأمان";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "رسالة تحتوي ملصق";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "تم تثبيت حزمة الملصقات";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "تنزيل";
@@ -5159,58 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "إكمال الإعداد على نسخة سطح المكتب من Signal.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "اسم جهة الاتصال";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "تضبيب الصورة";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "وسع للتكبير، اسحب للتعديل.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "اسحب لمُعاينة المزيد من الخلفيات.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيين خلفية لجميع المُحادثات.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيين خلفية لـ %@.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "تعيين";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "مُعاينة";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "مسح الخلفية";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "مسح الخلفية لهذه المُحادثة؟";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "مسح الخلفية؟ هذا لن يؤدي إلى مسح الخلفيات المُخصصة التي قد قمت بتعيينها لمُحادثاتك.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النمط الداكن يعتّم الخلفية";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "يتعذّر مسح الخلفية، الرجاء المحاولة في وقت لاحق أو تواصل مع الدعم في حال استمرار المشكلة.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "يتعذّر إعادة تعيين جميع الخلفيات، الرجاء المحاولة في وقت لاحق أو تواصل مع الدعم في حال استمرار المشكلة.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "مُعاينة";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "إعادة تعيين جميع الخلفيات";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "إعادة تعيين جميع الخلفيات، بما في ذلك الخلفيات المُخصصة التي قد قمت بتعيينها لمُحادثاتك؟";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "تعيين خلفية";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "خلفية المحادثة";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "لقد حذفت هذه الرسالة.";

@@ -69,6 +69,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
+@property (nonatomic, readonly) NSCache<StickerInfo *, StickerReusableView *> *suggestedStickerViewCache;
 @property (nonatomic, readonly) UIStackView *outerStack;
 @property (nonatomic, readonly) UIStackView *mediaAndSendStack;
 
@@ -94,7 +95,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
 @property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
-@property (nonatomic, nullable, weak) UIView *stickerTooltip;
 @property (nonatomic) BOOL isConfigurationComplete;
 
 #pragma mark - Keyboards
@@ -122,6 +122,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     _conversationStyle = conversationStyle;
     _receivedSafeAreaInsets = UIEdgeInsetsZero;
+    _suggestedStickerViewCache = [NSCache new];
 
     self.inputToolbarDelegate = inputToolbarDelegate;
 
@@ -357,7 +358,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     const UIEdgeInsets stickerListContentInset
         = UIEdgeInsetsMake(suggestedStickerSpacing, 24, suggestedStickerSpacing, 24);
     self.suggestedStickerView.contentInset = stickerListContentInset;
-    self.suggestedStickerView.hidden = YES;
+    self.suggestedStickerView.isHiddenInStackView = YES;
     [self.suggestedStickerView
         autoSetDimension:ALDimensionHeight
                   toSize:suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top];
@@ -575,63 +576,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 }
 
-- (void)showStickerTooltipIfNecessary
-{
-    if (!StickerManager.shared.shouldShowStickerTooltip) {
-        return;
-    }
-
-    dispatch_block_t markTooltipAsShown = ^{
-        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [StickerManager.shared stickerTooltipWasShownWithTransaction:transaction];
-        });
-    };
-
-    __block StickerPack *_Nullable stickerPack;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        stickerPack = [StickerManager installedStickerPacksWithTransaction:transaction].firstObject;
-    }];
-    if (stickerPack == nil) {
-        return;
-    }
-    if (self.stickerTooltip != nil) {
-        markTooltipAsShown();
-        return;
-    }
-    if (self.desiredKeyboardType == KeyboardType_Sticker) {
-        // The intent of this tooltip is to prod users to activate the
-        // sticker keyboard.  If it's already active, we can skip the
-        // tooltip.
-        markTooltipAsShown();
-        return;
-    }
-
-    __weak ConversationInputToolbar *weakSelf = self;
-    UIView *tooltip = [StickerTooltip presentFromView:self
-                                   widthReferenceView:self
-                                    tailReferenceView:self.stickerButton
-                                          stickerPack:stickerPack
-                                       wasTappedBlock:^{
-                                           [weakSelf removeStickerTooltip];
-                                           [weakSelf toggleKeyboardType:KeyboardType_Sticker animated:YES];
-                                       }];
-    self.stickerTooltip = tooltip;
-
-    const CGFloat tooltipDurationSeconds = 5.f;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(tooltipDurationSeconds * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                       [weakSelf removeStickerTooltip];
-                   });
-
-    markTooltipAsShown();
-}
-
-- (void)removeStickerTooltip
-{
-    [self.stickerTooltip removeFromSuperview];
-    self.stickerTooltip = nil;
-}
-
 - (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
@@ -697,10 +641,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
         [self updateSuggestedStickers];
 
-        if (self.stickerButton.hidden || self.stickerKeyboardIfSet.isFirstResponder) {
-            [self removeStickerTooltip];
-        }
-
         if (doLayout) {
             [self layoutIfNeeded];
         }
@@ -711,8 +651,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     } else {
         updateBlock();
     }
-
-    [self showStickerTooltipIfNecessary];
 }
 
 // iOS doesn't always update the safeAreaInsets correctly & in a timely
@@ -1534,7 +1472,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)updateSuggestedStickerView
 {
     if (self.suggestedStickerInfos.count < 1) {
-        self.suggestedStickerView.hidden = YES;
+        self.suggestedStickerView.isHiddenInStackView = YES;
         [self layoutIfNeeded];
         return;
     }
@@ -1544,12 +1482,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     for (StickerInfo *stickerInfo in self.suggestedStickerInfos) {
         [items addObject:[[StickerHorizontalListViewItemSticker alloc]
                              initWithStickerInfo:stickerInfo
-                                  didSelectBlock:^{
-                                      [weakSelf didSelectSuggestedSticker:stickerInfo];
-                                  }]];
+                                  didSelectBlock:^{ [weakSelf didSelectSuggestedSticker:stickerInfo]; }
+                                           cache:self.suggestedStickerViewCache]];
     }
     self.suggestedStickerView.items = items;
-    self.suggestedStickerView.hidden = NO;
+    self.suggestedStickerView.isHiddenInStackView = NO;
     [self layoutIfNeeded];
     if (shouldReset) {
         self.suggestedStickerView.contentOffset
@@ -1565,21 +1502,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     [self clearTextMessageAnimated:YES];
     [self.inputToolbarDelegate sendSticker:stickerInfo];
-}
-
-// stickerTooltip lies outside this view's bounds, so we
-// need to special-case the hit testing so that it can
-// intercept touches within its bounds.
-- (BOOL)pointInside:(CGPoint)point withEvent:(nullable UIEvent *)event
-{
-    UIView *_Nullable stickerTooltip = self.stickerTooltip;
-    if (stickerTooltip != nil) {
-        CGRect stickerTooltipFrame = [self convertRect:stickerTooltip.bounds fromView:stickerTooltip];
-        if (CGRectContainsPoint(stickerTooltipFrame, point)) {
-            return YES;
-        }
-    }
-    return [super pointInside:point withEvent:event];
 }
 
 - (void)viewDidAppear

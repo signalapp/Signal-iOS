@@ -84,6 +84,17 @@ public class CVMediaView: UIView {
             configure(forError: .missing)
             return
         }
+        switch attachmentPointer.state {
+        case .pendingMessageRequest, .pendingManualDownload:
+            // We don't need to add a download indicator for pending
+            // attachments; CVComponentBodyMedia will add a download
+            // button if any media in the gallery is pending.
+            return
+        case .failed, .enqueued, .downloading:
+            break
+        @unknown default:
+            owsFailDebug("Invalid value.")
+        }
 
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
@@ -256,7 +267,6 @@ public class CVMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let reusableMediaView = reusableMediaView else {
-            owsFailDebug("Missing reusableMediaView.")
             return
         }
         guard reusableMediaView.owner == self else {
@@ -271,7 +281,6 @@ public class CVMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let reusableMediaView = reusableMediaView else {
-            owsFailDebug("Missing reusableMediaView.")
             return
         }
         guard reusableMediaView.owner == self else {

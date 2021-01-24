@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "ചാറ്റ് നിറം";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "തിരുത്തുക";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ഗ്രൂപ്പ് വിവരം ആർക്ക് എഡിറ്റ് ചെയ്യാനാകും";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "എഡിറ്റുചെയ്യുക";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ആർക്കാണ് അംഗങ്ങളെ ചേർക്കാൻ കഴിയുക";
@@ -3665,16 +3665,19 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "നിങ്ങളെ പറ്റി രണ്ടുവാക്ക് എഴുതൂ...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Be kind";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "ദയ കാട്ടുക";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "കോഫി പ്രേമി";
+
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "എന്‍ക്രിപ്റ്റ് ചെയ്തത്";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "ലോകസഞ്ചാരി";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
@@ -4292,7 +4295,7 @@
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "മുന്‍കൂറായി ഉള്ളത്";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Set Wallpaper";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "സ്ക്രീൻ സുരക്ഷ";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal ലേക്ക് പങ്കിടുക";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "പ്രവർത്തനരഹിതമാക്കുക";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "പ്രവർത്തനക്ഷമമാക്കുക";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "സുരക്ഷാ നമ്പർ കാണിക്കുക";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "സ്റ്റിക്കർ സന്ദേശം";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "സ്റ്റിക്കർ പായ്ക്ക് ഇൻസ്റ്റാൾ ചെയ്തു";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "ഇൻസ്റ്റാൾ";
@@ -5161,14 +5182,17 @@
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
 
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "വലുതാക്കാന്‍ നുള്ളുക, ക്രമീകരിക്കാൻ വലിച്ചിടുക.";
 
 /* The incoming bubble text when setting a preset */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "എല്ലാ ചാറ്റുകള്‍ക്കും വാള്‍പേപ്പര്‍ സജ്ജമാക്കുക";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
@@ -5177,16 +5201,16 @@
 "WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "പ്രിവ്യൂ";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "ഈ ചാറ്റിന്റെ വാള്‍പേപ്പര്‍ മായ്ക്കുണോ?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "വാൾപേപ്പർ മായ്‌ക്കണോ? നിങ്ങളുടെ ചാറ്റുകൾക്കായി നിങ്ങൾ സജ്ജമാക്കിയ ഇഷ്‌ടാനുസൃത വാൾപേപ്പറുകൾ ഇത് മായ്‌ക്കില്ല.";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
@@ -5198,13 +5222,13 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "പ്രിവ്യൂ";
 
 /* Reset all wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "നിങ്ങളുടെ ചാറ്റുകൾക്കായി നിങ്ങൾ സജ്ജമാക്കിയ ഇഷ്‌ടാനുസൃത വാൾപേപ്പറുകൾ ഉൾപ്പെടെ എല്ലാ വാൾപേപ്പറുകളും പുനഃസജ്ജമാക്കണോ?";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";

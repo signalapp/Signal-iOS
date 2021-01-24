@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -599,8 +599,11 @@ public extension GroupMembership {
                                             role: TSGroupMemberRole,
                                             didJoinFromInviteLink: Bool = false) {
             for address in addresses {
-                if memberStates[address] != nil {
-                    owsFailDebug("Duplicate address.")
+                guard memberStates[address] == nil else {
+                    // Not necessarily an error; you might know of the UUID mapping 
+                    // for a user that another group member doesn't know about.
+                    Logger.warn("Duplicate address.")
+                    continue
                 }
                 memberStates[address] = .fullMember(role: role, didJoinFromInviteLink: didJoinFromInviteLink)
             }

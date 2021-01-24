@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "संपादन";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "गट माहिती जो संपादन करू शकतो";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "सर्व सदस्य";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "संपादन";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
@@ -1571,7 +1571,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "त्यांनी आपला सुरक्षितता नंबर बदल सत्यापित न केल्यामुळे, त्यांच्या डिव्हाईसमध्ये काहीतरी समस्या असल्यामुळे, किंवा त्यांनी आपल्याला ब्लॉक केल्यामुळे असे असू शकते.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
@@ -1643,10 +1643,10 @@
 "GROUP_CALL_YOU" = "आपण";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "आपण गट कॉलमध्ये आहात";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "आपण (दुसऱ्या डिव्हाईसवर)";
 
 /* Body for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_BODY" = "विनामूल्य एन्क्रिप्टेड गट कॉल चालू करण्यासाठी नवीन गट उघडा";
@@ -1706,7 +1706,7 @@
 "GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "आपण गट लिंक बंद केली आहे.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
@@ -1715,7 +1715,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "अॅडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
@@ -1724,7 +1724,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "अॅडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
@@ -1733,7 +1733,7 @@
 "GROUP_INVITE_LINK_RESET" = " The group link was reset.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "आपण गट लिंक रीसेट केली.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
@@ -1742,7 +1742,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी अॅडमिन मान्यता बंद केली आहे.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
@@ -1751,7 +1751,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी अॅडमिन मान्यता चालू केली आहे.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
@@ -1787,7 +1787,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "लोड होत आहे…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "आपण या गटात सामील होण्यास आणि आपले नाव आणि फोटो त्याच्या सदस्यांसह सामायिक करण्यास इच्छुक आहात?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "आपण ऑनलाईन आहात की नाही ते कृपया तपासा आणि पुन्हा प्रयत्न करा.";
@@ -1805,7 +1805,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी अॅडमिनने स्वीकार करणे आवश्यक आहे.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1826,7 +1826,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ज्या व्यक्ती हा कोड स्कॅन करतील त्यांना आपल्या गटात सामील होता येईल. आपली ती सेटिंग सुरू असल्यास अॅडमिन यांना तरीही नवीन सदस्यांना स्वीकार करावे लागेल.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
@@ -1847,7 +1847,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी अॅडमिनने स्वीकार करणे आवश्यक आहे.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
@@ -1856,7 +1856,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "गट लिंक रीसेट करण्याची आपणास खात्री आहे का? वर्तमान लिंक वापरून लोक यापुढे गटात सामील होऊ शकणार नाहीत.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "सामायिक करा";
@@ -1913,7 +1913,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "आपण गटात सामील झालात.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "गट लिंक द्वारा आपण गटात सामील झाला आहात.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने आपल्याला काढले.";
@@ -2366,7 +2366,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "शिफारस केलेली मर्यादा संपली";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
@@ -2870,7 +2870,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "या गटात सामील व्हायचे? आपण स्वीकार करेपर्यंत आपण त्यांचा संदेश पाहिला आहे हे त्यांना कळणार नाही.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "अनब्लॉक करा";
@@ -3503,7 +3503,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN निर्मिती अयशस्वी";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल. आपल्याला अॅप उघडण्यासाठी PIN ची गरज लागणार नाही.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -3662,7 +3662,7 @@
 "PROCEED_BUTTON" = "पुढे चला";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Write a few words about yourself…";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "स्वतःबद्दल काही शब्द लिहा…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Be kind";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Globetrotter";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
@@ -3983,7 +3986,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "तरीही पाठवा";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "पुढील व्यक्तींनी डिव्हाइस पुनर्स्थापित केले किंवा बदलले असतील. गोपनीयता सुनिश्चित करण्यासाठी आपला सुरक्षितता नंबर त्यांच्यासोबत सत्यापित करा.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
@@ -4292,7 +4295,7 @@
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "प्रीसेट";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Set Wallpaper";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "स्क्रीन सुरक्षा";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "नोंदणी लॉक";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "संगल्नला सामायिक करा";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "अक्षम करा";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "सक्षम करा";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "सुरक्षितता नंबर दाखवा";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "स्टिकर संदेश";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "स्टिकर पॅक स्थापन केले";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "स्थापना करा";
@@ -5051,7 +5072,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल. आपल्याला अॅप उघडण्यासाठी PIN ची गरज लागणार नाही.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN ची ओळख करून देत आहे";
@@ -5161,14 +5182,17 @@
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
 
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "झूम करण्यासाठी पिंच करा, अनुरूप करण्यासाठी ओढा.";
 
 /* The incoming bubble text when setting a preset */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "सर्व चॅटसाठी वॉलपेपर सेट करा.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
@@ -5177,7 +5201,7 @@
 "WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "पुनरावलोकन";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
@@ -5198,7 +5222,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "पुनरावलोकन";
 
 /* Reset all wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";

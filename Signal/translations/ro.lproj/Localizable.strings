@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Culoare conversaţie";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Editează";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Cine poate edita informațiile grupului";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Toți membrii";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Editează";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Cine poate adăuga membrii";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Iubitor de cafea";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Criptat";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Disponibil pentru conversații";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Globetrotter";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Vorbește liber";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Într-o pauză";
@@ -4289,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Sesiunea conversației a fost resetată";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Alegeți din galerie";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "Presetări";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Setare fundal";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Despre";
@@ -4448,7 +4451,7 @@
 "SETTINGS_DATA" = "Utilizare date";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Reducerea consumului de date";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Folosind mai puține date, se pot îmbunătăți apelurile în rețelele cu probleme";
@@ -4502,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sunet mesaj";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "Fundal conversații";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Termeni și politica de confidențialitate";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Securitate Ecran";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Afișare în Sugestii";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Conversațiile Signal sunt afișate ca și sugestii când distribuiți din alte aplicații.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocare înregistrare";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Partajează prin Signal";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Eroare la dezactivarea sugestiilor pentru distribuire";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Conversațiile Signal pot fi afișate acum ca și sugestii când distribuiți din alte aplicații.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Distribuire mai facilă";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Dezactivați";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Activează";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Afișează numărul de siguranță";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Mesaj cu autocolant";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Pachetul cu autocolante este instalat";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalați";
@@ -5159,58 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Finalizează configurarea în Signal Desktop.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nume contact";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Estompare poză";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Prindeți pentru a mări, trageți pentru a ajusta.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Glisați pentru a previzualiza mai multe imagini de fundal.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Setați imaginea de fundal pentru toate conversațiile";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Setare fundal pentru %@.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Aplicare";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "Previzualizare";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Eliminare fundal";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Eliminați fundalul pentru această conversație?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Ștergeți imaginea de fundal? Aceasta nu va șterge imaginile de fundal personalizate pe care le-ați setat pentru conversațiile dvs.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Tema întunecată estompează fundalul";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Imaginea de fundal nu a putut fi ștearsă, încercați din nou mai târziu sau contactați suportul dacă eroarea persistă.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Nu s-au putut reseta toate imaginile de fundal, încercați din nou mai târziu sau contactați suportul dacă eroarea persistă.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "Previzualizare";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Resetare toate imaginile de fundal";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Resetați toate imaginile de fundal, inclusiv imaginile de fundal personalizate pe care le-ați setat pentru conversațiile dvs.?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Setează fundal";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "Fundal conversații";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Ai șters acest mesaj.";

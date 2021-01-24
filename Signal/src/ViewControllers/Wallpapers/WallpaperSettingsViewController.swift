@@ -35,6 +35,7 @@ public class WallpaperSettingsViewController: OWSTableViewController {
                                                        comment: "Title for the wallpaper settings preview section.")
         let previewItem = OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
             guard let self = self else { return cell }
             let miniPreview = MiniPreviewView(thread: self.thread)
             cell.contentView.addSubview(miniPreview)
@@ -129,7 +130,14 @@ public class WallpaperSettingsViewController: OWSTableViewController {
             )
         }
 
-        OWSActionSheets.showConfirmationAlert(title: title) { _ in
+        OWSActionSheets.showConfirmationAlert(
+            title: title,
+            proceedTitle: NSLocalizedString(
+                "WALLPAPER_SETTINGS_CLEAR_WALLPAPER",
+                comment: "Clear wallpaper action in wallpaper settings view."
+            ),
+            proceedStyle: .destructive
+        ) { _ in
             self.clearWallpaper()
         }
     }
@@ -155,7 +163,12 @@ public class WallpaperSettingsViewController: OWSTableViewController {
             title: NSLocalizedString(
                 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION",
                 comment: "Confirmation dialog when resetting all wallpapers."
-            )
+            ),
+            proceedTitle: NSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_ALL",
+                comment: "Reset all wallpapers action in wallpaper settings view."
+            ),
+            proceedStyle: .destructive
         ) { _ in
             self.resetAllWallpapers()
         }

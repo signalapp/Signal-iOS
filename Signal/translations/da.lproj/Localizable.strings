@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat farve";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Redigér";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Hvem kan redigere info for gruppe";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle medlemmer";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Redigér";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Hvem kan tilføje medlemmer";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Kaffeelsker";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Krypteret";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Gratis at chatte";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Globetrotter";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Tal frit";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Tager en pause";
@@ -4289,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Chatsession opdateret";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Vælg fra billeder";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "Forudindstillet";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Opsæt baggrund";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Om";
@@ -4448,7 +4451,7 @@
 "SETTINGS_DATA" = "Dataforbrug";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Brug færre data";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Brug af færre data kan forbedre opkald på dårlige netværk";
@@ -4502,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Beskedtone";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "Chatbaggrund";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og privatlivspolitik";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skærmsikkerhed";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Vis i forslag";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-chats vises som forslag, når de deles fra andre apps.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Del til Signal";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Delingsforslag kunne ikke deaktiveres.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal-chats kan nu vises som forslag, når de deles fra andre apps.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Deling gøres lettere";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Déaktiver";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Aktivér";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Vis sikkerhedsnummer";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Klistermærke besked";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Pakke med klistermærker installeret";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installér";
@@ -5159,58 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Færdiggør opsætning på Signal Desktop.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kontaktnavn";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Slør billede";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Klem for at zoome, træk for at justere.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Stryg for at få vist flere baggrunde";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Opsæt baggrund til alle chats.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Opsæt baggrund til %@.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Opsæt";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "Eksempel";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Fjern baggrund";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Fjern baggrund fra denne chat?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Fjern tapet? Dette fjerner ikke de tilpassede baggrunde, du opsatte til dine chats.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Mørkt tema dæmper baggrund";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Baggrunden kunne ikke fjernes. Prøv igen senere, eller kontakt support, hvis fejlen vedvarer.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Alle baggrunde kunne ikke nulstlles. Prøv igen senere, eller kontakt support, hvis fejlen vedvarer.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "Eksempel";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Nulstil alle baggrunde";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Nulstil alle baggrunde, inklusive de tilpassede baggrunde, du opsatte til dine chats?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Opsæt baggrund";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "Chatbaggrund";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Du slettede beskeden.";

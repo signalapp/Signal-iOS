@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>5.3.0</string>
 	<key>CFBundleVersion</key>
-	<string>5.3.0.5</string>
+	<string>5.3.0.18</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>

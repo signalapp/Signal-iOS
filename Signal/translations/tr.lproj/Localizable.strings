@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Konuşma Rengi";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Düzenle";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Grup Bilgisini Kimler Düzenleyebilir";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Tüm Üyeler";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Düzenle";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Kim Üye Ekleyebilir";
@@ -2213,7 +2213,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Eski ve Yeni Grup karşılaştırması";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Yöneticiler ve bahsedilmeler gibi yeni özellikleri etkinleştirmek için bu grubu yükseltin. Bu gruba resimlerini veya isimlerini paylaşmayan kişilere gruba katılma daveti gönderilecektir. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Yöneticiler ve bahsedilmeler gibi yeni özellikleri etkinleştirmek için bu grubu yükseltin. Bu gruba resimlerini veya adlarını paylaşmayan kişilere gruba katılma daveti gönderilecektir. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Yeni Gruba Yükseltilemiyor";
@@ -2816,7 +2816,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Grubu Sil ve Ayrıl?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "İstekleri dikkatle gözden geçirin. Signal aynı isme sahip başka bir kişi buldu.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "İstekleri dikkatle gözden geçirin. Signal aynı ada sahip başka bir kişi buldu.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Kişiniz";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Kahve sevdalısı";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Şifreli";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Konuşmaya açık";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Gezgin";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Özgürce Konuşun";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Dinleniyor";
@@ -4208,10 +4211,10 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Cihazınız Bağlanamadı";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Bu cihaza bir isim verin";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Bu cihaza bir ad verin";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Bu ismi \"Bağlı Cihazlar\" altında göreceksiniz.";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Bu adı \"Bağlı Cihazlar\" altında göreceksiniz.";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "İsim seçin";
@@ -4289,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Konuşma oturumu yenilendi";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Fotoğraflardan seç";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "Ön ayarlar";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Duvar kağıdı ayarla";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Hakkında";
@@ -4448,7 +4451,7 @@
 "SETTINGS_DATA" = "Veri kullanımı";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Daha Az Veri Kullan";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Kötü ağ koşullarında daha az veri kullanmak arama kalitesini arttırabilir";
@@ -4502,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "İleti Sesi";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "Sohbet Duvar Kağıdı";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Şartlar ve Gizlilik İlkesi";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Ekran Güvenliği";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Önerilerde Göster";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Başka uygulamalardan paylaşım yaparken Signal sohbetleri önerilerde gösterilir.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kayıt Kilidi";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal'de Paylaş";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Paylaşım önerileri devre dışı bırakılamadı.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal konuşmaları artık başka uygulamalardan paylaşım yapıldığında öneri olarak gözükecek.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Paylaşım Kolaylaştırıldı";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Devre dışı bırak";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Etkinleştir";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Güvenlik Numarasını Göster";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Çıkartma İletisi";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Çıkartma paketi yüklendi";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Yükle";
@@ -5159,58 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Kurulumu Signal'in Masaüstü uygulamasından bitirin.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kişi Adı";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Fotoğrafı Bulanıklaştır";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Yakınlaştırmak için parmaklarınızı birbirine yakınlaştırın, ayarlamak için sürükleyin.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Daha fazla duvar kağıdını önizlemek için kaydırın.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Tüm sohbetler için duvar kağıdını ayarlayın.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ için duvar kağıdını ayarlayın.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Ayarla";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Preview";
+"WALLPAPER_PREVIEW_TITLE" = "Ön izleme";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Duvar Kağıdını Kaldır";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Bu sohbet için duvar kağıdı kaldırılsın mi?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Clear wallpaper? This will not clear custom wallpapers you’ve set for your chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Duvar kağıdı kaldırılsın mi? Bu, sohbetleriniz için ayarladığınız özel duvar kağıtlarını kaldırmayacaktır.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Koyu Tema, Duvar Kağıdını Karartır";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Duvar kağıdı kaldırılamadı, lütfen daha sonra tekrar deneyin veya hata devam ederse destek ekibiyle iletişime geçin.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Tüm duvar kağıtları sıfırlanamadı, lütfen daha sonra tekrar deneyin veya hata devam ederse destek ekibiyle iletişime geçin.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "Preview";
+"WALLPAPER_SETTINGS_PREVIEW" = "Ön izleme";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Tüm Duvar Kağıtlarını Sıfırla";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Sohbetleriniz için belirlediğiniz özel duvar kağıtları dahil tüm duvar kağıtları sıfırlansın mı?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Duvar kağıdı ayarla";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "Sohbet Duvar Kağıdı";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Bu iletiyi sildiniz.";

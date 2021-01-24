@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>5.3.0</string>
 	<key>CFBundleVersion</key>
-	<string>5.3.0.5</string>
+	<string>5.3.0.18</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -53,6 +53,10 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
+			<key>IntentsSupported</key>
+			<array>
+				<string>INSendMessageIntent</string>
+			</array>
 			<key>NSExtensionActivationRule</key>
 			<string>SUBQUERY (
                 extensionItems,

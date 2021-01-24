@@ -376,7 +376,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             // Once the write transaction has completed, it is safe
             // to use the cache for this key again for .read caches.
             transaction.addSyncCompletion {
-                _ = self.performSync {
+                self.performSync {
                     self.removeExclusion(for: cacheKey)
                 }
             }

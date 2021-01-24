@@ -88,3 +88,74 @@ public class StickerView: NSObject {
         return stickerView
     }
 }
+
+public class StickerPlaceholderView: UIView {
+    let placeholderView = UIView()
+    public init(color: UIColor) {
+        super.init(frame: .zero)
+
+        placeholderView.backgroundColor = color
+        addSubview(placeholderView)
+        placeholderView.autoPinEdgesToSuperviewMargins()
+
+        if #available(iOS 13, *) { placeholderView.layer.cornerCurve = .continuous }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+
+        layoutMargins = UIEdgeInsets(hMargin: width / 8, vMargin: height / 8)
+        placeholderView.layer.cornerRadius = placeholderView.width / 3
+    }
+}
+
+@objc
+public class StickerReusableView: UIView {
+    public var hasStickerView: Bool { stickerView != nil }
+
+    private weak var stickerView: UIView?
+    public func configure(with stickerView: UIView) {
+        guard stickerView != self.stickerView else { return }
+
+        self.stickerView = stickerView
+        addSubview(stickerView)
+        stickerView.autoPinEdgesToSuperviewEdges()
+
+        if let placeholderView = placeholderView {
+            self.placeholderView = nil
+            stickerView.alpha = 0
+
+            UIView.animate(withDuration: 0.2) {
+                stickerView.alpha = 1
+                placeholderView.alpha = 0
+            } completion: { _ in
+                placeholderView.removeFromSuperview()
+            }
+        }
+    }
+
+    private weak var placeholderView: StickerPlaceholderView?
+    public func showPlaceholder(color: UIColor = Theme.secondaryBackgroundColor) {
+        guard placeholderView == nil else { return }
+        let placeholderView = StickerPlaceholderView(color: color)
+        self.placeholderView = placeholderView
+        addSubview(placeholderView)
+        placeholderView.autoPinEdgesToSuperviewEdges()
+
+        if let stickerView = stickerView {
+            self.stickerView = nil
+            placeholderView.alpha = 0
+
+            UIView.animate(withDuration: 0.2) {
+                placeholderView.alpha = 1
+                stickerView.alpha = 0
+            } completion: { _ in
+                stickerView.removeFromSuperview()
+            }
+        }
+    }
+}

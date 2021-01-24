@@ -265,15 +265,18 @@ class ProfileBioViewController: OWSTableViewController {
         let bio: String
 
         static let values = [
+            DefaultBio(emoji: "👋",
+                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY",
+                                              comment: "The 'Speak Freely' default bio in the profile bio view.")),
+            DefaultBio(emoji: "🤐",
+                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED",
+                                              comment: "The 'Encrypted' default bio in the profile bio view.")),
             DefaultBio(emoji: "👍",
                        bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT",
                                               comment: "The 'free to chat' default bio in the profile bio view.")),
             DefaultBio(emoji: "☕",
                        bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER",
                                               comment: "The 'Coffee lover' default bio in the profile bio view.")),
-            DefaultBio(emoji: "✈️",
-                       bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER",
-                                              comment: "The 'Globetrotter' default bio in the profile bio view.")),
             DefaultBio(emoji: "📵",
                        bio: NSLocalizedString("PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK",
                                               comment: "The 'Taking a break' default bio in the profile bio view.")),

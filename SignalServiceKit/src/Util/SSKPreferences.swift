@@ -49,6 +49,20 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
+    private static let areSharingSuggestionsEnabledKey = "areSharingSuggestionsEnabled"
+
+    @objc
+    public static func areSharingSuggestionsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(areSharingSuggestionsEnabledKey, defaultValue: true, transaction: transaction)
+    }
+
+    @objc
+    public static func setAreSharingSuggestionsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: areSharingSuggestionsEnabledKey, transaction: transaction)
+    }
+
+    // MARK: -
+
     @objc
     public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
         return shared.hasSavedThread(transaction: transaction)

@@ -8,7 +8,7 @@ import Foundation
 protocol GetStartedBannerViewControllerDelegate: class {
     func getStartedBannerDidTapInviteFriends(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController)
-    func getStartedBannerDidDismissAllCards(_ banner: GetStartedBannerViewController)
+    func getStartedBannerDidDismissAllCards(_ banner: GetStartedBannerViewController, animated: Bool)
 }
 
 @objc(OWSGetStartedBannerViewController)
@@ -67,8 +67,6 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
 
-        collectionView.delegate = self
-        collectionView.dataSource = self
         updateContent()
         applyTheme()
 
@@ -118,6 +116,12 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         self.view = view
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        collectionView.delegate = self
+        collectionView.dataSource = self
+    }
+
     @objc func applyTheme() {
         header.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
         let backdropColor = Theme.backgroundColor
@@ -137,7 +141,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     }
 
     func fetchContent() -> [GetStartedBannerEntry] {
-        SDSDatabaseStorage.shared.uiRead { readTx in
+        SDSDatabaseStorage.shared.read { readTx in
             let activeCards = Self.getActiveCards(readTx: readTx)
 
             let visibleThreadCount: UInt
@@ -167,27 +171,35 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         let oldContent = bannerContent
         let newContent = fetchContent()
 
-        collectionView.performBatchUpdates {
+        // The data source is only set after -viewDidLoad
+        // We can skip animations if we haven't been showing content to begin with
+        let isAnimated = (collectionView.dataSource === self)
+
+        if isAnimated {
+            collectionView.performBatchUpdates {
+                bannerContent = newContent
+
+                let oldBannerIds = oldContent.map { $0.identifier }
+                let newBannerIds = newContent.map { $0.identifier }
+
+                // Delete everything in oldBannerIds that's not in newBannerIds
+                collectionView.deleteItems(
+                    at: oldBannerIds.enumerated()
+                        .filter { newBannerIds.contains($0.element) == false }
+                        .map { IndexPath(item: $0.offset, section: 0) })
+
+                // Insert everything in newBannerIds that's not in oldBannerIds
+                collectionView.insertItems(
+                    at: newBannerIds.enumerated()
+                        .filter { oldBannerIds.contains($0.element) == false }
+                        .map { IndexPath(item: $0.offset, section: 0) })
+            }
+        } else {
             bannerContent = newContent
-
-            let oldBannerIds = oldContent.map { $0.identifier }
-            let newBannerIds = newContent.map { $0.identifier }
-
-            // Delete everything in oldBannerIds that's not in newBannerIds
-            collectionView.deleteItems(
-                at: oldBannerIds.enumerated()
-                    .filter { newBannerIds.contains($0.element) == false }
-                    .map { IndexPath(item: $0.offset, section: 0) })
-
-            // Insert everything in newBannerIds that's not in oldBannerIds
-            collectionView.insertItems(
-                at: newBannerIds.enumerated()
-                    .filter { oldBannerIds.contains($0.element) == false }
-                    .map { IndexPath(item: $0.offset, section: 0) })
         }
 
         if bannerContent.count == 0 {
-            delegate?.getStartedBannerDidDismissAllCards(self)
+            delegate?.getStartedBannerDidDismissAllCards(self, animated: isAnimated)
         }
     }
 }

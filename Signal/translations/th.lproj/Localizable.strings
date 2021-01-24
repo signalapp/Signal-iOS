@@ -53,7 +53,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "เพิ่มสมาชิกไปยัง “%2$@” หรือไม่?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "เพิ่ม %1$@ สมาชิกไปยัง “%2$@” หรือไม่?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "เพิ่มสมาชิก %1$@ คนไปยัง “%2$@” หรือไม่?";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "เพิ่มสมาชิกใหม่";
@@ -383,7 +383,7 @@
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "กลุ่มถูกปิดกั้น";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "ผู้ใช้ถูกปิดกั้น";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "ผู้ใช้ถูกปิดกั้นอยู่แล้ว";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกปิดกั้น";
@@ -844,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "แก้ไข";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ใครที่สามารถแก้ไขข้อมูลกลุ่ม";
 
@@ -855,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "สมาชิกทั้งหมด";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "แก้ไข";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ใครสามารถเพิ่มสมาชิก";
@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "ลิงก์กลุ่ม";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "ทำให้เป็นผู้ดูแล";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "ตั้งเป็นผู้ดูแล";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
@@ -1169,13 +1169,13 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "กำลังรออุปกรณ์ตัวอื่นอยู่...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "กำลังรออุปกรณ์ตัวอื่น...";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา การถ่ายโอนนั้นจะถูกเข้ารหัสลับตั้งแต่ต้นทางถึงปลายทาง";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "กำลังรับข้อมูล";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "รับข้อมูล";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "กำลังเชื่อมต่อ…";
@@ -1190,7 +1190,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "กำลังถ่ายโอนข้อมูล";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ถ่ายโอนข้อมูล";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";
@@ -1292,7 +1292,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในผู้ติดต่อของคุณที่ใช้ Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญใครสักคนล่ะ";
+"EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญใครสักคนล่ะ?";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "ไม่สามารถเปิดใช้กุญแจลงทะเบียนได้";
@@ -1469,13 +1469,13 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "ไม่สามารถเลือก GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "โปรดป้อนการค้นหาของคุณ";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "กรุณาป้อนการค้นหาของคุณ";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "ค้นหา GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "เกิดข้อผิดพลาด แตะเพื่อลองใหม่";
+"GIF_VIEW_SEARCH_ERROR" = "ผิดพลาด แตะเพื่อลองใหม่";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "ไม่มีผลลัพธ์";
@@ -3670,11 +3670,14 @@
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
 
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
 
-/* The 'Globetrotter' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_GLOBETROTTER" = "Globetrotter";
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
@@ -4663,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "ความปลอดภัยหน้าจอ";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "กุญแจลงทะเบียน";
 
@@ -4738,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "แบ่งปันไปยัง Signal";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "หยุดใช้";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "เริ่มใช้";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "แสดงหมายเลขความปลอดภัย";
 
@@ -4767,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ข้อความสติกเกอร์";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "ติดตั้งสติกเกอร์แล้ว";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "ติดตั้ง";
@@ -5063,10 +5084,10 @@
 "UPGRADE_IOS_ALERT_MESSAGE" = "ในอนาคตอันใกล้ Signal จะต้องทำงานบน iOS 11 หรือใหม่กว่า กรุณาปรับรุ่นได้ใน การตั้งค่า >> ทั่วไป >> รายการอัพเดทซอฟต์แวร์";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "อัพเกรด iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "ปรับรุ่น iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "ชื่อผู้ใช้ใน Signal เป็นตัวเลือก ถ้าคุณเลือกสร้างชื่อผู้ใช้ขึ้นมา ผู้ใช้ Signal คนอื่นๆ จะสามารถหาและติดต่อคุณได้จากชื่อผู้ใช้นี้โดยไม่จำเป็นต้องรู้หมายเลขโทรศัพท์ของคุณ ";
+"USERNAME_DESCRIPTION" = "ชื่อผู้ใช้ใน Signal นั้นจะมีหรือไม่ก็ได้ ถ้าคุณเลือกสร้างชื่อผู้ใช้ ผู้ใช้ Signal คนอื่นจะสามารถหาและติดต่อคุณได้จากชื่อผู้ใช้นี้โดยไม่จำเป็นต้องรู้หมายเลขโทรศัพท์ของคุณ";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "ชื่อผู้ใช้";
@@ -5099,7 +5120,7 @@
 "USERNAME_TOO_SHORT_ERROR" = "ชื่อผู้ใช้ต้องมีอย่างน้อย  4 อักขระ";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "มีคนใช้ %@ แล้ว";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "มีผู้ใช้ %@ แล้ว";
 
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "การปรับปรุงชื่อผู้ใช้ล้มเหลว";
@@ -5160,6 +5181,9 @@
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";

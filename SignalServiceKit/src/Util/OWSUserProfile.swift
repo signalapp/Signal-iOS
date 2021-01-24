@@ -11,7 +11,7 @@ public extension OWSUserProfile {
     // Before encrypting and submitting we NULL pad the name data to this length.
     static var maxNameLengthBytes: Int = 128
 
-    static let kMaxBioLengthChars: Int = 100
+    static let kMaxBioLengthChars: Int = 140
     static let kMaxBioLengthBytes: Int = 512
 
     static let kMaxBioEmojiLengthChars: Int = 1

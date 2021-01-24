@@ -447,12 +447,6 @@ typedef enum : NSUInteger {
     _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
     self.layout.delegate = self.loadCoordinator;
 
-    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
-    [self.view addSubview:wallpaperContainer];
-    [wallpaperContainer autoPinEdgesToSuperviewEdges];
-
-    [self setupWallpaper];
-
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
     //
@@ -483,6 +477,17 @@ typedef enum : NSUInteger {
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
     [self registerReuseIdentifiers];
+
+    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
+    [self.view addSubview:wallpaperContainer];
+    [wallpaperContainer autoPinEdgesToSuperviewEdges];
+    [self setupWallpaper];
+
+    // The view controller will only automatically adjust content insets for a
+    // scrollView at index 0, so we need the collection view to remain subview index 0.
+    // But the wallpaper should appear visually behind the collection view.
+    wallpaperContainer.layer.zPosition = -1;
+    wallpaperContainer.userInteractionEnabled = NO;
 
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -999,12 +1004,6 @@ typedef enum : NSUInteger {
             if (!self.requestView) {
                 [self popKeyBoard];
             }
-
-            // When we programmatically pop the keyboard here,
-            // the scroll position gets into a weird state and
-            // content is hidden behind the keyboard so we restore
-            // it to the default position.
-            [self scrollToInitialPositionAnimated:YES];
             break;
         case ConversationViewActionAudioCall:
             [self startIndividualAudioCall];
@@ -1018,6 +1017,11 @@ typedef enum : NSUInteger {
         case ConversationViewActionNewGroupActionSheet:
             dispatch_async(dispatch_get_main_queue(), ^{ [self showGroupLinkPromotionActionSheet]; });
             break;
+    }
+
+    [self scrollToInitialPositionAnimated:NO];
+    if (self.viewState.hasAppliedFirstLoad) {
+        [self clearInitialScrollState];
     }
 
     // Clear the "on open" state after the view has been presented.

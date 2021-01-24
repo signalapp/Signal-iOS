@@ -29,7 +29,7 @@ public extension UIEdgeInsets {
         return plus(-inset)
     }
 
-    public var asSize: CGSize {
+    var asSize: CGSize {
         CGSize(width: left + right,
                height: top + bottom)
     }
@@ -417,6 +417,10 @@ public extension CGSize {
         return CGSizeCeil(self)
     }
 
+    var floor: CGSize {
+        return CGSizeFloor(self)
+    }
+
     var round: CGSize {
         return CGSizeRound(self)
     }
@@ -799,6 +803,7 @@ public extension UIStackView {
 
 // This works around a UIStackView bug where hidden subviews
 // sometimes re-appear.
+@objc
 public extension UIView {
     var isHiddenInStackView: Bool {
         get { isHidden }

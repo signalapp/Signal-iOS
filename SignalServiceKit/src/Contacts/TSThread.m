@@ -18,6 +18,8 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
+@import Intents;
+
 NS_ASSUME_NONNULL_BEGIN
 
 BOOL IsNoteToSelfEnabled(void)
@@ -616,6 +618,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                  thread.messageDraft = nil;
                                  thread.shouldThreadBeVisible = NO;
                              }];
+
+    // Delete any intents we previously donated for this thread.
+    [INInteraction deleteInteractionsWithGroupIdentifier:self.uniqueId completion:^(NSError *error) {}];
 }
 
 - (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction

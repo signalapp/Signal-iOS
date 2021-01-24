@@ -87,23 +87,22 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         componentView.hasWallpaper = hasWallpaper
 
         if !isReusing || themeHasChanged || wallpaperModeHasChanged {
-            titleLabel.removeFromSuperview()
-
             componentView.blurView?.removeFromSuperview()
             componentView.blurView = nil
-
-            componentView.vibrancyView?.removeFromSuperview()
-            componentView.vibrancyView = nil
 
             if hasWallpaper {
                 let blurView = buildBlurView(conversationStyle: conversationStyle)
                 componentView.blurView = blurView
 
-                contentView.addSubview(blurView)
+                contentView.insertSubview(blurView, at: 0)
                 blurView.autoPinEdgesToSuperviewEdges()
 
                 blurView.clipsToBounds = true
                 blurView.layer.cornerRadius = 8
+
+                strokeView.backgroundColor = .ows_blackAlpha80
+            } else {
+                strokeView.backgroundColor = .ows_gray45
             }
         }
     }
@@ -167,7 +166,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         fileprivate let titleLabel = UILabel()
 
         fileprivate var blurView: UIVisualEffectView?
-        fileprivate var vibrancyView: UIVisualEffectView?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -183,7 +181,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-            strokeView.backgroundColor = UIColor.ows_gray45
             strokeView.autoSetDimension(.height, toSize: 1)
         }
 
@@ -200,9 +197,6 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
                 blurView?.removeFromSuperview()
                 blurView = nil
-
-                vibrancyView?.removeFromSuperview()
-                vibrancyView = nil
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false

@@ -75,6 +75,10 @@ extension CVNode {
         interaction as? TSOutgoingMessage != nil
     }
 
+    var isFromLinkedDevice: Bool {
+        (interaction as? TSOutgoingMessage)?.isFromLinkedDevice == true
+    }
+
     var wasRemotelyDeleted: Bool {
         guard let message = interaction as? TSMessage else {
             return false

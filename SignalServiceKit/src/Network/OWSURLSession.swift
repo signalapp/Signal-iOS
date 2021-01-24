@@ -190,7 +190,7 @@ public class OWSURLSession: NSObject {
     }
 
     private lazy var session: URLSession = {
-        URLSession(configuration: configuration, delegate: self, delegateQueue: Self.operationQueue)
+        URLSession(configuration: configuration, delegate: delegateBox, delegateQueue: Self.operationQueue)
     }()
 
     @objc
@@ -221,6 +221,16 @@ public class OWSURLSession: NSObject {
         self.extraHeaders = extraHeaders
 
         super.init()
+    }
+
+    deinit {
+        // From NSURLSession.h
+        // If you do not invalidate the session by calling the invalidateAndCancel() or
+        // finishTasksAndInvalidate() method, your app leaks memory until it exits
+        //
+        // Even though there will be no reference cycle, underlying NSURLSession metadata
+        // is malloced and kept around as a root leak.
+        session.invalidateAndCancel()
     }
 
     private struct RequestConfig {
@@ -449,12 +459,17 @@ public class OWSURLSession: NSObject {
     // MARK: - TaskState
 
     private let lock = UnfairLock()
+    lazy private var delegateBox = URLSessionDelegateBox(delegate: self)
 
     typealias TaskIdentifier = Int
     public typealias ProgressBlock = (URLSessionTask, Progress) -> Void
 
     private typealias TaskStateMap = [TaskIdentifier: TaskState]
-    private var taskStateMap = TaskStateMap()
+    private var taskStateMap = TaskStateMap() {
+        didSet {
+            delegateBox.isRetaining = (taskStateMap.count > 0)
+        }
+    }
 
     private func addTask(_ task: URLSessionTask, taskState: TaskState) {
         lock.withLock {
@@ -929,5 +944,124 @@ private class UploadTaskState: TaskState {
 
     func reject(error: Error) {
         resolver.reject(error)
+    }
+}
+
+// NSURLSession maintains a strong reference to its delegate until explicitly invalidated
+// OWSURLSession acts as its own delegate, and may be retained by any number of owners
+// We don't really know when to invalidate our session, because a caller may decide to reuse a session
+// at any time.
+//
+// So here's the plan:
+// - While we have any outstanding tasks, a strong reference cycle is maintained. Promise holders
+//   don't need to hold on to the session while waiting for a promise to resolve.
+//   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
+//              ^-----------------------(strongReference)-------------------|
+//
+// - Once all outstanding tasks have been resolved, the box breaks its reference. If there are no
+//   external references to the OWSURLSession, then everything cleans itself up.
+//   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
+//                                                x-----(weakDelegate)-----|
+//
+private class URLSessionDelegateBox: NSObject {
+
+    private weak var weakDelegate: OWSURLSession?
+    private var strongReference: OWSURLSession?
+
+    init(delegate: OWSURLSession) {
+        self.weakDelegate = delegate
+    }
+
+    var isRetaining: Bool {
+        get {
+            strongReference != nil
+        }
+        set {
+            strongReference = newValue ? weakDelegate : nil
+        }
+    }
+}
+
+// MARK: -
+
+ extension URLSessionDelegateBox: URLSessionDelegate, URLSessionTaskDelegate, URLSessionDownloadDelegate {
+
+    // Any of the optional methods will be forwarded using objc selector forwarding
+    // If all goes according to plan, weakDelegate will only go nil once everything is being dealloced
+    // But just in case, let's make sure we provide a fallback implementation to the only non-optional method we've conformed to
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        weakDelegate?.urlSession(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
+    }
+
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didWriteData bytesWritten: Int64,
+                    totalBytesWritten: Int64,
+                    totalBytesExpectedToWrite: Int64) {
+        weakDelegate?.urlSession(session,
+                                 downloadTask: downloadTask,
+                                 didWriteData: bytesWritten,
+                                 totalBytesWritten: totalBytesWritten,
+                                 totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+    }
+
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didResumeAtOffset fileOffset: Int64,
+                    expectedTotalBytes: Int64) {
+        weakDelegate?.urlSession(session,
+                                 downloadTask: downloadTask,
+                                 didResumeAtOffset: fileOffset,
+                                 expectedTotalBytes: expectedTotalBytes)
+    }
+
+    public typealias URLAuthenticationChallengeCompletion = OWSURLSession.URLAuthenticationChallengeCompletion
+
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping URLAuthenticationChallengeCompletion) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 didReceive: challenge,
+                                 completionHandler: completionHandler)
+    }
+
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    didSendBodyData bytesSent: Int64,
+                    totalBytesSent: Int64,
+                    totalBytesExpectedToSend: Int64) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 didSendBodyData: bytesSent,
+                                 totalBytesSent: totalBytesSent,
+                                 totalBytesExpectedToSend: totalBytesExpectedToSend)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 didCompleteWithError: error)
+    }
+
+    func urlSession(_ session: URLSession,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping URLAuthenticationChallengeCompletion) {
+        weakDelegate?.urlSession(session,
+                                 didReceive: challenge,
+                                 completionHandler: completionHandler)
+    }
+
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    willPerformHTTPRedirection response: HTTPURLResponse,
+                    newRequest: URLRequest,
+                    completionHandler: @escaping (URLRequest?) -> Void) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 willPerformHTTPRedirection: response,
+                                 newRequest: newRequest,
+                                 completionHandler: completionHandler)
     }
 }

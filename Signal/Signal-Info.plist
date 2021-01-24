@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>OSXVersion</key>
-		<string>10.15.7</string>
+		<string>11.1</string>
 		<key>WebRTCCommit</key>
 		<string>d9faa1be9ef6996232977b0ee713efa024c0df9d Production build of v2.8.8</string>
 	</dict>
@@ -45,7 +45,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5.3.0.5</string>
+	<string>5.3.0.18</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -137,6 +137,10 @@
 	<string>Signal will save photos to your library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Signal will let you choose which photos from your library to send.</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+	</array>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIAppFonts</key>
