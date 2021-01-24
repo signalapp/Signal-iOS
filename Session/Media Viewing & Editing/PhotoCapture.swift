@@ -599,24 +599,6 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
             }
             completion()
         }
-
-        // for legacy (iOS10) devices
-        func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-            if #available(iOS 11, *) {
-                owsFailDebug("unexpectedly calling legacy method.")
-            }
-
-            guard let photoSampleBuffer = photoSampleBuffer else {
-                owsFailDebug("sampleBuffer was unexpectedly nil")
-                return
-            }
-
-            let data = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(photoSampleBuffer)
-            DispatchQueue.main.async {
-                self.delegate?.captureOutputDidFinishProcessing(photoData: data, error: error)
-            }
-            completion()
-        }
     }
 }
 
@@ -687,6 +669,7 @@ extension AVCaptureVideoOrientation: CustomStringConvertible {
             return "AVCaptureVideoOrientation.landscapeRight"
         case .landscapeLeft:
             return "AVCaptureVideoOrientation.landscapeLeft"
+        default: preconditionFailure()
         }
     }
 }
@@ -708,6 +691,7 @@ extension UIDeviceOrientation: CustomStringConvertible {
             return "UIDeviceOrientation.faceUp"
         case .faceDown:
             return "UIDeviceOrientation.faceDown"
+        default: preconditionFailure()
         }
     }
 }
@@ -731,6 +715,7 @@ extension UIImage.Orientation: CustomStringConvertible {
             return "UIImageOrientation.leftMirrored"
         case .rightMirrored:
             return "UIImageOrientation.rightMirrored"
+        default: preconditionFailure()
         }
     }
 }

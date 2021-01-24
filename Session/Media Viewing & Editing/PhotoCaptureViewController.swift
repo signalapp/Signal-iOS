@@ -330,6 +330,7 @@ class PhotoCaptureViewController: OWSViewController {
             imageName = "ic_flash_mode_on"
         case .off:
             imageName = "ic_flash_mode_off"
+        default: preconditionFailure()
         }
 
         self.flashModeControl.setImage(imageName: imageName)
@@ -520,6 +521,7 @@ class CaptureButton: UIView {
                 self.superview?.layoutIfNeeded()
             }
             delegate?.didCancelLongPressCaptureButton(self)
+        default: break
         }
     }
 }

@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class HomeVC;
 @class OWSMessageFetcherJob;
 @class OWSNavigationController;
-@class OWSWebRTCCallMessageHandler;
 @class OutboundCallInitiator;
 @class TSThread;
 

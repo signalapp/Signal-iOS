@@ -52,6 +52,7 @@ public final class Storage : NSObject {
 
     @discardableResult
     public static func write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void, completion: @escaping () -> Void) -> Promise<Void> {
+        print(owsStorage)
         let (promise, seal) = Promise<Void>.pending()
         serialQueue.async {
             owsStorage.dbReadWriteConnection.readWrite { transaction in
