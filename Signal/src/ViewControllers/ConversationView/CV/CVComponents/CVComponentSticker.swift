@@ -66,7 +66,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             containerView.addSubview(reusableMediaView.mediaView)
             reusableMediaView.mediaView.autoPinEdgesToSuperviewEdges()
 
-            if isOutgoing, !attachmentStream.isUploaded {
+            if isOutgoing, !attachmentStream.isUploaded, !isFromLinkedDevice {
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
                                                             conversationStyle: conversationStyle)
