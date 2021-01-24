@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -197,7 +197,7 @@ public class GroupsV2Protos {
     public class func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                                changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
-        var builder = SSKProtoGroupContextV2.builder()
+        let builder = SSKProtoGroupContextV2.builder()
         builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
         builder.setRevision(groupModel.revision)
 

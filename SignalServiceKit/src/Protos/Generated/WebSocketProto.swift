@@ -179,17 +179,17 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable {
 
     fileprivate convenience init(_ proto: WebSocketProtos_WebSocketRequestMessage) throws {
         guard proto.hasVerb else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: verb")
+            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: verb")
         }
         let verb = proto.verb
 
         guard proto.hasPath else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: path")
+            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: path")
         }
         let path = proto.path
 
         guard proto.hasRequestID else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: requestID")
+            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestID")
         }
         let requestID = proto.requestID
 
@@ -407,12 +407,12 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable {
 
     fileprivate convenience init(_ proto: WebSocketProtos_WebSocketResponseMessage) throws {
         guard proto.hasRequestID else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: requestID")
+            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: requestID")
         }
         let requestID = proto.requestID
 
         guard proto.hasStatus else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: status")
+            throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: status")
         }
         let status = proto.status
 

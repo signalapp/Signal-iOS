@@ -963,13 +963,12 @@ private class UploadTaskState: TaskState {
 //   i.e.   OWSURLSession --(session)--> URLSession --(delegate)--> URLSessionDelegateBox
 //                                                x-----(weakDelegate)-----|
 //
-private typealias BoxedType = (URLSessionDelegate & URLSessionTaskDelegate & URLSessionDownloadDelegate)
-private class URLSessionDelegateBox: NSObject, BoxedType {
+private class URLSessionDelegateBox: NSObject {
 
-    private weak var weakDelegate: BoxedType?
-    private var strongReference: BoxedType?
+    private weak var weakDelegate: OWSURLSession?
+    private var strongReference: OWSURLSession?
 
-    init(delegate: BoxedType) {
+    init(delegate: OWSURLSession) {
         self.weakDelegate = delegate
     }
 
@@ -981,6 +980,11 @@ private class URLSessionDelegateBox: NSObject, BoxedType {
             strongReference = newValue ? weakDelegate : nil
         }
     }
+}
+
+// MARK: -
+
+ extension URLSessionDelegateBox: URLSessionDelegate, URLSessionTaskDelegate, URLSessionDownloadDelegate {
 
     // Any of the optional methods will be forwarded using objc selector forwarding
     // If all goes according to plan, weakDelegate will only go nil once everything is being dealloced
@@ -989,16 +993,75 @@ private class URLSessionDelegateBox: NSObject, BoxedType {
         weakDelegate?.urlSession(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
     }
 
-    override func responds(to aSelector: Selector!) -> Bool {
-        return super.responds(to: aSelector) || (weakDelegate?.responds(to: aSelector) == true)
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didWriteData bytesWritten: Int64,
+                    totalBytesWritten: Int64,
+                    totalBytesExpectedToWrite: Int64) {
+        weakDelegate?.urlSession(session,
+                                 downloadTask: downloadTask,
+                                 didWriteData: bytesWritten,
+                                 totalBytesWritten: totalBytesWritten,
+                                 totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }
 
-    override func forwardingTarget(for aSelector: Selector!) -> Any? {
-        if weakDelegate?.responds(to: aSelector) == true {
-            return weakDelegate
-        } else {
-            return nil
-        }
+    func urlSession(_ session: URLSession,
+                    downloadTask: URLSessionDownloadTask,
+                    didResumeAtOffset fileOffset: Int64,
+                    expectedTotalBytes: Int64) {
+        weakDelegate?.urlSession(session,
+                                 downloadTask: downloadTask,
+                                 didResumeAtOffset: fileOffset,
+                                 expectedTotalBytes: expectedTotalBytes)
     }
 
+    public typealias URLAuthenticationChallengeCompletion = OWSURLSession.URLAuthenticationChallengeCompletion
+
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping URLAuthenticationChallengeCompletion) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 didReceive: challenge,
+                                 completionHandler: completionHandler)
+    }
+
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    didSendBodyData bytesSent: Int64,
+                    totalBytesSent: Int64,
+                    totalBytesExpectedToSend: Int64) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 didSendBodyData: bytesSent,
+                                 totalBytesSent: totalBytesSent,
+                                 totalBytesExpectedToSend: totalBytesExpectedToSend)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 didCompleteWithError: error)
+    }
+
+    func urlSession(_ session: URLSession,
+                    didReceive challenge: URLAuthenticationChallenge,
+                    completionHandler: @escaping URLAuthenticationChallengeCompletion) {
+        weakDelegate?.urlSession(session,
+                                 didReceive: challenge,
+                                 completionHandler: completionHandler)
+    }
+
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    willPerformHTTPRedirection response: HTTPURLResponse,
+                    newRequest: URLRequest,
+                    completionHandler: @escaping (URLRequest?) -> Void) {
+        weakDelegate?.urlSession(session,
+                                 task: task,
+                                 willPerformHTTPRedirection: response,
+                                 newRequest: newRequest,
+                                 completionHandler: completionHandler)
+    }
 }

@@ -29,7 +29,7 @@ public extension UIEdgeInsets {
         return plus(-inset)
     }
 
-    public var asSize: CGSize {
+    var asSize: CGSize {
         CGSize(width: left + right,
                height: top + bottom)
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1209,7 +1209,7 @@ class StorageServiceOperation: OWSOperation {
     private func cleanUpUnknownIdentifiers(transaction: SDSAnyWriteTransaction) {
         // We may have learned of new record types; if so we should
         // cull them from the unknownIdentifiersTypeMap on launch.
-        var knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
+        let knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
             .contact,
             .groupv1,
             .groupv2,
