@@ -107,7 +107,7 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable {
 
     fileprivate convenience init(_ proto: ProvisioningProtos_ProvisioningUuid) throws {
         guard proto.hasUuid else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: uuid")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: uuid")
         }
         let uuid = proto.uuid
 
@@ -265,12 +265,12 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable {
 
     fileprivate convenience init(_ proto: ProvisioningProtos_ProvisionEnvelope) throws {
         guard proto.hasPublicKey else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: publicKey")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: publicKey")
         }
         let publicKey = proto.publicKey
 
         guard proto.hasBody else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: body")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: body")
         }
         let body = proto.body
 
@@ -575,22 +575,22 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable {
 
     fileprivate convenience init(_ proto: ProvisioningProtos_ProvisionMessage) throws {
         guard proto.hasIdentityKeyPublic else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: identityKeyPublic")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: identityKeyPublic")
         }
         let identityKeyPublic = proto.identityKeyPublic
 
         guard proto.hasIdentityKeyPrivate else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: identityKeyPrivate")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: identityKeyPrivate")
         }
         let identityKeyPrivate = proto.identityKeyPrivate
 
         guard proto.hasProvisioningCode else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: provisioningCode")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: provisioningCode")
         }
         let provisioningCode = proto.provisioningCode
 
         guard proto.hasProfileKey else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: profileKey")
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: profileKey")
         }
         let profileKey = proto.profileKey
 
