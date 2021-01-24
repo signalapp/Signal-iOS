@@ -88,13 +88,13 @@ extension MessageSender {
         }
         let group = thread.groupModel
         // Update name if needed
-        if name != group.groupName { setName(to: name, for: groupPublicKey, using: transaction) }
+        if name != group.groupName { try setName(to: name, for: groupPublicKey, using: transaction) }
         // Add members if needed
         let addedMembers = members.subtracting(group.groupMemberIds)
-        if !addedMembers.isEmpty { addMembers(addedMembers, to: groupPublicKey, using: transaction) }
+        if !addedMembers.isEmpty { try addMembers(addedMembers, to: groupPublicKey, using: transaction) }
         // Remove members if needed
         let removedMembers = Set(group.groupMemberIds).subtracting(members)
-        if !removedMembers.isEmpty { removeMembers(addedMembers, to: groupPublicKey, using: transaction) }
+        if !removedMembers.isEmpty { try removeMembers(removedMembers, to: groupPublicKey, using: transaction) }
     }
     
     public static func setName(to name: String, for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
