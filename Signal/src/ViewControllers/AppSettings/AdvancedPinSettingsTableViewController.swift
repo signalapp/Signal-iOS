@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,8 +42,12 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController {
                     }
                     self.navigationController?.pushViewController(vc, animated: true)
                 } else {
-                    PinSetupViewController.disablePinWithConfirmation(fromViewController: self).done { [weak self] _ in
+                    firstly(on: .main) {
+                        PinSetupViewController.disablePinWithConfirmation(fromViewController: self)
+                    }.done { [weak self] _ in
                         self?.updateTableContents()
+                    }.catch { error in
+                        owsFailDebug("Error: \(error)")
                     }
                 }
         }))
