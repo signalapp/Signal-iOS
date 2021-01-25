@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "Contact.h"
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
-@property (nonatomic, readonly) NSUInteger imageHash;
+@property (nonatomic, readonly) NSInteger imageHash;
 
 @end
 
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     _emails = [emails copy];
 
     if (imageDataToHash != nil) {
-        NSUInteger hashValue = 0;
+        NSInteger hashValue = 0;
         NSData *_Nullable hashData = [Cryptography computeSHA256Digest:imageDataToHash
                                                       truncatedToBytes:sizeof(hashValue)];
         if (!hashData) {
@@ -338,23 +338,34 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (NSArray<NSString *> *)e164PhoneNumbers
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
+        [result addObject:phoneNumber.toE164];
+    }
+    return result;
+}
+
 // This method is used to de-bounce system contact fetch notifications
 // by checking for changes in the contact data.
-- (NSUInteger)hash
+- (NSInteger)hash
 {
     // base hash is some arbitrary number
-    NSUInteger hash = 1825038313;
+    NSInteger hash = 1825038313;
 
-    hash = hash ^ self.fullName.hash;
+    hash ^= self.fullName.hash;
 
-    hash = hash ^ self.imageHash;
+    hash ^= self.nickname.hash;
 
-    for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
-        hash = hash ^ phoneNumber.toE164.hash;
+    hash ^= self.imageHash;
+
+    for (NSString *phoneNumber in self.e164PhoneNumbers) {
+        hash ^= phoneNumber.hash;
     }
 
     for (NSString *email in self.emails) {
-        hash = hash ^ email.hash;
+        hash ^= email.hash;
     }
 
     return hash;
