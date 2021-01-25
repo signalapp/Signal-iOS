@@ -209,15 +209,6 @@ struct SessionProtos_Content {
   /// Clears the value of `dataMessage`. Subsequent reads from it will return its default value.
   mutating func clearDataMessage() {_uniqueStorage()._dataMessage = nil}
 
-  var syncMessage: SessionProtos_SyncMessage {
-    get {return _storage._syncMessage ?? SessionProtos_SyncMessage()}
-    set {_uniqueStorage()._syncMessage = newValue}
-  }
-  /// Returns true if `syncMessage` has been explicitly set.
-  var hasSyncMessage: Bool {return _storage._syncMessage != nil}
-  /// Clears the value of `syncMessage`. Subsequent reads from it will return its default value.
-  mutating func clearSyncMessage() {_uniqueStorage()._syncMessage = nil}
-
   var receiptMessage: SessionProtos_ReceiptMessage {
     get {return _storage._receiptMessage ?? SessionProtos_ReceiptMessage()}
     set {_uniqueStorage()._receiptMessage = newValue}
@@ -1364,93 +1355,6 @@ extension SessionProtos_ReceiptMessage.TypeEnum: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-struct SessionProtos_SyncMessage {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var sent: SessionProtos_SyncMessage.Sent {
-    get {return _storage._sent ?? SessionProtos_SyncMessage.Sent()}
-    set {_uniqueStorage()._sent = newValue}
-  }
-  /// Returns true if `sent` has been explicitly set.
-  var hasSent: Bool {return _storage._sent != nil}
-  /// Clears the value of `sent`. Subsequent reads from it will return its default value.
-  mutating func clearSent() {_uniqueStorage()._sent = nil}
-
-  var padding: Data {
-    get {return _storage._padding ?? SwiftProtobuf.Internal.emptyData}
-    set {_uniqueStorage()._padding = newValue}
-  }
-  /// Returns true if `padding` has been explicitly set.
-  var hasPadding: Bool {return _storage._padding != nil}
-  /// Clears the value of `padding`. Subsequent reads from it will return its default value.
-  mutating func clearPadding() {_uniqueStorage()._padding = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  struct Sent {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    var destination: String {
-      get {return _storage._destination ?? String()}
-      set {_uniqueStorage()._destination = newValue}
-    }
-    /// Returns true if `destination` has been explicitly set.
-    var hasDestination: Bool {return _storage._destination != nil}
-    /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-    mutating func clearDestination() {_uniqueStorage()._destination = nil}
-
-    var timestamp: UInt64 {
-      get {return _storage._timestamp ?? 0}
-      set {_uniqueStorage()._timestamp = newValue}
-    }
-    /// Returns true if `timestamp` has been explicitly set.
-    var hasTimestamp: Bool {return _storage._timestamp != nil}
-    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
-    mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
-
-    var message: SessionProtos_DataMessage {
-      get {return _storage._message ?? SessionProtos_DataMessage()}
-      set {_uniqueStorage()._message = newValue}
-    }
-    /// Returns true if `message` has been explicitly set.
-    var hasMessage: Bool {return _storage._message != nil}
-    /// Clears the value of `message`. Subsequent reads from it will return its default value.
-    mutating func clearMessage() {_uniqueStorage()._message = nil}
-
-    var expirationStartTimestamp: UInt64 {
-      get {return _storage._expirationStartTimestamp ?? 0}
-      set {_uniqueStorage()._expirationStartTimestamp = newValue}
-    }
-    /// Returns true if `expirationStartTimestamp` has been explicitly set.
-    var hasExpirationStartTimestamp: Bool {return _storage._expirationStartTimestamp != nil}
-    /// Clears the value of `expirationStartTimestamp`. Subsequent reads from it will return its default value.
-    mutating func clearExpirationStartTimestamp() {_uniqueStorage()._expirationStartTimestamp = nil}
-
-    var isRecipientUpdate: Bool {
-      get {return _storage._isRecipientUpdate ?? false}
-      set {_uniqueStorage()._isRecipientUpdate = newValue}
-    }
-    /// Returns true if `isRecipientUpdate` has been explicitly set.
-    var hasIsRecipientUpdate: Bool {return _storage._isRecipientUpdate != nil}
-    /// Clears the value of `isRecipientUpdate`. Subsequent reads from it will return its default value.
-    mutating func clearIsRecipientUpdate() {_uniqueStorage()._isRecipientUpdate = nil}
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _storage = _StorageClass.defaultInstance
-  }
-
-  init() {}
-
-  fileprivate var _storage = _StorageClass.defaultInstance
-}
-
 struct SessionProtos_AttachmentPointer {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2093,7 +1997,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   static let protoMessageName: String = _protobuf_package + ".Content"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "dataMessage"),
-    2: .same(proto: "syncMessage"),
     5: .same(proto: "receiptMessage"),
     6: .same(proto: "typingMessage"),
     7: .same(proto: "configurationMessage"),
@@ -2101,7 +2004,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
   fileprivate class _StorageClass {
     var _dataMessage: SessionProtos_DataMessage? = nil
-    var _syncMessage: SessionProtos_SyncMessage? = nil
     var _receiptMessage: SessionProtos_ReceiptMessage? = nil
     var _typingMessage: SessionProtos_TypingMessage? = nil
     var _configurationMessage: SessionProtos_ConfigurationMessage? = nil
@@ -2112,7 +2014,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
     init(copying source: _StorageClass) {
       _dataMessage = source._dataMessage
-      _syncMessage = source._syncMessage
       _receiptMessage = source._receiptMessage
       _typingMessage = source._typingMessage
       _configurationMessage = source._configurationMessage
@@ -2129,7 +2030,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   public var isInitialized: Bool {
     return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       if let v = _storage._dataMessage, !v.isInitialized {return false}
-      if let v = _storage._syncMessage, !v.isInitialized {return false}
       if let v = _storage._configurationMessage, !v.isInitialized {return false}
       return true
     }
@@ -2141,7 +2041,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       while let fieldNumber = try decoder.nextFieldNumber() {
         switch fieldNumber {
         case 1: try decoder.decodeSingularMessageField(value: &_storage._dataMessage)
-        case 2: try decoder.decodeSingularMessageField(value: &_storage._syncMessage)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._receiptMessage)
         case 6: try decoder.decodeSingularMessageField(value: &_storage._typingMessage)
         case 7: try decoder.decodeSingularMessageField(value: &_storage._configurationMessage)
@@ -2155,9 +2054,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       if let v = _storage._dataMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      }
-      if let v = _storage._syncMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
       }
       if let v = _storage._receiptMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
@@ -2178,7 +2074,6 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._dataMessage != rhs_storage._dataMessage {return false}
-        if _storage._syncMessage != rhs_storage._syncMessage {return false}
         if _storage._receiptMessage != rhs_storage._receiptMessage {return false}
         if _storage._typingMessage != rhs_storage._typingMessage {return false}
         if _storage._configurationMessage != rhs_storage._configurationMessage {return false}
@@ -3460,182 +3355,6 @@ extension SessionProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     0: .same(proto: "DELIVERY"),
     1: .same(proto: "READ"),
   ]
-}
-
-extension SessionProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SyncMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sent"),
-    8: .same(proto: "padding"),
-  ]
-
-  fileprivate class _StorageClass {
-    var _sent: SessionProtos_SyncMessage.Sent? = nil
-    var _padding: Data? = nil
-
-    static let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _sent = source._sent
-      _padding = source._padding
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
-  public var isInitialized: Bool {
-    return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._sent, !v.isInitialized {return false}
-      return true
-    }
-  }
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        switch fieldNumber {
-        case 1: try decoder.decodeSingularMessageField(value: &_storage._sent)
-        case 8: try decoder.decodeSingularBytesField(value: &_storage._padding)
-        default: break
-        }
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._sent {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      }
-      if let v = _storage._padding {
-        try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
-      }
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage, rhs: SessionProtos_SyncMessage) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._sent != rhs_storage._sent {return false}
-        if _storage._padding != rhs_storage._padding {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension SessionProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_SyncMessage.protoMessageName + ".Sent"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
-    2: .same(proto: "timestamp"),
-    3: .same(proto: "message"),
-    4: .same(proto: "expirationStartTimestamp"),
-    6: .same(proto: "isRecipientUpdate"),
-  ]
-
-  fileprivate class _StorageClass {
-    var _destination: String? = nil
-    var _timestamp: UInt64? = nil
-    var _message: SessionProtos_DataMessage? = nil
-    var _expirationStartTimestamp: UInt64? = nil
-    var _isRecipientUpdate: Bool? = nil
-
-    static let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _destination = source._destination
-      _timestamp = source._timestamp
-      _message = source._message
-      _expirationStartTimestamp = source._expirationStartTimestamp
-      _isRecipientUpdate = source._isRecipientUpdate
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
-  public var isInitialized: Bool {
-    return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._message, !v.isInitialized {return false}
-      return true
-    }
-  }
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        switch fieldNumber {
-        case 1: try decoder.decodeSingularStringField(value: &_storage._destination)
-        case 2: try decoder.decodeSingularUInt64Field(value: &_storage._timestamp)
-        case 3: try decoder.decodeSingularMessageField(value: &_storage._message)
-        case 4: try decoder.decodeSingularUInt64Field(value: &_storage._expirationStartTimestamp)
-        case 6: try decoder.decodeSingularBoolField(value: &_storage._isRecipientUpdate)
-        default: break
-        }
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._destination {
-        try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-      }
-      if let v = _storage._timestamp {
-        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
-      }
-      if let v = _storage._message {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-      }
-      if let v = _storage._expirationStartTimestamp {
-        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
-      }
-      if let v = _storage._isRecipientUpdate {
-        try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
-      }
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SessionProtos_SyncMessage.Sent, rhs: SessionProtos_SyncMessage.Sent) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._destination != rhs_storage._destination {return false}
-        if _storage._timestamp != rhs_storage._timestamp {return false}
-        if _storage._message != rhs_storage._message {return false}
-        if _storage._expirationStartTimestamp != rhs_storage._expirationStartTimestamp {return false}
-        if _storage._isRecipientUpdate != rhs_storage._isRecipientUpdate {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
 }
 
 extension SessionProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

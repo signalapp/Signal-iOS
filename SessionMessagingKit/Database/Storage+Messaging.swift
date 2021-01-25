@@ -31,10 +31,7 @@ extension Storage {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let tsMessage: TSMessage
         if message.sender == getUserPublicKey() {
-            guard let syncTarget = message.syncTarget else { return nil }
-            let tsOutgoingMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
-            tsOutgoingMessage.update(withSentRecipient: syncTarget, wasSentByUD: true, transaction: transaction)
-            tsMessage = tsOutgoingMessage
+            tsMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
         } else {
             tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         }

@@ -354,9 +354,6 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
         if let _value = dataMessage {
             builder.setDataMessage(_value)
         }
-        if let _value = syncMessage {
-            builder.setSyncMessage(_value)
-        }
         if let _value = receiptMessage {
             builder.setReceiptMessage(_value)
         }
@@ -377,10 +374,6 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
         @objc public func setDataMessage(_ valueParam: SNProtoDataMessage) {
             proto.dataMessage = valueParam.proto
-        }
-
-        @objc public func setSyncMessage(_ valueParam: SNProtoSyncMessage) {
-            proto.syncMessage = valueParam.proto
         }
 
         @objc public func setReceiptMessage(_ valueParam: SNProtoReceiptMessage) {
@@ -408,8 +401,6 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
     @objc public let dataMessage: SNProtoDataMessage?
 
-    @objc public let syncMessage: SNProtoSyncMessage?
-
     @objc public let receiptMessage: SNProtoReceiptMessage?
 
     @objc public let typingMessage: SNProtoTypingMessage?
@@ -418,13 +409,11 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
     private init(proto: SessionProtos_Content,
                  dataMessage: SNProtoDataMessage?,
-                 syncMessage: SNProtoSyncMessage?,
                  receiptMessage: SNProtoReceiptMessage?,
                  typingMessage: SNProtoTypingMessage?,
                  configurationMessage: SNProtoConfigurationMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
-        self.syncMessage = syncMessage
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
         self.configurationMessage = configurationMessage
@@ -444,11 +433,6 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
         var dataMessage: SNProtoDataMessage? = nil
         if proto.hasDataMessage {
             dataMessage = try SNProtoDataMessage.parseProto(proto.dataMessage)
-        }
-
-        var syncMessage: SNProtoSyncMessage? = nil
-        if proto.hasSyncMessage {
-            syncMessage = try SNProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
         var receiptMessage: SNProtoReceiptMessage? = nil
@@ -472,7 +456,6 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
         let result = SNProtoContent(proto: proto,
                                     dataMessage: dataMessage,
-                                    syncMessage: syncMessage,
                                     receiptMessage: receiptMessage,
                                     typingMessage: typingMessage,
                                     configurationMessage: configurationMessage)
@@ -3372,270 +3355,6 @@ extension SNProtoReceiptMessage {
 
 extension SNProtoReceiptMessage.SNProtoReceiptMessageBuilder {
     @objc public func buildIgnoringErrors() -> SNProtoReceiptMessage? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - SNProtoSyncMessageSent
-
-@objc public class SNProtoSyncMessageSent: NSObject {
-
-    // MARK: - SNProtoSyncMessageSentBuilder
-
-    @objc public class func builder() -> SNProtoSyncMessageSentBuilder {
-        return SNProtoSyncMessageSentBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoSyncMessageSentBuilder {
-        let builder = SNProtoSyncMessageSentBuilder()
-        if let _value = destination {
-            builder.setDestination(_value)
-        }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
-        if let _value = message {
-            builder.setMessage(_value)
-        }
-        if hasExpirationStartTimestamp {
-            builder.setExpirationStartTimestamp(expirationStartTimestamp)
-        }
-        if hasIsRecipientUpdate {
-            builder.setIsRecipientUpdate(isRecipientUpdate)
-        }
-        return builder
-    }
-
-    @objc public class SNProtoSyncMessageSentBuilder: NSObject {
-
-        private var proto = SessionProtos_SyncMessage.Sent()
-
-        @objc fileprivate override init() {}
-
-        @objc public func setDestination(_ valueParam: String) {
-            proto.destination = valueParam
-        }
-
-        @objc public func setTimestamp(_ valueParam: UInt64) {
-            proto.timestamp = valueParam
-        }
-
-        @objc public func setMessage(_ valueParam: SNProtoDataMessage) {
-            proto.message = valueParam.proto
-        }
-
-        @objc public func setExpirationStartTimestamp(_ valueParam: UInt64) {
-            proto.expirationStartTimestamp = valueParam
-        }
-
-        @objc public func setIsRecipientUpdate(_ valueParam: Bool) {
-            proto.isRecipientUpdate = valueParam
-        }
-
-        @objc public func build() throws -> SNProtoSyncMessageSent {
-            return try SNProtoSyncMessageSent.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoSyncMessageSent.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SessionProtos_SyncMessage.Sent
-
-    @objc public let message: SNProtoDataMessage?
-
-    @objc public var destination: String? {
-        guard proto.hasDestination else {
-            return nil
-        }
-        return proto.destination
-    }
-    @objc public var hasDestination: Bool {
-        return proto.hasDestination
-    }
-
-    @objc public var timestamp: UInt64 {
-        return proto.timestamp
-    }
-    @objc public var hasTimestamp: Bool {
-        return proto.hasTimestamp
-    }
-
-    @objc public var expirationStartTimestamp: UInt64 {
-        return proto.expirationStartTimestamp
-    }
-    @objc public var hasExpirationStartTimestamp: Bool {
-        return proto.hasExpirationStartTimestamp
-    }
-
-    @objc public var isRecipientUpdate: Bool {
-        return proto.isRecipientUpdate
-    }
-    @objc public var hasIsRecipientUpdate: Bool {
-        return proto.hasIsRecipientUpdate
-    }
-
-    private init(proto: SessionProtos_SyncMessage.Sent,
-                 message: SNProtoDataMessage?) {
-        self.proto = proto
-        self.message = message
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoSyncMessageSent {
-        let proto = try SessionProtos_SyncMessage.Sent(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SessionProtos_SyncMessage.Sent) throws -> SNProtoSyncMessageSent {
-        var message: SNProtoDataMessage? = nil
-        if proto.hasMessage {
-            message = try SNProtoDataMessage.parseProto(proto.message)
-        }
-
-        // MARK: - Begin Validation Logic for SNProtoSyncMessageSent -
-
-        // MARK: - End Validation Logic for SNProtoSyncMessageSent -
-
-        let result = SNProtoSyncMessageSent(proto: proto,
-                                            message: message)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SNProtoSyncMessageSent {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SNProtoSyncMessageSent.SNProtoSyncMessageSentBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoSyncMessageSent? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - SNProtoSyncMessage
-
-@objc public class SNProtoSyncMessage: NSObject {
-
-    // MARK: - SNProtoSyncMessageBuilder
-
-    @objc public class func builder() -> SNProtoSyncMessageBuilder {
-        return SNProtoSyncMessageBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoSyncMessageBuilder {
-        let builder = SNProtoSyncMessageBuilder()
-        if let _value = sent {
-            builder.setSent(_value)
-        }
-        if let _value = padding {
-            builder.setPadding(_value)
-        }
-        return builder
-    }
-
-    @objc public class SNProtoSyncMessageBuilder: NSObject {
-
-        private var proto = SessionProtos_SyncMessage()
-
-        @objc fileprivate override init() {}
-
-        @objc public func setSent(_ valueParam: SNProtoSyncMessageSent) {
-            proto.sent = valueParam.proto
-        }
-
-        @objc public func setPadding(_ valueParam: Data) {
-            proto.padding = valueParam
-        }
-
-        @objc public func build() throws -> SNProtoSyncMessage {
-            return try SNProtoSyncMessage.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoSyncMessage.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SessionProtos_SyncMessage
-
-    @objc public let sent: SNProtoSyncMessageSent?
-
-    @objc public var padding: Data? {
-        guard proto.hasPadding else {
-            return nil
-        }
-        return proto.padding
-    }
-    @objc public var hasPadding: Bool {
-        return proto.hasPadding
-    }
-
-    private init(proto: SessionProtos_SyncMessage,
-                 sent: SNProtoSyncMessageSent?) {
-        self.proto = proto
-        self.sent = sent
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoSyncMessage {
-        let proto = try SessionProtos_SyncMessage(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SessionProtos_SyncMessage) throws -> SNProtoSyncMessage {
-        var sent: SNProtoSyncMessageSent? = nil
-        if proto.hasSent {
-            sent = try SNProtoSyncMessageSent.parseProto(proto.sent)
-        }
-
-        // MARK: - Begin Validation Logic for SNProtoSyncMessage -
-
-        // MARK: - End Validation Logic for SNProtoSyncMessage -
-
-        let result = SNProtoSyncMessage(proto: proto,
-                                        sent: sent)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SNProtoSyncMessage {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SNProtoSyncMessage.SNProtoSyncMessageBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoSyncMessage? {
         return try! self.build()
     }
 }
