@@ -138,7 +138,7 @@ public class AddToGroupViewController: OWSTableViewController {
 
     private func didSelectGroup(_ groupThread: TSGroupThread) {
         let shortName = databaseStorage.uiRead { transaction in
-            return Environment.shared.contactsManager.shortDisplayName(for: self.address, transaction: transaction)
+            return Self.contactsManager.shortDisplayName(for: self.address, transaction: transaction)
         }
 
         guard !groupThread.groupModel.groupMembership.isMemberOfAnyKind(address) else {
