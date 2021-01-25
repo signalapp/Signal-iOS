@@ -161,12 +161,19 @@ extension MessageSender {
             throw Error.invalidClosedGroupUpdate
         }
         let group = thread.groupModel
-        // Send the update to the group
+        let members = Set(group.groupMemberIds).subtracting(membersToRemove)
+        let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
+        // Send the update to the group and generate + distribute a new encryption key pair if needed
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .membersRemoved(members: membersToRemove.map { Data(hex: $0) }))
-        MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
+        if isCurrentUserAdmin {
+            let _ = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction).done {
+                try generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members, using: transaction)
+            }
+        } else {
+            MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
+        }
         // Update the group
-        let members = [String](Set(group.groupMemberIds).subtracting(membersToRemove))
-        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
