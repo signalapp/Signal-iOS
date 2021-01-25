@@ -46,12 +46,16 @@ public struct OrderedDictionary<KeyType: Hashable, ValueType> {
         insert(key: key, at: 0, value: value)
     }
 
-    public mutating func replace(key: KeyType, value: ValueType) {
-        let oldValue = keyValueMap.updateValue(value, forKey: key)
-        owsAssert(oldValue != nil, "Key not in dictionary: \(key)")
+    @discardableResult
+    public mutating func replace(key: KeyType, value: ValueType) -> ValueType {
+        guard let oldValue = keyValueMap.updateValue(value, forKey: key) else {
+            owsFail("Key is not present in OrderedDictionary: \(key)")
+        }
 
         owsAssertDebug(orderedKeys.contains(key), "Missing key in key list: \(key)")
         owsAssertDebug(orderedKeys.count == keyValueMap.count, "Invalid contents.")
+
+        return oldValue
     }
 
     @discardableResult

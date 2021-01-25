@@ -14,9 +14,7 @@ fileprivate extension IndexSet {
 
 @objc
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
-
-    private var galleryDates: [GalleryDate] { return mediaGallery.sectionDates }
-    private var loadedGalleryItems: [GalleryDate: [MediaGalleryItem?]] = [:]
+    private var galleryDates: [GalleryDate] { return mediaGallery.sections.orderedKeys }
 
     private let thread: TSThread
     private lazy var mediaGallery: MediaGallery = {
@@ -100,7 +98,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         guard let sectionIdx = galleryDates.firstIndex(of: galleryItem.galleryDate) else {
             return nil
         }
-        guard let rowIdx = loadedGalleryItems[galleryItem.galleryDate]?.firstIndex(of: galleryItem) else {
+        guard let rowIdx = mediaGallery.sections[sectionIdx].value.firstIndex(of: galleryItem) else {
             return nil
         }
 
@@ -108,8 +106,12 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     override public func viewWillAppear(_ animated: Bool) {
-        Logger.debug("no items loaded yet, scrolling to end")
-        _ = self.mediaGallery.loadEarlierSections()
+        if mediaGallery.sections.isEmpty {
+            databaseStorage.uiRead { transaction in
+                _ = self.mediaGallery.loadEarlierSections(transaction: transaction)
+            }
+        }
+
         self.view.layoutIfNeeded()
         let lastSectionItemCount = self.collectionView(self.collectionView!,
                                                        numberOfItemsInSection: self.galleryDates.count)
@@ -239,6 +241,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     // MARK: UICollectionViewDataSource
 
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        Logger.debug("")
+
         guard galleryDates.count > 0 else {
             // empty gallery
             return 1
@@ -249,6 +253,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
+        Logger.debug("\(sectionIdx)")
 
         guard galleryDates.count > 0 else {
             // empty gallery
@@ -265,18 +270,12 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return 0
         }
 
-        guard let sectionDate = self.galleryDates[safe: sectionIdx - 1] else {
+        guard let count = mediaGallery.sections[safe: sectionIdx - 1]?.value.count else {
             owsFailDebug("unknown section: \(sectionIdx)")
             return 0
         }
 
-        if let loadedItems = self.loadedGalleryItems[sectionDate] {
-            return loadedItems.count
-        }
-
-        let result = mediaGallery.numberOfItemsInSection(for: sectionDate)
-        self.loadedGalleryItems[sectionDate] = Array(repeating: nil, count: result)
-        return result
+        return count
     }
 
     override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -377,13 +376,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
-        guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
+        let realSection = indexPath.section - 1
+        guard let sectionItems = mediaGallery.sections[safe: realSection]?.value else {
             owsFailDebug("unknown section: \(indexPath.section)")
-            return nil
-        }
-
-        guard let sectionItems = self.loadedGalleryItems[sectionDate] else {
-            owsFailDebug("no section for date: \(sectionDate)")
             return nil
         }
 
@@ -396,23 +391,18 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return loadedGalleryItem
         }
 
-        let direction: GalleryDirection
-        if case .some(.some(_)) = sectionItems[safe: indexPath.item - 1] {
-            // Have we loaded the immediate previous item already? Then we probably want later items too.
-            direction = .after
-        } else if case .some(.some(_)) = sectionItems[safe: indexPath.item + 1] {
-            // Have we loaded the immediate next item already? Then we probably want later items too.
-            direction = .before
-        } else {
-            direction = .around
+        // Only load "after" the current item in this function, to avoid shifting section indexes.
+        mediaGallery.ensureGalleryItemsLoaded(.after,
+                                              sectionIndex: indexPath.section - 1,
+                                              itemIndex: indexPath.item,
+                                              amount: 50,
+                                              shouldLoadAlbumRemainder: false) { newSectionIndexes in
+            UIView.performWithoutAnimation {
+                self.collectionView.insertSections(newSectionIndexes.shifted(by: 1))
+            }
         }
 
-        // Pass this directly to avoid a copy-on-write.
-        mediaGallery.loadGalleryItems(&self.loadedGalleryItems[sectionDate]!,
-                                      for: sectionDate,
-                                      near: indexPath.item,
-                                      direction: direction)
-        return self.loadedGalleryItems[sectionDate]![indexPath.item]!
+        return mediaGallery.sections[realSection].value[indexPath.item]!
     }
 
     func updateVisibleCells() {
@@ -711,17 +701,20 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         UIView.performWithoutAnimation {
             collectionView.performBatchUpdates({
-                let newSections: Range<Int>
-                switch direction {
-                case .before:
-                    newSections = mediaGallery.loadEarlierSections()
-                case .after:
-                    newSections = mediaGallery.loadLaterSections()
-                case .around:
-                    preconditionFailure() // unused
+                databaseStorage.uiRead { transaction in
+                    let newSections: Range<Int>
+                    switch direction {
+                    case .before:
+                        newSections = 0..<mediaGallery.loadEarlierSections(transaction: transaction)
+                    case .after:
+                        let newSectionCount = mediaGallery.loadLaterSections(transaction: transaction)
+                        newSections = (mediaGallery.sections.count - newSectionCount)..<mediaGallery.sections.count
+                    case .around:
+                        preconditionFailure() // unused
+                    }
+                    Logger.debug("found new sections: \(newSections)")
+                    collectionView.insertSections(IndexSet(newSections).shifted(by: 1))
                 }
-                Logger.debug("found new sections: \(newSections)")
-                collectionView.insertSections(IndexSet(newSections).shifted(by: 1))
             }, completion: { finished in
                 Logger.debug("performBatchUpdates finished: \(finished)")
                 self.isFetchingMoreData = false

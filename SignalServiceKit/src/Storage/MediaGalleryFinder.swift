@@ -237,6 +237,68 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         var description: String { self.rawValue }
     }
 
+    private struct QueryParts {
+        let fromTableClauses: String
+        let orderClauses: String
+        let rangeClauses: String
+
+        init(for interaction: TSInteraction? = nil,
+             in dateInterval: DateInterval? = nil,
+             order: Order = .ascending,
+             limit: Int? = nil,
+             offset: Int? = nil) {
+            owsAssertDebug(interaction == nil || dateInterval == nil,
+                           "cannot query based on both an interaction and a date interval")
+
+            let whereCondition: String = interaction.map {
+                return "AND media_gallery_items.albumMessageId = \($0.uniqueId)"
+            } ?? dateInterval.map {
+                let startMillis = $0.start.ows_millisecondsSince1970
+                // Both DateInterval and SQL BETWEEN are closed ranges, but rounding to millisecond precision loses range
+                // at the boundaries, leading to the first millisecond of a month being considered part of the previous
+                // month as well. Subtract 1ms from the end timestamp to avoid this.
+                let endMillis = $0.end.ows_millisecondsSince1970 - 1
+                return "AND \(interactionColumn: .receivedAtTimestamp) BETWEEN \(startMillis) AND \(endMillis)"
+            } ?? ""
+
+            let limitModifier = limit.map { "LIMIT \($0)" } ?? ""
+            let offsetModifier = offset.map { "OFFSET \($0)" } ?? ""
+
+            fromTableClauses = """
+                FROM "media_gallery_items"
+                INNER JOIN \(AttachmentRecord.databaseTableName)
+                    ON media_gallery_items.attachmentId = \(attachmentColumnFullyQualified: .id)
+                    AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
+                INNER JOIN \(InteractionRecord.databaseTableName)
+                    ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
+                    AND \(interactionColumn: .isViewOnceMessage) = FALSE
+                WHERE media_gallery_items.threadId = ?
+                    \(whereCondition)
+            """
+
+            orderClauses = """
+                ORDER BY
+                    \(interactionColumn: .receivedAtTimestamp) \(order),
+                    media_gallery_items.albumMessageId \(order),
+                    media_gallery_items.originalAlbumOrder \(order)
+            """
+
+            rangeClauses = """
+                \(limitModifier)
+                \(offsetModifier)
+            """
+        }
+
+        func select(_ result: String) -> String {
+            return """
+            SELECT \(result)
+            \(fromTableClauses)
+            \(orderClauses)
+            \(rangeClauses)
+            """
+        }
+    }
+
     /// An **unsanitized** interface for building queries against the `media_gallery_items` table
     /// and the associated AttachmentRecord and InteractionRecord tables.
     private static func itemsQuery(result: String = "\(AttachmentRecord.databaseTableName).*",
@@ -245,40 +307,8 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
                                    order: Order = .ascending,
                                    limit: Int? = nil,
                                    offset: Int? = nil) -> String {
-        owsAssertDebug(interaction == nil || dateInterval == nil,
-                       "cannot query based on both an interaction and a date interval")
-        let whereCondition: String = interaction.map {
-            return "AND media_gallery_items.albumMessageId = \($0.uniqueId)"
-        } ?? dateInterval.map {
-            let startMillis = $0.start.ows_millisecondsSince1970
-            // Both DateInterval and SQL BETWEEN are closed ranges, but rounding to millisecond precision loses range
-            // at the boundaries, leading to the first millisecond of a month being considered part of the previous
-            // month as well. Subtract 1ms from the end timestamp to avoid this.
-            let endMillis = $0.end.ows_millisecondsSince1970 - 1
-            return "AND \(interactionColumn: .receivedAtTimestamp) BETWEEN \(startMillis) AND \(endMillis)"
-        } ?? ""
-
-        let limitModifier = limit.map { "LIMIT \($0)" } ?? ""
-        let offsetModifier = offset.map { "OFFSET \($0)" } ?? ""
-
-        return """
-            SELECT \(result)
-            FROM "media_gallery_items"
-            INNER JOIN \(AttachmentRecord.databaseTableName)
-                ON media_gallery_items.attachmentId = \(attachmentColumnFullyQualified: .id)
-                AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
-            INNER JOIN \(InteractionRecord.databaseTableName)
-                ON media_gallery_items.albumMessageId = \(interactionColumnFullyQualified: .id)
-                AND \(interactionColumn: .isViewOnceMessage) = FALSE
-            WHERE media_gallery_items.threadId = ?
-                \(whereCondition)
-            ORDER BY
-                \(interactionColumn: .receivedAtTimestamp) \(order),
-                media_gallery_items.albumMessageId \(order),
-                media_gallery_items.originalAlbumOrder \(order)
-            \(limitModifier)
-            \(offsetModifier)
-        """
+        let queryParts = QueryParts(for: interaction, in: dateInterval, order: order, limit: limit, offset: offset)
+        return queryParts.select(result)
     }
 
     func mostRecentMediaAttachment(transaction: GRDBReadTransaction) -> TSAttachment? {
@@ -407,6 +437,29 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             owsFailDebug("attachment.grdbId was unexpectedly nil")
             return nil
         }
+
+        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
+    }
+
+    public func mediaIndex(of attachment: TSAttachmentStream,
+                           in interval: DateInterval,
+                           transaction: GRDBReadTransaction) -> Int? {
+        guard let attachmentRowId = attachment.grdbId else {
+            owsFailDebug("attachment.grdbId was unexpectedly nil")
+            return nil
+        }
+
+        let queryParts = QueryParts(in: interval)
+        let sql = """
+        SELECT mediaIndex
+        FROM (
+            SELECT
+                ROW_NUMBER() OVER (\(queryParts.orderClauses)) - 1 as mediaIndex,
+                media_gallery_items.attachmentId
+            \(queryParts.fromTableClauses)
+        )
+        WHERE attachmentId = ?
+        """
 
         return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
     }
