@@ -150,6 +150,7 @@ extension MessageSender {
     
     public static func removeMembers(_ membersToRemove: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) throws {
         // Get the group, check preconditions & prepare
+        let userPublicKey = getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
@@ -160,9 +161,13 @@ extension MessageSender {
             SNLog("Invalid closed group update.")
             throw Error.invalidClosedGroupUpdate
         }
+        guard !membersToRemove.contains(userPublicKey) else {
+            SNLog("Invalid closed group update.")
+            throw Error.invalidClosedGroupUpdate
+        }
         let group = thread.groupModel
         let members = Set(group.groupMemberIds).subtracting(membersToRemove)
-        let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
+        let isCurrentUserAdmin = group.groupAdminIds.contains(userPublicKey)
         // Send the update to the group and generate + distribute a new encryption key pair if needed
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .membersRemoved(members: membersToRemove.map { Data(hex: $0) }))
         if isCurrentUserAdmin {

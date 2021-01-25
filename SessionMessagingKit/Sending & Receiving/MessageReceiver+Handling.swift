@@ -388,6 +388,7 @@ extension MessageReceiver {
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             }
             // Generate and distribute a new encryption key pair if needed
+            // NOTE: If we're the admin we can be sure at this point that we weren't removed
             let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
             if isCurrentUserAdmin {
                 do {
