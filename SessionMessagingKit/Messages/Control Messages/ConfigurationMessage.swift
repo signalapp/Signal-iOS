@@ -4,6 +4,8 @@ import SessionUtilitiesKit
 public final class ConfigurationMessage : ControlMessage {
     public var closedGroups: Set<ClosedGroup> = []
     public var openGroups: Set<String> = []
+    
+    public override var ttl: UInt64 { 4 * 24 * 60 * 60 * 1000 }
 
     public override var isSelfSendValid: Bool { true }
     

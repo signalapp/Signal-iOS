@@ -358,11 +358,9 @@ public final class MessageSender : NSObject {
             tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
         }
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
-        // Sync the message if:
-        // • it wasn't a self-send
-        // • it was a visible message
+        // Sync the message if needed
         let userPublicKey = getUserHexEncodedPublicKey()
-        if case .contact(let publicKey) = destination, publicKey != userPublicKey, let message = message as? VisibleMessage {
+        if case .contact(let publicKey) = destination, let message = message as? VisibleMessage {
             message.syncTarget = publicKey
             // FIXME: Make this a job
             sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()

@@ -22,7 +22,7 @@ import SessionUtilitiesKit
             outgoingMessageWithTimestamp: visibleMessage.sentTimestamp!,
             in: thread,
             messageBody: visibleMessage.text,
-            attachmentIds: NSMutableArray(),
+            attachmentIds: NSMutableArray(array: visibleMessage.attachmentIDs),
             expiresInSeconds: expiration,
             expireStartedAt: 0,
             isVoiceMessage: false,
