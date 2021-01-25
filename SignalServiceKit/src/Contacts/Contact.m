@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
-@property (nonatomic, readonly) NSInteger imageHash;
+@property (nonatomic, readonly) NSUInteger imageHash;
 
 @end
 
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     _emails = [emails copy];
 
     if (imageDataToHash != nil) {
-        NSInteger hashValue = 0;
+        NSUInteger hashValue = 0;
         NSData *_Nullable hashData = [Cryptography computeSHA256Digest:imageDataToHash
                                                       truncatedToBytes:sizeof(hashValue)];
         if (!hashData) {
@@ -349,10 +349,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This method is used to de-bounce system contact fetch notifications
 // by checking for changes in the contact data.
-- (NSInteger)hash
+- (NSUInteger)hash
 {
     // base hash is some arbitrary number
-    NSInteger hash = 1825038313;
+    NSUInteger hash = 1825038313;
 
     hash ^= self.fullName.hash;
 
