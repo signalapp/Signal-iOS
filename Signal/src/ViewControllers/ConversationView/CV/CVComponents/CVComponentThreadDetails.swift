@@ -130,7 +130,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         CVLabelConfig(text: text,
                       font: .ows_dynamicTypeSubheadline,
                       textColor: Theme.secondaryTextAndIconColor,
-                      numberOfLines: 2,
+                      numberOfLines: 0,
                       lineBreakMode: .byWordWrapping,
                       textAlignment: .center)
     }

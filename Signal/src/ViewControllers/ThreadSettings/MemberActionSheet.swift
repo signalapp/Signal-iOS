@@ -292,7 +292,7 @@ private class MemberHeader: UIStackView {
 
         if let bioForDisplay = bioForDisplay {
             let label = buildSubtitleLabel(text: bioForDisplay)
-            label.numberOfLines = 2
+            label.numberOfLines = 0
             addArrangedSubview(label)
         }
 
