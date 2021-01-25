@@ -240,8 +240,8 @@ public final class MessageSender : NSObject {
                         }
                     }
                     storage.write(with: { transaction in
-                        MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-                        var shouldNotify = (message is VisibleMessage)
+                        MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
+                        var shouldNotify = (message is VisibleMessage && !isSyncMessage)
                         if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
                             shouldNotify = true
                         }
@@ -339,7 +339,7 @@ public final class MessageSender : NSObject {
     }
 
     // MARK: Success & Failure Handling
-    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
+    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, isSyncMessage: Bool = false, using transaction: Any) {
         Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction) // To later ignore self-sends in a multi device context
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
@@ -358,9 +358,11 @@ public final class MessageSender : NSObject {
             tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
         }
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
-        // Sync the message if needed
+        // Sync the message if:
+        // • it's a visible message
+        // • we didn't sync it already
         let userPublicKey = getUserHexEncodedPublicKey()
-        if case .contact(let publicKey) = destination, let message = message as? VisibleMessage {
+        if case .contact(let publicKey) = destination, !isSyncMessage, let message = message as? VisibleMessage {
             message.syncTarget = publicKey
             // FIXME: Make this a job
             sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()

@@ -13,7 +13,7 @@ public final class VisibleMessage : Message {
     @objc public var contact: Contact?
     @objc public var profile: Profile?
 
-    public override var isSelfSendValid: Bool { true }
+    public override var isSelfSendValid: Bool { syncTarget != nil }
     
     // MARK: Initialization
     public override init() { super.init() }
