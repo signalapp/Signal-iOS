@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedReplyModel.h"
@@ -198,9 +198,43 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Couldn't load sticker data.");
             return nil;
         }
+
+        // Sticker type metadata isn't reliable, so determine the
+        // sticker type by examining the actual sticker data.
+        StickerType stickerType = stickerMetadata.stickerType;
+        NSString *_Nullable contentType = stickerMetadata.contentType;
+        if (stickerType == StickerTypeWebp) {
+            ImageMetadata *imageMetadata = [stickerData imageMetadataWithPath:nil mimeType:nil];
+            switch (imageMetadata.imageFormat) {
+                case ImageFormat_Unknown:
+                    OWSFailDebug(@"Unknown sticker data format.");
+                    return nil;
+                case ImageFormat_Png:
+                    stickerType = StickerTypeApng;
+                    contentType = imageMetadata.mimeType;
+                    break;
+                case ImageFormat_Gif:
+                    stickerType = StickerTypeGif;
+                    contentType = imageMetadata.mimeType;
+                    break;
+                case ImageFormat_Webp:
+                    stickerType = StickerTypeWebp;
+                    contentType = imageMetadata.mimeType;
+                    break;
+                case ImageFormat_LottieSticker:
+                    stickerType = StickerTypeSignalLottie;
+                    contentType = imageMetadata.mimeType;
+                    break;
+                default:
+                    OWSFailDebug(
+                        @"Invalid sticker data format: %@.", NSStringForImageFormat(imageMetadata.imageFormat));
+                    return nil;
+            }
+        }
+
         const CGFloat kMaxThumbnailSizePixels = 512;
         UIImage *_Nullable thumbnailImage;
-        switch (stickerMetadata.stickerType) {
+        switch (stickerType) {
             case StickerTypeWebp:
                 thumbnailImage = [stickerData stillForWebpData];
                 break;
@@ -233,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     bodyRanges:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:thumbnailImage
-                                   contentType:stickerMetadata.contentType
+                                   contentType:contentType
                                 sourceFilename:quotedAttachment.sourceFilename
                               attachmentStream:quotedAttachment
                     thumbnailAttachmentPointer:nil

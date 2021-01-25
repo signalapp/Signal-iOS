@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
@@ -607,7 +607,12 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         // We don't need a top or bottom insets, since we pin to the top and bottom layout guides.
         self.automaticallyAdjustsScrollViewInsets = NO;
     } else {
-        [self.tableView autoPinEdgesToSuperviewEdges];
+        if (self.shouldAvoidKeyboard) {
+            [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeBottom];
+            [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableView avoidNotch:YES];
+        } else {
+            [self.tableView autoPinEdgesToSuperviewEdges];
+        }
     }
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];

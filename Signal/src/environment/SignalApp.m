@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalApp.h"
@@ -50,7 +50,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
     [self handleCrashDetection];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self warmAvailableEmojiCacheAsync]; }];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self warmCachesAsync]; }];
 
     return self;
 }

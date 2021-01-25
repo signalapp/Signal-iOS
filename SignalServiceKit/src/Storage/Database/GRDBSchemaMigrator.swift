@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -92,6 +92,8 @@ public class GRDBSchemaMigrator: NSObject {
         case updateMarkedUnreadIndex
         case addGroupCallMessage2
         case addGroupCallEraIdIndex
+        case addProfileBio
+        case addWasIdentityVerified
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -124,10 +126,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_turnScreenSecurityOnForExistingUsers
         case dataMigration_disableLinkPreviewForExistingUsers
         case dataMigration_groupIdMapping
+        case dataMigration_disableSharingSuggestionsForExistingUsers
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 16
+    public static let grdbSchemaVersionLatest: UInt = 18
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -901,6 +904,29 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(MigrationId.addProfileBio.rawValue) { db in
+            do {
+                try db.alter(table: "model_OWSUserProfile") { table in
+                    table.add(column: "bio", .text)
+                    table.add(column: "bioEmoji", .text)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addWasIdentityVerified.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { table in
+                    table.add(column: "wasIdentityVerified", .boolean)
+                }
+
+                try db.execute(sql: "UPDATE model_TSInteraction SET wasIdentityVerified = 0")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -1045,6 +1071,12 @@ public class GRDBSchemaMigrator: NSObject {
                                                 forGroupId: groupThread.groupModel.groupId,
                                                 transaction: transaction.asAnyWrite)
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_disableSharingSuggestionsForExistingUsers.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            SSKPreferences.setAreSharingSuggestionsEnabled(false, transaction: transaction.asAnyWrite)
         }
     }
 }

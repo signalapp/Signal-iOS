@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,6 +37,9 @@ public class ConversationStyle: NSObject {
 
     @objc
     public let isDarkThemeEnabled: Bool
+
+    @objc
+    public let hasWallpaper: Bool
 
     private let dynamicBodyTypePointSize: CGFloat
     private let primaryTextColor: UIColor
@@ -80,11 +83,6 @@ public class ConversationStyle: NSObject {
     public let contentWidth: CGFloat
 
     @objc
-    public var selectableCenteredContentWidth: CGFloat {
-        viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing) - (Self.selectionViewWidth + Self.messageStackSpacing) * 2
-    }
-
-    @objc
     public var headerViewContentWidth: CGFloat {
         viewWidth - (headerGutterLeading + headerGutterTrailing)
     }
@@ -117,16 +115,27 @@ public class ConversationStyle: NSObject {
     @objc
     public let lastTextLineAxis: CGFloat
 
+    // Incoming and outgoing messages are visually distinguished
+    // by leading and trailing alignment, respectively.
+    //
+    // Reserve a space so that in the most compressed layouts
+    // (small form factor, group avatar, multi-select, etc.)
+    // there is space for them to align in these directions.
+    @objc
+    public static let messageDirectionSpacing: CGFloat = 12
+
     @objc
     public required init(type: ConversationStyleType,
                          thread: TSThread,
-                         viewWidth: CGFloat) {
+                         viewWidth: CGFloat,
+                         hasWallpaper: Bool) {
 
         self.type = type
         self.conversationColor = ConversationStyle.conversationColor(thread: thread)
         self.viewWidth = viewWidth
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
+        self.hasWallpaper = hasWallpaper
 
         gutterLeading = thread.isGroupThread ? 12 : 16
         gutterTrailing = 16
@@ -155,6 +164,9 @@ public class ConversationStyle: NSObject {
         contentWidth = viewWidth - (gutterLeading + gutterTrailing)
 
         var maxMessageWidth = contentWidth - (Self.selectionViewWidth + Self.messageStackSpacing)
+
+        maxMessageWidth -= Self.messageDirectionSpacing
+
         if thread.isGroupThread {
             maxMessageWidth -= (Self.groupMessageAvatarDiameter + Self.messageStackSpacing)
         }
@@ -181,7 +193,11 @@ public class ConversationStyle: NSObject {
 
     @objc
     private var defaultBubbleColorIncoming: UIColor {
-        isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
+        if hasWallpaper {
+            return isDarkThemeEnabled ? .ows_gray95 : .white
+        } else {
+            return isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
+        }
     }
 
     @objc
@@ -254,7 +270,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
-        if message.wasRemotelyDeleted {
+        if message.wasRemotelyDeleted && !hasWallpaper {
             return primaryTextColor
         } else if message is TSIncomingMessage {
             return bubbleTextColorIncoming
@@ -346,6 +362,7 @@ public class ConversationStyle: NSObject {
             dynamicBodyTypePointSize == other.dynamicBodyTypePointSize &&
             conversationColor == other.conversationColor &&
             isDarkThemeEnabled == other.isDarkThemeEnabled &&
+            hasWallpaper == other.hasWallpaper &&
             maxMessageWidth == other.maxMessageWidth &&
             maxMediaMessageWidth == other.maxMediaMessageWidth &&
             textInsets == other.textInsets &&

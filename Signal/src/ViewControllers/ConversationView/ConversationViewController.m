@@ -50,7 +50,6 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSFormat.h>
@@ -167,7 +166,8 @@ typedef enum : NSUInteger {
 
     ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeInitial
                                                                             thread:threadViewModel.threadRecord
-                                                                         viewWidth:0];
+                                                                         viewWidth:0
+                                                                      hasWallpaper:threadViewModel.hasWallpaper];
     _viewState = [[CVViewState alloc] initWithThreadViewModel:threadViewModel conversationStyle:conversationStyle];
     self.viewState.delegate = self;
 
@@ -461,6 +461,7 @@ typedef enum : NSUInteger {
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.allowsMultipleSelection = YES;
+    self.collectionView.backgroundColor = UIColor.clearColor;
 
     // To minimize time to initial apearance, we initially disable prefetching, but then
     // re-enable it once the view has appeared.
@@ -476,6 +477,17 @@ typedef enum : NSUInteger {
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
 
     [self registerReuseIdentifiers];
+
+    UIView *wallpaperContainer = self.viewState.wallpaperContainer;
+    [self.view addSubview:wallpaperContainer];
+    [wallpaperContainer autoPinEdgesToSuperviewEdges];
+    [self setupWallpaper];
+
+    // The view controller will only automatically adjust content insets for a
+    // scrollView at index 0, so we need the collection view to remain subview index 0.
+    // But the wallpaper should appear visually behind the collection view.
+    wallpaperContainer.layer.zPosition = -1;
+    wallpaperContainer.userInteractionEnabled = NO;
 
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -566,7 +578,7 @@ typedef enum : NSUInteger {
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     [self updateCellsVisible];
-    [self.cellMediaCache removeAllObjects];
+    [self.mediaCache removeAllObjects];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -576,7 +588,7 @@ typedef enum : NSUInteger {
     self.isWaitingForDeceleration = NO;
     [self saveDraft];
     [self markVisibleMessagesAsRead];
-    [self.cellMediaCache removeAllObjects];
+    [self.mediaCache removeAllObjects];
     [self cancelReadTimer];
     [self dismissPresentedViewControllerIfNecessary];
     [self saveLastVisibleSortIdAndOnScreenPercentage];
@@ -965,12 +977,14 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self autoLoadMoreIfNecessary];
-    [self updateV2GroupIfNecessary];
+    if (!SSKDebugFlags.reduceLogChatter) {
+        [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
+        [self updateV2GroupIfNecessary];
+    }
 
     if (!self.viewHasEverAppeared) {
         // To minimize time to initial apearance, we initially disable prefetching, but then
@@ -990,12 +1004,6 @@ typedef enum : NSUInteger {
             if (!self.requestView) {
                 [self popKeyBoard];
             }
-
-            // When we programmatically pop the keyboard here,
-            // the scroll position gets into a weird state and
-            // content is hidden behind the keyboard so we restore
-            // it to the default position.
-            [self scrollToInitialPositionAnimated:YES];
             break;
         case ConversationViewActionAudioCall:
             [self startIndividualAudioCall];
@@ -1011,6 +1019,11 @@ typedef enum : NSUInteger {
             break;
     }
 
+    [self scrollToInitialPositionAnimated:NO];
+    if (self.viewState.hasAppliedFirstLoad) {
+        [self clearInitialScrollState];
+    }
+
     // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
 
@@ -1021,7 +1034,9 @@ typedef enum : NSUInteger {
     if (!self.viewState.hasTriedToMigrateGroup) {
         self.viewState.hasTriedToMigrateGroup = YES;
 
-        [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+        if (!SSKDebugFlags.reduceLogChatter) {
+            [GroupsV2Migration autoMigrateThreadIfNecessary:self.thread];
+        }
     }
 
     [self viewDidAppearDidComplete];
@@ -1062,7 +1077,7 @@ typedef enum : NSUInteger {
     [self saveDraft];
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
-    [self.cellMediaCache removeAllObjects];
+    [self.mediaCache removeAllObjects];
     [self.inputToolbar clearDesiredKeyboard];
 
     self.isUserScrolling = NO;
@@ -1612,9 +1627,10 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.attachmentDownloads downloadAttachmentsForMessageId:message.uniqueId
+    [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
         attachmentGroup:AttachmentGroupAllAttachmentsIncoming
         downloadBehavior:AttachmentDownloadBehaviorBypassAll
+        touchMessageImmediately:YES
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
         }
@@ -2098,28 +2114,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - Attachment Picking: Documents
 
-- (void)showAttachmentDocumentPickerMenu
-{
-    ActionSheetController *actionSheet = [ActionSheetController new];
-
-    ActionSheetAction *mediaAction = [[ActionSheetAction alloc]
-        initWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
-                style:ActionSheetActionStyleDefault
-              handler:^(ActionSheetAction *action) { [self chooseFromLibraryAsDocument:YES]; }];
-    [actionSheet addAction:mediaAction];
-
-    ActionSheetAction *browseAction = [[ActionSheetAction alloc]
-        initWithTitle:NSLocalizedString(@"BROWSE_FILES_BUTTON", @"browse files option from file sharing menu")
-                style:ActionSheetActionStyleDefault
-              handler:^(ActionSheetAction *action) { [self showDocumentPicker]; }];
-    [actionSheet addAction:browseAction];
-
-    [actionSheet addAction:OWSActionSheets.cancelAction];
-
-    [self dismissKeyBoard];
-    [self presentActionSheet:actionSheet];
-}
-
 - (void)showDocumentPicker
 {
     NSString *allItems = (__bridge NSString *)kUTTypeItem;
@@ -2250,10 +2244,9 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
                                                                       dataUTI:type
-                                                                 imageQuality:TSImageQualityOriginal];
+                                                                 imageQuality:TSImageQualityMedium];
     [self showApprovalDialogForAttachment:attachment];
 }
 
@@ -2284,14 +2277,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)chooseFromLibraryAsMedia
-{
-    OWSAssertIsOnMainThread();
-
-    [self chooseFromLibraryAsDocument:NO];
-}
-
-- (void)chooseFromLibraryAsDocument:(BOOL)shouldTreatAsDocument
+- (void)chooseFromLibrary
 {
     OWSAssertIsOnMainThread();
 
@@ -2303,13 +2289,7 @@ typedef enum : NSUInteger {
             return;
         }
 
-        SendMediaNavigationController *pickerModal;
-        if (shouldTreatAsDocument) {
-            pickerModal = [SendMediaNavigationController asMediaDocumentPicker];
-        } else {
-            pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
-        }
-
+        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
@@ -2661,7 +2641,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self chooseFromLibraryAsMedia];
+    [self chooseFromLibrary];
 }
 
 - (void)gifButtonPressed
@@ -2675,7 +2655,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self showAttachmentDocumentPickerMenu];
+    [self showDocumentPicker];
 }
 
 - (void)contactButtonPressed
@@ -2955,7 +2935,8 @@ typedef enum : NSUInteger {
 
     // make sure toolbar extends below iPhoneX home button.
     self.view.backgroundColor = Theme.toolbarBackgroundColor;
-    self.collectionView.backgroundColor = Theme.backgroundColor;
+
+    [self updateWallpaperView];
 
     [self updateNavigationTitle];
     [self updateNavigationBarSubtitleLabel];
@@ -3446,6 +3427,8 @@ typedef enum : NSUInteger {
     OWSAssertDebug(stickerInfo);
 
     OWSLogVerbose(@"Sending sticker.");
+
+    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
 
     TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithInstalledSticker:stickerInfo thread:self.thread];
     [self messageWasSent:message];
@@ -4334,12 +4317,17 @@ typedef enum : NSUInteger {
 }
 
 - (void)cvc_didTapGenericAttachment:(CVComponentGenericAttachment *_Nonnull)attachment
+                    inComponentView:(id <CVComponentView> _Nonnull)componentView
 {
     OWSAssertIsOnMainThread();
 
-    QLPreviewController *previewController = [[QLPreviewController alloc] init];
-    previewController.dataSource = attachment;
-    [self presentViewController:previewController animated:YES completion:nil];
+    if (attachment.canQuickLook) {
+        QLPreviewController *previewController = [[QLPreviewController alloc] init];
+        previewController.dataSource = attachment;
+        [self presentViewController:previewController animated:YES completion:nil];
+    } else {
+        [attachment showShareUIFromView:componentView.rootView];
+    }
 }
 
 - (void)cvc_didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply

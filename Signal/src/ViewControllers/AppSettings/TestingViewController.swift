@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -173,6 +173,32 @@ class TestingViewController: OWSTableViewController {
             section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Groups v2: Auto-migrate all v1 groups")) {
                 GroupsV2Migration.tryToAutoMigrateAllGroups(shouldLimitBatchSize: false)
             })
+            contents.addSection(section)
+        }
+
+        // MARK: - Other
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("All attachment downloads will fail.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Force attachment download failures."),
+                                        testableFlag: DebugFlags.forceAttachmentDownloadFailures))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Attachment downloads will be blocked by pending message request.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Attachment download vs. message request."),
+                                        testableFlag: DebugFlags.forceAttachmentDownloadPendingMessageRequest))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Attachment downloads will be blocked by manual download.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Attachment download vs. manual download."),
+                                        testableFlag: DebugFlags.forceAttachmentDownloadPendingManualDownload))
             contents.addSection(section)
         }
 

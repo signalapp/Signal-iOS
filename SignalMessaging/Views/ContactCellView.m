@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactCellView.h"
@@ -114,7 +114,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 - (void)configureFontsAndColors
 {
     self.nameLabel.font = OWSTableItem.primaryLabelFont;
-    self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
+    self.subtitleLabel.font = [UIFont ows_dynamicTypeCaption1ClampedFont];
     self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
 
     self.nameLabel.textColor = self.forceDarkAppearance ? Theme.darkThemePrimaryColor : Theme.primaryTextColor;
@@ -315,6 +315,11 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle
 {
     self.subtitleLabel.attributedText = attributedSubtitle;
+}
+
+- (void)setSubtitle:(nullable NSString *)subtitle
+{
+    [self setAttributedSubtitle:subtitle.asAttributedString];
 }
 
 - (BOOL)hasAccessoryText

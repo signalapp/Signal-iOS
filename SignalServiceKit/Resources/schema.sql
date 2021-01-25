@@ -108,6 +108,7 @@ CREATE
             ,"hasEnded" BOOLEAN
             ,"creatorUuid" TEXT
             ,"joinedMemberUuids" BLOB
+            ,"wasIdentityVerified" BOOLEAN
         )
 ;
 
@@ -340,6 +341,8 @@ CREATE
             ,"isUuidCapable" BOOLEAN NOT NULL DEFAULT 0
             ,"lastFetchDate" DOUBLE
             ,"lastMessagingDate" DOUBLE
+            ,"bio" TEXT
+            ,"bioEmoji" TEXT
         )
 ;
 

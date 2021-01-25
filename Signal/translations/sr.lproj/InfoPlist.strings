@@ -1,4 +1,4 @@
-NSAppleMusicUsageDescription = "Signal-у користи Apple Music за репродукцију медијских прилога.";
+NSAppleMusicUsageDescription = "Signal користи Apple Music за репродукцију медијских прилога.";
 NSCameraUsageDescription = "Signal користи вашу камеру за фотографисање и видео позиве.";
 NSContactsUsageDescription = "Signal користи именик да пронађе ваше познанике. Ваше контакте не складиштимо на серверу.";
 NSFaceIDUsageDescription = "Signal-ово закључавање екрана користи Face ID.";

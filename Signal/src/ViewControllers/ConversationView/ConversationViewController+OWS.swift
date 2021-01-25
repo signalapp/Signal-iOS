@@ -361,7 +361,12 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
 }
 
 extension ConversationViewController: MediaPresentationContextProvider {
-    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard case let .gallery(galleryItem) = item else {
+            owsFailDebug("Unexpected media type")
+            return nil
+        }
+
         guard let indexPath = ensureIndexPath(of: galleryItem.message) else {
             owsFailDebug("indexPath was unexpectedly nil")
             return nil

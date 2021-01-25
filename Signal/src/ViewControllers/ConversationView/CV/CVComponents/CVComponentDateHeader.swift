@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -47,9 +47,9 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     }
 
     private var cellLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: 8,
+        UIEdgeInsets(top: 0,
                      leading: conversationStyle.headerGutterLeading,
-                     bottom: 8,
+                     bottom: 0,
                      trailing: conversationStyle.headerGutterTrailing)
     }
 
@@ -66,6 +66,57 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         }
 
         titleLabelConfig.applyForRendering(label: componentView.titleLabel)
+
+        let hStackView = componentView.hStackView
+        let contentView = componentView.contentView
+        let titleLabel = componentView.titleLabel
+
+        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
+        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
+
+        let hasWallpaper = conversationStyle.hasWallpaper
+        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
+        componentView.hasWallpaper = hasWallpaper
+
+        let isReusing = componentView.rootView.superview != nil
+
+        if !isReusing {
+            hStackView.apply(config: hStackConfig)
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
+
+            hStackView.addArrangedSubview(leadingSpacer)
+            hStackView.addArrangedSubview(contentView)
+            hStackView.addArrangedSubview(trailingSpacer)
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        }
+
+        if !isReusing || themeHasChanged || wallpaperModeHasChanged {
+            titleLabel.removeFromSuperview()
+
+            componentView.blurView?.removeFromSuperview()
+            componentView.blurView = nil
+
+            if hasWallpaper {
+                let blurView = buildBlurView(conversationStyle: conversationStyle)
+                componentView.blurView = blurView
+
+                contentView.addSubview(blurView)
+                blurView.autoPinEdgesToSuperviewEdges()
+
+                blurView.clipsToBounds = true
+                blurView.layer.cornerRadius = 8
+
+                blurView.contentView.addSubview(titleLabel)
+            } else {
+                contentView.addSubview(titleLabel)
+            }
+
+            titleLabel.autoPinWidthToSuperview(withMargin: titleHMargin)
+            titleLabel.autoPinHeightToSuperview(withMargin: titleVMargin)
+        }
     }
 
     static func buildState(interaction: TSInteraction) -> State {
@@ -82,6 +133,16 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                              textAlignment: .center)
     }
 
+    private var titleHMargin: CGFloat { 10 }
+    private var titleVMargin: CGFloat { 4 }
+
+    private var hStackConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .horizontal,
+                          alignment: .center,
+                          spacing: 0,
+                          layoutMargins: .zero)
+    }
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
@@ -91,10 +152,11 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let cellLayoutMargins = self.cellLayoutMargins
         var height: CGFloat = cellLayoutMargins.totalHeight
 
-        let availableWidth = max(0, maxWidth - cellLayoutMargins.totalWidth)
+        let availableWidth = max(0, maxWidth - cellLayoutMargins.totalWidth - (titleHMargin * 2))
         let labelSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: availableWidth)
 
         height += labelSize.height
+        height += titleVMargin * 2
 
         return CGSizeCeil(CGSize(width: width, height: height))
     }
@@ -106,12 +168,19 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     @objc
     public class CVComponentViewDateHeader: NSObject, CVComponentView {
 
+        fileprivate let hStackView = OWSStackView(name: "dateHeader.hStackView")
+        fileprivate let contentView = UIView()
         fileprivate let titleLabel = UILabel()
+
+        fileprivate var blurView: UIVisualEffectView?
+
+        fileprivate var hasWallpaper = false
+        fileprivate var isDarkThemeEnabled = false
 
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
-            titleLabel
+            hStackView
         }
 
         // MARK: -
@@ -125,7 +194,15 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             owsAssertDebug(isDedicatedCellView)
 
             if !isDedicatedCellView {
+                hStackView.reset()
+
                 titleLabel.removeFromSuperview()
+
+                blurView?.removeFromSuperview()
+                blurView = nil
+
+                hasWallpaper = false
+                isDarkThemeEnabled = false
             }
             titleLabel.text = nil
         }

@@ -7,12 +7,12 @@
 #import "DebugUIContacts.h"
 #import "DebugUIMessagesAction.h"
 #import "DebugUIMessagesAssetLoader.h"
-#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -1377,7 +1377,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
 
     ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeDefault
                                                                             thread:thread
-                                                                         viewWidth:0];
+                                                                         viewWidth:0
+                                                                      hasWallpaper:NO];
     [actions addObjectsFromArray:@[
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"
@@ -3476,6 +3477,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSAssertDebug(thread);
 
+    SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
+    if ([thread isKindOfClass:TSContactThread.class]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        otherAddress = contactThread.contactAddress;
+    }
+
     NSMutableArray<TSInteraction *> *result = [NSMutableArray new];
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -3568,9 +3575,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                               createdInExistingGroup:NO]];
     }
 
-    [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread
-                                                              address:[[SignalServiceAddress alloc]
-                                                                          initWithPhoneNumber:@"+19174054215"]]];
+    [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread address:otherAddress]];
 
     [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeSessionDidEnd]];
     // TODO: customMessage?
@@ -3578,38 +3583,32 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     // TODO: customMessage?
     [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupQuit]];
 
-    [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                             initWithThread:thread
-                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                          verificationState:OWSVerificationStateDefault
-                              isLocalChange:YES]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:thread
+                                                               recipientAddress:otherAddress
+                                                              verificationState:OWSVerificationStateDefault
+                                                                  isLocalChange:YES]];
 
-    [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                             initWithThread:thread
-                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                          verificationState:OWSVerificationStateVerified
-                              isLocalChange:YES]];
-    [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                             initWithThread:thread
-                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                          verificationState:OWSVerificationStateNoLongerVerified
-                              isLocalChange:YES]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:thread
+                                                               recipientAddress:otherAddress
+                                                              verificationState:OWSVerificationStateVerified
+                                                                  isLocalChange:YES]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:thread
+                                                               recipientAddress:otherAddress
+                                                              verificationState:OWSVerificationStateNoLongerVerified
+                                                                  isLocalChange:YES]];
 
-    [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                             initWithThread:thread
-                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                          verificationState:OWSVerificationStateDefault
-                              isLocalChange:NO]];
-    [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                             initWithThread:thread
-                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                          verificationState:OWSVerificationStateVerified
-                              isLocalChange:NO]];
-    [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                             initWithThread:thread
-                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                          verificationState:OWSVerificationStateNoLongerVerified
-                              isLocalChange:NO]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:thread
+                                                               recipientAddress:otherAddress
+                                                              verificationState:OWSVerificationStateDefault
+                                                                  isLocalChange:NO]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:thread
+                                                               recipientAddress:otherAddress
+                                                              verificationState:OWSVerificationStateVerified
+                                                                  isLocalChange:NO]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:thread
+                                                               recipientAddress:otherAddress
+                                                              verificationState:OWSVerificationStateNoLongerVerified
+                                                                  isLocalChange:NO]];
 
     [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
                                                  withTransaction:transaction]];
@@ -3630,10 +3629,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(blockingSNChangeMessage);
     [result addObject:blockingSNChangeMessage];
 
-    [result addObject:[[TSErrorMessage alloc]
-                             initWithThread:thread
-                          failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                    address:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]]];
+    [result addObject:[TSErrorMessage nonblockingIdentityChangeInThread:thread
+                                                                address:otherAddress
+                                                    wasIdentityVerified:NO]];
+    [result addObject:[TSErrorMessage nonblockingIdentityChangeInThread:thread
+                                                                address:otherAddress
+                                                    wasIdentityVerified:YES]];
 
     return result;
 }

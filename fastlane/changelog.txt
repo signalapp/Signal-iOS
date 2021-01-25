@@ -1,1 +1,13 @@
-Introducing group calling! Group calls are free, private, and end-to-end encrypted, like everything else on Signal. To get started, open a Signal group and tap the video call button. Available in New Groups only.
+This update is filled with dozens of changes! Here are a few highlights:
+
+• Adjust your media download preferences to control when attachments get downloaded (Settings > Data Usage).
+• We added support for longer group names in languages like Hindi where the previous limit was too small.
+• We raised the group call limit from 5 to 8, so now you can call it even.
+• Share something funny from other apps with multiple Signal chats at the same time.
+• Use the optional shortcut to enable a shareable group link when you create a new group.
+• Additional file attachments can now be opened right from within the app.
+• Now you can easily see the latest Signal profile photo that your contacts have chosen, but we added an option to always show system profile photos if you prefer the old behavior (or start to miss the blurry photo of them from 9 years ago that has travelled across multiple SIM cards).
+• Video quality and size improvements.
+• We fixed a bug that prevented iPad users from tapping Send when sharing content from other apps, and another bug that prevented WebP images from sending properly on iOS 14.
+
+Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

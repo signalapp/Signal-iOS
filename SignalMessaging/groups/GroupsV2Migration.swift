@@ -163,6 +163,9 @@ public extension GroupsV2Migration {
     static func tryToAutoMigrateAllGroups(shouldLimitBatchSize: Bool) {
         AssertIsOnMainThread()
 
+        guard !DebugFlags.reduceLogChatter else {
+            return
+        }
         guard FeatureFlags.groupsV2Migrations else {
             return
         }

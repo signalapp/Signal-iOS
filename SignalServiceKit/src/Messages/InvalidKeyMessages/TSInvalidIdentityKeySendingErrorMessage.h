@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -17,11 +17,6 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
 @property (nonatomic, readonly) NSString *messageId;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
-                          address:(nullable SignalServiceAddress *)address NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -52,9 +47,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage :
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+             wasIdentityVerified:(BOOL)wasIdentityVerified
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:messageId:preKeyBundle:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:wasIdentityVerified:messageId:preKeyBundle:));
 
 // clang-format on
 

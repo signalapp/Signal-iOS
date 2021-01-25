@@ -168,7 +168,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else if componentState.isSticker {
             return true
         } else if isBorderlessViewOnceMessage {
-            return true
+            return false
         } else {
             return isBorderless
         }
@@ -301,7 +301,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         let bottomInset = reactions != nil ? reactionsVProtrusion : 0
         componentView.layoutConstraints.append(rootView.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomInset))
-        componentView.layoutConstraints.append(rootView.autoSetDimension(.width, toSize: cellMeasurement.cellSize.width))
 
         self.swipeToReplyReference = nil
         self.swipeToReplyProgress = swipeToReplyState.getProgress(interactionId: interaction.uniqueId)
@@ -329,12 +328,22 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else if hasSendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
             let sendFailureBadge = UIImageView()
+            sendFailureBadge.contentMode = .center
             sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: .ows_accentRed)
             sendFailureBadge.autoSetDimensions(to: CGSize(square: sendFailureBadgeSize))
             cellView.addSubview(sendFailureBadge)
             sendFailureBadge.autoPinEdge(toSuperviewMargin: .trailing)
-            let sendFailureBadgeBottomMargin = round(conversationStyle.lastTextLineAxis - sendFailureBadgeSize * 0.5)
-            sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView, withOffset: -sendFailureBadgeBottomMargin)
+
+            if conversationStyle.hasWallpaper {
+                sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+                sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
+                sendFailureBadge.clipsToBounds = true
+
+                sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView)
+            } else {
+                let sendFailureBadgeBottomMargin = round(conversationStyle.lastTextLineAxis - sendFailureBadgeSize * 0.5)
+                sendFailureBadge.autoPinEdge(.bottom, to: .bottom, of: rootView, withOffset: -sendFailureBadgeBottomMargin)
+            }
 
             rootView.autoPinEdge(.trailing, to: .leading, of: sendFailureBadge, withOffset: -sendFailureBadgeSpacing)
         } else {
@@ -352,7 +361,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var selectionViewSpacing: CGFloat { ConversationStyle.messageStackSpacing }
     private var selectionViewWidth: CGFloat { ConversationStyle.selectionViewWidth }
-    private let sendFailureBadgeSize: CGFloat = 24
+    private var sendFailureBadgeSize: CGFloat { conversationStyle.hasWallpaper ? 40 : 24 }
     private var sendFailureBadgeSpacing: CGFloat { ConversationStyle.messageStackSpacing }
 
     // The "message" contents of this component are vertically
@@ -557,14 +566,30 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         componentView.swipeToReplyContentView = swipeToReplyContentView
         let swipeToReplyIconView = componentView.swipeToReplyIconView
-        swipeToReplyIconView.setTemplateImageName("reply-outline-24",
-                                                  tintColor: .ows_gray45)
-        swipeToReplyIconView.contentMode = .scaleAspectFit
+        swipeToReplyIconView.contentMode = .center
         swipeToReplyIconView.alpha = 0
         cellHStack.addSubview(swipeToReplyIconView)
         cellHStack.sendSubviewToBack(swipeToReplyIconView)
         swipeToReplyIconView.autoAlignAxis(.horizontal, toSameAxisOf: swipeToReplyContentView)
         swipeToReplyIconView.autoPinEdge(.leading, to: .leading, of: swipeToReplyContentView, withOffset: 8)
+
+        if conversationStyle.hasWallpaper {
+            swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+            swipeToReplyIconView.layer.cornerRadius = 17
+            swipeToReplyIconView.clipsToBounds = true
+            swipeToReplyIconView.autoSetDimensions(to: CGSize(square: 34))
+
+            swipeToReplyIconView.setTemplateImageName("reply-outline-20",
+                                                      tintColor: .ows_gray45)
+        } else {
+            swipeToReplyIconView.backgroundColor = .clear
+            swipeToReplyIconView.layer.cornerRadius = 0
+            swipeToReplyIconView.clipsToBounds = false
+            swipeToReplyIconView.autoSetDimensions(to: CGSize(square: 24))
+
+            swipeToReplyIconView.setTemplateImageName("reply-outline-24",
+                                                      tintColor: .ows_gray45)
+        }
 
         if let reactions = self.reactions {
             let reactionsView = configureSubcomponentView(messageView: componentView,
@@ -613,25 +638,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                of: outerContentView,
                                                withOffset: -reactionsVOverlap)
         }
-
-        for componentAndView in activeComponentAndViews(messageView: componentView) {
-            let subcomponent = componentAndView.component
-            let subcomponentView = componentAndView.componentView
-            guard let incompleteAttachmentInfo = subcomponent.incompleteAttachmentInfo(componentView: subcomponentView) else {
-                continue
-            }
-            let attachment = incompleteAttachmentInfo.attachment
-            let attachmentView = incompleteAttachmentInfo.attachmentView
-            let shouldShowDownloadProgress = incompleteAttachmentInfo.shouldShowDownloadProgress
-            guard let progressViewToken = addProgressViewsIfNecessary(attachment: attachment,
-                                                                      attachmentView: attachmentView,
-                                                                      hostView: outerContentView,
-                                                                      shouldShowDownloadProgress: shouldShowDownloadProgress) else {
-                Logger.warn("Could not add progress view(s).")
-                continue
-            }
-            componentView.progressViewTokens.append(progressViewToken)
-        }
     }
 
     private var cellLayoutMargins: UIEdgeInsets {
@@ -660,7 +666,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var bubbleBackgroundColor: UIColor {
-        if wasRemotelyDeleted {
+        if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
             return Theme.backgroundColor
         }
         if isBubbleTransparent {
@@ -671,7 +677,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var bubbleStrokeColor: UIColor? {
         if wasRemotelyDeleted || isBorderlessViewOnceMessage {
-            return Theme.outlineColor
+            return conversationStyle.hasWallpaper ? nil : Theme.outlineColor
         } else {
             return nil
         }
@@ -726,7 +732,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // remaining space in the "outer" stack.
         let contentMaxWidth = max(0,
                                   min(conversationStyle.maxMessageWidth,
-                                      outerStackViewMaxWidth - outerStackViewSize.width))
+                                      outerStackViewMaxWidth - (outerStackViewSize.width +
+                                                                    ConversationStyle.messageDirectionSpacing)))
 
         func measureStackView(config: CVStackViewConfig,
                               componentKeys keys: [CVComponentKey]) -> CGSize {
@@ -1055,8 +1062,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate var layoutConstraints = [NSLayoutConstraint]()
 
-        fileprivate var progressViewTokens = [ProgressViewToken]()
-
         public var isDedicatedCellView = false
 
         public var rootView: UIView {
@@ -1221,11 +1226,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             NSLayoutConstraint.deactivate(layoutConstraints)
             layoutConstraints = []
-
-            for progressViewToken in progressViewTokens {
-                progressViewToken.reset()
-            }
-            progressViewTokens = []
         }
 
         fileprivate func removeSwipeToReplyAnimations() {

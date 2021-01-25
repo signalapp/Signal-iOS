@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "PrivacySettingsTableViewController.h"
@@ -15,6 +15,7 @@
 
 @import SafariServices;
 @import PromiseKit;
+@import Intents;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -158,6 +159,31 @@ NS_ASSUME_NONNULL_BEGIN
         @"SETTINGS_LINK_PREVIEWS_FOOTER", @"Footer for setting for enabling & disabling link previews.");
     [contents addSection:linkPreviewsSection];
 
+    OWSTableSection *sharingSuggestionsSection = [OWSTableSection new];
+    [sharingSuggestionsSection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SHARING_SUGGESTIONS",
+                                                     @"Setting for enabling & disabling sharing suggestions.")
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"sharing_SUGGESTIONS"]
+                    isOnBlock:^{
+                        if (!weakSelf) {
+                            return NO;
+                        }
+                        PrivacySettingsTableViewController *strongSelf = weakSelf;
+
+                        __block BOOL areSharingSuggestionsEnabled;
+                        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                            areSharingSuggestionsEnabled =
+                                [SSKPreferences areSharingSuggestionsEnabledWithTransaction:transaction];
+                        }];
+                        return areSharingSuggestionsEnabled;
+                    }
+                    isEnabledBlock:^{ return YES; }
+                    target:weakSelf
+                    selector:@selector(didToggleSharingSuggestionsEnabled:)]];
+    sharingSuggestionsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_SHARING_SUGGESTIONS_FOOTER", @"Footer for setting for enabling & disabling sharing suggestions.");
+    [contents addSection:sharingSuggestionsSection];
+
     OWSTableSection *blocklistSection = [OWSTableSection new];
     blocklistSection.footerTitle
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_FOOTER", @"An explanation of the 'blocked' setting");
@@ -226,15 +252,13 @@ NS_ASSUME_NONNULL_BEGIN
                     NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                     NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
                 }];
-        [attributedFooter appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
-        [attributedFooter appendAttributedString:
-                              [[NSAttributedString alloc]
-                                  initWithString:CommonStrings.learnMore
-                                      attributes:@{
-                                          NSLinkAttributeName : [NSURL
-                                              URLWithString:@"https://support.signal.org/hc/articles/360007059792"],
-                                          NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
-                                      }]];
+        [attributedFooter appendAttributedString:@" ".asAttributedString];
+        [attributedFooter append:CommonStrings.learnMore
+                      attributes:@{
+                          NSLinkAttributeName : [NSURL
+                                                 URLWithString:@"https://support.signal.org/hc/articles/360007059792"],
+                          NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                      }];
         pinsSection.footerAttributedTitle = attributedFooter;
 
         [pinsSection
@@ -394,16 +418,14 @@ NS_ASSUME_NONNULL_BEGIN
                 NSForegroundColorAttributeName : UIColor.ows_gray45Color,
                 NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
             }];
-    [unidentifiedDeliveryFooterText appendAttributedString:[[NSAttributedString alloc] initWithString:@" "
-                                                                                           attributes:@{}]];
-    [unidentifiedDeliveryFooterText
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:CommonStrings.learnMore
-                                       attributes:@{
-                                           NSLinkAttributeName :
-                                               [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"],
-                                           NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
-                                       }]];
+    [unidentifiedDeliveryFooterText append:@" "
+                                attributes:@{}];
+    [unidentifiedDeliveryFooterText append:CommonStrings.learnMore
+                                attributes:@{
+                                    NSLinkAttributeName :
+                                        [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"],
+                                    NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                                }];
 
     unidentifiedDeliveryIndicatorsSection.footerAttributedTitle = unidentifiedDeliveryFooterText;
     [contents addSection:unidentifiedDeliveryIndicatorsSection];
@@ -533,6 +555,33 @@ NS_ASSUME_NONNULL_BEGIN
                                              transaction:transaction.unwrapGrdbWrite];
         [SSKPreferences setAreLinkPreviewsEnabled:sender.isOn sendSyncMessage:YES transaction:transaction];
     });
+}
+
+- (void)didToggleSharingSuggestionsEnabled:(UISwitch *)sender
+{
+    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
+
+    if (sender.isOn) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [SSKPreferences setAreSharingSuggestionsEnabled:YES transaction:transaction];
+        });
+    } else {
+        [INInteraction deleteAllInteractionsWithCompletion:^(NSError *_Nullable error) {
+            if (error) {
+                OWSFailDebug(@"Failed to disable sharing suggestions %@", error.localizedDescription);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [sender setOn:YES];
+                    [OWSActionSheets showActionSheetWithTitle:
+                                         NSLocalizedString(@"SHARING_SUGGESTIONS_DISABLE_ERROR",
+                                             @"Title of alert indicating sharing suggestions failed to deactivate")];
+                });
+            } else {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                    [SSKPreferences setAreSharingSuggestionsEnabled:NO transaction:transaction];
+                });
+            }
+        }];
+    }
 }
 
 - (void)showChangePin

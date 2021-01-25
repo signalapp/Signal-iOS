@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupImportJob.h"
@@ -329,6 +329,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     return [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:localProfileGivenName
                                                              profileFamilyName:localProfileFamilyName
+                                                                    profileBio:nil
+                                                               profileBioEmoji:nil
                                                              profileAvatarData:localProfileAvatarData]
         .catch(^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);

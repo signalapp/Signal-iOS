@@ -39,6 +39,20 @@ extension String {
     }
 }
 
+extension CGImage {
+    fileprivate var hasAlpha: Bool {
+        switch self.alphaInfo {
+        case .none, .noneSkipFirst, .noneSkipLast:
+            return false
+        case .first, .last, .premultipliedFirst, .premultipliedLast, .alphaOnly:
+            return true
+        @unknown default:
+            // better safe than sorry
+            return true
+        }
+    }
+}
+
 extension SignalAttachmentError: LocalizedError {
     public var errorDescription: String? {
         switch self {
@@ -280,11 +294,18 @@ public class SignalAttachment: NSObject {
                                                              shouldDeleteOnDeallocation: true)
         clonedDataSource.sourceFilename = sourceFilename
 
-        let attachment = SignalAttachment(dataSource: clonedDataSource, dataUTI: self.dataUTI)
-        attachment.captionText = self.captionText
-        attachment.isViewOnceAttachment = self.isViewOnceAttachment
+        return self.replacingDataSource(with: clonedDataSource)
+    }
 
-        return attachment
+    private func replacingDataSource(with newDataSource: DataSource, dataUTI: String? = nil) -> SignalAttachment {
+        let result = SignalAttachment(dataSource: newDataSource, dataUTI: dataUTI ?? self.dataUTI)
+        result.captionText = captionText
+        result.isConvertibleToTextMessage = isConvertibleToTextMessage
+        result.isConvertibleToContactShare = isConvertibleToContactShare
+        result.isViewOnceAttachment = isViewOnceAttachment
+        result.isVoiceMessage = isVoiceMessage
+        result.isBorderless = isBorderless
+        return result
     }
 
     @objc
@@ -639,7 +660,6 @@ public class SignalAttachment: NSObject {
                 // we want to make it borderless.
                 let isBorderless = dataSource?.hasStickerLikeProperties ?? false
 
-                // Pasted images _SHOULD _NOT_ be resized, if possible.
                 return imageAttachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium, isBorderless: isBorderless)
             }
         }
@@ -738,8 +758,6 @@ public class SignalAttachment: NSObject {
             }
             attachment.cachedImage = image
 
-            let isValidOutput = isValidOutputImage(image: image, dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality)
-
             if let sourceFilename = dataSource.sourceFilename,
                 let sourceFileExtension = sourceFilename.fileExtension,
                 ["heic", "heif"].contains(sourceFileExtension.lowercased()),
@@ -759,32 +777,37 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            if isValidOutput, canStripMetadata(for: attachment.mimeType) {
+            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
-                return removeImageMetadata(attachment: attachment)
-            } else {
-                let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
-                Logger.verbose("Rebuilding image attachement of type: \(attachment.mimeType) size: \(size)")
-
-                return convertAndCompressImage(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
+                do {
+                    return try attachment.removingImageMetadata()
+                } catch {
+                    Logger.verbose("Failed to remove metadata directly: \(error)")
+                }
             }
+
+            let size = ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)
+            Logger.verbose("Rebuilding image attachment of type: \(attachment.mimeType), size: \(size)")
+
+            return convertAndCompressImage(image: image,
+                                           attachment: attachment,
+                                           filename: dataSource.sourceFilename,
+                                           imageQuality: imageQuality)
         }
     }
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isValidOutputImage(image: UIImage?, dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> Bool {
-        guard image != nil else {
-            return false
-        }
-        guard let dataSource = dataSource else {
-            return false
-        }
+    private class func isValidOutputOriginalImage(dataSource: DataSource,
+                                                  dataUTI: String,
+                                                  imageQuality: TSImageQuality) -> Bool {
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else {
             return false
         }
-        if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
-            dataSource.dataLength <= kMaxFileSizeImage {
+        if !doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
+            return false
+        }
+        if imageQuality == .original || dataSource.hasStickerLikeProperties {
             return true
         }
         return false
@@ -793,25 +816,46 @@ public class SignalAttachment: NSObject {
     private class func convertAndCompressImage(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(attachment.error == nil)
 
-        if imageQuality == .original &&
-            attachment.dataLength < kMaxFileSizeGeneric &&
-            outputImageUTISet.contains(attachment.dataUTI) &&
-            canStripMetadata(for: attachment.dataUTI) {
-            // We should avoid resizing images attached "as documents" if possible.
-            // Just remove the metadata and return.
-            return removeImageMetadata(attachment: attachment)
-        }
-
         var imageUploadQuality = imageQuality.imageQualityTier()
 
         while true {
+            let outcome = convertAndCompressImageAttempt(image: image,
+                                                         attachment: attachment,
+                                                         filename: filename,
+                                                         imageQuality: imageQuality,
+                                                         imageUploadQuality: imageUploadQuality)
+            switch outcome {
+            case .signalAttachment(let signalAttachment):
+                return signalAttachment
+            case .error(let error):
+                attachment.error = error
+                return attachment
+            case .reduceQuality(let imageQualityTier):
+                imageUploadQuality = imageQualityTier
+            }
+        }
+    }
+
+    private enum ConvertAndCompressOutcome {
+        case signalAttachment(signalAttachment: SignalAttachment)
+        case reduceQuality(imageQualityTier: TSImageQualityTier)
+        case error(error: SignalAttachmentError)
+    }
+
+    private class func convertAndCompressImageAttempt(image: UIImage,
+                                                      attachment: SignalAttachment,
+                                                      filename: String?,
+                                                      imageQuality: TSImageQuality,
+                                                      imageUploadQuality: TSImageQualityTier) -> ConvertAndCompressOutcome {
+        autoreleasepool {  () -> ConvertAndCompressOutcome in
+            owsAssertDebug(attachment.error == nil)
+
             let maxSize = maxSizeForImage(image: image, imageUploadQuality: imageUploadQuality)
             var dstImage: UIImage! = image
             if image.size.width > maxSize ||
                 image.size.height > maxSize {
                 guard let resizedImage = imageScaled(image, toMaxSize: maxSize) else {
-                    attachment.error = .couldNotResizeImage
-                    return attachment
+                    return .error(error: .couldNotResizeImage)
                 }
                 dstImage = resizedImage
             }
@@ -821,10 +865,9 @@ public class SignalAttachment: NSObject {
             let dataFileExtension: String
             let imageData: Data
 
-            if attachment.mimeType == OWSMimeTypeImageWebp {
+            if image.cgImage?.hasAlpha == true {
                 guard let pngImageData = dstImage.pngData() else {
-                    attachment.error = .couldNotConvertImage
-                    return attachment
+                    return .error(error: .couldNotConvertImage)
                 }
 
                 dataUTI = kUTTypePNG as String
@@ -835,8 +878,7 @@ public class SignalAttachment: NSObject {
                 guard let jpgImageData = dstImage.jpegData(
                     compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)
                 ) else {
-                    attachment.error = .couldNotConvertImage
-                    return attachment
+                    return .error(error: .couldNotConvertImage)
                 }
 
                 dataUTI = kUTTypeJPEG as String
@@ -845,9 +887,13 @@ public class SignalAttachment: NSObject {
                 imageData = jpgImageData
             }
 
-            guard let dataSource = DataSourceValue.dataSource(with: imageData, fileExtension: dataFileExtension) else {
-                attachment.error = .couldNotConvertImage
-                return attachment
+            let dataSource: DataSource
+            do {
+                let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
+                try imageData.write(to: tempFileUrl)
+                dataSource = try DataSourcePath.dataSource(with: tempFileUrl, shouldDeleteOnDeallocation: false)
+            } catch {
+                return .error(error: .couldNotConvertImage)
             }
 
             let baseFilename = filename?.filenameWithoutExtension
@@ -856,11 +902,10 @@ public class SignalAttachment: NSObject {
 
             if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
                 dataSource.dataLength <= kMaxFileSizeImage {
-                let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
-                recompressedAttachment.isBorderless = attachment.isBorderless
+                let recompressedAttachment = attachment.replacingDataSource(with: dataSource, dataUTI: dataUTI)
                 recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
-                return recompressedAttachment
+                Logger.verbose("Converted \(attachment.mimeType), size: \(dataSource.dataLength) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
+                return .signalAttachment(signalAttachment: recompressedAttachment)
             }
 
             // If the image output is larger than the file size limit,
@@ -868,18 +913,17 @@ public class SignalAttachment: NSObject {
             // image upload quality.
             switch imageUploadQuality {
             case .original:
-                imageUploadQuality = .high
+                return .reduceQuality(imageQualityTier: .high)
             case .high:
-                imageUploadQuality = .mediumHigh
+                return .reduceQuality(imageQualityTier: .mediumHigh)
             case .mediumHigh:
-                imageUploadQuality = .medium
+                return .reduceQuality(imageQualityTier: .medium)
             case .medium:
-                imageUploadQuality = .mediumLow
+                return .reduceQuality(imageQualityTier: .mediumLow)
             case .mediumLow:
-                imageUploadQuality = .low
+                return .reduceQuality(imageQualityTier: .low)
             case .low:
-                attachment.error = .fileSizeTooLarge
-                return attachment
+                return .error(error: .fileSizeTooLarge)
             }
         }
     }
@@ -888,54 +932,58 @@ public class SignalAttachment: NSObject {
     // crashes reliably in the share extension after screen lock's auth UI has been presented.
     // Resizing using a CGContext seems to work fine.
     private class func imageScaled(_ uiImage: UIImage, toMaxSize maxSize: CGFloat) -> UIImage? {
-        guard let cgImage = uiImage.cgImage else {
-            owsFailDebug("UIImage missing cgImage.")
-            return nil
+        autoreleasepool {
+            Logger.verbose("maxSize: \(maxSize)")
+            guard let cgImage = uiImage.cgImage else {
+                owsFailDebug("UIImage missing cgImage.")
+                return nil
+            }
+
+            // It's essential that we work consistently in "CG" coordinates (which are
+            // pixels and don't reflect orientation), not "UI" coordinates (which
+            // are points and do reflect orientation).
+            let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
+            var maxSizeRect = CGRect.zero
+            maxSizeRect.size = CGSize(square: maxSize)
+            let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size.floor
+            assert(newSize.width <= maxSize)
+            assert(newSize.height <= maxSize)
+
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let bitmapInfo: CGBitmapInfo = [
+                CGBitmapInfo(rawValue: CGImageByteOrderInfo.orderDefault.rawValue),
+                CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)]
+            guard let context = CGContext(data: nil,
+                                          width: Int(newSize.width),
+                                          height: Int(newSize.height),
+                                          bitsPerComponent: 8,
+                                          bytesPerRow: 0,
+                                          space: colorSpace,
+                                          bitmapInfo: bitmapInfo.rawValue) else {
+                owsFailDebug("could not create CGContext.")
+                return nil
+            }
+            context.interpolationQuality = .high
+
+            var drawRect = CGRect.zero
+            drawRect.size = newSize
+            context.draw(cgImage, in: drawRect)
+
+            guard let newCGImage = context.makeImage() else {
+                owsFailDebug("could not create new CGImage.")
+                return nil
+            }
+            return UIImage(cgImage: newCGImage,
+                           scale: uiImage.scale,
+                           orientation: uiImage.imageOrientation)
         }
-
-        // It's essential that we work consistently in "CG" coordinates (which are
-        // pixels and don't reflect orientation), not "UI" coordinates (which
-        // are points and do reflect orientation).
-        let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
-        var maxSizeRect = CGRect.zero
-        maxSizeRect.size = CGSize(square: maxSize)
-        let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size
-        assert(newSize.width <= maxSize)
-        assert(newSize.height <= maxSize)
-
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo: CGBitmapInfo = [
-            CGBitmapInfo(rawValue: CGImageByteOrderInfo.orderDefault.rawValue),
-            CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)]
-        guard let context = CGContext.init(data: nil,
-                                           width: Int(newSize.width),
-                                           height: Int(newSize.height),
-                                           bitsPerComponent: 8,
-                                           bytesPerRow: 0,
-                                           space: colorSpace,
-                                           bitmapInfo: bitmapInfo.rawValue) else {
-                                            owsFailDebug("could not create CGContext.")
-            return nil
-        }
-        context.interpolationQuality = .high
-
-        var drawRect = CGRect.zero
-        drawRect.size = newSize
-        context.draw(cgImage, in: drawRect)
-
-        guard let newCGImage = context.makeImage() else {
-            owsFailDebug("could not create new CGImage.")
-            return nil
-        }
-        return UIImage(cgImage: newCGImage,
-                       scale: uiImage.scale,
-                       orientation: uiImage.imageOrientation)
     }
 
     private class func doesImageHaveAcceptableFileSize(dataSource: DataSource, imageQuality: TSImageQuality) -> Bool {
         switch imageQuality {
         case .original:
-            return true
+            // This deliberately checks against "generic" rather than "image" for files attached as documents.
+            return dataSource.dataLength < kMaxFileSizeGeneric
         case .medium:
             return dataSource.dataLength < UInt(1024 * 1024)
         case .compact:
@@ -961,84 +1009,68 @@ public class SignalAttachment: NSObject {
     }
 
     private class func jpegCompressionQuality(imageUploadQuality: TSImageQualityTier) -> CGFloat {
-        switch imageUploadQuality {
-        case .original:
-            return 1
-        case .high:
-            return 0.9
-        case .mediumHigh:
-            return 0.8
-        case .medium:
-            return 0.7
-        case .mediumLow:
-            return 0.6
-        case .low:
-            return 0.5
-        }
+        // 0.6 produces some artifacting but not a ton.
+        // We don't want to scale this level down across qualities because lower resolutions show artifacting more.
+        return 0.6
     }
 
-    private class func canStripMetadata(for typeIdentifier: String) -> Bool {
-        let cgSupportedTypes = CGImageDestinationCopyTypeIdentifiers() as NSArray
-        return cgSupportedTypes.contains(typeIdentifier)
-    }
+    private func removingImageMetadata() throws -> SignalAttachment {
+        owsAssertDebug(isImage)
 
-    private class func removeImageMetadata(attachment: SignalAttachment) -> SignalAttachment {
-        guard canStripMetadata(for: attachment.dataUTI) else {
-            owsFailDebug("CoreGraphics can't output \(attachment.dataUTI). Stripping unsupported.")
-            attachment.error = .couldNotRemoveMetadata
-            return attachment
-        }
-
-        guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
-            attachment.error = .missingData
-            return attachment
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+            throw SignalAttachmentError.missingData
         }
 
         guard let type = CGImageSourceGetType(source) else {
-            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
-            attachment.error = .invalidFileFormat
-            return attachment
+            throw SignalAttachmentError.invalidFileFormat
         }
 
         let count = CGImageSourceGetCount(source)
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData as CFMutableData, type, count, nil) else {
-            attachment.error = .couldNotRemoveMetadata
-            return attachment
+            throw SignalAttachmentError.couldNotRemoveMetadata
         }
 
-        let removeMetadataProperties: [String: AnyObject] =
-        [
-            kCGImagePropertyExifDictionary as String: kCFNull,
-            kCGImagePropertyExifAuxDictionary as String: kCFNull,
-            kCGImagePropertyGPSDictionary as String: kCFNull,
-            kCGImagePropertyTIFFDictionary as String: kCFNull,
-            kCGImagePropertyJFIFDictionary as String: kCFNull,
-            kCGImagePropertyPNGDictionary as String: kCFNull,
-            kCGImagePropertyIPTCDictionary as String: kCFNull,
-            kCGImagePropertyMakerAppleDictionary as String: kCFNull
-        ]
-
-        for index in 0...count-1 {
-            CGImageDestinationAddImageFromSource(destination, source, index, removeMetadataProperties as CFDictionary)
-        }
-
-        if CGImageDestinationFinalize(destination) {
-            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
-                attachment.error = .couldNotRemoveMetadata
-                return attachment
+        // Build up a metadata with CFNulls in the place of all tags present in the original metadata.
+        // (Unfortunately CGImageDestinationCopyImageSource can only merge metadata, not replace it.)
+        let metadata = CGImageMetadataCreateMutable()
+        let enumerateOptions: NSDictionary = [kCGImageMetadataEnumerateRecursively: false]
+        var hadError = false
+        for i in 0..<count {
+            guard let originalMetadata = CGImageSourceCopyMetadataAtIndex(source, i, nil) else {
+                throw SignalAttachmentError.couldNotRemoveMetadata
             }
-
-            let strippedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: attachment.dataUTI)
-            strippedAttachment.isBorderless = attachment.isBorderless
-            return strippedAttachment
-
-        } else {
-            Logger.verbose("CGImageDestinationFinalize failed")
-            attachment.error = .couldNotRemoveMetadata
-            return attachment
+            CGImageMetadataEnumerateTagsUsingBlock(originalMetadata, nil, enumerateOptions) { path, tag in
+                guard let namespace = CGImageMetadataTagCopyNamespace(tag),
+                      let prefix = CGImageMetadataTagCopyPrefix(tag),
+                      CGImageMetadataRegisterNamespaceForPrefix(metadata, namespace, prefix, nil),
+                      CGImageMetadataSetValueWithPath(metadata, nil, path, kCFNull) else {
+                    hadError = true
+                    return false // stop iteration
+                }
+                return true
+            }
+            if hadError {
+                throw SignalAttachmentError.couldNotRemoveMetadata
+            }
         }
+
+        var error: Unmanaged<CFError>?
+        let copyOptions: NSDictionary = [
+            kCGImageDestinationMergeMetadata: true,
+            kCGImageDestinationMetadata: metadata
+        ]
+        guard CGImageDestinationCopyImageSource(destination, source, copyOptions, &error) else {
+            let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
+            Logger.verbose("CGImageDestinationCopyImageSource failed for \(dataUTI): \(errorMessage)")
+            throw SignalAttachmentError.couldNotRemoveMetadata
+        }
+
+        guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: dataUTI) else {
+            throw SignalAttachmentError.couldNotRemoveMetadata
+        }
+
+        return self.replacingDataSource(with: dataSource)
     }
 
     // MARK: Video Attachments

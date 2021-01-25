@@ -4,6 +4,6 @@ NSContactsUsageDescription = "Signal använder dina kontakter för att hitta anv
 NSFaceIDUsageDescription = "Signals skärmlås använder Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal behöver åtkomst till din plats för att dela din nuvarande plats.";
 NSMicrophoneUsageDescription = "Signal behöver åtkomst till din mikrofon för att ringa och ta emot telefonsamtal och spela in röstmeddelanden.";
-NSPhotoLibraryAddUsageDescription = "Signal sparar foton i ditt bibliotek.";
+NSPhotoLibraryAddUsageDescription = "Signal sparar foton till ditt bibliotek.";
 NSPhotoLibraryUsageDescription = "Med Signal kan du välja vilka foton från ditt bibliotek du vill skicka.";
 NSLocalNetworkUsageDescription = "Signal använder det lokala nätverket för att låta dig direkt överföra ditt konto till en ny telefon. Den kommer inte att användas om du inte uttryckligen väljer att initiera en överföring till en ny enhet.";

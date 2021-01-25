@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import AVFoundation
 public enum OWSThumbnailError: Error {
     case failure(description: String)
     case assertionFailure(description: String)
-    case externalError(description: String, underlyingError:Error)
+    case externalError(description: String, underlyingError: Error)
 }
 
 @objc public class OWSLoadedThumbnail: NSObject {
@@ -139,7 +139,21 @@ private struct OWSThumbnailRequest {
             throw OWSThumbnailError.failure(description: "Cannot thumbnail attachment.")
         }
 
-        let isWebp = attachment.contentType == OWSMimeTypeImageWebp
+        // Sticker type metadata isn't reliable and default to
+        // a webp MIME type. Therefore for all nominally webp
+        // image attachments, determine the MIME type by examining
+        // the actual attachment data.
+        var contentType = attachment.contentType
+        let mightBeWebp = attachment.contentType == OWSMimeTypeImageWebp
+        if mightBeWebp,
+           let filePath = attachment.originalFilePath {
+            let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
+            if imageMetadata.imageFormat != .unknown,
+               let mimeType = imageMetadata.mimeType {
+                contentType = mimeType
+            }
+        }
+        let isWebp = contentType == OWSMimeTypeImageWebp
 
         let thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
         if FileManager.default.fileExists(atPath: thumbnailPath) {

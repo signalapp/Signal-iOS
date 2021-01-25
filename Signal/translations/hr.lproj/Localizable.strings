@@ -433,9 +433,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Novo: Zamaglite lica ili crtajte bilo gdje kako biste ih zamaglili";
 
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Pregledaj";
-
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Dodaj";
 
@@ -847,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Boja razgovora";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Uredi";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Tko može urediti informacije o grupi";
 
@@ -858,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Svi članovi";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Uredi";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Tko može dodati članove";
@@ -1385,7 +1382,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaš sigurnosni broj s %@ je promijenjen.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Sesija razgovora je osvježena";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Dogodila se nepoznata pogreška.";
@@ -1459,7 +1456,7 @@
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Pozovi prijatelje";
 
-/* 'Get Started' button directing users to create a group' */
+/* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Nova grupa";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
@@ -2483,7 +2480,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ovi razgovori su arhivirani i prikazuju se na početnoj stranici samo ako primite nove poruke.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "Još nema razgovora.\nZapočnite slanjem poruke prijatelju.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ vas je zvao/la";
@@ -2573,7 +2570,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Dearhiviraj razgovor";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Saznaj više";
+"LEARN_MORE" = "Saznajte više";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Napusti";
@@ -2678,7 +2675,7 @@
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ slika";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ stavki";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2979,6 +2976,18 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Provjerite jeste li na mreži i pokušajte ponovo.";
+
+/* String representing only the cellular interface */
+"NETWORK_INTERFACE_SET_CELLULAR" = "Samo mobilni podaci";
+
+/* String representing the 'never' condition of having no supported network interfaces */
+"NETWORK_INTERFACE_SET_NEVER" = "Nikada";
+
+/* String representing only the wifi interface */
+"NETWORK_INTERFACE_SET_WIFI" = "Samo Wi-Fi";
+
+/* String representing both wifi and cellular interfaces */
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi i mobilni podaci";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Pronađite prema broju telefona";
@@ -3652,14 +3661,50 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nastavi";
 
+/* Placeholder text for the bio field of the profile bio view. */
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Napišite par riječi o sebi...";
+
+/* The 'Be kind' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Budite ljubazni";
+
+/* The 'Coffee lover' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Ljubitelj kave";
+
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Šifrirano";
+
+/* The 'free to chat' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Slobodan/na za razgovor";
+
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Govorite slobodno";
+
+/* The 'Taking a break' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Na pauzi";
+
+/* The 'Working on something new' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Radim na nečem novom";
+
+/* Title for the profile bio view. */
+"PROFILE_BIO_VIEW_TITLE" = "Opis";
+
+/* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Opis (%@)";
+
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ je promijenio/la svoje ime na profilu iz %@ u %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ je promijenio/la ime na profilu u %@.";
 
+/* Button to add a 'bio' to the user's profile in the profile view. */
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Dodaj u profil";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Postavite profilnu sliku";
+
+/* Header for the 'bio' section of the profile view. */
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "Opis";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Ukloni sliku";
@@ -4241,10 +4286,19 @@
 "SEND_SMS_INVITE_TITLE" = "Želite li pozvati sljedeći broj na Signal:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal koristi end-to-end šifriranje i možda će ponekad trebati osvježiti sesiju razgovora. To ne utječe na sigurnost vašeg razgovora, ali ste možda propustili poruku od ovog kontakta i možete zatražiti da je ponovno pošalje.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "Sesija razgovora je osvježena";
+
+/* Title for the wallpaper choose from photos option */
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Odaberi iz galerije";
+
+/* Title for the wallpaper presets section */
+"SET_WALLPAPER_PRESETS" = "Unaprijed dodano";
+
+/* Title for the set wallpaper settings view. */
+"SET_WALLPAPER_TITLE" = "Postavi pozadinu";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "O aplikaciji";
@@ -4304,10 +4358,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Zapisnici pogrešaka";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Prikaži fotografije kontakata iz imenika ako su dostupne";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Koristi fotografije kontakata iz imenika";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Tema";
@@ -4394,7 +4448,16 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nGPLv3 licenca";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Upotreba podatkovnih podataka";
+
+/* Item title for the low bandwidth call setting */
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Koristi manje mobilnih podataka";
+
+/* Section footer for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Korištenjem manje mobilnih podataka mogu se poboljšati pozivi na lošim mrežama";
+
+/* Section header for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Pozivi";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Glasovne poruke, jednom vidljivi medijski zapisi i naljepnice (manje od 100 kb) se uvijek automatski preuzimaju.";
@@ -4406,7 +4469,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Poništi postavke automatskog preuzimanja";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Upotreba podatkovnih podataka";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Izbriši račun";
@@ -4440,6 +4503,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk poruke";
+
+/* Label for settings view that allows user to change the wallpaper. */
+"SETTINGS_ITEM_WALLPAPER" = "Pozadina razgovora";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Uvjeti i pravila o privatnosti";
@@ -4600,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Sigurnost zaslona";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Prikaži u prijedlozima";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Razgovori u Signalu se prikazuju kao prijedlozi prilikom dijeljenja iz drugih aplikacija.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zaključavanje registracije";
 
@@ -4664,7 +4736,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Nije moguće poslati privitak";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Učitavanje %1$@ od %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Učitavanje...";
@@ -4674,6 +4746,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Podijeli na Signalu";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Onemogućavanje prijedloga prilikom dijeljenja nije uspjelo.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Razgovori u Signalu se sada mogu prikazati kao prijedlozi prilikom dijeljenja iz drugih aplikacija.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Dijeljenje je postalo još lakše";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Onemogući";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Omogući";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Prikaži sigurnosni broj";
@@ -4705,9 +4792,6 @@
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Naljepnica";
 
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Paket naljepnica je instaliran";
-
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalirajte";
 
@@ -4737,9 +4821,6 @@
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Paket naljepnica";
-
-/* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Podijeli paket naljepnica";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paket naljepnica";
@@ -5097,6 +5178,63 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dovrši postavljanje Signala za Desktop.";
+
+/* Placeholder text for header of the wallpaper mini preview */
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Ime kontakta";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Zamuti sliku";
+
+/* The incoming bubble text when setting a photo */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Stisnite za zumiranje, povucite za podešavanje.";
+
+/* The incoming bubble text when setting a preset */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Prijeđite prstom za pregled ostalih pozadina.";
+
+/* The outgoing bubble text when setting a wallpaper for all chats. */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Postavi pozadinu za sve razgovore.";
+
+/* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Postavi pozadinu za %@.";
+
+/* The text for the set button on wallpaper preview view. */
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Postavi";
+
+/* Title for the wallpaper preview view. */
+"WALLPAPER_PREVIEW_TITLE" = "Pregled";
+
+/* Clear wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Ukloni pozadinu";
+
+/* Confirmation dialog when clearing the wallpaper for a specific chat. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Ukloni pozadinu iz ovog razgovora?";
+
+/* Confirmation dialog when clearing the global wallpaper. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Želite li ukloniti pozadinu? Ovo neće ukloniti prilagođene pozadine koje ste postavili za razgovore.";
+
+/* Dim wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Zatamni pozadinu";
+
+/* An error indicating to the user that we failed to clear the wallpaper. */
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Nije moguće ukloniti pozadinu. Pokušajte ponovo kasnije ili kontaktirajte podršku ako se pogreška nastavi.";
+
+/* An error indicating to the user that we failed to reset all wallpapers. */
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Nije moguće poništiti sve pozadine. Pokušajte ponovo kasnije ili kontaktirajte podršku ako se pogreška nastavi.";
+
+/* Title for the wallpaper settings preview section. */
+"WALLPAPER_SETTINGS_PREVIEW" = "Pregled";
+
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL" = "Poništi sve pozadine";
+
+/* Confirmation dialog when resetting all wallpapers. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Želite li poništiti sve pozadine, uključujući prilagođene pozadine koje ste postavili za razgovore?";
+
+/* Set wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Postavi pozadinu";
+
+/* Title for the wallpaper settings view. */
+"WALLPAPER_SETTINGS_TITLE" = "Pozadina razgovora";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Izbrisali ste ovu poruku.";

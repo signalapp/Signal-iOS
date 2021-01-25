@@ -332,9 +332,19 @@ public class SelectionHighlightView: UIView {
         subviews.forEach { $0.removeFromSuperview() }
 
         for frame in frames {
-            let highlight = UIView(frame: frame)
-            highlight.backgroundColor = Theme.selectedConversationCellColor
-            addSubview(highlight)
+            if UIAccessibility.isReduceTransparencyEnabled {
+                let highlight = UIView(frame: frame)
+                highlight.backgroundColor = Theme.selectedConversationCellColor
+                addSubview(highlight)
+            } else {
+                let highlight = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+                highlight.frame = frame
+                let overlay = UIView()
+                overlay.backgroundColor = Theme.selectedConversationCellColor
+                highlight.contentView.addSubview(overlay)
+                overlay.frame = highlight.bounds
+                addSubview(highlight)
+            }
         }
     }
 }

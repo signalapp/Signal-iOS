@@ -1,0 +1,9 @@
+NSAppleMusicUsageDescription = "Signal cần dùng Apple Music để phát tập đa phương tiện đính kèm.";
+NSCameraUsageDescription = "Signal sử dụng camera của bạn để chụp ảnh và cho cuộc gọi video.";
+NSContactsUsageDescription = "Signal dùng danh bạ của bạn để tìm người dùng bạn biết. Chúng tôi không lưu trữ danh bạ của bạn trên máy chủ.";
+NSFaceIDUsageDescription = "Khoá Màn hình của Signal sử dụng Face ID.";
+NSLocationWhenInUseUsageDescription = "Signal cần truy cập địa điểm của bạn để chia sẻ địa điểm hiện tại của bạn.";
+NSMicrophoneUsageDescription = "Signal cần truy cập micro của bạn để thực hiện và nhận cuộc gọi và lưu tin nhắn âm thanh.";
+NSPhotoLibraryAddUsageDescription = "Signal sẽ lưu ảnh vào thư viện của bạn.";
+NSPhotoLibraryUsageDescription = "Signal sẽ cho bạn chọn ảnh nào từ thư viện của bạn để gửi đi.";
+NSLocalNetworkUsageDescription = "Signal sử dụng mạng cục bộ để cho phép bạn chuyển trực tiếp tài khoản của bạn sang một điện thoại mới. Nó sẽ không được dùng trừ khi bạn rõ ràng chọn để bắt đầu chuyển sang thiết bị mới.";

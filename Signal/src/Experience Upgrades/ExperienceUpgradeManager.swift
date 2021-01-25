@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -159,7 +159,8 @@ class ExperienceUpgradeManager: NSObject {
              .contactPermissionReminder,
              .linkPreviews,
              .researchMegaphone1,
-             .groupCallsMegaphone:
+             .groupCallsMegaphone,
+             .sharingSuggestions:
             return true
         case .groupsV2AndMentionsSplash2:
             return false
@@ -184,6 +185,8 @@ class ExperienceUpgradeManager: NSObject {
             return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .groupCallsMegaphone:
             return GroupCallsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .sharingSuggestions:
+            return SharingSuggestionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

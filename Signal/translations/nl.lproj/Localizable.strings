@@ -433,9 +433,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nieuw: Vervaag gezichten of teken om andere dingen te vervagen.";
 
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Bladeren";
-
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Toevoegen";
 
@@ -509,7 +506,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Gemiste video-oproep";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder eigen camera aan te zetten";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Beantwoorden";
@@ -847,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Gesprekskleur";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Aanpassen";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Wie de groepsinformatie kan aanpassen";
 
@@ -858,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle groepsleden";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Aanpassen";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Wie leden kan toevoegen";
@@ -1385,7 +1382,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Je veiligheidsnummer met %@ is veranderd.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Gespreksessie vernieuwd";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Er is een onbekende fout opgetreden.";
@@ -1459,7 +1456,7 @@
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Kennissen uitnodigen";
 
-/* 'Get Started' button directing users to create a group' */
+/* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
@@ -2216,7 +2213,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Verouderde groepen tegenover nieuwe groepen";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Zet deze groep om om nieuwe functionaliteiten te kunnen gebruiken zoals  @vermeldingen en beheerders. Groepsleden die hun profielnaam en -foto niet voor deze groep zichtbaar hebben gemaakt, zullen worden uitgenodigd om tot deze groep toe te treden. %@. ";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Zet deze groep om om nieuwe functionaliteiten te kunnen gebruiken zoals  @vermeldingen en beheerders. Groepsleden die hun profielnaam, -foto en -omschrijving niet voor deze groep zichtbaar hebben gemaakt, zullen worden uitgenodigd om tot deze groep toe te treden. %@. ";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Kan niet worden omgezet naar een nieuwe groep";
@@ -2465,7 +2462,7 @@
 "IN_CALL_RECONNECTING" = "Opnieuw verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Bellen …";
+"IN_CALL_RINGING" = "Gaat over …";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Audio-oproep …";
@@ -2483,7 +2480,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Deze gesprekken worden gearchiveerd en zullen alleen opnieuw in postvak-in verschijnen als je nieuwe berichten ontvangt.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "Nog geen gesprekken.\nBegin door een vriend of kennis een bericht te zenden.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ heeft je gebeld";
@@ -2675,10 +2672,10 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Bericht wissen";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Afbeeldingen";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ afbeeldingen";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ items ";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2831,13 +2828,13 @@
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Verzoek";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Evalueer verzoeken";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Verzoek evalueren";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Contactpersoon bijwerken";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Evalueer verzoeken";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Verzoek evalueren";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaarden";
@@ -2846,10 +2843,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam en -foto kan zien? Je zult geen berichten ontvangen en je profiel zal voor hem of haar niet meer worden bijgewerkt totdat je hem of haar hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Je zult geen berichten ontvangen en je profiel zal voor hem of haar niet meer worden bijgewerkt totdat je hem of haar hebt gedeblokkeerd.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam en -foto kunnen zien? Je zult geen berichten ontvangen en je profiel zal voor de leden van deze groep niet meer worden bijgewerkt totdat je de groep hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Je zult geen berichten ontvangen en je profiel zal voor de leden van deze groep niet meer worden bijgewerkt totdat je de groep hebt gedeblokkeerd.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deblokkeer deze groep? Ze zullen niet kunnen zien dat je hun berichten hebt gelezen zolang je ze niet deblokkeert.";
@@ -2861,16 +2858,16 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Wil je je profielnaam en -foto voor je gesprekspartner zichtbaar maken om je gesprek met %@ voort te kunnen zetten?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Wil je je profielnaam, -foto en -omschrijving voor je gesprekspartner zichtbaar maken om je gesprek met %@ voort te kunnen zetten?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil je je profielnaam en -foto voor deze groep zichtbaar maken om je gesprek met de groep voort te kunnen zetten?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil je je profielnaam, -foto en -omschrijving voor deze groep zichtbaar maken om je gesprek met de groep voort te kunnen zetten?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam en -foto kan zien? Hij of zij zal totdat je het gespreksverzoek aanvaardt niet kunnen zien dat je zijn of haar berichten hebt gelezen.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Hij of zij zal totdat je het gespreksverzoek aanvaardt niet kunnen zien dat je zijn of haar berichten hebt gelezen.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van deze groep je profielnaam en -foto kunnen zien? De leden van deze groep zullen totdat je het gespreksverzoek aanvaardt niet kunnen zien dat je hun berichten hebt gelezen.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van deze groep je profielnaam, -foto en -omschrijving kunnen zien? De leden van deze groep zullen totdat je het gespreksverzoek aanvaardt niet kunnen zien dat je hun berichten hebt gelezen.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Deelnemen aan deze groep? Ze zullen niet kunnen zien dat je hun berichten hebt gelezen zolang je de uitnodiging nog niet hebt geaccepteerd.";
@@ -2979,6 +2976,18 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Controleer of je met internet verbonden bent en probeer het opnieuw.";
+
+/* String representing only the cellular interface */
+"NETWORK_INTERFACE_SET_CELLULAR" = "Alleen bij mobielegegevensoverdracht";
+
+/* String representing the 'never' condition of having no supported network interfaces */
+"NETWORK_INTERFACE_SET_NEVER" = "Nooit";
+
+/* String representing only the wifi interface */
+"NETWORK_INTERFACE_SET_WIFI" = "Alleen bij wifi";
+
+/* String representing both wifi and cellular interfaces */
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi en mobielegegevensoverdracht";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Op telefoonnummer zoeken";
@@ -3143,7 +3152,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Overslaan en nieuwe pincode aanmaken";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je je pincode niet kan herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan weer gebruiken, maar sommige instellingen waaronder je profielnaam en -foto zullen dan niet bewaard blijven.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je je pincode niet kan herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan weer gebruiken, maar sommige instellingen waaronder je profielnaam, -foto en -omschrijving zullen dan niet bewaard blijven.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pincode invoeren overslaan?";
@@ -3272,7 +3281,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor verlopende berichten op %@ ingesteld.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de dienst te hervatten.";
+"OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de bereikbaarheid te hervatten.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Je hebt %@ gebeld";
@@ -3335,7 +3344,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Uitnodiging voor de groep “%@” intrekken?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen wie zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te aanvaarden, dan zullen op dat moment zijn of haar profielnaam en -afbeelding zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben aanvaard.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen wie zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te aanvaarden, dan zullen op dat moment zijn of haar profielnaam, -foto en -omschrijving zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben aanvaard.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepsverwijzing lid te worden van \"%@\".";
@@ -3494,7 +3503,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam en -foto, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
+"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam, -foto en -omschrijving, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Leer meer over pincodes";
@@ -3652,14 +3661,50 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Doorgaan";
 
+/* Placeholder text for the bio field of the profile bio view. */
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Schijf een paar woorden over jezelf …";
+
+/* The 'Be kind' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Wees aardig";
+
+/* The 'Coffee lover' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Koffieliefhebber";
+
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Versleuteld";
+
+/* The 'free to chat' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Beschikbaar om te spreken";
+
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Spreek vrijuit";
+
+/* The 'Taking a break' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Ik heb even pauze";
+
+/* The 'Working on something new' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Ik werk aan iets nieuws";
+
+/* Title for the profile bio view. */
+"PROFILE_BIO_VIEW_TITLE" = "Over mij";
+
+/* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Over mij (%@)";
+
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ heeft zijn of haar profielnaam van %@ naar %@ gewijzigd.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ heeft zijn of haar profielnaam naar %@ gewijzigd.";
 
+/* Button to add a 'bio' to the user's profile in the profile view. */
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Toevoegen aan je profiel";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielfoto instellen";
+
+/* Header for the 'bio' section of the profile view. */
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "Over mij";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Profielfoto verwijderen";
@@ -3809,13 +3854,13 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Je pincode is een wachtwoord welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers of karakters. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Je pincode is een code welke je zelf hebt aangemaakt en welke bestaat uit vier of meer cijfers of een combinatie van cijfers en letters. Als je je je pincode niet kunt herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam en -afbeelding zullen dan verloren gaan.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Je pincode is een code welke je zelf hebt aangemaakt en welke bestaat uit vier of meer cijfers of een combinatie van cijfers en letters. Als je je je pincode niet kunt herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam, -foto en -omschrijving zullen dan verloren gaan.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Je pincode is een code welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Je hebt nog %lu pogingen resterend. Als je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam en -afbeelding zullen dan verloren gaan.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Je hebt nog %lu pogingen resterend. Als je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam, -foto en -omschrijving zullen dan verloren gaan.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Je hebt nog %lu pogingen resterend. Als je geen pogingen meer over hebt wordt Signal vergrendeld voor dit telefoonnummer. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Als je er dan voor kiest om zonder pincode opnieuw te registreren, dan wordt de Signal-app gereset en alle inhoud wordt gewist.";
@@ -3824,7 +3869,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Je hebt nog 1 poging resterend. Als je geen pogingen meer over hebt dan wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Als je er dan voor kiest om zonder pincode opnieuw te registreren, dan wordt de Signal-app gereset en alle inhoud wordt gewist.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Je hebt nog 1 poging resterend. Als je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam en -afbeelding zullen dan verloren gaan.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Je hebt nog 1 poging resterend. Als je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam, -foto en -omschrijving zullen dan verloren gaan.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrecte pincode";
@@ -4190,7 +4235,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installeer Signal op je telefoon";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tik in de Signal-app op je telefoon op je profielafbeelding om de instellingen te openen. Tik vervolgens op ‘Gekoppelde apparaten’ en ‘Nieuw apparaat koppelen’ om deze QR-code met je telefoon te scannen:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tik in de Signal-app op je telefoon op je profielfoto om de instellingen te openen. Tik vervolgens op ‘Gekoppelde apparaten’ en ‘Nieuw apparaat koppelen’ om deze QR-code met je telefoon te scannen:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Vind hier hulp met het koppelen van je iPad";
@@ -4241,10 +4286,19 @@
 "SEND_SMS_INVITE_TITLE" = "Wil je het volgende nummer uitnodigen voor Signal:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Het kan soms nodig zijn om je gespreksessie te vernieuwen. Dit heeft geen invloed op de beveiliging van je gesprek, maar het is mogelijk dat je een bericht van je contactpersoon hebt gemist. Vraag je contactpersoon eventueel om zijn of haar meest recente berichten opnieuw te zenden.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "Gespreksessie vernieuwd";
+
+/* Title for the wallpaper choose from photos option */
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Kiezen vanuit galerij";
+
+/* Title for the wallpaper presets section */
+"SET_WALLPAPER_PRESETS" = "Beschikbare standaard achtergronden";
+
+/* Title for the set wallpaper settings view. */
+"SET_WALLPAPER_TITLE" = "Gespreksachtergrond kiezen";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Over";
@@ -4304,10 +4358,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutlogs";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Gebruik indien beschikbaar de profielfoto uit je eigen systeemadresboek weer, in plaats van de profielfoto welke anderen voor zichzelf hebben ingesteld.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Gebruik profielfoto van systeemadresboek";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Thema";
@@ -4394,7 +4448,16 @@
 "SETTINGS_COPYRIGHT" = "Auteursrecht Signal-berichtenapp\n Gelicentieerd onder de GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Gegevensgebruik";
+
+/* Item title for the low bandwidth call setting */
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Minder gegevensoverdracht bij oproepen";
+
+/* Section footer for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Gebruik maken van minder gegevensoverdracht bij oproepen kan de kwaliteit van oproepen verbeteren";
+
+/* Section header for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Oproepen";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Spraakberichten, eenmaligeweergave-media en stickers (minder dan 100kb) worden altijd automatisch gedownload.";
@@ -4406,7 +4469,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Herstel automatischedownload-instellingen";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Gegevensgebruik";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Registratie opzeggen";
@@ -4433,13 +4496,16 @@
 "SETTINGS_INFORMATION_HEADER" = "Informatie";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Nodig kenissen uit";
+"SETTINGS_INVITE_TITLE" = "Nodig kennissen uit";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "Je kunt me bereiken met de @signalapp. Download de app nu: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Berichtgeluid";
+
+/* Label for settings view that allows user to change the wallpaper. */
+"SETTINGS_ITEM_WALLPAPER" = "Gespreksachtergrond";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Voorwaarden en privacybeleid";
@@ -4526,7 +4592,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Pincode-herinneringen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt dan je profielnaam en -foto, je instellingen en je contacten herstellen wanneer je Signal opnieuw installeert.";
+"SETTINGS_PINS_FOOTER" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt dan je profielnaam, -foto en -omschrijving, je instellingen en je contacten herstellen wanneer je Signal opnieuw installeert.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Wijzig je pincode";
@@ -4600,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Beveiliging tegen schermafdrukken";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Weergeven in suggesties";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-gesprekken worden weergegeven als suggesties bij het delen vanuit andere apps.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";
 
@@ -4664,7 +4736,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Kan bijlage niet verzenden";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%1$@ van %2$@ aan het uploaden …";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploaden …";
@@ -4674,6 +4746,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Verzenden via Signal";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Het is niet gelukt om suggesties bij delen uit te schakelen.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal-gesprekken worden nu weergegeven als suggesties bij het delen vanuit andere apps.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Delen makkelijker gemaakt";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Uitschakelen";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Inschakelen";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Veiligheidsnummer tonen";
@@ -4705,9 +4792,6 @@
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Stickerbericht";
 
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Stickerpakket geïnstalleerd";
-
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installeer";
 
@@ -4737,9 +4821,6 @@
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Stickerpakket";
-
-/* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Stickerpakket doorsturen";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Stickerpakket";
@@ -4991,7 +5072,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lees meer over pincodes";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam en -foto, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de PIN niet nodig om de app te openen.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam, -foto en -omschrijving, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de PIN niet nodig om de app te openen.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";
@@ -5097,6 +5178,63 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Vervolledig de installatie op Signal Desktop.";
+
+/* Placeholder text for header of the wallpaper mini preview */
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Naam van contactpersoon";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Afbeelding vervagen";
+
+/* The incoming bubble text when setting a photo */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Knijp met twee vingers om te vergroten of te draaien, sleep met één vinger om te verschuiven.";
+
+/* The incoming bubble text when setting a preset */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Veeg om meer achtergronden weer te geven.";
+
+/* The outgoing bubble text when setting a wallpaper for all chats. */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Deze achtergrond instellen voor alle gesprekken.";
+
+/* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Een achtergrond instellen voor %@.";
+
+/* The text for the set button on wallpaper preview view. */
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Kiezen";
+
+/* Title for the wallpaper preview view. */
+"WALLPAPER_PREVIEW_TITLE" = "Voorbeeld";
+
+/* Clear wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Achtergrond verwijderen";
+
+/* Confirmation dialog when clearing the wallpaper for a specific chat. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Achtergrond verwijderen voor dit gesprek?";
+
+/* Confirmation dialog when clearing the global wallpaper. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Deze achtergrond verwijderen? Achtergronden die je apart voor een bepaald gesprek hebt ingesteld worden niet verwijderd.";
+
+/* Dim wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Donker thema dimt achtergrond";
+
+/* An error indicating to the user that we failed to clear the wallpaper. */
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "De achtergrond is niet verwijderd, probeer het later opnieuw of neem contact op met ondersteuning als het probleem blijft bestaan.";
+
+/* An error indicating to the user that we failed to reset all wallpapers. */
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Niet alle achtergronden zijn verwijderd, probeer het later opnieuw of neem contact op met ondersteuning als het probleem blijft bestaan.";
+
+/* Title for the wallpaper settings preview section. */
+"WALLPAPER_SETTINGS_PREVIEW" = "Voorbeeld";
+
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL" = "Alle achtergronden verwijderen";
+
+/* Confirmation dialog when resetting all wallpapers. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Alle achtergronden verwijderen, inclusief achtergronden die je apart voor een bepaald gesprek hebt ingesteld?";
+
+/* Set wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Gespreksachtergrond kiezen";
+
+/* Title for the wallpaper settings view. */
+"WALLPAPER_SETTINGS_TITLE" = "Gespreksachtergrond";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Je hebt dit bericht verwijderd.";

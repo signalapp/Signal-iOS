@@ -802,7 +802,7 @@ public func serializedData() throws -> Data {
                 if proto_syntax == 'proto2':
                     writer.add('guard proto.%s else {' % field.has_accessor_name() )
                     writer.push_indent()
-                    writer.add('throw %s.invalidProtobuf(description: "\(Self.logTag) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
+                    writer.add('throw %s.invalidProtobuf(description: "\(Self.logTag()) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
                     writer.pop_indent()
                     writer.add('}')
 
@@ -1007,7 +1007,7 @@ public func serializedData() throws -> Data {
 
         if writer.needs_objc():
             writer.add_objc()
-            writer.add('public class %s {' % self.swift_builder_name)
+            writer.add('public class %s: NSObject {' % self.swift_builder_name)
         else:
             writer.add('public struct %s {' % self.swift_builder_name)
         writer.newline()

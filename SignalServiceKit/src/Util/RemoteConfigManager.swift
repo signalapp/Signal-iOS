@@ -149,6 +149,20 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var automaticSessionResetKillSwitch: Bool {
+        return isEnabled(.automaticSessionResetKillSwitch)
+    }
+
+    @objc
+    public static var automaticSessionResetAttemptInterval: TimeInterval {
+        guard let automaticSessionResetAttemptIntervalString: String = value(.automaticSessionResetAttemptInterval),
+              let automaticSessionResetAttemptInterval = TimeInterval(automaticSessionResetAttemptIntervalString) else {
+            return kHourInterval
+        }
+        return automaticSessionResetAttemptInterval
+    }
+
+    @objc
     public static var researchMegaphone: Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else { return false }
         return remoteConfig.researchMegaphone
@@ -330,6 +344,7 @@ private struct Flags {
         case groupsV2manualMigrations
         case groupsV2blockingMigrations
         case groupCallingKillSwitch
+        case automaticSessionResetKillSwitch
     }
 
     // Values defined in this array remain set once they are
@@ -349,6 +364,7 @@ private struct Flags {
         case clientExpiration
         case researchMegaphone
         case cdsSyncInterval
+        case automaticSessionResetAttemptInterval
     }
 }
 

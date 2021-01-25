@@ -1,17 +1,17 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "RecipientPickerViewController.h"
-#import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
-#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
 #import <PromiseKit/AnyPromise.h>
+#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>

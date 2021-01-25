@@ -255,7 +255,9 @@ extension SendMessageFlow {
             }
         }.done { (thread: TSThread) in
             Logger.info("Transitioning to single thread.")
-            SignalApp.shared().presentConversation(for: thread, animated: true)
+            SignalApp.shared().dismissAllModals(animated: true) {
+                SignalApp.shared().presentConversation(for: thread, animated: true)
+            }
         }.catch { error in
             owsFailDebug("Error: \(error)")
             self.showSendFailedAlert()

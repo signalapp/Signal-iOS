@@ -433,9 +433,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Ново: Замаглувајте лица или нацртајте било каде за замаглување.";
 
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Прелистување";
-
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Додадете...";
 
@@ -542,7 +539,7 @@
 "CALLBACK_BUTTON_TITLE" = "Возврати повик";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Вашата камера е исклучена";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal Корисник";
@@ -847,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Измени";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Кој може да ги уредува информациите за групата";
 
@@ -858,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Сите членови";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Измени";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
@@ -902,10 +899,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не известувај ако е нечујно";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Дали да добиете известување кога некој ќе ве спомне во исклучени разговори?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Спомнувања";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Исклучи звук";
@@ -1385,7 +1382,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = " Вашиот безбедносен број %@ е променет.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Сесијата со разговорот е освежена";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = " Се појави непозната грешка.";
@@ -1454,12 +1451,12 @@
 "GENERIC_ATTACHMENT_LABEL" = "Прикачување";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get started";
+"GET_STARTED_BANNER_TITLE" = "Започнете";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Покани пријатели";
 
-/* 'Get Started' button directing users to create a group' */
+/* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Нова група";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
@@ -1541,10 +1538,10 @@
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
+"GROUP_CALL_CONTINUE_BUTTON" = "Продолжи повик";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "Групниот повик заврши";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Повеќе информации";
@@ -1559,7 +1556,7 @@
 "GROUP_CALL_IS_FULL" = "Call is Full";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Приклучи се на повик";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
@@ -1580,7 +1577,7 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Нема никој";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
@@ -1604,7 +1601,7 @@
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "На овој повик · 1 личност ";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
@@ -1613,22 +1610,22 @@
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Некој со променет сигурносен број се приклучи на овој повик.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Повлечи нагоре за промена на погледи";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "Започни повик";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tap here to start a group call";
+"GROUP_CALL_START_TOOLTIP" = "Допри тука да започнеш групен повик";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Вие започнавте групен повик";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
@@ -1646,16 +1643,16 @@
 "GROUP_CALL_YOU" = "Вие";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "Вие сте во групниот повик";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Отворете нова група за да започнете бесплатен енкриптиран групен повик";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Претставуваме групни повици";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Создадовте група.";
@@ -1709,7 +1706,7 @@
 "GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Вие го исклучивте групниот линк.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
@@ -1736,7 +1733,7 @@
 "GROUP_INVITE_LINK_RESET" = " The group link was reset.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Вие го ресетиравте групниот линк.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
@@ -1784,13 +1781,13 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Приклучи сѐ";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Се вчитува...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Дали сакате да се приклучите на оваа група и да го споделите Вашето име и слика со нејзините членови?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Ве молиме проверете дали сте приклучени на Интернет и обидете се повторно.";
@@ -1808,7 +1805,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Бара од администраторот да ги одобри новите членови кои што се приклучуваат преку групниот линк.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1829,13 +1826,13 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Луѓе кои го скенираат кодот ќе можат да се приклучат на Вашата група. Администраторите сѐ уште ќе треба да ги одобрат новите членови ако ја имате вклучено таа опција.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
 
 /* The title for the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR код";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1850,7 +1847,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Бара од администраторот да ги одобри новите членови кои што се приклучуваат преку групниот линк.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
@@ -1859,7 +1856,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Дали сте сигурни дека сакате да го ресетирате групниот линк? Луѓето повеќе нема да можат да се приклучат на групата со тековниот линк.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Сподели";
@@ -1868,10 +1865,10 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Сподели";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR код";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Сподели преку Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
@@ -1916,7 +1913,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Вие и се приклучивте на групата.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Вие се приклучивте на групата преку групниот линк.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ве отстрани.";
@@ -1928,13 +1925,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Го откажавте барањето за приклучување во група.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Испративте барање за приклучување во група.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Вашите администраторски привилегии беа отповикани.";
@@ -1967,7 +1964,7 @@
 "GROUP_MEMBERS_CALL" = "Аудио повик";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Можете да додадете или да поканите пријатели откако ќе ја креирате оваа група.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Членови";
@@ -2153,7 +2150,7 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Името на групата сега е  “%@“.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "Оваа група беше надградена кон „Нови групи“.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
@@ -2201,7 +2198,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Што се застарени групи";
 
 /* Body text for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
@@ -2213,7 +2210,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Застарени и нови групи";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
@@ -2228,7 +2225,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Цела историја на пораки и медиа од пред надградбата ќе бидат зачувани.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -2273,25 +2270,25 @@
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Застарена група";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Ќе треба да прифатите покана за да и се приклучите на оваа група повторно. Нема да добивате пораки од групата додека не прифатите.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "За пристап до нови опции како @mentions и администратори надградете ја оваа група.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Што се тоа нови групи?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Цела историја на пораки и медиа беа зачувани од пред надградбата.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Нови групи доаѓаат со опции како @mentions и администратори на групи. Исто така ќе поддржуваат повеќе опции во иднина.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
@@ -2315,7 +2312,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Цела историја на пораки и медиа беа зачувани од пред надградбата.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
@@ -2324,19 +2321,19 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Овој член ќе треба да прифати покана за да се приклучи на групата повторно. Истиот нема да добива пораки од групата се додека не прифати:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Овие членови треба да прифатат покана за повторно приклучување во групата. Тие нема да добиваат пораки од групата додека не прифатат:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Овој член не е во можност да се приклучи на Нови групи и ќе биде отстранет од групата:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Овие членови не се во можност да се приклучат на Нови групи и ќе бидат отстранети од групата:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Наградба кон нови групи";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
@@ -2369,7 +2366,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Препорачаниот лимит за членови е достигнат";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
@@ -2522,7 +2519,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Поканувањето на повеќе корисници во исто време ќе започне групна порака и примачите ќе можат да се видат меѓусебно.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Join";
+"JOIN_CALL_PILL_BUTTON" = "Приклучи сѐ";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Пораките исчезнуваат после %@.";
@@ -2822,22 +2819,22 @@
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
 
 /* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Your contact";
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Ваш контакт";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
 
 /* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Request";
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Барање";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Прегледај барање";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Update contact";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Ажурирај контакт";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Прегледај барање";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Прифати";
@@ -2879,7 +2876,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Одблокирај";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Откажи барање";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -2980,6 +2977,18 @@
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Ве молиме проверете дали сте приклучени на Интернет и обидете се повторно.";
 
+/* String representing only the cellular interface */
+"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+
+/* String representing the 'never' condition of having no supported network interfaces */
+"NETWORK_INTERFACE_SET_NEVER" = "Никогаш";
+
+/* String representing only the wifi interface */
+"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
+
+/* String representing both wifi and cellular interfaces */
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi and Cellular";
+
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Најди по телефонски број";
 
@@ -3041,7 +3050,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Најди Контакти преку телефонски број";
 
 /* A string describing that the user has no groups in common with another user */
-"NO_GROUPS_IN_COMMON" = "No groups in common";
+"NO_GROUPS_IN_COMMON" = "Немате заеднички групи";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Избери контакт или група за разговор";
@@ -3383,7 +3392,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nobody";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Никој";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
@@ -3404,7 +3413,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY" = "Nobody";
+"PHONE_NUMBER_SHARING_NOBODY" = "Никој";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
@@ -3581,7 +3590,7 @@
 "PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Pinned";
+"PINNED_SECTION_TITLE" = "Закачени";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Создадете ПИН";
@@ -3652,14 +3661,50 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Продолжи";
 
+/* Placeholder text for the bio field of the profile bio view. */
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Неколку зборови за Вас...";
+
+/* The 'Be kind' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Бидете љубезни";
+
+/* The 'Coffee lover' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Љубител на кафе";
+
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Енкриптирано";
+
+/* The 'free to chat' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Јави ми се";
+
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+
+/* The 'Taking a break' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "На пауза";
+
+/* The 'Working on something new' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Работам";
+
+/* Title for the profile bio view. */
+"PROFILE_BIO_VIEW_TITLE" = "За";
+
+/* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "About (%@)";
+
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ го променил своето име од %@ во %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ го промени своето име на профилот во %@.";
 
+/* Button to add a 'bio' to the user's profile in the profile view. */
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Add to Profile";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Поставете слика на профилот";
+
+/* Header for the 'bio' section of the profile view. */
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "За";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Отстранете слика";
@@ -3908,7 +3953,7 @@
 "RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tell Signal what you think";
+"RESEARCH_MEGAPHONE_TITLE" = "Кажете ни што мислите за Signal";
 
 /* Text for the research modal footer */
 "RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
@@ -3920,10 +3965,10 @@
 "RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "Направете ја анкетата";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
+"RESEARCH_MODAL_TITLE" = "Signal истражувања";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Обиди се пак";
@@ -4244,7 +4289,16 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "Сесијата со разговорот е освежена";
+
+/* Title for the wallpaper choose from photos option */
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+
+/* Title for the wallpaper presets section */
+"SET_WALLPAPER_PRESETS" = "Достапни";
+
+/* Title for the set wallpaper settings view. */
+"SET_WALLPAPER_TITLE" = "Set Wallpaper";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "За";
@@ -4396,6 +4450,15 @@
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Data Usage";
 
+/* Item title for the low bandwidth call setting */
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+
+/* Section footer for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Користење на помалку податоци може да ги подобри повиците на лоши мрежи";
+
+/* Section header for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Повици";
+
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
 
@@ -4441,6 +4504,9 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук на порака";
 
+/* Label for settings view that allows user to change the wallpaper. */
+"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Услови и Политика на Приватност";
 
@@ -4469,7 +4535,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Слики";
 
 /* Label for the 'video' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Видео";
 
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Messaging";
@@ -4600,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Безбедност на Екран";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Show in Suggestions";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Регистрација за заклучување";
 
@@ -4675,6 +4747,21 @@
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Сподели со Signal";
 
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Sharing Made Easier";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Оневозможи";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Овозможи";
+
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Покажи безбедносен број";
 
@@ -4704,9 +4791,6 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Стикер порака";
-
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Инсталиран стикер пакет";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Инсталирај";
@@ -4738,9 +4822,6 @@
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Стикер пакет";
 
-/* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Сподели Стикер пакет";
-
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Стикер пакет";
 
@@ -4760,7 +4841,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Контактирајте не";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Кажете ни што се случува";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
@@ -5097,6 +5178,63 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завршете го поставувањето на Signal Desktop.";
+
+/* Placeholder text for header of the wallpaper mini preview */
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+
+/* The incoming bubble text when setting a photo */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Допрете за зголемување, повлечете за промена.";
+
+/* The incoming bubble text when setting a preset */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+
+/* The outgoing bubble text when setting a wallpaper for all chats. */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Поставете позадина за сите разговори.";
+
+/* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+
+/* The text for the set button on wallpaper preview view. */
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+
+/* Title for the wallpaper preview view. */
+"WALLPAPER_PREVIEW_TITLE" = "Преглед";
+
+/* Clear wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+
+/* Confirmation dialog when clearing the wallpaper for a specific chat. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Да ја отстранам позадината за овој разговор?";
+
+/* Confirmation dialog when clearing the global wallpaper. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Да отстранам позадина? Ова нема да ги отстрани сопствените позадини кои ги имате поставено за Вашите разговори.";
+
+/* Dim wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+
+/* An error indicating to the user that we failed to clear the wallpaper. */
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+
+/* An error indicating to the user that we failed to reset all wallpapers. */
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+
+/* Title for the wallpaper settings preview section. */
+"WALLPAPER_SETTINGS_PREVIEW" = "Преглед";
+
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+
+/* Confirmation dialog when resetting all wallpapers. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Да ги ресетирам сите позадини, вклучувајќи ги и сопствените позадини кои ги имате поставено за Вашите разговори?";
+
+/* Set wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+
+/* Title for the wallpaper settings view. */
+"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Вие ја избришавте оваа порака.";

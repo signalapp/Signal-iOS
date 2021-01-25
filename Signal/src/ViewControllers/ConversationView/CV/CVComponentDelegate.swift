@@ -73,7 +73,8 @@ public protocol CVComponentDelegate {
                              attachmentStream: TSAttachmentStream,
                              imageView: UIView)
 
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment)
+    @objc(cvc_didTapGenericAttachment:inComponentView:)
+    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment, in componentView: CVComponentView)
 
     func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel)
 

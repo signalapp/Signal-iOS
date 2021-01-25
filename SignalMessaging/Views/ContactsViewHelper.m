@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsViewHelper.h"
@@ -530,16 +530,16 @@ NS_ASSUME_NONNULL_BEGIN
             newContact.phoneNumbers = @[ labeledPhoneNumber ];
         }
 
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            newContact.givenName = [self.profileManager givenNameForAddress:address transaction:transaction];
+            newContact.familyName = [self.profileManager familyNameForAddress:address transaction:transaction];
+            newContact.imageData = UIImagePNGRepresentation([self.profileManager profileAvatarForAddress:address transaction:transaction]);
+        }];
+
         if (updatedNameComponents) {
             newContact.givenName = updatedNameComponents.givenName;
             newContact.familyName = updatedNameComponents.familyName;
-        } else {
-            [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-                newContact.givenName = [self.profileManager givenNameForAddress:address transaction:transaction];
-                newContact.familyName = [self.profileManager familyNameForAddress:address transaction:transaction];
-            }];
         }
-
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }
 

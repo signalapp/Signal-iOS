@@ -65,6 +65,8 @@ public class AttachmentMultisend {
                                                                       transaction: transaction)
                     messages.append(message)
                     threads.append(thread)
+
+                    thread.donateSendMessageIntent(transaction: transaction)
                 }
 
                 // map of attachments we'll upload to their copies in each recipient thread
@@ -139,6 +141,8 @@ public class AttachmentMultisend {
                                                                       transaction: transaction)
                     messages.append(message)
                     threads.append(thread)
+
+                    thread.donateSendMessageIntent(transaction: transaction)
                 }
 
                 // map of attachments we'll upload to their copies in each recipient thread

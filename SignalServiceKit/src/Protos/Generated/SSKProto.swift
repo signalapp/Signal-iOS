@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -399,7 +399,7 @@ public class SSKProtoEnvelope: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_Envelope) throws {
         guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: timestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
@@ -610,7 +610,7 @@ public class SSKProtoTypingMessage: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_TypingMessage) throws {
         guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: timestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
@@ -1109,7 +1109,7 @@ public class SSKProtoCallMessageOffer: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Offer) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -1296,7 +1296,7 @@ public class SSKProtoCallMessageAnswer: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Answer) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -1526,7 +1526,7 @@ public class SSKProtoCallMessageIceUpdate: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.IceUpdate) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -1661,7 +1661,7 @@ public class SSKProtoCallMessageBusy: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Busy) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -1872,7 +1872,7 @@ public class SSKProtoCallMessageHangup: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Hangup) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -2874,7 +2874,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Quote) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -4600,7 +4600,7 @@ public class SSKProtoDataMessagePreview: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Preview) throws {
         guard proto.hasURL else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: url")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: url")
         }
         let url = proto.url
 
@@ -4818,22 +4818,22 @@ public class SSKProtoDataMessageSticker: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Sticker) throws {
         guard proto.hasPackID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: packID")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packID")
         }
         let packID = proto.packID
 
         guard proto.hasPackKey else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: packKey")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packKey")
         }
         let packKey = proto.packKey
 
         guard proto.hasStickerID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: stickerID")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: stickerID")
         }
         let stickerID = proto.stickerID
 
         guard proto.hasData else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: data")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: data")
         }
         let data = try SSKProtoAttachmentPointer(proto.data)
 
@@ -5103,12 +5103,12 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Reaction) throws {
         guard proto.hasEmoji else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: emoji")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: emoji")
         }
         let emoji = proto.emoji
 
         guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: timestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
@@ -5244,7 +5244,7 @@ public class SSKProtoDataMessageDelete: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Delete) throws {
         guard proto.hasTargetSentTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: targetSentTimestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: targetSentTimestamp")
         }
         let targetSentTimestamp = proto.targetSentTimestamp
 
@@ -7454,7 +7454,7 @@ public class SSKProtoSyncMessageContacts: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Contacts) throws {
         guard proto.hasBlob else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: blob")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: blob")
         }
         let blob = try SSKProtoAttachmentPointer(proto.blob)
 
@@ -8164,7 +8164,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Read) throws {
         guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: timestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
@@ -8569,12 +8569,12 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.StickerPackOperation) throws {
         guard proto.hasPackID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: packID")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packID")
         }
         let packID = proto.packID
 
         guard proto.hasPackKey else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: packKey")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packKey")
         }
         let packKey = proto.packKey
 
@@ -8808,7 +8808,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.ViewOnceOpen) throws {
         guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: timestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
@@ -10743,7 +10743,7 @@ public class SSKProtoGroupContext: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_GroupContext) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -12121,7 +12121,7 @@ public class SSKProtoGroupDetails: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_GroupDetails) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 
@@ -12318,7 +12318,7 @@ public class SSKProtoPackSticker: NSObject, Codable {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_Pack.Sticker) throws {
         guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: id")
+            throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
 

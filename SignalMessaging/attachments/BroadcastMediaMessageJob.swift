@@ -128,6 +128,15 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
 }
 
 public enum BroadcastMediaUploader {
+
+    // MARK: - Dependencies
+
+    private static var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    // MARK: -
+
     static func upload(attachmentIdMap: [String: [String]]) throws -> [TSOutgoingMessage] {
         let observer = NotificationCenter.default.addObserver(
             forName: .attachmentUploadProgress,
@@ -163,9 +172,35 @@ public enum BroadcastMediaUploader {
         }
         defer { NotificationCenter.default.removeObserver(observer) }
 
-        let uploadOperations = attachmentIdMap.keys.map { attachmentId in
+        let uploadOperations = attachmentIdMap.keys.map { (attachmentId) -> OWSUploadOperation in
+
+            let messageIds: [String] = {
+                guard let correspondingAttachmentIds = attachmentIdMap[attachmentId] else {
+                    owsFailDebug("correspondingAttachments was unexpectedly nil")
+                    return []
+                }
+                var result = [String]()
+                Self.databaseStorage.read { transaction in
+                    for attachmentId in correspondingAttachmentIds {
+                        guard let correspondingAttachment = TSAttachmentStream.anyFetchAttachmentStream(
+                            uniqueId: attachmentId,
+                            transaction: transaction
+                        ) else {
+                            Logger.warn("correspondingAttachment is missing. User has since deleted?")
+                            continue
+                        }
+                        if let albumMessageId = correspondingAttachment.albumMessageId {
+                            result.append(albumMessageId)
+                        }
+                    }
+                }
+                return result
+            }()
+
             // This is only used for media attachments, so we can always use v3.
-            return OWSUploadOperation(attachmentId: attachmentId, canUseV3: true)
+            return OWSUploadOperation(attachmentId: attachmentId,
+                                      messageIds: messageIds,
+                                        canUseV3: true)
         }
 
         OWSUploadOperation.uploadQueue.addOperations(uploadOperations, waitUntilFinished: true)

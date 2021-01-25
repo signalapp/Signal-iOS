@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 // Any Obj-C used by SSK Swift must be imported.
@@ -16,7 +16,6 @@
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBackupFragment.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>

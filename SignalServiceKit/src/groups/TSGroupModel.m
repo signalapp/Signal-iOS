@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
@@ -123,8 +123,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
         OWSFailDebug(@"Could not convert group avatar to PNG.");
         return nil;
     }
-    // We should never hit this limit, given the max dimension above.
-    const NSUInteger kMaxLength = 500 * 1000;
+    // We should almost never hit this limit, given the max dimension above.
+    const NSUInteger kMaxLength = 1024 * 1024 * 2.9;
     if (data.length > kMaxLength) {
         OWSLogVerbose(@"Group avatar data length: %lu (%@)",
                       (unsigned long)data.length,

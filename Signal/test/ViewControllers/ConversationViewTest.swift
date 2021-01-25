@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -17,9 +17,9 @@ class ConversationViewTest: SignalBaseTest {
         Theme.setIsDarkThemeEnabledForTests(false)
         XCTAssertFalse(Theme.isDarkThemeEnabled)
 
-        let style1 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 100)
-        let style2 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 100)
-        let style3 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 101)
+        let style1 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 100, hasWallpaper: false)
+        let style2 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 100, hasWallpaper: false)
+        let style3 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 101, hasWallpaper: false)
 
         XCTAssertFalse(style1.isDarkThemeEnabled)
         XCTAssertFalse(style2.isDarkThemeEnabled)
@@ -32,7 +32,7 @@ class ConversationViewTest: SignalBaseTest {
         Theme.setIsDarkThemeEnabledForTests(true)
         XCTAssertTrue(Theme.isDarkThemeEnabled)
 
-        let style4 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 100)
+        let style4 = ConversationStyle(type: .`default`, thread: thread, viewWidth: 100, hasWallpaper: false)
 
         XCTAssertFalse(style1.isDarkThemeEnabled)
         XCTAssertFalse(style2.isDarkThemeEnabled)

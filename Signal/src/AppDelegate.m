@@ -741,7 +741,34 @@ void uncaughtExceptionHandler(NSException *exception)
         return NO;
     }
 
-    if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
+    if ([userActivity.activityType isEqualToString:@"INSendMessageIntent"]) {
+        OWSLogInfo(@"got send message intent");
+
+        INInteraction *interaction = [userActivity interaction];
+        INIntent *intent = interaction.intent;
+
+        if (![intent isKindOfClass:[INSendMessageIntent class]]) {
+            OWSFailDebug(@"unexpected class for send message intent: %@", intent);
+            return NO;
+        }
+        INSendMessageIntent *sendMessageIntent = (INSendMessageIntent *)intent;
+        NSString *_Nullable threadUniqueId = sendMessageIntent.conversationIdentifier;
+        if (!threadUniqueId) {
+            OWSFailDebug(@"Missing thread id for INSendMessageIntent");
+            return NO;
+        }
+
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            if (![self.tsAccountManager isRegisteredAndReady]) {
+                OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
+            [SignalApp.sharedApp presentConversationAndScrollToFirstUnreadMessageForThreadId:threadUniqueId
+                                                                                    animated:NO];
+        }];
+        return YES;
+    } else if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
         OWSLogInfo(@"got start video call intent");
 
         INInteraction *interaction = [userActivity interaction];

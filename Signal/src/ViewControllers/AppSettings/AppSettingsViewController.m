@@ -11,11 +11,11 @@
 #import "OWSBackupSettingsViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
-#import "ProfileViewController.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 
@@ -85,6 +85,8 @@
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
 
     [self updateTableContents];
+
+    [self.bulkProfileFetch fetchProfileWithAddress:self.tsAccountManager.localAddress];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -122,17 +124,12 @@
                                                   [weakSelf showInviteFlow];
                                               }]];
 
-    // Starting with iOS 13, show an appearance section to allow setting the app theme
-    // to match the "system" dark/light mode settings and to adjust the app specific
-    // language settings.
-    if (@available(iOS 13, *)) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_APPEARANCE_TITLE",
                                                                   @"The title for the appearance settings.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"appearance")
                                                   actionBlock:^{
                                                       [weakSelf showAppearance];
                                                   }]];
-    }
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
@@ -346,12 +343,12 @@
 
 - (void)showProfile
 {
-    ProfileViewController *profileVC =
-        [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings
+    UIViewController *vc =
+        [[ProfileViewController alloc] initWithMode:ProfileViewModeAppSettings
                                   completionHandler:^(ProfileViewController *completedVC) {
                                       [completedVC.navigationController popViewControllerAnimated:YES];
                                   }];
-    [self.navigationController pushViewController:profileVC animated:YES];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showData

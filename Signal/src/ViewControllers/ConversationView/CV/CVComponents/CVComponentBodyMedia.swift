@@ -17,9 +17,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private var mediaAlbumHasPendingAttachment: Bool {
         bodyMedia.mediaAlbumHasPendingAttachment
     }
-    private var mediaAlbumHasPendingManualDownloadAttachment: Bool {
-        bodyMedia.mediaAlbumHasPendingManualDownloadAttachment
-    }
 
     private var areAllItemsImages: Bool {
         for item in items {
@@ -69,11 +66,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let conversationStyle = self.conversationStyle
 
         let albumView = componentView.albumView
-        albumView.configure(mediaCache: self.cellMediaCache,
+        albumView.configure(mediaCache: self.mediaCache,
                             items: self.items,
                             isOutgoing: self.isOutgoing,
                             isBorderless: self.isBorderless,
-                            cellMeasurement: cellMeasurement)
+                            cellMeasurement: cellMeasurement,
+                            conversationStyle: conversationStyle)
 
         let blockLayoutView = componentView.blockLayoutView
         blockLayoutView.addSubview(albumView)
@@ -179,7 +177,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentView.rootView.addSubview(downloadButton)
             downloadButton.autoCenterInSuperview()
 
-            if mediaAlbumHasPendingManualDownloadAttachment {
+            if mediaAlbumHasPendingAttachment {
                 let attachmentPointers = items.compactMap { $0.attachment as? TSAttachmentPointer }
                 let pendingManualDownloadAttachments = attachmentPointers.filter { $0.isPendingManualDownload }
                 let totalSize = pendingManualDownloadAttachments.map { $0.byteCount}.reduce(0, +)
@@ -301,7 +299,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
-                return false
+                Self.attachmentDownloads.cancelDownload(attachmentId: attachmentPointer.uniqueId)
+                return true
             @unknown default:
                 owsFailDebug("Invalid attachment pointer state.")
                 return false

@@ -14,20 +14,48 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
         self.useThemeBackgroundColors = true
 
         updateTableContents()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .ThemeDidChange,
+            object: nil
+        )
     }
 
+    @objc
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let themeSection = OWSTableSection()
-        themeSection.headerTitle = NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
-                                                     comment: "The title for the theme section in the appearance settings.")
+        let firstSection = OWSTableSection()
+        firstSection.customHeaderHeight = 14
 
-        themeSection.add(appearanceItem(.system))
-        themeSection.add(appearanceItem(.light))
-        themeSection.add(appearanceItem(.dark))
+        // Starting with iOS 13, show them in appearance section to allow setting the app
+        // theme to match the "system" dark/light mode settings..
+        if #available(iOS 13, *) {
+            firstSection.add(OWSTableItem.disclosureItem(
+                withText: NSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
+                                            comment: "The title for the theme section in the appearance settings."),
+                detailText: ThemeSettingsTableViewController.currentThemeName,
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
+            ) { [weak self] in
+                guard let self = self else { return }
+                let vc = ThemeSettingsTableViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+        }
 
-        contents.addSection(themeSection)
+        firstSection.add(OWSTableItem.disclosureItem(
+            withText: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
+                                        comment: "Label for settings view that allows user to change the wallpaper."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+        ) { [weak self] in
+            guard let self = self else { return }
+            let vc = WallpaperSettingsViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+        })
+
+        contents.addSection(firstSection)
 
         let contactSection = OWSTableSection()
         contactSection.customHeaderHeight = 14

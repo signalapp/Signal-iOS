@@ -729,6 +729,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewDidDisappear:animated];
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    BOOL isBannerVisible = self.getStartedBanner.view && !self.getStartedBanner.view.isHidden;
+
+    UIEdgeInsets newContentInset = UIEdgeInsetsZero;
+    newContentInset.bottom = isBannerVisible ? self.getStartedBanner.opaqueHeight : 0;
+
+    if (!UIEdgeInsetsEqualToEdgeInsets(self.tableView.contentInset, newContentInset)) {
+        [UIView animateWithDuration:0.25 animations:^{ self.tableView.contentInset = newContentInset; }];
+    }
+}
+
 - (void)updateBarButtonItems
 {
     if (self.conversationListMode != ConversationListMode_Inbox) {
@@ -1145,7 +1158,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     __block ThreadViewModel *_Nullable newThreadViewModel;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord transaction:transaction];
+        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
+                                                 forConversationList:YES
+                                                         transaction:transaction];
     }];
     [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
     return newThreadViewModel;
@@ -2344,16 +2359,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.inviteFlow presentWithIsAnimated:YES isModal:YES completion:nil];
 }
 
-- (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner
+- (void)getStartedBannerDidDismissAllCards:(OWSGetStartedBannerViewController *)banner animated:(BOOL)isAnimated
 {
-    [UIView animateWithDuration:0.5
-        animations:^{ self.getStartedBanner.view.alpha = 0; }
-        completion:^(BOOL finished) {
-            [self.getStartedBanner.view removeFromSuperview];
-            [self.getStartedBanner removeFromParentViewController];
+    void (^dismissBlock)(void) = ^{
+        [self.getStartedBanner.view removeFromSuperview];
+        [self.getStartedBanner removeFromParentViewController];
+        self.getStartedBanner = nil;
+    };
 
-            self.getStartedBanner = nil;
-        }];
+    if (isAnimated) {
+        [UIView animateWithDuration:0.5
+            animations:^{ self.getStartedBanner.view.alpha = 0; }
+            completion:^(BOOL finished) { dismissBlock(); }];
+    } else {
+        dismissBlock();
+    }
 }
 
 @end

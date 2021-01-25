@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -712,27 +712,25 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
             isFetchingMoreData = true
 
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-
             // mediaTileViewLayout will adjust content offset to compensate for the change in content height so that
             // the same content is visible after the update. I considered doing something like setContentOffset in the
             // batchUpdate completion block, but it caused a distinct flicker, which I was able to avoid with the
             // `CollectionViewLayout.prepare` based approach.
             mediaTileViewLayout.isInsertingCellsToTop = true
             mediaTileViewLayout.contentSizeBeforeInsertingToTop = collectionView.contentSize
-            collectionView.performBatchUpdates({
-                self.mediaGallery.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
-                    Logger.debug("insertingSections: \(addedSections) items: \(addedItems)")
+            UIView.performWithoutAnimation {
+                collectionView.performBatchUpdates({
+                    self.mediaGallery.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
+                        Logger.debug("insertingSections: \(addedSections) items: \(addedItems)")
 
-                    collectionView.insertSections(addedSections)
-                    collectionView.insertItems(at: addedItems)
-                }
-            }, completion: { finished in
-                Logger.debug("performBatchUpdates finished: \(finished)")
-                self.isFetchingMoreData = false
-                CATransaction.commit()
-            })
+                        collectionView.insertSections(addedSections)
+                        collectionView.insertItems(at: addedItems)
+                    }
+                }, completion: { finished in
+                    Logger.debug("performBatchUpdates finished: \(finished)")
+                    self.isFetchingMoreData = false
+                })
+            }
 
         } else if oldContentHeight - contentOffsetY < kEdgeThreshold {
             // Near the bottom, load newer content
@@ -752,8 +750,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
             isFetchingMoreData = true
 
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
             UIView.performWithoutAnimation {
                 collectionView.performBatchUpdates({
                     self.mediaGallery.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize, shouldLoadAlbumRemainder: false) { addedSections, addedItems in
@@ -764,7 +760,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 }, completion: { finished in
                     Logger.debug("performBatchUpdates finished: \(finished)")
                     self.isFetchingMoreData = false
-                    CATransaction.commit()
                 })
             }
         }
@@ -772,9 +767,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 }
 
 extension MediaTileViewController: MediaPresentationContextProvider {
-    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         // First time presentation can occur before layout.
         view.layoutIfNeeded()
+
+        guard case let .gallery(galleryItem) = item else {
+            owsFailDebug("Unexpected media type")
+            return nil
+        }
 
         guard let indexPath = indexPath(galleryItem: galleryItem) else {
             owsFailDebug("galleryItemIndexPath was unexpectedly nil")

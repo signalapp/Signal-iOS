@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +15,6 @@ protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset)
 
     var isInBatchSelectMode: Bool { get }
-    var isPickingAsDocument: Bool { get }
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool
     func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController)
 }
@@ -212,11 +211,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     var imageQuality: TSImageQuality {
-        guard let delegate = delegate else {
-            return .medium
-        }
-
-        return delegate.isPickingAsDocument ? .original : .medium
+        return .medium
     }
 
     override func viewWillLayoutSubviews() {

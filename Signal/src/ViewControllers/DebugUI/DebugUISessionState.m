@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISessionState.h"
-#import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

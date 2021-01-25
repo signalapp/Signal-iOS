@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -148,6 +148,24 @@ extension ConversationSettingsViewController {
                 self?.tappedConversationSearch()
             }))
         }
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsWallpaper,
+                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
+                                            comment: "Label for settings view that allows user to change the wallpaper."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+            )
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.showWallpaperSettingsView()
+        }))
 
         if !isNoteToSelf && !isGroupThread && thread.hasSafetyNumbers() {
             // Safety Numbers
@@ -724,6 +742,11 @@ extension ConversationSettingsViewController {
 
                 if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
+                } else if !memberAddress.isLocalAddress,
+                          let bioForDisplay = (Self.databaseStorage.read { transaction in
+                    Self.profileManager.profileBioForDisplay(for: memberAddress, transaction: transaction)
+                }) {
+                    cell.setAttributedSubtitle(NSAttributedString(string: bioForDisplay))
                 } else {
                     cell.setAttributedSubtitle(nil)
                 }

@@ -90,7 +90,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // This will get cleared by updateViewToReflectLoad().
         owsAssertDebug(viewState.scrollContinuityMap == nil)
-        viewState.scrollContinuityMap = buildScrollContinuityMap(forRenderState: renderState)
+        if hasViewWillAppearEverBegun,
+           !renderState.isFirstLoad {
+            viewState.scrollContinuityMap = buildScrollContinuityMap(forRenderState: renderState)
+        }
 
         return CVUpdateToken(isScrolledToBottom: self.isScrolledToBottom,
                              lastMessageForInboxSortId: threadViewModel.lastMessageForInbox?.sortId)
@@ -100,8 +103,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                   scrollAction: CVScrollAction,
                                   updateToken: CVUpdateToken) {
         AssertIsOnMainThread()
-
-        owsAssertDebug(self.viewState.scrollContinuityMap != nil)
 
         guard hasViewWillAppearEverBegun else {
             // It's safe to ignore updates before viewWillAppear
@@ -240,7 +241,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // Do not discard scrollContinuityMap if it corresponds to a
         // subsequent load. Animated and non-animated loads might
         // land in any order and thus complete out of order.
-        owsAssertDebug(viewState.scrollContinuityMap != nil)
         self.viewState.scrollContinuityMap = nil
 
         self.loadCoordinator.loadDidLand()
@@ -377,7 +377,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         benchSteps.step("2")
 
         scrollToInitialPosition(animated: false)
-        clearInitialScrollState()
+        if self.hasViewDidAppearEverCompleted {
+            clearInitialScrollState()
+        }
 
         benchSteps.step("3")
 
@@ -403,7 +405,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return
         }
         viewState.hasAppliedFirstLoad = true
-        clearInitialScrollState()
+        if self.hasViewDidAppearEverCompleted {
+            clearInitialScrollState()
+        }
     }
 
     private func updateReloadingAll(renderState: CVRenderState,
@@ -630,8 +634,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier)
     }
 
-    private func buildConversationStyle() -> ConversationStyle {
+    private func buildConversationStyle(hasWallpaper: Bool? = nil) -> ConversationStyle {
         AssertIsOnMainThread()
+
+        let hasWallpaper = hasWallpaper ?? viewState.threadViewModel.hasWallpaper
 
         func buildDefaultConversationStyle(type: ConversationStyleType) -> ConversationStyle {
             // Treat all styles as "initial" (not to be trusted) until
@@ -639,7 +645,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let viewWidth = floor(collectionView.width)
             return ConversationStyle(type: type,
                                      thread: thread,
-                                     viewWidth: viewWidth)
+                                     viewWidth: viewWidth,
+                                     hasWallpaper: hasWallpaper)
         }
 
         guard self.conversationStyle.type != .`default` else {
@@ -691,17 +698,22 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             let viewWidth = floor(navigationViewWidth)
             return ConversationStyle(type: .placeholder,
                                      thread: thread,
-                                     viewWidth: viewWidth)
+                                     viewWidth: viewWidth,
+                                     hasWallpaper: hasWallpaper)
         }
     }
 
     @objc
     @discardableResult
-    public func updateConversationStyle() -> Bool {
+    @available(swift, obsoleted: 1.0)
+    public func updateConversationStyle() -> Bool { updateConversationStyle(hasWallpaper: nil) }
+
+    @discardableResult
+    public func updateConversationStyle(hasWallpaper: Bool? = nil) -> Bool {
         AssertIsOnMainThread()
 
         let oldConversationStyle = self.conversationStyle
-        let newConversationStyle = buildConversationStyle()
+        let newConversationStyle = buildConversationStyle(hasWallpaper: hasWallpaper)
 
         let didChange = !newConversationStyle.isEqualForCellRendering(oldConversationStyle)
         if !didChange {

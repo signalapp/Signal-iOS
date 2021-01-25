@@ -63,7 +63,9 @@ public class CVLoader: NSObject {
                         // If thread has been deleted from the database, use last known model.
                         return prevRenderState.threadViewModel
                     }
-                    return ThreadViewModel(thread: thread, transaction: transaction)
+                    return ThreadViewModel(thread: thread,
+                                           forConversationList: false,
+                                           transaction: transaction)
                 }
                 let threadViewModel = loadThreadViewModel()
 
@@ -247,12 +249,25 @@ public class CVLoader: NSObject {
                                                  thread: TSThread,
                                                  containerView: UIView,
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
-        let cellMediaCache = NSCache<NSString, AnyObject>()
         let conversationStyle = ConversationStyle(type: .`default`,
                                                   thread: thread,
-                                                  viewWidth: containerView.width)
+                                                  viewWidth: containerView.width,
+                                                  hasWallpaper: false)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
-                                    cellMediaCache: cellMediaCache)
+                                    mediaCache: CVMediaCache())
+        return CVLoader.buildStandaloneRenderItem(interaction: interaction,
+                                                  thread: thread,
+                                                  coreState: coreState,
+                                                  transaction: transaction)
+    }
+
+    @objc
+    public static func buildStandaloneRenderItem(interaction: TSInteraction,
+                                                 thread: TSThread,
+                                                 conversationStyle: ConversationStyle,
+                                                 transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+        let coreState = CVCoreState(conversationStyle: conversationStyle,
+                                    mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                   thread: thread,
                                                   coreState: coreState,
@@ -265,7 +280,9 @@ public class CVLoader: NSObject {
                                                   transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         AssertIsOnMainThread()
 
-        let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+        let threadViewModel = ThreadViewModel(thread: thread,
+                                              forConversationList: false,
+                                              transaction: transaction)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
         let itemBuildingContext = CVItemBuildingContextImpl(threadViewModel: threadViewModel,

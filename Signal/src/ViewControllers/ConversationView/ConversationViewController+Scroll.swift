@@ -516,36 +516,50 @@ extension ConversationViewController {
     @objc
     public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
 
-        Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
+        if !DebugFlags.reduceLogChatter {
+            Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
+        }
 
         if isPresentingMessageActions,
            let contentOffset = targetContentOffsetForMessageActionInteraction {
-            Logger.verbose("---- targetContentOffsetForMessageActionInteraction: \(contentOffset)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- targetContentOffsetForMessageActionInteraction: \(contentOffset)")
+            }
             return contentOffset
         }
 
         if let contentOffset = targetContentOffsetForSizeTransition() {
-            Logger.verbose("---- targetContentOffsetForSizeTransition: \(contentOffset)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- targetContentOffsetForSizeTransition: \(contentOffset)")
+            }
             return contentOffset
         }
 
         if let contentOffset = targetContentOffsetForUpdate() {
-            Logger.verbose("---- targetContentOffsetForUpdate: \(contentOffset)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- targetContentOffsetForUpdate: \(contentOffset)")
+            }
             return contentOffset
         }
 
         if let contentOffset = targetContentOffsetForScrollContinuityMap() {
-            Logger.verbose("---- targetContentOffsetForScrollContinuityMap: \(contentOffset)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- targetContentOffsetForScrollContinuityMap: \(contentOffset)")
+            }
             return contentOffset
         }
 
         if scrollContinuity == .bottom,
            let contentOffset = targetContentOffsetForBottom() {
-            Logger.verbose("---- forLastKnownDistanceFromBottom: \(contentOffset)")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- forLastKnownDistanceFromBottom: \(contentOffset)")
+            }
             return contentOffset
         }
 
-        Logger.verbose("---- ...: \(proposedContentOffset)")
+        if !DebugFlags.reduceLogChatter {
+            Logger.verbose("---- ...: \(proposedContentOffset)")
+        }
         return proposedContentOffset
     }
 

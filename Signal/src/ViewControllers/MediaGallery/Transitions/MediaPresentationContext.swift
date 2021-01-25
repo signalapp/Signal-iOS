@@ -1,10 +1,24 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 let kIsDebuggingMediaPresentationAnimations = false
+
+enum Media {
+    case gallery(MediaGalleryItem)
+    case image(UIImage)
+
+    var image: UIImage? {
+        switch self {
+        case let .gallery(item):
+            return item.attachmentStream.originalImage
+        case let .image(image):
+            return image
+        }
+    }
+}
 
 struct MediaPresentationContext {
     let mediaView: UIView
@@ -29,7 +43,7 @@ struct MediaPresentationContext {
 // The other animation controller, the MediaDismissAnimationController is used when we're going to
 // stop showing the media pager. This can be a pop to the tile view, or a modal dismiss.
 protocol MediaPresentationContextProvider {
-    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext?
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext?
 
     // The transitionView will be presented below this view.
     // If nil, the transitionView will be presented above all

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,6 +16,8 @@ public class SignalServiceProfile: NSObject {
     public let address: SignalServiceAddress
     public let identityKey: Data
     public let profileNameEncrypted: Data?
+    public let bioEncrypted: Data?
+    public let bioEmojiEncrypted: Data?
     public let username: String?
     public let avatarUrlPath: String?
     public let unidentifiedAccessVerifier: Data?
@@ -52,6 +54,10 @@ public class SignalServiceProfile: NSObject {
         }
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
+
+        self.bioEncrypted = try params.optionalBase64EncodedData(key: "about")
+
+        self.bioEmojiEncrypted = try params.optionalBase64EncodedData(key: "aboutEmoji")
 
         self.username = try params.optional(key: "username")
 

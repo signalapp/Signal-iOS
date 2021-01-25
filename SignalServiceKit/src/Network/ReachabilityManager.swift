@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,6 +32,14 @@ public protocol SSKReachabilityManager {
     var isReachable: Bool { get }
 
     func isReachable(via reachabilityType: ReachabilityType) -> Bool
+}
+
+public extension SSKReachabilityManager {
+    func isReachable(with configuration: NetworkInterfaceSet) -> Bool {
+        NetworkInterface.allCases.contains { interface in
+            configuration.isSuperset(of: interface.singleItemSet) && isReachable(via: interface.reachabilityType)
+        }
+    }
 }
 
 // MARK: -
@@ -104,5 +112,14 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
             return
         }
         Logger.debug("started notifier")
+    }
+}
+
+private extension NetworkInterface {
+    var reachabilityType: ReachabilityType {
+        switch self {
+        case .cellular: return .cellular
+        case .wifi: return .wifi
+        }
     }
 }

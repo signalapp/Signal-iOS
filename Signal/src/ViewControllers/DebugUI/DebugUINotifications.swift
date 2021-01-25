@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,8 +192,8 @@ class DebugUINotifications: DebugUIPage {
 
     func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
         return delayedNotificationDispatch {
-            let errorMessage = TSErrorMessage(thread: thread,
-                                              failedMessageType: TSErrorMessageType.invalidMessage)
+            let builder = TSErrorMessageBuilder(thread: thread, errorType: .invalidMessage)
+            let errorMessage = TSErrorMessage(errorMessageWithBuilder: builder)
 
             self.databaseStorage.write { transaction in
                 self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)

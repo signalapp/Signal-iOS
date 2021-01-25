@@ -9,6 +9,7 @@ enum ViewOnceState: Equatable {
     case incomingExpired
     case incomingDownloading(attachmentPointer: TSAttachmentPointer)
     case incomingFailed
+    case incomingPending
     case incomingAvailable(attachmentStream: TSAttachmentStream)
     case incomingInvalidContent
     case outgoingSending
@@ -87,11 +88,9 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
         switch viewOnceState {
         case .incomingDownloading(let attachmentPointer):
-            let progressView = MediaDownloadView(attachmentId: attachmentPointer.uniqueId, radius: downloadProgressRadius)
-            progressView.progressColor = textColor
-            progressView.autoSetDimensions(to: CGSize(square: iconSize))
-            progressView.setContentHuggingHigh()
-            progressView.setCompressionResistanceHigh()
+            let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                        style: .withoutCircle(diameter: iconSize),
+                                                        conversationStyle: conversationStyle)
             componentView.hStackView.addArrangedSubview(progressView)
         default:
             if shouldShowIcon, let iconName = self.iconName {
@@ -162,12 +161,21 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             return false
         }
 
-        if viewOnceState == .incomingFailed {
+        switch viewOnceState {
+        case .unknown:
+            owsFailDebug("Invalid value.")
+        case .incomingDownloading,
+             .incomingInvalidContent:
+            break
+        case .incomingFailed, .incomingPending:
             componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
-        } else if case .incomingAvailable = viewOnceState {
+        case .incomingAvailable:
             componentDelegate.cvc_didTapViewOnceAttachment(message)
-        } else if isExpired {
+        case .incomingExpired, .outgoingSentExpired:
             componentDelegate.cvc_didTapViewOnceExpired(message)
+        case .outgoingFailed,
+             .outgoingSending:
+            break
         }
         return true
     }
@@ -212,7 +220,7 @@ fileprivate extension CVComponentViewOnce {
         case .incomingDownloading:
             owsFailDebug("Unexpected state.")
             return nil
-        case .incomingFailed:
+        case .incomingFailed, .incomingPending:
             return "arrow-down-circle-outline-24"
         case .incomingAvailable:
             return "view-once-24"
@@ -235,6 +243,7 @@ fileprivate extension CVComponentViewOnce {
         case .incomingExpired,
              .incomingDownloading,
              .incomingFailed,
+             .incomingPending,
              .incomingAvailable:
             return conversationStyle.bubbleTextColorIncoming
         case .outgoingFailed,
@@ -256,7 +265,8 @@ fileprivate extension CVComponentViewOnce {
         case .incomingExpired:
             return conversationStyle.bubbleTextColorIncoming
         case .incomingDownloading,
-             .incomingFailed:
+             .incomingFailed,
+             .incomingPending:
             return pendingColor
         case .incomingAvailable:
             return conversationStyle.bubbleTextColorIncoming
@@ -292,6 +302,9 @@ fileprivate extension CVComponentViewOnce {
             return buildDefaultConfig(text: text)
         case .incomingFailed:
             let text = CommonStrings.retryButton
+            return buildDefaultConfig(text: text)
+        case .incomingPending:
+            let text = NSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons.")
             return buildDefaultConfig(text: text)
         case .incomingAvailable:
             let text: String

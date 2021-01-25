@@ -433,9 +433,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Berria: aurpegiak zirriborratu edo edonon marraztu zirriborrotzeko.";
 
-/* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Nabigatu";
-
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Gehitu";
 
@@ -847,6 +844,9 @@
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Txat-aren kolorea";
 
+/* Label for the 'edit' button in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT" = "Editatu";
+
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Taldearen informazioa edita dezakeena";
 
@@ -858,9 +858,6 @@
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Partaide Guztiak";
-
-/* Label for the 'edit group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_GROUP" = "Editatu";
 
 /* Label for 'edit membership access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Kide Berriak Gehitu Ditzakeena";
@@ -1385,7 +1382,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@(r)ekin duzun segurtasun zenbakia aldatu da.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Chat session refreshed";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Txataren sesioa eguneratu egin da";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Errore ezezaguna gertatu da.";
@@ -1459,7 +1456,7 @@
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Gonbidatu lagunak";
 
-/* 'Get Started' button directing users to create a group' */
+/* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Talde berria";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
@@ -2483,7 +2480,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Solasaldi hauek artxibatuta daude eta bakarrik mezu berriak jasotakoan agertuko dira sarrera erretiluan.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "Ez dago txatik.\nHasi lagun bati mezua bidaliz.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ -(e)k deitu dizu";
@@ -2678,7 +2675,7 @@
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ argazki";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ elementu";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2979,6 +2976,18 @@
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Mesedez, egiazta ezazu online zauden eta saia zaitez berriro.";
+
+/* String representing only the cellular interface */
+"NETWORK_INTERFACE_SET_CELLULAR" = "Telefonoa bakarrik";
+
+/* String representing the 'never' condition of having no supported network interfaces */
+"NETWORK_INTERFACE_SET_NEVER" = "Inoiz ez";
+
+/* String representing only the wifi interface */
+"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi bakarrik";
+
+/* String representing both wifi and cellular interfaces */
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi eta Telefonoa";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Bilatu telefono zenbakia erabiliz";
@@ -3652,14 +3661,50 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Jarraitu";
 
+/* Placeholder text for the bio field of the profile bio view. */
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Idatzi zuri buruzko hitz batzuk...";
+
+/* The 'Be kind' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Izan atsegina...";
+
+/* The 'Coffee lover' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Kafea gustatzen zai";
+
+/* The 'Encrypted' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Zifratuta";
+
+/* The 'free to chat' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Txateatzeko libre";
+
+/* The 'Speak Freely' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Hitz egin";
+
+/* The 'Taking a break' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Atsedena hartzen";
+
+/* The 'Working on something new' default bio in the profile bio view. */
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Zerbait berrian lanean";
+
+/* Title for the profile bio view. */
+"PROFILE_BIO_VIEW_TITLE" = "Honi buruz";
+
+/* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Honi buruz (%@)";
+
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ erabiltzaileak bere profilaren izena aldatu du. Lehen %@ zen eta orain %@ da.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@erabiltzailea bere profilaren izena aldatu du. Orain %@ da.";
 
+/* Button to add a 'bio' to the user's profile in the profile view. */
+"PROFILE_VIEW_ADD_BIO_TO_PROFILE" = "Profilera gehitu";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ezarri profil argazkia";
+
+/* Header for the 'bio' section of the profile view. */
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "Honi buruz";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Ezabatu Argazkia";
@@ -4241,10 +4286,19 @@
 "SEND_SMS_INVITE_TITLE" = "Gobidatu nahi duzu ondoko zenbakia Signal erabiltzera:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signalek muturretik-muturrerako zifratzea erabiltzen dut eta noizbehinka txataren sesioa eguneratu beharko duzu. Honek ez du zure txataren segurtasunean eraginik baina agian kontaktu horren mezuren bat galdu egingo zenuen eta berriz bidaltzeko eskatu beharko zenioke zure kontaktuari.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Chat session refreshed";
+"SESSION_REFRESH_ALERT_TITLE" = "Txataren sesioa eguneratu egin da";
+
+/* Title for the wallpaper choose from photos option */
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Aukeratu argazkietatik";
+
+/* Title for the wallpaper presets section */
+"SET_WALLPAPER_PRESETS" = "Aurre-ezarpenak";
+
+/* Title for the set wallpaper settings view. */
+"SET_WALLPAPER_TITLE" = "Ezarri hormairudia";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Honi buruz";
@@ -4304,10 +4358,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Erroreei buruzko informazioa.";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Erakutsi sistemaren kontaktuen irudiak, baldin badaude";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use system contact photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Erabili sistemaren kontaktuen irudiak";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Gaia";
@@ -4394,7 +4448,16 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Mezualaria\nBaimenduta GPLv3 litzentziapean";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Datu-erabilera";
+
+/* Item title for the low bandwidth call setting */
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Datu gutxiago erabili";
+
+/* Section footer for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Datu gutxiago erabiltzeak sare txarretan deiak hobetzea ekarri dezake";
+
+/* Section header for the call section in data settings */
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Deiak";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Ahots mezuak, behin ikusteko media eta eranskailuak (100 kb baino txikiagoak) automatikoki deskargatuko dira beti.";
@@ -4406,7 +4469,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Berrezarri automatikoki deskargatzearen ezarpenak";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Datu-erabilera";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Kontua Ezabatu";
@@ -4440,6 +4503,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Mezuaren soinua";
+
+/* Label for settings view that allows user to change the wallpaper. */
+"SETTINGS_ITEM_WALLPAPER" = "Elkarrizketaren hormairudia";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Baldintzak eta pribatutasun arauak";
@@ -4600,6 +4666,12 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Pantailaren segurtasuna";
 
+/* Setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Erakutsi iradokizunetan";
+
+/* Footer for setting for enabling & disabling sharing suggestions. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal txatak iradokizun bezala erakutsiko dira beste aplikazio batzuetatik zerbait partekatzen duzunean.";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Erregistratze-blokeoa";
 
@@ -4664,7 +4736,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Ezin izan da eranskina bidali";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%1$@ / %2$@ kargatzen...";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Eguneratzen...";
@@ -4674,6 +4746,21 @@
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Partekatu Signal bitartez";
+
+/* Title of alert indicating sharing suggestions failed to deactivate */
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Huts egin du partekatze iradokizunak desaktibatzeak.";
+
+/* Body for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal txatak iradokizun bezala erakutsi daitezke beste aplikazio batzuetatik zerbait partekatzen duzunean.";
+
+/* Title for sharing suggestions megaphone */
+"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Partekatze erraztua";
+
+/* Disable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Desaktibatu";
+
+/* Enable button for sharing suggestions megaphone */
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Gaitu";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Erakutsi segurtasun zenbakia";
@@ -4705,9 +4792,6 @@
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Eranskailua duen Mezua";
 
-/* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Eranskailuen multzoa instalatu da";
-
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalatu";
 
@@ -4737,9 +4821,6 @@
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Eranskailuen Paketea";
-
-/* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Partekatu Eranskailuen Paketea";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Eranskailuen Paketea";
@@ -5097,6 +5178,63 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Osatu ezarpena Signal Desktop-en.";
+
+/* Placeholder text for header of the wallpaper mini preview */
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kontaktuaren izena";
+
+/* Blur button on wallpaper preview. */
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Lausotu argazkia";
+
+/* The incoming bubble text when setting a photo */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Egin zoom, arrastatu doitzeko";
+
+/* The incoming bubble text when setting a preset */
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Mugitu alde batera hormairudi gehiago ikusteko";
+
+/* The outgoing bubble text when setting a wallpaper for all chats. */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Ezarri hormairudia elkarrizketa guztientzat";
+
+/* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Ezarri hormairudia %@ elkarrizketarentzat.";
+
+/* The text for the set button on wallpaper preview view. */
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Ezarri";
+
+/* Title for the wallpaper preview view. */
+"WALLPAPER_PREVIEW_TITLE" = "Aurrebista";
+
+/* Clear wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Kendu hormairudia";
+
+/* Confirmation dialog when clearing the wallpaper for a specific chat. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Kendu elkarrizketa honen hormairudia";
+
+/* Confirmation dialog when clearing the global wallpaper. */
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Kendu hormairudia? Honek ez ditu zure elkarrizketetarako zuk ezarritako hormairudiak.";
+
+/* Dim wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Itxura ilunak hormairudia leundu egingo du";
+
+/* An error indicating to the user that we failed to clear the wallpaper. */
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Ezin izan da hormairudia kendu, saiatu berriz beranduago edo jarri kontaktuan laguntza zerbitzuarekin erroreak bere horretan jarraitzen badu.";
+
+/* An error indicating to the user that we failed to reset all wallpapers. */
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Ezin izan dira hormairudi guztiak kendu, saiatu berriz beranduago edo jarri kontaktuan laguntza zerbitzuarekin erroreak bere horretan jarraitzen badu.";
+
+/* Title for the wallpaper settings preview section. */
+"WALLPAPER_SETTINGS_PREVIEW" = "Aurrebista";
+
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL" = "Berrezarri hormairudi guztiak";
+
+/* Confirmation dialog when resetting all wallpapers. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Hormairudi guztiak berrezarri, zure elkarrizketetarako ezarri dituzunak barne?";
+
+/* Set wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Ezarri hormairudia";
+
+/* Title for the wallpaper settings view. */
+"WALLPAPER_SETTINGS_TITLE" = "Elkarrizketaren hormairudia";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Mezu hau ezabatu duzu.";

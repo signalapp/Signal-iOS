@@ -48,77 +48,40 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             containerView.backgroundColor = nil
             containerView.layer.cornerRadius = 0
 
+            let cacheKey = attachmentStream.uniqueId
             let isAnimated = attachmentStream.shouldBeRenderedByYY
-            componentView.isAnimated = isAnimated
-            if isAnimated {
-                containerView.addSubview(componentView.animatedImageView)
-                componentView.animatedImageView.autoPinEdgesToSuperviewEdges()
-
-                componentView.loadBlock = {
-                    guard let filePath = attachmentStream.originalFilePath else {
-                        owsFailDebug("Missing filePath.")
-                        return
-                    }
-                    guard let image = YYImage(contentsOfFile: filePath) else {
-                        owsFailDebug("Could not load image.")
-                        return
-                    }
-                    componentView.animatedImageView.image = image
-                }
+            let reusableMediaView: ReusableMediaView
+            if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
+                reusableMediaView = cachedView
             } else {
-                containerView.addSubview(componentView.stillmageView)
-                componentView.stillmageView.autoPinEdgesToSuperviewEdges()
+                let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream)
+                reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
+                mediaCache.setMediaView(reusableMediaView, forKey: cacheKey, isAnimated: isAnimated)
+            }
 
-                componentView.loadBlock = {
-                    guard let filePath = attachmentStream.originalFilePath else {
-                        owsFailDebug("Missing filePath.")
-                        return
-                    }
-                    guard let image = UIImage(contentsOfFile: filePath) else {
-                        owsFailDebug("Could not load image.")
-                        return
-                    }
-                    componentView.stillmageView.image = image
-                }
+            reusableMediaView.owner = componentView
+            componentView.reusableMediaView = reusableMediaView
+            reusableMediaView.mediaView.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+                                                                               comment: "Accessibility label for stickers.")
+            containerView.addSubview(reusableMediaView.mediaView)
+            reusableMediaView.mediaView.autoPinEdgesToSuperviewEdges()
+
+            if isOutgoing, !attachmentStream.isUploaded, !isFromLinkedDevice {
+                let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
+                                                            style: .withCircle,
+                                                            conversationStyle: conversationStyle)
+                containerView.addSubview(progressView)
+                progressView.autoCenterInSuperview()
             }
         } else if let attachmentPointer = self.attachmentPointer {
-            componentView.loadBlock = {}
             containerView.backgroundColor = Theme.secondaryBackgroundColor
             containerView.layer.cornerRadius = 18
 
-            switch attachmentPointer.state {
-            case .enqueued, .downloading:
-                break
-            case .failed, .pendingManualDownload, .pendingMessageRequest:
-                let downloadStack = UIStackView()
-                downloadStack.axis = .horizontal
-                downloadStack.alignment = .center
-                downloadStack.spacing = 8
-                downloadStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 10)
-                downloadStack.isLayoutMarginsRelativeArrangement = true
-
-                let pillView = OWSLayerView.pillView()
-                pillView.backgroundColor = Theme.washColor.withAlphaComponent(0.8)
-                downloadStack.addSubview(pillView)
-                pillView.autoPinEdgesToSuperviewEdges()
-
-                let iconView = UIImageView.withTemplateImageName("arrow-down-24",
-                                                                 tintColor: Theme.accentBlueColor)
-                iconView.autoSetDimensions(to: CGSize.square(20))
-                downloadStack.addArrangedSubview(iconView)
-
-                let downloadLabel = UILabel()
-                downloadLabel.text = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                       comment: "Accessibility label for stickers.")
-                downloadLabel.textColor = Theme.accentBlueColor
-                downloadLabel.font = .ows_dynamicTypeCaption1
-                downloadStack.addArrangedSubview(downloadLabel)
-
-                containerView.addSubview(downloadStack)
-                downloadStack.autoCenterInSuperview()
-            @unknown default:
-                break
-            }
+            let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
+                                                        style: .withCircle,
+                                                        conversationStyle: conversationStyle)
+            containerView.addSubview(progressView)
+            progressView.autoCenterInSuperview()
         } else {
             owsFailDebug("Invalid attachment.")
             return
@@ -161,30 +124,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         fileprivate let containerView = UIView()
 
-        // TODO: We might want to:
-        //
-        // * Lazy-create these views.
-        // * Recycle these views (e.g. for animation continuity, for perf).
-        // * Ensure a given instance is only ever user for animated or still.
-        fileprivate lazy var animatedImageView = { () -> UIImageView in
-            let view = YYAnimatedImageView()
-            view.contentMode = .scaleAspectFit
-            view.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                        comment: "Accessibility label for stickers.")
-            return view
-        }()
-        fileprivate lazy var stillmageView = { () -> UIImageView in
-            let view = UIImageView()
-            view.contentMode = .scaleAspectFit
-            view.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                        comment: "Accessibility label for stickers.")
-            return view
-        }()
-
-        fileprivate var isAnimated = false
-
-        typealias LoadBlock = () -> Void
-        fileprivate var loadBlock: LoadBlock?
+        fileprivate var reusableMediaView: ReusableMediaView?
 
         public var isDedicatedCellView = false
 
@@ -194,22 +134,26 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
-                guard let loadBlock = loadBlock else {
-                    owsFailDebug("Missing loadBlock.")
-                    return
+                if let reusableMediaView = reusableMediaView,
+                   reusableMediaView.owner == self {
+                    reusableMediaView.load()
                 }
-                loadBlock()
             } else {
-                animatedImageView.image = nil
-                stillmageView.image = nil
+                if let reusableMediaView = reusableMediaView,
+                   reusableMediaView.owner == self {
+                    reusableMediaView.unload()
+                }
             }
         }
 
         public func reset() {
             containerView.removeAllSubviews()
-            animatedImageView.image = nil
-            stillmageView.image = nil
-            loadBlock = nil
+
+            if let reusableMediaView = reusableMediaView,
+               reusableMediaView.owner == self {
+                reusableMediaView.unload()
+                reusableMediaView.owner = nil
+            }
         }
     }
 }

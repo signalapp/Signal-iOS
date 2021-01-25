@@ -8,8 +8,6 @@ import Foundation
 @objc
 public extension UIResponder {
 
-    // MARK: - Dependencies
-
     var audioSession: OWSAudioSession {
         Environment.shared.audioSession
     }
@@ -263,11 +261,9 @@ public extension UIResponder {
     }
 }
 
-// MARK: -
+// MARK: - Swift-only Dependencies
 
 public extension UIResponder {
-
-    // MARK: - Dependencies
 
     var groupsV2: GroupsV2Swift {
         SSKEnvironment.shared.groupsV2 as! GroupsV2Swift

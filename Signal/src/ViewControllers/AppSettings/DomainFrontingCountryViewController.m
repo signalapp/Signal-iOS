@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DomainFrontingCountryViewController.h"
 #import "OWSCountryMetadata.h"
-#import "OWSTableViewController.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalServiceKit/OWSSignalService.h>
 

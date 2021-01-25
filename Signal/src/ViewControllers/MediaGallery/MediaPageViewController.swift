@@ -26,7 +26,7 @@ fileprivate extension MediaDetailViewController {
     }
 }
 
-class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate, MediaGalleryDelegate {
+class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate, MediaGalleryDelegate, InteractivelyDismissableViewController {
 
     var mediaInteractiveDismiss: MediaInteractiveDismiss!
 
@@ -151,7 +151,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         // Navigation
 
-        mediaInteractiveDismiss = MediaInteractiveDismiss(mediaPageViewController: self)
+        mediaInteractiveDismiss = MediaInteractiveDismiss(targetViewController: self)
         mediaInteractiveDismiss.addGestureRecognizer(to: view)
 
         // Even though bars are opaque, we want content to be layed out behind them.
@@ -385,6 +385,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     @objc
     public func didPressDismissButton(_ sender: Any) {
+        dismissSelf(animated: true)
+    }
+
+    @objc
+    public func performInteractiveDismissal(animated: Bool) {
         dismissSelf(animated: true)
     }
 
@@ -807,7 +812,7 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
 }
 
 extension MediaPageViewController: MediaPresentationContextProvider {
-    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         let mediaView = currentViewController.mediaView
 
         guard nil != mediaView.superview else {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,7 +101,7 @@ public class MessageFetcherJob: NSObject {
         completionQueue.async {
             self.operationQueue.waitUntilAllOperationsAreFinished()
 
-            _ = self.serialQueue.sync {
+            self.serialQueue.sync {
                 self.activeFetchCycles.remove(fetchCycle.uuid)
                 self.completedFetchCyclesCounter += 1
             }

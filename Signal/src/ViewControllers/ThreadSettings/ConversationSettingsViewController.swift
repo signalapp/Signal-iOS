@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -177,10 +177,19 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     func updateNavigationBar() {
-        if isGroupThread, canEditConversationAttributes {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_GROUP",
-                                                                                         comment: "Label for the 'edit group' button in conversation settings view."),
-                                                                style: .plain, target: self, action: #selector(editGroupButtonWasPressed))
+        guard canEditConversationAttributes else {
+            navigationItem.rightBarButtonItem = nil
+            return
+        }
+
+        if isGroupThread || contactsManager.isSystemContactsAuthorized {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT",
+                                         comment: "Label for the 'edit' button in conversation settings view."),
+                style: .plain,
+                target: self,
+                action: #selector(editButtonWasPressed))
+
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -219,7 +228,9 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                     transaction: transaction) else {
                 return false
             }
-            let newThreadViewModel = ThreadViewModel(thread: newThread, transaction: transaction)
+            let newThreadViewModel = ThreadViewModel(thread: newThread,
+                                                     forConversationList: false,
+                                                     transaction: transaction)
             self.threadViewModel = newThreadViewModel
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
             self.groupViewHelper.delegate = self
@@ -307,26 +318,24 @@ class ConversationSettingsViewController: OWSTableViewController {
     // MARK: - Actions
 
     @objc func conversationNameTouched(sender: UIGestureRecognizer) {
-        if !canEditConversationAttributes {
-            owsFailDebug("failure: !self.canEditConversationAttributes")
-            return
-        }
+        guard sender.state == .recognized else { return }
         guard let avatarView = avatarView else {
             owsFailDebug("Missing avatarView.")
             return
         }
 
-        if sender.state == .recognized {
-            if isGroupThread {
-                if avatarView.containsGestureLocation(sender) {
-                    showGroupAttributesView(editAction: .avatar)
-                } else {
-                    showGroupAttributesView(editAction: .name)
-                }
-            } else {
-                if contactsManager.supportsContactEditing {
-                    presentContactViewController()
-                }
+        let didTapAvatar = avatarView.containsGestureLocation(sender)
+        let hasValidAvatar = !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil
+
+        if didTapAvatar, hasValidAvatar {
+            presentAvatarViewController()
+        } else if canEditConversationAttributes {
+            if didTapAvatar, isGroupThread {
+                showGroupAttributesView(editAction: .avatar)
+            } else if isGroupThread {
+                showGroupAttributesView(editAction: .name)
+            } else if contactsManager.supportsContactEditing {
+                presentContactViewController()
             }
         }
     }
@@ -351,6 +360,11 @@ class ConversationSettingsViewController: OWSTableViewController {
     func showSoundSettingsView() {
         let vc = OWSSoundSettingsViewController()
         vc.thread = thread
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    func showWallpaperSettingsView() {
+        let vc = WallpaperSettingsViewController(thread: thread)
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -593,13 +607,24 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
 
         guard let contactViewController =
-            contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
-                owsFailDebug("Unexpectedly missing contact VC")
-                return
+                contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
+            owsFailDebug("Unexpectedly missing contact VC")
+            return
         }
 
         contactViewController.delegate = self
         navigationController?.pushViewController(contactViewController, animated: true)
+    }
+
+    func presentAvatarViewController() {
+        guard let avatarView = avatarView, avatarView.image != nil else { return }
+        guard let vc = databaseStorage.uiRead(block: { readTx in
+            AvatarViewController(thread: self.thread, readTx: readTx)
+        }) else {
+            return
+        }
+
+        present(vc, animated: true)
     }
 
     private func presentAddToContactViewController(address: SignalServiceAddress) {
@@ -955,8 +980,14 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     @objc
-    func editGroupButtonWasPressed(_ sender: Any) {
-        showGroupAttributesView(editAction: .none)
+    func editButtonWasPressed(_ sender: Any) {
+        owsAssertDebug(canEditConversationAttributes)
+
+        if isGroupThread {
+            showGroupAttributesView(editAction: .none)
+        } else {
+            presentContactViewController()
+        }
     }
 
     // MARK: - Notifications
@@ -1180,5 +1211,23 @@ extension ConversationSettingsViewController: GroupViewHelperDelegate {
 extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate {
     func replaceAdmin(uuid: UUID) {
         showLeaveGroupConfirmAlert(replacementAdminUuid: uuid)
+    }
+}
+
+extension ConversationSettingsViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard let avatarView = self.avatarView, let superview = avatarView.superview else {
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(avatarView.frame, from: superview)
+        return MediaPresentationContext(
+            mediaView: avatarView,
+            presentationFrame: presentationFrame,
+            cornerRadius: presentationFrame.width / 2)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return nil
     }
 }

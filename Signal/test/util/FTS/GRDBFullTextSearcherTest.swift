@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -167,18 +167,26 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             let bookClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient, self.bobRecipient],
                                                                             name: "Book Club",
                                                                             transaction: transaction)
-            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
+            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread,
+                                                  forConversationList: true,
+                                                  transaction: transaction)
 
             let snackClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient],
                                                                              name: "Snack Club",
                                                                              transaction: transaction)
-            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
+            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread,
+                                                   forConversationList: true,
+                                                   transaction: transaction)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.aliceRecipient, transaction: transaction)
-            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
+            self.aliceThread = ThreadViewModel(thread: aliceContactThread,
+                                               forConversationList: true,
+                                               transaction: transaction)
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.bobRecipient, transaction: transaction)
-            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread,
+                                                  forConversationList: true,
+                                                  transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
             helloAlice.anyInsert(transaction: transaction)

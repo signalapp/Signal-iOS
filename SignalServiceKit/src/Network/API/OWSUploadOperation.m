@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUploadOperation.h"
@@ -24,14 +24,11 @@ NSString *const kAttachmentUploadProgressNotification = @"kAttachmentUploadProgr
 NSString *const kAttachmentUploadProgressKey = @"kAttachmentUploadProgressKey";
 NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachmentIDKey";
 
-// Use a slightly non-zero value to ensure that the progress
-// indicator shows up as quickly as possible.
-static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
-
 @interface OWSUploadOperation ()
 
 @property (readonly, nonatomic) NSString *attachmentId;
 @property (readonly, nonatomic) BOOL canUseV3;
+@property (readonly, nonatomic) NSArray<NSString *> *messageIds;
 
 @property (nonatomic, nullable) TSAttachmentStream *completedUpload;
 
@@ -65,7 +62,9 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
 #pragma mark -
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId canUseV3:(BOOL)canUseV3
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId
+                          messageIds:(NSArray<NSString *> *)messageIds
+                            canUseV3:(BOOL)canUseV3
 {
     self = [super init];
     if (!self) {
@@ -76,6 +75,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     _attachmentId = attachmentId;
     _canUseV3 = canUseV3;
+    _messageIds = messageIds;
 
     return self;
 }
@@ -136,6 +136,16 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                                                           cdnNumber:upload.cdnNumber
                                                     uploadTimestamp:upload.uploadTimestamp
                                                         transaction:transaction];
+
+                for (NSString *messageId in self.messageIds) {
+                    TSInteraction *_Nullable interaction = [TSInteraction anyFetchWithUniqueId:messageId
+                                                                                   transaction:transaction];
+                    if (interaction == nil) {
+                        OWSLogWarn(@"Missing interaction.");
+                        continue;
+                    }
+                    [self.databaseStorage touchInteraction:interaction shouldReindex:false transaction:transaction];
+                }
             });
             self.completedUpload = attachmentStream;
             [self reportSuccess];
@@ -153,11 +163,10 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
         });
 }
 
-- (void)fireNotificationWithProgress:(CGFloat)aProgress
+- (void)fireNotificationWithProgress:(CGFloat)progress
 {
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
 
-    CGFloat progress = MAX(kAttachmentUploadProgressTheta, aProgress);
     [notificationCenter postNotificationNameAsync:kAttachmentUploadProgressNotification
                                            object:nil
                                          userInfo:@{

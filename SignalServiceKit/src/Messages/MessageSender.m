@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MessageSender.h"
@@ -480,7 +480,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug(outgoingMessagePreparer.savedAttachmentIds != nil);
         for (NSString *attachmentId in outgoingMessagePreparer.savedAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
-                [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId canUseV3:canUseV3];
+                [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId
+                                                      messageIds:@[ message.uniqueId ]
+                                                        canUseV3:canUseV3];
             [sendMessageOperation addDependency:uploadAttachmentOperation];
             [OWSUploadOperation.uploadQueue addOperation:uploadAttachmentOperation];
         }

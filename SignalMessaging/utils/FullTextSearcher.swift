@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -302,7 +302,9 @@ public class FullTextSearcher: NSObject {
                 let sortKey = ConversationSortKey(isContactThread: false,
                                                   creationDate: groupThread.creationDate,
                                                   lastInteractionRowId: groupThread.lastInteractionRowId)
-                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: groupThread,
+                                                      forConversationList: true,
+                                                      transaction: transaction)
                 let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
                 groups.append(searchResult)
             case is TSContactThread:
@@ -408,7 +410,9 @@ public class FullTextSearcher: NSObject {
             if let threadViewModel = threadViewModelCache[thread.uniqueId] {
                 return threadViewModel
             }
-            let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+            let threadViewModel = ThreadViewModel(thread: thread,
+                                                  forConversationList: true,
+                                                  transaction: transaction)
             threadViewModelCache[thread.uniqueId] = threadViewModel
             return threadViewModel
         }

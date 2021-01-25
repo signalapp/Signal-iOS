@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -204,11 +204,13 @@ private class MemberHeader: UIStackView {
         var fetchedThread: TSContactThread?
         var fetchedDisplayName: String?
         var username: String?
+        var bioForDisplay: String?
 
         databaseStorage.read { transaction in
             fetchedThread = TSContactThread.getWithContactAddress(address, transaction: transaction)
             fetchedDisplayName = self.contactsManager.displayName(for: address, transaction: transaction)
             username = self.profileManager.username(for: address, transaction: transaction)
+            bioForDisplay = self.profileManager.profileBioForDisplay(for: address, transaction: transaction)
         }
 
         // Only open a write transaction if we need to create a new thread record.
@@ -275,17 +277,27 @@ private class MemberHeader: UIStackView {
             }
         }
 
+        func buildSubtitleLabel(text: String) -> UILabel {
+            let label = UILabel()
+            label.font = .ows_dynamicTypeSubheadline
+            label.textColor = Theme.secondaryTextAndIconColor
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
+            label.textAlignment = .center
+            label.setContentHuggingVerticalHigh()
+            label.setCompressionResistanceVerticalHigh()
+            label.text = text
+            return label
+        }
+
+        if let bioForDisplay = bioForDisplay {
+            let label = buildSubtitleLabel(text: bioForDisplay)
+            label.numberOfLines = 2
+            addArrangedSubview(label)
+        }
+
         if let detailText = detailText {
-            let detailsLabel = UILabel()
-            detailsLabel.font = .ows_dynamicTypeSubheadline
-            detailsLabel.textColor = Theme.secondaryTextAndIconColor
-            detailsLabel.numberOfLines = 0
-            detailsLabel.lineBreakMode = .byWordWrapping
-            detailsLabel.textAlignment = .center
-            detailsLabel.setContentHuggingVerticalHigh()
-            detailsLabel.setCompressionResistanceVerticalHigh()
-            detailsLabel.text = detailText
-            addArrangedSubview(detailsLabel)
+            addArrangedSubview(buildSubtitleLabel(text: detailText))
         }
 
         let actionsStackView = UIStackView()

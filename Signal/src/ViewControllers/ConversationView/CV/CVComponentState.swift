@@ -67,7 +67,6 @@ public class CVComponentState: Equatable {
         let items: [CVMediaAlbumItem]
         let mediaAlbumHasFailedAttachment: Bool
         let mediaAlbumHasPendingAttachment: Bool
-        let mediaAlbumHasPendingManualDownloadAttachment: Bool
     }
     let bodyMedia: BodyMedia?
 
@@ -201,6 +200,7 @@ public class CVComponentState: Equatable {
     struct ThreadDetails: Equatable {
         let avatar: UIImage?
         let titleText: String
+        let bioText: String?
         let detailsText: String?
         let mutualGroupsText: NSAttributedString?
     }
@@ -421,6 +421,7 @@ public class CVComponentState: Equatable {
                 return .textOnlyMessage
             }
 
+            Logger.verbose("interaction: \(interaction.debugDescription)")
             owsFailDebug("Unknown state.")
             return .unknown
         }()
@@ -627,7 +628,11 @@ fileprivate extension CVComponentState.Builder {
                                                                               currentCallThreadId: currentCallThreadId,
                                                                               transaction: transaction)
             return build()
-        case .unreadIndicator, .dateHeader:
+        case .unreadIndicator:
+            unreadIndicator = CVComponentState.UnreadIndicator()
+            return build()
+        case .dateHeader:
+            dateHeader = CVComponentState.DateHeader()
             return build()
         case .incomingMessage, .outgoingMessage:
             guard let message = interaction as? TSMessage else {
@@ -706,7 +711,6 @@ fileprivate extension CVComponentState.Builder {
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
-                var mediaAlbumHasPendingManualDownloadAttachment = false
                 for attachment in bodyAttachments {
                     guard let attachmentPointer = attachment as? TSAttachmentPointer else {
                         continue
@@ -720,7 +724,6 @@ fileprivate extension CVComponentState.Builder {
                         mediaAlbumHasPendingAttachment = true
                     case .pendingManualDownload:
                         mediaAlbumHasPendingAttachment = true
-                        mediaAlbumHasPendingManualDownloadAttachment = true
                     @unknown default:
                         owsFailDebug("Invalid attachment pointer state.")
                         continue
@@ -729,8 +732,7 @@ fileprivate extension CVComponentState.Builder {
 
                 self.bodyMedia = BodyMedia(items: mediaAlbumItems,
                                            mediaAlbumHasFailedAttachment: mediaAlbumHasFailedAttachment,
-                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment,
-                                           mediaAlbumHasPendingManualDownloadAttachment: mediaAlbumHasPendingManualDownloadAttachment)
+                                           mediaAlbumHasPendingAttachment: mediaAlbumHasPendingAttachment)
                 return build()
             }
 
@@ -809,9 +811,17 @@ fileprivate extension CVComponentState.Builder {
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
             if let attachmentPointer = mediaAttachment as? TSAttachmentPointer {
-                return buildViewOnce(viewOnceState: (attachmentPointer.state == .failed
-                                                        ? .incomingFailed
-                                                        : .incomingDownloading(attachmentPointer: attachmentPointer)))
+                switch attachmentPointer.state {
+                case .enqueued, .downloading:
+                    return buildViewOnce(viewOnceState: .incomingDownloading(attachmentPointer: attachmentPointer))
+                case .failed:
+                    return buildViewOnce(viewOnceState: .incomingFailed)
+                case .pendingMessageRequest, .pendingManualDownload:
+                    return buildViewOnce(viewOnceState: .incomingPending)
+                @unknown default:
+                    owsFailDebug("Invalid value.")
+                    return buildViewOnce(viewOnceState: .incomingFailed)
+                }
             } else if let attachmentStream = mediaAttachment as? TSAttachmentStream {
                 if attachmentStream.isValidVisualMedia
                     && (attachmentStream.isImage || attachmentStream.isAnimated || attachmentStream.isVideo) {

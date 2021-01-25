@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,6 +81,36 @@ public extension OWSContactsManager {
                                    comparableAddress: address.stringForDisplay)
         }
         return sort(sortableAddresses)
+    }
+
+    // MARK: -
+
+    func shortestDisplayName(
+        forGroupMember groupMember: SignalServiceAddress,
+        inGroup groupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> String {
+
+        let fullName = displayName(for: groupMember, transaction: transaction)
+        let shortName = shortDisplayName(for: groupMember, transaction: transaction)
+        guard shortName != fullName else { return fullName }
+
+        // Try to return just the short name unless the group contains another
+        // member with the same short name.
+
+        for otherMember in groupModel.groupMembership.fullMembers {
+            guard otherMember != groupMember else { continue }
+
+            // Use the full name if the member's short name matches
+            // another member's full or short name.
+            let otherFullName = displayName(for: otherMember, transaction: transaction)
+            guard otherFullName != shortName else { return fullName }
+
+            let otherShortName = shortDisplayName(for: otherMember, transaction: transaction)
+            guard otherShortName != shortName else { return fullName }
+        }
+
+        return shortName
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -87,6 +87,7 @@ public final class CallService: NSObject {
 
     /// True whenever CallService has any call in progress.
     /// The call may not yet be visible to the user if we are still in the middle of signaling.
+    @objc
     public var hasCallInProgress: Bool {
         calls.count > 0
     }
@@ -98,10 +99,24 @@ public final class CallService: NSObject {
     /// which will let us know which one, if any, should become the "current call". But in the
     /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
     /// placing an outgoing call.
-    private var calls = Set<SignalCall>() {
-        didSet {
-            AssertIsOnMainThread()
+    private let _calls = AtomicValue<Set<SignalCall>>(Set())
+    private var calls: Set<SignalCall> {
+        get {
+            _calls.get()
         }
+    }
+
+    private func addCall(_ call: SignalCall) {
+        var calls = _calls.get()
+        calls.insert(call)
+        _calls.set(calls)
+    }
+
+    private func removeCall(_ call: SignalCall) -> Bool {
+        var calls = _calls.get()
+        let result = calls.remove(call)
+        _calls.set(calls)
+        return result != nil
     }
 
     public override init() {
@@ -124,6 +139,19 @@ public final class CallService: NSObject {
             name: .OWSApplicationDidBecomeActive,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(configureBandwidthMode),
+            name: Self.callServicePreferencesDidChange,
+            object: nil)
+
+        // Note that we're not using the usual .owsReachabilityChanged
+        // We want to update our bandwidth mode if the app has been backgrounded
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(configureBandwidthMode),
+            name: .reachabilityChanged,
+            object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
@@ -308,6 +336,28 @@ public final class CallService: NSObject {
         }
     }
 
+    @objc
+    func configureBandwidthMode() {
+        guard AppReadiness.isAppReady else { return }
+        guard let currentCall = currentCall else { return }
+
+        let highBandwidthInterfaces = databaseStorage.read { readTx in
+            Self.highBandwidthNetworkInterfaces(readTx: readTx)
+        }
+        let useLowBandwidth = !SSKEnvironment.shared.reachabilityManager.isReachable(with: highBandwidthInterfaces)
+        Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
+
+        switch currentCall.mode {
+        case let .group(call):
+            call.updateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
+        case let .individual(call) where call.state == .connected:
+            callManager.setLowBandwidthMode(enabled: useLowBandwidth)
+        default:
+            // Do nothing. We'll reapply the bandwidth mode once connected
+            break
+        }
+    }
+
     // MARK: -
 
     // This method should be called when a fatal error occurred for a call.
@@ -345,7 +395,7 @@ public final class CallService: NSObject {
         // If call is for the current call, clear it out first.
         if call === currentCall { currentCall = nil }
 
-        if calls.remove(call) == nil {
+        if !removeCall(call) {
             owsFailDebug("unknown call: \(call)")
         }
 
@@ -431,7 +481,7 @@ public final class CallService: NSObject {
         guard !hasCallInProgress else { return nil }
 
         guard let call = SignalCall.groupCall(thread: thread) else { return nil }
-        calls.insert(call)
+        addCall(call)
 
         currentCall = call
 
@@ -469,7 +519,7 @@ public final class CallService: NSObject {
         let call = SignalCall.outgoingIndividualCall(localId: UUID(), remoteAddress: address)
         call.individualCall.offerMediaType = hasVideo ? .video : .audio
 
-        calls.insert(call)
+        addCall(call)
 
         return call
     }
@@ -496,7 +546,7 @@ public final class CallService: NSObject {
             offerMediaType: offerMediaType
         )
 
-        calls.insert(newCall)
+        addCall(newCall)
 
         return newCall
     }
@@ -562,12 +612,35 @@ public final class CallService: NSObject {
             return tokenData
         }
     }
+
+    // MARK: - Bandwidth
+    static let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
+    private static let keyValueStore = SDSKeyValueStore(collection: "CallService")
+    private static let highBandwidthPreferenceKey = "HighBandwidthPreferenceKey"
+
+    static func setHighBandwidthInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
+        Logger.info("Updating preferred low bandwidth interfaces: \(interfaceSet.rawValue)")
+
+        keyValueStore.setUInt(interfaceSet.rawValue, key: highBandwidthPreferenceKey, transaction: writeTx)
+        writeTx.addSyncCompletion {
+            NotificationCenter.default.postNotificationNameAsync(callServicePreferencesDidChange, object: nil)
+        }
+    }
+
+    static func highBandwidthNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
+        guard let highBandwidthPreference = keyValueStore.getUInt(
+                highBandwidthPreferenceKey,
+                transaction: readTx) else { return .wifiAndCellular }
+
+        return NetworkInterfaceSet(rawValue: highBandwidthPreference)
+    }
 }
 
 extension CallService: CallObserver {
     public func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
         updateIsVideoEnabled()
+        configureBandwidthMode()
     }
 
     public func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
@@ -581,6 +654,7 @@ extension CallService: CallObserver {
         AssertIsOnMainThread()
         updateIsVideoEnabled()
         updateGroupMembersForCurrentCallIfNecessary()
+        configureBandwidthMode()
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}

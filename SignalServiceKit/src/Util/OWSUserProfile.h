@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -33,6 +33,8 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
 @property (atomic, readonly, nullable) NSString *familyName;
 @property (atomic, readonly, nullable) NSPersonNameComponents *nameComponents;
 @property (atomic, readonly, nullable) NSString *fullName;
+@property (atomic, readonly, nullable) NSString *bio;
+@property (atomic, readonly, nullable) NSString *bioEmoji;
 @property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly) BOOL isUuidCapable;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
@@ -65,6 +67,8 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
                       uniqueId:(NSString *)uniqueId
                   avatarFileName:(nullable NSString *)avatarFileName
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
+                             bio:(nullable NSString *)bio
+                        bioEmoji:(nullable NSString *)bioEmoji
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
@@ -74,7 +78,7 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 
@@ -107,6 +111,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
+                        bio:(nullable NSString *)bio
+                   bioEmoji:(nullable NSString *)bioEmoji
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -116,6 +122,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 - (void)updateWithGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
+                        bio:(nullable NSString *)bio
+                   bioEmoji:(nullable NSString *)bioEmoji
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath

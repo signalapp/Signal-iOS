@@ -1,8 +1,12 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+
+protocol InteractivelyDismissableViewController: UIViewController {
+    func performInteractiveDismissal(animated: Bool)
+}
 
 protocol InteractiveDismissDelegate: AnyObject {
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
@@ -13,16 +17,16 @@ protocol InteractiveDismissDelegate: AnyObject {
 
 extension InteractiveDismissDelegate {
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-        
+
     }
     func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
-        
+
     }
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-        
+
     }
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-        
+
     }
 }
 
@@ -30,11 +34,11 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
     weak var interactiveDismissDelegate: InteractiveDismissDelegate?
-    private weak var mediaPageViewController: MediaPageViewController?
+    private weak var targetViewController: InteractivelyDismissableViewController?
 
-    init(mediaPageViewController: MediaPageViewController) {
+    init(targetViewController: InteractivelyDismissableViewController) {
         super.init()
-        self.mediaPageViewController = mediaPageViewController
+        self.targetViewController = targetViewController
     }
 
     public func addGestureRecognizer(to view: UIView) {
@@ -82,7 +86,7 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         switch gestureRecognizer.state {
         case .began:
             interactionInProgress = true
-            mediaPageViewController?.dismissSelf(animated: true)
+            targetViewController?.performInteractiveDismissal(animated: true)
 
         case .changed:
             let velocity = abs(gestureRecognizer.velocity(in: coordinateSpace).y)

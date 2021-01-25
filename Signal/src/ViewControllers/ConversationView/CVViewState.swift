@@ -103,6 +103,8 @@ public class CVViewState: NSObject {
 
     public var sendMessageController: SendMessageController?
 
+    public let mediaCache = CVMediaCache()
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -113,14 +115,6 @@ public class CVViewState: NSObject {
     public var panHandler: CVPanHandler?
 
     // MARK: -
-
-    @objc
-    public let cellMediaCache: NSCache<NSString, AnyObject> = {
-        let cache = NSCache<NSString, AnyObject>()
-        // Cache the cell media for ~24 cells.
-        cache.countLimit = 24
-        return cache
-    }()
 
     var initialScrollState: CVInitialScrollState?
 
@@ -140,6 +134,9 @@ public class CVViewState: NSObject {
     @objc
     public let presentationStatusBenchSteps = BenchSteps(title: "presentationStatusBenchSteps")
     #endif
+
+    @objc
+    public var wallpaperContainer = UIView()
 
     // MARK: - 
 
@@ -251,6 +248,8 @@ public extension ConversationViewController {
 
     var isMeasuringKeyboardHeight: Bool { inputToolbar?.isMeasuringKeyboardHeight ?? false }
 
+    var mediaCache: CVMediaCache { viewState.mediaCache }
+
     // MARK: - Gestures
 
     var collectionViewTapGestureRecognizer: UITapGestureRecognizer {
@@ -284,10 +283,6 @@ public extension ConversationViewController {
 
     // MARK: -
 
-    var cellMediaCache: NSCache<NSString, AnyObject> {
-        viewState.cellMediaCache
-    }
-
     #if TESTABLE_BUILD
     var initialLoadBenchSteps: BenchSteps { viewState.initialLoadBenchSteps }
     #endif
@@ -298,8 +293,7 @@ public extension ConversationViewController {
 extension CVViewState {
 
     var asCoreState: CVCoreState {
-        CVCoreState(conversationStyle: conversationStyle,
-                    cellMediaCache: cellMediaCache)
+        CVCoreState(conversationStyle: conversationStyle, mediaCache: mediaCache)
     }
 }
 
@@ -350,7 +344,7 @@ extension ConversationViewController {
 // pieces of CVC state during async loads.
 struct CVCoreState {
     let conversationStyle: ConversationStyle
-    let cellMediaCache: NSCache<NSString, AnyObject>
+    let mediaCache: CVMediaCache
 }
 
 // MARK: -

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,7 @@ public protocol CVNode {
     var interaction: TSInteraction { get }
     var messageCellType: CVMessageCellType { get }
     var conversationStyle: ConversationStyle { get }
-    var cellMediaCache: NSCache<NSString, AnyObject> { get }
+    var mediaCache: CVMediaCache { get }
 }
 
 // MARK: -
@@ -73,6 +73,10 @@ extension CVNode {
 
     var isOutgoing: Bool {
         interaction as? TSOutgoingMessage != nil
+    }
+
+    var isFromLinkedDevice: Bool {
+        (interaction as? TSOutgoingMessage)?.isFromLinkedDevice == true
     }
 
     var wasRemotelyDeleted: Bool {
