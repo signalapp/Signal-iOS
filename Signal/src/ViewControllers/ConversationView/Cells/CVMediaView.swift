@@ -20,6 +20,7 @@ public class CVMediaView: UIView {
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
+    private let isFromLinkedDevice: Bool
 
     private var reusableMediaView: ReusableMediaView?
 
@@ -30,12 +31,14 @@ public class CVMediaView: UIView {
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
                          isBorderless: Bool,
+                         isFromLinkedDevice: Bool,
                          conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
+        self.isFromLinkedDevice = isFromLinkedDevice
         self.conversationStyle = conversationStyle
 
         super.init(frame: .zero)
@@ -105,13 +108,12 @@ public class CVMediaView: UIView {
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
-        guard isOutgoing else {
-            return false
-        }
         guard let attachmentStream = attachment as? TSAttachmentStream else {
             return false
         }
-        guard !attachmentStream.isUploaded else {
+        guard isOutgoing,
+              !attachmentStream.isUploaded,
+              !isFromLinkedDevice else {
             return false
         }
         let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),

@@ -70,6 +70,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                             items: self.items,
                             isOutgoing: self.isOutgoing,
                             isBorderless: self.isBorderless,
+                            isFromLinkedDevice: self.isFromLinkedDevice,
                             cellMeasurement: cellMeasurement,
                             conversationStyle: conversationStyle)
 
