@@ -167,12 +167,16 @@ message DataMessage {
     optional string profilePicture = 2;
   }
 
-  message ClosedGroupUpdateV2 {
+  message ClosedGroupControlMessage {
 
     enum Type {
       NEW                 = 1; // publicKey, name, encryptionKeyPair, members, admins
       UPDATE              = 2; // name, members
       ENCRYPTION_KEY_PAIR = 3; // wrappers
+      NAME_CHANGE         = 4; // name
+      MEMBERS_ADDED       = 5; // members
+      MEMBERS_REMOVED     = 6; // members
+      MEMBER_LEFT         = 7;
     }
 
     message KeyPairWrapper {
@@ -192,20 +196,20 @@ message DataMessage {
     repeated KeyPairWrapper wrappers          = 7;
   }
 
-  optional string              body                = 1;
-  repeated AttachmentPointer   attachments         = 2;
-  optional GroupContext        group               = 3;
-  optional uint32              flags               = 4;
-  optional uint32              expireTimer         = 5;
-  optional bytes               profileKey          = 6;
-  optional uint64              timestamp           = 7;
-  optional Quote               quote               = 8;
-  repeated Contact             contact             = 9;
-  repeated Preview             preview             = 10;
-  optional LokiProfile         profile             = 101;
-  optional ClosedGroupUpdateV2 closedGroupUpdateV2 = 104;
-  optional string              syncTarget          = 105;
-  optional PublicChatInfo      publicChatInfo      = 999;
+  optional string                    body                      = 1;
+  repeated AttachmentPointer         attachments               = 2;
+  optional GroupContext              group                     = 3;
+  optional uint32                    flags                     = 4;
+  optional uint32                    expireTimer               = 5;
+  optional bytes                     profileKey                = 6;
+  optional uint64                    timestamp                 = 7;
+  optional Quote                     quote                     = 8;
+  repeated Contact                   contact                   = 9;
+  repeated Preview                   preview                   = 10;
+  optional LokiProfile               profile                   = 101;
+  optional ClosedGroupControlMessage closedGroupControlMessage = 104;
+  optional string                    syncTarget                = 105;
+  optional PublicChatInfo            publicChatInfo            = 999;
 }
 
 message ConfigurationMessage {
@@ -236,17 +240,17 @@ message ReceiptMessage {
 
 message SyncMessage {
 
-   message Sent {
-     optional string                     destination              = 1;
-     optional uint64                     timestamp                = 2;
-     optional DataMessage                message                  = 3;
-     optional uint64                     expirationStartTimestamp = 4;
-     optional bool                       isRecipientUpdate        = 6 [default = false];
-   }
+  message Sent {
+    optional string      destination              = 1;
+    optional uint64      timestamp                = 2;
+    optional DataMessage message                  = 3;
+    optional uint64      expirationStartTimestamp = 4;
+    optional bool        isRecipientUpdate        = 6 [default = false];
+  }
 
-   optional Sent             sent          = 1;
-   optional bytes            padding       = 8;
- }
+  optional Sent  sent    = 1;
+  optional bytes padding = 8;
+}
 
 message AttachmentPointer {
 

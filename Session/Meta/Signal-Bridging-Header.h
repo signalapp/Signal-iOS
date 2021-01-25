@@ -33,7 +33,6 @@
 #import "OWSQuotedMessageView.h"
 #import "OWSWindowManager.h"
 #import "PrivacySettingsTableViewController.h"
-#import "RemoteVideoView.h"
 #import "OWSQRCodeScanningViewController.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
@@ -88,6 +87,4 @@
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionUtilitiesKit/LKGroupUtilities.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
-#import <WebRTC/RTCAudioSession.h>
-#import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>

@@ -8,8 +8,6 @@
 		<string>0.36.0</string>
 		<key>OSXVersion</key>
 		<string>10.15.6</string>
-		<key>WebRTCCommit</key>
-		<string>1445d719bf05280270e9f77576f80f973fd847f8 M73</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -65,7 +63,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Session's Screen Lock feature uses Face ID.</string>
+	<string>Session&apos;s Screen Lock feature uses Face ID.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Session needs access to your microphone to record media.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

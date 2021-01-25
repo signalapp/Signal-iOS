@@ -410,14 +410,14 @@ struct SessionProtos_DataMessage {
   /// Clears the value of `profile`. Subsequent reads from it will return its default value.
   mutating func clearProfile() {_uniqueStorage()._profile = nil}
 
-  var closedGroupUpdateV2: SessionProtos_DataMessage.ClosedGroupUpdateV2 {
-    get {return _storage._closedGroupUpdateV2 ?? SessionProtos_DataMessage.ClosedGroupUpdateV2()}
-    set {_uniqueStorage()._closedGroupUpdateV2 = newValue}
+  var closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage {
+    get {return _storage._closedGroupControlMessage ?? SessionProtos_DataMessage.ClosedGroupControlMessage()}
+    set {_uniqueStorage()._closedGroupControlMessage = newValue}
   }
-  /// Returns true if `closedGroupUpdateV2` has been explicitly set.
-  var hasClosedGroupUpdateV2: Bool {return _storage._closedGroupUpdateV2 != nil}
-  /// Clears the value of `closedGroupUpdateV2`. Subsequent reads from it will return its default value.
-  mutating func clearClosedGroupUpdateV2() {_uniqueStorage()._closedGroupUpdateV2 = nil}
+  /// Returns true if `closedGroupControlMessage` has been explicitly set.
+  var hasClosedGroupControlMessage: Bool {return _storage._closedGroupControlMessage != nil}
+  /// Clears the value of `closedGroupControlMessage`. Subsequent reads from it will return its default value.
+  mutating func clearClosedGroupControlMessage() {_uniqueStorage()._closedGroupControlMessage = nil}
 
   var syncTarget: String {
     get {return _storage._syncTarget ?? String()}
@@ -1080,13 +1080,13 @@ struct SessionProtos_DataMessage {
     fileprivate var _profilePicture: String? = nil
   }
 
-  struct ClosedGroupUpdateV2 {
+  struct ClosedGroupControlMessage {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
     /// @required
-    var type: SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum {
+    var type: SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum {
       get {return _storage._type ?? .new}
       set {_uniqueStorage()._type = newValue}
     }
@@ -1132,7 +1132,7 @@ struct SessionProtos_DataMessage {
       set {_uniqueStorage()._admins = newValue}
     }
 
-    var wrappers: [SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper] {
+    var wrappers: [SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper] {
       get {return _storage._wrappers}
       set {_uniqueStorage()._wrappers = newValue}
     }
@@ -1151,6 +1151,16 @@ struct SessionProtos_DataMessage {
       /// wrappers
       case encryptionKeyPair // = 3
 
+      /// name
+      case nameChange // = 4
+
+      /// members
+      case membersAdded // = 5
+
+      /// members
+      case membersRemoved // = 6
+      case memberLeft // = 7
+
       init() {
         self = .new
       }
@@ -1160,6 +1170,10 @@ struct SessionProtos_DataMessage {
         case 1: self = .new
         case 2: self = .update
         case 3: self = .encryptionKeyPair
+        case 4: self = .nameChange
+        case 5: self = .membersAdded
+        case 6: self = .membersRemoved
+        case 7: self = .memberLeft
         default: return nil
         }
       }
@@ -1169,6 +1183,10 @@ struct SessionProtos_DataMessage {
         case .new: return 1
         case .update: return 2
         case .encryptionKeyPair: return 3
+        case .nameChange: return 4
+        case .membersAdded: return 5
+        case .membersRemoved: return 6
+        case .memberLeft: return 7
         }
       }
 
@@ -2263,7 +2281,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
     101: .same(proto: "profile"),
-    104: .same(proto: "closedGroupUpdateV2"),
+    104: .same(proto: "closedGroupControlMessage"),
     105: .same(proto: "syncTarget"),
     999: .same(proto: "publicChatInfo"),
   ]
@@ -2280,7 +2298,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     var _contact: [SessionProtos_DataMessage.Contact] = []
     var _preview: [SessionProtos_DataMessage.Preview] = []
     var _profile: SessionProtos_DataMessage.LokiProfile? = nil
-    var _closedGroupUpdateV2: SessionProtos_DataMessage.ClosedGroupUpdateV2? = nil
+    var _closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage? = nil
     var _syncTarget: String? = nil
     var _publicChatInfo: SessionProtos_PublicChatInfo? = nil
 
@@ -2300,7 +2318,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       _contact = source._contact
       _preview = source._preview
       _profile = source._profile
-      _closedGroupUpdateV2 = source._closedGroupUpdateV2
+      _closedGroupControlMessage = source._closedGroupControlMessage
       _syncTarget = source._syncTarget
       _publicChatInfo = source._publicChatInfo
     }
@@ -2315,7 +2333,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
   public var isInitialized: Bool {
     return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._closedGroupUpdateV2, !v.isInitialized {return false}
+      if let v = _storage._closedGroupControlMessage, !v.isInitialized {return false}
       return true
     }
   }
@@ -2336,7 +2354,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 101: try decoder.decodeSingularMessageField(value: &_storage._profile)
-        case 104: try decoder.decodeSingularMessageField(value: &_storage._closedGroupUpdateV2)
+        case 104: try decoder.decodeSingularMessageField(value: &_storage._closedGroupControlMessage)
         case 105: try decoder.decodeSingularStringField(value: &_storage._syncTarget)
         case 999: try decoder.decodeSingularMessageField(value: &_storage._publicChatInfo)
         default: break
@@ -2380,7 +2398,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       if let v = _storage._profile {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
       }
-      if let v = _storage._closedGroupUpdateV2 {
+      if let v = _storage._closedGroupControlMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 104)
       }
       if let v = _storage._syncTarget {
@@ -2409,7 +2427,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
         if _storage._contact != rhs_storage._contact {return false}
         if _storage._preview != rhs_storage._preview {return false}
         if _storage._profile != rhs_storage._profile {return false}
-        if _storage._closedGroupUpdateV2 != rhs_storage._closedGroupUpdateV2 {return false}
+        if _storage._closedGroupControlMessage != rhs_storage._closedGroupControlMessage {return false}
         if _storage._syncTarget != rhs_storage._syncTarget {return false}
         if _storage._publicChatInfo != rhs_storage._publicChatInfo {return false}
         return true
@@ -3091,8 +3109,8 @@ extension SessionProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension SessionProtos_DataMessage.ClosedGroupUpdateV2: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".ClosedGroupUpdateV2"
+extension SessionProtos_DataMessage.ClosedGroupControlMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".ClosedGroupControlMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
     2: .same(proto: "publicKey"),
@@ -3104,13 +3122,13 @@ extension SessionProtos_DataMessage.ClosedGroupUpdateV2: SwiftProtobuf.Message, 
   ]
 
   fileprivate class _StorageClass {
-    var _type: SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum? = nil
+    var _type: SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum? = nil
     var _publicKey: Data? = nil
     var _name: String? = nil
     var _encryptionKeyPair: SessionProtos_KeyPair? = nil
     var _members: [Data] = []
     var _admins: [Data] = []
-    var _wrappers: [SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper] = []
+    var _wrappers: [SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -3188,7 +3206,7 @@ extension SessionProtos_DataMessage.ClosedGroupUpdateV2: SwiftProtobuf.Message, 
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdateV2, rhs: SessionProtos_DataMessage.ClosedGroupUpdateV2) -> Bool {
+  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupControlMessage, rhs: SessionProtos_DataMessage.ClosedGroupControlMessage) -> Bool {
     if lhs._storage !== rhs._storage {
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
@@ -3209,16 +3227,20 @@ extension SessionProtos_DataMessage.ClosedGroupUpdateV2: SwiftProtobuf.Message, 
   }
 }
 
-extension SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+extension SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "NEW"),
     2: .same(proto: "UPDATE"),
     3: .same(proto: "ENCRYPTION_KEY_PAIR"),
+    4: .same(proto: "NAME_CHANGE"),
+    5: .same(proto: "MEMBERS_ADDED"),
+    6: .same(proto: "MEMBERS_REMOVED"),
+    7: .same(proto: "MEMBER_LEFT"),
   ]
 }
 
-extension SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SessionProtos_DataMessage.ClosedGroupUpdateV2.protoMessageName + ".KeyPairWrapper"
+extension SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.ClosedGroupControlMessage.protoMessageName + ".KeyPairWrapper"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "publicKey"),
     2: .same(proto: "encryptedKeyPair"),
@@ -3250,7 +3272,7 @@ extension SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper: SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper, rhs: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper) -> Bool {
+  static func ==(lhs: SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper, rhs: SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper) -> Bool {
     if lhs._publicKey != rhs._publicKey {return false}
     if lhs._encryptedKeyPair != rhs._encryptedKeyPair {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

@@ -2301,25 +2301,25 @@ extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
 
 #endif
 
-// MARK: - SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper
+// MARK: - SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper
 
-@objc public class SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper: NSObject {
+@objc public class SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper: NSObject {
 
-    // MARK: - SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder
+    // MARK: - SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder
 
-    @objc public class func builder(publicKey: Data, encryptedKeyPair: Data) -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder {
-        return SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder(publicKey: publicKey, encryptedKeyPair: encryptedKeyPair)
+    @objc public class func builder(publicKey: Data, encryptedKeyPair: Data) -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder {
+        return SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder(publicKey: publicKey, encryptedKeyPair: encryptedKeyPair)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder {
-        let builder = SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder(publicKey: publicKey, encryptedKeyPair: encryptedKeyPair)
+    @objc public func asBuilder() -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder {
+        let builder = SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder(publicKey: publicKey, encryptedKeyPair: encryptedKeyPair)
         return builder
     }
 
-    @objc public class SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder: NSObject {
+    @objc public class SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder: NSObject {
 
-        private var proto = SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper()
+        private var proto = SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper()
 
         @objc fileprivate override init() {}
 
@@ -2338,22 +2338,22 @@ extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
             proto.encryptedKeyPair = valueParam
         }
 
-        @objc public func build() throws -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper {
-            return try SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.parseProto(proto)
+        @objc public func build() throws -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper {
+            return try SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.parseProto(proto)
         }
 
         @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.parseProto(proto).serializedData()
+            return try SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper
+    fileprivate let proto: SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper
 
     @objc public let publicKey: Data
 
     @objc public let encryptedKeyPair: Data
 
-    private init(proto: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper,
+    private init(proto: SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper,
                  publicKey: Data,
                  encryptedKeyPair: Data) {
         self.proto = proto
@@ -2366,12 +2366,12 @@ extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper {
-        let proto = try SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper(serializedData: serializedData)
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper {
+        let proto = try SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.ClosedGroupUpdateV2.KeyPairWrapper) throws -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper {
+    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper) throws -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper {
         guard proto.hasPublicKey else {
             throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: publicKey")
         }
@@ -2382,13 +2382,13 @@ extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
         }
         let encryptedKeyPair = proto.encryptedKeyPair
 
-        // MARK: - Begin Validation Logic for SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper -
+        // MARK: - Begin Validation Logic for SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper -
 
-        // MARK: - End Validation Logic for SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper -
+        // MARK: - End Validation Logic for SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper -
 
-        let result = SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper(proto: proto,
-                                                                         publicKey: publicKey,
-                                                                         encryptedKeyPair: encryptedKeyPair)
+        let result = SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper(proto: proto,
+                                                                               publicKey: publicKey,
+                                                                               encryptedKeyPair: encryptedKeyPair)
         return result
     }
 
@@ -2399,57 +2399,69 @@ extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
 
 #if DEBUG
 
-extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper {
+extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper {
     @objc public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapperBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper? {
+extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataMessageClosedGroupControlMessageKeyPairWrapperBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper? {
         return try! self.build()
     }
 }
 
 #endif
 
-// MARK: - SNProtoDataMessageClosedGroupUpdateV2
+// MARK: - SNProtoDataMessageClosedGroupControlMessage
 
-@objc public class SNProtoDataMessageClosedGroupUpdateV2: NSObject {
+@objc public class SNProtoDataMessageClosedGroupControlMessage: NSObject {
 
-    // MARK: - SNProtoDataMessageClosedGroupUpdateV2Type
+    // MARK: - SNProtoDataMessageClosedGroupControlMessageType
 
-    @objc public enum SNProtoDataMessageClosedGroupUpdateV2Type: Int32 {
+    @objc public enum SNProtoDataMessageClosedGroupControlMessageType: Int32 {
         case new = 1
         case update = 2
         case encryptionKeyPair = 3
+        case nameChange = 4
+        case membersAdded = 5
+        case membersRemoved = 6
+        case memberLeft = 7
     }
 
-    private class func SNProtoDataMessageClosedGroupUpdateV2TypeWrap(_ value: SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum) -> SNProtoDataMessageClosedGroupUpdateV2Type {
+    private class func SNProtoDataMessageClosedGroupControlMessageTypeWrap(_ value: SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum) -> SNProtoDataMessageClosedGroupControlMessageType {
         switch value {
         case .new: return .new
         case .update: return .update
         case .encryptionKeyPair: return .encryptionKeyPair
+        case .nameChange: return .nameChange
+        case .membersAdded: return .membersAdded
+        case .membersRemoved: return .membersRemoved
+        case .memberLeft: return .memberLeft
         }
     }
 
-    private class func SNProtoDataMessageClosedGroupUpdateV2TypeUnwrap(_ value: SNProtoDataMessageClosedGroupUpdateV2Type) -> SessionProtos_DataMessage.ClosedGroupUpdateV2.TypeEnum {
+    private class func SNProtoDataMessageClosedGroupControlMessageTypeUnwrap(_ value: SNProtoDataMessageClosedGroupControlMessageType) -> SessionProtos_DataMessage.ClosedGroupControlMessage.TypeEnum {
         switch value {
         case .new: return .new
         case .update: return .update
         case .encryptionKeyPair: return .encryptionKeyPair
+        case .nameChange: return .nameChange
+        case .membersAdded: return .membersAdded
+        case .membersRemoved: return .membersRemoved
+        case .memberLeft: return .memberLeft
         }
     }
 
-    // MARK: - SNProtoDataMessageClosedGroupUpdateV2Builder
+    // MARK: - SNProtoDataMessageClosedGroupControlMessageBuilder
 
-    @objc public class func builder(type: SNProtoDataMessageClosedGroupUpdateV2Type) -> SNProtoDataMessageClosedGroupUpdateV2Builder {
-        return SNProtoDataMessageClosedGroupUpdateV2Builder(type: type)
+    @objc public class func builder(type: SNProtoDataMessageClosedGroupControlMessageType) -> SNProtoDataMessageClosedGroupControlMessageBuilder {
+        return SNProtoDataMessageClosedGroupControlMessageBuilder(type: type)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoDataMessageClosedGroupUpdateV2Builder {
-        let builder = SNProtoDataMessageClosedGroupUpdateV2Builder(type: type)
+    @objc public func asBuilder() -> SNProtoDataMessageClosedGroupControlMessageBuilder {
+        let builder = SNProtoDataMessageClosedGroupControlMessageBuilder(type: type)
         if let _value = publicKey {
             builder.setPublicKey(_value)
         }
@@ -2465,20 +2477,20 @@ extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.SNProtoDataMessage
         return builder
     }
 
-    @objc public class SNProtoDataMessageClosedGroupUpdateV2Builder: NSObject {
+    @objc public class SNProtoDataMessageClosedGroupControlMessageBuilder: NSObject {
 
-        private var proto = SessionProtos_DataMessage.ClosedGroupUpdateV2()
+        private var proto = SessionProtos_DataMessage.ClosedGroupControlMessage()
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(type: SNProtoDataMessageClosedGroupUpdateV2Type) {
+        @objc fileprivate init(type: SNProtoDataMessageClosedGroupControlMessageType) {
             super.init()
 
             setType(type)
         }
 
-        @objc public func setType(_ valueParam: SNProtoDataMessageClosedGroupUpdateV2Type) {
-            proto.type = SNProtoDataMessageClosedGroupUpdateV2TypeUnwrap(valueParam)
+        @objc public func setType(_ valueParam: SNProtoDataMessageClosedGroupControlMessageType) {
+            proto.type = SNProtoDataMessageClosedGroupControlMessageTypeUnwrap(valueParam)
         }
 
         @objc public func setPublicKey(_ valueParam: Data) {
@@ -2513,32 +2525,32 @@ extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.SNProtoDataMessage
             proto.admins = wrappedItems
         }
 
-        @objc public func addWrappers(_ valueParam: SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper) {
+        @objc public func addWrappers(_ valueParam: SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper) {
             var items = proto.wrappers
             items.append(valueParam.proto)
             proto.wrappers = items
         }
 
-        @objc public func setWrappers(_ wrappedItems: [SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper]) {
+        @objc public func setWrappers(_ wrappedItems: [SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper]) {
             proto.wrappers = wrappedItems.map { $0.proto }
         }
 
-        @objc public func build() throws -> SNProtoDataMessageClosedGroupUpdateV2 {
-            return try SNProtoDataMessageClosedGroupUpdateV2.parseProto(proto)
+        @objc public func build() throws -> SNProtoDataMessageClosedGroupControlMessage {
+            return try SNProtoDataMessageClosedGroupControlMessage.parseProto(proto)
         }
 
         @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoDataMessageClosedGroupUpdateV2.parseProto(proto).serializedData()
+            return try SNProtoDataMessageClosedGroupControlMessage.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: SessionProtos_DataMessage.ClosedGroupUpdateV2
+    fileprivate let proto: SessionProtos_DataMessage.ClosedGroupControlMessage
 
-    @objc public let type: SNProtoDataMessageClosedGroupUpdateV2Type
+    @objc public let type: SNProtoDataMessageClosedGroupControlMessageType
 
     @objc public let encryptionKeyPair: SNProtoKeyPair?
 
-    @objc public let wrappers: [SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper]
+    @objc public let wrappers: [SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper]
 
     @objc public var publicKey: Data? {
         guard proto.hasPublicKey else {
@@ -2568,10 +2580,10 @@ extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.SNProtoDataMessage
         return proto.admins
     }
 
-    private init(proto: SessionProtos_DataMessage.ClosedGroupUpdateV2,
-                 type: SNProtoDataMessageClosedGroupUpdateV2Type,
+    private init(proto: SessionProtos_DataMessage.ClosedGroupControlMessage,
+                 type: SNProtoDataMessageClosedGroupControlMessageType,
                  encryptionKeyPair: SNProtoKeyPair?,
-                 wrappers: [SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper]) {
+                 wrappers: [SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper]) {
         self.proto = proto
         self.type = type
         self.encryptionKeyPair = encryptionKeyPair
@@ -2583,33 +2595,33 @@ extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.SNProtoDataMessage
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageClosedGroupUpdateV2 {
-        let proto = try SessionProtos_DataMessage.ClosedGroupUpdateV2(serializedData: serializedData)
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageClosedGroupControlMessage {
+        let proto = try SessionProtos_DataMessage.ClosedGroupControlMessage(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.ClosedGroupUpdateV2) throws -> SNProtoDataMessageClosedGroupUpdateV2 {
+    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.ClosedGroupControlMessage) throws -> SNProtoDataMessageClosedGroupControlMessage {
         guard proto.hasType else {
             throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
         }
-        let type = SNProtoDataMessageClosedGroupUpdateV2TypeWrap(proto.type)
+        let type = SNProtoDataMessageClosedGroupControlMessageTypeWrap(proto.type)
 
         var encryptionKeyPair: SNProtoKeyPair? = nil
         if proto.hasEncryptionKeyPair {
             encryptionKeyPair = try SNProtoKeyPair.parseProto(proto.encryptionKeyPair)
         }
 
-        var wrappers: [SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper] = []
-        wrappers = try proto.wrappers.map { try SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.parseProto($0) }
+        var wrappers: [SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper] = []
+        wrappers = try proto.wrappers.map { try SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.parseProto($0) }
 
-        // MARK: - Begin Validation Logic for SNProtoDataMessageClosedGroupUpdateV2 -
+        // MARK: - Begin Validation Logic for SNProtoDataMessageClosedGroupControlMessage -
 
-        // MARK: - End Validation Logic for SNProtoDataMessageClosedGroupUpdateV2 -
+        // MARK: - End Validation Logic for SNProtoDataMessageClosedGroupControlMessage -
 
-        let result = SNProtoDataMessageClosedGroupUpdateV2(proto: proto,
-                                                           type: type,
-                                                           encryptionKeyPair: encryptionKeyPair,
-                                                           wrappers: wrappers)
+        let result = SNProtoDataMessageClosedGroupControlMessage(proto: proto,
+                                                                 type: type,
+                                                                 encryptionKeyPair: encryptionKeyPair,
+                                                                 wrappers: wrappers)
         return result
     }
 
@@ -2620,14 +2632,14 @@ extension SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.SNProtoDataMessage
 
 #if DEBUG
 
-extension SNProtoDataMessageClosedGroupUpdateV2 {
+extension SNProtoDataMessageClosedGroupControlMessage {
     @objc public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpdateV2Builder {
-    @objc public func buildIgnoringErrors() -> SNProtoDataMessageClosedGroupUpdateV2? {
+extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGroupControlMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoDataMessageClosedGroupControlMessage? {
         return try! self.build()
     }
 }
@@ -2692,8 +2704,8 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
         if let _value = profile {
             builder.setProfile(_value)
         }
-        if let _value = closedGroupUpdateV2 {
-            builder.setClosedGroupUpdateV2(_value)
+        if let _value = closedGroupControlMessage {
+            builder.setClosedGroupControlMessage(_value)
         }
         if let _value = syncTarget {
             builder.setSyncTarget(_value)
@@ -2772,8 +2784,8 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
             proto.profile = valueParam.proto
         }
 
-        @objc public func setClosedGroupUpdateV2(_ valueParam: SNProtoDataMessageClosedGroupUpdateV2) {
-            proto.closedGroupUpdateV2 = valueParam.proto
+        @objc public func setClosedGroupControlMessage(_ valueParam: SNProtoDataMessageClosedGroupControlMessage) {
+            proto.closedGroupControlMessage = valueParam.proto
         }
 
         @objc public func setSyncTarget(_ valueParam: String) {
@@ -2807,7 +2819,7 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
 
     @objc public let profile: SNProtoDataMessageLokiProfile?
 
-    @objc public let closedGroupUpdateV2: SNProtoDataMessageClosedGroupUpdateV2?
+    @objc public let closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?
 
     @objc public let publicChatInfo: SNProtoPublicChatInfo?
 
@@ -2869,7 +2881,7 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
                  contact: [SNProtoDataMessageContact],
                  preview: [SNProtoDataMessagePreview],
                  profile: SNProtoDataMessageLokiProfile?,
-                 closedGroupUpdateV2: SNProtoDataMessageClosedGroupUpdateV2?,
+                 closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?,
                  publicChatInfo: SNProtoPublicChatInfo?) {
         self.proto = proto
         self.attachments = attachments
@@ -2878,7 +2890,7 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
         self.contact = contact
         self.preview = preview
         self.profile = profile
-        self.closedGroupUpdateV2 = closedGroupUpdateV2
+        self.closedGroupControlMessage = closedGroupControlMessage
         self.publicChatInfo = publicChatInfo
     }
 
@@ -2917,9 +2929,9 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
             profile = try SNProtoDataMessageLokiProfile.parseProto(proto.profile)
         }
 
-        var closedGroupUpdateV2: SNProtoDataMessageClosedGroupUpdateV2? = nil
-        if proto.hasClosedGroupUpdateV2 {
-            closedGroupUpdateV2 = try SNProtoDataMessageClosedGroupUpdateV2.parseProto(proto.closedGroupUpdateV2)
+        var closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage? = nil
+        if proto.hasClosedGroupControlMessage {
+            closedGroupControlMessage = try SNProtoDataMessageClosedGroupControlMessage.parseProto(proto.closedGroupControlMessage)
         }
 
         var publicChatInfo: SNProtoPublicChatInfo? = nil
@@ -2938,7 +2950,7 @@ extension SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpd
                                         contact: contact,
                                         preview: preview,
                                         profile: profile,
-                                        closedGroupUpdateV2: closedGroupUpdateV2,
+                                        closedGroupControlMessage: closedGroupControlMessage,
                                         publicChatInfo: publicChatInfo)
         return result
     }
