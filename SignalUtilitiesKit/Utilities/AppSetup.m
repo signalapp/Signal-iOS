@@ -91,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
         appSpecificSingletonBlock();
 
         OWSAssertDebug(SSKEnvironment.shared.isComplete);
+        
+        [SNConfiguration performMainSetup]; // Must happen before the performUpdateCheck call below
 
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
