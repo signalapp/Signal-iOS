@@ -378,7 +378,8 @@ public class SDSDatabaseStorage: SDSTransactable {
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
                     uiDatabaseObserver.didTouch(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("conversationListDatabaseObserver was unexpectedly nil")
+                    // This can race with observation setup when app becomes ready.
+                    Logger.warn("uiDatabaseObserver was unexpectedly nil")
                 }
                 if shouldReindex {
                     GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
