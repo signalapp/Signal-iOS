@@ -16,6 +16,11 @@ extension MessageReceiver {
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
+        var isMainAppAndActive = false
+        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
+            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+        }
+        guard isMainAppAndActive else { return }
         // Touch the thread to update the home screen preview
         let storage = SNMessagingKitConfiguration.shared.storage
         guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }

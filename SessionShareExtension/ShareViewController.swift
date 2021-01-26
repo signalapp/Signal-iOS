@@ -83,15 +83,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
             SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
-            },
-            migrationCompletion: { [weak self] in
-                                    AssertIsOnMainThread()
+        }, migrationCompletion: { [weak self] in
+            AssertIsOnMainThread()
 
-                                    guard let strongSelf = self else { return }
+            guard let strongSelf = self else { return }
 
-                                    // performUpdateCheck must be invoked after Environment has been initialized because
-                                    // upgrade process may depend on Environment.
-                                    strongSelf.versionMigrationsDidComplete()
+            // performUpdateCheck must be invoked after Environment has been initialized because
+            // upgrade process may depend on Environment.
+            strongSelf.versionMigrationsDidComplete()
         })
 
         let shareViewNavigationController = OWSNavigationController()
@@ -112,7 +111,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             Logger.debug("setup is slow - showing loading screen")
             strongSelf.showPrimaryViewController(loadViewController)
-            }.retainUntilComplete()
+        }.retainUntilComplete()
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -180,7 +179,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
                 guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber())")
+                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber()!)")
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
@@ -199,7 +198,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if tsAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber())")
+                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber()!)")
 
                 // We don't need to use the TSSocketManager in the SAE.
 
@@ -258,7 +257,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppReadiness.setAppIsReady()
 
         if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber())")
+            Logger.info("localNumber: \(TSAccountManager.localNumber()!)")
 
             // We don't need to use messageFetcherJob in the SAE.
 
@@ -290,7 +289,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("")
 
         if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber())")
+            Logger.info("localNumber: \(TSAccountManager.localNumber()!)")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
