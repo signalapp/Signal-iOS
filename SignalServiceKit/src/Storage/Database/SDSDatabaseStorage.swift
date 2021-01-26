@@ -154,7 +154,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
             // There seems to be a rare issue where at least one reader or writer
             // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
-            // a schema migration and does not reflect
+            // a schema migration and does not reflect the migrations.
             grdbStorage.pool.releaseMemory()
             weak var weakPool = grdbStorage.pool
             weak var weakGrdbStorage = grdbStorage
