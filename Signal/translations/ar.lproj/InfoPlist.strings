@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "يحتاج Signal أن يستخدم Apple Music ليستطيع تشغيل الوسائط المرفقة.";
-NSCameraUsageDescription = "يحتاج Signal الوصول إلى الكاميرا من أجل التقاط الصور ومن أجل محادثات الفيديو.";
-NSContactsUsageDescription = "يستخدم Signal جهات اتصالك لإيجاد المستخدمين الذين تعرفهم. نحن لا نقوم بتخزين جهات اتصالك في سيرفراتنا.";
-NSFaceIDUsageDescription = "قفل الشاشة لـ Signal يستخدم تقنية التعرف على الوجه.";
-NSLocationWhenInUseUsageDescription = "يحتاج Signal الوصول لموقعك من أجل مشاركة موقعك الحالي.";
-NSMicrophoneUsageDescription = "يحتاج Signal الوصول إلى الميكروفون لتستطيع الاتصال أو تسجيل الرسائل الصوتية.";
+NSAppleMusicUsageDescription = "يحتاج Signal إلى استخدام Apple Music ليستطيع تشغيل الوسائط المرفقة.";
+NSCameraUsageDescription = "يحتاج Signal إلى الوصول إلى الكاميرا من أجل التقاط الصور ومن أجل المكالمات بالصورة.";
+NSContactsUsageDescription = "يستخدم Signal جهات اتصالك لإيجاد المستخدمين الذين تعرفهم. نحن لا نقوم بتخزين جهات اتصالك في خوادمنا.";
+NSFaceIDUsageDescription = "قفل شاشة Signal يستخدم تقنية التعرف على الوجه.";
+NSLocationWhenInUseUsageDescription = "يحتاج Signal إلى الوصول لموقعك من أجل مشاركة موقعك الحالي.";
+NSMicrophoneUsageDescription = "يحتاج Signal الوصول إلى ميكروفونك ليصبح بإمكانك الاتصال أو تسجيل الرسائل الصوتية.";
 NSPhotoLibraryAddUsageDescription = "سيحفظ Signal الصور في مكتبتك.";
 NSPhotoLibraryUsageDescription = "سيسمح لك Signal باختيار الصور التي تريد إرسالها من مكتبتك.";
-NSLocalNetworkUsageDescription = "يستخدم Signal الشبكة المحلية للسماح لك بنقل حسابك مباشرة إلى الهاتف جديد. لن يتم استخدامه إلا إذا قمت ببدء عملية النقل إلى جهاز جديد برغبتك انت.";
+NSLocalNetworkUsageDescription = "يستخدم Signal الشبكة المحلية للسماح لك بنقل حسابك مباشرة إلى الهاتف الجديد. لن يتم استخدامه إلا إذا رغبت صراحة ببدء عملية النقل نحو الجهاز الجديد.";
