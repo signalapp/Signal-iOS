@@ -356,8 +356,6 @@ public extension OWSDisappearingMessagesConfiguration {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return OWSDisappearingMessagesConfiguration.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(disappearingMessagesConfigurationColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -388,14 +386,6 @@ public extension OWSDisappearingMessagesConfiguration {
                             batchSize: UInt,
                             block: @escaping (OWSDisappearingMessagesConfiguration, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            OWSDisappearingMessagesConfiguration.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? OWSDisappearingMessagesConfiguration else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSDisappearingMessagesConfiguration.grdbFetchCursor(transaction: grdbTransaction)
@@ -437,10 +427,6 @@ public extension OWSDisappearingMessagesConfiguration {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: OWSDisappearingMessagesConfiguration.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -472,8 +458,6 @@ public extension OWSDisappearingMessagesConfiguration {
 
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: OWSDisappearingMessagesConfiguration.collection())
         case .grdbRead(let grdbTransaction):
             return DisappearingMessagesConfigurationRecord.ows_fetchCount(grdbTransaction.database)
         }
@@ -483,8 +467,6 @@ public extension OWSDisappearingMessagesConfiguration {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: OWSDisappearingMessagesConfiguration.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try DisappearingMessagesConfigurationRecord.deleteAll(grdbTransaction.database)
@@ -533,8 +515,6 @@ public extension OWSDisappearingMessagesConfiguration {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: OWSDisappearingMessagesConfiguration.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(disappearingMessagesConfigurationColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]

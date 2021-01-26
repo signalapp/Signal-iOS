@@ -1622,14 +1622,12 @@ public extension %(class_name)s {
 
         swift_body += '''
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return %(class_name)s.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(%(record_name)s.databaseTableName) WHERE \(%(record_identifier)sColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
         }
     }
-''' % { "class_name": str(clazz.name), "record_name": record_name, "record_identifier": record_identifier(clazz.name) }
+''' % { "record_name": record_name, "record_identifier": record_identifier(clazz.name) }
 
         swift_body += '''
     // Traverses all records.
@@ -1656,14 +1654,6 @@ public extension %(class_name)s {
                             batchSize: UInt,
                             block: @escaping (%s, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            %s.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? %s else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = %s.grdbFetchCursor(transaction: grdbTransaction)
@@ -1680,7 +1670,7 @@ public extension %(class_name)s {
             }
         }
     }
-''' % ( ( str(clazz.name), ) * 6 )
+''' % ( ( str(clazz.name), ) * 4 )
 
         swift_body += '''
     // Traverses all records' unique ids.
@@ -1707,10 +1697,6 @@ public extension %(class_name)s {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: %s.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -1721,7 +1707,7 @@ public extension %(class_name)s {
                 block: block)
         }
     }
-''' % ( str(clazz.name), record_identifier(clazz.name), record_name, )
+''' % ( record_identifier(clazz.name), record_name, )
 
         swift_body += '''
     // Does not order the results.
@@ -1748,13 +1734,11 @@ public extension %(class_name)s {
         swift_body += '''
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: %s.collection())
         case .grdbRead(let grdbTransaction):
             return %s.ows_fetchCount(grdbTransaction.database)
         }
     }
-''' % ( str(clazz.name),  record_name, )
+''' % ( record_name, )
 
         # ---- Remove All ----
 
@@ -1763,8 +1747,6 @@ public extension %(class_name)s {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: %s.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try %s.deleteAll(grdbTransaction.database)
@@ -1813,8 +1795,6 @@ public extension %(class_name)s {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: %s.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(%s.databaseTableName) WHERE \(%sColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]
@@ -1822,7 +1802,7 @@ public extension %(class_name)s {
         }
     }
 }
-''' % ( str(clazz.name), record_name, str(clazz.name), record_name, record_identifier(clazz.name), )
+''' % ( record_name, record_name, record_identifier(clazz.name), )
 
         # ---- Fetch ----
 

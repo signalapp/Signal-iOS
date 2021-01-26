@@ -12,8 +12,6 @@ class GRDBFinderTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
-        storageCoordinator.useGRDBForTests()
-
         // ensure local client has necessary "registered" state
         let localE164Identifier = "+13235551234"
         let localUUID = UUID()

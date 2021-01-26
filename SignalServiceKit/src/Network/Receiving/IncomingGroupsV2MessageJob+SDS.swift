@@ -393,8 +393,6 @@ public extension IncomingGroupsV2MessageJob {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return IncomingGroupsV2MessageJob.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName) WHERE \(incomingGroupsV2MessageJobColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -425,14 +423,6 @@ public extension IncomingGroupsV2MessageJob {
                             batchSize: UInt,
                             block: @escaping (IncomingGroupsV2MessageJob, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            IncomingGroupsV2MessageJob.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? IncomingGroupsV2MessageJob else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = IncomingGroupsV2MessageJob.grdbFetchCursor(transaction: grdbTransaction)
@@ -474,10 +464,6 @@ public extension IncomingGroupsV2MessageJob {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: IncomingGroupsV2MessageJob.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -509,8 +495,6 @@ public extension IncomingGroupsV2MessageJob {
 
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: IncomingGroupsV2MessageJob.collection())
         case .grdbRead(let grdbTransaction):
             return IncomingGroupsV2MessageJobRecord.ows_fetchCount(grdbTransaction.database)
         }
@@ -520,8 +504,6 @@ public extension IncomingGroupsV2MessageJob {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: IncomingGroupsV2MessageJob.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try IncomingGroupsV2MessageJobRecord.deleteAll(grdbTransaction.database)
@@ -570,8 +552,6 @@ public extension IncomingGroupsV2MessageJob {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: IncomingGroupsV2MessageJob.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName) WHERE \(incomingGroupsV2MessageJobColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]

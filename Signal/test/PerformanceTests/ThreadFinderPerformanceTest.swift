@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,14 +9,12 @@ import SignalServiceKit
 class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
     func testGRDBPerf_enumerateVisibleThreads() {
-        storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             enumerateVisibleThreads(isArchived: false)
         }
     }
 
     func testGRDBPerf_enumerateVisibleThreads_isArchived() {
-        storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             enumerateVisibleThreads(isArchived: true)
         }

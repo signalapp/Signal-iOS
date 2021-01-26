@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -9,18 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const StorageIsReadyNotification;
 
 typedef NS_CLOSED_ENUM(NSUInteger, DataStore) {
-    DataStoreYdb,
     DataStoreGrdb,
 };
 NSString *NSStringForDataStore(DataStore value);
 
 typedef NS_CLOSED_ENUM(NSUInteger, StorageCoordinatorState) {
-    // GRDB TODO: Remove .ydb and ydbTests once we ship GRDB to production.
-    StorageCoordinatorStateYDB,
-    StorageCoordinatorStateBeforeYDBToGRDBMigration,
-    StorageCoordinatorStateDuringYDBToGRDBMigration,
     StorageCoordinatorStateGRDB,
-    StorageCoordinatorStateYDBTests,
     StorageCoordinatorStateGRDBTests,
 };
 NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
@@ -31,19 +25,11 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @property (atomic, readonly) StorageCoordinatorState state;
 
-@property (atomic, readonly) BOOL isMigrating;
-
 @property (atomic, readonly) BOOL isStorageReady;
 
 - (instancetype)init;
 
-// These methods should only be called by the migration itself.
-- (void)migrationYDBToGRDBWillBegin;
-- (void)migrationYDBToGRDBDidComplete;
-
-@property (class, nonatomic, readonly) BOOL hasYdbFile;
 @property (class, nonatomic, readonly) BOOL hasGrdbFile;
-@property (class, nonatomic, readonly) BOOL hasUnmigratedYdbFile;
 
 @property (class, nonatomic, readonly) BOOL hasInvalidDatabaseVersion;
 
@@ -54,11 +40,6 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 @property (class, nonatomic, readonly) BOOL isReadyForShareExtension;
 
 - (BOOL)isDatabasePasswordAccessible;
-
-#ifdef TESTABLE_BUILD
-- (void)useGRDBForTests;
-- (void)useYDBForTests;
-#endif
 
 - (void)markStorageSetupAsComplete;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,7 +7,6 @@ import Foundation
 @objc
 public class AnyContactThreadFinder: NSObject {
     let grdbAdapter = GRDBContactThreadFinder()
-    let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }
 
 // MARK: -
@@ -18,8 +17,6 @@ public extension AnyContactThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.contactThread(for: address, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOne(for: address, transaction: transaction)
         }
     }
 
@@ -28,8 +25,6 @@ public extension AnyContactThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.contactThreadForUUID(uuid, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOneForUUID(uuid, transaction: transaction)
         }
     }
 
@@ -38,8 +33,6 @@ public extension AnyContactThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.contactThreadForPhoneNumber(phoneNumber, transaction: transaction)
-        case .yapRead(let transaction):
-            return yapdbAdapter.fetchOneForPhoneNumber(phoneNumber, transaction: transaction)
         }
     }
 }

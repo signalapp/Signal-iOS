@@ -392,8 +392,6 @@ public extension OWSBackupFragment {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return OWSBackupFragment.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(BackupFragmentRecord.databaseTableName) WHERE \(backupFragmentColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -424,14 +422,6 @@ public extension OWSBackupFragment {
                             batchSize: UInt,
                             block: @escaping (OWSBackupFragment, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            OWSBackupFragment.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? OWSBackupFragment else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSBackupFragment.grdbFetchCursor(transaction: grdbTransaction)
@@ -473,10 +463,6 @@ public extension OWSBackupFragment {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: OWSBackupFragment.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -508,8 +494,6 @@ public extension OWSBackupFragment {
 
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: OWSBackupFragment.collection())
         case .grdbRead(let grdbTransaction):
             return BackupFragmentRecord.ows_fetchCount(grdbTransaction.database)
         }
@@ -519,8 +503,6 @@ public extension OWSBackupFragment {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: OWSBackupFragment.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try BackupFragmentRecord.deleteAll(grdbTransaction.database)
@@ -569,8 +551,6 @@ public extension OWSBackupFragment {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: OWSBackupFragment.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(BackupFragmentRecord.databaseTableName) WHERE \(backupFragmentColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]

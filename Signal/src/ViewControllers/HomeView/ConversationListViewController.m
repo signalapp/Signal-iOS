@@ -37,12 +37,12 @@ typedef NS_ENUM(NSInteger, ConversationListMode) {
     ConversationListMode_Inbox,
 };
 
-// The bulk of the content in this view is driven by a YapDB view/mapping.
+// The bulk of the content in this view is driven by ThreadMapping.
 // However, we also want to optionally include ReminderView's at the top
 // and an "Archived Conversations" button at the bottom. Rather than introduce
 // index-offsets into the Mapping calculation, we introduce two pseudo groups
 // to add a top and bottom section to the content, and create cells for those
-// sections without consulting the YapMapping.
+// sections without consulting the ThreadMapping.
 // This is a bit of a hack, but it consolidates the hacks into the Reminder/Archive section
 // and allows us to leaves the bulk of the content logic on the happy path.
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
@@ -1918,16 +1918,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     return (ConversationListViewController *)topViewController;
-}
-
-- (NSString *)currentGrouping
-{
-    switch (self.conversationListMode) {
-        case ConversationListMode_Inbox:
-            return TSInboxGroup;
-        case ConversationListMode_Archive:
-            return TSArchiveGroup;
-    }
 }
 
 #pragma mark - Previewing

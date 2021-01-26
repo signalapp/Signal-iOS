@@ -53,7 +53,6 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     func testGRDBPerf_messageSending_contactThread() {
         // This is an example of a performance test case.
-        storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             sendMessages_contactThread()
@@ -63,7 +62,6 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     func testGRDBPerf_messageSending_groupThread() {
         // This is an example of a performance test case.
-        storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             sendMessages_groupThread()

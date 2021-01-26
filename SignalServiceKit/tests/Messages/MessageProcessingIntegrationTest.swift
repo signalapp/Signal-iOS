@@ -47,7 +47,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func test_contactMessage_e164AndUuidEnvelope() {
-
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,

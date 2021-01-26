@@ -38,7 +38,6 @@
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
@@ -84,4 +83,3 @@
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/TestModel.h>
 #import <SignalServiceKit/UnfairLock.h>
-#import <SignalServiceKit/YAPDBMessageContentJobFinder.h>

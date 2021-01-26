@@ -53,7 +53,7 @@ extension DeviceTransferService {
             return false
         }
 
-        guard database.key.count == kSQLCipherKeySpecLength else {
+        guard database.key.count == GRDBDatabaseStorageAdapter.kSQLCipherKeySpecLength else {
             owsFailDebug("incorrect database key length")
             return false
         }

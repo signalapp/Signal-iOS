@@ -462,16 +462,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (int64_t)messageSortIdForMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (transaction.transitional_yapWriteTransaction) {
-        return message.sortId;
+    if (message.grdbId == nil) {
+        OWSFailDebug(@"Missing messageSortId.");
+    } else if (message.grdbId.unsignedLongLongValue == 0) {
+        OWSFailDebug(@"Invalid messageSortId.");
     } else {
-        if (message.grdbId == nil) {
-            OWSFailDebug(@"Missing messageSortId.");
-        } else if (message.grdbId.unsignedLongLongValue == 0) {
-            OWSFailDebug(@"Invalid messageSortId.");
-        } else {
-            return message.grdbId.longLongValue;
-        }
+        return message.grdbId.longLongValue;
     }
     return 0;
 }

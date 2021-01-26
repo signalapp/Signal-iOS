@@ -69,8 +69,6 @@ public class AppEnvironment: NSObject {
         super.init()
 
         SwiftSingletons.register(self)
-
-        YDBToGRDBMigration.add(keyStore: AppUpdateNag.shared.keyValueStore, label: "AppUpdateNag")
     }
 
     @objc

@@ -420,8 +420,6 @@ public extension TestModel {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return TestModel.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(TestModelRecord.databaseTableName) WHERE \(testModelColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -452,14 +450,6 @@ public extension TestModel {
                             batchSize: UInt,
                             block: @escaping (TestModel, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            TestModel.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
-                guard let value = object as? TestModel else {
-                    owsFailDebug("unexpected object: \(type(of: object))")
-                    return
-                }
-                block(value, stop)
-            }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = TestModel.grdbFetchCursor(transaction: grdbTransaction)
@@ -501,10 +491,6 @@ public extension TestModel {
                                      batchSize: UInt,
                                      block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            ydbTransaction.enumerateKeys(inCollection: TestModel.collection()) { (uniqueId, stop) in
-                block(uniqueId, stop)
-            }
         case .grdbRead(let grdbTransaction):
             grdbEnumerateUniqueIds(transaction: grdbTransaction,
                                    sql: """
@@ -536,8 +522,6 @@ public extension TestModel {
 
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.numberOfKeys(inCollection: TestModel.collection())
         case .grdbRead(let grdbTransaction):
             return TestModelRecord.ows_fetchCount(grdbTransaction.database)
         }
@@ -547,8 +531,6 @@ public extension TestModel {
     //          in their anyWillRemove(), anyDidRemove() methods.
     class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydbTransaction.removeAllObjects(inCollection: TestModel.collection())
         case .grdbWrite(let grdbTransaction):
             do {
                 try TestModelRecord.deleteAll(grdbTransaction.database)
@@ -597,8 +579,6 @@ public extension TestModel {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
-        case .yapRead(let ydbTransaction):
-            return ydbTransaction.hasObject(forKey: uniqueId, inCollection: TestModel.collection())
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT EXISTS ( SELECT 1 FROM \(TestModelRecord.databaseTableName) WHERE \(testModelColumn: .uniqueId) = ? )"
             let arguments: StatementArguments = [uniqueId]

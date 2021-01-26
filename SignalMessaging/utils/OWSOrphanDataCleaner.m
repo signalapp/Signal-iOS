@@ -13,7 +13,6 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -315,10 +314,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // ever accidentally removing the YDB or GRDB databases during
     // orphan clean up.
     NSString *grdbDirectoryPath = [SDSDatabaseStorage grdbDatabaseDirUrl].path;
-    NSString *ydbDirectoryPath = [OWSPrimaryStorage sharedDataDatabaseDirPath];
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
     for (NSString *filePath in allOnDiskFilePaths) {
-        if ([filePath hasPrefix:grdbDirectoryPath] || [filePath hasPrefix:ydbDirectoryPath]) {
+        if ([filePath hasPrefix:grdbDirectoryPath]) {
             OWSLogInfo(@"Protecting database file: %@", filePath);
             [databaseFilePaths addObject:filePath];
         }
@@ -326,8 +324,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths minusSet:databaseFilePaths];
     OWSLogVerbose(
         @"grdbDirectoryPath: %@ (%d)", grdbDirectoryPath, [OWSFileSystem fileOrFolderExistsAtPath:grdbDirectoryPath]);
-    OWSLogVerbose(
-        @"ydbDirectoryPath: %@ (%d)", ydbDirectoryPath, [OWSFileSystem fileOrFolderExistsAtPath:ydbDirectoryPath]);
     OWSLogVerbose(@"databaseFilePaths: %lu", (unsigned long)databaseFilePaths.count);
 
     OWSLogVerbose(@"allOnDiskFilePaths: %lu", (unsigned long)allOnDiskFilePaths.count);

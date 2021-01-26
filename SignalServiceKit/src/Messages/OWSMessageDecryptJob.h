@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
 
-extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue;
-
 @interface OWSMessageDecryptJob : BaseModel
 
 @property (nonatomic, readonly) NSDate *createdAt;
@@ -46,25 +44,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeD
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageDecryptJobFinder : NSObject
-
-- (NSString *)databaseExtensionName;
-- (NSString *)databaseExtensionGroup;
-
-- (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction;
-
-+ (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
-
-#ifdef DEBUG
-- (void)addJobForEnvelopeData:(NSData *)envelopeData
-      serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-                  transaction:(SDSAnyWriteTransaction *)transaction;
-#endif
 
 @end
 

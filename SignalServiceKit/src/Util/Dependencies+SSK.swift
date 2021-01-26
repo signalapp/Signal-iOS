@@ -152,14 +152,6 @@ public extension NSObject {
         .shared
     }
 
-    final var primaryStorage: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorageRef
-    }
-
-    static var primaryStorage: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorageRef
-    }
-
     final var profileManager: ProfileManagerProtocol {
         SSKEnvironment.shared.profileManagerRef
     }
@@ -585,14 +577,6 @@ public extension Dependencies {
         .shared
     }
 
-    var primaryStorage: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorageRef
-    }
-
-    static var primaryStorage: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorageRef
-    }
-
     var profileManager: ProfileManagerProtocol {
         SSKEnvironment.shared.profileManagerRef
     }
@@ -931,15 +915,6 @@ public extension Dependencies {
 
     static var serviceClient: SignalServiceClient {
         SignalServiceRestClient.shared
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSPrimaryStorage {
-    static var shared: OWSPrimaryStorage? {
-        SSKEnvironment.shared.primaryStorageRef
     }
 }
 

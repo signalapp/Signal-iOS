@@ -9,8 +9,6 @@ import GRDB
 public class FullTextSearchFinder: NSObject {
     public func enumerateObjects(searchText: String, transaction: SDSAnyReadTransaction, block: @escaping (Any, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
-        case .yapRead:
-            owsFailDebug("YDB FTS no longer supported.")
         case .grdbRead(let grdbRead):
             GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, transaction: grdbRead, block: block)
         }
@@ -20,9 +18,6 @@ public class FullTextSearchFinder: NSObject {
         assert(type(of: model).shouldBeIndexedForFTS)
 
         switch transaction.writeTransaction {
-        case .yapWrite:
-            // Do nothing.
-            break
         case .grdbWrite(let grdbWrite):
             GRDBFullTextSearchFinder.modelWasInserted(model: model, transaction: grdbWrite)
         }
@@ -41,9 +36,6 @@ public class FullTextSearchFinder: NSObject {
         assert(type(of: model).shouldBeIndexedForFTS)
 
         switch transaction.writeTransaction {
-        case .yapWrite:
-            // Do nothing.
-            break
         case .grdbWrite(let grdbWrite):
             GRDBFullTextSearchFinder.modelWasUpdated(model: model, transaction: grdbWrite)
         }
@@ -53,9 +45,6 @@ public class FullTextSearchFinder: NSObject {
         assert(type(of: model).shouldBeIndexedForFTS)
 
         switch transaction.writeTransaction {
-        case .yapWrite:
-            // Do nothing.
-            break
         case .grdbWrite(let grdbWrite):
             GRDBFullTextSearchFinder.modelWasRemoved(model: model, transaction: grdbWrite)
         }
@@ -63,9 +52,6 @@ public class FullTextSearchFinder: NSObject {
 
     public class func allModelsWereRemoved(collection: String, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
-        case .yapWrite:
-            // Do nothing.
-            break
         case .grdbWrite(let grdbWrite):
             GRDBFullTextSearchFinder.allModelsWereRemoved(collection: collection, transaction: grdbWrite)
         }
@@ -140,8 +126,7 @@ extension FullTextSearchFinder {
 
 // MARK: - Querying
 
-// We use SQLite's FTS5 for both YDB and GRDB, we can use the
-// same query for both cases.
+// We use SQLite's FTS5 for GRDB.
 extension FullTextSearchFinder {
 
     // We want to match by prefix for "search as you type" functionality.

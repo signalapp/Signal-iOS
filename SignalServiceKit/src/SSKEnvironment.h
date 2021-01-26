@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageManager;
 @class OWSMessagePipelineSupervisor;
 @class OWSOutgoingReceiptManager;
-@class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
 @class SDSDatabaseStorage;
 @class SSKPreKeyStore;
@@ -38,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
-@class YapDatabaseConnection;
 
 @protocol ContactsManagerProtocol;
 @protocol NotificationsProtocol;
@@ -66,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
              pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -164,14 +161,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) AppExpiry *appExpiryRef;
 @property (nonatomic, readonly) MessageProcessor *messageProcessorRef;
 
-@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorageRef;
-
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<NotificationsProtocol> notificationsManagerRef;
-
-@property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
 
 - (BOOL)isComplete;
 

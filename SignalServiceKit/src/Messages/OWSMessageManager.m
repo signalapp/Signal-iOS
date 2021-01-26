@@ -20,7 +20,6 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSGroupInfoRequestMessage.h"
 #import "OWSIdentityManager.h"
-#import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"

@@ -3,7 +3,6 @@
 //
 
 #import "SSKBaseTestObjC.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
@@ -56,20 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *))block
 {
     DatabaseStorageWrite(SDSDatabaseStorage.shared, block);
-}
-
-- (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
-{
-    OWSAssert(block);
-
-    [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWithBlock:block];
-}
-
-- (void)yapWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
-{
-    OWSAssert(block);
-
-    [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWriteWithBlock:block];
 }
 
 @end

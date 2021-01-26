@@ -3010,9 +3010,7 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:YES completion:nil];
 
     // We always want to scroll to the bottom of the conversation after the local user
-    // sends a message.  Normally, this is taken care of in yapDatabaseModified:, but
-    // we don't listen to db modifications when this view isn't visible, i.e. when the
-    // attachment approval view is presented.
+    // sends a message.
     [self scrollToBottomOfConversationAnimated:NO];
 }
 

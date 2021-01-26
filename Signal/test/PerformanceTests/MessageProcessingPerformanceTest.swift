@@ -27,7 +27,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        storageCoordinator.useGRDBForTests()
         try! databaseStorage.grdbStorage.setupUIDatabase()
 
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
