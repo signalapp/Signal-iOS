@@ -3587,7 +3587,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Le NIP doit comporter au moins quatre chiffres.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Vous pouvez épingler jusqu’à quatre conversations.";
+"PINNED_CONVERSATION_LIMIT" = "Vous ne pouvez épingler plus de quatre conversations.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Épinglées";
@@ -3671,13 +3671,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Amateur de café";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Chiffré";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Prêt à converser";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Exprimez-vous librement";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Je prend une pause";
@@ -4292,13 +4292,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "La session de dialogue en ligne a été actualisée";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choisir parmis les photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Choisir dans Photos";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "Préréglages";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Définir le fond d'écran";
+"SET_WALLPAPER_TITLE" = "Définir un fond d’écran";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "À propos de Signal";
@@ -4451,7 +4451,7 @@
 "SETTINGS_DATA" = "Utilisations des données";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Utiliser moins de données mobiles";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Utiliser moins de données";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Sur les réseaux peu performants, utiliser moins de données pourrait améliorer la qualité des appels";
@@ -4505,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son de message";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Fond d'écran";
+"SETTINGS_ITEM_WALLPAPER" = "Fond d’écran de conversation";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Conditions générales et politique de confidentialité";
@@ -5183,19 +5183,19 @@
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nom du contact";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Rendre la photo floue";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pincez pour zoomer, glissez pour ajuster.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pincer pour zoomer, glisser pour ajuster.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Faites défiler pour avoir un aperçu d'autres fonds d'écran.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Faire glisser pour prévisualiser d’autres fonds d’écran.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Définir le fond d'écran pour toutes les conversations.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Définir le fond d’écran pour toutes les conversations.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Définir le fond d'écran pour %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Définir le fond d’écran pour %@.";
 
 /* The text for the set button on wallpaper preview view. */
 "WALLPAPER_PREVIEW_SET_BUTTON" = "Définir";
@@ -5204,37 +5204,37 @@
 "WALLPAPER_PREVIEW_TITLE" = "Aperçu";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Réinitialiser le fond d'écran";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Effacer le fond d’écran";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Réinitialiser le fond d'écran pour cette conversation ?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Effacer le fond d’écran pour cette conversation ?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Réinitialiser le fond d'écran ? Cela n'effacera pas les fonds d'écran personnalisés que vous avez définis pour vos chats.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Effacer le fond d’écran ? Les fonds d’écran personnalisés que vous avez définis pour vos conversations ne seront pas effacés.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Le thème sombre assombrit également le fond d'écran";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Le thème sombre atténue le fond d’écran";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Le fond d'écran n'a pas pu être réinitialisé, veuillez essayer ultérieurement ou contactez l'assistance si l'erreur persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Le fond d’écran n’a pas pu être effacé. Veuillez essayer plus tard ou contacter l’assistance si l’erreur persiste.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Tous les fonds d'écran n'ont pas pu être réinitialisés, veuillez essayer ultérieurement ou contactez l'assistance si l'erreur persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Tous les fonds d’écran n’ont pas pu être réinitialisés. Veuillez essayer plus tard ou contacter l’assistance si l’erreur persiste.";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "Aperçu";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Réinitialiser tous les fonds d'écran";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Réinitialiser tous les fonds d’écran";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Réinitialiser tous les fonds d'écran ainsi que les fonds d'écrans personnalisés utilisés dans vos conversations ?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Réinitialiser tous les fonds d’écran, dont les fonds d’écran personnalisés que vous avez définis pour vos conversations ?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Définir le fond d'écran";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Définir un fond d’écran";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Fond d'écran";
+"WALLPAPER_SETTINGS_TITLE" = "Fond d’écran de conversation";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Vous avez supprimé ce message.";

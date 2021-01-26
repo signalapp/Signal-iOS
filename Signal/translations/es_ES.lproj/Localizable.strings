@@ -1553,7 +1553,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Se alcanzó el número máximo de participantes para esta llamada. Inténtalo más tarde.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "La llamada está llena";
+"GROUP_CALL_IS_FULL" = "La llamada está completa";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Unirse";
@@ -3686,10 +3686,10 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Trabajando en cosas nuevas";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "Detalles";
+"PROFILE_BIO_VIEW_TITLE" = "Biografía";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Detalles (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Biografía (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ha cambiado su nombre de %@ a %@.";
@@ -3704,7 +3704,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Seleccionar foto de perfil";
 
 /* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "Detalles";
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "Biografía";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Eliminar foto";

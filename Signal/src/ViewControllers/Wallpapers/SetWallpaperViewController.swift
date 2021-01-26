@@ -7,8 +7,12 @@ import Foundation
 class SetWallpaperViewController: OWSTableViewController {
     lazy var collectionView = WallpaperCollectionView { [weak self] wallpaper in
         guard let self = self else { return }
-        let vc = PreviewWallpaperViewController(mode: .preset(selectedWallpaper: wallpaper), thread: self.thread)
-        self.navigationController?.pushViewController(vc, animated: true)
+        let vc = PreviewWallpaperViewController(
+            mode: .preset(selectedWallpaper: wallpaper),
+            thread: self.thread,
+            delegate: self
+        )
+        self.presentFullScreen(UINavigationController(rootViewController: vc), animated: true)
     }
 
     let thread: TSThread?
@@ -109,15 +113,30 @@ extension SetWallpaperViewController: UIImagePickerControllerDelegate, UINavigat
             return owsFailDebug("Missing image")
         }
 
-        let vc = PreviewWallpaperViewController(mode: .photo(selectedPhoto: rawImage), thread: thread)
+        let vc = PreviewWallpaperViewController(
+            mode: .photo(selectedPhoto: rawImage),
+            thread: thread,
+            delegate: self
+        )
 
         picker.dismiss(animated: true) {
-            self.navigationController?.pushViewController(vc, animated: true)
+            self.presentFullScreen(UINavigationController(rootViewController: vc), animated: true)
         }
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension SetWallpaperViewController: PreviewWallpaperDelegate {
+    func previewWallpaperDidCancel(_ vc: PreviewWallpaperViewController) {
+        presentedViewController?.dismiss(animated: true)
+    }
+
+    func previewWallpaperDidComplete(_ vc: PreviewWallpaperViewController) {
+        presentedViewController?.dismiss(animated: true)
+        navigationController?.popViewController(animated: true)
     }
 }
 

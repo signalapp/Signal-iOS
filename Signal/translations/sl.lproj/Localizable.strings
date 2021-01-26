@@ -3665,25 +3665,25 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Napišite nekaj besed o sebi ...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Bodi prijazen/a";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Prijaznost, pliz!";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Ljubitelj/ica kave";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Za kofetek!";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Šifrirano";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Nimam besed.";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Za debato!";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "No, povej!";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "No povej!";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Možgani na off!";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Možgani na off";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Delam na nečem";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Delam na nečem ...";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "Več";

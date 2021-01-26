@@ -3686,7 +3686,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "新しいことをしています";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "この連絡先について";
+"PROFILE_BIO_VIEW_TITLE" = "自己紹介";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "自己紹介 (%@)";
@@ -3704,7 +3704,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "プロフィール写真を設定";
 
 /* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "この連絡先について";
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "自己紹介";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "写真を消去";
@@ -5186,16 +5186,16 @@
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "写真をぼかす";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ピンチして拡大、ドラッグして調整します。";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ピンチで拡大、ドラッグで調整します。";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "スワイプしてさらに壁紙をプレビュー";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "スワイプすると別の壁紙をプレビューできます。";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "すべてのチャットに壁紙を設定しましょう。";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "すべてのチャットの壁紙を設定します。";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ の壁紙を設定しましょう。";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ の壁紙を設定します。";
 
 /* The text for the set button on wallpaper preview view. */
 "WALLPAPER_PREVIEW_SET_BUTTON" = "設定する";

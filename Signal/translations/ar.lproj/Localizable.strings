@@ -5,13 +5,13 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "قبول رقم الأمان الجديد";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "مُرفق";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "المرفق";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "الصوت";
 
 /* Accessibility label for contact. */
-"ACCESSIBILITY_LABEL_CONTACT" = "جهة اتصال";
+"ACCESSIBILITY_LABEL_CONTACT" = "جهة الاتصال";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "الوسائط";
@@ -35,7 +35,7 @@
 "ACTION_SEND_MESSAGE" = "إرسال رسالة";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "مشاركة جهة اتصال";
+"ACTION_SHARE_CONTACT" = "مشاركة جهة الاتصال";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "يُرجى اللمس للتنزيل";
@@ -53,13 +53,13 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "إضافة عضو إلى \"%2$@\"؟";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "أضف عدد %1$@ عضو إلى \"%2$@\"؟";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "إضافة %1$@ عضو إلى \"%2$@\"؟";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "إضافة عضو جديد";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "إضافة أعضاء جُدد";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "إضافة أعضاء جدد";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "إضافة أعضاء";
@@ -83,13 +83,13 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "أضف إلى %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ هو بالفعل عُضو في %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ بالفعل عضو في %@";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "مؤخراً";
+"ADD_TO_GROUP_RECENTS_TITLE" = "مؤخرا";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "تم إضافة %@ إلى %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "تمت إضافة %@ إلى %@";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "إضافة إلى مجموعة أُخرى";
@@ -113,10 +113,10 @@
 "ALERT_SAVE" = "حفظ";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "أجب";
+"ANSWER_CALL_BUTTON_TITLE" = "الإجابة";
 
 /* notification body */
-"APN_Message" = "رسالة جديدة!";
+"APN_Message" = "رسالة جديدة !";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذّر بدأ Signal. حتى نتمكّن من تصحيح المُشكلة الرجاء إرسال سجلات الفحص إلى بريد الدعم: support@signal.org";
@@ -245,13 +245,13 @@
 "ATTACHMENT_KEYBOARD_FILE" = "ملف";
 
 /* A button to select a GIF from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_GIF" = "GIF";
+"ATTACHMENT_KEYBOARD_GIF" = "صورة متحركة";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "موقع جغرافي";
+"ATTACHMENT_KEYBOARD_LOCATION" = "الموقع الجغرافي";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "إمنح صلاحيات الوصول للصور من الإعدادات لتتمكن من إرسالها هُنا.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "يجب عليك منح صلاحيات الوصول للصور من الإعدادات للتمكن من إرسالها هنا.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "بمُجرّد أن تلتقط صور، ستتمكن من إرسال الأخيرة من هُنا.";
@@ -275,13 +275,13 @@
 "ATTACHMENT_TYPE_FILE" = "ملف";
 
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_GIF" = "GIF";
+"ATTACHMENT_TYPE_GIF" = "صورة متحركة";
 
 /* Short text label for an image attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_IMAGE" = "صورة";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "صورة فوتوغرافية";
+"ATTACHMENT_TYPE_PHOTO" = "صورة ضوئية";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VIDEO" = "فيديو";
@@ -296,7 +296,7 @@
 "AUDIO_CALL_LABEL" = "مكالمة صوتية";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "السمّاعة";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مكبر الصوت";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "الرجوع";
@@ -305,22 +305,22 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ليس بالإمكان تصدير نُسخة احتياطية للبيانات.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "فشل في استقبال المعلومات من الخادم.";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "جواب الخادم باطل.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "جاري مسح النُسخة الاحتياطية";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "يجري مسح النسخة الاحتياطية";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "جاري تهيئة النُسخة الاحتياطية";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "تجري تهيئة النسخة الاحتياطية";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "جاري تصدير البيانات";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "يجري تصدير البيانات";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "جاري تصدير النُسخة الاحتياطية";
+"BACKUP_EXPORT_PHASE_EXPORT" = "يجري تصدير النسخة الاحتياطية";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "جاري رفع النُسخة الاحتياطية";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "يجري رفع النسخة الاحتياطية";
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "يتعذّر إستيراد النُسخة الاحتياطية.";
@@ -359,7 +359,7 @@
 "BACKUP_UNEXPECTED_ERROR" = "خطأ نَسخ احتياطي غير متوقع";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "إغلاق الافتة";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "إغلاق اللافتة";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "لن تستقبل رسائل أو تحديثات من هذه المجموعة بعد الآن.";
@@ -1466,13 +1466,13 @@
 "GIF_PICKER_ERROR_GENERIC" = "حدث خلل مجهول.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "تعذّر اختيار GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "تعذّر اختيار الصورة المتحركة";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "الرجاء إدخال البحث الخاص بك.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "بحث GIF";
+"GIF_PICKER_VIEW_TITLE" = "البحث عن الصور المتحركة";
 
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "خطأ. انقر لإعادة المحاولة.";
@@ -2408,13 +2408,13 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "أبدأ أوَّلَ مُحادثةٍ لكَ مِن هُنا.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "أضافك %@ إلى المجموعة";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ قد أضافك للمجموعة";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "طلب مراسلة";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "طلب تراسُل";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "لم يعثر على أي شيء لـ '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "لا توجد نتيجة لـ'%@'";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "الأرشيف";
@@ -2423,37 +2423,37 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "ارسم في أي مكان لتضبيبه";
+"IMAGE_EDITOR_BLUR_HINT" = "ارسم في أي مكان للتضبيب";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "ضبّب الوجوه";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "ارسم لتضبيب مزيدٍ من الأوجه والأماكن";
+"IMAGE_EDITOR_BLUR_TOAST" = "ارسم لتضبيب المزيد من الأوجه أو المساحات";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "لا يمكنك مشاركة أكثر من %@ عنصر.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "لا يُمكنك مُشاركة أكثر من %@ عنصر.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "تغيير الصور";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "منح حق الوصول الكامل في الإعدادات أو تغيير الصور التي يحق لـ Signal الوصول إليها.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "امنح حق الوصول الكامل في الإعدادات أو غير الصور التي يحقّ لـSignal الوصول إليها.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "ﻻ تظهر صورك ؟";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "ألا ترى صورك؟";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "فشل تحديد المرفق.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "فشل في تحديد المُرفق.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "جار الربط…";
+"IN_CALL_CONNECTING" = "جار الاتصال…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "أُجيب عليه من جهاز آخر.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "تمت الإجابة عليه من جهاز آخر.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "فاتت المكالمة لكون مكالمة أخرى كانت جارية من جهاز آخر في الوقت ذاته.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "تم التفويت لأن مُكالمة أُخرى جارية في جهاز آخر في الوقت ذاته.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "رُفضت من جهاز آخر.";
@@ -2465,58 +2465,58 @@
 "IN_CALL_RINGING" = "رنين…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "مكالمة صوتية...";
+"IN_CALL_RINGING_AUDIO" = "مُكالمة صوتية...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "مكالمة فيديو...";
+"IN_CALL_RINGING_VIDEO" = "مُكالمة فيديو...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "تمت الإجابة. جار التأمين...";
+"IN_CALL_SECURING" = "تمّت الإجابة. جار التأمين...";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إن هذه المحادثات مؤرشفة و سوف تظهر فقط في علبة البريد الوارد إذا استلمت رسائل جديدة.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "إن هذه المُحادثات مؤرشفة وسظهر في علبة الوارد إذا تم استلام رسائل جديدة فقط.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "لا تُوجَدُ أيُّ مُحَادَثاتٍ حَتَّى الآن.\nإبدأ بِمُراسَلةِ أحدِ الأصدِقاء.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "قام %@ بالاتصال بك";
+"INCOMING_CALL_FORMAT" = "%@ قد اتصل بك";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "يمكنك تلقي الرسائل المتزامنة عبر هاتفك أو جهاز iPad. ↵إن محادثاتك السابقة لا يُعاد توجيهها إلى الأجهزة الحديثة المرتبطة، وذلك لأجل أمانك.";
+"INFO_MESSAGE_SYNCED_THREAD" = "يُمكنك إرسال أو استقبال رسائل متزامنة من هاتفك أو من iPad.\nحفاظًا على أمانك ، لا يتم نقل محفوظات المُحادثة إلى الأجهزة المُرتبطة الجديدة.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "يستخدم %@ Signal !";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ مُتواجد على Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "لصاقات";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "المُلصقات";
 
 /* accessibility label for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "رسالة صوتية.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "رسالة صوتية";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يُمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "السماح بإستخدام جهات الاتصال";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "السماح بالوصول لجهات الاتصال";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة اﻷصدقاء لـSignal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة الأصدقاء إلى Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "بحث";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "البحث";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "أدع أصدقائك";
+"INVITE_FRIENDS_PICKER_TITLE" = "أدعُ أصدقائك";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "إن دعوتك عدة أشخاص في آن واحد سوف يبدأ محادثة جماعية. و عليه، فإن كل المستلمين سوف يتمكنون من رؤية بعضهم البعض.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "إن دعوتك لعدة أشخاص في آن واحد ستؤدي إلى بدأ مُحادثة جماعية. و عليه، فإن جميع المُستلمين سوف يتمكنون من رؤية بعضهم البعض.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "انضم";
@@ -2528,22 +2528,22 @@
 "KEEP_MESSAGES_FOREVER" = "الرسائل لا تختفي.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "اذهب إلى كل الوسائط";
+"KEY_COMMAND_ALL_MEDIA" = "اذهب إلى جميع الوسائط";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "أرشفة المحادثة";
+"KEY_COMMAND_ARCHIVE" = "أرشفة المُحادثة";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "أظهر المرفقات";
+"KEY_COMMAND_ATTACHMENTS" = "أظهر المُرفقات";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "ذهاب إلى معلومات المحادثة";
+"KEY_COMMAND_CONVERSATION_INFO" = "الذهاب إلى معلومات المُحادثة";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "التركيز على شريط الإدخال";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "اذهب إلى البحث عن صور متحركة";
+"KEY_COMMAND_GIF_SEARCH" = "اذهب إلى بحث GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "مجموعة جديدة";
@@ -5156,10 +5156,10 @@
 "VIDEO_CALL_LABEL" = "اتصال فيديو";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "لقد قمت مسبقا بمعاينة هذه الرسالة.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "لقد سبق لك رؤية هذه الرسالة.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "انقر هنا لجعل هذه الرسالة تختفي بعد أن تشاهد.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "عليك باللمس هنا لجعل هذه الرسالة تختفي بعد أن تشاهد.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "تُزال ملفات الوسائط التي تظهر مرة واحدة تلقائيا فور إرسالها.";

@@ -4295,7 +4295,7 @@
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Выбрать из Фото";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Встроенные";
+"SET_WALLPAPER_PRESETS" = "Предустановленные";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Установить обои";

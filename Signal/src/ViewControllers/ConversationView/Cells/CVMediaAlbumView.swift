@@ -28,6 +28,7 @@ public class CVMediaAlbumView: UIStackView {
                           items: [CVMediaAlbumItem],
                           isOutgoing: Bool,
                           isBorderless: Bool,
+                          isFromLinkedDevice: Bool,
                           cellMeasurement: CVCellMeasurement,
                           conversationStyle: ConversationStyle) {
 
@@ -43,6 +44,7 @@ public class CVMediaAlbumView: UIStackView {
                         isOutgoing: isOutgoing,
                         maxMessageWidth: maxMessageWidth,
                         isBorderless: isBorderless,
+                        isFromLinkedDevice: isFromLinkedDevice,
                         conversationStyle: conversationStyle)
         }
         self.isBorderless = isBorderless

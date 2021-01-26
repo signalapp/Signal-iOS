@@ -1007,7 +1007,7 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "ממטב מסד נתונים";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@שע";
+"DATE_HOURS_AGO_FORMAT" = "%@ שעות";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ד";

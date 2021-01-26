@@ -4505,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Dźwięk wiadomości";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Tapeta rozmowy";
+"SETTINGS_ITEM_WALLPAPER" = "Tapeta czatu";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Regulamin & Polityka Prywatności";
@@ -5234,7 +5234,7 @@
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Ustaw tapetę";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Tapeta rozmowy";
+"WALLPAPER_SETTINGS_TITLE" = "Tapeta";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Skasowałeś(aś) tę wiadomość.";

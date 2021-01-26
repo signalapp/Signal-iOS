@@ -358,4 +358,9 @@ extension ProfileBioViewController: UITextFieldDelegate {
     func textFieldDidChange(_ textField: UITextField) {
         updateNavigation()
     }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        didTapDone()
+        return false
+    }
 }

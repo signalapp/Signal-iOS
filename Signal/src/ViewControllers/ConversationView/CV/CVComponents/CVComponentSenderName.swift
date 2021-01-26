@@ -75,7 +75,10 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
         var size = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
 
-        if isBorderlessWithWallpaper { size.height += contentViewBorderlessMargins.totalHeight }
+        if isBorderlessWithWallpaper {
+            size.width += contentViewBorderlessMargins.totalWidth
+            size.height += contentViewBorderlessMargins.totalHeight
+        }
 
         return size
     }

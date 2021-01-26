@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalAccount.h"
@@ -168,6 +168,11 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 // --- CODE GENERATION MARKER
 
+- (BOOL)shouldUseNicknames
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kSignalPreferNicknamesPreference];
+}
+
 - (nullable NSString *)contactPreferredDisplayName {
     NSPersonNameComponents *components = [NSPersonNameComponents new];
     components.givenName = self.contact.firstName;
@@ -176,7 +181,7 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
     
     NSString *result = nil;
     // If we have a nickname check what the user prefers.
-    if (components.nickname.length && [[NSUserDefaults standardUserDefaults] boolForKey: kSignalPreferNicknamesPreference]) {
+    if (components.nickname.length && self.shouldUseNicknames) {
         result = components.nickname;
     } else {
         result = [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents: components
@@ -184,6 +189,22 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
                                                                                   options: 0];
     }
     return result.filterStringForDisplay;
+}
+
+- (nullable NSString *)contactNicknameIfAvailable
+{
+    if (!self.shouldUseNicknames) {
+        return nil;
+    }
+    NSString *nickname = self.contact.nickname;
+    if (nickname.length > 0)
+    {
+        return nickname;
+    }
+    else
+    {
+        return nil;
+    }
 }
 
 - (nullable NSString *)contactFullName

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -367,9 +367,10 @@ public class SystemContactsFetcher: NSObject {
                 return
             }
 
-            Logger.info("fetched \(contacts.count) contacts.")
-
-            let contactsHash = contacts.hashValue
+            var contactsHash = 0
+            for contact in contacts {
+                contactsHash = contactsHash ^ contact.hash
+            }
 
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false

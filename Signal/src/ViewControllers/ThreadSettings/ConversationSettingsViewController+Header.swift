@@ -88,13 +88,17 @@ extension ConversationSettingsViewController {
             return label
         }
 
-        mutating func addSubtitleLabel(text: String, font: UIFont? = nil) {
+        @discardableResult
+        mutating func addSubtitleLabel(text: String, font: UIFont? = nil) -> UILabel {
             addSubtitleLabel(attributedText: NSAttributedString(string: text), font: font)
         }
 
-        mutating func addSubtitleLabel(attributedText: NSAttributedString, font: UIFont? = nil) {
+        @discardableResult
+        mutating func addSubtitleLabel(attributedText: NSAttributedString, font: UIFont? = nil) -> UILabel {
             subviews.append(UIView.spacer(withHeight: 8))
-            subviews.append(buildHeaderSubtitleLabel(attributedText: attributedText, font: font))
+            let label = buildHeaderSubtitleLabel(attributedText: attributedText, font: font)
+            subviews.append(label)
+            return label
         }
 
         mutating func addLegacyGroupView(groupThread: TSGroupThread,
@@ -221,7 +225,10 @@ extension ConversationSettingsViewController {
         if !contactThread.contactAddress.isLocalAddress,
             let bioText = profileManager.profileBioForDisplay(for: contactThread.contactAddress,
                                                              transaction: transaction) {
-            builder.addSubtitleLabel(text: bioText)
+            let label = builder.addSubtitleLabel(text: bioText)
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
+            label.textAlignment = .center
         }
 
         let threadName = contactsManager.displayName(for: contactThread, transaction: transaction)

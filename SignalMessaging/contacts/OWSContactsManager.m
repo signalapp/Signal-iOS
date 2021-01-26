@@ -1132,6 +1132,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                              transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
+
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
+    if (signalAccount != nil) {
+        NSString *_Nullable nickname = signalAccount.contactNicknameIfAvailable;
+        if (nickname.length > 0) {
+            return nickname;
+        }
+    }
+
     NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
     if (!nameComponents) {
         return [self displayNameForAddress:address transaction:transaction];

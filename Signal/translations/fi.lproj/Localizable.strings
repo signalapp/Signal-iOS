@@ -614,7 +614,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Hae yhteystiedoistasi Signalin käyttäjiä sallimalla yhteystietojen käyttö iOS:n asetuksissa.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tämä palauttaa sovelluksen poistamalla viestisi ja purkamalla rekisteröintisi palvelimelta. Sovellus sulkeutuu, kun tämä prosessi on valmis.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Signal-tili poistetaan ja sovellusasetukset nollataan. Sovellus sulkeutuu prosessin päätteeksi.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Haluatko varmasti poistaa tilisi?";
@@ -1001,7 +1001,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Liikuta ja skaalaa";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tämä saattaa viedä muutaman minuutin.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tämä saattaa kestää muutaman minuutin.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Päivitetään tietokantaa";
@@ -1208,7 +1208,7 @@
 "DISAPPEARING_MESSAGES_LABEL" = "Katoavien viestien asetukset";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Selvä";
+"DISMISS_BUTTON_TEXT" = "Peruuta";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Sensuurin kiertämisen sijainti";
@@ -1460,7 +1460,7 @@
 "GET_STARTED_CARD_NEW_GROUP" = "Uusi ryhmä";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF:n lataaminen epäonnistui. Varmista, että olet verkossa.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF:n lataaminen epäonnistui, tarkista verkkoyhteys.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Tuntematon virhe.";
@@ -1652,7 +1652,7 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Avaa uuden tyylin ryhmä aloittaaksesi ilmaisen ja salatun ryhmäpuhelun";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Esittelemme ryhmäpuhelut";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Esittelyssä ryhmäpuhelut";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Sinä loit ryhmän.";
@@ -2423,13 +2423,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Piirrä mihin vain sumentaaksesi";
+"IMAGE_EDITOR_BLUR_HINT" = "Sumenna piirtämällä kohdan päällä";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Sumenna kasvot";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Piirrä sumentaaksesi lisää kasvoja tai alueita";
+"IMAGE_EDITOR_BLUR_TOAST" = "Sumenna kasvoja tai alueita piirtämällä";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Et voi jakaa useampaa kuin %@ kappaletta.";
@@ -2654,7 +2654,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Viesti";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ yhteistä ryhmä";
+"MANY_GROUPS_IN_COMMON" = "%@ yhteistä ryhmää";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Kaikki media";
@@ -2843,13 +2843,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Estä";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Sallitaanko henkilön %@ lähettää sinulle viestejä ja nähdä nimesi ja profiilikuvasi? Et saa viestejä ennen kuin poistat niiden eston.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Sallitaanko henkilön %@ lähettää sinulle viestejä ja nähdä nimesi ja profiilikuvasi? Et saa viestejä ennen eston poistamista.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Poistetaanko tämän ryhmän esto ja näytetäänkö nimesi ja profiilikuvasi sen jäsenille? Et saa viestejä ennen kuin poistat niiden eston.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Poistetaanko tämän ryhmän esto ja näytetäänkö nimesi ja profiilikuvasi sen jäsenille? Et saa viestejä ennen eston poistamista.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Haluatko poistaa tämän ryhmän eston? He eivät tiedä, että olet nähnyt heidän viestinsä, ennen kuin poistat eston.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Haluatko poistaa tämän ryhmän eston? He eivät tiedä, että olet nähnyt heidän viestinsä ennen eston poistamista.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Jatka";
@@ -2954,7 +2954,7 @@
 "MISSING_LOCATION_PERMISSION_TITLE" = "Tämän toiminnon käyttämiseksi Signal tarvitsee lupaa saada laitteesi sijainti.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Voit antaa tämän käyttöoikeuden laitteesi Asetuksista.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Voit antaa tämän käyttöoikeuden iOS-asetuksissa.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Tämän toiminnon käyttämiseksi Signal tarvitsee lupaa päästä laitteesi mediakirjastoon.";
@@ -3098,7 +3098,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Otetaanko Ilmoitukset käyttöön?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Toimintoihin kuuluu \"Merkitse luetuksi\", \"Vastaa\" ja \"Soita takaisin\".";
+"NOTIFICATIONS_FOOTER_WARNING" = "Toimintoihin kuuluu Merkitse luetuksi, Vastaa ja Soita takaisin.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ei nimeä eikä sisältöä";
@@ -3470,7 +3470,7 @@
 "PIN_ACTION" = "Kiinnitä";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Tunnusluvun on oltava vähintään 4 merkkiä";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Tunnusluvussa on oltava vähintään 4 merkkiä";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Vaihda tunnusluku";
@@ -3512,7 +3512,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Tunnusluvut eivät täsmää. Yritä uudelleen.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Tunnusluvun on oltava vähintään 4 numeroa";
+"PIN_CREATION_NUMERIC_HINT" = "Tunnusluvussa on oltava vähintään 4 numeroa";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Syötä tunnusluku uudelleen";
@@ -3566,7 +3566,7 @@
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Muistutamme sinua jälleen muutaman päivän päästä.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Vahvista Signal-tunnuslukusi";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Varmenna Signal-tunnuslukusi";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Muistutamme sinua jälleen huomenna.";
@@ -3578,7 +3578,7 @@
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Muistutamme sinua uudelleen viikon kuluttua.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Virheellinen tunnusluku, yritä uudelleen.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Väärä tunnusluku, yritä uudelleen.";
 
 /* The title for the 'pin reminder' dialog. */
 "PIN_REMINDER_TITLE" = "Syötä Signal-tunnuslukusi";
@@ -3662,7 +3662,7 @@
 "PROCEED_BUTTON" = "Jatka";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Kuvaile itseäsi muutamalla sanalla...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Kerro jotain itsestäsi...";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Ole ystävällinen";
@@ -3677,7 +3677,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Tule juttelemaan vapaasti";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Puhu vapaasti";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Tauolla";
@@ -3686,10 +3686,10 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Luomassa uutta";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "Tiedot";
+"PROFILE_BIO_VIEW_TITLE" = "Tietoja";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Tiedot (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Tietoja (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ muutti profiilinimensä %@ nimeksi %@.";
@@ -3704,7 +3704,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Aseta profiilikuva";
 
 /* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "Tiedot";
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "Tietoja";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Poista profiilikuva";
@@ -3737,7 +3737,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Internet-yhteys vaaditaan profiilin päivittämiseen.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiilisi on salattu päästä päähän. Se ja siihen tekemäsi muutokset näkyvät yhteystiedoillesi, kun aloitat tai hyväksyt uusia keskusteluja ja kun liityt uusiin ryhmiin.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiilisi on salattu päästä päähän. Se näkyy yhteystiedoillesi, kun aloitat tai hyväksyt uusia keskusteluja ja kun liityt uusiin ryhmiin.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Tallenna";
@@ -3905,7 +3905,7 @@
 "REGISTRATION_ERROR" = "Virhe rekisteröitymisessä";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Emme pysty aktivoimaan laitettasi ennen kuin olet vahvistanut lähettämämme koodin.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Laitteen aktivointi edellyttää lähettämämme koodin syöttämistä.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Tätä puhelinnumeron esitystapaa ei tueta, ota yhteys tukeen.";
@@ -4142,7 +4142,7 @@
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "Vuonna_1984.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Luitko tämän vielä?";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Luitko jo tämän?";
 
 /* This is a file name 'Instructions' for the cat chat group. */
 "SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Käyttöohjeet.PDF";
@@ -4214,7 +4214,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Valitse nimi tälle laitteelle";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Tämä nimi tulee olemaan \"Yhdistetyt laitteet\" -näkymässä.";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Tämä nimi näytetään Yhdistetyt laitteet -näkymässä.";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Valitse nimi";
@@ -4223,7 +4223,7 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Viimeistele yhdistys";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Käynnistä Signal puhelimellasi yhdistääksesi tämä iPad tiliisi";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Aloita tämän iPadin yhdistäminen avaamalla Signal puhelimessasi";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Minulla ei ole Signalia puhelimessa…";
@@ -4235,7 +4235,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Asenna Signal puhelimeesi";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Napauta profiilikuvaasi avataksesi Signalin asetukset puhelimellasi. Sitten \"Yhdistetyt laitteet\" ja \"Yhdistä uusi laite\" skannataksesi tämä koodi puhelimellasi:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Avaa Signal-asetukset napauttamalla profiilikuvaasi. Napauta Yhdistetyt laitteet ja Yhdistä uusi laite ja skannaa sitten tämä koodi puhelimellasi:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Saa apua iPadin yhdistämiseen täältä";
@@ -4280,25 +4280,25 @@
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Palaa mediakirjastoon";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Kutsu ystävä suojaamattomalla tekstiviestillä?";
+"SEND_SMS_CONFIRM_TITLE" = "Kutsutaanko kaveri suojaamattomalla tekstiviestillä?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Haluatko kutsua seuraavan numeron käyttämään Signalia:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signalin sisältö salataan päästä päähän, mutta ajoittain keskustelu voidaan joutua päivittämään. Se ei vaikuta tietoturvaan, mutta tämän yhteyshenkilön viimeisin viesti ei välttämättä näy, ja voit pyytää häntä lähettämään sen uudelleen.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Keskustelutuokio on päivitetty";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Valitse kuvista";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "Esiasetukset";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Aseta taustakuva";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "Tietoja ohjelmasta";
@@ -4346,7 +4346,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Ota tunnusluku käyttöön";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signalin tunnusluku";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal-tunnusluku";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Lähetä virheenkorjausloki";
@@ -4358,10 +4358,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Virhelokit";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Käytä yhteystietojen kuvia osoitekirjasta";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä yhteystietoihin tallennetut henkilökuvat";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Näytä yhteystietojen kuvat osoitekirjasta";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Järjestelmän yhteystietokuvat";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Teema";
@@ -4451,7 +4451,7 @@
 "SETTINGS_DATA" = "Datankäyttö";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Vähennä puheluiden datankäyttöä";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Pienempi datankäyttö voi parantaa puheluja heikolla verkkoyhteydellä";
@@ -4505,7 +4505,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Viestin ääni";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "Keskustelunäkymän taustakuva";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Käyttöehdot ja yksityisyydensuoja";
@@ -4529,7 +4529,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Ääni";
 
 /* Label for the 'document' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Dokumentit";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Tiedostot";
 
 /* Label for the 'photo' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Kuvat";
@@ -4592,7 +4592,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Tunnuslukumuistutukset";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Tunnusluku pitää Signaliin tallennetut tiedot salattuina, jotta vain sinä pääset niihin käsiksi. Profiilisi, asetuksesi ja yhteystietosi palautuvat kun asennat Signalin uudelleen.";
+"SETTINGS_PINS_FOOTER" = "Tunnusluvulla salataan Signaliin tallennetut tiedot, jotta vain sinä pääset niihin käsiksi. Profiili, asetukset ja yhteystiedot palautetaan, jos Signal asennetaan uudelleen.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Vaihda tunnusluku";
@@ -4895,7 +4895,7 @@
 "SWITCH_ON" = "Käytössä";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Vahvista";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Varmenna";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Tämä viesti poistettiin.";
@@ -5072,7 +5072,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lisätietoa tunnusluvuista";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Tunnusluku salaa Signaliin tallennetut tiedot, jotta vain sinä pääset niihin käsiksi. Profiilisi, asetuksesi ja yhteystietosi palautuvat kun asennat Signalin uudelleen. Tunnuslukua ei tarvita sovelluksen avaamiseen.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Tunnusluvulla salataan Signaliin tallentamasi tiedot. Profiilisi, asetuksesi ja yhteystietosi palautetaan, kun asennat Signalin uudelleen. Tunnuslukua ei tarvita sovelluksen avaamiseen.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Esittelyssä tunnusluku";
@@ -5180,61 +5180,61 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Viimeistele yhdistäminen Signalin työpöytäversiossa.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Yhteystiedon nimi";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Sumenna kuva";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Zoomaa nipistämällä, säädä vetämällä.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Lähennä/loitonna nipistämällä, säädä vetämällä.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Esikatsele lisää taustakuvia pyyhkäisemällä";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Aseta taustakuva kaikille chat-keskusteluille.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Aseta taustakuva kaikkiin keskusteluihin.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Aseta taustakuva keskusteluun %@.";
 
 /* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
+"WALLPAPER_PREVIEW_SET_BUTTON" = "Aseta";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Esikatselu";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Poista taustakuva";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Haluatko poistaa tämän keskustelun taustakuvan?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Haluatko poistaa taustakuvan? Tämä ei poista chat-keskusteluillesi asettamiasi mukautettuja taustakuvia.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Haluatko poistaa taustakuvan? Yksittäisille keskusteluille asetettuja taustakuvia ei poisteta.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Tumma teema himmentää taustakuvan";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Taustakuvan poistaminen epäonnistui. Yritä myöhemmin uudelleen ja tarvittaessa ota yhteyttä tukeen.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Taustakuvien poistaminen epäonnistui. Yritä myöhemmin uudelleen ja tarvittaessa ota yhteyttä tukeen.";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "Esikatselu";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Poista kaikki taustakuvat";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Alusta kaikki taustakuvat mukaanlukien omat taustakuvat, jotka olet asettanut chat-keskusteluihisi?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Poistetaanko kaikki taustakuvat yhteystietokohtaiset mukaan lukien?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Aseta taustakuva";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "Keskustelunäkymän taustakuva";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Poistit tämän viestin.";

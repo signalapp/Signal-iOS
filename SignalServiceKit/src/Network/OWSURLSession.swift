@@ -221,6 +221,9 @@ public class OWSURLSession: NSObject {
         self.extraHeaders = extraHeaders
 
         super.init()
+
+        // Ensure this is set so that we don't try to create it in deinit().
+        _ = self.delegateBox
     }
 
     deinit {
@@ -840,9 +843,7 @@ public class OWSHttpHeaders: NSObject {
     public override init() {}
 
     @objc
-    public init(httpHeaders: [String: String]?) {
-
-    }
+    public init(httpHeaders: [String: String]?) {}
 
     @objc
     public func hasValueForHeader(_ header: String) -> Bool {
