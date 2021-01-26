@@ -143,25 +143,35 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        GRDBSchemaMigrator().runSchemaMigrations()
+        var didPerformIncrementalMigrations = GRDBSchemaMigrator().runSchemaMigrations()
 
-        // There seems to be a rare issue where at least one reader or writer
-        // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
-        // a schema migration and does not reflect 
-        grdbStorage.pool.releaseMemory()
-        weak var weakPool = grdbStorage.pool
-        weak var weakGrdbStorage = grdbStorage
-        owsAssertDebug(weakPool != nil)
-        owsAssertDebug(weakGrdbStorage != nil)
-        _grdbStorage = createGrdbStorage()
+        Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
 
-        grdbStorage.forceUpdateSnapshot()
+        didPerformIncrementalMigrations = true
 
-        DispatchQueue.main.async {
-            owsAssertDebug(weakPool == nil)
-            owsAssertDebug(weakGrdbStorage == nil)
+        if didPerformIncrementalMigrations {
+            let benchSteps = BenchSteps()
 
-            completion()
+            // There seems to be a rare issue where at least one reader or writer
+            // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
+            // a schema migration and does not reflect
+            grdbStorage.pool.releaseMemory()
+            weak var weakPool = grdbStorage.pool
+            weak var weakGrdbStorage = grdbStorage
+            owsAssertDebug(weakPool != nil)
+            owsAssertDebug(weakGrdbStorage != nil)
+            _grdbStorage = createGrdbStorage()
+
+            DispatchQueue.main.async {
+                owsAssertDebug(weakPool == nil)
+                owsAssertDebug(weakGrdbStorage == nil)
+
+                benchSteps.step("New GRDB adapter.")
+
+                completion()
+            }
+        } else {
+            DispatchQueue.main.async(execute: completion)
         }
     }
 
