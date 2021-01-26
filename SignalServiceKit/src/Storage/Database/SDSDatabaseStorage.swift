@@ -132,6 +132,33 @@ public class SDSDatabaseStorage: SDSTransactable {
     @objc
     public static let storageDidReload = Notification.Name("storageDidReload")
 
+    @objc
+    public func runGrdbSchemaMigrations() {
+        guard storageCoordinatorState == .GRDB,
+              canReadFromGrdb else {
+            owsFailDebug("Not GRDB.")
+            return
+        }
+
+        Logger.info("")
+
+        GRDBSchemaMigrator().runSchemaMigrations()
+
+        // There seems to be a rare issue where at least one reader or writer
+        // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
+        // a schema migration and does not reflect 
+        grdbStorage.pool.releaseMemory()
+        weak var weakPool = grdbStorage.pool
+        weak var weakGrdbStorage = grdbStorage
+        owsAssertDebug(weakPool != nil)
+        owsAssertDebug(weakGrdbStorage != nil)
+        _grdbStorage = createGrdbStorage()
+        owsAssertDebug(weakPool == nil)
+        owsAssertDebug(weakGrdbStorage == nil)
+
+        grdbStorage.forceUpdateSnapshot()
+    }
+
     public func reload() {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
@@ -150,7 +177,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
 
         SSKEnvironment.shared.warmCaches()
-        OWSIdentityManager.shared().recreateDatabaseQueue()
 
         if wasRegistered != TSAccountManager.shared().isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
