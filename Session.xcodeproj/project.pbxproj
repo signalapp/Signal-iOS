@@ -304,6 +304,8 @@
 		B8D64FC825BA78520029CFC0 /* SessionProtocolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A8622553B41A00C340D1 /* SessionProtocolKit.framework */; };
 		B8D64FC925BA78520029CFC0 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		B8D64FCB25BA78A90029CFC0 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
+		B8FF8DAE25C0D00F004D1F22 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
+		B8FF8DAF25C0D00F004D1F22 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
@@ -1990,6 +1992,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8FF8DAE25C0D00F004D1F22 /* SessionMessagingKit.framework in Frameworks */,
+				B8FF8DAF25C0D00F004D1F22 /* SessionUtilitiesKit.framework in Frameworks */,
 				C32A027F25A80432000ED5D4 /* SessionProtocolKit.framework in Frameworks */,
 				C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */,
 				C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */,
@@ -5376,7 +5380,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 168;
+				CURRENT_PROJECT_VERSION = 169;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5445,7 +5449,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 168;
+				CURRENT_PROJECT_VERSION = 169;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5506,7 +5510,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 168;
+				CURRENT_PROJECT_VERSION = 169;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5576,7 +5580,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 168;
+				CURRENT_PROJECT_VERSION = 169;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6591,7 +6595,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 168;
+				CURRENT_PROJECT_VERSION = 169;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6659,7 +6663,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 168;
+				CURRENT_PROJECT_VERSION = 169;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
