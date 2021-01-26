@@ -209,7 +209,18 @@ class MiniPreviewView: UIView {
 
         stackViewContainer.layer.cornerRadius = 8
         stackViewContainer.clipsToBounds = true
-        stackViewContainer.autoSetDimensions(to: CGSize(width: 156, height: 288))
+
+        let windowAspectRatio = CGSize(
+            width: CurrentAppContext().frame.size.smallerAxis,
+            height: CurrentAppContext().frame.size.largerAxis
+        ).aspectRatio
+
+        stackViewContainer.autoSetDimensions(
+            to: CGSize(
+                width: 156,
+                height: 156 / windowAspectRatio
+            )
+        )
 
         addSubview(stackViewContainer)
         stackViewContainer.autoHCenterInSuperview()
@@ -250,7 +261,7 @@ class MiniPreviewView: UIView {
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10
         bubbleView.autoSetDimensions(to: CGSize(width: 100, height: 30))
-        bubbleView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray05
+        bubbleView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray95 : .ows_white
         containerView.addSubview(bubbleView)
         bubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
         bubbleView.autoPinHeightToSuperview()
