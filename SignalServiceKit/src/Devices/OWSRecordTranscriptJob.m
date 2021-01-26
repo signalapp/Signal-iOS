@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
             // This is probably a v2 group update.
             OWSLogWarn(@"Ignoring message transcript for empty v2 group message.");
         } else {
-            OWSFailDebug(@"Ignoring message transcript for empty message.");
+            OWSLogWarn(@"Ignoring message transcript for empty message.");
         }
         return;
     }
