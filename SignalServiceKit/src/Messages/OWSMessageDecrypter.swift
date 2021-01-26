@@ -57,8 +57,15 @@ extension OWSMessageDecrypter {
                 OWSLogger.info("Successfully sent null message after session reset " +
                                 "for undecryptable message from \(senderId)")
             }, failure: { error in
-                owsFailDebug("Failed to send null message after session reset " +
-                                "for undecryptable message from \(senderId) (\(error))")
+                let nsError = error as NSError
+                if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                    nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                    OWSLogger.info("Failed to send null message after session reset for " +
+                                    "for undecryptable message from \(senderId) (\(error))")
+                } else {
+                    owsFailDebug("Failed to send null message after session reset " +
+                                    "for undecryptable message from \(senderId) (\(error))")
+                }
             })
         }
     }
