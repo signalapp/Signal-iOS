@@ -646,7 +646,9 @@ NS_ASSUME_NONNULL_BEGIN
             attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
         // Ensure that the snippet is at least two lines so that it is top-aligned.
-        attributedText = [attributedText stringByAppendingString:@"\n \n" attributes:@{}];
+        attributedText = [attributedText stringByAppendingString:@" \n \n" attributes:@{
+            NSFontAttributeName : self.snippetFont,
+        }];
         self.snippetLabel.attributedText = attributedText;
 
         self.typingIndicatorWrapper.hidden = YES;
