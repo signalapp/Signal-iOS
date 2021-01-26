@@ -108,7 +108,7 @@ public class SSKSessionStore: NSObject {
         owsAssertDebug(!accountId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        OWSLogger.info("deleting session for accountId: \(accountId) device: \(deviceId)")
+        Logger.info("deleting session for accountId: \(accountId) device: \(deviceId)")
 
         guard var dictionary = keyValueStore.getObject(forKey: accountId,
                                                        transaction: transaction) as! SessionsByDeviceDictionary? else {
@@ -130,7 +130,7 @@ public class SSKSessionStore: NSObject {
     private func deleteAllSessions(forAccountId accountId: String,
                                    transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!accountId.isEmpty)
-        OWSLogger.info("deleting all sessions for contact: \(accountId)")
+        Logger.info("deleting all sessions for contact: \(accountId)")
         keyValueStore.removeValue(forKey: accountId, transaction: transaction)
     }
 
@@ -145,7 +145,7 @@ public class SSKSessionStore: NSObject {
     public func archiveAllSessions(forAccountId accountId: String,
                                    transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!accountId.isEmpty)
-        OWSLogger.info("archiving all sessions for contact: \(accountId)")
+        Logger.info("archiving all sessions for contact: \(accountId)")
 
         guard let dictionary = keyValueStore.getObject(forKey: accountId,
                                                        transaction: transaction) as! SessionsByDeviceDictionary? else {
@@ -174,20 +174,20 @@ public class SSKSessionStore: NSObject {
 
     @objc
     public func resetSessionStore(_ transaction: SDSAnyWriteTransaction) {
-        OWSLogger.warn("resetting session store")
+        Logger.warn("resetting session store")
         keyValueStore.removeAll(transaction: transaction)
     }
 
     @objc
     public func printAllSessions(transaction: SDSAnyReadTransaction) {
-        OWSLogger.debug("All Sessions.")
+        Logger.debug("All Sessions.")
         keyValueStore.enumerateKeysAndObjects(transaction: transaction) { key, value, _ in
             guard let deviceSessions = value as? NSDictionary else {
                 owsFailDebug("Unexpected type: \(type(of: value)) in collection.")
                 return
             }
 
-            OWSLogger.debug("     Sessions for recipient: \(key)")
+            Logger.debug("     Sessions for recipient: \(key)")
             deviceSessions.enumerateKeysAndObjects { key, value, _ in
                 guard let data = self.serializedSession(fromDatabaseRepresentation: value) else {
                     // We've already logged an error here, just move on.
@@ -195,7 +195,7 @@ public class SSKSessionStore: NSObject {
                 }
                 do {
                     let sessionRecord = try SignalClient.SessionRecord(bytes: data)
-                    OWSLogger.debug("         Device: \(key) hasCurrentState: \(sessionRecord.hasCurrentState)")
+                    Logger.debug("         Device: \(key) hasCurrentState: \(sessionRecord.hasCurrentState)")
                 } catch {
                     owsFailDebug("invalid session record: \(error)")
                 }

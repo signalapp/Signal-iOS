@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -682,7 +682,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             try certificateValidator.throwswrapped_validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {
-            OWSLogger.error("Invalid certificate")
+            Logger.error("Invalid certificate")
             return false
         }
     }
