@@ -132,8 +132,9 @@ public class SDSDatabaseStorage: SDSTransactable {
     @objc
     public static let storageDidReload = Notification.Name("storageDidReload")
 
+    // completion is performed on the main queue.
     @objc
-    public func runGrdbSchemaMigrations() {
+    public func runGrdbSchemaMigrations(completion: @escaping () -> Void) {
         guard storageCoordinatorState == .GRDB,
               canReadFromGrdb else {
             owsFailDebug("Not GRDB.")
@@ -153,10 +154,15 @@ public class SDSDatabaseStorage: SDSTransactable {
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
         _grdbStorage = createGrdbStorage()
-        owsAssertDebug(weakPool == nil)
-        owsAssertDebug(weakGrdbStorage == nil)
 
         grdbStorage.forceUpdateSnapshot()
+
+        DispatchQueue.main.async {
+            owsAssertDebug(weakPool == nil)
+            owsAssertDebug(weakGrdbStorage == nil)
+
+            completion()
+        }
     }
 
     public func reload() {
@@ -257,28 +263,6 @@ public class SDSDatabaseStorage: SDSTransactable {
             return
         }
         uiDatabaseObserver.appendSnapshotDelegate(snapshotDelegate)
-    }
-
-    // MARK: -
-
-    @objc
-    public func newDatabaseQueue() -> SDSAnyDatabaseQueue {
-        var yapDatabaseQueue: YAPDBDatabaseQueue?
-        var grdbDatabaseQueue: GRDBDatabaseQueue?
-
-        switch storageCoordinatorState {
-        case .YDB:
-            yapDatabaseQueue = yapStorage.newDatabaseQueue()
-        case .GRDB:
-            grdbDatabaseQueue = grdbStorage.newDatabaseQueue()
-        case .ydbTests, .grdbTests, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
-            yapDatabaseQueue = yapStorage.newDatabaseQueue()
-            grdbDatabaseQueue = grdbStorage.newDatabaseQueue()
-        }
-
-        return SDSAnyDatabaseQueue(yapDatabaseQueue: yapDatabaseQueue,
-                                   grdbDatabaseQueue: grdbDatabaseQueue,
-                                   crossProcess: crossProcess)
     }
 
     // MARK: - UI Database Snapshot Completion
