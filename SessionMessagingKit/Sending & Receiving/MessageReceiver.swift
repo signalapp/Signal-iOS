@@ -109,7 +109,7 @@ public enum MessageReceiver {
         let message: Message? = {
             if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
             if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
-            if let closedGroupUpdate = ClosedGroupUpdateV2.fromProto(proto) { return closedGroupUpdate }
+            if let closedGroupControlMessage = ClosedGroupControlMessage.fromProto(proto) { return closedGroupControlMessage }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
             return nil

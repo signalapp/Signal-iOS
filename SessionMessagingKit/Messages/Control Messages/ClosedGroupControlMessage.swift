@@ -1,7 +1,7 @@
 import SessionProtocolKit
 import SessionUtilitiesKit
 
-public final class ClosedGroupUpdateV2 : ControlMessage {
+public final class ClosedGroupControlMessage : ControlMessage {
     public var kind: Kind?
 
     public override var ttl: UInt64 {
@@ -14,14 +14,23 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
         case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data])
+        /// - Note: Deprecated in favor of more explicit group updates.
         case update(name: String, members: [Data])
         case encryptionKeyPair([KeyPairWrapper]) // The new encryption key pair encrypted for each member individually
+        case nameChange(name: String)
+        case membersAdded(members: [Data])
+        case membersRemoved(members: [Data])
+        case memberLeft
 
         public var description: String {
             switch self {
             case .new: return "new"
             case .update: return "update"
             case .encryptionKeyPair: return "encryptionKeyPair"
+            case .nameChange: return "nameChange"
+            case .membersAdded: return "membersAdded"
+            case .membersRemoved: return "membersRemoved"
+            case .memberLeft: return "memberLeft"
             }
         }
     }
@@ -49,13 +58,13 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
             coder.encode(encryptedKeyPair, forKey: "encryptedKeyPair")
         }
 
-        public static func fromProto(_ proto: SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper) -> KeyPairWrapper? {
+        public static func fromProto(_ proto: SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper) -> KeyPairWrapper? {
             return KeyPairWrapper(publicKey: proto.publicKey.toHexString(), encryptedKeyPair: proto.encryptedKeyPair)
         }
 
-        public func toProto() -> SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper? {
+        public func toProto() -> SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper? {
             guard let publicKey = publicKey, let encryptedKeyPair = encryptedKeyPair else { return nil }
-            let result = SNProtoDataMessageClosedGroupUpdateV2KeyPairWrapper.builder(publicKey: Data(hex: publicKey), encryptedKeyPair: encryptedKeyPair)
+            let result = SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.builder(publicKey: Data(hex: publicKey), encryptedKeyPair: encryptedKeyPair)
             do {
                 return try result.build()
             } catch {
@@ -83,6 +92,10 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case .update(let name, _):
             return !name.isEmpty
         case .encryptionKeyPair: return true
+        case .nameChange(let name): return !name.isEmpty
+        case .membersAdded(let members): return !members.isEmpty
+        case .membersRemoved(let members): return !members.isEmpty
+        case .memberLeft: return true
         }
     }
 
@@ -105,6 +118,17 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case "encryptionKeyPair":
             guard let wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper] else { return nil }
             self.kind = .encryptionKeyPair(wrappers)
+        case "nameChange":
+            guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
+            self.kind = .nameChange(name: name)
+        case "membersAdded":
+            guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
+            self.kind = .membersAdded(members: members)
+        case "membersRemoved":
+            guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
+            self.kind = .membersRemoved(members: members)
+        case "memberLeft":
+            self.kind = .memberLeft
         default: return nil
         }
     }
@@ -127,33 +151,53 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
         case .encryptionKeyPair(let wrappers):
             coder.encode("encryptionKeyPair", forKey: "kind")
             coder.encode(wrappers, forKey: "wrappers")
+        case .nameChange(let name):
+            coder.encode("nameChange", forKey: "kind")
+            coder.encode(name, forKey: "name")
+        case .membersAdded(let members):
+            coder.encode("membersAdded", forKey: "kind")
+            coder.encode(members, forKey: "members")
+        case .membersRemoved(let members):
+            coder.encode("membersRemoved", forKey: "kind")
+            coder.encode(members, forKey: "members")
+        case .memberLeft:
+            coder.encode("memberLeft", forKey: "kind")
         }
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupUpdateV2? {
-        guard let closedGroupUpdateProto = proto.dataMessage?.closedGroupUpdateV2 else { return nil }
+    public override class func fromProto(_ proto: SNProtoContent) -> ClosedGroupControlMessage? {
+        guard let closedGroupControlMessageProto = proto.dataMessage?.closedGroupControlMessage else { return nil }
         let kind: Kind
-        switch closedGroupUpdateProto.type {
+        switch closedGroupControlMessageProto.type {
         case .new:
-            guard let publicKey = closedGroupUpdateProto.publicKey, let name = closedGroupUpdateProto.name,
-                let encryptionKeyPairAsProto = closedGroupUpdateProto.encryptionKeyPair else { return nil }
+            guard let publicKey = closedGroupControlMessageProto.publicKey, let name = closedGroupControlMessageProto.name,
+                let encryptionKeyPairAsProto = closedGroupControlMessageProto.encryptionKeyPair else { return nil }
             do {
                 let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded(), privateKeyData: encryptionKeyPairAsProto.privateKey)
                 kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair,
-                    members: closedGroupUpdateProto.members, admins: closedGroupUpdateProto.admins)
+                    members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins)
             } catch {
                 SNLog("Couldn't parse key pair.")
                 return nil
             }
         case .update:
-            guard let name = closedGroupUpdateProto.name else { return nil }
-            kind = .update(name: name, members: closedGroupUpdateProto.members)
+            guard let name = closedGroupControlMessageProto.name else { return nil }
+            kind = .update(name: name, members: closedGroupControlMessageProto.members)
         case .encryptionKeyPair:
-            let wrappers = closedGroupUpdateProto.wrappers.compactMap { KeyPairWrapper.fromProto($0) }
+            let wrappers = closedGroupControlMessageProto.wrappers.compactMap { KeyPairWrapper.fromProto($0) }
             kind = .encryptionKeyPair(wrappers)
+        case .nameChange:
+            guard let name = closedGroupControlMessageProto.name else { return nil }
+            kind = .nameChange(name: name)
+        case .membersAdded:
+            kind = .membersAdded(members: closedGroupControlMessageProto.members)
+        case .membersRemoved:
+            kind = .membersRemoved(members: closedGroupControlMessageProto.members)
+        case .memberLeft:
+            kind = .memberLeft
         }
-        return ClosedGroupUpdateV2(kind: kind)
+        return ClosedGroupControlMessage(kind: kind)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
@@ -162,32 +206,43 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
             return nil
         }
         do {
-            let closedGroupUpdate: SNProtoDataMessageClosedGroupUpdateV2.SNProtoDataMessageClosedGroupUpdateV2Builder
+            let closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGroupControlMessageBuilder
             switch kind {
             case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins):
-                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .new)
-                closedGroupUpdate.setPublicKey(publicKey)
-                closedGroupUpdate.setName(name)
-                let encryptionKeyPairAsProto = SNProtoDataMessageClosedGroupUpdateV2KeyPair.builder(publicKey: encryptionKeyPair.publicKey, privateKey: encryptionKeyPair.privateKey)
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .new)
+                closedGroupControlMessage.setPublicKey(publicKey)
+                closedGroupControlMessage.setName(name)
+                let encryptionKeyPairAsProto = SNProtoDataMessageClosedGroupControlMessageKeyPair.builder(publicKey: encryptionKeyPair.publicKey, privateKey: encryptionKeyPair.privateKey)
                 do {
-                    closedGroupUpdate.setEncryptionKeyPair(try encryptionKeyPairAsProto.build())
+                    closedGroupControlMessage.setEncryptionKeyPair(try encryptionKeyPairAsProto.build())
                 } catch {
                     SNLog("Couldn't construct closed group update proto from: \(self).")
                     return nil
                 }
-                closedGroupUpdate.setMembers(members)
-                closedGroupUpdate.setAdmins(admins)
+                closedGroupControlMessage.setMembers(members)
+                closedGroupControlMessage.setAdmins(admins)
             case .update(let name, let members):
-                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .update)
-                closedGroupUpdate.setName(name)
-                closedGroupUpdate.setMembers(members)
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .update)
+                closedGroupControlMessage.setName(name)
+                closedGroupControlMessage.setMembers(members)
             case .encryptionKeyPair(let wrappers):
-                closedGroupUpdate = SNProtoDataMessageClosedGroupUpdateV2.builder(type: .encryptionKeyPair)
-                closedGroupUpdate.setWrappers(wrappers.compactMap { $0.toProto() })
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .encryptionKeyPair)
+                closedGroupControlMessage.setWrappers(wrappers.compactMap { $0.toProto() })
+            case .nameChange(let name):
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .nameChange)
+                closedGroupControlMessage.setName(name)
+            case .membersAdded(let members):
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .membersAdded)
+                closedGroupControlMessage.setMembers(members)
+            case .membersRemoved(let members):
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .membersRemoved)
+                closedGroupControlMessage.setMembers(members)
+            case .memberLeft:
+                closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .memberLeft)
             }
             let contentProto = SNProtoContent.builder()
             let dataMessageProto = SNProtoDataMessage.builder()
-            dataMessageProto.setClosedGroupUpdateV2(try closedGroupUpdate.build())
+            dataMessageProto.setClosedGroupControlMessage(try closedGroupControlMessage.build())
             // Group context
             try setGroupContextIfNeeded(on: dataMessageProto, using: transaction)
             // Expiration timer
@@ -209,7 +264,7 @@ public final class ClosedGroupUpdateV2 : ControlMessage {
     // MARK: Description
     public override var description: String {
         """
-        ClosedGroupUpdate(
+        ClosedGroupControlMessage(
             kind: \(kind?.description ?? "null")
         )
         """

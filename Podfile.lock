@@ -140,7 +140,7 @@ DEPENDENCIES:
   - Reachability
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - Sodium
+  - Sodium (~> 0.8.0)
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (~> 1.5.0)
@@ -230,6 +230,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 3263ab95f60e220882ca53cca4c6bdc2e7a80381
+PODFILE CHECKSUM: e639c728c4ea2a89f3e904f3a07d380c7459bdd9
 
 COCOAPODS: 1.10.0.rc.1

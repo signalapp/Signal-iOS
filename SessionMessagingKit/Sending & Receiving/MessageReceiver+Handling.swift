@@ -11,7 +11,7 @@ extension MessageReceiver {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
-        case let message as ClosedGroupUpdateV2: handleClosedGroupUpdateV2(message, using: transaction)
+        case let message as ClosedGroupControlMessage: handleClosedGroupControlMessage(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
@@ -231,15 +231,19 @@ extension MessageReceiver {
         return tsIncomingMessageID
     }
 
-    private static func handleClosedGroupUpdateV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
-        case .new: handleNewGroupV2(message, using: transaction)
-        case .update: handleGroupUpdateV2(message, using: transaction)
-        case .encryptionKeyPair: handleGroupEncryptionKeyPair(message, using: transaction)
+        case .new: handleNewClosedGroup(message, using: transaction)
+        case .update: handleClosedGroupUpdated(message, using: transaction) // Deprecated
+        case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
+        case .nameChange: handleClosedGroupNameChanged(message, using: transaction)
+        case .membersAdded: handleClosedGroupMembersAdded(message, using: transaction)
+        case .membersRemoved: handleClosedGroupMembersRemoved(message, using: transaction)
+        case .memberLeft: handleClosedGroupMemberLeft(message, using: transaction)
         }
     }
     
-    private static func handleNewGroupV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -268,8 +272,182 @@ extension MessageReceiver {
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
     }
+
+    private static func handleClosedGroupEncryptionKeyPair(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        // Prepare
+        guard case let .encryptionKeyPair(wrappers) = message.kind, let groupPublicKey = message.groupPublicKey else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let userPublicKey = getUserHexEncodedPublicKey()
+        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
+            return SNLog("Couldn't find user X25519 key pair.")
+        }
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        let threadID = TSGroupThread.threadId(fromGroupId: groupID)
+        guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
+            return SNLog("Ignoring closed group encryption key pair for nonexistent group.")
+        }
+        guard thread.groupModel.groupAdminIds.contains(message.sender!) else {
+            return SNLog("Ignoring closed group encryption key pair from non-admin.")
+        }
+        // Find our wrapper and decrypt it if possible
+        guard let wrapper = wrappers.first(where: { $0.publicKey == userPublicKey }), let encryptedKeyPair = wrapper.encryptedKeyPair else { return }
+        let plaintext: Data
+        do {
+            plaintext = try MessageReceiver.decryptWithSessionProtocol(ciphertext: encryptedKeyPair, using: userKeyPair).plaintext
+        } catch {
+            return SNLog("Couldn't decrypt closed group encryption key pair.")
+        }
+        // Parse it
+        let proto: SNProtoDataMessageClosedGroupControlMessageKeyPair
+        do {
+            proto = try SNProtoDataMessageClosedGroupControlMessageKeyPair.parseData(plaintext)
+        } catch {
+            return SNLog("Couldn't parse closed group encryption key pair.")
+        }
+        let keyPair: ECKeyPair
+        do {
+            keyPair = try ECKeyPair(publicKeyData: proto.publicKey.removing05PrefixIfNeeded(), privateKeyData: proto.privateKey)
+        } catch {
+            return SNLog("Couldn't parse closed group encryption key pair.")
+        }
+        // Store it
+        Storage.shared.addClosedGroupEncryptionKeyPair(keyPair, for: groupPublicKey, using: transaction)
+        SNLog("Received a new closed group encryption key pair.")
+    }
     
-    private static func handleGroupUpdateV2(_ message: ClosedGroupUpdateV2, using transaction: Any) {
+    private static func handleClosedGroupNameChanged(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        guard case let .nameChange(name) = message.kind else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        performIfValid(for: message, using: transaction) { groupID, thread, group in
+            // Update the group
+            let newGroupModel = TSGroupModel(title: name, memberIds: group.groupMemberIds, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            thread.setGroupModel(newGroupModel, with: transaction)
+            // Notify the user if needed
+            guard name != group.groupName else { return }
+            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
+            infoMessage.save(with: transaction)
+        }
+    }
+    
+    private static func handleClosedGroupMembersAdded(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        guard case let .membersAdded(membersAsData) = message.kind else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        performIfValid(for: message, using: transaction) { groupID, thread, group in
+            // Update the group
+            let members = Set(group.groupMemberIds).union(membersAsData.map { $0.toHexString() })
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            thread.setGroupModel(newGroupModel, with: transaction)
+            // Notify the user if needed
+            guard members != Set(group.groupMemberIds) else { return }
+            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
+            infoMessage.save(with: transaction)
+        }
+    }
+    
+    private static func handleClosedGroupMembersRemoved(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        guard case let .membersRemoved(membersAsData) = message.kind else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let groupPublicKey = message.groupPublicKey else { return }
+        performIfValid(for: message, using: transaction) { groupID, thread, group in
+            // Check that the admin wasn't removed
+            let members = Set(group.groupMemberIds).subtracting(membersAsData.map { $0.toHexString() })
+            guard members.contains(group.groupAdminIds.first!) else {
+                return SNLog("Ignoring invalid closed group update.")
+            }
+            // If the current user was removed:
+            // • Stop polling for the group
+            // • Remove the key pairs associated with the group
+            // • Notify the PN server
+            let userPublicKey = getUserHexEncodedPublicKey()
+            let wasCurrentUserRemoved = !members.contains(userPublicKey)
+            if wasCurrentUserRemoved {
+                Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
+                Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
+                let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
+            }
+            // Generate and distribute a new encryption key pair if needed
+            let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
+            if isCurrentUserAdmin {
+                do {
+                    try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: Set(members), using: transaction)
+                } catch {
+                    SNLog("Couldn't distribute new encryption key pair.")
+                }
+            }
+            // Update the group
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            thread.setGroupModel(newGroupModel, with: transaction)
+            // Notify the user if needed
+            guard members != Set(group.groupMemberIds) else { return }
+            let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .typeGroupQuit : .typeGroupUpdate
+            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType, customMessage: updateInfo)
+            infoMessage.save(with: transaction)
+        }
+    }
+    
+    private static func handleClosedGroupMemberLeft(_ message: ClosedGroupControlMessage, using transaction: Any) {
+        guard case .memberLeft = message.kind else { return }
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let groupPublicKey = message.groupPublicKey else { return }
+        performIfValid(for: message, using: transaction) { groupID, thread, group in
+            let didAdminLeave = group.groupAdminIds.contains(message.sender!)
+            let members: Set<String> = didAdminLeave ? [] : Set(group.groupMemberIds).subtracting([ message.sender! ]) // If the admin leaves the group is disbanded
+            // Guard against self-sends
+            guard message.sender != getUserHexEncodedPublicKey() else {
+                return SNLog("Ignoring invalid closed group update.")
+            }
+            // Generate and distribute a new encryption key pair if needed
+            let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
+            if isCurrentUserAdmin {
+                do {
+                    try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members, using: transaction)
+                } catch {
+                    SNLog("Couldn't distribute new encryption key pair.")
+                }
+            }
+            // Update the group
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            thread.setGroupModel(newGroupModel, with: transaction)
+            // Notify the user if needed
+            guard members != Set(group.groupMemberIds) else { return }
+            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: updateInfo)
+            infoMessage.save(with: transaction)
+        }
+    }
+    
+    private static func performIfValid(for message: ClosedGroupControlMessage, using transaction: Any, _ update: (Data, TSGroupThread, TSGroupModel) -> Void) {
+        // Prepare
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        // Get the group
+        guard let groupPublicKey = message.groupPublicKey else { return }
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        let threadID = TSGroupThread.threadId(fromGroupId: groupID)
+        guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
+            return SNLog("Ignoring closed group update for nonexistent group.")
+        }
+        let group = thread.groupModel
+        // Check that the message isn't from before the group was created
+        guard Double(message.sentTimestamp!) > thread.creationDate.timeIntervalSince1970 * 1000 else {
+            return SNLog("Ignoring closed group update from before thread was created.")
+        }
+        // Check that the sender is a member of the group
+        guard Set(group.groupMemberIds).contains(message.sender!) else {
+            return SNLog("Ignoring closed group update from non-member.")
+        }
+        // Perform the update
+        update(groupID, thread, group)
+    }
+    
+    
+    
+    // MARK: - Deprecated
+    
+    /// - Note: Deprecated.
+    private static func handleClosedGroupUpdated(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .update(name, membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -326,47 +504,5 @@ extension MessageReceiver {
             let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
-    }
-
-    private static func handleGroupEncryptionKeyPair(_ message: ClosedGroupUpdateV2, using transaction: Any) {
-        // Prepare
-        guard case let .encryptionKeyPair(wrappers) = message.kind, let groupPublicKey = message.groupPublicKey else { return }
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let userPublicKey = getUserHexEncodedPublicKey()
-        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
-            return SNLog("Couldn't find user X25519 key pair.")
-        }
-        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        let threadID = TSGroupThread.threadId(fromGroupId: groupID)
-        guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            return SNLog("Ignoring closed group encryption key pair for nonexistent group.")
-        }
-        guard thread.groupModel.groupAdminIds.contains(message.sender!) else {
-            return SNLog("Ignoring closed group encryption key pair from non-admin.")
-        }
-        // Find our wrapper and decrypt it if possible
-        guard let wrapper = wrappers.first(where: { $0.publicKey == userPublicKey }), let encryptedKeyPair = wrapper.encryptedKeyPair else { return }
-        let plaintext: Data
-        do {
-            plaintext = try MessageReceiver.decryptWithSessionProtocol(ciphertext: encryptedKeyPair, using: userKeyPair).plaintext
-        } catch {
-            return SNLog("Couldn't decrypt closed group encryption key pair.")
-        }
-        // Parse it
-        let proto: SNProtoDataMessageClosedGroupUpdateV2KeyPair
-        do {
-            proto = try SNProtoDataMessageClosedGroupUpdateV2KeyPair.parseData(plaintext)
-        } catch {
-            return SNLog("Couldn't parse closed group encryption key pair.")
-        }
-        let keyPair: ECKeyPair
-        do {
-            keyPair = try ECKeyPair(publicKeyData: proto.publicKey.removing05PrefixIfNeeded(), privateKeyData: proto.privateKey)
-        } catch {
-            return SNLog("Couldn't parse closed group encryption key pair.")
-        }
-        // Store it
-        Storage.shared.addClosedGroupEncryptionKeyPair(keyPair, for: groupPublicKey, using: transaction)
-        SNLog("Received a new closed group encryption key pair.")
     }
 }

@@ -45,15 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
     [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 }
 
-+ (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *)recipientId
-                   callMessageBuilder:(SNProtoCallMessageBuilder *)callMessageBuilder
-{
-    if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
-        [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
-    }
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

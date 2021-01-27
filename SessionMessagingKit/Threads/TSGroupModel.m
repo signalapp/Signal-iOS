@@ -135,18 +135,22 @@ const int32_t kGroupIdLength = 16;
     }
     
     if (membersWhoJoined.count > 0) {
-        updatedGroupInfoString = @"New members joined";
+        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
+            return [LKUserDisplayNameUtilities getPrivateChatDisplayNameAvoidWriteTransaction:item] ?: item;
+        }];
+        updatedGroupInfoString = [updatedGroupInfoString
+                                  stringByAppendingString:[NSString
+                                                           stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
+                                                           [newMembersNames componentsJoinedByString:@", "]]];
     }
     
     if (newModel.removedMembers.count > 0) {
-        NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
-        NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey != nil ? masterDeviceHexEncodedPublicKey : TSAccountManager.localNumber;
-        if ([newModel.removedMembers containsObject:hexEncodedPublicKey]) {
+        if ([newModel.removedMembers containsObject:[SNGeneralUtilities getUserPublicKey]]) {
             updatedGroupInfoString = [updatedGroupInfoString
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
         } else {
             NSArray *removedMemberNames = [newModel.removedMembers.allObjects map:^NSString*(NSString* publicKey) {
-                return [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:publicKey];
+                return [LKUserDisplayNameUtilities getPrivateChatDisplayNameAvoidWriteTransaction:publicKey] ?: publicKey;
             }];
             if ([removedMemberNames count] > 1) {
                 updatedGroupInfoString = [updatedGroupInfoString
