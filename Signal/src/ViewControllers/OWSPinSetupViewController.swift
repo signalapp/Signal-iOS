@@ -558,7 +558,7 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.resignFirstResponder()
 
-        let progressView = PinProgressView(
+        let progressView = AnimatedProgressView(
             loadingText: NSLocalizedString("PIN_CREATION_PIN_PROGRESS",
                                            comment: "Indicates the work we are doing while creating the user's pin")
         )
@@ -566,7 +566,7 @@ public class PinSetupViewController: OWSViewController {
         progressView.autoPinWidthToSuperview()
         progressView.autoVCenterInSuperview()
 
-        progressView.startLoading {
+        progressView.startAnimating {
             self.view.isUserInteractionEnabled = false
             self.nextButton.alpha = 0.5
         }
@@ -581,10 +581,8 @@ public class PinSetupViewController: OWSViewController {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.
-            progressView.loadingComplete(success: true, animated: false) { [weak self] in
-                guard let self = self else { return }
-                self.completionHandler(self, nil)
-            }
+            progressView.stopAnimatingImmediately()
+            self.completionHandler(self, nil)
 
             // Clear the experience upgrade if it was pending.
             SDSDatabaseStorage.shared.asyncWrite { transaction in
@@ -600,9 +598,9 @@ public class PinSetupViewController: OWSViewController {
             // whenever enabling it fails.
             OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
 
-            progressView.loadingComplete(success: false, animateAlongside: {
+            progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
-            }) {
+            } completion: {
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
 
@@ -739,7 +737,15 @@ extension PinSetupViewController {
     }
 }
 
-class PinProgressView: UIView {
+class AnimatedProgressView: UIView {
+    var hidesWhenStopped = true
+    private(set) var isAnimating = false
+
+    var loadingText: String? {
+        get { label.text }
+        set { label.text = newValue }
+    }
+
     private let label = UILabel()
     private let progressAnimation = AnimationView(name: "pinCreationInProgress")
     private let errorAnimation = AnimationView(name: "pinCreationFail")
@@ -748,42 +754,42 @@ class PinProgressView: UIView {
     required init(loadingText: String) {
         super.init(frame: .zero)
 
-        backgroundColor = Theme.backgroundColor
-
         let animationContainer = UIView()
-        addSubview(animationContainer)
-        animationContainer.autoPinWidthToSuperview()
-        animationContainer.autoPinEdge(toSuperviewEdge: .top)
-
         progressAnimation.backgroundBehavior = .pauseAndRestore
         progressAnimation.loopMode = .playOnce
         progressAnimation.contentMode = .scaleAspectFit
         animationContainer.addSubview(progressAnimation)
         progressAnimation.autoPinEdgesToSuperviewEdges()
 
-        errorAnimation.isHidden = true
         errorAnimation.backgroundBehavior = .pauseAndRestore
         errorAnimation.loopMode = .playOnce
         errorAnimation.contentMode = .scaleAspectFit
         animationContainer.addSubview(errorAnimation)
         errorAnimation.autoPinEdgesToSuperviewEdges()
 
-        successAnimation.isHidden = true
         successAnimation.backgroundBehavior = .pauseAndRestore
         successAnimation.loopMode = .playOnce
         successAnimation.contentMode = .scaleAspectFit
         animationContainer.addSubview(successAnimation)
         successAnimation.autoPinEdgesToSuperviewEdges()
 
+        label.numberOfLines = 0
         label.font = .systemFont(ofSize: 17)
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
-        label.text = loadingText
+        self.loadingText = loadingText
 
+        addSubview(animationContainer)
         addSubview(label)
+
+        animationContainer.autoPinWidthToSuperview()
         label.autoPinWidthToSuperview(withMargin: 8)
+
+        animationContainer.autoPinEdge(toSuperviewEdge: .top)
         label.autoPinEdge(.top, to: .bottom, of: animationContainer, withOffset: 12)
         label.autoPinBottomToSuperviewMargin()
+
+        reset()
     }
 
     required init?(coder: NSCoder) {
@@ -798,35 +804,52 @@ class PinProgressView: UIView {
         errorAnimation.isHidden = true
         errorAnimation.stop()
         completedSuccessfully = nil
-        completionHandler = nil
-        alpha = 0
-    }
+        animationCompletionHandler = nil
+        isAnimating = false
 
-    func startLoading(animateAlongside: @escaping () -> Void) {
-        reset()
-
-        progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
-
-        UIView.animate(withDuration: 0.15) {
-            self.alpha = 1
-            animateAlongside()
+        if hidesWhenStopped {
+            alpha = 0
         }
     }
 
-    func loadingComplete(success: Bool, animated: Bool = true, animateAlongside: (() -> Void)? = nil, completion: @escaping () -> Void) {
-        // Marking loading complete does not immediately stop the loading indicator,
+    func startAnimating(alongside animationBlock: @escaping () -> Void = {}) {
+        owsAssertDebug(!isAnimating)
+        reset()
+        isAnimating = true
+
+        self.startNextLoopOrFinish()
+
+        UIView.animate(withDuration: 0.15) {
+            if self.hidesWhenStopped {
+                self.alpha = 1
+            }
+            animationBlock()
+        }
+    }
+
+    func stopAnimatingImmediately() {
+        owsAssertDebug(isAnimating)
+
+        if let animationCompletionHandler = animationCompletionHandler {
+            UIView.performWithoutAnimation(animationCompletionHandler)
+        } else {
+            reset()
+        }
+    }
+
+    func stopAnimating(success: Bool, animateAlongside: (() -> Void)? = nil, completion: @escaping () -> Void) {
+        owsAssertDebug(isAnimating)
+
+        // Marking the animation complete does not immediately stop the animation,
         // instead it sets this flag which waits until the animation is at the point
         // it can transition to the next state.
         completedSuccessfully = success
 
-        guard animated else {
-            reset()
-            return completion()
-        }
-
-        completionHandler = { [weak self] in
+        animationCompletionHandler = { [weak self] in
             UIView.animate(withDuration: 0.15, animations: {
-                self?.alpha = 0
+                if self?.hidesWhenStopped == true {
+                    self?.alpha = 0
+                }
                 animateAlongside?()
             }) { _ in
                 self?.reset()
@@ -836,13 +859,15 @@ class PinProgressView: UIView {
     }
 
     private var completedSuccessfully: Bool?
-    private var completionHandler: (() -> Void)?
+    private var animationCompletionHandler: (() -> Void)?
 
     private func startNextLoopOrFinish() {
         // If we haven't yet completed, start another loop of the progress animation.
         // We'll check again when it's done.
         guard let completedSuccessfully = completedSuccessfully else {
-            return progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
+            return progressAnimation.playAndWhenFinished { [weak self] in
+                self?.startNextLoopOrFinish()
+            }
         }
 
         guard !progressAnimation.isHidden else { return }
@@ -852,10 +877,26 @@ class PinProgressView: UIView {
 
         if completedSuccessfully {
             successAnimation.isHidden = false
-            successAnimation.play { [weak self] _ in self?.completionHandler?() }
+            successAnimation.playAndWhenFinished { [weak self] in
+                self?.animationCompletionHandler?()
+            }
         } else {
             errorAnimation.isHidden = false
-            errorAnimation.play { [weak self] _ in self?.completionHandler?() }
+            errorAnimation.playAndWhenFinished { [weak self] in
+                self?.animationCompletionHandler?()
+            }
+        }
+    }
+}
+
+private extension AnimationView {
+    func playAndWhenFinished(_ completion: @escaping () -> Void) {
+        play { didComplete in
+            if didComplete {
+                completion()
+            } else {
+                // Animation was interrupted before completing, skipping completion.
+            }
         }
     }
 }
