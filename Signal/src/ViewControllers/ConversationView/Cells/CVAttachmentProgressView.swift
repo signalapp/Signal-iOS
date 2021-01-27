@@ -266,13 +266,14 @@ public class CVAttachmentProgressView: UIView {
             let animationName: String
             switch style {
             case .withCircle:
-                animationName = "determinate_spinner"
+                animationName = "determinate_spinner_white"
             case .withoutCircle:
                 animationName = (isIncoming && !isDarkThemeEnabled
                                     ? "determinate_spinner_blue"
-                                    : "determinate_spinner")
+                                    : "determinate_spinner_white")
             }
             let animationView = ensureAnimationView(progressView, animationName: animationName)
+            owsAssertDebug(animationView.animation != nil)
             progressView = animationView
             animationView.backgroundBehavior = .pause
             animationView.loopMode = .playOnce
@@ -290,13 +291,14 @@ public class CVAttachmentProgressView: UIView {
             let animationName: String
             switch style {
             case .withCircle:
-                animationName = "indeterminate_spinner"
+                animationName = "indeterminate_spinner_white"
             case .withoutCircle:
                 animationName = (isIncoming && !isDarkThemeEnabled
                                     ? "indeterminate_spinner_blue"
-                                    : "indeterminate_spinner")
+                                    : "indeterminate_spinner_white")
             }
             let animationView = ensureAnimationView(unknownProgressView, animationName: animationName)
+            owsAssertDebug(animationView.animation != nil)
             unknownProgressView = animationView
             animationView.backgroundBehavior = .pauseAndRestore
             animationView.loopMode = .loop
