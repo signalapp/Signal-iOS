@@ -35,6 +35,8 @@ public final class CallService: NSObject {
 
     private var databaseStorage: SDSDatabaseStorage { .shared }
 
+    private static var databaseStorage: SDSDatabaseStorage { .shared }
+
     @objc
     public let individualCallService = IndividualCallService()
     let groupCallMessageHandler = GroupCallUpdateMessageHandler()
@@ -341,10 +343,7 @@ public final class CallService: NSObject {
         guard AppReadiness.isAppReady else { return }
         guard let currentCall = currentCall else { return }
 
-        let highBandwidthInterfaces = databaseStorage.read { readTx in
-            Self.highBandwidthNetworkInterfaces(readTx: readTx)
-        }
-        let useLowBandwidth = !SSKEnvironment.shared.reachabilityManager.isReachable(with: highBandwidthInterfaces)
+        let useLowBandwidth = Self.useLowBandwidthWithSneakyTransaction()
         Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
 
         switch currentCall.mode {
@@ -356,6 +355,13 @@ public final class CallService: NSObject {
             // Do nothing. We'll reapply the bandwidth mode once connected
             break
         }
+    }
+
+    static func useLowBandwidthWithSneakyTransaction() -> Bool {
+        let highBandwidthInterfaces = databaseStorage.read { readTx in
+            Self.highBandwidthNetworkInterfaces(readTx: readTx)
+        }
+        return !SSKEnvironment.shared.reachabilityManager.isReachable(with: highBandwidthInterfaces)
     }
 
     // MARK: -

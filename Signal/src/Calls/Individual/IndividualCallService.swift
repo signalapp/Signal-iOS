@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -271,7 +271,7 @@ import SignalMessaging
         guard let opaque = opaque else {
             // TODO: Remove once the proto is updated to only support opaque and require it.
             Logger.debug("opaque not received for offer, remote should update")
-            return;
+            return
         }
 
         let newCall = callService.prepareIncomingIndividualCall(
@@ -437,7 +437,7 @@ import SignalMessaging
         guard let opaque = opaque else {
             // TODO: Remove once the proto is updated to only support opaque and require it.
             Logger.debug("opaque not received for answer, remote should update")
-            return;
+            return
         }
 
         guard let identityKeys = getIdentityKeys(thread: thread) else {
@@ -544,8 +544,7 @@ import SignalMessaging
 
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
-            // TODO: Get the stored setting to populate useLowBandwidth correctly.
-            let useLowBandwidth = false
+            let useLowBandwidth = CallService.useLowBandwidthWithSneakyTransaction()
             Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
 
             // Tell the Call Manager to proceed with its active call.
