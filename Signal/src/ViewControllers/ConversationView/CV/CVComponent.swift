@@ -230,7 +230,8 @@ extension CVComponentBase: CVNode {
 
     var isTextOnlyMessage: Bool { messageCellType == .textOnlyMessage }
 
-    func accessibilityLabel(description descriptionParam: String?) -> String {
+    func accessibilityLabel(description descriptionParam: String?,
+                            ignoreMissingSenderName: Bool = false) -> String {
         let description = { () -> String in
             if let description = descriptionParam,
                !description.isEmpty {
@@ -241,6 +242,8 @@ extension CVComponentBase: CVNode {
         if let authorName = itemViewState.accessibilityAuthorName,
            !authorName.isEmpty {
             return "\(authorName) \(description)"
+        } else if ignoreMissingSenderName {
+            return description
         } else {
             owsFailDebug("Missing sender name.")
             return description
