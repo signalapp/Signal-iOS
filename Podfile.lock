@@ -101,11 +101,11 @@ PODS:
     - HKDFKit
     - SignalCoreKit
     - SwiftProtobuf
-  - SignalRingRTC (2.8.8):
+  - SignalRingRTC (2.9.0):
     - PromiseKit
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.8.8)
-  - SignalRingRTC/WebRTC (2.8.8):
+    - SignalRingRTC/WebRTC (= 2.9.0)
+  - SignalRingRTC/WebRTC (2.9.0):
     - PromiseKit
     - SignalCoreKit
   - SignalServiceKit (0.9.0):
@@ -398,7 +398,7 @@ SPEC CHECKSUMS:
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
-  SignalRingRTC: f77b817d18b9b0ea58c35162e610ff00046f7523
+  SignalRingRTC: d59de0ae05da586f043f83e5a6f7e5bc0c60a482
   SignalServiceKit: 8ba67567dc48244551f74b48a69ef5e1912a289e
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
