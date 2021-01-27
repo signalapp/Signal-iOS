@@ -25,15 +25,9 @@ enum AppNotificationCategory: CaseIterable {
     case incomingMessageFromNoLongerVerifiedIdentity
     case errorMessage
     case threadlessErrorMessage
-//    case incomingCall
-//    case missedCall
-//    case missedCallFromNoLongerVerifiedIdentity
 }
 
 enum AppNotificationAction: CaseIterable {
-//    case answerCall
-//    case callBack
-//    case declineCall
     case markAsRead
     case reply
     case showThread
@@ -56,12 +50,6 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.errorMessage"
         case .threadlessErrorMessage:
             return "Signal.AppNotificationCategory.threadlessErrorMessage"
-//        case .incomingCall:
-//            return "Signal.AppNotificationCategory.incomingCall"
-//        case .missedCall:
-//            return "Signal.AppNotificationCategory.missedCall"
-//        case .missedCallFromNoLongerVerifiedIdentity:
-//            return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
         }
     }
 
@@ -75,12 +63,6 @@ extension AppNotificationCategory {
             return [.showThread]
         case .threadlessErrorMessage:
             return []
-//        case .incomingCall:
-//            return [.answerCall, .declineCall]
-//        case .missedCall:
-//            return [.callBack, .showThread]
-//        case .missedCallFromNoLongerVerifiedIdentity:
-//            return [.showThread]
         }
     }
 }
@@ -88,12 +70,6 @@ extension AppNotificationCategory {
 extension AppNotificationAction {
     var identifier: String {
         switch self {
-//        case .answerCall:
-//            return "Signal.AppNotifications.Action.answerCall"
-//        case .callBack:
-//            return "Signal.AppNotifications.Action.callBack"
-//        case .declineCall:
-//            return "Signal.AppNotifications.Action.declineCall"
         case .markAsRead:
             return "Signal.AppNotifications.Action.markAsRead"
         case .reply:
