@@ -305,6 +305,7 @@
 		B8FF8DAF25C0D00F004D1F22 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		B8FF8E6225C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 in Resources */ = {isa = PBXBuildFile; fileRef = B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */; };
 		B8FF8E7425C10FC3004D1F22 /* GeoLite2-Country-Locations-English in Resources */ = {isa = PBXBuildFile; fileRef = B8FF8E7325C10FC3004D1F22 /* GeoLite2-Country-Locations-English */; };
+		B8FF8EA625C11FEF004D1F22 /* IPv4.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FF8EA525C11FEF004D1F22 /* IPv4.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
@@ -1347,6 +1348,7 @@
 		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
 		B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Blocks-IPv4"; path = "Countries/GeoLite2-Country-Blocks-IPv4"; sourceTree = "<group>"; };
 		B8FF8E7325C10FC3004D1F22 /* GeoLite2-Country-Locations-English */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Locations-English"; path = "Countries/GeoLite2-Country-Locations-English"; sourceTree = "<group>"; };
+		B8FF8EA525C11FEF004D1F22 /* IPv4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPv4.swift; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -2264,6 +2266,7 @@
 			children = (
 				C33FDB68255A580F00E217F9 /* ContentProxy.swift */,
 				C3C2A5BC255385EE00C340D1 /* HTTP.swift */,
+				B8FF8EA525C11FEF004D1F22 /* IPv4.swift */,
 				C3C2A5D92553860B00C340D1 /* JSON.swift */,
 				C33FDAF2255A580500E217F9 /* ProxiedContentDownloader.swift */,
 				C352A3A42557B5F000338F3E /* TSRequest.h */,
@@ -4838,6 +4841,7 @@
 				B8856D23256F116B001CE70E /* Weak.swift in Sources */,
 				C32C5A48256DB8F0003C73A2 /* BuildConfiguration.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
+				B8FF8EA625C11FEF004D1F22 /* IPv4.swift in Sources */,
 				C3D9E35525675EE10040E4F3 /* MIMETypeUtil.m in Sources */,
 				C3A7219A2558C1660043A11F /* AnyPromise+Conversion.swift in Sources */,
 				C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */,
