@@ -70,8 +70,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         let titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
         let explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
 
-        let titleLabel = self.titleLabel(text: titleText)
-        let explanationLabel = self.explanationLabel(explanationText: explanationText)
+        let titleLabel = self.createTitleLabel(text: titleText)
+        let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel"
 

@@ -126,6 +126,8 @@ public class AccountManager: NSObject {
                 // not deployed to production yet.
                 if error.httpStatusCode == 404 {
                     Logger.warn("404 while requesting preauthChallenge: \(error)")
+                } else if error.isNetworkFailureOrTimeout {
+                    Logger.warn("Network failure while requesting preauthChallenge: \(error)")
                 } else {
                     fallthrough
                 }

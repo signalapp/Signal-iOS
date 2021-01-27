@@ -154,10 +154,12 @@ dispatch_queue_t NetworkManagerQueue()
     }
 
     OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
-    [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:NO];
 
     // Apply the default headers for this session manager.
     [httpHeaders addHeaders:self.defaultHeaders overwriteOnConflict:NO];
+
+    // Then apply any custom headers for the request
+    [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:YES];
 
     // Set User-Agent header.
     [httpHeaders addHeader:OWSURLSession.kUserAgentHeader

@@ -178,6 +178,13 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
                 owsFailDebug("Error: \(error)")
                 return
             }
+
+            DispatchQueue.main.async {
+                self.notificationCenter.getPendingNotificationRequests { (notifications) in
+                    Logger.info("michlin \(notifications)")
+                }
+            }
+
             guard notificationIdentifier != UserNotificationPresenterAdaptee.kMigrationNotificationId else {
                 return
             }

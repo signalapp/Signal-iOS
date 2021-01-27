@@ -93,10 +93,14 @@ private class OnboardingCodeView: UIView {
     private func createSubviews() {
         textfield.textAlignment = .left
         textfield.delegate = self
-        textfield.keyboardType = .numberPad
+        textfield.codeDelegate = self
+
         textfield.textColor = Theme.primaryTextColor
         textfield.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
-        textfield.codeDelegate = self
+        textfield.keyboardType = .numberPad
+        if #available(iOS 12, *) {
+            textfield.textContentType = .oneTimeCode
+        }
 
         var digitViews = [UIView]()
         (0..<digitCount).forEach { (_) in
@@ -107,9 +111,7 @@ private class OnboardingCodeView: UIView {
             digitViews.append(digitView)
         }
 
-        let (hyphenView, _, _) = makeCellView(text: "-", hasStroke: false)
-
-        digitViews.insert(hyphenView, at: 3)
+        digitViews.insert(UIView.spacer(withWidth: 24), at: 3)
 
         let stackView = UIStackView(arrangedSubviews: digitViews)
         stackView.axis = .horizontal
@@ -133,8 +135,9 @@ private class OnboardingCodeView: UIView {
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()
 
-        let strokeColor = (hasStroke ? Theme.primaryTextColor : UIColor.clear)
-        let strokeView = digitView.addBottomStroke(color: strokeColor, strokeWidth: 1)
+        let strokeColor = (hasStroke ? Theme.secondaryTextAndIconColor : UIColor.clear)
+        let strokeView = digitView.addBottomStroke(color: strokeColor, strokeWidth: 3)
+        strokeView.layer.cornerRadius = 1.5
 
         let vMargin: CGFloat = 4
         let cellHeight: CGFloat = digitLabel.font.lineHeight + vMargin * 2
@@ -177,12 +180,18 @@ private class OnboardingCodeView: UIView {
         textfield.selectedTextRange = textfield.textRange(from: newPosition, to: newPosition)
     }
 
+    @discardableResult
     public override func becomeFirstResponder() -> Bool {
         return textfield.becomeFirstResponder()
     }
 
+    @discardableResult
+    public override func resignFirstResponder() -> Bool {
+        return textfield.resignFirstResponder()
+    }
+
     func setHasError(_ hasError: Bool) {
-        let backgroundColor = (hasError ? UIColor.ows_accentRed : Theme.primaryTextColor)
+        let backgroundColor = (hasError ? UIColor.ows_accentRed : Theme.secondaryTextAndIconColor)
         for digitStroke in digitStrokes {
             digitStroke.backgroundColor = backgroundColor
         }
@@ -247,22 +256,20 @@ extension OnboardingCodeView: OnboardingCodeViewTextFieldDelegate {
 
 @objc
 public class OnboardingVerificationViewController: OnboardingBaseViewController {
+    private var canResend = false
 
-    private enum CodeState {
-        case sent
-        case readyForResend
-        case resent
-    }
-
-    // MARK: -
-
-    private var codeState = CodeState.sent
-
+    private let topSpacer = UIView.vStretchingSpacer()
     private var titleLabel: UILabel?
-    private var backLink: UIView?
+    private var subtitleLabel: UILabel?
+    private var backLink: OWSFlatButton?
     private let onboardingCodeView = OnboardingCodeView()
-    private var codeStateLink: OWSFlatButton?
+    private var resendCodeButton: OWSFlatButton?
+    private var callMeButton: OWSFlatButton?
     private let errorLabel = UILabel()
+    private let progressView = AnimatedProgressView()
+
+    private var equalSpacerHeightConstraint: NSLayoutConstraint?
+    private var pinnedSpacerHeightConstraint: NSLayoutConstraint?
 
     @objc
     public func hideBackLink() {
@@ -273,12 +280,31 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         view = UIView()
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
-
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: "")
+        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(
+            withE164: onboardingController.phoneNumber?.e164 ?? "")
+            .replacingOccurrences(of: " ", with: "\u{00a0}")
+
+        let titleLabel = self.createTitleLabel(
+            text: NSLocalizedString(
+                "ONBOARDING_VERIFICATION_TITLE_LABEL",
+                comment: "Title label for the onboarding verification page")
+            )
+
+        let subtitleLabel = self.createExplanationLabel(
+            explanationText: String(
+                format: NSLocalizedString(
+                    "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
+                    comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."),
+                formattedPhoneNumber)
+            )
+
+
         self.titleLabel = titleLabel
+        self.subtitleLabel = subtitleLabel
         titleLabel.accessibilityIdentifier = "onboarding.verification." + "titleLabel"
+        subtitleLabel.accessibilityIdentifier = "onboarding.verification." + "subtitleLabel"
 
         let backLink = self.linkButton(title: NSLocalizedString("ONBOARDING_VERIFICATION_BACK_LINK",
                                                                 comment: "Label for the link that lets users change their phone number in the onboarding views."),
@@ -301,44 +327,67 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         errorRow.addSubview(errorLabel)
         errorLabel.autoPinEdgesToSuperviewEdges()
 
-        let codeStateLink = self.linkButton(title: "",
-                                             selector: #selector(resendCodeLinkTapped))
-        codeStateLink.enableMultilineLabel()
-        self.codeStateLink = codeStateLink
-        codeStateLink.accessibilityIdentifier = "onboarding.verification." + "codeStateLink"
+        let resendCodeButton = self.linkButton(title: "", selector: #selector(resendCodeButtonTapped))
+        resendCodeButton.enableMultilineLabel()
+        resendCodeButton.accessibilityIdentifier = "onboarding.verification." + "resendCodeButton"
+        self.resendCodeButton = resendCodeButton
 
-        let topSpacer = UIView.vStretchingSpacer()
+        let callMeButton = self.linkButton(title: "", selector: #selector(callMeButtonTapped))
+        callMeButton.enableMultilineLabel()
+        callMeButton.accessibilityIdentifier = "onboarding.verification." + "callMeButton"
+        self.callMeButton = callMeButton
+
+        let buttonStack = UIStackView(arrangedSubviews: [
+            resendCodeButton,
+            UIView.hStretchingSpacer(),
+            callMeButton
+        ])
+        buttonStack.axis = .horizontal
+        buttonStack.alignment = .center
+        resendCodeButton.autoPinWidth(toWidthOf: callMeButton)
+
         let bottomSpacer = UIView.vStretchingSpacer()
-        let compressableBottomMargin = UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 12),
+            subtitleLabel,
+            UIView.spacer(withHeight: 4),
             backLink,
             topSpacer,
             onboardingCodeView,
             UIView.spacer(withHeight: 12),
             errorRow,
             bottomSpacer,
-            codeStateLink,
-            compressableBottomMargin
-            ])
+            buttonStack,
+            UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
+        ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         primaryView.addSubview(stackView)
+        primaryView.addSubview(progressView)
 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        progressView.autoCenterInSuperviewMargins()
 
-        // Ensure whitespace is balanced, so inputs are vertically centered.
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        progressView.hidesWhenStopped = false
+        progressView.alpha = 0
+
+        // During initial layout, ensure whitespace is balanced, so inputs are vertically centered.
+        // After initial layout, keep top spacer height constant so keyboard frame changes don't update its position
+        equalSpacerHeightConstraint = topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        pinnedSpacerHeightConstraint = topSpacer.autoSetDimension(.height, toSize: 0)
+        pinnedSpacerHeightConstraint?.priority = .defaultHigh
+        pinnedSpacerHeightConstraint?.isActive = false
 
         startCodeCountdown()
+        updateResendButtons()
 
-        updateCodeState()
-
-        setHasInvalidCode(false)
+        UIView.performWithoutAnimation {
+            setHasInvalidCode(false)
+        }
     }
 
      // MARK: - Code State
@@ -369,169 +418,200 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
         let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
 
-        guard countdownInterval < countdownDuration else {
+        if countdownInterval >= countdownDuration {
             // Countdown complete.
             codeCountdownTimer.invalidate()
             self.codeCountdownTimer = nil
 
-            if codeState != .sent {
-                owsFailDebug("Unexpected codeState: \(codeState)")
-            }
-            codeState = .readyForResend
-            updateCodeState()
-            return
+            canResend = true
         }
 
-        // Update the "code state" UI to reflect the countdown.
-        updateCodeState()
+        // Update the resend buttons UI to reflect the countdown.
+        updateResendButtons()
     }
 
-    private func updateCodeState() {
+    private func updateResendButtons() {
         AssertIsOnMainThread()
 
         guard let codeCountdownStart = codeCountdownStart else {
             owsFailDebug("Missing codeCountdownStart.")
             return
         }
-        guard let titleLabel = titleLabel else {
-            owsFailDebug("Missing titleLabel.")
-            return
-        }
-        guard let codeStateLink = codeStateLink else {
-            owsFailDebug("Missing codeStateLink.")
-            return
-        }
 
-        var e164PhoneNumber = ""
-        if let phoneNumber = onboardingController.phoneNumber {
-            e164PhoneNumber = phoneNumber.e164
-        }
+        resendCodeButton?.setEnabled(canResend)
+        callMeButton?.setEnabled(canResend)
 
-        let formattedPhoneNumber =
-            PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: e164PhoneNumber)
-                .replacingOccurrences(of: " ", with: "\u{00a0}")
+        if canResend {
+            let resendCodeTitle = NSLocalizedString(
+                "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON",
+                comment: "Label for button to resend SMS verification code.")
+            let callMeTitle = NSLocalizedString(
+                "ONBOARDING_VERIFICATION_CALL_ME_BUTTON",
+                comment: "Label for button to perform verification with a phone call.")
 
-        // Update titleLabel
-        switch codeState {
-        case .sent, .readyForResend:
-            titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT",
-                                                               comment: "Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}."),
-                                     formattedPhoneNumber)
-        case .resent:
-            titleLabel.text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT",
-                                                               comment: "Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}."),
-                                     formattedPhoneNumber)
-        }
+            resendCodeButton?.setTitle(
+                title: resendCodeTitle,
+                font: .ows_dynamicTypeSubheadlineClamped,
+                titleColor: Theme.accentBlueColor)
+            callMeButton?.setTitle(
+                title: callMeTitle,
+                font: .ows_dynamicTypeSubheadlineClamped,
+                titleColor: Theme.accentBlueColor)
 
-        // Update codeStateLink
-        switch codeState {
-        case .sent:
+        } else {
             let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
             let countdownRemaining = max(0, countdownDuration - countdownInterval)
             let formattedCountdown = OWSFormat.formatDurationSeconds(Int(round(countdownRemaining)))
-            let text = String(format: NSLocalizedString("ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT",
-                                                        comment: "Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}."),
-                              formattedCountdown)
-            codeStateLink.setTitle(title: text, font: .ows_dynamicTypeBodyClamped, titleColor: Theme.secondaryTextAndIconColor)
-        case .readyForResend:
-            codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK",
-                                                            comment: "Label for link that can be used when the original code did not arrive."),
-                                   font: .ows_dynamicTypeBodyClamped,
-                                   titleColor: Theme.accentBlueColor)
-        case .resent:
-            codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK",
-                                                            comment: "Label for link that can be used when the resent code did not arrive."),
-                                   font: .ows_dynamicTypeBodyClamped,
-                                   titleColor: Theme.accentBlueColor)
+
+            let resendCodeCountdownFormat = NSLocalizedString(
+                "ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT",
+                comment: "Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}.")
+            let callMeCountdownFormat = NSLocalizedString(
+                "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT",
+                comment: "Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}.")
+
+            let resendCodeTitle = String(format: resendCodeCountdownFormat, formattedCountdown)
+            let callMeTitle = String(format: callMeCountdownFormat, formattedCountdown)
+            resendCodeButton?.setTitle(
+                title: resendCodeTitle,
+                font: .ows_dynamicTypeSubheadlineClamped,
+                titleColor: Theme.secondaryTextAndIconColor)
+            callMeButton?.setTitle(
+                title: callMeTitle,
+                font: .ows_dynamicTypeSubheadlineClamped,
+                titleColor: Theme.secondaryTextAndIconColor)
+        }
+    }
+
+    private func resendCode(asPhoneCall: Bool) {
+        onboardingCodeView.resignFirstResponder()
+        
+        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: onboardingController.phoneNumber?.e164 ?? "")
+        self.onboardingController.presentPhoneNumberConfirmationSheet(from: self, number: formattedPhoneNumber) { [weak self] shouldContinue in
+            guard let self = self else { return }
+            guard shouldContinue else {
+                self.navigationController?.popViewController(animated: true)
+                return
+            }
+
+            self.setProgressView(animating: true, text: "")
+            self.onboardingController.requestVerification(fromViewController: self, isSMS: !asPhoneCall) { [weak self] error in
+                self?.setProgressView(animating: false)
+                if error != nil {
+                    self?.onboardingCodeView.becomeFirstResponder()
+                }
+            }
         }
     }
 
     // MARK: - View Lifecycle
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        shouldBottomViewReserveSpaceForKeyboard = false
+    }
 
-        _ = onboardingCodeView.becomeFirstResponder()
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        onboardingCodeView.becomeFirstResponder()
+        shouldIgnoreKeyboardChanges = false
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        shouldIgnoreKeyboardChanges = true
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // After a layout pass performed under the equal spacing constraint, pin the
+        // top spacer's height. We don't want to re-adjust everything whenever the keyboard
+        // frame changes (e.g. showing and hiding the QuickType bar)
+        if equalSpacerHeightConstraint?.isActive == true, topSpacer.height > 0 {
+            pinnedSpacerHeightConstraint?.constant = topSpacer.height
+
+            pinnedSpacerHeightConstraint?.isActive = true
+            equalSpacerHeightConstraint?.isActive = false
+        }
     }
 
     // MARK: - Events
 
     @objc func backLinkTapped() {
         Logger.info("")
-
         self.navigationController?.popViewController(animated: true)
     }
 
-    @objc func resendCodeLinkTapped() {
+    @objc func resendCodeButtonTapped() {
+        guard canResend else { return }
         Logger.info("")
-
-        switch codeState {
-        case .sent:
-            // Ignore taps until the countdown expires.
-            break
-        case .readyForResend, .resent:
-            showResendActionSheet()
-        }
+        resendCode(asPhoneCall: false)
     }
 
-    private func showResendActionSheet() {
+    @objc func callMeButtonTapped() {
+        guard canResend else { return }
         Logger.info("")
-
-        let actionSheet = ActionSheetController(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE",
-                                                                     comment: "Title for the 'resend code' alert in the 'onboarding verification' view."),
-                                            message: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE",
-                                                                       comment: "Message for the 'resend code' alert in the 'onboarding verification' view."))
-
-        if onboardingController.verificationRequestCount > 2 {
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT",
-                                                                             comment: "action sheet item shown after a number of failures to receive a verificaiton SMS during registration"),
-                                                    style: .default) { _ in
-                ComposeSupportEmailOperation.sendEmailWithDefaultErrorHandling(supportFilter: "Signal Registration - Verification Code for iOS")
-            })
-        }
-
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON",
-                                                                     comment: "Label for the 'resend code by SMS' button in the 'onboarding verification' view."),
-                                            style: .default) { _ in
-                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: true)
-        })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON",
-                                                                     comment: "Label for the 'resend code by voice' button in the 'onboarding verification' view."),
-                                            style: .default) { _ in
-                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: false)
-        })
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-
-        self.presentActionSheet(actionSheet)
+        resendCode(asPhoneCall: true)
     }
 
     private func tryToVerify() {
         Logger.info("")
-
-        guard onboardingCodeView.isComplete else {
-            self.setHasInvalidCode(false)
-            return
-        }
-
         setHasInvalidCode(false)
+        guard onboardingCodeView.isComplete else { return }
 
+        let spinnerLabel = NSLocalizedString(
+            "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL",
+            comment: "Label for a progress spinner currently validating code")
+
+        setProgressView(animating: true, text: spinnerLabel)
+        onboardingCodeView.resignFirstResponder()
         onboardingController.update(verificationCode: onboardingCodeView.verificationCode)
 
-        // Temporarily hide the "resend link" button during the verification attempt.
-        codeStateLink?.layer.opacity = 0.05
-
-        onboardingController.submitVerification(fromViewController: self, completion: { (outcome) in
-            self.codeStateLink?.layer.opacity = 1
-
+        onboardingController.submitVerification(fromViewController: self, showModal: false, completion: { (outcome) in
+            self.setProgressView(animating: false)
+            if outcome != .success {
+                self.onboardingCodeView.becomeFirstResponder()
+            }
             if outcome == .invalidVerificationCode {
                 self.setHasInvalidCode(true)
             }
         })
     }
 
-    private func setHasInvalidCode(_ value: Bool) {
-        onboardingCodeView.setHasError(value)
-        errorLabel.isHidden = !value
+    private func setProgressView(animating: Bool, text: String? = nil) {
+        text.map { progressView.loadingText = $0 }
+
+        if animating, !progressView.isAnimating {
+            progressView.startAnimating()
+            UIView.animate(withDuration: 0.25, delay: 0.25, options: .beginFromCurrentState) {
+                self.backLink?.setEnabled(false)
+                self.resendCodeButton?.setEnabled(false)
+                self.resendCodeButton?.setEnabled(false)
+
+                self.progressView.alpha = 1
+                self.onboardingCodeView.alpha = 0
+            }
+
+        } else if !animating, progressView.isAnimating {
+            UIView.animate(withDuration: 0.25, delay: 0, options: .beginFromCurrentState) {
+                self.backLink?.setEnabled(true)
+                self.resendCodeButton?.setEnabled(true)
+                self.resendCodeButton?.setEnabled(true)
+
+                self.progressView.alpha = 0
+                self.onboardingCodeView.alpha = 1
+            } completion: { _ in
+                self.progressView.stopAnimatingImmediately()
+            }
+        }
+    }
+
+    private func setHasInvalidCode(_ isInvalid: Bool) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: .beginFromCurrentState) {
+            self.onboardingCodeView.setHasError(isInvalid)
+            self.errorLabel.alpha = isInvalid ? 1 : 0
+        }
     }
 
     @objc

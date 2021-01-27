@@ -70,6 +70,13 @@ public class OnboardingNavigationController: OWSNavigationController {
             setViewControllers([onboardingController.nextViewController(milestone: nextMilestone)], animated: false)
         }
     }
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        let superOrientations = super.supportedInterfaceOrientations
+        let onboardingOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
+
+        return superOrientations.intersection(onboardingOrientations)
+    }
 }
 
 @objc
@@ -353,6 +360,9 @@ public class OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         Logger.info("")
+
+        // TODO: Once notification work is complete, uncomment this.
+        // AppEnvironment.shared.notificationPresenter.cancelIncompleteRegistrationNotification()
 
         let view = OnboardingVerificationViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
@@ -664,7 +674,28 @@ public class OnboardingController: NSObject {
 
     // MARK: - Registration
 
-    public func requestVerification(fromViewController: UIViewController, isSMS: Bool) {
+    public func presentPhoneNumberConfirmationSheet(from vc: UIViewController, number: String, completion: @escaping (_ didApprove: Bool) -> Void) {
+        let titleFormat = NSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT",
+            comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}.")
+        let message = NSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
+            comment: "Message for confirmation alert during phone number registration.")
+        let editButtonTitle = NSLocalizedString(
+            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON",
+            comment: "A button allowing user to cancel registration and edit a phone number")
+
+        let sheet = ActionSheetController(title: String(format: titleFormat, number), message: message)
+        sheet.addAction(ActionSheetAction(title: CommonStrings.yesButton, style: .default, handler: { _ in
+            completion(true)
+        }))
+        sheet.addAction(ActionSheetAction(title: editButtonTitle, style: .default, handler: { _ in
+            completion(false)
+        }))
+        vc.present(sheet, animated: true, completion: nil)
+    }
+
+    public func requestVerification(fromViewController: UIViewController, isSMS: Bool, completion: @escaping (_ error: Error?) -> Void) {
         AssertIsOnMainThread()
 
         guard let phoneNumber = phoneNumber else {
@@ -679,49 +710,52 @@ public class OnboardingController: NSObject {
 
         let captchaToken = self.captchaToken
         self.verificationRequestCount += 1
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: true) { modal in
-            firstly {
-                self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
-                                                               captchaToken: captchaToken,
-                                                               isSMS: isSMS)
-            }.done {
-                modal.dismiss {
-                    self.requestingVerificationDidSucceed(viewController: fromViewController)
-                }
-            }.catch { error in
-                Logger.error("Error: \(error)")
-                modal.dismiss {
-                    self.requestingVerificationDidFail(viewController: fromViewController, error: error)
-                }
-            }
+
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+        firstly { () -> Promise<Void> in
+            return self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
+                                                           captchaToken: captchaToken,
+                                                           isSMS: isSMS)
+        }.done {
+            completion(nil)
+            self.requestingVerificationDidSucceed(viewController: fromViewController)
+
+        }.catch { error in
+            Logger.error("Error: \(error)")
+            completion(error)
+            self.requestingVerificationDidFail(viewController: fromViewController, error: error)
         }
+//        }
     }
 
     private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
-        if let statusCode = error.httpStatusCode {
-            switch statusCode {
-            case 400:
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
-                return
-            case 413:
-                OWSActionSheets.showActionSheet(title: nil,
-                                                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
-                return
-            default:
-                break
-            }
-        }
+        switch error {
+        case let error where error.httpStatusCode == 400:
+            OWSActionSheets.showActionSheet(
+                title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
 
-        if case AccountServiceClientError.captchaRequired = error {
-            return onboardingDidRequireCaptcha(viewController: viewController)
-        }
+        case let error where error.httpStatusCode == 413:
+            OWSActionSheets.showActionSheet(
+                title: nil,
+                message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
 
-        let nsError = error as NSError
-        owsFailDebug("unexpected error: \(nsError)")
-        OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                                        message: nsError.localizedRecoverySuggestion)
+        case let error where error.isNetworkFailureOrTimeout:
+            OWSActionSheets.showActionSheet(
+                title: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
+                                         comment: "Alert title for network failure during registration"),
+                message: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
+                                           comment: "Alert body for network failure during registration"))
+
+        case AccountServiceClientError.captchaRequired:
+            onboardingDidRequireCaptcha(viewController: viewController)
+
+        default:
+            let nsError = error as NSError
+            owsFailDebug("unexpected error: \(nsError)")
+            OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
+                                            message: nsError.localizedRecoverySuggestion)
+        }
     }
 
     // MARK: - Transfer
@@ -799,6 +833,7 @@ public class OnboardingController: NSObject {
 
     public func submitVerification(fromViewController: UIViewController,
                                    checkForAvailableTransfer: Bool = true,
+                                   showModal: Bool = true,
                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
@@ -872,44 +907,56 @@ public class OnboardingController: NSObject {
         tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
 
         let twoFAPin = self.twoFAPin
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: true) { (modal) in
 
-                                                        self.accountManager.register(
-                                                            verificationCode: verificationCode,
-                                                            pin: twoFAPin,
-                                                            checkForAvailableTransfer: checkForAvailableTransfer
-                                                        )
-                                                            .then { _ -> Promise<Void> in
-                                                                // Re-enable 2FA and RegLock with the registered pin, if any
-                                                                if let pin = twoFAPin {
-                                                                    self.databaseStorage.write { transaction in
-                                                                        OWS2FAManager.shared().markEnabled(pin: pin, transaction: transaction)
-                                                                    }
 
-                                                                    if OWS2FAManager.shared().mode == .V2 {
-                                                                        return OWS2FAManager.shared().enableRegistrationLockV2()
-                                                                    }
-                                                                }
 
-                                                                return Promise.value(())
-                                                            }.done { (_) in
-                                                                DispatchQueue.main.async {
-                                                                    modal.dismiss(completion: {
-                                                                        self.verificationDidComplete(fromView: fromViewController)
-                                                                    })
-                                                                }
-                                                            }.catch({ (error) in
-                                                                Logger.error("Error: \(error)")
+        let promise = firstly {
+            self.accountManager.register(
+                verificationCode: verificationCode,
+                pin: twoFAPin,
+                checkForAvailableTransfer: checkForAvailableTransfer)
 
-                                                                DispatchQueue.main.async {
-                                                                    modal.dismiss(completion: {
-                                                                        self.verificationFailed(fromViewController: fromViewController,
-                                                                                                error: error as NSError,
-                                                                                                completion: completion)
-                                                                    })
-                                                                }
-                                                            })
+        }.then { () -> Promise<Void> in
+            // Re-enable 2FA and RegLock with the registered pin, if any
+            if let pin = twoFAPin {
+                self.databaseStorage.write { transaction in
+                    OWS2FAManager.shared().markEnabled(pin: pin, transaction: transaction)
+                }
+                if OWS2FAManager.shared().mode == .V2 {
+                    return OWS2FAManager.shared().enableRegistrationLockV2()
+                }
+            }
+            return Promise.value(())
+        }
+
+        if showModal {
+            ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
+                promise.done {
+                    modal.dismiss {
+                        self.verificationDidComplete(fromView: fromViewController)
+                    }
+                }.catch { error in
+                    modal.dismiss(completion: {
+                        Logger.error("Error: \(error)")
+
+                        self.verificationFailed(
+                            fromViewController: fromViewController,
+                            error: error as NSError,
+                            completion: completion)
+                    })
+                }
+            }
+        } else {
+            promise.done {
+                self.verificationDidComplete(fromView: fromViewController)
+            }.catch { error in
+                Logger.error("Error: \(error)")
+
+                self.verificationFailed(
+                    fromViewController: fromViewController,
+                    error: error as NSError,
+                    completion: completion)
+            }
         }
     }
 

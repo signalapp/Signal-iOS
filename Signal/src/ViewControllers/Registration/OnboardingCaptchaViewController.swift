@@ -17,7 +17,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE", comment: "Title of the 'onboarding Captcha' view."))
         titleLabel.accessibilityIdentifier = "onboarding.captcha." + "titleLabel"
 
         let titleRow = UIStackView(arrangedSubviews: [
@@ -120,7 +120,8 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         onboardingController.update(captchaToken: captchaToken)
 
-        onboardingController.requestVerification(fromViewController: self, isSMS: true)
+        onboardingController.requestVerification(fromViewController: self, isSMS: true) { success in
+        }
     }
 
     private func parseCaptcha(url: URL) -> String? {

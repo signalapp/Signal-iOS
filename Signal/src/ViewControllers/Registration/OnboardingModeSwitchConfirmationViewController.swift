@@ -48,9 +48,9 @@ class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewControll
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingHigh()
 
-        let titleLabel = self.titleLabel(text: titleText)
+        let titleLabel = self.createTitleLabel(text: titleText)
 
-        let explanationLabel = self.explanationLabel(explanationText: explanationText)
+        let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
 
         let nextButton = self.primaryButton(title: nextButtonText,
                                             selector: #selector(didPressNext))

@@ -16,7 +16,7 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(
+        let titleLabel = self.createTitleLabel(
             text: NSLocalizedString("DEVICE_TRANSFER_QRCODE_TITLE",
                                     comment: "The title for the device transfer qr code view")
         )
@@ -24,7 +24,7 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
         titleLabel.accessibilityIdentifier = "onboarding.transferQRCode.titleLabel"
         titleLabel.setContentHuggingHigh()
 
-        let explanationLabel = self.explanationLabel(
+        let explanationLabel = self.createExplanationLabel(
             explanationText: NSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION",
                                                comment: "The explanation for the device transfer qr code view")
         )
@@ -33,7 +33,7 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
 
         qrCodeView.setContentHuggingVerticalLow()
 
-        let explanationLabel2 = self.explanationLabel(
+        let explanationLabel2 = self.createExplanationLabel(
             explanationText: NSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION2",
             comment: "The second explanation for the device transfer qr code view")
         )

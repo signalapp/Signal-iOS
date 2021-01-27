@@ -46,7 +46,7 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString(
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE",
             comment: "Title of the 'onboarding phone number discoverability' view."
         ))
@@ -67,7 +67,7 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
             comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}"
         )
-        let explanationLabel = self.explanationLabel(
+        let explanationLabel = self.createExplanationLabel(
             explanationText: String(format: explanationTextFormat, formattedPhoneNumber)
         )
         explanationLabel.accessibilityIdentifier = "onboarding.phoneNumberDiscoverability." + "explanationLabel"
