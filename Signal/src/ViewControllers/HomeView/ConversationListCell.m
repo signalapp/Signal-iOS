@@ -240,11 +240,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.snippetLabel.font = self.snippetFont;
     self.snippetLabel.textColor = self.snippetColor;
 
-    // UILabel appears to have an issue where it's height is
-    // too large if its text is just a series of newlines,
-    // so we need to clamp it to max two lines of height.
-    //
-    // We pad the measurement to avoid clipping.
     CGFloat snippetLineHeight = ceil(1.1 * self.snippetFont.ows_semibold.lineHeight);
 
     CGFloat muteIconSize = 16;
@@ -646,7 +641,13 @@ NS_ASSUME_NONNULL_BEGIN
             attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
         }
         // Ensure that the snippet is at least two lines so that it is top-aligned.
-        attributedText = [attributedText stringByAppendingString:@"\n \n" attributes:@{}];
+        //
+        // UILabel appears to have an issue where it's height is
+        // too large if its text is just a series of empty lines,
+        // so we include spaces to avoid that issue.
+        attributedText = [attributedText stringByAppendingString:@" \n \n" attributes:@{
+            NSFontAttributeName : self.snippetFont,
+        }];
         self.snippetLabel.attributedText = attributedText;
 
         self.typingIndicatorWrapper.hidden = YES;
