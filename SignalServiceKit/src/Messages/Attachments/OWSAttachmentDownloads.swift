@@ -1027,7 +1027,9 @@ public extension OWSAttachmentDownloads {
         }
 
         guard !promises.isEmpty else {
-            success(attachmentStreams)
+            Self.serialQueue.async {
+                success(attachmentStreams)
+            }
             return
         }
 
