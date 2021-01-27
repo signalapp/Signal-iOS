@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,8 +37,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return OWSProfileManager.shared()
     }
 
-    private var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+    private var groupV2Updates: GroupV2UpdatesImpl {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesImpl
     }
 
     private var versionedProfiles: VersionedProfilesImpl {
@@ -1695,7 +1695,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // Download and update database with the group state.
             return firstly {
                 self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
-                                                                                      groupSecretParamsData: groupV2Params.groupSecretParamsData)
+                                                                                      groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                                                                                      groupModelOptions: .didJustAddSelfViaGroupLink)
             }.recover(on: .global()) { (_: Error) -> Promise<TSGroupThread> in
                 throw GroupsV2Error.requestingMemberCantLoadGroupState
             }.then(on: .global()) { _ -> Promise<TSGroupThread> in

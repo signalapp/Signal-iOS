@@ -35,6 +35,8 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     public var wasJustCreatedByLocalUser: Bool = false
     @objc
+    public var didJustAddSelfViaGroupLink: Bool = false
+    @objc
     public var droppedMembers = [SignalServiceAddress]()
 
     @objc
@@ -50,6 +52,7 @@ public class TSGroupModelV2: TSGroupModel {
                          isPlaceholderModel: Bool,
                          wasJustMigrated: Bool,
                          wasJustCreatedByLocalUser: Bool,
+                         didJustAddSelfViaGroupLink: Bool,
                          addedByAddress: SignalServiceAddress?,
                          droppedMembers: [SignalServiceAddress]) {
         assert(secretParamsData.count > 0)
@@ -63,6 +66,7 @@ public class TSGroupModelV2: TSGroupModel {
         self.isPlaceholderModel = isPlaceholderModel
         self.wasJustMigrated = wasJustMigrated
         self.wasJustCreatedByLocalUser = wasJustCreatedByLocalUser
+        self.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
         self.droppedMembers = droppedMembers
 
         super.init(groupId: groupId,
@@ -135,7 +139,12 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.droppedMembers.stableSort() == droppedMembers.stableSort() else {
             return false
         }
-        // Ignore isPlaceholderModel & wasJustMigrated & wasJustCreatedByLocalUser.
+        // Ignore transient properties:
+        //
+        // * isPlaceholderModel
+        // * wasJustMigrated
+        // * wasJustCreatedByLocalUser
+        // * didJustAddSelfViaGroupLink
         return true
     }
 
@@ -156,6 +165,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "isPlaceholderModel: \(isPlaceholderModel),\n"
         result += "wasJustMigrated: \(wasJustMigrated),\n"
         result += "wasJustCreatedByLocalUser: \(wasJustCreatedByLocalUser),\n"
+        result += "didJustAddSelfViaGroupLink: \(didJustAddSelfViaGroupLink),\n"
         result += "droppedMembers: \(droppedMembers),\n"
         result += "]"
         return result
@@ -215,6 +225,13 @@ public extension TSGroupModel {
             return false
         }
         return groupModelV2.wasJustCreatedByLocalUser
+    }
+
+    var didJustAddSelfViaGroupLinkV2: Bool {
+        guard let groupModelV2 = self as? TSGroupModelV2 else {
+            return false
+        }
+        return groupModelV2.didJustAddSelfViaGroupLink
     }
 
     var getDroppedMembers: [SignalServiceAddress] {
