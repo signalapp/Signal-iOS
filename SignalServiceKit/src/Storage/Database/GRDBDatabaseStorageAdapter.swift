@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         super.init()
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
+            // This adapter may have been discarded after running
+            // schema migrations.            
+            guard let self = self else { return }
+            
             BenchEventStart(title: "GRDB Setup", eventId: "GRDB Setup")
             defer { BenchEventComplete(eventId: "GRDB Setup") }
             do {
@@ -66,10 +70,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 owsFail("unable to setup database: \(error)")
             }
         }
-    }
-
-    func newDatabaseQueue() -> GRDBDatabaseQueue {
-        return GRDBDatabaseQueue(storageAdapter: self)
     }
 
     public func add(function: DatabaseFunction) {

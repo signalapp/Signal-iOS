@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -132,6 +132,51 @@ public class SDSDatabaseStorage: SDSTransactable {
     @objc
     public static let storageDidReload = Notification.Name("storageDidReload")
 
+    // completion is performed on the main queue.
+    @objc
+    public func runGrdbSchemaMigrations(completion: @escaping () -> Void) {
+        guard storageCoordinatorState == .GRDB,
+              canReadFromGrdb else {
+            owsFailDebug("Not GRDB.")
+            return
+        }
+
+        Logger.info("")
+
+        let didPerformIncrementalMigrations = GRDBSchemaMigrator().runSchemaMigrations()
+
+        Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
+
+        if didPerformIncrementalMigrations {
+            let benchSteps = BenchSteps()
+
+            // There seems to be a rare issue where at least one reader or writer
+            // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
+            // a schema migration and does not reflect the migrations.
+            grdbStorage.pool.releaseMemory()
+            weak var weakPool = grdbStorage.pool
+            weak var weakGrdbStorage = grdbStorage
+            owsAssertDebug(weakPool != nil)
+            owsAssertDebug(weakGrdbStorage != nil)
+            _grdbStorage = createGrdbStorage()
+
+            DispatchQueue.main.async {
+                // We want to make sure all db connections from the old adapter/pool are closed.
+                //
+                // We only reach this point by a predictable code path; the autoreleasepool
+                // should be drained by this point.
+                owsAssertDebug(weakPool == nil)
+                owsAssertDebug(weakGrdbStorage == nil)
+
+                benchSteps.step("New GRDB adapter.")
+
+                completion()
+            }
+        } else {
+            DispatchQueue.main.async(execute: completion)
+        }
+    }
+
     public func reload() {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
@@ -150,7 +195,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
 
         SSKEnvironment.shared.warmCaches()
-        OWSIdentityManager.shared().recreateDatabaseQueue()
 
         if wasRegistered != TSAccountManager.shared().isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
@@ -231,28 +275,6 @@ public class SDSDatabaseStorage: SDSTransactable {
             return
         }
         uiDatabaseObserver.appendSnapshotDelegate(snapshotDelegate)
-    }
-
-    // MARK: -
-
-    @objc
-    public func newDatabaseQueue() -> SDSAnyDatabaseQueue {
-        var yapDatabaseQueue: YAPDBDatabaseQueue?
-        var grdbDatabaseQueue: GRDBDatabaseQueue?
-
-        switch storageCoordinatorState {
-        case .YDB:
-            yapDatabaseQueue = yapStorage.newDatabaseQueue()
-        case .GRDB:
-            grdbDatabaseQueue = grdbStorage.newDatabaseQueue()
-        case .ydbTests, .grdbTests, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
-            yapDatabaseQueue = yapStorage.newDatabaseQueue()
-            grdbDatabaseQueue = grdbStorage.newDatabaseQueue()
-        }
-
-        return SDSAnyDatabaseQueue(yapDatabaseQueue: yapDatabaseQueue,
-                                   grdbDatabaseQueue: grdbDatabaseQueue,
-                                   crossProcess: crossProcess)
     }
 
     // MARK: - UI Database Snapshot Completion

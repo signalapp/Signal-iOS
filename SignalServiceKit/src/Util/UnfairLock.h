@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// Note: Errors with unfair lock are fatal and will terminate the process.
 NS_SWIFT_NAME(UnfairLock)
-@interface OWSUnfairLock : NSObject <NSLocking>
+@interface UnfairLock : NSObject <NSLocking>
 
 /// Locks the lock. Blocks if the lock is held by another thread.
 /// Forwards to os_unfair_lock_lock() defined in os/lock.h

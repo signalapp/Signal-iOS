@@ -1,10 +1,18 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 public extension UnfairLock {
+
+    /// Acquires and releases the lock around the provided closure. Blocks the current thread until the lock can be
+    /// acquired.
+    @objc
+    @available(swift, obsoleted: 1.0)
+    final func withLockObjc(_ criticalSection: () -> Void) {
+        withLock(criticalSection)
+    }
 
     /// Acquires and releases the lock around the provided closure. Blocks the current thread until the lock can be
     /// acquired.
