@@ -189,7 +189,12 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     DispatchMainThreadSafe(^{
         if (self.conversationSplitViewController.visibleThread) {
             if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
-                [self.conversationSplitViewController.selectedConversationViewController popKeyBoard];
+                ConversationViewController *conversationView
+                    = self.conversationSplitViewController.selectedConversationViewController;
+                [conversationView popKeyBoard];
+                if (action == ConversationViewActionUpdateDraft) {
+                    [conversationView reloadDraft];
+                }
                 return;
             }
         }

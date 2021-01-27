@@ -1014,8 +1014,12 @@ typedef enum : NSUInteger {
         case ConversationViewActionGroupCallLobby:
             [self showGroupLobbyOrActiveCall];
             break;
-        case ConversationViewActionNewGroupActionSheet:
+        case ConversationViewActionNewGroupActionSheet: {
             dispatch_async(dispatch_get_main_queue(), ^{ [self showGroupLinkPromotionActionSheet]; });
+            break;
+        }
+        case ConversationViewActionUpdateDraft:
+            // Do nothing; input toolbar was just created with the latest draft.
             break;
     }
 
