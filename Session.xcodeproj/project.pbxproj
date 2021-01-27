@@ -305,6 +305,8 @@
 		B8D64FCB25BA78A90029CFC0 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		B8FF8DAE25C0D00F004D1F22 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
 		B8FF8DAF25C0D00F004D1F22 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
+		B8FF8E6225C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 in Resources */ = {isa = PBXBuildFile; fileRef = B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */; };
+		B8FF8E7425C10FC3004D1F22 /* GeoLite2-Country-Locations-English in Resources */ = {isa = PBXBuildFile; fileRef = B8FF8E7325C10FC3004D1F22 /* GeoLite2-Country-Locations-English */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
 		B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
@@ -543,8 +545,6 @@
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
 		C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C354E75923FE2A7600CE22E3 /* BaseVC.swift */; };
-		C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */; };
-		C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */; };
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
 		C3645350252449260045C478 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364534F252449260045C478 /* VoiceMessageView.swift */; };
 		C364535C252467900045C478 /* AudioUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C364535B252467900045C478 /* AudioUtilities.swift */; };
@@ -1356,6 +1356,8 @@
 		B8D8F19225661BF80092EF10 /* Storage+Messaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Messaging.swift"; sourceTree = "<group>"; };
 		B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OnionRequests.swift"; sourceTree = "<group>"; };
 		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
+		B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Blocks-IPv4"; path = "Countries/GeoLite2-Country-Blocks-IPv4"; sourceTree = "<group>"; };
+		B8FF8E7325C10FC3004D1F22 /* GeoLite2-Country-Locations-English */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Locations-English"; path = "Countries/GeoLite2-Country-Locations-English"; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		B90418E5183E9DD40038554A /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -1596,8 +1598,6 @@
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
 		C354E75923FE2A7600CE22E3 /* BaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVC.swift; sourceTree = "<group>"; };
 		C35E8AA22485C72300ACB629 /* SwiftCSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCSV.framework; path = ThirdParty/Carthage/Build/iOS/SwiftCSV.framework; sourceTree = "<group>"; };
-		C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Locations-English.csv"; sourceTree = "<group>"; };
-		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
 		C364534F252449260045C478 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		C364535B252467900045C478 /* AudioUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioUtilities.swift; sourceTree = "<group>"; };
@@ -2388,6 +2388,15 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		B8FF8E6025C10D8B004D1F22 /* Countries */ = {
+			isa = PBXGroup;
+			children = (
+				B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */,
+				B8FF8E7325C10FC3004D1F22 /* GeoLite2-Country-Locations-English */,
+			);
+			name = Countries;
+			sourceTree = "<group>";
+		};
 		C300A5BB2554AFFB00555489 /* Messages */ = {
 			isa = PBXGroup;
 			children = (
@@ -2754,15 +2763,6 @@
 				C352A32E2557549C00338F3E /* NotifyPNServerJob.swift */,
 			);
 			path = Jobs;
-			sourceTree = "<group>";
-		};
-		C35E8AA42485C83B00ACB629 /* CSV */ = {
-			isa = PBXGroup;
-			children = (
-				C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */,
-				C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */,
-			);
-			path = CSV;
 			sourceTree = "<group>";
 		};
 		C360968D25AD16B4008B62B2 /* Onboarding */ = {
@@ -3561,7 +3561,7 @@
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
-				C35E8AA42485C83B00ACB629 /* CSV */,
+				B8FF8E6025C10D8B004D1F22 /* Countries */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B633C4FD1A1D190B0059AC12 /* Images */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
@@ -4319,7 +4319,6 @@
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
-				C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
@@ -4333,12 +4332,12 @@
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
+				B8FF8E7425C10FC3004D1F22 /* GeoLite2-Country-Locations-English in Resources */,
 				B8CCF6352396005F0091D419 /* SpaceMono-Regular.ttf in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
 				4C61819F219E1796009BD6B5 /* typing-animation-dark.gif in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
-				C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				C3CA3ABE255CDB0D00F4C6D4 /* portuguese.txt in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
@@ -4351,6 +4350,7 @@
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				C3CA3AC8255CDB2900F4C6D4 /* spanish.txt in Resources */,
 				34B6A90B218BA1D1007C4606 /* typing-animation.gif in Resources */,
+				B8FF8E6225C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
