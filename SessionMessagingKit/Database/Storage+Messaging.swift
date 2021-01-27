@@ -31,7 +31,17 @@ extension Storage {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let tsMessage: TSMessage
         if message.sender == getUserPublicKey() {
-            tsMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
+            let tsOutgoingMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
+            var recipients: [String] = []
+            if let syncTarget = message.syncTarget {
+                recipients.append(syncTarget)
+            } else if let thread = thread as? TSGroupThread, thread.isClosedGroup {
+                recipients = thread.groupModel.groupMemberIds
+            }
+            recipients.forEach { recipient in
+                tsOutgoingMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
+            }
+            tsMessage = tsOutgoingMessage
         } else {
             tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         }
