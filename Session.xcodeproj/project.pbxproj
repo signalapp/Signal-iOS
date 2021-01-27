@@ -682,13 +682,6 @@
 		C38EF40B255B6DF7007E1867 /* TappableStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3ED255B6DF6007E1867 /* TappableStackView.swift */; };
 		C38EF40C255B6DF7007E1867 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3EE255B6DF6007E1867 /* GradientView.swift */; };
 		C38EF48A255B7E3F007E1867 /* SessionUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C331FF1B2558F9D300070591 /* SessionUIKit.framework */; };
-		C396DAEF2518408B00FF6DC5 /* ParsingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAE82518408900FF6DC5 /* ParsingState.swift */; };
-		C396DAF02518408B00FF6DC5 /* String+Lines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAE92518408A00FF6DC5 /* String+Lines.swift */; };
-		C396DAF12518408B00FF6DC5 /* EnumeratedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAEA2518408A00FF6DC5 /* EnumeratedView.swift */; };
-		C396DAF22518408B00FF6DC5 /* NamedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAEB2518408A00FF6DC5 /* NamedView.swift */; };
-		C396DAF32518408B00FF6DC5 /* Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAEC2518408A00FF6DC5 /* Description.swift */; };
-		C396DAF42518408B00FF6DC5 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAED2518408B00FF6DC5 /* Parser.swift */; };
-		C396DAF52518408B00FF6DC5 /* CSV.swift in Sources */ = {isa = PBXBuildFile; fileRef = C396DAEE2518408B00FF6DC5 /* CSV.swift */; };
 		C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */; };
 		C3A3A0EC256E1949004D228D /* OWSRecipientIdentity.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBEC255A581B00E217F9 /* OWSRecipientIdentity.m */; };
 		C3A3A0F5256E194C004D228D /* OWSRecipientIdentity.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAA0255A57FF00E217F9 /* OWSRecipientIdentity.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1762,13 +1755,6 @@
 		C396469D2509D3F400B0B9F5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C396469E2509D40400B0B9F5 /* vi-VN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "vi-VN"; path = "vi-VN.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		C396469F2509D41100B0B9F5 /* id-ID */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "id-ID"; path = "id-ID.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		C396DAE82518408900FF6DC5 /* ParsingState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParsingState.swift; sourceTree = "<group>"; };
-		C396DAE92518408A00FF6DC5 /* String+Lines.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Lines.swift"; sourceTree = "<group>"; };
-		C396DAEA2518408A00FF6DC5 /* EnumeratedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnumeratedView.swift; sourceTree = "<group>"; };
-		C396DAEB2518408A00FF6DC5 /* NamedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NamedView.swift; sourceTree = "<group>"; };
-		C396DAEC2518408A00FF6DC5 /* Description.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Description.swift; sourceTree = "<group>"; };
-		C396DAED2518408B00FF6DC5 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
-		C396DAEE2518408B00FF6DC5 /* CSV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CSV.swift; sourceTree = "<group>"; };
 		C39DD28724F3318C008590FC /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		C3A3A170256E1D25004D228D /* SSKReachabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKReachabilityManager.swift; sourceTree = "<group>"; };
 		C3A71D0A2558989C0043A11F /* MessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageWrapper.swift; sourceTree = "<group>"; };
@@ -2483,7 +2469,6 @@
 			isa = PBXGroup;
 			children = (
 				C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */,
-				C396DAE72518407300FF6DC5 /* SwiftCSV */,
 			);
 			path = Dependencies;
 			sourceTree = "<group>";
@@ -3214,20 +3199,6 @@
 				C33FDA6D255A57FA00E217F9 /* YapDatabase+Promise.swift */,
 			);
 			path = Database;
-			sourceTree = "<group>";
-		};
-		C396DAE72518407300FF6DC5 /* SwiftCSV */ = {
-			isa = PBXGroup;
-			children = (
-				C396DAEE2518408B00FF6DC5 /* CSV.swift */,
-				C396DAEC2518408A00FF6DC5 /* Description.swift */,
-				C396DAEA2518408A00FF6DC5 /* EnumeratedView.swift */,
-				C396DAEB2518408A00FF6DC5 /* NamedView.swift */,
-				C396DAED2518408B00FF6DC5 /* Parser.swift */,
-				C396DAE82518408900FF6DC5 /* ParsingState.swift */,
-				C396DAE92518408A00FF6DC5 /* String+Lines.swift */,
-			);
-			path = SwiftCSV;
 			sourceTree = "<group>";
 		};
 		C3A721332558BDDF0043A11F /* Open Groups */ = {
@@ -5032,9 +5003,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C396DAF52518408B00FF6DC5 /* CSV.swift in Sources */,
 				B8CCF63723961D6D0091D419 /* NewPrivateChatVC.swift in Sources */,
-				C396DAF12518408B00FF6DC5 /* EnumeratedView.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
@@ -5063,7 +5032,6 @@
 				34D1F0A91F867BFC0066283D /* ConversationViewCell.m in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
-				C396DAF32518408B00FF6DC5 /* Description.swift in Sources */,
 				34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
@@ -5079,7 +5047,6 @@
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumCellView.swift in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
-				C396DAF42518408B00FF6DC5 /* Parser.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				B85A68B12587141A008CC492 /* Storage+Resetting.swift in Sources */,
@@ -5129,7 +5096,6 @@
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */,
 				B8B26C8F234D629C004ED98C /* MentionCandidateSelectionView.swift in Sources */,
-				C396DAF02518408B00FF6DC5 /* String+Lines.swift in Sources */,
 				B8CCF63F23975CFB0091D419 /* JoinPublicChatVC.swift in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
@@ -5143,7 +5109,6 @@
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				45C0DC1B1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
-				C396DAF22518408B00FF6DC5 /* NamedView.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				B82B4094239DF15900A248E7 /* ConversationTitleView.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
@@ -5157,7 +5122,6 @@
 				3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				B8A14D702589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift in Sources */,
-				C396DAEF2518408B00FF6DC5 /* ParsingState.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
