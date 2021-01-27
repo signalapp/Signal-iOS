@@ -50,6 +50,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
                                                          comment: "Accessibility label for audio.")
         audioMessageView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+        audioMessageView.isAccessibilityElement = true
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {

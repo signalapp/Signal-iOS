@@ -99,6 +99,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         selectionView.isHiddenInStackView = !isShowingSelectionUI
 
         titleLabelConfig.applyForRendering(label: titleLabel)
+        titleLabel.accessibilityLabel = accessibilityLabel(description: titleLabelConfig.stringValue)
 
         let isReusing = componentView.rootView.superview != nil
         if !isReusing {

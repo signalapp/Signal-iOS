@@ -76,6 +76,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_ATTACHMENT",
                                                          comment: "Accessibility label for attachment.")
         hStackView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+        hStackView.isAccessibilityElement = true
     }
 
     private var hStackLayoutMargins: UIEdgeInsets {

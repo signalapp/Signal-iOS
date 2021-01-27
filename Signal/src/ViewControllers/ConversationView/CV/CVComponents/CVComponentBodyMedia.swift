@@ -133,6 +133,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_MEDIA",
                                                          comment: "Accessibility label for media.")
         albumView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+        albumView.isAccessibilityElement = true
 
         if hasDownloadButton {
             let iconView = UIImageView.withTemplateImageName("arrow-down-24",

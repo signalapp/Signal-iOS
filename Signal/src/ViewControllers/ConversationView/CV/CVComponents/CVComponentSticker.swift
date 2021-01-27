@@ -65,8 +65,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             reusableMediaView.owner = componentView
             componentView.reusableMediaView = reusableMediaView
             let mediaView = reusableMediaView.mediaView
-            mediaView.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                             comment: "Accessibility label for stickers.")
             containerView.addArrangedSubview(mediaView)
             componentView.layoutConstraints.append(contentsOf: mediaView.autoSetDimensions(to: .square(stickerSize)))
 
@@ -95,9 +93,13 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             return
         }
 
-        let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                         comment: "Accessibility label for stickers.")
-        componentView.rootView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+        componentView.rootView.accessibilityLabel = buildAccessibilityLabel
+        componentView.rootView.isAccessibilityElement = true
+    }
+
+    private var buildAccessibilityLabel: String? {
+        accessibilityLabel(description: NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+                                                          comment: "Accessibility label for stickers."))
     }
 
     private var containerViewConfig: CVStackViewConfig {

@@ -259,15 +259,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private func configureForRemotelyDeleted(componentView: CVComponentViewBodyText) {
-        // TODO: Set accessibilityLabel.
         _ = configureForLabel(componentView: componentView,
-                          labelConfig: labelConfigForRemotelyDeleted)
+                              labelConfig: labelConfigForRemotelyDeleted)
     }
 
     private func configureForOversizeTextDownloading(componentView: CVComponentViewBodyText) {
-        // TODO: Set accessibilityLabel.
         _ = configureForLabel(componentView: componentView,
-                          labelConfig: labelConfigForOversizeTextDownloading)
+                              labelConfig: labelConfigForOversizeTextDownloading)
     }
 
     private func configureForLabel(componentView: CVComponentViewBodyText,
@@ -283,6 +281,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
         componentView.possibleTextView?.isHiddenInStackView = true
 
+        label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
+
         return label
     }
 
@@ -290,8 +290,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                      displayableText: DisplayableText) {
         switch textConfig(displayableText: displayableText) {
         case .labelConfig(let labelConfig):
-            let label = configureForLabel(componentView: componentView, labelConfig: labelConfig)
-            label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
+            _ = configureForLabel(componentView: componentView, labelConfig: labelConfig)
         case .textViewConfig(let textViewConfig):
             let textView = componentView.ensuredTextView
 
