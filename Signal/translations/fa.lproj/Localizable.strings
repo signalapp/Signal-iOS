@@ -2978,7 +2978,7 @@
 "NETWORK_ERROR_RECOVERY" = "لطفا چک کنید که آنلاین هستید و دوباره تلاش کنید.";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+"NETWORK_INTERFACE_SET_CELLULAR" = "صرفا داده همراه";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "هرگز";
@@ -2987,7 +2987,7 @@
 "NETWORK_INTERFACE_SET_WIFI" = "فقط وای-فای";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi and Cellular";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "وای-فای و داده همراه";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "جستجو از طریق شماره تلفن";
@@ -4520,7 +4520,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "هرگز";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "وای-فای و داده همراه";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "وای-فای";

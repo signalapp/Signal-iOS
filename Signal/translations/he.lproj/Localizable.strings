@@ -1757,7 +1757,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ הפעיל/ה אישור מנהלן עבור קישור הקבוצה.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ אינו יכול להתווסף באופן אוטומטי אל קבוצה זו על ידך. הוא הוזמן להצטרף, ולא יראה הודעות קבוצה כלשהן עד שהוא יסכים.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ אינם יכולים להתווסף באופן אוטומטי אל קבוצה זו על ידך. הם הוזמנו להצטרף, ולא יראו הודעות קבוצה כלשהן עד שהם יאשרו.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "הזמנה נשלחה";
@@ -1766,7 +1766,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ הזמנות נשלחו";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "משתמשים אלו אינם יכולים להתווסף באופן אוטומטי אל קבוצה זו על ידך. הם הוזמנו להצטרף, ולא יראו הודעות קבוצה כלשהן עד שהם יסכימו.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "משתמשים אלו אינם יכולים להתווסף באופן אוטומטי אל קבוצה זו על ידך. הם הוזמנו להצטרף, ולא יראו הודעות קבוצה כלשהן עד שהם יאשרו.";
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "הזמנות של חברי קבוצה";
@@ -1886,7 +1886,7 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ עשה אותך מנהלן.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "הסכמת להזמנה אל הקבוצה.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "אישרת הזמנה אל הקבוצה.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "הסכמת להזמנה אל הקבוצה מן %@.";
@@ -1979,10 +1979,10 @@
 "GROUP_NAME_PLACEHOLDER" = "שם קבוצה (דרוש)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ הסכים להזמנה אל הקבוצה.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ אישר/ה הזמנה אל הקבוצה.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ הסכים להזמנה שלך אל הקבוצה.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ אישר/ה את ההזמנה שלך אל הקבוצה.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ הסכים להזמנה אל הקבוצה מן %2$@.";
@@ -2180,7 +2180,7 @@
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "המשתמש בקבוצה כבר.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "לא היה ניתן להסכים להזמנה.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "לא היה ניתן לאשר הזמנה.";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "חסום קבוצה";
@@ -2837,7 +2837,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "סקור בקשה";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "קבל";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "אשר";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "חסום";
@@ -2870,7 +2870,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "להצטרף אל קבוצה זו ולשתף את השם והתמונה שלך עם חבריה? חברי הקבוצה לא יידעו שקראת את הודעותיהם עד שלא תאשר.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "להצטרף אל קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שלא תסכים.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "להצטרף אל קבוצה זו? הקבוצה לא תידע שראית את ההודעות שלה עד שתאשר.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "שחרר חסימה";
@@ -5201,7 +5201,7 @@
 "WALLPAPER_PREVIEW_SET_BUTTON" = "הגדר";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "הצג מראש";
+"WALLPAPER_PREVIEW_TITLE" = "תצוגה מקדימה";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "נקה טפט";
@@ -5222,7 +5222,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "כל הטפטים לא יכלו להתאפס, אנא נסה שוב מאוחר יותר או צור קשר עם התמיכה אם הבעיה נמשכת.";
 
 /* Title for the wallpaper settings preview section. */
-"WALLPAPER_SETTINGS_PREVIEW" = "הצג מראש";
+"WALLPAPER_SETTINGS_PREVIEW" = "תצוגה מקדימה";
 
 /* Reset all wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_ALL" = "אפס את כל הטפטים";

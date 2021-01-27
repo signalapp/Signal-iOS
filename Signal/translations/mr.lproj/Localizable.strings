@@ -1559,61 +1559,61 @@
 "GROUP_CALL_JOIN_BUTTON" = "कॉलमध्ये सामील व्हा";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
+"GROUP_CALL_LEAVE_BUTTON" = "कॉल सोडा";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "या कॉलमध्ये · %ld व्यक्ती";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, आणि %3$@ इतर व्यक्ती कॉलमध्ये आहेत";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ कडून ऑडिओ आणि व्हिडिओ प्राप्त करू शकत नाही";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "त्यांनी आपला सुरक्षितता नंबर बदल सत्यापित न केल्यामुळे, त्यांच्या डिव्हाईसमध्ये काहीतरी समस्या असल्यामुळे, किंवा त्यांनी आपल्याला ब्लॉक केल्यामुळे असे असू शकते.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ कडून ऑडिओ आणि व्हिडिओ प्राप्त करू शकत नाही";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "येथे अजून कुणीही नाही";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "आतापर्यंत या कॉलमध्ये कुणीही नाही.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, and %ld others joined the call";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, आणि %ld इतर व्यक्ती कॉलमध्ये सामील झाले आहेत";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, and %ld others left the call";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, आणि %ld इतर व्यक्तींनी कॉल सोडला आहे";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ joined the call";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ कॉलमध्ये सामील झाले";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ left the call";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ ने कॉल सोडला";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ and %@ joined the call";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ आणि %@ कॉलमध्ये सामील झाले";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ and %@ left the call";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ आणि %@ ने कॉल सोडला";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "या कॉलमध्ये · 1 व्यक्ती ";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ या कॉल मध्ये आहे";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Reconnecting";
+"GROUP_CALL_RECONNECTING" = "पुनःकनेक्ट करत आहे…";
 
 /* notification body when a group call participant joins with an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "कुणीतरी कॉलमध्ये सामील झाले आहे ज्यांचा सुरक्षितता नंबर बदलला आहे.";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "कुणीतरी गट कॉल चालू केला";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "दृश्य बदल्ण्यासाठी वर स्वाइप करा";
@@ -1625,19 +1625,19 @@
 "GROUP_CALL_START_TOOLTIP" = "गट कॉल प्रारंभ करण्यासाठी येथे टॅप करा";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "आपण गट कॉल चालू केला";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ ने गट कॉल चालू केला";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and 1 other is in this call";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, आणि 1 इतर व्यक्ती या कॉलमध्ये आहेत";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ and %2$@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ आणि %2$@ या कॉलमध्ये आहेत";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "आपण कॉलवरून डिसकनेक्ट झाला होता. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "आपण";
@@ -1667,94 +1667,94 @@
 "GROUP_CREATION_FAILED" = "सर्व सदस्य गटात जोडणे शक्य झाले नाही. पुन्हा प्रयत्न करण्यासाठी टॅप करा.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "एक अवैध आमंत्रण जोडले गेले होते.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "आपण एक अवैध आमंत्रण जोडले आहे.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "आपण अवैध आमंत्रणे जोडले आहेत.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ ने अवैध आमंत्रण जोडले आहे.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ अवैध आमंत्रणे जोडले आहेत.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "अवैध आमंत्रणे जोडली गेली होती.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "अवैध आमंत्रण जोडले गेले होते.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "आपण अवैध आमंत्रण रद्द केले.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "आपण अवैध आमंत्रणे रद्द केली.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ ने अवैध आमंत्रण रद्द केले.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ ने अवैध आमंत्रणे रद्द केली.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "अवैध आमंत्रणे रद्द केली गेली होती.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+"GROUP_INVITE_LINK_DISABLED" = "गट लिंक बंद केली गेली होती.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "आपण गट लिंक बंद केली आहे.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ने गट लिंक बंद केली.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "अॅडमिन मान्यता चालू असलेली गट लिंक चालू केली गेली होती.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "अॅडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ने अॅडमिन मान्यता चालू असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "अॅडमिन मान्यता बंद असलेली गट लिंक चालू केली गेली होती.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "अॅडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ने अॅडमिन मान्यता बंद असलेली गट लिंक आपण चालू केली आहे.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "गट लिंक रीसेट केली गेली होती.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "आपण गट लिंक रीसेट केली.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ ने गट लिंक रीसेट केली.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "गट लिंकसाठी अॅडमिन मान्यता बंद केली गेली होती.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी अॅडमिन मान्यता बंद केली आहे.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ने गट लिंकसाठी अॅडमिन मान्यता बंद केली आहे.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "गट लिंकसाठी अॅडमिन मान्यता चालू केली गेली होती.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "आपण गट लिंकसाठी अॅडमिन मान्यता चालू केली आहे.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ने गट लिंकसाठी अॅडमिन मान्यता चालू केली आहे.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "आपल्याद्वारा %@ गटात स्वयंचलितपणे जोडला जाऊ शकत नाही. त्यांना सामील होण्यास निमंत्रण दिले आहे, आणि ते स्वीकारे पर्यंत कुठलेही संदेश पाहू शकणार नाहीत.";
@@ -1772,13 +1772,13 @@
 "GROUP_INVITES_VIEW_TITLE" = "सदस्य आमंत्रणे";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ही गट लिंक आता वैध नाही.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "गटात सामील होऊ शकत नाही";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "गट";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "सामील व्हा";
@@ -1793,16 +1793,16 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "आपण ऑनलाईन आहात की नाही ते कृपया तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "कृपया पुन्हा प्रयत्न करा.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "ही गट लिंक वैध नाही. सामील होण्याचा प्रयत्न करण्यापूर्वी कृपया पूर्ण लिंक व्यवस्थित आणि योग्य असल्याची खात्री करा.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "अवैध लिंक";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "या गटात सामील होण्यासाठी या डिव्हाईसवर Signal अद्यतनित करा.";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी अॅडमिनने स्वीकार करणे आवश्यक आहे.";
@@ -1811,25 +1811,25 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "नवीन सदस्य स्वीकारा";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "लिंक सक्षम आणि शेअर करा";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Share Link";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "लिंक शेअर करा";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "मित्रांना पटकन या गटात सामील करून घेण्यासाठी त्यांच्यासोबत ही लिंक शेअर करा.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "मित्रांना आमंत्रित करा";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "गट लिंक वरून आपल्या मित्रांना गटात आमंत्रित करा";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ज्या व्यक्ती हा कोड स्कॅन करतील त्यांना आपल्या गटात सामील होता येईल. आपली ती सेटिंग सुरू असल्यास अॅडमिन यांना तरीही नवीन सदस्यांना स्वीकार करावे लागेल.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "कोड शेअर करा";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR कोड";
@@ -1844,7 +1844,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "गट लिंक";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "व्यवस्थापित आणि सक्षम करा";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "नवीन सदस्यांनी गट लिंक द्वारा सामील होण्यासाठी अॅडमिनने स्वीकार करणे आवश्यक आहे.";
@@ -1853,7 +1853,7 @@
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "सदस्य विनंत्या";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "रीसेट करा";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "गट लिंक रीसेट करण्याची आपणास खात्री आहे का? वर्तमान लिंक वापरून लोक यापुढे गटात सामील होऊ शकणार नाहीत.";
@@ -1871,7 +1871,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal द्वारा शेअर करा";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "ही लिंक असलेला कुणीही या गटात सामील होऊ शकतो, किंवा सामील होण्याची विनंती पाठवू शकतो. आपल्या विश्वासातल्या व्यक्तींसोबत ही लिंक शेअर करा.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "गट लिंक";
@@ -1922,13 +1922,13 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आपण गटातून काढले गेले.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ ने गटामध्ये सामील होण्याची आपली विनंती मान्य केली.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "आपण गटात सामील होण्याची आपली विनंती रद्द केली.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "आपली गटामध्ये सामील होण्याची विनंती नाकारली गेली होती.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "आपण गटात सामील होण्यासाठी विनंती पाठविली.";
@@ -1940,7 +1940,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ने आपले प्रशासक विशेषाधिकार रद्द केले.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "एका सदस्याने आपल्याला गटात जोडले.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "प्रशासक";
@@ -2033,7 +2033,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 व्यक्तीला गटामध्ये आमंत्रित केले गेले.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ गटात आमंत्रित केले गेले होते.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "आपण %@ ला गटात आमंत्रित केले.";
@@ -2051,7 +2051,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ गटात सामील झाले.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "गट लिंक द्वारा %@ गटात सामील झाला. ";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ने गट सोडले.";
@@ -2063,28 +2063,28 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ने %2$@ ला काढले.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%@ कडून गटात सामील होण्याची विनंतीला आपण मान्यता दिली.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ कडून गटात सामील होण्याच्या विनंतीला %2$@ ने मान्यता दिली.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "%@ कडील गटात सामील होण्याची विनंती मान्य झाली होती.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ने गटात सामील होण्याची त्यांची विनंती रद्द केली.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "%@ कडून गटात सामील होण्याची विनंतीला आपण नकार दिला.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%1$@ कडून गटात सामील होण्याची विनंती %2$@ ने नाकारली.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ कडील गटात सामील होण्याची विनंती नाकारली गेली होती.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ने गट लिंक द्वारा सामील होण्यासाठी विनंती केली.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ नी त्यांचे प्रशासक विशेषाधिकार रद्द केले.";
@@ -2099,7 +2099,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "सदस्य विनंत्या";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "प्रलंबित आमंत्रणे";
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "सदस्य विनंत्या आणि आमंत्रणे";
@@ -2108,22 +2108,22 @@
 "GROUP_UPDATED" = "गट अद्यतनित.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "गट फोटो काढला गेला होता.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "आपण फोटो काढला.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने फोटो काढला.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "गट फोटो अद्यतनित केला गेला होता.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "आपण फोटो अद्यतनित केला.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने फोटो अद्यतनित केला.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "आपण गट अद्ययावत केले.";
@@ -2150,13 +2150,13 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "गट नाव आता \"%@\" आहे.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "हा गट नवीन गटात श्रेणीसुधारित केले गेले होते.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "सदस्य नवीन गटात जोडला जाऊ शकला नाही आणि त्यातून तो काढले गेला आहे.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "आपण नवीन गटात जोडला जाऊ शकला नाही आणि त्यातून काढला गेला आहात.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
@@ -2276,7 +2276,7 @@
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "या गटात पुन्हा सामील होण्यासाठी आपल्याला आमंत्रण स्वीकार करावे लागेल, आणि आपण स्वीकार करेपर्यंत आपल्याला गट संदेश प्राप्त होणार नाहीत.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "गट श्रेणीसुधारित करा";
 
 /* Title for the the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@उल्लेख आणि अॅडमिन सारखे वैशिष्ट्ये अॅक्सेस करण्यासाठी, हा गट श्रेणीसुधारित करा.";
@@ -2291,16 +2291,16 @@
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "नवीन गटांमध्ये @उल्लेख आणि गट अॅडमिन सारखे वैशिष्ट्ये आहेत, आणि भविष्यात आम्ही अधिक वैशिष्ट्यांना समर्थन देऊ.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "नवीन गट";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "सदस्ये जोडा";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "सदस्य जोडयाचा?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "सदस्य जोडयाचे?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "सदस्ये जोडा";
@@ -2336,22 +2336,22 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "नवीन गटात श्रेणीसुधारणा करा";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "हा गट श्रेणीसुधारित करा";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "हा गट सध्या नवीन गटामध्ये श्रेणीसुधारित केला जाऊ शकला नाही.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "हा गट सध्या नवीन गटांमध्ये श्रेणीसुधारित केला जाऊ शकला नाही कारण आपण इंटरनेटसोबत कनेक्ट केलेले नाही आहात. नंतर पुन्हा प्रयत्न करा.";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "श्रेणीसुधारणा पूर्ण करू शकले नाही";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "नवीन गटावर श्रेणीसुधारित केले.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "हा गट श्रेणीसुधारित करा";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "आपण जाण्यापूर्वी, या गटासाठी नवीन प्रशासक निवडा.";
@@ -2363,16 +2363,16 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "नवीन प्रशासक निवडा";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "%@ सदस्य किंवा त्यापेक्षा कमी सदस्य असल्यावर Signal गट सर्वोत्कृष्ट कार्य करतात. अधिक सदस्य जोडल्यामुळे संदेश पाठवणे आणि प्राप्त करणे यात विलंब होईल.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "शिफारस केलेली मर्यादा संपली";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "तरीही सदस्य जोडायचा?";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "विनंत्या पहा";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "विनंत्या पहा";
@@ -2381,10 +2381,10 @@
 "HELP_CONTACT_US" = "आमच्या सोबत संपर्क साधा";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "समर्थन केंद्र";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "आर्काईव्ह केलेले चॅट";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "अवरोधित केले";
@@ -2405,7 +2405,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "आपल्या संपर्कांमधील काही आधीपासून Signal वर आहेत, ज्यात %@, %@ आणि %@ यांचा समावेश आहे.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "आपले पहिले चॅट येथे चालू करा.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ ने आपल्याला गटात जोडले";
@@ -2435,13 +2435,13 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "%@ आयटम पेक्षा अधिक आपण सामायिक करू शकत नाही.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "फोटो बदला";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "सेटिंगमध्ये पूर्ण अॅक्सेस मान्य करा किंवा Signal अॅक्सेस करू शकणारे फोटो बदला.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "आपले सर्व फोटो दिसत नाहीत?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "संलग्न निवडण्यात अयशस्वी.";
@@ -2465,10 +2465,10 @@
 "IN_CALL_RINGING" = "रिंग होत आहे…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "ऑडिओ कॉल…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "व्हिडीओ कॉल…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "उत्तर दिले. सुरक्षित करत आहे…";
@@ -2477,16 +2477,16 @@
 "IN_CALL_TERMINATED" = "कॉल संपला.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "हे चॅट आर्काईव्हे केलेले आहेत आणि इनबॉक्स मध्ये फक्त नवीन संदेश प्राप्त झाल्यास दिसतील.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "आतापर्यंत कुठेलही चॅट नाही.\nमित्राला संदेश पाठवून सुरू करा.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@  ने आपल्याला कॉल केले";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "आपण आपल्या फोन किंवा iPad वरून संकलित संदेश पाठवू आणि प्राप्त करू शकता. ↵आपल्या सुरक्षेसाठी, नवीन लिंक केलेल्या डिव्हाईस मध्ये चॅट इतिहास स्थानांतरित केला जात नाही.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal वर आहे!";
@@ -2531,13 +2531,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "सर्व मिडिया वर जा";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "चॅट आर्काईव्ह करा";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "संलग्न दाखवा";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "चॅट माहिती वर जा";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "फोकस इनपुट बार";
@@ -2552,10 +2552,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "नवीन संदेश";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "पुढील चॅट वर जा";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "मागील चॅट वर जा";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "शोध";
@@ -2567,7 +2567,7 @@
 "KEY_COMMAND_STICKERS" = "स्टिकर दाखवा";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "चॅट अनआर्काईव्ह करा";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "अधिक जाणा";
@@ -2588,7 +2588,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "डिव्हाईस लिंक करणे अयशस्वी";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "हा डिव्हाईस आपले गट आणि संपर्क पाहू शकेल, आपले चॅट अॅक्सेस करू शकेल, आणि आपल्या नावाने संदेश पाठवू शकेल.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "हे डिव्हाईस लिंक करायचे?";
@@ -2615,31 +2615,31 @@
 "LINKING_DEVICE_FAILED_TITLE" = "डिव्हाईस लिंक करणे अयशस्वी";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "लिंक पुनरावलोकन आता सर्व साईटसाठी उत्पन्न केले जाईल.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "अक्षम करा";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "कुठलीही लिंकचे पुनरावलोकन करा";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "आपले Signal खाते स्थानांतरित करण्यासाठी, आपल्याला दोन्ही डिव्हाईसवर स्थानिक नेटवर्कचा अॅक्सेस सक्षम करणे गरजेचे आहे.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "मदत हवी?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "प्रत्येक डिव्हाईसवर, सेटिंग उघडा";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "\"स्थानिक नेटवर्क\" चालू करा";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Signal वर नेव्हिगेट करा";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "स्थानिक नेटवर्क अॅक्सेस चालू करा";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "नाव किंवा पत्त्याद्वारे शोधा";
@@ -2654,7 +2654,7 @@
 "LONG_TEXT_VIEW_TITLE" = "संदेश";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+"MANY_GROUPS_IN_COMMON" = "%@ गट समाईक";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "सर्व मिडिया";
@@ -2672,10 +2672,10 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "संदेश हटवा";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Photos";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ फोटो";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ Items";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ आयटम";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2699,7 +2699,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सर्वांसाठी हटवा";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "हा संदेश चॅटमधील प्रत्येकासाठी Signal च्या अलीकडील आवृत्ती वर असल्यास तो हटविला जाईल. आपण संदेश हटविला हे ते पाहण्यात सक्षम असतील.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
@@ -2966,10 +2966,10 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "आपल्या खात्यासोबत लिंक करू शकणाऱ्या डिव्हाईसच्या कमाल मर्यादेपर्यंत सध्या आपण पोहोचला आहात. कृपया एक डिव्हाईस काढा आणि पुन्हा प्रयत्न करा.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "म्यूट केलेल्या चॅटबद्दल आपल्याला सूचना प्राप्त होणार नाहीत.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "म्यूट केलेले";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "वगळा";
@@ -2978,13 +2978,13 @@
 "NETWORK_ERROR_RECOVERY" = "आपण ऑनलाईन आहात की नाही ते कृपया तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
+"NETWORK_INTERFACE_SET_CELLULAR" = "फक्त सेल्यूलर";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "कधीही नाही";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
+"NETWORK_INTERFACE_SET_WIFI" = "फक्त Wi-Fi";
 
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi आणि सेल्यूलर";
@@ -3008,7 +3008,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "नवीन गट तयार केला जाऊ शकला नाही. आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "नवीन गटांचे समर्थन करत नाही";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "गट नाव आवश्यक आहे.";

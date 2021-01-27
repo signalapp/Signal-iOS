@@ -5192,7 +5192,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Esikatsele lisää taustakuvia pyyhkäisemällä";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Aseta taustakuva kaikkiin keskusteluihin.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Taustakuva asetetaan kaikkiin keskusteluihin.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Aseta taustakuva keskusteluun %@.";
@@ -5213,7 +5213,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Haluatko poistaa taustakuvan? Yksittäisille keskusteluille asetettuja taustakuvia ei poisteta.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Tumma teema himmentää taustakuvan";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Himmennä tummassa teemassa";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Taustakuvan poistaminen epäonnistui. Yritä myöhemmin uudelleen ja tarvittaessa ota yhteyttä tukeen.";

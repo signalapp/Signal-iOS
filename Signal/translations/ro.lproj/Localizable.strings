@@ -2168,7 +2168,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Nu ai putut fi adăugat la noul grup și ai fost invitat să te înscrii";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membri nu au putut fi adăugați la noul grup și au fost invitați să se alăture.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Ați părăsit grupul.";
@@ -2213,31 +2213,31 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grupuri vechi vs. grupuri noi";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Actualizează acest grup pentru a activa noi funcționalități cum ar fi @mențiuni și abilitatea de a administra grupul. Membrii care nu și-au partajat numele și poza de profil cu acest grup vor fi invitați să se alăture. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Nu se poate actualiza la noile grupuri";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Acest grup vechi nu poate fi actualizat la noile grupuri din cauza numărului mare de membri. Dimensiunea maximă a grupului este de %@. ";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Acest grup va fi actualizat când toți membrii vor folosi o versiune a aplicației Signal capabilă să suporte funcționalitățile noilor grupuri.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tot istoricul mesajelor și conținutul media o să fie păstrate înainte de actualizare.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Acest grup nu poate fi creat din cauză că un membru folosește o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acest membru își actualizează aplicația Signal sau îl ștergi din lista de membri. ";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Grupul nu poate fi creat pentru că %@ membrii folosesc o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acești membrii își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. ";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Acest grup nu poate fi creat din cauză că un membru folosește o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acest membru își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Grupul nu poate fi creat pentru că %1$@ membrii folosesc o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acești membrii își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Un Grup Vechi va fi creat deoarece 1 membru folosește o versiune veche de Signal. Puteți crea un Grup de tip Nou cu ei după ce își actualizează Signal, sau îi eliminați înainte de a crea grupul.";
@@ -2255,19 +2255,19 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Acesta este un grup vechi. Funcții precum administratorii de grup sunt accesibile doar grupurilor noi. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Acest grup vechi nu poate fi încă actualizat la noile grupuri. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Acest grup vechi nu poate fi actualizat la noile grupuri pentru că are prea mulți membrii. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Acesta este un grup vechi. Pentru a avea acces la funcții noi cum ar fi @mențiuni și administrare, accesează %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Un membru nu a putut fi readăugat noului grup. Vrei să-l adaugi acum?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ membrii nu au putut fi readăugați noului grup. Vrei să-i adaugi acum?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grup vechi";
@@ -2306,28 +2306,28 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Adaugă membri";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Acest membru nu a putut fi adăugat automat noului grup atunci când a fost actualizat:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Acești membri nu au putut fi adăugați automat noului grup atunci când a fost actualizat:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Tot istoricul mesajelor și conținutul media a fost păstrat înainte de actualizare.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Acest membru a fost șters din grup și nu va putea să se alăture din nou decât după ce actualizează aplicația:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Acești membrii au fost șterși din grup și nu vor putea să se alăture din nou decât după ce își actualizează aplicația:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Acest membru va trebui să accepte din nou invitația de a se alătura acestui grup, și nu va primi mesaje din grup până când nu va accepta:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Acești membri vor trebui să accepte din nou invitația de a se alătura acestui grup, și nu vor primi mesaje din grup până când nu vor accepta:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Acest memebru nu se poate alătura noilor grupuri și va fi șters din grup. ";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Acest membru nu se poate alătura grupurilor noi și va fi eliminat din grup:";
@@ -2342,7 +2342,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Acest grup nu a putut fi actualizat la noul tip de grup chiar acum.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Acest grup nu poate fi actualizat noilor grupuri pentru că nu există o conexiune la Internet. Te rog să încerci mai târziu. ";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Nu am putut finaliza actualizarea";
@@ -2363,7 +2363,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Alegeți un nou admin";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Grupurile pe Signal au performanțe maxime cu %@ membrii sau mai puțin. Adăugarea mai multor membri va provoca întârzieri la trimiterea și primirea mesajelor.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "A fost atinsă limita de membri recomandată";
@@ -4292,7 +4292,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Sesiunea conversației a fost resetată";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Alegeți din galerie";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Alege din galerie";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "Presetări";
@@ -4757,7 +4757,7 @@
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Distribuire mai facilă";
 
 /* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Dezactivați";
+"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Dezactivează";
 
 /* Enable button for sharing suggestions megaphone */
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Activează";
@@ -5186,13 +5186,13 @@
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "Estompare poză";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Prindeți pentru a mări, trageți pentru a ajusta.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Prinde pentru a mări, trage pentru a ajusta.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Glisați pentru a previzualiza mai multe imagini de fundal.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Glisează pentru a previzualiza mai multe imagini de fundal.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Setați imaginea de fundal pentru toate conversațiile";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Setează imaginea de fundal pentru toate conversațiile";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Setare fundal pentru %@.";
@@ -5207,16 +5207,16 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Eliminare fundal";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Eliminați fundalul pentru această conversație?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Elimini fundalul pentru această conversație?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Ștergeți imaginea de fundal? Aceasta nu va șterge imaginile de fundal personalizate pe care le-ați setat pentru conversațiile dvs.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Șterge imaginea de fundal? Nu vor fi șterse imaginile de fundal personalizate setate pentru fiecare conversație.";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Tema întunecată estompează fundalul";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Imaginea de fundal nu a putut fi ștearsă, încercați din nou mai târziu sau contactați suportul dacă eroarea persistă.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Imaginea de fundal nu a putut fi ștearsă, încearcă din nou mai târziu sau contactează suportul dacă eroarea persistă.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Nu s-au putut reseta toate imaginile de fundal, încercați din nou mai târziu sau contactați suportul dacă eroarea persistă.";
@@ -5228,7 +5228,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL" = "Resetare toate imaginile de fundal";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Resetați toate imaginile de fundal, inclusiv imaginile de fundal personalizate pe care le-ați setat pentru conversațiile dvs.?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Resetezi toate imaginile de fundal, inclusiv imaginile de fundal personalizate pe care le-ai setat pentru conversațiile tale?";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Setează fundal";
