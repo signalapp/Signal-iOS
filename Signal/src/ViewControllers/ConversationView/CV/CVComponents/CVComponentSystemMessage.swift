@@ -227,8 +227,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             availableWidth -= ConversationStyle.selectionViewWidth + outerStackConfig.spacing
         }
 
-        // Padding around the hStack
-        availableWidth -= (outerStackConfig.spacing * 2 + 4) * 2
+        // Padding around the hStack (leading and trailing side)
+        availableWidth -= (outerStackConfig.spacing + 4) * 2
+
+        // Padding around the vStackView
+        availableWidth -= vStackConfig.layoutMargins.totalWidth
 
         var height: CGFloat = 0
 
