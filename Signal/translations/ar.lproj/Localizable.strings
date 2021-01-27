@@ -2552,112 +2552,112 @@
 "KEY_COMMAND_NEW_MESSAGE" = "رسالة جديدة";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "الذهاب إلى المحادثة التالية";
+"KEY_COMMAND_NEXT_CONVERSATION" = "انتقل إلى المُحادثة التالية";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "الذهاب إلى المحادثة السابقة";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "انتقل إلى المُحادثة السابقة";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "بحث";
+"KEY_COMMAND_SEARCH" = "البحث";
 
 /* A keyboard command to present the application settings dialog. */
-"KEY_COMMAND_SETTINGS" = "إعدادات";
+"KEY_COMMAND_SETTINGS" = "الإعدادات";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "أظهر الملصقات";
+"KEY_COMMAND_STICKERS" = "أظهر المُلصقات";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "إلغاء الأرشفة المحادثة";
+"KEY_COMMAND_UNARCHIVE" = "إلغاء أرشفة المُحادثة";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "أعرف أكثر";
+"LEARN_MORE" = "أعرف المزيد";
 
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "غادر";
+"LEAVE_BUTTON_TITLE" = "غادِر";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "مغادرة المجموعة";
+"LEAVE_GROUP_ACTION" = "مُغادرة المجموعة";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "حدث خطأ أثناء مغادرة المجموعة.";
+"LEAVE_GROUP_FAILED" = "حدث خطأ أثناء مُغادرة المجموعة.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "إن الرمز المربع غير صالح. يُرجى التأكد من مسحك للرمز المربع الظاهر على شاشة جهازك الذي تود ربطه.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "إن رمز الاستجابة السريعة غير صالح. يُرجى التأكد من مسحك لرمز الاستجابة السريعة الظاهر على الجهازك الذي تُريد ربطه.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "فشل ربط الجهاز";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "سوف يتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، وكذا الوصول إلى محادثاتك، و إرسال الرسائل باسمك.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "هذا الجهاز سوف يتمكن من رؤية مجموعاتك وجهات اتصالك، الوصول إلى محادثاتك وإرسال الرسائل باسمك.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ربط هذا الجهاز؟";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "إعادة المحاولة";
+"LINK_DEVICE_RESTART" = "إعادة المُحاولة";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "قم بمسح الرمز المربع الظاهر على شاشة جهازك الذي تود ربطه.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "قم بمسح رمز الاستجابة السريعة الظاهر على الجهاز الذي تُريد ربطه.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "مسح رمز الـQR";
+"LINK_NEW_DEVICE_SUBTITLE" = "مسح رمز الاستجابة السريعة";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ربط جهاز جديد";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "معاينة الوصلة";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "اﻷجهزة المرتبطة";
+"LINKED_DEVICES_TITLE" = "اﻷجهزة المُرتبطة";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "فشل ربط الجهاز";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "لن تُولَّد معاينة الوصلات في كل المواقع.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "مُعاينة الروابط لن تُولَّد لجميع المواقع.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "تعطيل";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "معاينة كل الوصلات";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "مُعاينة جميع الروابط";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "من أجل نقل حساب Signal الخاص بك، يجب عليك تفعيل الوصول إلى الشبكة المحلية في كلا الجهازين.";
 
 /* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "أتريد مساعدة ؟";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "هل تحتاج مُساعدة؟";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "يُرجى فتح الإعدادات، في كل جهاز";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "افتح الإعدادات، على كل جهاز";
 
 /* Third step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "تشغيل \"الشبكة المحلية\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "الذهاب إلى Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "انتقل إلى Signal";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "تشغيل الوصول إلى الشبكة المحلية";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ابحث بالاسم أو العنوان";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "البحث بالاسم أو العنوان";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "حدد موقعا";
+"LOCATION_PICKER_TITLE" = "حدِّد موقعاً";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "التسجيل";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "رسالة";
+"LONG_TEXT_VIEW_TITLE" = "الرسالة";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ مجموعة مشتركة";
+"MANY_GROUPS_IN_COMMON" = "عدد %@ مجموعة مُشتَرَكة";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "كل الوسائط";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "جميع الوسائط";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "الكاميرا";
@@ -2666,37 +2666,37 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "مكتبة الصور";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "حذف %d رسالة";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "حذف عدد %d رسالة";
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "حذف الرسالة";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ صورة";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "عدد %@ صورة";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ عنصر";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "عدد %@ عُنصر";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "أنت\n";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "أنت";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "ذكرني لاحقا";
+"MEGAPHONE_REMIND_LATER" = "ذكِّرني لاحقاً";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "سوف نذكِّرك لاحقا";
+"MEGAPHONE_WILL_REMIND_LATER" = "سوف نُذكِّرُك لاحقاً.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "نسخ نص الرسالة";
+"MESSAGE_ACTION_COPY_TEXT" = "نسخ نصّ الرسالة";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "احذف للجميع";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "حذف للجميع";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "سوف تُحذَف هذه الرسالة لأياً كان في هذه المحادثة إن كانوا يستخدمون إصدار Signal حديث. سيكون بمقدرتهم رؤية أنك قد حذف رسالة.";
@@ -4253,7 +4253,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "جهات الاتصال أخرى";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "محادثات حديثة";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "المحادثات الحديثة";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "ارسل مرة أُخرى";
@@ -4265,7 +4265,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "فشل إرسال الرسالة.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة, فضلّا أعد المحاولة لاحقًا.";
+"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة، يُرجى إعادة المحاولة لاحقا.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "لقد دعوت صديقك لاستخدام Signal !";
@@ -4292,7 +4292,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "تم إنعاش جلسة المحادثة";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "أختر من الصور";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "اختر من الصور";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "الخيارات الافتراضية";

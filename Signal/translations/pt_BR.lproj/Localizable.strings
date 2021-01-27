@@ -3737,7 +3737,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "O perfil só pode ser atualizado quando conectado à Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Seu perfil é criptografado de ponta a ponta. Seus contatos poderão vê-lo, bem como às mudanças feitas nele, quando você iniciar ou aceitar uma conversa e quando você entrar para um grupo.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Seu perfil é criptografado de ponta a ponta. Seus contatos poderão vê-lo, bem como as mudanças feitas nele, quando você iniciar ou aceitar uma conversa e quando você entrar para um grupo.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvar";
@@ -5186,10 +5186,10 @@
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "Borrar foto";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pince com os dedos para aproximar ou afastar, arraste para ajustar.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Aproxime ou arraste com os dedos para ajustar a foto.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Deslize para pré-visualizar mais papéis de parede.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Deslize para ver mais papéis de parede.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Definir papel de parede para todas as conversas.";
@@ -5213,7 +5213,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Remover papel de parede? Não serão removidos os personalizados que você tiver definido para as suas conversas.";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Escurecer papel de parede no tema escuro";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Não foi possível remover o papel de parede. Por favor, tente novamente mais tarde ou entre em contato com o suporte se o erro persistir.";
