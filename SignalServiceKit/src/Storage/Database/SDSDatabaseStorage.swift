@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -143,11 +143,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        var didPerformIncrementalMigrations = GRDBSchemaMigrator().runSchemaMigrations()
+        let didPerformIncrementalMigrations = GRDBSchemaMigrator().runSchemaMigrations()
 
         Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
-
-        didPerformIncrementalMigrations = true
 
         if didPerformIncrementalMigrations {
             let benchSteps = BenchSteps()
@@ -163,6 +161,10 @@ public class SDSDatabaseStorage: SDSTransactable {
             _grdbStorage = createGrdbStorage()
 
             DispatchQueue.main.async {
+                // We want to make sure all db connections from the old adapter/pool are closed.
+                //
+                // We only reach this point by a predictable code path; the autoreleasepool
+                // should be drained by this point.
                 owsAssertDebug(weakPool == nil)
                 owsAssertDebug(weakGrdbStorage == nil)
 
