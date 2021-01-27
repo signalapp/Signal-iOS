@@ -846,6 +846,8 @@ fileprivate extension CALayer {
     func aspectFillInBounds(_ fillBounds: CGRect, with layerTransform: CGAffineTransform) {
         bounds = fillBounds
 
+        guard !fillBounds.isEmpty else { return }
+
         transform = CATransform3DIdentity
         let untransformedLayerFrame = frame
 
