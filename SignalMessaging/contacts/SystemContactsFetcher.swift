@@ -164,7 +164,7 @@ public class SystemContactsFetcher: NSObject {
 
     private let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue")
 
-    var lastContactUpdateHash: Int?
+    var lastContactsBatch: [Contact]?
     var lastDelegateNotificationDate: Date?
     let contactStoreAdapter: ContactsFrameworkContactStoreAdaptee
 
@@ -369,13 +369,11 @@ public class SystemContactsFetcher: NSObject {
 
             Logger.info("fetched \(contacts.count) contacts.")
 
-            let contactsHash = contacts.hashValue
-
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
 
-                if self.lastContactUpdateHash != contactsHash {
-                    Logger.info("contact hash changed. new contactsHash: \(contactsHash)")
+                if self.lastContactsBatch != contacts {
+                    Logger.info("contact info has changed.")
                     shouldNotifyDelegate = true
                 } else if isUserRequested {
                     Logger.info("ignoring debounce due to user request")
@@ -394,7 +392,7 @@ public class SystemContactsFetcher: NSObject {
                             Logger.info("ignoring since debounce interval hasn't expired")
                         }
                     } else {
-                        Logger.info("first contact fetch. contactsHash: \(contactsHash)")
+                        Logger.info("first contact fetch")
                         shouldNotifyDelegate = true
                     }
                 }
@@ -408,7 +406,7 @@ public class SystemContactsFetcher: NSObject {
                 }
 
                 self.lastDelegateNotificationDate = Date()
-                self.lastContactUpdateHash = contactsHash
+                self.lastContactsBatch = contacts
 
                 self.delegate?.systemContactsFetcher(self, updatedContacts: contacts, isUserRequested: isUserRequested)
                 completion(nil)
