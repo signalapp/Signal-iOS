@@ -104,6 +104,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         }
 
         labelConfig.applyForRendering(label: componentView.label)
+        componentView.label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
         componentView.hStackView.addArrangedSubview(componentView.label)
     }
 

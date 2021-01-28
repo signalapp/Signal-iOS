@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,6 +40,7 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_CONTACT",
                                                          comment: "Accessibility label for contact.")
         contactShareView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
+        contactShareView.isAccessibilityElement = true
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
