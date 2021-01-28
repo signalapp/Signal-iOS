@@ -7,5 +7,6 @@
 • We improved image compression and quality so larger-than-life memories are always just the right size.
 • Expanded chat list previews display the sender's name in group chats so it's easier to decide which threads to look at first.
 • Signal chats can now be displayed as suggestions when sharing from other apps. This setting can be enabled or disabled at any time.
+• We fixed a few bugs that were reported to us by the beta community and people who are really fast at downloading new things.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
