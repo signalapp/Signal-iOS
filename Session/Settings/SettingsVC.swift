@@ -181,8 +181,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
             getSeparator(),
-            getSettingButton(withTitle: "Multi Device (Beta)", color: Colors.text, action: #selector(showMultiDeviceOptions)),
-            getSeparator(),
+//            getSettingButton(withTitle: "Multi Device (Beta)", color: Colors.text, action: #selector(showMultiDeviceOptions)),
+//            getSeparator(),
             getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation)),
             getSeparator()
         ]
