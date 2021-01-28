@@ -104,13 +104,11 @@ extension MessageReceiver {
 
     public static func setExpirationTimer(to duration: UInt32, for senderPublicKey: String, groupPublicKey: String?, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        var isGroup = false
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
             guard Storage.shared.isClosedGroup(groupPublicKey) else { return }
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
-            isGroup = true
         } else {
             threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
         }
@@ -119,20 +117,18 @@ extension MessageReceiver {
         configuration.save(with: transaction)
         let senderDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
         let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.millisecondTimestamp(), thread: thread,
-            configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: isGroup)
+            configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
         message.save(with: transaction)
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
 
     public static func disableExpirationTimer(for senderPublicKey: String, groupPublicKey: String?, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        var isGroup = false
         var threadOrNil: TSThread?
         if let groupPublicKey = groupPublicKey {
             guard Storage.shared.isClosedGroup(groupPublicKey) else { return }
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
-            isGroup = true
         } else {
             threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
         }
@@ -141,7 +137,7 @@ extension MessageReceiver {
         configuration.save(with: transaction)
         let senderDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: senderPublicKey, transaction: transaction) ?? senderPublicKey
         let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.millisecondTimestamp(), thread: thread,
-            configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: isGroup)
+            configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
         message.save(with: transaction)
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
