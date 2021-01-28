@@ -1145,10 +1145,17 @@ extension GroupUpdateCopy {
                         address: address,
                         format: format, updaterName)
             case .unknown:
-                addItem(.userMembershipState_added,
-                        address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
-                                                comment: "Message indicating that the local user was added to the group."))
+                if newGroupModel.didJustAddSelfViaGroupLinkV2 {
+                    addItem(.userMembershipState_added,
+                            address: localAddress,
+                            copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                                                    comment: "Message indicating that the local user has joined the group."))
+                } else {
+                    addItem(.userMembershipState_added,
+                            address: localAddress,
+                            copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                    comment: "Message indicating that the local user was added to the group."))
+                }
             }
         } else {
             let userName = contactsManager.displayName(for: address, transaction: transaction)
@@ -1668,10 +1675,17 @@ extension GroupUpdateCopy {
                         address: localAddress,
                         format: format, updaterName)
             default:
-                addItem(.userMembershipState_added,
-                        address: localAddress,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
-                                                comment: "Message indicating that the local user was added to the group."))
+                if newGroupModel.didJustAddSelfViaGroupLink {
+                    addItem(.userMembershipState_added,
+                            address: localAddress,
+                            copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                                                    comment: "Message indicating that the local user has joined the group."))
+                } else {
+                    addItem(.userMembershipState_added,
+                            address: localAddress,
+                            copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                    comment: "Message indicating that the local user was added to the group."))
+                }
             }
         case .invited:
             if let localAddress = Self.tsAccountManager.localAddress,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,6 +32,14 @@ public struct ChangedGroupModel {
 // TODO: Rename to GroupsV2IncomingChanges
 public class GroupsV2Changes {
 
+    // MARK: - Dependencies
+
+    private static var tsAccountManager: TSAccountManager {
+        .shared()
+    }
+
+    // MARK: -
+
     // GroupsV2Changes has one responsibility: applying incremental
     // changes to group models. It should exactly mimic the behavior
     // of the service. Applying these "diffs" allow us to do two things:
@@ -51,9 +59,13 @@ public class GroupsV2Changes {
     class func applyChangesToGroupModel(groupThread: TSGroupThread,
                                         changeActionsProto: GroupsProtoGroupChangeActions,
                                         downloadedAvatars: GroupV2DownloadedAvatars,
+                                        groupModelOptions: TSGroupModelOptions,
                                         transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
+        }
+        guard let localUuid = tsAccountManager.localUuid else {
+            throw OWSAssertionError("Missing localUuid.")
         }
         guard !oldGroupModel.isPlaceholderModel else {
             throw GroupsV2Error.cantApplyChangesToPlaceholder
@@ -80,6 +92,7 @@ public class GroupsV2Changes {
         var newAvatarData: Data? = oldGroupModel.groupAvatarData
         var newAvatarUrlPath = oldGroupModel.avatarUrlPath
         var newInviteLinkPassword: Data? = oldGroupModel.inviteLinkPassword
+        var didJustAddSelfViaGroupLink = false
 
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
@@ -165,6 +178,11 @@ public class GroupsV2Changes {
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
             groupMembershipBuilder.addFullMember(uuid, role: role, didJoinFromInviteLink: didJoinFromInviteLink)
+
+            if changeAuthorUuid == localUuid,
+               uuid == localUuid {
+                didJustAddSelfViaGroupLink = true
+            }
 
             guard let profileKeyCiphertextData = member.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
@@ -564,6 +582,11 @@ public class GroupsV2Changes {
         builder.groupV2Revision = newRevision
         builder.avatarUrlPath = newAvatarUrlPath
         builder.inviteLinkPassword = newInviteLinkPassword
+
+        builder.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
+
+        builder.apply(options: groupModelOptions)
+
         let newGroupModel = try builder.buildAsV2(transaction: transaction)
 
         return ChangedGroupModel(oldGroupModel: oldGroupModel,
