@@ -13,8 +13,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
     
     public override var isSelfSendValid: Bool {
         switch kind {
-        case .update, .encryptionKeyPair, .nameChange, .membersAdded, .membersRemoved, .memberLeft: return true
-        default: return false
+        case .new: return false
+        default: return true
         }
     }
     
