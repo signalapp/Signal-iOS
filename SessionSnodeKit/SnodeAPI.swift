@@ -35,8 +35,8 @@ public final class SnodeAPI : NSObject {
         public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
-            case .clockOutOfSync: return "Your clock is out of sync with the service node network."
-            case .snodePoolUpdatingFailed: return "Failed to update random service node pool."
+            case .clockOutOfSync: return "Your clock is out of sync with the Service Node network. Please check that your device's clock is set to automatic time."
+            case .snodePoolUpdatingFailed: return "Failed to update the Service Node pool."
             }
         }
     }

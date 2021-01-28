@@ -102,7 +102,7 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            SNLog("Can't leave nonexistent closed group.")
+            SNLog("Can't change name for nonexistent closed group.")
             throw Error.noThread
         }
         guard !name.isEmpty else {
@@ -127,7 +127,7 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            SNLog("Can't leave nonexistent closed group.")
+            SNLog("Can't add members to nonexistent closed group.")
             throw Error.noThread
         }
         guard !newMembers.isEmpty else {
@@ -135,11 +135,26 @@ extension MessageSender {
             throw Error.invalidClosedGroupUpdate
         }
         let group = thread.groupModel
+        let members = [String](Set(group.groupMemberIds).union(newMembers))
+        let membersAsData = members.map { Data(hex: $0) }
+        let adminsAsData = group.groupAdminIds.map { Data(hex: $0) }
+        guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else {
+            SNLog("Couldn't find encryption key pair for closed group: \(groupPublicKey).")
+            throw Error.noKeyPair
+        }
         // Send the update to the group
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .membersAdded(members: newMembers.map { Data(hex: $0) }))
         MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
+        // Send updates to the new members individually
+        for member in newMembers {
+            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+            thread.save(with: transaction)
+            let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: group.groupName!,
+                encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
+            let closedGroupControlMessage = ClosedGroupControlMessage(kind: closedGroupControlMessageKind)
+            MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
+        }
         // Update the group
-        let members = [String](Set(group.groupMemberIds).union(newMembers))
         let newGroupModel = TSGroupModel(title: group.groupName, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
@@ -154,7 +169,7 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            SNLog("Can't leave nonexistent closed group.")
+            SNLog("Can't remove members from nonexistent closed group.")
             throw Error.noThread
         }
         guard !membersToRemove.isEmpty else {

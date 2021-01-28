@@ -3,8 +3,9 @@
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let thread: TSGroupThread
     private var name = ""
-    private var members: [String] = [] { didSet { tableView.reloadData() } }
+    private var members: [String] = [] { didSet { handleMembersChanged() } }
     private var isEditingGroupName = false { didSet { handleIsEditingGroupNameChanged() } }
+    private var tableViewHeightConstraint: NSLayoutConstraint!
 
     // MARK: Components
     private lazy var groupNameLabel: UILabel = {
@@ -67,8 +68,8 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         func getDisplayName(for publicKey: String) -> String {
             return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
         }
-        members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         setUpViewHierarchy()
+        members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         updateNavigationBarButtons()
         name = thread.groupModel.groupName!
     }
@@ -109,6 +110,9 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         middleStackView.alignment = .center
         middleStackView.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, leading: Values.mediumSpacing, bottom: Values.smallSpacing, trailing: Values.mediumSpacing)
         middleStackView.isLayoutMarginsRelativeArrangement = true
+        middleStackView.set(.height, to: Values.largeButtonHeight + Values.smallSpacing * 2)
+        // Table view
+        tableViewHeightConstraint = tableView.set(.height, to: 0)
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [
             UIView.vSpacer(Values.veryLargeSpacing),
@@ -129,7 +133,6 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         mainStackView.pin(to: scrollView)
         view.addSubview(scrollView)
         scrollView.pin(to: view)
-        mainStackView.pin(.bottom, to: .bottom, of: view)
     }
 
     // MARK: Table View Data Source / Delegate
@@ -175,6 +178,11 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         navigationItem.rightBarButtonItem = doneButton
     }
 
+    private func handleMembersChanged() {
+        tableViewHeightConstraint.constant = CGFloat(members.count) * 67
+        tableView.reloadData()
+    }
+    
     private func handleIsEditingGroupNameChanged() {
         updateNavigationBarButtons()
         UIView.animate(withDuration: 0.25) {
@@ -263,9 +271,9 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         Storage.write(with: { [weak self] transaction in
             do {
                 if !members.contains(getUserHexEncodedPublicKey()) {
-                    try MessageSender.v2_leave(groupPublicKey, using: transaction)
+                    try MessageSender.leave(groupPublicKey, using: transaction)
                 } else {
-                    try MessageSender.v2_update(groupPublicKey, with: members, name: name, transaction: transaction)
+                    try MessageSender.update(groupPublicKey, with: members, name: name, transaction: transaction)
                 }
             } catch {
                 DispatchQueue.main.async {

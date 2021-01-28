@@ -360,8 +360,43 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
                 message = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone."
             }
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
+<<<<<<< HEAD
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { [weak self] _ in
                 self?.delete(thread)
+=======
+            alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
+                Storage.write { transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
+                    if let openGroup = openGroup {
+                        var messageIDs: Set<String> = []
+                        thread.enumerateInteractions(with: transaction) { interaction, _ in
+                            messageIDs.insert(interaction.uniqueId!)
+                        }
+                        OWSPrimaryStorage.shared().updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, in: transaction)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastMessageServerIDCollection)
+                        transaction.removeObject(forKey: "\(openGroup.server).\(openGroup.channel)", inCollection: Storage.lastDeletionServerIDCollection)
+                        let _ = OpenGroupAPI.leave(openGroup.channel, on: openGroup.server)
+                        thread.removeAllThreadInteractions(with: transaction)
+                        thread.remove(with: transaction)
+                    } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
+                        let groupID = thread.groupModel.groupId
+                        let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
+                        do {
+                            try MessageSender.leave(groupPublicKey, using: transaction)
+                        } catch {
+                            // TODO: Handle
+                        }
+                        Storage.write { transaction in
+                            thread.removeAllThreadInteractions(with: transaction)
+                            thread.remove(with: transaction)
+                        }
+                    } else {
+                        thread.removeAllThreadInteractions(with: transaction)
+                        thread.remove(with: transaction)
+                    }
+                }
+                NotificationCenter.default.post(name: .threadDeleted, object: nil, userInfo: [ "threadId" : thread.uniqueId! ])
+>>>>>>> dev
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
             guard let self = self else { return }

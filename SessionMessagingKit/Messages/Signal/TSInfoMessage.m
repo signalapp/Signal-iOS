@@ -113,10 +113,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     switch (_messageType) {
-        case TSInfoMessageTypeLokiSessionResetInProgress:
-            return NSLocalizedString(@"Secure session reset in progress", nil);
-        case TSInfoMessageTypeLokiSessionResetDone:
-            return NSLocalizedString(@"Secure session reset done", nil);
         case TSInfoMessageTypeSessionDidEnd:
             return NSLocalizedString(@"SECURE_SESSION_RESET", nil);
         case TSInfoMessageTypeUnsupportedMessage:

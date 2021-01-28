@@ -295,18 +295,12 @@ public class OWSLinkPreview: MTLModel {
 
     @objc
     public class func isValidLinkUrl(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
-        }
-        return true
+        return URL(string: urlString) != nil
     }
 
     @objc
     public class func isValidMediaUrl(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
-        }
-        return true
+        return URL(string: urlString) != nil
     }
 
     // MARK: - Serial Queue
