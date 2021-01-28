@@ -12,16 +12,19 @@ pod 'SwiftProtobuf', "1.7.0"
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
+pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', testspecs: ["Tests"]
+# pod 'SignalClient', path: '../libsignal-client', testspecs: ["Tests"]
+
 pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
 # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
 
 pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
 # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
 
-pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
+pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit-Private', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+pod 'SignalMetadataKit', git: 'ssh://git@github.com/signalapp/SignalMetadataKit-Private', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'

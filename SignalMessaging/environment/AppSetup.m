@@ -135,8 +135,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                       contactsViewHelper:contactsViewHelper
                                            broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue]];
 
-        [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
-
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                linkPreviewManager:linkPreviewManager
                                                                     messageSender:messageSender

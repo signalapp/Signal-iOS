@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 import SignalMetadataKit
+import SignalClient
 
 @objc
 public enum MessageSenderError: Int, Error {
@@ -73,9 +74,9 @@ public extension MessageSender {
         }
     }
 
-    class func isUntrustedIdentityError(_ error: Error) -> Bool {
+    class func isUntrustedIdentityError(_ error: Error?) -> Bool {
         switch error {
-        case MessageSenderError.untrustedIdentity:
+        case MessageSenderError.untrustedIdentity?:
             return true
         default:
             return false
@@ -161,7 +162,7 @@ extension MessageSender {
             }
 
             return deviceIds.filter { deviceId in
-                !self.sessionStore.containsSession(
+                !self.sessionStore.containsActiveSession(
                     forAccountId: recipient.accountId,
                     deviceId: Int32(deviceId),
                     transaction: transaction
@@ -176,8 +177,8 @@ extension MessageSender {
 
             Logger.verbose("Fetching prekey for: \(messageSend.address), \(deviceId)")
 
-            let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<PreKeyBundle> in
-                let (promise, resolver) = Promise<PreKeyBundle>.pending()
+            let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<AxolotlKit.PreKeyBundle> in
+                let (promise, resolver) = Promise<AxolotlKit.PreKeyBundle>.pending()
                 self.makePrekeyRequest(
                     messageSend: messageSend,
                     deviceId: NSNumber(value: deviceId),
@@ -190,11 +191,10 @@ extension MessageSender {
                     },
                     failure: { error in
                         resolver.reject(error)
-
                     }
                 )
                 return promise
-            }.done(on: .global()) { (preKeyBundle: PreKeyBundle) -> Void in
+            }.done(on: .global()) { (preKeyBundle: AxolotlKit.PreKeyBundle) -> Void in
                 try self.databaseStorage.write { transaction in
                     // Since we successfully fetched the prekey bundle,
                     // we know this device is registered. We can safely
@@ -239,13 +239,19 @@ extension MessageSender {
 
 // MARK: -
 
+fileprivate extension ProtocolAddress {
+    convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
+        try self.init(name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!, deviceId: deviceId)
+    }
+}
+
 @objc
 public extension MessageSender {
 
     class func makePrekeyRequest(messageSend: OWSMessageSend,
                                  deviceId: NSNumber,
                                  accountId: AccountId?,
-                                 success: @escaping (PreKeyBundle?) -> Void,
+                                 success: @escaping (AxolotlKit.PreKeyBundle?) -> Void,
                                  failure: @escaping (Error) -> Void) {
         assert(!Thread.isMainThread)
 
@@ -302,7 +308,7 @@ public extension MessageSender {
             guard let responseObject = result.responseObject as? [AnyHashable: Any] else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
-            let bundle = PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
+            let bundle = AxolotlKit.PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
             success(bundle)
         }.catch(on: .global()) { error in
             if let httpStatusCode = error.httpStatusCode {
@@ -317,53 +323,68 @@ public extension MessageSender {
         }
     }
 
-    private class func createSession(forPreKeyBundle preKeyBundle: PreKeyBundle,
-                                     accountId: String,
-                                     recipientAddress: SignalServiceAddress,
-                                     deviceId: NSNumber,
-                                     transaction: SDSAnyWriteTransaction) throws {
+    @objc(createSessionForPreKeyBundle:accountId:recipientAddress:deviceId:transaction:error:)
+    class func createSession(forPreKeyBundle preKeyBundle: AxolotlKit.PreKeyBundle,
+                             accountId: String,
+                             recipientAddress: SignalServiceAddress,
+                             deviceId: NSNumber,
+                             transaction: SDSAnyWriteTransaction) throws {
         assert(!Thread.isMainThread)
 
         Logger.info("Creating session for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
-        guard !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) else {
+        guard !sessionStore.containsActiveSession(forAccountId: accountId,
+                                                  deviceId: deviceId.int32Value,
+                                                  transaction: transaction) else {
             Logger.warn("Session already exists.")
             return
         }
 
-        let builder = SessionBuilder(sessionStore: sessionStore,
-                                     preKeyStore: preKeyStore,
-                                     signedPreKeyStore: signedPreKeyStore,
-                                     identityKeyStore: identityManager,
-                                     recipientId: accountId,
-                                     deviceId: deviceId.int32Value)
-        do {
-            try builder.processPrekeyBundle(preKeyBundle,
-                                            protocolContext: transaction)
-        } catch {
-            Logger.warn("Error: \(error)")
-
-            if let exception = (error as NSError).userInfo[SCKExceptionWrapperUnderlyingExceptionKey] as? NSException {
-                if UntrustedIdentityKeyException == exception.name.rawValue {
-                    handleUntrustedIdentityKeyError(accountId: accountId,
-                                                    recipientAddress: recipientAddress,
-                                                    preKeyBundle: preKeyBundle,
-                                                    transaction: transaction)
-                }
-            } else {
-                owsFailDebug("Missing underlying exception.")
-            }
-
-            throw error
+        let bundle: SignalClient.PreKeyBundle
+        if preKeyBundle.preKeyPublic.isEmpty {
+            bundle = try SignalClient.PreKeyBundle(
+                registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
+                deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
+                signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
+                signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
+                signedPrekeySignature: preKeyBundle.signedPreKeySignature,
+                identity: try SignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+        } else {
+            bundle = try SignalClient.PreKeyBundle(
+                registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
+                deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
+                prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
+                prekey: try PublicKey(preKeyBundle.preKeyPublic),
+                signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
+                signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
+                signedPrekeySignature: preKeyBundle.signedPreKeySignature,
+                identity: try SignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
         }
-        if !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) {
+
+        do {
+            let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: deviceId.uint32Value)
+            try processPreKeyBundle(bundle,
+                                    for: protocolAddress,
+                                    sessionStore: sessionStore,
+                                    identityStore: identityManager,
+                                    context: transaction)
+        } catch SignalError.untrustedIdentity(_) {
+            handleUntrustedIdentityKeyError(accountId: accountId,
+                                            recipientAddress: recipientAddress,
+                                            preKeyBundle: preKeyBundle,
+                                            transaction: transaction)
+            throw MessageSenderError.untrustedIdentity
+        }
+        if !sessionStore.containsActiveSession(forAccountId: accountId,
+                                               deviceId: deviceId.int32Value,
+                                               transaction: transaction) {
             owsFailDebug("Session does not exist.")
         }
     }
 
     class func handleUntrustedIdentityKeyError(accountId: String,
                                                recipientAddress: SignalServiceAddress,
-                                               preKeyBundle: PreKeyBundle,
+                                               preKeyBundle: AxolotlKit.PreKeyBundle,
                                                transaction: SDSAnyWriteTransaction) {
         saveRemoteIdentity(recipientAddress: recipientAddress,
                            preKeyBundle: preKeyBundle,
@@ -378,7 +399,7 @@ public extension MessageSender {
     }
 
     private class func saveRemoteIdentity(recipientAddress: SignalServiceAddress,
-                                          preKeyBundle: PreKeyBundle,
+                                          preKeyBundle: AxolotlKit.PreKeyBundle,
                                           transaction: SDSAnyWriteTransaction) {
         Logger.info("recipientAddress: \(recipientAddress)")
         do {
@@ -407,7 +428,7 @@ fileprivate extension MessageSender {
 
     class func hadUntrustedIdentityKeyError(recipientAddress: SignalServiceAddress,
                                             currentIdentityKey: Data,
-                                            preKeyBundle: PreKeyBundle) {
+                                            preKeyBundle: AxolotlKit.PreKeyBundle) {
         assert(!Thread.isMainThread)
 
         let newIdentityKey: Data
@@ -1133,6 +1154,93 @@ extension MessageSender {
             for deviceId in devicesToRemove {
                 sessionStore.archiveSession(for: messageSend.address, deviceId: deviceId.int32Value, transaction: transaction)
             }
+        }
+    }
+}
+
+extension MessageSender {
+    private enum EncryptionError: Error {
+        case missingSession(recipientAddress: SignalServiceAddress, deviceId: Int32)
+    }
+
+    @objc(encryptedMessageForMessageSend:deviceId:plainText:transaction:error:)
+    private func encryptedMessage(for messageSend: OWSMessageSend,
+                                  deviceId: Int32,
+                                  plainText: Data,
+                                  transaction: SDSAnyWriteTransaction) throws -> NSDictionary {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let message = messageSend.message
+        let recipientAddress = messageSend.address
+        owsAssertDebug(recipientAddress.isValid)
+
+        guard Self.sessionStore.containsActiveSession(for: recipientAddress,
+                                                      deviceId: deviceId,
+                                                      transaction: transaction) else {
+            throw EncryptionError.missingSession(recipientAddress: recipientAddress, deviceId: deviceId)
+        }
+
+        let paddedPlaintext = (plainText as NSData).paddedMessageBody()
+
+        let serializedMessage: Data
+        let messageType: TSWhisperMessageType
+
+        let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
+
+        if let udSendingAccess = messageSend.udSendingAccess {
+            let secretCipher = try SMKSecretSessionCipher(sessionStore: Self.sessionStore,
+                                                          preKeyStore: Self.preKeyStore,
+                                                          signedPreKeyStore: Self.signedPreKeyStore,
+                                                          identityStore: Self.identityManager)
+
+            serializedMessage = try secretCipher.throwswrapped_encryptMessage(
+                recipient: SMKAddress(uuid: recipientAddress.uuid, e164: recipientAddress.phoneNumber),
+                deviceId: deviceId,
+                paddedPlaintext: paddedPlaintext,
+                senderCertificate: udSendingAccess.senderCertificate,
+                protocolContext: transaction)
+            messageType = .unidentifiedSenderMessageType
+
+        } else {
+            let result = try signalEncrypt(message: paddedPlaintext,
+                                           for: protocolAddress,
+                                           sessionStore: Self.sessionStore,
+                                           identityStore: Self.identityManager,
+                                           context: transaction)
+
+            switch result.messageType {
+            case .whisper:
+                messageType = .encryptedWhisperMessageType
+            case .preKey:
+                messageType = .preKeyWhisperMessageType
+            default:
+                messageType = .unknownMessageType
+            }
+
+            serializedMessage = Data(result.serialize())
+        }
+
+        // We had better have a session after encrypting for this recipient!
+        let session = try Self.sessionStore.loadSession(for: protocolAddress, context: transaction)!
+
+        let messageParams = OWSMessageServiceParams(
+            type: messageType,
+            address: recipientAddress,
+            device: deviceId,
+            content: serializedMessage,
+            isSilent: message.isSilent,
+            isOnline: message.isOnline,
+            registrationId: Int32(bitPattern: try session.remoteRegistrationId()))
+
+        do {
+            return try MTLJSONAdapter.jsonDictionary(fromModel: messageParams) as NSDictionary
+        } catch {
+            OWSAnalytics.logEvent(OWSAnalyticsEvents.messageSendErrorCouldNotSerializeMessageJson(),
+                                  severity: .error,
+                                  parameters: nil,
+                                  location: "\((#file as NSString).lastPathComponent):\(#function)",
+                                  line: #line)
+            throw error
         }
     }
 }

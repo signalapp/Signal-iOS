@@ -4,6 +4,7 @@
 
 import Foundation
 import GRDB
+import SignalClient
 
 // MARK: - Any*Transaction
 
@@ -196,7 +197,7 @@ public class SDSAnyReadTransaction: NSObject, SPKProtocolReadContext {
 }
 
 @objc
-public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteContext {
+public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteContext, StoreContext {
     public enum WriteTransactionType {
         case yapWrite(_ transaction: YapDatabaseReadWriteTransaction)
         case grdbWrite(_ transaction: GRDBWriteTransaction)
@@ -312,6 +313,12 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         case .grdbWrite(let grdbWrite):
             grdbWrite.addRemovedFinalizationKey(key)
         }
+    }
+}
+
+public extension StoreContext {
+    var asTransaction: SDSAnyWriteTransaction {
+        return self as! SDSAnyWriteTransaction
     }
 }
 

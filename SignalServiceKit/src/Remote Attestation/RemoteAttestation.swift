@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalClient
 
 extension RemoteAttestation {
 
@@ -226,8 +227,84 @@ extension RemoteAttestation {
     }
 }
 
-public extension RemoteAttestationError {
-    var reason: String? {
+extension RemoteAttestationError {
+    public var reason: String? {
         return userInfo[RemoteAttestationErrorKey_Reason] as? String
+    }
+
+    fileprivate init(_ code: Code, reason: String) {
+        owsFailDebug("Error: \(reason)")
+        self.init(code, userInfo: [RemoteAttestationErrorKey_Reason: reason])
+    }
+}
+
+@objc
+public class RemoteAttestationKeys: NSObject {
+    @objc
+    public let clientEphemeralKeyPair: ECKeyPair
+
+    @objc
+    public let serverEphemeralPublic: Data
+
+    @objc
+    public let serverStaticPublic: Data
+
+    @objc
+    public let clientKey: OWSAES256Key
+
+    @objc
+    public let serverKey: OWSAES256Key
+
+    @objc
+    public init(clientEphemeralKeyPair: ECKeyPair, serverEphemeralPublic: Data, serverStaticPublic: Data) throws {
+        if serverEphemeralPublic.isEmpty {
+            throw RemoteAttestationError(.assertionError, reason: "Invalid serverEphemeralPublic")
+        }
+        if serverStaticPublic.isEmpty {
+            throw RemoteAttestationError(.assertionError, reason: "Invalid serverStaticPublic")
+        }
+
+        self.clientEphemeralKeyPair = clientEphemeralKeyPair
+        self.serverEphemeralPublic = serverEphemeralPublic
+        self.serverStaticPublic = serverStaticPublic
+
+        do {
+            let clientPrivateKey = clientEphemeralKeyPair.identityKeyPair.privateKey
+            let serverEphemeralPublicKey = try! ECPublicKey(keyData: serverEphemeralPublic).key
+            let serverStaticPublicKey = try! ECPublicKey(keyData: serverStaticPublic).key
+
+            let ephemeralToEphemeral = clientPrivateKey.keyAgreement(with: serverEphemeralPublicKey)
+            let ephemeralToStatic = clientPrivateKey.keyAgreement(with: serverStaticPublicKey)
+
+            let masterSecret = ephemeralToEphemeral + ephemeralToStatic
+            let publicKeys = clientEphemeralKeyPair.publicKey + serverEphemeralPublic + serverStaticPublic
+
+            let derivedMaterial = try hkdf(
+                outputLength: Int(kAES256_KeyByteLength) * 2,
+                version: 3,
+                inputKeyMaterial: masterSecret,
+                salt: publicKeys,
+                info: []
+            )
+
+            let clientKeyData = derivedMaterial[0..<Int(kAES256_KeyByteLength)]
+            guard let clientKey = OWSAES256Key(data: Data(clientKeyData)) else {
+                owsFail("failed to create client key")
+            }
+            self.clientKey = clientKey
+
+            let serverKeyData = derivedMaterial[Int(kAES256_KeyByteLength)...]
+            guard let serverKey = OWSAES256Key(data: Data(serverKeyData)) else {
+                owsFail("failed to create server key")
+            }
+            self.serverKey = serverKey
+
+        } catch {
+            owsFailDebug("Error: failed to derive keys - \(error)")
+            throw RemoteAttestationError(.assertionError, userInfo: [
+                RemoteAttestationErrorKey_Reason: "failed to derive keys",
+                NSUnderlyingErrorKey: error
+            ])
+        }
     }
 }

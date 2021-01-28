@@ -15,7 +15,6 @@
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
@@ -158,13 +157,13 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (NSString *)ensureAccountIdForAddress:(SignalServiceAddress *)address
                             transaction:(SDSAnyWriteTransaction *)transaction
 {
-    return [[OWSAccountIdFinder new] ensureAccountIdForAddress:address transaction:transaction];
+    return [OWSAccountIdFinder ensureAccountIdForAddress:address transaction:transaction];
 }
 
 - (nullable NSString *)accountIdForAddress:(SignalServiceAddress *)address
                                transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [[OWSAccountIdFinder new] accountIdForAddress:address transaction:transaction];
+    return [OWSAccountIdFinder accountIdForAddress:address transaction:transaction];
 }
 
 - (nullable NSData *)identityKeyForAddress:(SignalServiceAddress *)address
@@ -503,8 +502,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(direction != TSMessageDirectionUnknown);
     OWSAssertDebug(transaction);
 
-    SignalServiceAddress *_Nullable address = [[OWSAccountIdFinder new] addressForAccountId:accountId
-                                                                                transaction:transaction];
+    SignalServiceAddress *_Nullable address = [OWSAccountIdFinder addressForAccountId:accountId
+                                                                          transaction:transaction];
 
     if (address.isLocalAddress) {
         ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairWithTransaction:transaction];
@@ -577,8 +576,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                 wasIdentityVerified:(BOOL)wasIdentityVerified
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
-    SignalServiceAddress *_Nullable address = [[OWSAccountIdFinder new] addressForAccountId:accountId
-                                                                                transaction:transaction];
+    SignalServiceAddress *_Nullable address = [OWSAccountIdFinder addressForAccountId:accountId
+                                                                          transaction:transaction];
 
     if (!address.isValid) {
         OWSFailDebug(@"address unexpectedly invalid for accountId: %@", accountId);
@@ -674,9 +673,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                          NSString *phoneNumber = (NSString *)value;
                                                          address = [[SignalServiceAddress alloc]
                                                              initWithPhoneNumber:phoneNumber];
-                                                         OWSAccountIdFinder *accountIdFinder = [OWSAccountIdFinder new];
-                                                         accountId = [accountIdFinder accountIdForAddress:address
-                                                                                              transaction:transaction];
+                                                         accountId =
+                                                             [OWSAccountIdFinder accountIdForAddress:address
+                                                                                         transaction:transaction];
                                                          if (accountId == nil) {
                                                              OWSFailDebug(@"Missing accountId for address.");
                                                              return;

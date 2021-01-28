@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalClient
 
 @objc
 public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable {
@@ -92,6 +93,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public convenience init(uuid: UUID?, phoneNumber: String?) {
         self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .low)
+    }
+
+    internal convenience init(from address: ProtocolAddress) {
+        if let uuid = UUID(uuidString: address.name) {
+            self.init(uuid: uuid)
+        } else {
+            // FIXME: What happens if this is *not* a valid phone number?
+            self.init(phoneNumber: address.name)
+        }
     }
 
     @objc

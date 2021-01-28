@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalProtocolHelper.h"
@@ -71,8 +71,10 @@ NS_ASSUME_NONNULL_BEGIN
     BobAxolotlParameters   *bobParams = [[BobAxolotlParameters alloc] initWithMyIdentityKeyPair:bobIdentityKeyPair theirIdentityKey:[aliceIdentityKeyPair publicKey] ourSignedPrekey:bobBaseKey ourRatchetKey:bobBaseKey ourOneTimePrekey:bobOneTimePK theirBaseKey:[aliceBaseKey publicKey]];
 
     [RatchetingSession throws_initializeSession:bobSessionState sessionVersion:3 BobParameters:bobParams];
+    bobSessionState.aliceBaseKey = aliceBaseKey.publicKey;
 
     [RatchetingSession throws_initializeSession:aliceSessionState sessionVersion:3 AliceParameters:aliceParams];
+    aliceSessionState.aliceBaseKey = aliceBaseKey.publicKey;
 
     [aliceIdentityKeyStore saveRemoteIdentity:bobIdentityKeyPair.publicKey
                                   recipientId:bobIdentifier

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,12 +11,10 @@ public struct TestProtocolRunner {
 
     public init() { }
 
-    let accountIdentifierFinder  = OWSAccountIdFinder()
+    public func initialize(senderClient: TestSignalClient, recipientClient: TestSignalClient, transaction: SDSAnyWriteTransaction) throws {
 
-    public func initialize(senderClient: SignalClient, recipientClient: SignalClient, transaction: SDSAnyWriteTransaction) throws {
-
-        let senderIdentifier = accountIdentifierFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
-        let recipientIdentifier = accountIdentifierFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
+        let senderIdentifier = OWSAccountIdFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
+        let recipientIdentifier = OWSAccountIdFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
 
         try SignalProtocolHelper.sessionInitialization(withAliceSessionStore: senderClient.sessionStore,
                                                        aliceIdentityKeyStore: senderClient.identityKeyStore,
@@ -29,12 +27,12 @@ public struct TestProtocolRunner {
                                                        protocolContext: transaction)
     }
 
-    public func encrypt(plaintext: Data, senderClient: SignalClient, recipientAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> CipherMessage {
+    public func encrypt(plaintext: Data, senderClient: TestSignalClient, recipientAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> CipherMessage {
         let sessionCipher = try senderClient.sessionCipher(for: recipientAccountId)
         return try sessionCipher.encryptMessage(plaintext, protocolContext: protocolContext)
     }
 
-    public func decrypt(cipherMessage: CipherMessage, recipientClient: SignalClient, senderAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> Data {
+    public func decrypt(cipherMessage: CipherMessage, recipientClient: TestSignalClient, senderAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> Data {
         let sessionCipher = try recipientClient.sessionCipher(for: senderAccountId)
         return try sessionCipher.decrypt(cipherMessage, protocolContext: protocolContext)
     }
@@ -46,7 +44,7 @@ public typealias SignalAccountIdentifier = String
 
 /// Represents a Signal installation, it can represent the local client or
 /// a remote client.
-public protocol SignalClient {
+public protocol TestSignalClient {
     var identityKeyPair: ECKeyPair { get }
     var identityKey: IdentityKey { get }
     var e164Identifier: SignalE164Identifier? { get }
@@ -63,7 +61,7 @@ public protocol SignalClient {
     func sessionCipher(for accountId: SignalAccountIdentifier) throws -> SessionCipher
 }
 
-public extension SignalClient {
+public extension TestSignalClient {
     var identityKey: IdentityKey {
         return identityKeyPair.publicKey
     }
@@ -85,18 +83,14 @@ public extension SignalClient {
                              deviceId: 1)
     }
 
-    var accountIdFinder: OWSAccountIdFinder {
-        return OWSAccountIdFinder()
-    }
-
     func accountId(transaction: SDSAnyWriteTransaction) -> String {
-        return accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
+        return OWSAccountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
     }
 }
 
 /// Can be used to represent the protocol state held by a remote client.
 /// i.e. someone who's sending messages to the local client.
-public struct FakeSignalClient: SignalClient {
+public struct FakeSignalClient: TestSignalClient {
 
     public var sessionStore: SessionStore { return protocolStore }
     public var preKeyStore: PreKeyStore { return protocolStore }
@@ -128,7 +122,7 @@ public struct FakeSignalClient: SignalClient {
 
 /// Represents the local user, backed by the same protocol stores, etc.
 /// used in the app.
-public struct LocalSignalClient: SignalClient {
+public struct LocalSignalClient: TestSignalClient {
 
     public init() { }
 
@@ -181,7 +175,7 @@ public struct FakeService {
         return SDSDatabaseStorage.shared
     }
 
-    public func envelopeBuilder(fromSenderClient senderClient: SignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
+    public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
@@ -196,7 +190,7 @@ public struct FakeService {
         return builder
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient, bodyText: String?) throws -> Data {
+    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(bodyText: bodyText)
         let cipherMessage: CipherMessage = databaseStorage.write { transaction in
             return try! self.runner.encrypt(plaintext: plaintext,

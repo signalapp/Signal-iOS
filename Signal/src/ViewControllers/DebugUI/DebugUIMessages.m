@@ -20,7 +20,6 @@
 #import <SignalServiceKit/OWSGroupInfoRequestMessage.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>

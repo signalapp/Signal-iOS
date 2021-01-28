@@ -16,7 +16,6 @@
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 

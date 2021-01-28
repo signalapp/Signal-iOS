@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
+		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
@@ -975,6 +976,7 @@
 		02CD38E58B58A689DCF037AD /* Pods-SignalTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.profiling.xcconfig"; sourceTree = "<group>"; };
+		173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionMigrationPerfTest.swift; sourceTree = "<group>"; };
 		1BC279B87E730B066A5AFB2A /* Pods-SignalPerformanceTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
@@ -3196,6 +3198,7 @@
 				4C42960F231A1AA400D9D240 /* MessageSendingPerformanceTest.swift */,
 				4C10B1C8231778880099396B /* PerformanceBaseTest.swift */,
 				4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */,
+				173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */,
 				348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */,
 				3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */,
 				34A4D56E24E4D341002F8044 /* UnfairLockPerformanceTest.swift */,
@@ -4552,6 +4555,7 @@
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalArgon2/SignalArgon2.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalClient/SignalClient.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
@@ -4587,6 +4591,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalArgon2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
@@ -4650,6 +4655,7 @@
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalArgon2/SignalArgon2.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalClient/SignalClient.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
@@ -4682,6 +4688,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalArgon2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
@@ -4742,6 +4749,7 @@
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalArgon2/SignalArgon2.framework",
+				"${BUILT_PRODUCTS_DIR}/SignalClient/SignalClient.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
@@ -4774,6 +4782,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalArgon2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
@@ -5079,6 +5088,7 @@
 				4C10B19423176D250099396B /* MockEnvironment.m in Sources */,
 				4C42960E2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift in Sources */,
 				34A4D56F24E4D342002F8044 /* UnfairLockPerformanceTest.swift in Sources */,
+				173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */,
 				348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */,
 				34B14D8B24F0012100CC3A9A /* GroupsPerfTest.swift in Sources */,
 				4C10B19523176D250099396B /* MarqueeLabel.swift in Sources */,

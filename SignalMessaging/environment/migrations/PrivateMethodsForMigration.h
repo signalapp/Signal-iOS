@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SSKPreKeyStore.h>
-#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SSKSignedPreKeyStore.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
