@@ -98,9 +98,9 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                 return handleFailure(error)
             }
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
-            storage.write(with: { transaction in
+            storage.write { transaction in
                 storage.persist(stream, associatedWith: self.tsIncomingMessageID, using: transaction)
-            }, completion: { })
+            }
         }.catch(on: DispatchQueue.global()) { error in
             handleFailure(error)
         }

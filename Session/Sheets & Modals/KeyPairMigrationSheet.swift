@@ -39,8 +39,18 @@ final class KeyPairMigrationSheet : Sheet {
         upgradeNowButton.set(.width, to: 240)
         upgradeNowButton.setTitle("Upgrade Now", for: UIControl.State.normal)
         upgradeNowButton.addTarget(self, action: #selector(upgradeNow), for: UIControl.Event.touchUpInside)
+        // Upgrade now button
+        let upgradeLaterButton = Button(style: .prominentOutline, size: .large)
+        upgradeLaterButton.set(.width, to: 240)
+        upgradeLaterButton.setTitle("Upgrade Later", for: UIControl.State.normal)
+        upgradeLaterButton.addTarget(self, action: #selector(upgradeLater), for: UIControl.Event.touchUpInside)
+        // Button stack view
+        let buttonStackView = UIStackView(arrangedSubviews: [ upgradeNowButton, upgradeLaterButton ])
+        buttonStackView.axis = .vertical
+        buttonStackView.spacing = Values.mediumSpacing
+        buttonStackView.alignment = .center
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, explanationLabel, upgradeNowButton ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, explanationLabel, buttonStackView ])
         stackView.axis = .vertical
         stackView.spacing = Values.veryLargeSpacing
         stackView.alignment = .center
@@ -54,5 +64,12 @@ final class KeyPairMigrationSheet : Sheet {
     
     @objc private func upgradeNow() {
         Storage.prepareForV2KeyPairMigration()
+    }
+    
+    @objc private func upgradeLater() {
+        let alert = UIAlertController(title: "Warning", message: "You won't be able to send or receive messages until you upgrade.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", accessibilityIdentifier: nil, style: .default, handler: nil))
+        presentingViewController?.dismiss(animated: true, completion: nil) // Dismiss self
+        presentingViewController?.present(alert, animated: true, completion: nil)
     }
 }

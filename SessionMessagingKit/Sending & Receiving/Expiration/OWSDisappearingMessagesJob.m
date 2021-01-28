@@ -164,8 +164,6 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    NSTimeInterval startedSecondsAgo = ([NSDate ows_millisecondTimeStamp] - expirationStartedAt) / 1000.0;
-
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
         [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
@@ -191,7 +189,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     NSString *_Nullable remoteContactName = nil;
     if (remoteRecipientId) {
-        remoteContactName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:remoteRecipientId avoidingWriteTransaction:YES];
+        remoteContactName = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:remoteRecipientId avoidingWriteTransaction:YES] ?: remoteRecipientId;
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.

@@ -340,14 +340,16 @@ public final class MessageSender : NSObject {
 
     // MARK: Success & Failure Handling
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        // Track the open group server message ID
+        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
         tsMessage.save(with: transaction)
         if let serverID = message.openGroupServerMessageID {
             storage.setIDForMessage(withServerID: serverID, to: tsMessage.uniqueId!, using: transaction)
         }
+        // Mark the message as sent
         var recipients = [ message.recipient! ]
         if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
             let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
@@ -356,6 +358,7 @@ public final class MessageSender : NSObject {
         recipients.forEach { recipient in
             tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
         }
+        // Start the disappearing messages timer if needed
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
     }
 
