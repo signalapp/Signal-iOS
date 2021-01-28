@@ -288,7 +288,7 @@ public class SignalAttachment: NSObject {
             cachedVideoPreview = image
             return image
 
-        } catch let error {
+        } catch {
             return nil
         }
     }

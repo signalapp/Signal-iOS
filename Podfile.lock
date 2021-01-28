@@ -53,7 +53,6 @@ PODS:
   - SQLCipher/standard (4.4.0):
     - SQLCipher/common
   - SSZipArchive (2.2.3)
-  - Starscream (3.0.6)
   - SwiftProtobuf (1.5.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
@@ -142,7 +141,6 @@ DEPENDENCIES:
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - Sodium (~> 0.8.0)
   - SSZipArchive
-  - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -176,9 +174,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit.git
-  Starscream:
-    :branch: signal-release
-    :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/loki-project/session-ios-yap-database.git
@@ -195,9 +190,6 @@ CHECKOUT OPTIONS:
   SignalCoreKit:
     :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
     :git: https://github.com/signalapp/SignalCoreKit.git
-  Starscream:
-    :commit: b09ea163c3cb305152c65b299cb024610f52e735
-    :git: https://github.com/signalapp/Starscream.git
   YapDatabase:
     :commit: 5806f6b6e0b34124ee09283a9eca9ce7e6eaf14e
     :git: https://github.com/loki-project/session-ios-yap-database.git
@@ -224,12 +216,11 @@ SPEC CHECKSUMS:
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e639c728c4ea2a89f3e904f3a07d380c7459bdd9
+PODFILE CHECKSUM: 70f7bae656b18fbce6806589f2df6a5a87bce09e
 
 COCOAPODS: 1.10.0.rc.1

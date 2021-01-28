@@ -254,7 +254,7 @@ public final class OpenGroupAPI : DotNetAPI {
                     let request = TSRequest(url: url, method: "POST", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false)
-                    promise.done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
+                    let _ = promise.done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
                         SNLog("Banned user with ID: \(publicKey) from server: \(server).")
                     }
                     promise.catch(on: DispatchQueue.main) { error in

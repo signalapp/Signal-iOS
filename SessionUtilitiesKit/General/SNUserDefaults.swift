@@ -1,6 +1,6 @@
 import Foundation
 
-public enum LKUserDefaults {
+public enum SNUserDefaults {
     
     public enum Bool : Swift.String {
         case hasLaunchedOnce
@@ -32,27 +32,27 @@ public enum LKUserDefaults {
 
 public extension UserDefaults {
     
-    subscript(bool: LKUserDefaults.Bool) -> Bool {
+    subscript(bool: SNUserDefaults.Bool) -> Bool {
         get { return self.bool(forKey: bool.rawValue) }
         set { set(newValue, forKey: bool.rawValue) }
     }
 
-    subscript(date: LKUserDefaults.Date) -> Date? {
+    subscript(date: SNUserDefaults.Date) -> Date? {
         get { return self.object(forKey: date.rawValue) as? Date }
         set { set(newValue, forKey: date.rawValue) }
     }
     
-    subscript(double: LKUserDefaults.Double) -> Double {
+    subscript(double: SNUserDefaults.Double) -> Double {
         get { return self.double(forKey: double.rawValue) }
         set { set(newValue, forKey: double.rawValue) }
     }
 
-    subscript(int: LKUserDefaults.Int) -> Int {
+    subscript(int: SNUserDefaults.Int) -> Int {
         get { return self.integer(forKey: int.rawValue) }
         set { set(newValue, forKey: int.rawValue) }
     }
     
-    subscript(string: LKUserDefaults.String) -> String? {
+    subscript(string: SNUserDefaults.String) -> String? {
         get { return self.string(forKey: string.rawValue) }
         set { set(newValue, forKey: string.rawValue) }
     }
