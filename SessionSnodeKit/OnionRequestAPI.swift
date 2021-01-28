@@ -44,11 +44,11 @@ public enum OnionRequestAPI {
         public var errorDescription: String? {
             switch self {
             case .httpRequestFailedAtDestination(let statusCode, _): return "HTTP request failed at destination with status code: \(statusCode)."
-            case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
+            case .insufficientSnodes: return "Couldn't find enough Service Nodes to build a path."
             case .invalidURL: return "Invalid URL"
-            case .missingSnodeVersion: return "Missing snode version."
-            case .snodePublicKeySetMissing: return "Missing snode public key set."
-            case .unsupportedSnodeVersion(let version): return "Unsupported snode version: \(version)."
+            case .missingSnodeVersion: return "Missing Service Node version."
+            case .snodePublicKeySetMissing: return "Missing Service Node public key set."
+            case .unsupportedSnodeVersion(let version): return "Unsupported Service Node version: \(version)."
             }
         }
     }
