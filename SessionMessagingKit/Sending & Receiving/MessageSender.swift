@@ -339,17 +339,12 @@ public final class MessageSender : NSObject {
     }
 
     // MARK: Success & Failure Handling
-<<<<<<< HEAD
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, isSyncMessage: Bool = false, using transaction: Any) {
-        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction) // To later ignore self-sends in a multi device context
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
-=======
-    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
->>>>>>> dev
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        // Ignore future self-sends
+        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Track the open group server message ID
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
         tsMessage.save(with: transaction)
