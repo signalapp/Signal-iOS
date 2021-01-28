@@ -104,7 +104,6 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         }
 
         labelConfig.applyForRendering(label: componentView.label)
-        componentView.label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
         componentView.hStackView.addArrangedSubview(componentView.label)
     }
 
@@ -357,5 +356,14 @@ fileprivate extension CVComponentViewOnce {
             owsAssertDebug(attachmentStream.isImage || attachmentStream.isAnimated)
             return .photo
         }
+    }
+}
+
+// MARK: -
+
+extension CVComponentViewOnce: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        // TODO: We could include the media type (video, image, animated image).
+        labelConfig.stringValue
     }
 }
