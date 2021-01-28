@@ -39,6 +39,7 @@ public final class Values : NSObject {
     @objc public static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc public static let tabBarHeight = isIPhone5OrSmaller ? CGFloat(32) : CGFloat(48)
     @objc public static let settingButtonHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
+    @objc public static let defaultSettingRowHeight = CGFloat(60)
     @objc public static let modalCornerRadius = CGFloat(10)
     @objc public static let modalButtonCornerRadius = CGFloat(5)
     @objc public static let fakeChatBubbleWidth = CGFloat(224)

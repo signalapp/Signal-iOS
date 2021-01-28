@@ -125,42 +125,33 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         joinPublicChatIfPossible(with: chatURL)
     }
     
-    fileprivate func joinPublicChatIfPossible(with chatURL: String) {
+    fileprivate func joinPublicChatIfPossible(with urlAsString: String) {
         guard !isJoining else { return }
-        guard let url = URL(string: chatURL), let scheme = url.scheme, scheme == "https", url.host != nil else {
+        guard let url = URL(string: urlAsString), let scheme = url.scheme, scheme == "https", url.host != nil else {
             return showError(title: NSLocalizedString("invalid_url", comment: ""), message: "Please check the URL you entered and try again")
         }
         isJoining = true
-        let channelID: UInt64 = 1
-        let urlAsString = url.absoluteString
-        let userPublicKey = getUserHexEncodedPublicKey()
-        let profileManager = OWSProfileManager.shared()
-        let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
-        let profilePictureURL = profileManager.profilePictureURL()
-        let profileKey = profileManager.localProfileKey().keyData
-        Storage.writeSync { transaction in
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastMessageServerIDCollection)
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: Storage.lastDeletionServerIDCollection)
-        }
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            PublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
-            .done(on: DispatchQueue.main) { [weak self] _ in
-                let _ = OpenGroupAPI.setDisplayName(to: displayName, on: urlAsString)
-                let _ = OpenGroupAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
-                let _ = OpenGroupAPI.join(channelID, on: urlAsString)
-                self?.presentingViewController!.dismiss(animated: true, completion: nil)
-            }
-            .catch(on: DispatchQueue.main) { [weak self] error in
-                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                var title = "Couldn't Join"
-                var message = ""
-                if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                    title = "Unauthorized"
-                    message = "Please ask the open group operator to add you to the group."
+            Storage.shared.write(with: { transaction in
+                OpenGroupManager.shared.add(with: urlAsString, using: transaction)
+                .done(on: DispatchQueue.main) { [weak self] _ in
+                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
                 }
-                self?.isJoining = false
-                self?.showError(title: title, message: message)
-            }
+                .catch(on: DispatchQueue.main) { [weak self] error in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    var title = "Couldn't Join"
+                    var message = ""
+                    if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
+                        title = "Unauthorized"
+                        message = "Please ask the open group operator to add you to the group."
+                    }
+                    self?.isJoining = false
+                    self?.showError(title: title, message: message)
+                }
+            }, completion: {
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+            })
         }
     }
     

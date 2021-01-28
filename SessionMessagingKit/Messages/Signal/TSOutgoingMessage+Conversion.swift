@@ -4,15 +4,25 @@ import SessionUtilitiesKit
     
     @objc(from:associatedWith:)
     static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread) -> TSOutgoingMessage {
+        return from(visibleMessage, associatedWith: thread, using: nil)
+    }
+    
+    static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction? = nil) -> TSOutgoingMessage {
         var expiration: UInt32 = 0
-        if let disappearingMessagesConfiguration = OWSDisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!) {
+        let disappearingMessagesConfigurationOrNil: OWSDisappearingMessagesConfiguration?
+        if let transaction = transaction {
+            disappearingMessagesConfigurationOrNil = OWSDisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!, transaction: transaction)
+        } else {
+            disappearingMessagesConfigurationOrNil = OWSDisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!)
+        }
+        if let disappearingMessagesConfiguration = disappearingMessagesConfigurationOrNil {
             expiration = disappearingMessagesConfiguration.isEnabled ? disappearingMessagesConfiguration.durationSeconds : 0
         }
         return TSOutgoingMessage(
             outgoingMessageWithTimestamp: visibleMessage.sentTimestamp!,
             in: thread,
             messageBody: visibleMessage.text,
-            attachmentIds: NSMutableArray(),
+            attachmentIds: NSMutableArray(array: visibleMessage.attachmentIDs),
             expiresInSeconds: expiration,
             expireStartedAt: 0,
             isVoiceMessage: false,

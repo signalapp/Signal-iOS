@@ -59,16 +59,8 @@ final class SeedModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
-        // Set up explanation label
-        let disclaimerLabel = UILabel()
-        disclaimerLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        disclaimerLabel.font = .systemFont(ofSize: 10)
-        disclaimerLabel.text = "It is not possible to use the same Session ID on multiple devices simultaneously"
-        disclaimerLabel.numberOfLines = 0
-        disclaimerLabel.lineBreakMode = .byWordWrapping
-        disclaimerLabel.textAlignment = .center
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel, buttonStackView, disclaimerLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel, buttonStackView ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         contentView.addSubview(stackView)

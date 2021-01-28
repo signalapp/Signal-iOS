@@ -181,6 +181,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
             getSeparator(),
+            getSettingButton(withTitle: "Multi Device (Beta)", color: Colors.text, action: #selector(showMultiDeviceOptions)),
+            getSeparator(),
             getSettingButton(withTitle: "Invite", color: Colors.text, action: #selector(sendInvitation)),
             getSeparator()
         ]
@@ -403,6 +405,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func showNotificationSettings() {
         let notificationSettingsVC = NotificationSettingsViewController()
         navigationController!.pushViewController(notificationSettingsVC, animated: true)
+    }
+
+    @objc private func showMultiDeviceOptions() {
+        let multiDeviceVC = MultiDeviceVC()
+        navigationController!.pushViewController(multiDeviceVC, animated: true)
     }
 
     @objc private func sendInvitation() {

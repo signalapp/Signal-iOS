@@ -146,21 +146,13 @@ public final class OpenGroupPoller : NSObject {
                 let groupProto = SNProtoGroupContext.builder(id: id, type: .deliver)
                 groupProto.setName(openGroup.displayName)
                 dataMessageProto.setGroup(try! groupProto.build())
+                // Sync target
+                if wasSentByCurrentUser {
+                    dataMessageProto.setSyncTarget(openGroup.id)
+                }
                 // Content
                 let content = SNProtoContent.builder()
-                if !wasSentByCurrentUser { // Incoming message
-                    content.setDataMessage(try! dataMessageProto.build())
-                } else { // Outgoing message
-                    // FIXME: This needs to be updated as we removed sync message handling
-                    let syncMessageSentBuilder = SNProtoSyncMessageSent.builder()
-                    syncMessageSentBuilder.setMessage(try! dataMessageProto.build())
-                    syncMessageSentBuilder.setDestination(userPublicKey)
-                    syncMessageSentBuilder.setTimestamp(message.timestamp)
-                    let syncMessageSent = try! syncMessageSentBuilder.build()
-                    let syncMessageBuilder = SNProtoSyncMessage.builder()
-                    syncMessageBuilder.setSent(syncMessageSent)
-                    content.setSyncMessage(try! syncMessageBuilder.build())
-                }
+                content.setDataMessage(try! dataMessageProto.build())
                 // Envelope
                 let envelope = SNProtoEnvelope.builder(type: .unidentifiedSender, timestamp: message.timestamp)
                 envelope.setSource(senderPublicKey)

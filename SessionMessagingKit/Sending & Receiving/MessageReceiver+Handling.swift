@@ -13,6 +13,7 @@ extension MessageReceiver {
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
         case let message as ClosedGroupControlMessage: handleClosedGroupControlMessage(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
+        case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
@@ -141,6 +142,22 @@ extension MessageReceiver {
         message.save(with: transaction)
         SSKEnvironment.shared.disappearingMessagesJob.startIfNecessary()
     }
+    
+    private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
+        guard message.sender == getUserHexEncodedPublicKey() else { return }
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
+        for closedGroup in message.closedGroups {
+            guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
+            handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                members: [String](closedGroup.members), admins: [String](closedGroup.admins), using: transaction)
+        }
+        let allOpenGroups = Set(storage.getAllUserOpenGroups().keys)
+        for openGroupURL in message.openGroups {
+            guard !allOpenGroups.contains(openGroupURL) else { continue }
+            OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
+        }
+    }
 
     @discardableResult
     public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws -> String {
@@ -182,7 +199,7 @@ extension MessageReceiver {
             }
         }
         // Get or create thread
-        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
+        guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         // Parse quote if needed
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
@@ -200,12 +217,12 @@ extension MessageReceiver {
             }
         }
         // Persist the message
-        guard let tsIncomingMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
+        guard let tsMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
             groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         message.threadID = threadID
         // Start attachment downloads if needed
         attachmentsToDownload.forEach { attachmentID in
-            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsIncomingMessageID: tsIncomingMessageID)
+            let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID)
             if isMainAppAndActive {
                 JobQueue.shared.add(downloadJob, using: transaction)
             } else {
@@ -218,13 +235,13 @@ extension MessageReceiver {
         }
         // Keep track of the open group server message ID ↔ message ID relationship
         if let serverID = message.openGroupServerMessageID {
-            storage.setIDForMessage(withServerID: serverID, to: tsIncomingMessageID, using: transaction)
+            storage.setIDForMessage(withServerID: serverID, to: tsMessageID, using: transaction)
         }
         // Notify the user if needed
-        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction),
-            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsIncomingMessageID }
+        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
+            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
         SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
-        return tsIncomingMessageID
+        return tsMessageID
     }
 
     private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
@@ -242,11 +259,14 @@ extension MessageReceiver {
     private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
         // Prepare
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        // Unwrap the message
         let groupPublicKey = publicKeyAsData.toHexString()
         let members = membersAsData.map { $0.toHexString() }
         let admins = adminsAsData.map { $0.toHexString() }
+        handleNewClosedGroup(groupPublicKey: groupPublicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, using: transaction)
+    }
+
+    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
@@ -294,9 +314,9 @@ extension MessageReceiver {
             return SNLog("Couldn't decrypt closed group encryption key pair.")
         }
         // Parse it
-        let proto: SNProtoDataMessageClosedGroupControlMessageKeyPair
+        let proto: SNProtoKeyPair
         do {
-            proto = try SNProtoDataMessageClosedGroupControlMessageKeyPair.parseData(plaintext)
+            proto = try SNProtoKeyPair.parseData(plaintext)
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }
@@ -341,7 +361,7 @@ extension MessageReceiver {
             infoMessage.save(with: transaction)
         }
     }
-    
+ 
     private static func handleClosedGroupMembersRemoved(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .membersRemoved(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -364,6 +384,7 @@ extension MessageReceiver {
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             }
             // Generate and distribute a new encryption key pair if needed
+            // NOTE: If we're the admin we can be sure at this point that we weren't removed
             let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
             if isCurrentUserAdmin {
                 do {

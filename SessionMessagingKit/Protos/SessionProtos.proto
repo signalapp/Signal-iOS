@@ -35,10 +35,10 @@ message TypingMessage {
 }
 
 message Content {
-  optional DataMessage    dataMessage    = 1;
-  optional SyncMessage    syncMessage    = 2;
-  optional ReceiptMessage receiptMessage = 5;
-  optional TypingMessage  typingMessage  = 6;
+  optional DataMessage          dataMessage          = 1;
+  optional ReceiptMessage       receiptMessage       = 5;
+  optional TypingMessage        typingMessage        = 6;
+  optional ConfigurationMessage configurationMessage = 7;
 }
 
 message ClosedGroupCiphertextMessageWrapper {
@@ -46,6 +46,13 @@ message ClosedGroupCiphertextMessageWrapper {
   optional bytes ciphertext = 1;
   // @required
   optional bytes ephemeralPublicKey = 2;
+}
+
+message KeyPair {
+  // @required
+  required bytes publicKey  = 1;
+  // @required
+  required bytes privateKey = 2;
 }
 
 message DataMessage {
@@ -171,13 +178,6 @@ message DataMessage {
       MEMBER_LEFT         = 7;
     }
 
-    message KeyPair {
-      // @required
-      required bytes publicKey  = 1;
-      // @required
-      required bytes privateKey = 2;
-    }
-
     message KeyPairWrapper {
       // @required
       required bytes publicKey        = 1; // The public key of the user the key pair is meant for
@@ -207,7 +207,22 @@ message DataMessage {
   repeated Preview                   preview                   = 10;
   optional LokiProfile               profile                   = 101;
   optional ClosedGroupControlMessage closedGroupControlMessage = 104;
+  optional string                    syncTarget                = 105;
   optional PublicChatInfo            publicChatInfo            = 999;
+}
+
+message ConfigurationMessage {
+
+  message ClosedGroup {
+    optional bytes   publicKey         = 1;
+    optional string  name              = 2;
+    optional KeyPair encryptionKeyPair = 3;
+    repeated bytes   members           = 4;
+    repeated bytes   admins            = 5;
+  }
+
+  repeated ClosedGroup closedGroups = 1;
+  repeated string      openGroups   = 2;
 }
 
 message ReceiptMessage {
@@ -220,20 +235,6 @@ message ReceiptMessage {
   // @required
   optional Type   type      = 1;
   repeated uint64 timestamp = 2;
-}
-
-message SyncMessage {
-
-  message Sent {
-    optional string      destination              = 1;
-    optional uint64      timestamp                = 2;
-    optional DataMessage message                  = 3;
-    optional uint64      expirationStartTimestamp = 4;
-    optional bool        isRecipientUpdate        = 6 [default = false];
-  }
-
-  optional Sent  sent    = 1;
-  optional bytes padding = 8;
 }
 
 message AttachmentPointer {

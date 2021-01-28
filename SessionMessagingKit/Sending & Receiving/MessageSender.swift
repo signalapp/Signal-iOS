@@ -105,7 +105,7 @@ public final class MessageSender : NSObject {
     }
 
     // MARK: One-on-One Chats & Closed Groups
-    internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+    internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any, isSyncMessage: Bool = false) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -137,8 +137,8 @@ public final class MessageSender : NSObject {
         }
         // Validate the message
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-        // Stop here if this is a self-send
-        guard !isSelfSend else {
+        // Stop here if this is a self-send (unless it's a configuration message or a sync message)
+        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage else {
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
@@ -240,8 +240,8 @@ public final class MessageSender : NSObject {
                         }
                     }
                     storage.write(with: { transaction in
-                        MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-                        var shouldNotify = (message is VisibleMessage)
+                        MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
+                        var shouldNotify = (message is VisibleMessage && !isSyncMessage)
                         if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
                             shouldNotify = true
                         }
@@ -339,10 +339,12 @@ public final class MessageSender : NSObject {
     }
 
     // MARK: Success & Failure Handling
-    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, using transaction: Any) {
+    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, isSyncMessage: Bool = false, using transaction: Any) {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        // Ignore future self-sends
+        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Track the open group server message ID
         tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
         tsMessage.save(with: transaction)
@@ -360,6 +362,15 @@ public final class MessageSender : NSObject {
         }
         // Start the disappearing messages timer if needed
         OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
+        // Sync the message if:
+        // • it's a visible message
+        // • we didn't sync it already
+        let userPublicKey = getUserHexEncodedPublicKey()
+        if case .contact(let publicKey) = destination, !isSyncMessage, let message = message as? VisibleMessage {
+            message.syncTarget = publicKey
+            // FIXME: Make this a job
+            sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()
+        }
     }
 
     public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {

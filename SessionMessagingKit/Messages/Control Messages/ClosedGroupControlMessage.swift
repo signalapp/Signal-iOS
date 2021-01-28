@@ -11,6 +11,13 @@ public final class ClosedGroupControlMessage : ControlMessage {
         }
     }
     
+    public override var isSelfSendValid: Bool {
+        switch kind {
+        case .new: return false
+        default: return true
+        }
+    }
+    
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
         case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data])
@@ -212,7 +219,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .new)
                 closedGroupControlMessage.setPublicKey(publicKey)
                 closedGroupControlMessage.setName(name)
-                let encryptionKeyPairAsProto = SNProtoDataMessageClosedGroupControlMessageKeyPair.builder(publicKey: encryptionKeyPair.publicKey, privateKey: encryptionKeyPair.privateKey)
+                let encryptionKeyPairAsProto = SNProtoKeyPair.builder(publicKey: encryptionKeyPair.publicKey, privateKey: encryptionKeyPair.privateKey)
                 do {
                     closedGroupControlMessage.setEncryptionKeyPair(try encryptionKeyPairAsProto.build())
                 } catch {

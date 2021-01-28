@@ -8,11 +8,13 @@ public enum SNUserDefaults {
         case hasViewedSeed
         case isUsingFullAPNs
         case isMigratingToV2KeyPair
+        case isUsingMultiDevice
     }
 
     public enum Date : Swift.String {
         case lastProfilePictureUpload
         case lastKeyPairMigrationNudge
+        case lastConfigurationSync
     }
 
     public enum Double : Swift.String {
