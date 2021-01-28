@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -167,6 +167,22 @@ public extension ConversationViewController {
         newInputToolbar.updateFontSizes()
 
         updateBottomBar()
+    }
+
+    @objc
+    func reloadDraft() {
+        AssertIsOnMainThread()
+
+        guard let messageDraft = (Self.databaseStorage.uiRead { transaction in
+                self.thread.currentDraft(with: transaction)
+        }) else {
+            return
+        }
+        guard let inputToolbar = self.inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+        inputToolbar.setMessageBody(messageDraft, animated: false)
     }
 
     @objc
