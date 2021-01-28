@@ -201,8 +201,13 @@ final class NewConversationButtonSet : UIView {
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if !bounds.contains(point), isUserDragging { collapse(withAnimation: true) }
-        return super.hitTest(point, with: event)
+        let allButtons = [ mainButton, joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
+        if allButtons.contains(where: { $0.frame.contains(point) }) {
+            return super.hitTest(point, with: event)
+        } else {
+            collapse(withAnimation: true)
+            return nil
+        }
     }
 }
 
