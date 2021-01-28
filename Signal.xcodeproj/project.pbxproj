@@ -187,6 +187,10 @@
 		3465948424352FE900E5C510 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465948324352FE900E5C510 /* OWSTableViewController.swift */; };
 		3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3466087120E550F300AFFE73 /* ConversationStyle.swift */; };
 		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
+		34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */; };
+		34684DB025C2228D00C5A93C /* determinate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */; };
+		34684DB125C2228D00C5A93C /* indeterminate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */; };
+		34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */; };
 		346941A1215D2EE400B5BFAD /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 3469419D215D2EE400B5BFAD /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419E215D2EE400B5BFAD /* OWSConversationColor.m */; };
 		346941A3215D2EE400B5BFAD /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419F215D2EE400B5BFAD /* Theme.m */; };
@@ -204,10 +208,6 @@
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
 		3470518C254B320700A19468 /* CVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518B254B320700A19468 /* CVRenderState.swift */; };
 		3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */; };
-		347091CF25B74B820061A8FF /* determinate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 347091CB25B74B820061A8FF /* determinate_spinner_blue.json */; };
-		347091D025B74B820061A8FF /* indeterminate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 347091CC25B74B820061A8FF /* indeterminate_spinner_blue.json */; };
-		347091D125B74B820061A8FF /* determinate_spinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 347091CD25B74B820061A8FF /* determinate_spinner.json */; };
-		347091D225B74B820061A8FF /* indeterminate_spinner.json in Resources */ = {isa = PBXBuildFile; fileRef = 347091CE25B74B820061A8FF /* indeterminate_spinner.json */; };
 		3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8732554926200F5847C /* QuotedMessageView.swift */; };
 		3470C8772555883600F5847C /* CVLoadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8752555883600F5847C /* CVLoadRequest.swift */; };
 		3470C8782555883600F5847C /* CVLoadContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470C8762555883600F5847C /* CVLoadContext.swift */; };
@@ -1198,6 +1198,10 @@
 		3465948324352FE900E5C510 /* OWSTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		3466087120E550F300AFFE73 /* ConversationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationStyle.swift; sourceTree = "<group>"; };
 		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Signal/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
+		34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_white.json; sourceTree = "<group>"; };
+		34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_blue.json; sourceTree = "<group>"; };
+		34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_blue.json; sourceTree = "<group>"; };
+		34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		3469419D215D2EE400B5BFAD /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
 		3469419E215D2EE400B5BFAD /* OWSConversationColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSConversationColor.m; sourceTree = "<group>"; };
 		3469419F215D2EE400B5BFAD /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
@@ -1215,10 +1219,6 @@
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
 		3470518B254B320700A19468 /* CVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVRenderState.swift; sourceTree = "<group>"; };
 		3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+CVC.swift"; sourceTree = "<group>"; };
-		347091CB25B74B820061A8FF /* determinate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_blue.json; sourceTree = "<group>"; };
-		347091CC25B74B820061A8FF /* indeterminate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_blue.json; sourceTree = "<group>"; };
-		347091CD25B74B820061A8FF /* determinate_spinner.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner.json; sourceTree = "<group>"; };
-		347091CE25B74B820061A8FF /* indeterminate_spinner.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner.json; sourceTree = "<group>"; };
 		3470C8732554926200F5847C /* QuotedMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuotedMessageView.swift; sourceTree = "<group>"; };
 		3470C8752555883600F5847C /* CVLoadRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVLoadRequest.swift; sourceTree = "<group>"; };
 		3470C8762555883600F5847C /* CVLoadContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVLoadContext.swift; sourceTree = "<group>"; };
@@ -3597,10 +3597,10 @@
 			isa = PBXGroup;
 			children = (
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
-				347091CB25B74B820061A8FF /* determinate_spinner_blue.json */,
-				347091CD25B74B820061A8FF /* determinate_spinner.json */,
-				347091CC25B74B820061A8FF /* indeterminate_spinner_blue.json */,
-				347091CE25B74B820061A8FF /* indeterminate_spinner.json */,
+				34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */,
+				34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */,
+				34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */,
+				34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
@@ -4361,6 +4361,7 @@
 			files = (
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
+				34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */,
@@ -4373,8 +4374,10 @@
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
+				34684DB025C2228D00C5A93C /* determinate_spinner_blue.json in Resources */,
 				887CD4872473587300FDD265 /* transfer.json in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
+				34684DB125C2228D00C5A93C /* indeterminate_spinner_blue.json in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
 				347C3855252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json in Resources */,
 				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
@@ -4403,11 +4406,9 @@
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
-				347091D025B74B820061A8FF /* indeterminate_spinner_blue.json in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
-				347091D125B74B820061A8FF /* determinate_spinner.json in Resources */,
 				45B74A7A2044AAB600CD42F8 /* keys.aifc in Resources */,
 				45B74A762044AAB600CD42F8 /* keys-quiet.aifc in Resources */,
 				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
@@ -4415,17 +4416,16 @@
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
+				34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */,
 				887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */,
-				347091CF25B74B820061A8FF /* determinate_spinner_blue.json in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
-				347091D225B74B820061A8FF /* indeterminate_spinner.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
