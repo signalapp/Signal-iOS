@@ -102,7 +102,7 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            SNLog("Can't leave nonexistent closed group.")
+            SNLog("Can't change name for nonexistent closed group.")
             throw Error.noThread
         }
         guard !name.isEmpty else {
@@ -127,7 +127,7 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            SNLog("Can't leave nonexistent closed group.")
+            SNLog("Can't add members to nonexistent closed group.")
             throw Error.noThread
         }
         guard !newMembers.isEmpty else {
@@ -168,7 +168,7 @@ extension MessageSender {
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let threadID = TSGroupThread.threadId(fromGroupId: groupID)
         guard let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            SNLog("Can't leave nonexistent closed group.")
+            SNLog("Can't remove members from nonexistent closed group.")
             throw Error.noThread
         }
         guard !membersToRemove.isEmpty else {
