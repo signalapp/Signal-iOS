@@ -701,7 +701,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // * sendFailureBadge
 
         let result = elements.joined(separator: " ")
-        Logger.verbose("---- \(result)")
         return result
     }
 
