@@ -328,7 +328,6 @@ EXTERNAL SOURCES:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
   SignalRingRTC:
-    :inhibit_wranings: true
     :path: ThirdParty/SignalRingRTC.podspec
   SignalServiceKit:
     :path: "."
@@ -429,6 +428,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 52c1be916555b10b233c6b3e5b67ccfa7e3b8bfb
+PODFILE CHECKSUM: 475f60705aafe113f149ddb1e53af34d2029b145
 
 COCOAPODS: 1.9.2
