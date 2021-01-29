@@ -711,7 +711,6 @@ public class OnboardingController: NSObject {
         let captchaToken = self.captchaToken
         self.verificationRequestCount += 1
 
-//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
         firstly { () -> Promise<Void> in
             return self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
                                                            captchaToken: captchaToken,
@@ -725,7 +724,6 @@ public class OnboardingController: NSObject {
             completion(error)
             self.requestingVerificationDidFail(viewController: fromViewController, error: error)
         }
-//        }
     }
 
     private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
@@ -937,7 +935,7 @@ public class OnboardingController: NSObject {
                     }
                 }.catch { error in
                     modal.dismiss(completion: {
-                        Logger.error("Error: \(error)")
+                        Logger.warn("Error: \(error)")
 
                         self.verificationFailed(
                             fromViewController: fromViewController,
@@ -950,7 +948,7 @@ public class OnboardingController: NSObject {
             promise.done {
                 self.verificationDidComplete(fromView: fromViewController)
             }.catch { error in
-                Logger.error("Error: \(error)")
+                Logger.warn("Error: \(error)")
 
                 self.verificationFailed(
                     fromViewController: fromViewController,
