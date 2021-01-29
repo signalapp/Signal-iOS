@@ -42,7 +42,6 @@ target 'SignalUtilitiesKit' do
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'GRKOpenSSLFramework', :inhibit_warnings => true
   pod 'HKDFKit', :inhibit_warnings => true
-  pod 'libPhoneNumber-iOS', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
