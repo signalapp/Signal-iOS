@@ -66,6 +66,30 @@ public extension UINavigationController {
     }
 }
 
+// MARK: - SpacerView
+
+public class SpacerView: UIView {
+    private var preferredSize: CGSize
+
+    convenience public init(preferredWidth: CGFloat = UIView.noIntrinsicMetric, preferredHeight: CGFloat = UIView.noIntrinsicMetric) {
+        self.init(preferredSize: CGSize(width: preferredWidth, height: preferredHeight))
+    }
+
+    public init(preferredSize: CGSize = CGSize(square: UIView.noIntrinsicMetric)) {
+        self.preferredSize = preferredSize
+        super.init(frame: .zero)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override public var intrinsicContentSize: CGSize {
+        get { preferredSize }
+        set { preferredSize = newValue }
+    }
+}
+
 // MARK: -
 
 @objc

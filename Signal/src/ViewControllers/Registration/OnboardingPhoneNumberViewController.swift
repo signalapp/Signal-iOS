@@ -53,16 +53,13 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     // MARK: - Views
 
-    private let topSpacer = UIView.vStretchingSpacer()
+    private var titleSpacer: UIView?
 
     private let countryNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_dynamicTypeBodyClamped
         label.accessibilityIdentifier = "onboarding.phoneNumber." + "countryNameLabel"
-
-        label.setContentHuggingHorizontalLow()
-        label.setCompressionResistanceHorizontalLow()
         return label
     }()
 
@@ -72,9 +69,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         let imageView = UIImageView(image: countryIcon?.withRenderingMode(.alwaysTemplate))
         imageView.tintColor = .ows_gray20
         imageView.accessibilityIdentifier = "onboarding.phoneNumber." + "countryImageView"
-
-        imageView.setCompressionResistanceHorizontalHigh()
-        imageView.setContentHuggingHorizontalHigh()
         return imageView
     }()
 
@@ -85,9 +79,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
         label.accessibilityIdentifier = "onboarding.phoneNumber." + "callingCodeLabel"
-
-        label.setContentHuggingHorizontalHigh()
-        label.setCompressionResistanceHorizontalHigh()
         return label
     }()
 
@@ -147,6 +138,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private var viewsToHideDuringVerification: [UIView]?
     private var equalSpacerHeightConstraint: NSLayoutConstraint?
     private var pinnedSpacerHeightConstraint: NSLayoutConstraint?
+    private var keyboardBottomConstraint: NSLayoutConstraint?
 
     // MARK: - View Lifecycle
 
@@ -170,6 +162,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         countryRow.isUserInteractionEnabled = true
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryRowTapped)))
         _ = countryRow.addBottomStroke(color: .ows_gray20, strokeWidth: CGHairlineWidth())
+        countryChevron.setContentHuggingHorizontalHigh()
+        countryChevron.setCompressionResistanceHigh()
 
         let phoneNumberRow = UIStackView(arrangedSubviews: [callingCodeLabel, phoneNumberTextField])
         phoneNumberRow.axis = .horizontal
@@ -177,19 +171,21 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         phoneNumberRow.spacing = 10
         phoneStrokeNormal = phoneNumberRow.addBottomStroke(color: .ows_gray20, strokeWidth: CGHairlineWidth())
         phoneStrokeError = phoneNumberRow.addBottomStroke(color: .ows_accentRed, strokeWidth: 1)
+        callingCodeLabel.autoSetDimension(.width, toSize: 45, relation: .greaterThanOrEqual)
+        callingCodeLabel.setCompressionResistanceHigh()
+        callingCodeLabel.setContentHuggingHorizontalHigh()
 
-        let bottomSpacer = UIView.vStretchingSpacer()
+        let titleSpacer = SpacerView(preferredHeight: 4)
+        let phoneNumberSpacer = SpacerView(preferredHeight: 11)
+        let warningLabelSpacer = SpacerView(preferredHeight: 4)
+        let bottomSpacer = SpacerView(preferredHeight: 4)
+        self.titleSpacer = titleSpacer
 
         let stackView = UIStackView(arrangedSubviews: [
-            titleLabel,
-            topSpacer,
-            countryRow,
-            phoneNumberRow,
-            UIView.spacer(withHeight: 11),
-            validationWarningLabel,
-            bottomSpacer,
-            OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton),
-            UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
+            titleLabel, titleSpacer,
+            countryRow, phoneNumberRow, phoneNumberSpacer,
+            validationWarningLabel, warningLabelSpacer,
+            OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton), bottomSpacer,
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -198,22 +194,53 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         primaryView.addSubview(progressSpinner)
         viewsToHideDuringVerification = [countryRow, phoneNumberRow, validationWarningLabel]
 
-        // Because of the keyboard, vertical spacing can get pretty cramped,
-        // so we have custom spacer logic.
-        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        // Here comes a bunch of autolayout prioritization to make sure we can fit on an iPhone 5s/SE
+        // It's complicated, but there are a few rules that help here:
+        // - First, set required constraints on everything that's *critical* for usability
+        // - Next, progressively add non-required constraints that are nice to have, but not critical.
+        // - Finally, pick one and only one view in the stack and set its contentHugging explicitly low
+        //
+        // - Non-required constraints should each have a unique priority. This is important to resolve
+        //   autolayout ambiguity e.g. I have 10pts of extra space, and two equally weighted constraints
+        //   that both consume 8pts. What do I satisfy?
+        // - Every view should have an intrinsicContentSize. Content Hugging and Content Compression
+        //   don't mean much without a content size.
+        stackView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewMargin: .top).priority = .defaultHigh
+        stackView.autoPinWidthToSuperviewMargins()
+        keyboardBottomConstraint = autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
         progressSpinner.autoCenterInSuperview()
 
-        // During initial layout, ensure whitespace is balanced, so inputs are vertically centered.
-        // After initial layout, keep top spacer height constant so keyboard frame changes don't update its position
-        equalSpacerHeightConstraint = topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
-        pinnedSpacerHeightConstraint = topSpacer.autoSetDimension(.height, toSize: 0)
-        pinnedSpacerHeightConstraint?.priority = .defaultHigh
+        // For when things get *really* cramped, here's what's required:
+        [titleLabel,
+         countryNameLabel,
+         countryChevron,
+         callingCodeLabel,
+         phoneNumberTextField,
+         continueButton].forEach { $0.setCompressionResistanceVerticalHigh() }
+        equalSpacerHeightConstraint = titleSpacer.autoMatch(.height, to: .height, of: warningLabelSpacer)
+        pinnedSpacerHeightConstraint = titleSpacer.autoSetDimension(.height, toSize: 0)
         pinnedSpacerHeightConstraint?.isActive = false
 
-        callingCodeLabel.autoSetDimension(.width, toSize: 45, relation: .greaterThanOrEqual)
-        countryRow.autoSetDimension(.height, toSize: 50)
-        phoneNumberRow.autoSetDimension(.height, toSize: 50)
+        // Views should ideally have a minimum amount of padding, but it's less required. In preferred order:
+        bottomSpacer.setContentCompressionResistancePriority(.required - 10, for: .vertical)
+        phoneNumberRow.autoSetDimension(.height, toSize: 50).priority = .required - 20
+        countryRow.autoSetDimension(.height, toSize: 50).priority = .required - 30
+        titleSpacer.setContentCompressionResistancePriority(.required - 40, for: .vertical)
+        warningLabelSpacer.setContentCompressionResistancePriority(.required - 50, for: .vertical)
+
+        // Ideally we'll try and satisfy these
+        phoneNumberSpacer.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        bottomSpacer.autoSetDimension(.height, toSize: 16, relation: .greaterThanOrEqual).priority = .defaultHigh
+
+        // If we're flush with space, bump up the keyboard spacer to the bottom layout margins
+        bottomSpacer.autoSetDimension(.height, toSize: primaryLayoutMargins.bottom).priority = .defaultLow
+        updateValidationWarningLabelCompressionResistance()
+
+        // And if we have so much space we don't know what to do with it, grow the space between
+        // the warning label and the continue button. Usually the top space will grow along with
+        // it because of the equal spacing constraint
+        warningLabelSpacer.setContentHuggingPriority(.init(100), for: .vertical)
 
         titleLabel.accessibilityIdentifier = "onboarding.phoneNumber." + "titleLabel"
         phoneNumberRow.accessibilityIdentifier = "onboarding.phoneNumber." + "phoneNumberRow"
@@ -247,26 +274,27 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         updateViewState()
     }
 
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        // After a layout pass performed under the equal spacing constraint, pin the
-        // top spacer's height. We don't want to re-adjust everything whenever the keyboard
-        // frame changes (e.g. showing and hiding the QuickType bar)
-        if equalSpacerHeightConstraint?.isActive == true, topSpacer.height > 0 {
-            pinnedSpacerHeightConstraint?.constant = topSpacer.height
-
-            pinnedSpacerHeightConstraint?.isActive = true
+    public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
+        let isDismissing = (after == 0)
+        if isDismissing, equalSpacerHeightConstraint?.isActive == true {
+            pinnedSpacerHeightConstraint?.constant = titleSpacer?.height ?? 0
             equalSpacerHeightConstraint?.isActive = false
+            pinnedSpacerHeightConstraint?.isActive = true
         }
-    }
 
-    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
+        // Ignore any minor decreases in height. We want to grow to accomodate the
+        // QuickType bar, but shrinking in response to its dismissal is a bit much.
+        let isKeyboardGrowing = after > (keyboardBottomConstraint?.constant ?? before)
+        let isSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
+        if isKeyboardGrowing || isSignificantlyShrinking || isDismissing {
+            super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
+            self.view.layoutIfNeeded()
+        }
 
-        // Unpin the top spacer height so the updated layout is equally balanced
-        equalSpacerHeightConstraint?.isActive = true
-        pinnedSpacerHeightConstraint?.isActive = false
+        if !isDismissing {
+            pinnedSpacerHeightConstraint?.isActive = false
+            equalSpacerHeightConstraint?.isActive = true
+        }
     }
 
     // MARK: - View population
@@ -360,13 +388,6 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             showSpinner = true
         }
 
-        // If we're about to make the warning label visible, let's layout just in
-        // case a text change dirtied the layout. We don't want the frame changing
-        // while it's becoming visible.
-        if showError, validationWarningLabel.alpha == 0 {
-            validationWarningLabel.superview?.layoutIfNeeded()
-        }
-
         // Update non-animated properties immediately
         countryNameLabel.text = countryName
         callingCodeLabel.text = callingCode
@@ -394,6 +415,9 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                 self.phoneStrokeNormal?.alpha = showError ? 0 : 1
                 self.phoneStrokeError?.alpha = showError ? 1 : 0
                 self.validationWarningLabel.alpha = showError ? 1 : 0
+                self.updateValidationWarningLabelCompressionResistance()
+
+                self.primaryView.layoutIfNeeded()
             }
         }
 
@@ -430,8 +454,22 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             // Rate limit expiration is in the past, clear the error
             phoneNumberError = nil
         default:
-            break
+            // Both of our text blobs are about the same size. Ideally we don't want to move views when the error appears
+            // So we pre-populate with filler text to try and maintain an approximately consistent intrinsic content size
+            // If there's no error, the view will be hidden and compression resistance reduced.
+            validationWarningLabel.text = NSLocalizedString(
+                "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
+                comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
         }
+    }
+
+    private func updateValidationWarningLabelCompressionResistance() {
+        // validationWarningLabel's compression resistance will toggle between high priority and low priority
+        // as it becomes visible. Ideally, we want to make space for it to avoid layout adjustments when
+        // showing the error. But when space constrained, it's the first thing we'll give up.
+
+        let desiredResistance: UILayoutPriority = phoneNumberError != nil ? .required - 1 : .defaultLow - 1
+        self.validationWarningLabel.setContentCompressionResistancePriority(desiredResistance, for: .vertical)
     }
 
     private func applyPhoneNumberFormatting() {
@@ -530,12 +568,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
     private func requestVerification(with phoneNumber: OnboardingPhoneNumber) {
         self.onboardingController.update(phoneNumber: phoneNumber)
 
-        // Start the animation and ignore keyboard updates to the bottom constraint
-        // If successful, the next view controller's keyboard will cause views to be
-        // repositioned during the push transition.
-        // If unsuccessful, we'll repin to the keyboard.
         self.verificationAnimation(shouldPlay: true)
-
         self.onboardingController.requestVerification(fromViewController: self, isSMS: true) { [weak self] error in
             guard let self = self else { return }
             self.verificationAnimation(shouldPlay: false)

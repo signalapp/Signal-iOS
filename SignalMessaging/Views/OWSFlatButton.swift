@@ -234,4 +234,8 @@ public class OWSFlatButton: UIView {
         }
         autoSetDimension(.height, toSize: font.lineHeight * 2.5)
     }
+
+    override public var intrinsicContentSize: CGSize {
+        button.intrinsicContentSize
+    }
 }
