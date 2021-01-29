@@ -490,15 +490,29 @@ private extension GroupMigrationActionSheet {
             owsFailDebug("Missing actionSheetController.")
             return
         }
+
+        let groupThread = self.groupThread
+        if GroupsV2Migration.verboseLogging {
+            Logger.info("groupId: \(groupThread.groupId.hexadecimalString)")
+        }
+
         ModalActivityIndicatorViewController.present(fromViewController: actionSheetController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly {
                                                             self.upgradePromise()
                                                         }.done { (_) in
+                                                            if GroupsV2Migration.verboseLogging {
+                                                                Logger.info("success groupId: \(groupThread.groupId.hexadecimalString)")
+                                                            }
+
                                                             modalActivityIndicator.dismiss {
                                                                 self.dismissAndShowUpgradeSuccessToast()
                                                             }
                                                         }.catch { error in
+                                                            if GroupsV2Migration.verboseLogging {
+                                                                Logger.info("failure groupId: \(groupThread.groupId.hexadecimalString), error: \(error)")
+                                                            }
+
                                                             owsFailDebug("Error: \(error)")
 
                                                             modalActivityIndicator.dismiss {
