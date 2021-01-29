@@ -281,8 +281,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
         componentView.possibleTextView?.isHiddenInStackView = true
 
-        label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
-
         return label
     }
 
@@ -305,8 +303,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             textView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
 
             textViewConfig.applyForRendering(textView: textView)
-
-            textView.accessibilityLabel = accessibilityLabel(description: textViewConfig.stringValue)
 
             textView.isHiddenInStackView = false
             if textView.superview == nil {
@@ -619,5 +615,21 @@ extension CVComponentBodyText.CVComponentViewBodyText: UITextViewDelegate {
             return false
         }
         return true
+    }
+}
+
+// MARK: -
+
+extension CVComponentBodyText: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        switch bodyText {
+        case .bodyText(let displayableText):
+            // NOTE: we use the full text.
+            return displayableText.fullTextValue.stringValue
+        case .oversizeTextDownloading:
+            return labelConfigForOversizeTextDownloading.stringValue
+        case .remotelyDeleted:
+            return labelConfigForRemotelyDeleted.stringValue
+        }
     }
 }

@@ -72,11 +72,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let bottomLabel = componentView.bottomLabel
         bottomLabelConfig.applyForRendering(label: bottomLabel)
         vStackView.addArrangedSubview(bottomLabel)
-
-        let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_ATTACHMENT",
-                                                         comment: "Accessibility label for attachment.")
-        hStackView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
-        hStackView.isAccessibilityElement = true
     }
 
     private var hStackLayoutMargins: UIEdgeInsets {
@@ -314,5 +309,16 @@ extension CVComponentGenericAttachment: QLPreviewControllerDataSource {
 
     private class UnavailableItem: NSObject, QLPreviewItem {
         var previewItemURL: URL? { nil }
+    }
+}
+
+// MARK: -
+
+extension CVComponentGenericAttachment: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        // TODO: We could include information about the attachment format,
+        //       and/or filename, and download state.
+        NSLocalizedString("ACCESSIBILITY_LABEL_ATTACHMENT",
+                          comment: "Accessibility label for attachment.")
     }
 }

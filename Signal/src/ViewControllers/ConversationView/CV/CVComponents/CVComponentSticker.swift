@@ -92,14 +92,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             owsFailDebug("Invalid attachment.")
             return
         }
-
-        componentView.rootView.accessibilityLabel = buildAccessibilityLabel
-        componentView.rootView.isAccessibilityElement = true
-    }
-
-    private var buildAccessibilityLabel: String? {
-        accessibilityLabel(description: NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                          comment: "Accessibility label for stickers."))
     }
 
     private var containerViewConfig: CVStackViewConfig {
@@ -180,5 +172,15 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 reusableMediaView.owner = nil
             }
         }
+    }
+}
+
+// MARK: -
+
+extension CVComponentSticker: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        // NOTE: We could include the strings used for sticker suggestion.
+        NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+                          comment: "Accessibility label for stickers.")
     }
 }
