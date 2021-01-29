@@ -13,17 +13,20 @@
 /* Accessibility label for contact. */
 "ACCESSIBILITY_LABEL_CONTACT" = "Contatto";
 
+/* Accessibility label for contact. Embeds: {{ the contact name }}. */
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
-
-/* Accessibility label for message. */
-"ACCESSIBILITY_LABEL_MESSAGE" = "Messaggio";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Tu";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Adesivo";
+
+/* Accessibility label for a voice memo. */
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Chiamata Signal";
@@ -981,6 +984,12 @@
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Aggiungi ai contatti";
+
+/* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
+
+/* Format for sender info for outgoing messages. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "You sent:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Elimina tutto";
@@ -4292,10 +4301,10 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Sessione di chat aggiornata";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Scegli da Foto";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Scegli dalle foto";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Reimposta";
+"SET_WALLPAPER_PRESETS" = "Predefiniti";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Imposta sfondo";
@@ -5183,13 +5192,13 @@
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nome contatto";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Foto sfocata";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Sfocatura foto";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pizzica per ingrandire, trascina per regolare.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Scorri per vedere altri sfondi";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Scorri per vedere l'anteprima di altri sfondi.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Imposta sfondo per tutte le chat.";
@@ -5219,16 +5228,16 @@
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Lo sfondo non può essere rimosso, riprova ancora oppure contatta il supporto se l'errore persiste. ";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Gli sfondi non possono essere rimossi, riprova ancora oppure contatta il supporto se l'errore persiste. ";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Tutti gli sfondi non possono essere resettati, riprova ancora oppure contatta il supporto se l'errore persiste. ";
 
 /* Title for the wallpaper settings preview section. */
 "WALLPAPER_SETTINGS_PREVIEW" = "Anteprima";
 
 /* Reset all wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_ALL" = "Reimposta tutti gli sfondi";
+"WALLPAPER_SETTINGS_RESET_ALL" = "Resetta tutti gli sfondi";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reimposta tutti gli sfondi, inclusi quelli personalizzati che hai scelto per le tue chat?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Resettare tutti gli sfondi, inclusi quelli personalizzati che hai scelto per le tue chat?";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Imposta sfondo";

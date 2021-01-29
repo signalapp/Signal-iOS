@@ -13,17 +13,20 @@
 /* Accessibility label for contact. */
 "ACCESSIBILITY_LABEL_CONTACT" = "Kontakt";
 
+/* Accessibility label for contact. Embeds: {{ the contact name }}. */
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
-
-/* Accessibility label for message. */
-"ACCESSIBILITY_LABEL_MESSAGE" = "Meddelande";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Du";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Klistermärke";
+
+/* Accessibility label for a voice memo. */
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Ring med Signal";
@@ -981,6 +984,12 @@
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Lägg till i kontakter";
+
+/* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
+
+/* Format for sender info for outgoing messages. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "You sent:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Ta bort alla";
@@ -2384,7 +2393,7 @@
 "HELP_SUPPORT_CENTER" = "Supportcenter";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkivera chattar";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverade chattar";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Blockerad";
@@ -3563,7 +3572,7 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "Vi ber dig ibland att verifiera din PIN-kod så att du kommer ihåg den.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Vi påminner dig om några dagar.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Vi påminner dig igen om några dagar.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Verifiera din Signal PIN-kod";
@@ -3572,10 +3581,10 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Vi påminner dig igen imorgon.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Vi påminner dig om några veckor igen.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Vi påminner dig igen om några veckor.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Vi påminner dig om en vecka.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Vi påminner dig igen om en vecka.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Ogiltig PIN-kod, försök igen.";
@@ -3599,7 +3608,7 @@
 "PINS_MEGAPHONE_BODY" = "PIN-koder håller information som lagras med Signal krypterad";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Vi påminner dig senare. Att skapa en PIN-kod blir obligatorisk om %ld dagar.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Vi påminner dig senare. Att skapa en PIN-kod blir obligatoriskt om %ld dagar.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Skapa en PIN-kod";
@@ -4286,7 +4295,7 @@
 "SEND_SMS_INVITE_TITLE" = "Vill du bjuda in följande nummer till Signal:";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal använder ände-till-ände-kryptering och det kan behöva uppdatera din chattsession ibland. Detta påverkar inte din chatts säkerhet, men du kan ha missat ett meddelande från denna kontakt och du kan behöva be dem skicka det igen.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal använder end-to-end-kryptering och det kan behöva uppdatera din chattsession ibland. Detta påverkar inte din chatts säkerhet, men du kan ha missat ett meddelande från denna kontakt och du kan behöva be dem skicka det igen.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Chattsessionen uppdaterad";
@@ -4460,13 +4469,13 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Samtal";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Röstmeddelanden, media som visas en gång och stickers (under 100kb) laddas alltid automatiskt ned.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Röstmeddelanden, media som visas en gång och klistermärken (under 100kb) laddas alltid ned automatiskt.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "MEDIA AUTO-NEDLADDNING";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "AUTO-NEDLADDNING AV MEDIA";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Återställ inställningar auto-nedladdning";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Återställ inställningar för auto-nedladdning";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Dataanvändning";

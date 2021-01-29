@@ -13,17 +13,20 @@
 /* Accessibility label for contact. */
 "ACCESSIBILITY_LABEL_CONTACT" = "جهة الاتصال";
 
+/* Accessibility label for contact. Embeds: {{ the contact name }}. */
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "الوسائط";
-
-/* Accessibility label for message. */
-"ACCESSIBILITY_LABEL_MESSAGE" = "رسالة";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "أنت";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "مُلصق";
+
+/* Accessibility label for a voice memo. */
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -981,6 +984,12 @@
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "أضف إلى جهات الاتصال";
+
+/* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
+
+/* Format for sender info for outgoing messages. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "You sent:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "حذف الكل";
@@ -4292,10 +4301,10 @@
 "SESSION_REFRESH_ALERT_TITLE" = "تم إنعاش جلسة المحادثة";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "اختر من الصور";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "الاختيار من الصور";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "الخيارات الافتراضية";
+"SET_WALLPAPER_PRESETS" = "الإعدادات المسبقة";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "تعيين خلفية";
@@ -4307,7 +4316,7 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "حظر";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "التحايل على الرقابة";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "تجاوز الرقابة";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "الموقع:%@";
@@ -5204,13 +5213,13 @@
 "WALLPAPER_PREVIEW_TITLE" = "مُعاينة";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "مسح الخلفية";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "محو الخلفية";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "مسح الخلفية لهذه المُحادثة؟";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "محو الخلفية لهذه المُحادثة؟";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "مسح الخلفية؟ هذا لن يؤدي إلى مسح الخلفيات المُخصصة التي قد قمت بتعيينها لمُحادثاتك.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "محو الخلفية؟ هذا لن يؤدي إلى مسح الخلفيات المُخصصة التي قد قمت بتعيينها لمُحادثاتك.";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النمط الداكن يعتّم الخلفية";
