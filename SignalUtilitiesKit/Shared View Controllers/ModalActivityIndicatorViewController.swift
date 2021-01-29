@@ -5,6 +5,7 @@
 import Foundation
 import MediaPlayer
 import SessionUIKit
+import NVActivityIndicatorView
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
@@ -16,8 +17,13 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     @objc
     public var wasCancelled: Bool = false
-
-    var activityIndicator: UIActivityIndicatorView?
+    
+    private lazy var spinner: NVActivityIndicatorView = {
+        let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .white, padding: nil)
+        result.set(.width, to: 64)
+        result.set(.height, to: 64)
+        return result
+    }()
 
     var presentTimer: Timer?
 
@@ -72,11 +78,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func loadView() {
         super.loadView()
 
-        self.view.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        self.view.backgroundColor = UIColor(white: 0, alpha: 0.6)
         self.view.isOpaque = false
-
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
-        self.activityIndicator = activityIndicator
         
         if let message = message {
             let messageLabel = UILabel()
@@ -87,15 +90,15 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             messageLabel.textAlignment = .center
             messageLabel.lineBreakMode = .byWordWrapping
             messageLabel.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
-            let stackView = UIStackView(arrangedSubviews: [ messageLabel, activityIndicator ])
+            let stackView = UIStackView(arrangedSubviews: [ messageLabel, spinner ])
             stackView.axis = .vertical
             stackView.spacing = Values.largeSpacing
             stackView.alignment = .center
             self.view.addSubview(stackView)
             stackView.center(in: self.view)
         } else {
-            self.view.addSubview(activityIndicator)
-            activityIndicator.autoCenterInSuperview()
+            self.view.addSubview(spinner)
+            spinner.autoCenterInSuperview()
         }
 
         if canCancel {
@@ -123,7 +126,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.activityIndicator?.startAnimating()
+        self.spinner.startAnimating()
 
         // Hide the the modal and wait for a second before revealing it,
         // to avoid "blipping" in the modal during short blocking operations.
@@ -144,7 +147,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        self.activityIndicator?.stopAnimating()
+        self.spinner.stopAnimating()
 
         clearTimer()
     }

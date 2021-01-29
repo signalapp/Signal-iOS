@@ -49,9 +49,6 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
-        doneButton.tintColor = Colors.text
-        navigationItem.rightBarButtonItem = doneButton
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
@@ -122,10 +119,6 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         dismiss(animated: true, completion: nil)
     }
 
-    @objc private func handleDoneButtonTapped() {
-        enterPublicKeyVC.startNewPrivateChatIfPossible()
-    }
-
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
         let hexEncodedPublicKey = string
         startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
@@ -146,6 +139,8 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
 
 private final class EnterPublicKeyVC : UIViewController {
     weak var newPrivateChatVC: NewPrivateChatVC!
+    private var isKeyboardShowing = false
+    private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
     private let publicKeyTextView = TextView(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
@@ -157,11 +152,36 @@ private final class EnterPublicKeyVC : UIViewController {
         return result
     }()
     
+    private lazy var userPublicKeyLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byCharWrapping
+        result.text = getUserHexEncodedPublicKey()
+        return result
+    }()
+    
+    private lazy var spacer1 = UIView.spacer(withHeight: Values.largeSpacing)
+    private lazy var spacer2 = UIView.spacer(withHeight: Values.largeSpacing)
+    private lazy var spacer3 = UIView.spacer(withHeight: Values.largeSpacing)
+    
+    private lazy var separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
+    
+    private lazy var buttonContainer: UIStackView = {
+        let result = UIStackView()
+        result.axis = .horizontal
+        result.spacing = Values.mediumSpacing
+        result.distribution = .fillEqually
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
-        // Set up explanation label
+        // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
@@ -169,25 +189,13 @@ private final class EnterPublicKeyVC : UIViewController {
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Set up separator
-        let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
-        // Set up user public key label
-        let userPublicKeyLabel = UILabel()
-        userPublicKeyLabel.textColor = Colors.text
-        userPublicKeyLabel.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
-        userPublicKeyLabel.numberOfLines = 0
-        userPublicKeyLabel.textAlignment = .center
-        userPublicKeyLabel.lineBreakMode = .byCharWrapping
-        userPublicKeyLabel.text = getUserHexEncodedPublicKey()
-        // Set up share button
+        // Share button
         let shareButton = Button(style: .unimportant, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
-        // Set up button container
-        let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
-        buttonContainer.axis = .horizontal
-        buttonContainer.spacing = Values.mediumSpacing
-        buttonContainer.distribution = .fillEqually
+        // Button container
+        buttonContainer.addArrangedSubview(copyButton)
+        buttonContainer.addArrangedSubview(shareButton)
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
@@ -198,19 +206,30 @@ private final class EnterPublicKeyVC : UIViewController {
         nextButton.pin(.top, to: .top, of: nextButtonContainer)
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
-        // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.largeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.largeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        view.addSubview(stackView)
-        stackView.pin(to: view)
-        // Set up width constraint
+        // Main stack view
+        let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyLabel, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        mainStackView.axis = .vertical
+        mainStackView.alignment = .fill
+        mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        mainStackView.isLayoutMarginsRelativeArrangement = true
+        view.addSubview(mainStackView)
+        mainStackView.pin(.leading, to: .leading, of: view)
+        mainStackView.pin(.top, to: .top, of: view)
+        view.pin(.trailing, to: .trailing, of: mainStackView)
+        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView)
+        // Width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
+        // Listen to keyboard notifications
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: General
@@ -227,6 +246,34 @@ private final class EnterPublicKeyVC : UIViewController {
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
+    }
+    
+    // MARK: Updating
+    @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+        guard !isKeyboardShowing else { return }
+        isKeyboardShowing = true
+        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        bottomConstraint.constant = newHeight
+        UIView.animate(withDuration: 0.25) {
+            [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
+                $0.alpha = 0
+                $0.isHidden = true
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
+        guard isKeyboardShowing else { return }
+        isKeyboardShowing = false
+        bottomConstraint.constant = 0
+        UIView.animate(withDuration: 0.25) {
+            [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
+                $0.alpha = 1
+                $0.isHidden = false
+            }
+            self.view.layoutIfNeeded()
+        }
     }
     
     // MARK: Interaction

@@ -11,16 +11,12 @@ final class SeedVC : BaseVC {
         return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
     }()
     
-    private lazy var redactedMnemonic: NSAttributedString = {
-        var mnemonic = self.mnemonic
-        let regex = try! NSRegularExpression(pattern: "\\w*", options: [])
-        let matches = regex.matches(in: mnemonic, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: mnemonic.count))
-        let result = NSMutableAttributedString(string: mnemonic)
-        matches.forEach { match in
-            result.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.thick.rawValue, range: match.range)
-            result.addAttribute(.strikethroughColor, value: Colors.accent, range: match.range)
+    private lazy var redactedMnemonic: String = {
+        if isIPhone5OrSmaller {
+            return "▆▆▆▆ ▆▆▆▆▆▆ ▆▆▆ ▆▆▆▆▆▆▆ ▆▆ ▆▆▆▆ ▆▆▆ ▆▆▆▆▆ ▆▆▆ ▆ ▆▆▆▆ ▆▆ ▆▆▆▆▆▆▆ ▆▆▆▆▆"
+        } else {
+            return "▆▆▆▆ ▆▆▆▆▆▆ ▆▆▆ ▆▆▆▆▆▆▆ ▆▆ ▆▆▆▆ ▆▆▆ ▆▆▆▆▆ ▆▆▆ ▆ ▆▆▆▆ ▆▆ ▆▆▆▆▆▆▆ ▆▆▆▆▆ ▆▆▆▆▆▆▆▆ ▆▆ ▆▆▆ ▆▆▆▆▆▆▆"
         }
-        return result
     }()
     
     // MARK: Components
@@ -37,7 +33,7 @@ final class SeedVC : BaseVC {
     
     private lazy var mnemonicLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
+        result.textColor = Colors.accent
         result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
         result.numberOfLines = 0
         result.textAlignment = .center
@@ -77,7 +73,7 @@ final class SeedVC : BaseVC {
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up mnemonic label
-        mnemonicLabel.attributedText = redactedMnemonic
+        mnemonicLabel.text = redactedMnemonic
         let mnemonicLabelGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(revealMnemonic))
         mnemonicLabel.addGestureRecognizer(mnemonicLabelGestureRecognizer)
         mnemonicLabel.isUserInteractionEnabled = true
@@ -159,7 +155,8 @@ final class SeedVC : BaseVC {
     
     @objc private func revealMnemonic() {
         UIView.transition(with: mnemonicLabel, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.mnemonicLabel.attributedText = NSAttributedString(string: self.mnemonic)
+            self.mnemonicLabel.text = self.mnemonic
+            self.mnemonicLabel.textColor = Colors.text
         }, completion: nil)
         UIView.transition(with: seedReminderView.titleLabel, duration: 0.25, options: .transitionCrossDissolve, animations: {
             let title = "Account Secured! 100%"
@@ -171,8 +168,8 @@ final class SeedVC : BaseVC {
             self.seedReminderView.subtitle = NSLocalizedString("view_seed_reminder_subtitle_3", comment: "")
         }, completion: nil)
         seedReminderView.setProgress(1, animated: true)
-        UserDefaults.standard[.hasViewedSeed] = true
-        NotificationCenter.default.post(name: .seedViewed, object: nil)
+//        UserDefaults.standard[.hasViewedSeed] = true
+//        NotificationCenter.default.post(name: .seedViewed, object: nil)
     }
     
     @objc private func copyMnemonic() {

@@ -1,6 +1,5 @@
 
 final class LandingVC : BaseVC {
-    private var fakeChatViewContentOffset: CGPoint!
     
     // MARK: Components
     private lazy var fakeChatView: FakeChatView = {
@@ -79,36 +78,14 @@ final class LandingVC : BaseVC {
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        if let fakeChatViewContentOffset = fakeChatViewContentOffset {
-            fakeChatView.contentOffset = fakeChatViewContentOffset
-        }
-    }
-    
     // MARK: Interaction
     @objc private func register() {
-        fakeChatViewContentOffset = fakeChatView.contentOffset
-        DispatchQueue.main.async {
-            self.fakeChatView.contentOffset = self.fakeChatViewContentOffset
-        }
         let registerVC = RegisterVC()
         navigationController!.pushViewController(registerVC, animated: true)
     }
     
     @objc private func restore() {
-        fakeChatViewContentOffset = fakeChatView.contentOffset
-        DispatchQueue.main.async {
-            self.fakeChatView.contentOffset = self.fakeChatViewContentOffset
-        }
         let restoreVC = RestoreVC()
         navigationController!.pushViewController(restoreVC, animated: true)
-    }
-    
-    // MARK: Convenience
-    private func setUserInteractionEnabled(_ isEnabled: Bool) {
-        [ registerButton, restoreButton ].forEach {
-            $0.isUserInteractionEnabled = isEnabled
-        }
     }
 }

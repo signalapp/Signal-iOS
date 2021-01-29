@@ -44,6 +44,7 @@ target 'SignalUtilitiesKit' do
   pod 'HKDFKit', :inhibit_warnings => true
   pod 'libPhoneNumber-iOS', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
+  pod 'NVActivityIndicatorView', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true

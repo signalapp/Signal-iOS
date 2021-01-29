@@ -40,12 +40,15 @@ final class FakeChatView : UIView {
         stackView.spacing = spacing
         stackView.alignment = .fill
         stackView.set(.width, to: UIScreen.main.bounds.width)
-        stackView.layoutMargins = UIEdgeInsets(top: 8, leading: Values.veryLargeSpacing, bottom: 8, trailing: Values.veryLargeSpacing)
+        let vInset = Values.smallSpacing
+        stackView.layoutMargins = UIEdgeInsets(top: vInset, leading: Values.veryLargeSpacing, bottom: vInset, trailing: Values.veryLargeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         scrollView.addSubview(stackView)
         stackView.pin(to: scrollView)
         addSubview(scrollView)
         scrollView.pin(to: self)
+        let height = chatBubbles.reduce(0) { $0 + $1.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height } + CGFloat(chatBubbles.count - 1) * spacing + 2 * vInset
+        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width, height: height)
     }
     
     private func getChatBubble(withText text: String, wasSentByCurrentUser: Bool) -> UIView {
@@ -103,7 +106,7 @@ final class FakeChatView : UIView {
                             self?.showChatBubble(at: 4)
                             UIView.animate(withDuration: animationDuration) {
                                 guard let self = self else { return }
-                                self.scrollView.contentOffset = CGPoint(x: 0, y: self.chatBubbles[0].height() + self.spacing + self.chatBubbles[1].height() + self.spacing + self.chatBubbles[2].height() + self.spacing)
+                                self.scrollView.contentOffset = CGPoint(x: 0, y: self.scrollView.contentSize.height - self.scrollView.bounds.height)
                             }
                         }
                     }
