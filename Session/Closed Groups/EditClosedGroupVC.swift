@@ -100,7 +100,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty
         if (!hasContactsToAdd) {
             addMembersButton.isUserInteractionEnabled = false
-            let disabledColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            let disabledColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
             addMembersButton.layer.borderColor = disabledColor.cgColor
             addMembersButton.setTitleColor(disabledColor, for: UIControl.State.normal)
         }
@@ -238,7 +238,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             self.members = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
             let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty
             self.addMembersButton.isUserInteractionEnabled = hasContactsToAdd
-            let color = hasContactsToAdd ? Colors.accent : Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            let color = hasContactsToAdd ? Colors.accent : Colors.text.withAlphaComponent(Values.mediumOpacity)
             self.addMembersButton.layer.borderColor = color.cgColor
             self.addMembersButton.setTitleColor(color, for: UIControl.State.normal)
         }

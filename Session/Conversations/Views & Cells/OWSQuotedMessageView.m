@@ -383,7 +383,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
         kRemotelySourcedContentRowMargin,
         kRemotelySourcedContentRowMargin);
 
-    UIColor *backgroundColor = LKAppModeUtilities.isLightMode ? [UIColor.whiteColor colorWithAlphaComponent:LKValues.unimportantElementOpacity] : [LKColors.text colorWithAlphaComponent:LKValues.unimportantElementOpacity];
+    UIColor *backgroundColor = LKAppModeUtilities.isLightMode ? [UIColor.whiteColor colorWithAlphaComponent:LKValues.mediumOpacity] : [LKColors.text colorWithAlphaComponent:LKValues.mediumOpacity];
     [sourceRow addBackgroundViewWithBackgroundColor:backgroundColor];
 
     return sourceRow;

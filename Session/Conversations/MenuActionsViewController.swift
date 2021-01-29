@@ -404,7 +404,7 @@ class MenuActionView: UIButton {
         var image = action.image
         image = image.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = textColor.withAlphaComponent(Values.unimportantElementOpacity)
+        imageView.tintColor = textColor.withAlphaComponent(Values.mediumOpacity)
         let imageWidth: CGFloat = 24
         imageView.autoSetDimensions(to: CGSize(width: imageWidth, height: imageWidth))
         imageView.isUserInteractionEnabled = false
@@ -417,7 +417,7 @@ class MenuActionView: UIButton {
 
         let subtitleLabel = UILabel()
         subtitleLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        subtitleLabel.textColor = textColor.withAlphaComponent(Values.unimportantElementOpacity)
+        subtitleLabel.textColor = textColor.withAlphaComponent(Values.mediumOpacity)
         subtitleLabel.text = action.subtitle
         subtitleLabel.isUserInteractionEnabled = false
 

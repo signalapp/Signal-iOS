@@ -7,7 +7,6 @@
 #import "TSIncomingMessage.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

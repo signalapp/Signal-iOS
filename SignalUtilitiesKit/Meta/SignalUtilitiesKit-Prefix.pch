@@ -12,7 +12,6 @@
     @import SignalCoreKit;
 
     @import SessionMessagingKit;
-    @import SessionProtocolKit;
     @import SessionSnodeKit;
     @import SessionUtilitiesKit;
 #endif

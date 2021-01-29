@@ -12,6 +12,8 @@ final class NewConversationButtonSet : UIView {
     private let iconSize = CGFloat(24)
     private let maxDragDistance = CGFloat(56)
     private let dragMargin = CGFloat(16)
+    static let collapsedButtonSize = CGFloat(60)
+    static let expandedButtonSize = CGFloat(72)
     
     // MARK: Components
     private lazy var mainButton = NewConversationButton(isMainButton: true, icon: #imageLiteral(resourceName: "Plus").scaled(to: CGSize(width: iconSize, height: iconSize)))
@@ -39,7 +41,7 @@ final class NewConversationButtonSet : UIView {
         createNewClosedGroupButton.isAccessibilityElement = true
         joinOpenGroupButton.accessibilityLabel = "Join open group button"
         joinOpenGroupButton.isAccessibilityElement = true
-        let inset = (Values.newConversationButtonExpandedSize - Values.newConversationButtonCollapsedSize) / 2
+        let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
         addSubview(joinOpenGroupButton)
         horizontalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.left, to: .left, of: self, withInset: inset)
         verticalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
@@ -52,9 +54,9 @@ final class NewConversationButtonSet : UIView {
         addSubview(mainButton)
         mainButton.center(.horizontal, in: self)
         mainButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
-        let width = 2 * Values.newConversationButtonExpandedSize + 2 * spacing + Values.newConversationButtonCollapsedSize
+        let width = 2 * NewConversationButtonSet.expandedButtonSize + 2 * spacing + NewConversationButtonSet.collapsedButtonSize
         set(.width, to: width)
-        let height = Values.newConversationButtonExpandedSize + spacing + Values.newConversationButtonCollapsedSize
+        let height = NewConversationButtonSet.expandedButtonSize + spacing + NewConversationButtonSet.collapsedButtonSize
         set(.height, to: height)
         collapse(withAnimation: false)
         isUserInteractionEnabled = true
@@ -75,8 +77,8 @@ final class NewConversationButtonSet : UIView {
         let buttons = [ joinOpenGroupButton, createNewPrivateChatButton, createNewClosedGroupButton ]
         UIView.animate(withDuration: 0.25, animations: {
             buttons.forEach { $0.alpha = 1 }
-            let inset = (Values.newConversationButtonExpandedSize - Values.newConversationButtonCollapsedSize) / 2
-            let size = Values.newConversationButtonCollapsedSize
+            let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
+            let size = NewConversationButtonSet.collapsedButtonSize
             self.joinOpenGroupButton.frame = CGRect(origin: CGPoint(x: inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
             self.createNewPrivateChatButton.frame = CGRect(center: CGPoint(x: self.bounds.center.x, y: inset + size / 2), size: CGSize(width: size, height: size))
             self.createNewClosedGroupButton.frame = CGRect(origin: CGPoint(x: self.width() - size - inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
@@ -91,14 +93,14 @@ final class NewConversationButtonSet : UIView {
         UIView.animate(withDuration: isAnimated ? 0.25 : 0) {
             buttons.forEach { button in
                 button.alpha = 0
-                let size = Values.newConversationButtonCollapsedSize
+                let size = NewConversationButtonSet.collapsedButtonSize
                 button.frame = CGRect(center: self.mainButton.center, size: CGSize(width: size, height: size))
             }
         }
     }
     
     private func reset() {
-        let mainButtonLocationInSelfCoordinates = CGPoint(x: width() / 2, y: height() - Values.newConversationButtonExpandedSize / 2)
+        let mainButtonLocationInSelfCoordinates = CGPoint(x: width() / 2, y: height() - NewConversationButtonSet.expandedButtonSize / 2)
         let mainButtonSize = mainButton.frame.size
         UIView.animate(withDuration: 0.25) {
             self.mainButton.frame = CGRect(center: mainButtonLocationInSelfCoordinates, size: mainButtonSize)
@@ -120,7 +122,7 @@ final class NewConversationButtonSet : UIView {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, isUserDragging else { return }
         let mainButtonSize = mainButton.frame.size
-        let mainButtonLocationInSelfCoordinates = CGPoint(x: width() / 2, y: height() - Values.newConversationButtonExpandedSize / 2)
+        let mainButtonLocationInSelfCoordinates = CGPoint(x: width() / 2, y: height() - NewConversationButtonSet.expandedButtonSize / 2)
         let touchLocationInSelfCoordinates = touch.location(in: self)
         mainButton.frame = CGRect(center: touchLocationInSelfCoordinates, size: mainButtonSize)
         mainButton.alpha = 1 - (touchLocationInSelfCoordinates.distance(to: mainButtonLocationInSelfCoordinates) / maxDragDistance)
@@ -159,7 +161,7 @@ final class NewConversationButtonSet : UIView {
     private func expand(_ button: NewConversationButton) {
         if let horizontalConstraint = horizontalButtonConstraints[button] { horizontalConstraint.constant = 0 }
         if let verticalConstraint = verticalButtonConstraints[button] { verticalConstraint.constant = 0 }
-        let size = Values.newConversationButtonExpandedSize
+        let size = NewConversationButtonSet.expandedButtonSize
         let frame = CGRect(center: button.center, size: CGSize(width: size, height: size))
         button.widthConstraint.constant = size
         button.heightConstraint.constant = size
@@ -167,7 +169,7 @@ final class NewConversationButtonSet : UIView {
             self.layoutIfNeeded()
             button.frame = frame
             button.layer.cornerRadius = size / 2
-            let glowColor = Colors.newConversationButtonShadow
+            let glowColor = Colors.expandedButtonGlowColor
             let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, radius: isLightMode ? 4 : 6)
             button.setCircularGlow(with: glowConfiguration)
             button.backgroundColor = Colors.accent
@@ -175,7 +177,7 @@ final class NewConversationButtonSet : UIView {
     }
     
     private func collapse(_ button: NewConversationButton) {
-        let inset = (Values.newConversationButtonExpandedSize - Values.newConversationButtonCollapsedSize) / 2
+        let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
         if joinOpenGroupButton == expandedButton {
             horizontalButtonConstraints[joinOpenGroupButton]!.constant = inset
             verticalButtonConstraints[joinOpenGroupButton]!.constant = -inset
@@ -185,7 +187,7 @@ final class NewConversationButtonSet : UIView {
             horizontalButtonConstraints[createNewClosedGroupButton]!.constant = -inset
             verticalButtonConstraints[createNewClosedGroupButton]!.constant = -inset
         }
-        let size = Values.newConversationButtonCollapsedSize
+        let size = NewConversationButtonSet.collapsedButtonSize
         let frame = CGRect(center: button.center, size: CGSize(width: size, height: size))
         button.widthConstraint.constant = size
         button.heightConstraint.constant = size
@@ -249,9 +251,9 @@ private final class NewConversationButton : UIImageView {
     private func setUpViewHierarchy(isUpdate: Bool = false) {
         let newConversationButtonCollapsedBackground = isLightMode ? UIColor(hex: 0xF5F5F5) : UIColor(hex: 0x1F1F1F)
         backgroundColor = isMainButton ? Colors.accent : newConversationButtonCollapsedBackground
-        let size = Values.newConversationButtonCollapsedSize
+        let size = NewConversationButtonSet.collapsedButtonSize
         layer.cornerRadius = size / 2
-        let glowColor = isMainButton ? Colors.newConversationButtonShadow : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
+        let glowColor = isMainButton ? Colors.expandedButtonGlowColor : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
         let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: false, radius: isLightMode ? 4 : 6)
         setCircularGlow(with: glowConfiguration)
         layer.masksToBounds = false

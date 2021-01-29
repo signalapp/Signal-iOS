@@ -4,15 +4,15 @@
 
 import Foundation
 
-@objc(OWSMediaAlbumCellView)
-public class MediaAlbumCellView: UIStackView {
+@objc(OWSMediaAlbumView)
+public class MediaAlbumView: UIStackView {
     private let items: [ConversationMediaAlbumItem]
 
     @objc
-    public let itemViews: [ConversationMediaView]
+    public let itemViews: [MediaView]
 
     @objc
-    public var moreItemsView: ConversationMediaView?
+    public var moreItemsView: MediaView?
 
     private static let kSpacingPts: CGFloat = 2
     private static let kMaxItems = 5
@@ -26,22 +26,20 @@ public class MediaAlbumCellView: UIStackView {
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          items: [ConversationMediaAlbumItem],
                          isOutgoing: Bool,
-                         maxMessageWidth: CGFloat,
-                         isOnionRouted: Bool) {
+                         maxMessageWidth: CGFloat) {
         self.items = items
-        self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
-            let result = ConversationMediaView(mediaCache: mediaCache,
+        self.itemViews = MediaAlbumView.itemsToDisplay(forItems: items).map {
+            let result = MediaView(mediaCache: mediaCache,
                                   attachment: $0.attachment,
                                   isOutgoing: isOutgoing,
-                                  maxMessageWidth: maxMessageWidth,
-                                  isOnionRouted: isOnionRouted)
+                                  maxMessageWidth: maxMessageWidth)
             return result
         }
 
         super.init(frame: .zero)
 
         // UIStackView's backgroundColor property has no effect.
-        addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        addBackgroundView(withBackgroundColor: Colors.navigationBarBackground)
 
         createContents(maxMessageWidth: maxMessageWidth)
     }
@@ -62,19 +60,19 @@ public class MediaAlbumCellView: UIStackView {
         case 2:
             // X X
             // side-by-side.
-            let imageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts) / 2
+            let imageSize = (maxMessageWidth - MediaAlbumView.kSpacingPts) / 2
             autoSet(viewSize: imageSize, ofViews: itemViews)
             for itemView in itemViews {
                 addArrangedSubview(itemView)
             }
             self.axis = .horizontal
-            self.spacing = MediaAlbumCellView.kSpacingPts
+            self.spacing = MediaAlbumView.kSpacingPts
         case 3:
             //   x
             // X x
             // Big on left, 2 small on right.
-            let smallImageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts * 2) / 3
-            let bigImageSize = smallImageSize * 2 + MediaAlbumCellView.kSpacingPts
+            let smallImageSize = (maxMessageWidth - MediaAlbumView.kSpacingPts * 2) / 3
+            let bigImageSize = smallImageSize * 2 + MediaAlbumView.kSpacingPts
 
             guard let leftItemView = itemViews.first else {
                 owsFailDebug("Missing view")
@@ -88,12 +86,12 @@ public class MediaAlbumCellView: UIStackView {
                                       axis: .vertical,
                                       viewSize: smallImageSize))
             self.axis = .horizontal
-            self.spacing = MediaAlbumCellView.kSpacingPts
+            self.spacing = MediaAlbumView.kSpacingPts
         case 4:
             // X X
             // X X
             // Square
-            let imageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts) / 2
+            let imageSize = (maxMessageWidth - MediaAlbumView.kSpacingPts) / 2
 
             let topViews = Array(itemViews[0..<2])
             addArrangedSubview(newRow(rowViews: topViews,
@@ -106,13 +104,13 @@ public class MediaAlbumCellView: UIStackView {
                                       viewSize: imageSize))
 
             self.axis = .vertical
-            self.spacing = MediaAlbumCellView.kSpacingPts
+            self.spacing = MediaAlbumView.kSpacingPts
         default:
             // X X
             // xxx
             // 2 big on top, 3 small on bottom.
-            let bigImageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts) / 2
-            let smallImageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts * 2) / 3
+            let bigImageSize = (maxMessageWidth - MediaAlbumView.kSpacingPts) / 2
+            let smallImageSize = (maxMessageWidth - MediaAlbumView.kSpacingPts * 2) / 3
 
             let topViews = Array(itemViews[0..<2])
             addArrangedSubview(newRow(rowViews: topViews,
@@ -125,9 +123,9 @@ public class MediaAlbumCellView: UIStackView {
                                       viewSize: smallImageSize))
 
             self.axis = .vertical
-            self.spacing = MediaAlbumCellView.kSpacingPts
+            self.spacing = MediaAlbumView.kSpacingPts
 
-            if items.count > MediaAlbumCellView.kMaxItems {
+            if items.count > MediaAlbumView.kMaxItems {
                 guard let lastView = bottomViews.last else {
                     owsFailDebug("Missing lastView")
                     return
@@ -140,7 +138,7 @@ public class MediaAlbumCellView: UIStackView {
                 lastView.addSubview(tintView)
                 tintView.autoPinEdgesToSuperviewEdges()
 
-                let moreCount = max(1, items.count - MediaAlbumCellView.kMaxItems)
+                let moreCount = max(1, items.count - MediaAlbumView.kMaxItems)
                 let moreCountText = OWSFormat.formatInt(Int32(moreCount))
                 let moreText = String(format: NSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
                                                                 comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}."), moreCountText)
@@ -184,24 +182,24 @@ public class MediaAlbumCellView: UIStackView {
     }
 
     private func autoSet(viewSize: CGFloat,
-                         ofViews views: [ConversationMediaView]) {
+                         ofViews views: [MediaView]) {
         for itemView in views {
             itemView.autoSetDimensions(to: CGSize(width: viewSize, height: viewSize))
         }
     }
 
-    private func newRow(rowViews: [ConversationMediaView],
+    private func newRow(rowViews: [MediaView],
                         axis: NSLayoutConstraint.Axis,
                         viewSize: CGFloat) -> UIStackView {
         autoSet(viewSize: viewSize, ofViews: rowViews)
         return newRow(rowViews: rowViews, axis: axis)
     }
 
-    private func newRow(rowViews: [ConversationMediaView],
+    private func newRow(rowViews: [MediaView],
                         axis: NSLayoutConstraint.Axis) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: rowViews)
         stackView.axis = axis
-        stackView.spacing = MediaAlbumCellView.kSpacingPts
+        stackView.spacing = MediaAlbumView.kSpacingPts
         return stackView
     }
 
@@ -267,8 +265,8 @@ public class MediaAlbumCellView: UIStackView {
     }
 
     @objc
-    public func mediaView(forLocation location: CGPoint) -> ConversationMediaView? {
-        var bestMediaView: ConversationMediaView?
+    public func mediaView(forLocation location: CGPoint) -> MediaView? {
+        var bestMediaView: MediaView?
         var bestDistance: CGFloat = 0
         for itemView in itemViews {
             let itemCenter = convert(itemView.center, from: itemView.superview)
@@ -283,7 +281,7 @@ public class MediaAlbumCellView: UIStackView {
     }
 
     @objc
-    public func isMoreItemsView(mediaView: ConversationMediaView) -> Bool {
+    public func isMoreItemsView(mediaView: MediaView) -> Bool {
         return moreItemsView == mediaView
     }
 }

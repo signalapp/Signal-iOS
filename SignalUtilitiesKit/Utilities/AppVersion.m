@@ -4,7 +4,6 @@
 
 #import "AppVersion.h"
 #import "NSUserDefaults+OWS.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

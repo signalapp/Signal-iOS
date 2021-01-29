@@ -71,7 +71,7 @@ public class VoiceMemoLockView: UIView {
         view.autoSetDimension(.width, toSize: width)
         view.backgroundColor = Colors.composeViewBackground
         view.layer.cornerRadius = width / 2
-        view.layer.borderColor = Colors.text.withAlphaComponent(Values.composeViewTextFieldBorderOpacity).cgColor
+        view.layer.borderColor = Colors.text.withAlphaComponent(Values.lowOpacity).cgColor
         view.layer.borderWidth = Values.composeViewTextFieldBorderThickness
 
         return view

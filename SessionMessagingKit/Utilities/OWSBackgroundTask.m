@@ -4,7 +4,6 @@
 
 #import "OWSBackgroundTask.h"
 #import "AppContext.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import <SignalCoreKit/Threading.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 

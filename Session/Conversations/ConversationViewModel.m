@@ -1083,13 +1083,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 [TSInteraction fetchObjectWithUniqueID:uniqueId transaction:transaction];
             if (!interaction) {
                 OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-                // TODO: Add analytics.
                 hasError = YES;
                 continue;
             }
             if (!interaction.uniqueId) {
                 OWSFailDebug(@"invalid interaction in message mapping: %@.", interaction);
-                // TODO: Add analytics.
                 hasError = YES;
                 continue;
             }
@@ -1226,7 +1224,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         id<ConversationViewItem> viewItem = viewItems[i];
         id<ConversationViewItem> _Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
         id<ConversationViewItem> _Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
-        BOOL shouldShowSenderAvatar = NO;
+        BOOL shouldShowSenderProfilePicture = NO;
         BOOL shouldHideFooter = NO;
         BOOL isFirstInCluster = YES;
         BOOL isLastInCluster = YES;
@@ -1322,9 +1320,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             }
 
             if (viewItem.isGroupThread) {
-                // Show the sender name for incoming group messages unless
-                // the previous message has the same sender name and
-                // no "date break" separates us.
+                // Show the sender name for incoming group messages unless the
+                // previous message has the same sender and no "date break" separates us.
                 BOOL shouldShowSenderName = YES;
                 NSString *_Nullable previousIncomingSenderId = nil;
                 if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
@@ -1333,37 +1330,18 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                     previousIncomingSenderId = previousIncomingMessage.authorId;
                     OWSAssertDebug(previousIncomingSenderId.length > 0);
 
-                    shouldShowSenderName
-                        = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
-                            || viewItem.hasCellHeader);
+                    shouldShowSenderName = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId] || viewItem.hasCellHeader);
                 }
                 
                 if (shouldShowSenderName) {
                     senderName = [[NSAttributedString alloc] initWithString:[SSKEnvironment.shared.profileManager profileNameForRecipientWithID:incomingSenderId avoidingWriteTransaction:YES]];
-                    
-                    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-                        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-                        NSData *groupId = groupThread.groupModel.groupId;
-                        NSString *stringGroupId = [[NSString alloc] initWithData:groupId encoding:NSUTF8StringEncoding];
-                        
-                        if (stringGroupId != nil) {
-                            NSString __block *displayName;
-                            [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                               displayName = [transaction objectForKey:incomingSenderId inCollection:stringGroupId];
-                            }];
-                            if (displayName != nil) {
-                                senderName = [[NSAttributedString alloc] initWithString:displayName attributes:[OWSMessageBubbleView senderNamePrimaryAttributes]];
-                            }
-                        }
-                    }
                 }
 
-                // Show the sender avatar for incoming group messages unless
-                // the next message has the same sender avatar and
-                // no "date break" separates us.
-                shouldShowSenderAvatar = YES;
-                if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
-                    shouldShowSenderAvatar = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]);
+                // Show the sender profile picture for incoming group messages unless the
+                // next message has the same sender and no "date break" separates us.
+                shouldShowSenderProfilePicture = YES;
+                if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                    shouldShowSenderProfilePicture = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]);
                 }
             }
         }
@@ -1374,9 +1352,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
         viewItem.isFirstInCluster = isFirstInCluster;
         viewItem.isLastInCluster = isLastInCluster;
-        viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
+        viewItem.shouldShowSenderProfilePicture = shouldShowSenderProfilePicture;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;
+        viewItem.wasPreviousItemInfoMessage = (previousViewItem.interaction.interactionType == OWSInteractionType_Info);
     }
 
     self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems];

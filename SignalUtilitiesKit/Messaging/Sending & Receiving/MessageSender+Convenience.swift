@@ -1,4 +1,3 @@
-import SessionProtocolKit
 import PromiseKit
 
 extension MessageSender {

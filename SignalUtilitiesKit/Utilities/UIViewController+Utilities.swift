@@ -9,7 +9,7 @@ public final class ViewControllerUtilities : NSObject {
     public static func setUpDefaultSessionStyle(for vc: UIViewController, title: String?, hasCustomBackButton: Bool) {
         // Set gradient background
         vc.view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
+        let gradient = Gradients.defaultBackground
         vc.view.setGradient(gradient)
         // Set navigation bar background color
         if let navigationBar = vc.navigationController?.navigationBar {

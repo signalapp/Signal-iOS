@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.circleView = circleView;
     circleView.userInteractionEnabled = NO;
     circleView.layer.cornerRadius = circleSize * 0.5f;
-    circleView.layer.borderColor = [LKColors.text colorWithAlphaComponent:LKValues.composeViewTextFieldBorderOpacity].CGColor;
+    circleView.layer.borderColor = [LKColors.text colorWithAlphaComponent:LKValues.lowOpacity].CGColor;
     circleView.layer.borderWidth = LKValues.composeViewTextFieldBorderThickness;
     [circleView autoSetDimension:ALDimensionWidth toSize:circleSize];
     [circleView autoSetDimension:ALDimensionHeight toSize:circleSize];

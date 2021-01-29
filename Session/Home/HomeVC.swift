@@ -36,7 +36,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
         result.backgroundColor = .clear
         result.separatorStyle = .none
         result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
-        let bottomInset = Values.newConversationButtonBottomOffset + Values.newConversationButtonExpandedSize + Values.largeSpacing + Values.newConversationButtonCollapsedSize
+        let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
         result.showsVerticalScrollIndicator = false
         return result
@@ -342,8 +342,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
             if let presentedVC = self.presentedViewController {
                 presentedVC.dismiss(animated: false, completion: nil)
             }
-            let conversationVC = ConversationViewController()
-            conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
+            let conversationVC = ConversationVC(thread: thread)
+//            conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
             self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
         }
     }
@@ -424,7 +424,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIViewC
     }
     
     @objc func joinOpenGroup() {
-        let joinOpenGroupVC = JoinPublicChatVC()
+        let joinOpenGroupVC = JoinOpenGroupVC()
         let navigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
         present(navigationController, animated: true, completion: nil)
     }

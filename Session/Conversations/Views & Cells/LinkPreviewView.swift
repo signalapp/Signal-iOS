@@ -628,7 +628,7 @@ public class LinkPreviewView: UIStackView {
             displayDomain.count > 0 {
             let label = UILabel()
             label.text = displayDomain
-            label.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            label.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
             label.font = .systemFont(ofSize: Values.verySmallFontSize)
             textStack.addArrangedSubview(label)
         }

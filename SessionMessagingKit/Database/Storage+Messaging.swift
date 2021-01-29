@@ -1,10 +1,6 @@
 import PromiseKit
 
 extension Storage {
-    
-    public func getOrGenerateRegistrationID(using transaction: Any) -> UInt32 {
-        SSKEnvironment.shared.tsAccountManager.getOrGenerateRegistrationId(transaction as! YapDatabaseReadWriteTransaction)
-    }
 
     /// Returns the ID of the thread.
     public func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? {

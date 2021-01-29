@@ -50,8 +50,8 @@ final class KeyPairMigrationSuccessSheet : Sheet {
         let sessionIDContainer = UIView()
         sessionIDContainer.addSubview(sessionIDLabel)
         sessionIDLabel.pin(to: sessionIDContainer, withInset: Values.mediumSpacing)
-        sessionIDContainer.layer.cornerRadius = Values.textFieldCornerRadius
-        sessionIDContainer.layer.borderWidth = Values.borderThickness
+        sessionIDContainer.layer.cornerRadius = TextField.cornerRadius
+        sessionIDContainer.layer.borderWidth = 1
         sessionIDContainer.layer.borderColor = Colors.text.cgColor
         // OK button
         let okButton = Button(style: .prominentOutline, size: .large)

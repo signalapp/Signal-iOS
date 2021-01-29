@@ -256,7 +256,7 @@ const CGFloat kMaxTextViewHeight = 120;
     self.borderView.backgroundColor = UIColor.clearColor;
     self.borderView.opaque = NO;
     self.borderView.layer.borderColor = LKColors.text.CGColor;
-    self.borderView.layer.opacity = LKValues.composeViewTextFieldBorderOpacity;
+    self.borderView.layer.opacity = LKValues.lowOpacity;
     self.borderView.layer.borderWidth = LKValues.composeViewTextFieldBorderThickness;
     self.borderView.layer.cornerRadius = vStackRounding;
     [self addSubview:self.borderView];

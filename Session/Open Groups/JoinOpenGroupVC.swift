@@ -1,5 +1,5 @@
 
-final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var isJoining = false
@@ -164,7 +164,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
 }
 
 private final class EnterChatURLVC : UIViewController {
-    weak var joinPublicChatVC: JoinPublicChatVC!
+    weak var joinPublicChatVC: JoinOpenGroupVC!
     private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
@@ -251,7 +251,7 @@ private final class EnterChatURLVC : UIViewController {
 }
 
 private final class ScanQRCodePlaceholderVC : UIViewController {
-    weak var joinPublicChatVC: JoinPublicChatVC!
+    weak var joinPublicChatVC: JoinOpenGroupVC!
     
     override func viewDidLoad() {
         // Remove background color

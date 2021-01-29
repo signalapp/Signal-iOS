@@ -9,7 +9,7 @@ public final class TabBar : UIView {
     private lazy var tabLabels: [UILabel] = tabs.map { tab in
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.textAlignment = .center
         result.text = tab.title
         result.set(.height, to: Values.tabBarHeight - Values.separatorThickness - Values.accentLineThickness)
@@ -93,7 +93,7 @@ public final class TabBar : UIView {
         tabLabelsCopy.remove(at: index)
         UIView.animate(withDuration: isAnimated ? 0.25 : 0) {
             tabLabel.textColor = Colors.text
-            tabLabelsCopy.forEach { $0.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity) }
+            tabLabelsCopy.forEach { $0.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity) }
             self.layoutIfNeeded()
         }
     }

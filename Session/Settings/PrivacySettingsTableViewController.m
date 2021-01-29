@@ -253,48 +253,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
 }
 
-- (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
-{
-    BOOL enabled = sender.isOn;
-    OWSLogInfo(@"toggled callsHideIPAddress: %@", enabled ? @"ON" : @"OFF");
-    [self.preferences setDoCallsHideIPAddress:enabled];
-}
-
-- (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsSystemCallLogEnabled:sender.isOn];
-}
-
-- (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsCallKitEnabled:sender.isOn];
-
-    // Show/Hide dependent switch: CallKit privacy
-    [self updateTableContents];
-}
-
-- (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
-
-    // rebuild callUIAdapter since CallKit configuration changed.
-//    [AppEnvironment.shared.callService createCallUIAdapter];
-}
-
-- (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender
-{
-    
-}
-
-- (void)didToggleUDShowIndicatorsSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setShouldShowUnidentifiedDeliveryIndicators:sender.isOn];
-}
-
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     BOOL isOn = sender.isOn;
@@ -311,11 +269,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     }
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
     SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
-}
-
-- (void)show2FASettings
-{
-    
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

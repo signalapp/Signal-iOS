@@ -4,12 +4,10 @@ import UIKit
 public final class Values : NSObject {
     
     // MARK: - Alpha Values
-    @objc public static let unimportantElementOpacity = CGFloat(0.6)
-    @objc public static let conversationCellTimestampOpacity = CGFloat(0.4)
-    @objc public static let textFieldBorderOpacity = CGFloat(0.4)
-    @objc public static let modalBackgroundOpacity = CGFloat(0.75)
-    @objc public static let composeViewTextFieldBorderOpacity = CGFloat(0.12)
-    @objc public static let composeViewTextFieldPlaceholderOpacity = CGFloat(0.4)
+    @objc public static let veryLowOpacity = CGFloat(0.12)
+    @objc public static let lowOpacity = CGFloat(0.4)
+    @objc public static let mediumOpacity = CGFloat(0.6)
+    @objc public static let highOpacity = CGFloat(0.75)
     
     // MARK: - Font Sizes
     @objc public static let verySmallFontSize = isIPhone5OrSmaller ? CGFloat(10) : CGFloat(12)
@@ -23,18 +21,18 @@ public final class Values : NSObject {
     @objc public static let smallButtonHeight = isIPhone5OrSmaller ? CGFloat(24) : CGFloat(27)
     @objc public static let mediumButtonHeight = isIPhone5OrSmaller ? CGFloat(30) : CGFloat(34)
     @objc public static let largeButtonHeight = isIPhone5OrSmaller ? CGFloat(40) : CGFloat(45)
+    
     @objc public static let accentLineThickness = CGFloat(4)
+    
     @objc public static let verySmallProfilePictureSize = CGFloat(26)
-    @objc public static let smallProfilePictureSize = CGFloat(35)
+    @objc public static let smallProfilePictureSize = CGFloat(33)
     @objc public static let mediumProfilePictureSize = CGFloat(45)
     @objc public static let largeProfilePictureSize = CGFloat(75)
-    @objc public static let borderThickness = CGFloat(1)
-    @objc public static let conversationCellStatusIndicatorSize = CGFloat(14)
+    
     @objc public static let searchBarHeight = CGFloat(36)
-    @objc public static let newConversationButtonCollapsedSize = CGFloat(60)
-    @objc public static let newConversationButtonExpandedSize = CGFloat(72)
-    @objc public static let textFieldHeight = isIPhone5OrSmaller ? CGFloat(48) : CGFloat(80)
-    @objc public static let textFieldCornerRadius = CGFloat(8)
+
+    // TODO ----------------
+    
     @objc public static let separatorLabelHeight = CGFloat(24)
     @objc public static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     @objc public static let tabBarHeight = isIPhone5OrSmaller ? CGFloat(32) : CGFloat(48)
@@ -46,7 +44,7 @@ public final class Values : NSObject {
     @objc public static let fakeChatBubbleCornerRadius = CGFloat(10)
     @objc public static let fakeChatViewHeight = isIPhone5OrSmaller ? CGFloat(234) : CGFloat(260)
     @objc public static let composeViewTextFieldBorderThickness = 1 / UIScreen.main.scale
-    @objc public static let messageBubbleCornerRadius: CGFloat = 10
+    @objc public static let messageBubbleCornerRadius: CGFloat = 8
     @objc public static let progressBarThickness: CGFloat = 2
     @objc public static let pnOptionCornerRadius = CGFloat(8)
     @objc public static let pathStatusViewSize = CGFloat(8)

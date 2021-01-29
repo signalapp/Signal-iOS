@@ -183,7 +183,7 @@ private final class EnterPublicKeyVC : UIViewController {
         view.backgroundColor = .clear
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         explanationLabel.text = NSLocalizedString("vc_enter_public_key_explanation", comment: "")
         explanationLabel.numberOfLines = 0

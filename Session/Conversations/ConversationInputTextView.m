@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.placeholderView = [UILabel new];
         self.placeholderView.text = NSLocalizedString(@"Message", @"");
-        self.placeholderView.textColor = [LKColors.text colorWithAlphaComponent:LKValues.composeViewTextFieldPlaceholderOpacity];
+        self.placeholderView.textColor = [LKColors.text colorWithAlphaComponent:LKValues.lowOpacity];
         self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
 

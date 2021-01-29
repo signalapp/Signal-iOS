@@ -10,7 +10,7 @@ class Modal : BaseVC {
         result.layer.cornerRadius = Values.modalCornerRadius
         result.layer.masksToBounds = false
         result.layer.borderColor = isLightMode ? UIColor.white.cgColor : Colors.modalBorder.cgColor
-        result.layer.borderWidth = Values.borderThickness
+        result.layer.borderWidth = 1
         result.layer.shadowColor = UIColor.black.cgColor
         result.layer.shadowRadius = isLightMode ? 2 : 8
         result.layer.shadowOpacity = isLightMode ? 0.1 : 0.64
@@ -31,7 +31,7 @@ class Modal : BaseVC {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        let alpha = isLightMode ? CGFloat(0.1) : Values.modalBackgroundOpacity
+        let alpha = isLightMode ? CGFloat(0.1) : Values.highOpacity
         view.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(alpha)
         cancelButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))

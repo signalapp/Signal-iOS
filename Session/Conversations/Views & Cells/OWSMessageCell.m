@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES IFF the avatar view is appropriate and configured.
 - (BOOL)updateAvatarView
 {
-    if (!self.viewItem.shouldShowSenderAvatar) {
+    if (!self.viewItem.shouldShowSenderProfilePicture) {
         return NO;
     }
     if (!self.viewItem.isGroupThread) {
@@ -314,7 +314,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.viewItem.shouldShowSenderAvatar) {
+    if (!self.viewItem.shouldShowSenderProfilePicture) {
         return;
     }
     if (!self.viewItem.isGroupThread) {
@@ -496,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    LKVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
+    SNVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
     if (![gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class] || voiceMessageView == nil) { return NO; }
     UIPanGestureRecognizer *panGestureRecognizer = (UIPanGestureRecognizer *)gestureRecognizer;
     CGPoint location = [panGestureRecognizer locationInView:voiceMessageView];

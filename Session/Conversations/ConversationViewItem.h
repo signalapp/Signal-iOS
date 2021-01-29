@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const SNAudioDidFinishPlayingNotification;
+
 typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown,
     OWSMessageCellType_TextOnlyMessage,
@@ -23,7 +25,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
-@class LKVoiceMessageView;
+@class SNVoiceMessageView;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
@@ -79,11 +81,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 
 @property (nonatomic) BOOL shouldShowDate;
-@property (nonatomic) BOOL shouldShowSenderAvatar;
+@property (nonatomic) BOOL shouldShowSenderProfilePicture;
 @property (nonatomic, nullable) NSAttributedString *senderName;
 @property (nonatomic) BOOL shouldHideFooter;
 @property (nonatomic) BOOL isFirstInCluster;
+@property (nonatomic) BOOL isOnlyMessageInCluster;
 @property (nonatomic) BOOL isLastInCluster;
+@property (nonatomic) BOOL wasPreviousItemInfoMessage;
 
 @property (nonatomic, nullable) OWSUnreadIndicator *unreadIndicator;
 
@@ -98,7 +102,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark - Audio Playback
 
-@property (nonatomic, weak) LKVoiceMessageView *lastAudioMessageView;
+@property (nonatomic, weak) SNVoiceMessageView *lastAudioMessageView;
 
 @property (nonatomic, readonly) CGFloat audioDurationSeconds;
 @property (nonatomic, readonly) CGFloat audioProgressSeconds;

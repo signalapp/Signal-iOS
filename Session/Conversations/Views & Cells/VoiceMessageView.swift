@@ -13,7 +13,7 @@ final class VoiceMessageView : UIView {
     @objc var isPlaying = false { didSet { updateToggleImageView() } }
 
     // MARK: Components
-    private lazy var toggleImageView = UIImageView(image: #imageLiteral(resourceName: "Play"))
+    private lazy var toggleImageView = UIImageView(image: UIImage(named: "Play"))
 
     private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .black, padding: nil)
 

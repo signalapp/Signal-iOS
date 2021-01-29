@@ -139,7 +139,7 @@ public final class ProfilePictureView : UIView {
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
         result.layer.borderColor = Colors.text.withAlphaComponent(0.35).cgColor
-        result.layer.borderWidth = Values.borderThickness
+        result.layer.borderWidth = 1
         result.contentMode = .scaleAspectFit
         return result
     }

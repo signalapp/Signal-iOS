@@ -1,7 +1,6 @@
 import AFNetworking
 import CryptoSwift
 import PromiseKit
-import SessionProtocolKit
 import SessionSnodeKit
 import SessionUtilitiesKit
 import SignalCoreKit

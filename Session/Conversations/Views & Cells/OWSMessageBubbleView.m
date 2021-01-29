@@ -608,7 +608,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
             UIColor *highlightColor;
             if (LKAppModeUtilities.isLightMode) {
-                highlightColor = isOutgoingMessage ? UIColor.whiteColor : [LKColors.accent colorWithAlphaComponent:LKValues.unimportantElementOpacity];
+                highlightColor = isOutgoingMessage ? UIColor.whiteColor : [LKColors.accent colorWithAlphaComponent:LKValues.mediumOpacity];
             } else {
                 highlightColor = UIColor.whiteColor;
             }
@@ -637,7 +637,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.senderNameLabel);
     OWSAssertDebug(self.shouldShowSenderName);
 
-    self.senderNameLabel.textColor = [LKColors.text colorWithAlphaComponent:LKValues.unimportantElementOpacity];
+    self.senderNameLabel.textColor = [LKColors.text colorWithAlphaComponent:LKValues.mediumOpacity];
     self.senderNameLabel.font = OWSMessageBubbleView.senderNameFont;
     self.senderNameLabel.text = self.viewItem.senderName.string;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -695,12 +695,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.viewItem.mediaAlbumItems);
     
-    OWSMediaAlbumCellView *albumView =
-        [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
+    OWSMediaAlbumView *albumView =
+        [[OWSMediaAlbumView alloc] initWithMediaCache:self.cellMediaCache
                                                     items:self.viewItem.mediaAlbumItems
                                                isOutgoing:self.isOutgoing
-                                          maxMessageWidth:self.conversationStyle.maxMessageWidth
-                                            isOnionRouted:YES];
+                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };
@@ -729,12 +728,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachment);
     OWSAssertDebug([attachment isAudio]);
 
-    LKVoiceMessageView *voiceMessageView = [[LKVoiceMessageView alloc] initWithVoiceMessage:attachment isOutgoing:self.isOutgoing];
-    [voiceMessageView setDuration:(int)self.viewItem.audioDurationSeconds];
-    [voiceMessageView setProgress:self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds];
-    [voiceMessageView initialize];
+    UIView *voiceMessageView = [UIView new];
 
-    self.viewItem.lastAudioMessageView = voiceMessageView;
+//    LKVoiceMessageView *voiceMessageView = [[LKVoiceMessageView alloc] initWithVoiceMessage:attachment isOutgoing:self.isOutgoing];
+//    [voiceMessageView setDuration:(int)self.viewItem.audioDurationSeconds];
+//    [voiceMessageView setProgress:self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds];
+//    [voiceMessageView initialize];
+
+//    self.viewItem.lastAudioMessageView = voiceMessageView;
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -946,7 +947,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
         case OWSMessageCellType_MediaMessage:
-            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMessageWidth
+            result = [OWSMediaAlbumView layoutSizeForMaxMessageWidth:maxMessageWidth
                                                                    items:self.viewItem.mediaAlbumItems];
 
             if (self.viewItem.mediaAlbumItems.count == 1) {
@@ -1314,19 +1315,19 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssertDebug(self.bodyMediaView);
             OWSAssertDebug(self.viewItem.mediaAlbumItems.count > 0);
 
-            if (![self.bodyMediaView isKindOfClass:[OWSMediaAlbumCellView class]]) {
+            if (![self.bodyMediaView isKindOfClass:[OWSMediaAlbumView class]]) {
                 OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
                 return;
             }
-            OWSMediaAlbumCellView *_Nullable mediaAlbumCellView = (OWSMediaAlbumCellView *)self.bodyMediaView;
+            OWSMediaAlbumView *_Nullable MediaAlbumView = (OWSMediaAlbumView *)self.bodyMediaView;
             CGPoint location = [self convertPoint:locationInMessageBubble toView:self.bodyMediaView];
-            OWSConversationMediaView *_Nullable mediaView = [mediaAlbumCellView mediaViewForLocation:location];
+            OWSMediaView *_Nullable mediaView = [MediaAlbumView mediaViewForLocation:location];
             if (!mediaView) {
                 OWSFailDebug(@"Missing media view.");
                 return;
             }
 
-            if ([mediaAlbumCellView isMoreItemsViewWithMediaView:mediaView]
+            if ([MediaAlbumView isMoreItemsViewWithMediaView:mediaView]
                 && self.viewItem.mediaAlbumHasFailedAttachment) {
                 [self.delegate didTapFailedIncomingAttachment:self.viewItem];
                 return;
@@ -1355,12 +1356,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     switch (self.cellType) {
         case OWSMessageCellType_Audio: {
-            LKVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
-            NSTimeInterval currentTime = [voiceMessageView getCurrentTime:sender];
-            [self.viewItem setAudioProgress:((CGFloat)currentTime) duration:self.viewItem.audioDurationSeconds];
-            CGFloat progress = self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds;
-            [voiceMessageView setProgress:progress];
-            [self.delegate didPanAudioViewItemToCurrentTime:currentTime];
+//            SNVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
+//            NSTimeInterval currentTime = [voiceMessageView getCurrentTime:sender];
+//            [self.viewItem setAudioProgress:((CGFloat)currentTime) duration:self.viewItem.audioDurationSeconds];
+//            CGFloat progress = self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds;
+//            [voiceMessageView setProgress:progress];
+//            [self.delegate didPanAudioViewItemToCurrentTime:currentTime];
             return;
         }
         default: return;

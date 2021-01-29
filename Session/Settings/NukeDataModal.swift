@@ -14,7 +14,7 @@ final class NukeDataModal : Modal {
         titleLabel.textAlignment = .center
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = NSLocalizedString("modal_clear_all_data_explanation", comment: "")
         explanationLabel.numberOfLines = 0

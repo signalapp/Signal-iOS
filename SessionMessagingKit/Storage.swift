@@ -1,4 +1,3 @@
-import SessionProtocolKit
 import PromiseKit
 import Sodium
 
@@ -21,13 +20,8 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserProfileKey() -> Data?
     func getUserProfilePictureURL() -> String?
 
-    // MARK: - Signal Protocol
+    // MARK: - Closed Groups
 
-    func getOrGenerateRegistrationID(using transaction: Any) -> UInt32
-
-    // MARK: - Shared Sender Keys
-
-    func getClosedGroupPrivateKey(for publicKey: String) -> String?
     func getUserClosedGroupPublicKeys() -> Set<String>
     func isClosedGroup(_ publicKey: String) -> Bool
 
@@ -61,6 +55,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func setOpenGroupPublicKey(for server: String, to newValue: String, using transaction: Any)
 
     // MARK: - Last Message Server ID
+
     func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64?
     func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any)
     func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any)

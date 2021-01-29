@@ -1,4 +1,3 @@
-import SessionProtocolKit
 
 @objc
 public final class SNMessagingKitConfiguration : NSObject {

@@ -82,12 +82,12 @@ final class SeedVC : BaseVC {
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
         mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing)
-        mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
-        mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
+        mnemonicLabelContainer.layer.cornerRadius = TextField.cornerRadius
+        mnemonicLabelContainer.layer.borderWidth = 1
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         // Set up call to action label
         let callToActionLabel = UILabel()
-        callToActionLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        callToActionLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         callToActionLabel.font = .systemFont(ofSize: isIPhone5OrSmaller ? Values.smallFontSize : Values.mediumFontSize)
         callToActionLabel.text = NSLocalizedString("vc_seed_reveal_button_title", comment: "")
         callToActionLabel.textAlignment = .center

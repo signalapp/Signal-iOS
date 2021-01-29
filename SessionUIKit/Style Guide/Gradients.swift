@@ -31,7 +31,7 @@ public final class Gradient : NSObject {
 @objc(LKGradients)
 final public class Gradients : NSObject {
 
-    @objc public static var defaultLokiBackground: Gradient {
+    @objc public static var defaultBackground: Gradient {
         switch AppModeManager.shared.currentAppMode {
         case .light: return Gradient(start: UIColor(hex: 0xFCFCFC), end: UIColor(hex: 0xFFFFFF))
         case .dark: return Gradient(start: UIColor(hex: 0x171717), end: UIColor(hex: 0x121212))

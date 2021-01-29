@@ -1,5 +1,4 @@
 import CryptoSwift
-import SessionProtocolKit
 import SessionUtilitiesKit
 import Sodium
 

@@ -4,8 +4,8 @@
 
 import Foundation
 
-@objc(OWSConversationMediaView)
-public class ConversationMediaView: UIView {
+@objc(OWSMediaView)
+public class MediaView: UIView {
 
     private enum MediaError {
         case missing
@@ -22,7 +22,6 @@ public class ConversationMediaView: UIView {
     private let maxMessageWidth: CGFloat
     private var loadBlock: (() -> Void)?
     private var unloadBlock: (() -> Void)?
-    private let isOnionRouted: Bool
 
     // MARK: - LoadState
 
@@ -85,17 +84,15 @@ public class ConversationMediaView: UIView {
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
-                         maxMessageWidth: CGFloat,
-                         isOnionRouted: Bool) {
+                         maxMessageWidth: CGFloat) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
         self.maxMessageWidth = maxMessageWidth
-        self.isOnionRouted = isOnionRouted
 
         super.init(frame: .zero)
 
-        backgroundColor = Theme.offBackgroundColor
+        backgroundColor = Colors.unimportant
         clipsToBounds = true
 
         createContents()
@@ -152,53 +149,19 @@ public class ConversationMediaView: UIView {
             configure(forError: .missing)
             return
         }
-        guard let attachmentId = attachmentPointer.uniqueId else {
-            owsFailDebug("Attachment missing unique ID.")
-            configure(forError: .invalid)
-            return
-        }
-        /*
-        guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
-            // Not being downloaded.
-            configure(forError: .missing)
-            return
-        }
-         */
-
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let view: UIView
-        if isOnionRouted { // Loki: Due to the way onion routing works we can't get upload progress for those attachments
-            let activityIndicatorView = UIActivityIndicatorView(style: .white)
-            activityIndicatorView.isHidden = false
-            activityIndicatorView.startAnimating()
-            view = activityIndicatorView
-        } else {
-            view = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
-        }
-        addSubview(view)
-        view.autoPinEdgesToSuperviewEdges()
+        let loader = MediaLoaderView()
+        addSubview(loader)
+        loader.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: self)
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
         guard isOutgoing else { return false }
         guard let attachmentStream = attachment as? TSAttachmentStream else { return false }
-        guard let attachmentId = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment missing unique ID.")
-            configure(forError: .invalid)
-            return false
-        }
         guard !attachmentStream.isUploaded else { return false }
-        let view: UIView
-        if isOnionRouted { // Loki: Due to the way onion routing works we can't get upload progress for those attachments
-            let activityIndicatorView = UIActivityIndicatorView(style: .white)
-            activityIndicatorView.isHidden = false
-            activityIndicatorView.startAnimating()
-            view = activityIndicatorView
-        } else {
-            view = MediaUploadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
-        }
-        addSubview(view)
-        view.autoPinEdgesToSuperviewEdges()
+        let loader = MediaLoaderView()
+        addSubview(loader)
+        loader.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: self)
         return true
     }
 
@@ -215,7 +178,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
-        animatedImageView.backgroundColor = Theme.offBackgroundColor
+        animatedImageView.backgroundColor = Colors.unimportant
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(animatedImageView)
@@ -274,7 +237,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.offBackgroundColor
+        stillImageView.backgroundColor = Colors.unimportant
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
@@ -329,7 +292,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.offBackgroundColor
+        stillImageView.backgroundColor = Colors.unimportant
 
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -408,7 +371,7 @@ public class ConversationMediaView: UIView {
             return
         }
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
+        iconView.tintColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         addSubview(iconView)
         iconView.autoCenterInSuperview()
     }
@@ -457,7 +420,7 @@ public class ConversationMediaView: UIView {
         Logger.verbose("media cache miss")
 
         let threadSafeLoadState = self.threadSafeLoadState
-        ConversationMediaView.loadQueue.async {
+        MediaView.loadQueue.async {
             guard threadSafeLoadState.get() == .loading else {
                 Logger.verbose("Skipping obsolete load.")
                 return

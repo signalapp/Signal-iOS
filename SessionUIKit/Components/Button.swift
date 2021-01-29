@@ -68,7 +68,7 @@ public final class Button : UIButton {
         layer.cornerRadius = height / 2
         backgroundColor = fillColor
         layer.borderColor = borderColor.cgColor
-        layer.borderWidth = Values.borderThickness
+        layer.borderWidth = 1
         let fontSize = (size == .small) ? Values.smallFontSize : Values.mediumFontSize
         titleLabel!.font = .boldSystemFont(ofSize: fontSize)
         setTitleColor(textColor, for: UIControl.State.normal)

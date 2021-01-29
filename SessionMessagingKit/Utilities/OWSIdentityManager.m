@@ -17,7 +17,6 @@
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSMessage.h"
-#import <SessionProtocolKit/SessionProtocolKit.h>
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <Curve25519Kit/Curve25519.h>

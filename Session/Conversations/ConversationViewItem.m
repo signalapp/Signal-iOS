@@ -20,6 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const SNAudioDidFinishPlayingNotification = @"SNAudioDidFinishPlayingNotification";
+
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     switch (cellType) {
@@ -111,13 +113,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @implementation ConversationInteractionViewItem
 
 @synthesize shouldShowDate = _shouldShowDate;
-@synthesize shouldShowSenderAvatar = _shouldShowSenderAvatar;
+@synthesize shouldShowSenderProfilePicture = _shouldShowSenderProfilePicture;
 @synthesize unreadIndicator = _unreadIndicator;
 @synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
 @synthesize isGroupThread = _isGroupThread;
+@synthesize isOnlyMessageInCluster = _isOnlyMessageInCluster;
 @synthesize isLastInCluster = _isLastInCluster;
+@synthesize wasPreviousItemInfoMessage = _wasPreviousItemInfoMessage;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
 @synthesize shouldHideFooter = _shouldHideFooter;
@@ -228,13 +232,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderAvatar
+- (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderProfilePicture
 {
-    if (_shouldShowSenderAvatar == shouldShowSenderAvatar) {
+    if (_shouldShowSenderProfilePicture == shouldShowSenderProfilePicture) {
         return;
     }
 
-    _shouldShowSenderAvatar = shouldShowSenderAvatar;
+    _shouldShowSenderProfilePicture = shouldShowSenderProfilePicture;
 
     [self clearCachedLayoutState];
 }
@@ -446,7 +450,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.audioProgressSeconds = progress;
 
-    [self.lastAudioMessageView setProgress:progress / duration];
+    [self.lastAudioMessageView setProgress:(int)(progress)];
 }
 
 - (void)showInvalidAudioFileAlert
@@ -456,6 +460,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [OWSAlerts
         showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
                                       @"Message for the alert indicating that an audio file is invalid.")];
+}
+
+- (void)audioPlayerDidFinishPlaying:(OWSAudioPlayer *)player successfully:(BOOL)flag
+{
+    if (!flag) { return; }
+    [NSNotificationCenter.defaultCenter postNotificationName:SNAudioDidFinishPlayingNotification object:nil];
 }
 
 #pragma mark - Displayable Text

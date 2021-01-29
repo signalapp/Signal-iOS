@@ -31,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing
 }
 
+- (void)audioPlayerDidFinishPlaying:(OWSAudioPlayer *)player successfully:(BOOL)flag
+{
+    // Do nothing
+}
+
 @end
 
 #pragma mark -
@@ -102,9 +107,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (BOOL)isPlaying
+{
+    return (self.delegate.audioPlaybackState == AudioPlaybackState_Playing);
+}
+
 - (void)play
 {
-
     // get current audio activity
     [self playWithAudioActivity:self.audioActivity];
 }
@@ -120,6 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.audioPlayer) {
         NSError *error;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
+        self.audioPlayer.enableRate = YES;
         if (error) {
             [self stop];
 
@@ -153,6 +163,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayer setCurrentTime:currentTime];
 }
 
+- (float)getPlaybackRate
+{
+    return self.audioPlayer.rate;
+}
+
+- (void)setPlaybackRate:(float)rate
+{
+    [self.audioPlayer setRate:rate];
+}
+
 - (void)pause
 {
     self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
@@ -182,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)togglePlayState
 {
-    if (self.delegate.audioPlaybackState == AudioPlaybackState_Playing) {
+    if (self.isPlaying) {
         [self pause];
     } else {
         [self playWithAudioActivity:self.audioActivity];
@@ -199,6 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
     [self stop];
+    [self.delegate audioPlayerDidFinishPlaying:self successfully:flag];
 }
 
 @end
