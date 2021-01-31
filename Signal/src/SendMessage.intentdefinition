@@ -27,10 +27,8 @@
 			<string>hnvUAa</string>
 			<key>INIntentInput</key>
 			<string>message</string>
-			<key>INIntentKeyParameter</key>
-			<string>recipient</string>
 			<key>INIntentLastParameterTag</key>
-			<integer>3</integer>
+			<integer>6</integer>
 			<key>INIntentManagedParameterCombinations</key>
 			<dict>
 				<key>recipient,message</key>
@@ -46,7 +44,7 @@
 				</dict>
 			</dict>
 			<key>INIntentName</key>
-			<string>Intent</string>
+			<string>SendMessage</string>
 			<key>INIntentParameterCombinations</key>
 			<dict>
 				<key>recipient,message</key>
@@ -67,53 +65,11 @@
 					<key>INIntentParameterConfigurable</key>
 					<true/>
 					<key>INIntentParameterDisplayName</key>
-					<string>Recipient</string>
-					<key>INIntentParameterDisplayNameID</key>
-					<string>qEjt8p</string>
-					<key>INIntentParameterDisplayPriority</key>
-					<integer>1</integer>
-					<key>INIntentParameterMetadata</key>
-					<dict>
-						<key>INIntentParameterMetadataType</key>
-						<string>Contact</string>
-					</dict>
-					<key>INIntentParameterName</key>
-					<string>recipient</string>
-					<key>INIntentParameterPromptDialogs</key>
-					<array>
-						<dict>
-							<key>INIntentParameterPromptDialogCustom</key>
-							<true/>
-							<key>INIntentParameterPromptDialogType</key>
-							<string>Configuration</string>
-						</dict>
-						<dict>
-							<key>INIntentParameterPromptDialogCustom</key>
-							<true/>
-							<key>INIntentParameterPromptDialogFormatString</key>
-							<string>Where to send the message?</string>
-							<key>INIntentParameterPromptDialogFormatStringID</key>
-							<string>bOj4Uz</string>
-							<key>INIntentParameterPromptDialogType</key>
-							<string>Primary</string>
-						</dict>
-					</array>
-					<key>INIntentParameterSupportsResolution</key>
-					<true/>
-					<key>INIntentParameterTag</key>
-					<integer>3</integer>
-					<key>INIntentParameterType</key>
-					<string>Person</string>
-				</dict>
-				<dict>
-					<key>INIntentParameterConfigurable</key>
-					<true/>
-					<key>INIntentParameterDisplayName</key>
 					<string>Message</string>
 					<key>INIntentParameterDisplayNameID</key>
 					<string>kj79D0</string>
 					<key>INIntentParameterDisplayPriority</key>
-					<integer>2</integer>
+					<integer>1</integer>
 					<key>INIntentParameterMetadata</key>
 					<dict>
 						<key>INIntentParameterMetadataCapitalization</key>
@@ -148,6 +104,50 @@
 					<true/>
 					<key>INIntentParameterTag</key>
 					<integer>2</integer>
+					<key>INIntentParameterType</key>
+					<string>String</string>
+				</dict>
+				<dict>
+					<key>INIntentParameterConfigurable</key>
+					<true/>
+					<key>INIntentParameterDisplayName</key>
+					<string>Recipient Phone Number</string>
+					<key>INIntentParameterDisplayNameID</key>
+					<string>qEjt8p</string>
+					<key>INIntentParameterDisplayPriority</key>
+					<integer>2</integer>
+					<key>INIntentParameterMetadata</key>
+					<dict>
+						<key>INIntentParameterMetadataCapitalization</key>
+						<string>Sentences</string>
+						<key>INIntentParameterMetadataDefaultValueID</key>
+						<string>t6y1rx</string>
+					</dict>
+					<key>INIntentParameterName</key>
+					<string>recipient</string>
+					<key>INIntentParameterPromptDialogs</key>
+					<array>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Configuration</string>
+						</dict>
+						<dict>
+							<key>INIntentParameterPromptDialogCustom</key>
+							<true/>
+							<key>INIntentParameterPromptDialogFormatString</key>
+							<string>Where to send the message?</string>
+							<key>INIntentParameterPromptDialogFormatStringID</key>
+							<string>bOj4Uz</string>
+							<key>INIntentParameterPromptDialogType</key>
+							<string>Primary</string>
+						</dict>
+					</array>
+					<key>INIntentParameterSupportsResolution</key>
+					<true/>
+					<key>INIntentParameterTag</key>
+					<integer>6</integer>
 					<key>INIntentParameterType</key>
 					<string>String</string>
 				</dict>

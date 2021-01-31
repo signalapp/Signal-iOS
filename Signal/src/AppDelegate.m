@@ -43,6 +43,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
+#import <Signal-Swift.h>
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 
@@ -891,6 +892,30 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
         return [self tryToOpenUrl:userActivity.webpageURL];
+    } else if ([userActivity.activityType isEqualToString:@"SendMessageIntent"]) {
+        OWSLogWarn(@"Executing intent %@", userActivity.activityType);
+
+        SendMessageIntent *intent = (SendMessageIntent *) userActivity.interaction.intent;
+
+        NSString *text = intent.message;
+        MessageBody *testMessageBody = [[MessageBody alloc] initWithText:text
+                                                                  ranges:MessageBodyRanges.empty];
+        NSString *number = [intent.recipient stringByReplacingOccurrencesOfString:@" " withString:@""];
+        OWSLogInfo(@"SendMessageIntent parameters: number %@ text %@", number, text);
+        
+
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            TSThread *thread = [AnyContactThreadFinder.alloc contactThreadForPhoneNumber:number transaction:transaction];
+            OWSLogInfo(@"Sending message %@ to recipient %@", text, thread.recipientAddresses[0]);
+            TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithBody:testMessageBody
+                                                                     thread:thread
+                                                           quotedReplyModel:Nil
+                                                           linkPreviewDraft:Nil
+                                                                transaction:transaction];
+        }];
+
+        // Send message in background
+        return NO;
     } else {
         OWSLogWarn(@"userActivity: %@, but not yet supported.", userActivity.activityType);
     }
