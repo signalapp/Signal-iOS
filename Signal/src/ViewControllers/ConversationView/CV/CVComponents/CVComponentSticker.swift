@@ -43,11 +43,14 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         }
 
         let containerView = componentView.containerView
+        containerView.apply(config: containerViewConfig)
+
+        guard let stickerSize = cellMeasurement.value(key: stickerMeasurementKey) else {
+            owsFailDebug("Missing stickerMeasurement.")
+            return
+        }
 
         if let attachmentStream = self.attachmentStream {
-            containerView.backgroundColor = nil
-            containerView.layer.cornerRadius = 0
-
             let cacheKey = attachmentStream.uniqueId
             let isAnimated = attachmentStream.shouldBeRenderedByYY
             let reusableMediaView: ReusableMediaView
@@ -61,41 +64,50 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
             reusableMediaView.owner = componentView
             componentView.reusableMediaView = reusableMediaView
-            reusableMediaView.mediaView.accessibilityLabel = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                                               comment: "Accessibility label for stickers.")
-            containerView.addSubview(reusableMediaView.mediaView)
-            reusableMediaView.mediaView.autoPinEdgesToSuperviewEdges()
+            let mediaView = reusableMediaView.mediaView
+            containerView.addArrangedSubview(mediaView)
+            componentView.layoutConstraints.append(contentsOf: mediaView.autoSetDimensions(to: .square(stickerSize)))
 
             if isOutgoing, !attachmentStream.isUploaded, !isFromLinkedDevice {
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
                                                             conversationStyle: conversationStyle)
                 containerView.addSubview(progressView)
-                progressView.autoCenterInSuperview()
+                progressView.autoAlignAxis(.horizontal, toSameAxisOf: mediaView)
+                progressView.autoAlignAxis(.vertical, toSameAxisOf: mediaView)
             }
         } else if let attachmentPointer = self.attachmentPointer {
-            containerView.backgroundColor = Theme.secondaryBackgroundColor
-            containerView.layer.cornerRadius = 18
+            let placeholderView = UIView()
+            placeholderView.backgroundColor = Theme.secondaryBackgroundColor
+            placeholderView.layer.cornerRadius = 18
+            containerView.addArrangedSubview(placeholderView)
+            componentView.layoutConstraints.append(contentsOf: placeholderView.autoSetDimensions(to: .square(stickerSize)))
 
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withCircle,
                                                         conversationStyle: conversationStyle)
-            containerView.addSubview(progressView)
+            placeholderView.addSubview(progressView)
             progressView.autoCenterInSuperview()
         } else {
             owsFailDebug("Invalid attachment.")
             return
         }
-
-        let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
-                                                         comment: "Accessibility label for stickers.")
-        componentView.rootView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
     }
+
+    private var containerViewConfig: CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: isOutgoing ? .trailing : .leading,
+                          spacing: 0,
+                          layoutMargins: .zero)
+    }
+
+    private let stickerMeasurementKey = "stickerMeasurementKey"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let size = min(maxWidth, Self.stickerSize)
+        let size: CGFloat = ceil(min(maxWidth, Self.stickerSize))
+        measurementBuilder.setValue(key: stickerMeasurementKey, value: size)
         return CGSize(width: size, height: size).ceil
     }
 
@@ -122,7 +134,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     @objc
     public class CVComponentViewSticker: NSObject, CVComponentView {
 
-        fileprivate let containerView = UIView()
+        fileprivate let containerView = OWSStackView(name: "sticker.container")
 
         fileprivate var reusableMediaView: ReusableMediaView?
 
@@ -131,6 +143,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         public var rootView: UIView {
             containerView
         }
+
+        fileprivate var layoutConstraints = [NSLayoutConstraint]()
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
@@ -147,7 +161,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         }
 
         public func reset() {
-            containerView.removeAllSubviews()
+            containerView.reset()
+
+            NSLayoutConstraint.deactivate(layoutConstraints)
+            layoutConstraints = []
 
             if let reusableMediaView = reusableMediaView,
                reusableMediaView.owner == self {
@@ -155,5 +172,15 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 reusableMediaView.owner = nil
             }
         }
+    }
+}
+
+// MARK: -
+
+extension CVComponentSticker: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        // NOTE: We could include the strings used for sticker suggestion.
+        NSLocalizedString("ACCESSIBILITY_LABEL_STICKER",
+                          comment: "Accessibility label for stickers.")
     }
 }

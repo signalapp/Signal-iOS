@@ -6,7 +6,6 @@
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 

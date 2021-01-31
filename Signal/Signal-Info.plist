@@ -7,7 +7,7 @@
 		<key>OSXVersion</key>
 		<string>11.1</string>
 		<key>WebRTCCommit</key>
-		<string>d9faa1be9ef6996232977b0ee713efa024c0df9d Production build of v2.8.8</string>
+		<string>d0bf5346f14a92d56387f90a3931774d0a8a5574 Production build of v2.9.0</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -28,7 +28,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>5.3.0</string>
+	<string>5.4.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -45,7 +45,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5.3.0.16</string>
+	<string>5.4.0.6</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>

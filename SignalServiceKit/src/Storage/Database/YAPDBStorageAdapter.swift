@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,10 +42,6 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
         storage.dbReadWriteConnection.readWrite { yapTransaction in
             block(yapTransaction)
         }
-    }
-
-    func newDatabaseQueue() -> YAPDBDatabaseQueue {
-        return YAPDBDatabaseQueue(databaseConnection: storage.newDatabaseConnection())
     }
 }
 

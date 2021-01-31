@@ -25,7 +25,6 @@
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
-#import "SSKSessionStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -42,11 +41,6 @@
 #import "TSSocketManager.h"
 #import "TSThread.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/CipherMessage.h>
-#import <AxolotlKit/PreKeyBundle.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <AxolotlKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -299,6 +293,14 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSOperationQueue *> *sendingQueueMap;
 
+@end
+
+@interface MessageSender (ImplementedInSwift)
+- (nullable NSDictionary *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                 deviceId:(int)deviceId
+                                                plainText:(NSData *)plainText
+                                              transaction:(SDSAnyWriteTransaction *)transaction
+                                                    error:(NSError **)error;
 @end
 
 #pragma mark -
@@ -926,7 +928,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
             [error setIsFatal:YES];
             *errorHandle = error;
             return nil;
-        } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+        } else if ([MessageSender isUntrustedIdentityError:exception.userInfo[NSUnderlyingErrorKey]]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
@@ -1329,28 +1331,23 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    __block NSException *encryptionException;
+    __block NSError *encryptionError;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *deviceId in deviceIds) {
-            @try {
-                NSDictionary *_Nullable messageDict = [self throws_encryptedMessageForMessageSend:messageSend
-                                                                                         deviceId:deviceId
-                                                                                        plainText:plainText
-                                                                                      transaction:transaction];
-                if (messageDict) {
-                    [messagesArray addObject:messageDict];
-                } else {
-                    OWSRaiseException(InvalidMessageException, @"Failed to encrypt message");
-                }
-            } @catch (NSException *exception) {
-                encryptionException = exception;
+            NSDictionary *_Nullable messageDict = [self encryptedMessageForMessageSend:messageSend
+                                                                              deviceId:deviceId.intValue
+                                                                             plainText:plainText
+                                                                           transaction:transaction
+                                                                                 error:&encryptionError];
+            if (!messageDict) {
                 return;
             }
+
+            [messagesArray addObject:messageDict];
         }
     });
-    if (encryptionException) {
-        OWSLogInfo(@"Exception during encryption: %@", encryptionException);
-        @throw encryptionException;
+    if (encryptionError) {
+        OWSRaiseException(InvalidMessageException, @"Failed to encrypt message: %@", encryptionError);
     }
     return [messagesArray copy];
 }
@@ -1369,9 +1366,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     __block BOOL hasSession;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasSession = [self.sessionStore containsSessionForAccountId:accountId
-                                                           deviceId:[deviceId intValue]
-                                                        transaction:transaction];
+        hasSession = [self.sessionStore containsActiveSessionForAccountId:accountId
+                                                                 deviceId:[deviceId intValue]
+                                                              transaction:transaction];
     }];
     if (hasSession) {
         return;
@@ -1399,17 +1396,17 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderInvalidDeviceException
                                                     reason:@"Device not registered"
-                                                  userInfo:nil];
+                                                  userInfo:@{ NSUnderlyingErrorKey : error }];
             } else if ([MessageSender isPrekeyRateLimitError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
-                                                  userInfo:nil];
+                                                  userInfo:@{ NSUnderlyingErrorKey : error }];
             } else if ([MessageSender isUntrustedIdentityError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException
                                                     reason:@"Identity key is not valid"
-                                                  userInfo:@ {}];
+                                                  userInfo:@{ NSUnderlyingErrorKey : error }];
             } else if (IsNetworkConnectivityFailure(error)) {
                 OWSLogWarn(@"Network failure in prekey request.");
             } else {
@@ -1427,148 +1424,23 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         NSString *missingPrekeyBundleException = @"missingPrekeyBundleException";
         OWSRaiseException(
             missingPrekeyBundleException, @"Can't get a prekey bundle from the server with required information");
-    } else {
-        [self throws_createSessionForPreKeyBundle:bundle
-                                        accountId:accountId
-                                 recipientAddress:recipientAddress
-                                         deviceId:deviceId];
     }
-}
 
-- (void)throws_createSessionForPreKeyBundle:(PreKeyBundle *)bundle
-                                  accountId:(NSString *)accountId
-                           recipientAddress:(SignalServiceAddress *)recipientAddress
-                                   deviceId:(NSNumber *)deviceId
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-
-    SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:self.sessionStore
-                                                               preKeyStore:self.preKeyStore
-                                                         signedPreKeyStore:self.signedPreKeyStore
-                                                          identityKeyStore:self.identityManager
-                                                               recipientId:accountId
-                                                                  deviceId:[deviceId intValue]];
-    __block NSException *_Nullable exception;
+    __block BOOL success;
+    __block NSError *error;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        if ([self.sessionStore containsSessionForAccountId:accountId
-                                                  deviceId:[deviceId intValue]
-                                               transaction:transaction]) {
-            OWSLogWarn(@"Session already exists.");
-            return;
-        }
-
-        @try {
-            [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
-
-            if (![self.sessionStore containsSessionForAccountId:accountId
-                                                       deviceId:[deviceId intValue]
-                                                    transaction:transaction]) {
-                OWSFailDebug(@"Session does not exist.");
-            }
-        } @catch (NSException *caughtException) {
-            exception = caughtException;
-
-            if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-                [MessageSender handleUntrustedIdentityKeyErrorWithAccountId:accountId
-                                                           recipientAddress:recipientAddress
-                                                               preKeyBundle:bundle
-                                                                transaction:transaction];
-            }
-        }
+        success = [[self class] createSessionForPreKeyBundle:bundle
+                                                   accountId:accountId
+                                            recipientAddress:recipientAddress
+                                                    deviceId:deviceId
+                                                 transaction:transaction
+                                                       error:&error];
     });
-    if (exception) {
-        @throw exception;
+    if (!success) {
+        // NSUnderlyingErrorKey isn't a normal NSException user info key, but it's appropriate here.
+        OWSRaiseExceptionWithUserInfo(
+            @"sessionCreationException", @{ NSUnderlyingErrorKey : error }, @"Failed to create session: %@", error);
     }
-}
-
-- (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                                        deviceId:(NSNumber *)deviceId
-                                                       plainText:(NSData *)plainText
-                                                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(messageSend);
-    OWSAssertDebug(deviceId);
-    OWSAssertDebug(plainText);
-    OWSAssertDebug(transaction);
-
-    TSOutgoingMessage *message = messageSend.message;
-    SignalServiceAddress *recipientAddress = messageSend.address;
-    OWSAssertDebug(recipientAddress.isValid);
-
-    NSString *accountId = [[OWSAccountIdFinder new] ensureAccountIdForAddress:recipientAddress transaction:transaction];
-
-    if (![self.sessionStore containsSessionForAccountId:accountId
-                                               deviceId:[deviceId intValue]
-                                            transaction:transaction]) {
-        NSString *missingSessionException = @"missingSessionException";
-        OWSRaiseException(missingSessionException,
-            @"Unexpectedly missing session for recipientAddress: %@, device: %@",
-            recipientAddress,
-            deviceId);
-    }
-
-    SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.sessionStore
-                                                            preKeyStore:self.preKeyStore
-                                                      signedPreKeyStore:self.signedPreKeyStore
-                                                       identityKeyStore:self.identityManager
-                                                            recipientId:accountId
-                                                               deviceId:[deviceId intValue]];
-
-    NSData *_Nullable serializedMessage;
-    TSWhisperMessageType messageType;
-    OWSUDSendingAccess *_Nullable udSendingAcess = messageSend.udSendingAccess;
-    if (udSendingAcess != nil) {
-        NSError *error;
-        SMKSecretSessionCipher *_Nullable secretCipher =
-            [[SMKSecretSessionCipher alloc] initWithSessionStore:self.sessionStore
-                                                     preKeyStore:self.preKeyStore
-                                               signedPreKeyStore:self.signedPreKeyStore
-                                                   identityStore:self.identityManager
-                                                           error:&error];
-        if (error || !secretCipher) {
-            OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
-        }
-        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:accountId
-                                                                             deviceId:deviceId.intValue
-                                                                      paddedPlaintext:[plainText paddedMessageBody]
-                                                                    senderCertificate:udSendingAcess.senderCertificate
-                                                                      protocolContext:transaction
-                                                                                error:&error];
-        SCKRaiseIfExceptionWrapperError(error);
-        if (!serializedMessage || error) {
-            OWSFailDebug(@"error while UD encrypting message: %@", error);
-            return nil;
-        }
-        messageType = TSUnidentifiedSenderMessageType;
-    } else {
-        // This may throw an exception.
-        id<CipherMessage> encryptedMessage = [cipher throws_encryptMessage:[plainText paddedMessageBody]
-                                                           protocolContext:transaction];
-        serializedMessage = encryptedMessage.serialized;
-        messageType = [self messageTypeForCipherMessage:encryptedMessage];
-    }
-
-    BOOL isSilent = message.isSilent;
-    BOOL isOnline = message.isOnline;
-    OWSMessageServiceParams *messageParams =
-        [[OWSMessageServiceParams alloc] initWithType:messageType
-                                              address:recipientAddress
-                                               device:[deviceId intValue]
-                                              content:serializedMessage
-                                             isSilent:isSilent
-                                             isOnline:isOnline
-                                       registrationId:[cipher throws_remoteRegistrationId:transaction]];
-
-    NSError *error;
-    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
-
-    if (error) {
-        OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
-        return nil;
-    }
-
-    return jsonDict;
 }
 
 - (TSWhisperMessageType)messageTypeForCipherMessage:(id<CipherMessage>)cipherMessage

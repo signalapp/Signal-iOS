@@ -19,7 +19,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKPreKeyStore.h"
-#import "SSKSessionStore.h"
 #import "SSKSignedPreKeyStore.h"
 #import "StorageCoordinator.h"
 #import "TSAccountManager.h"
@@ -46,8 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)activate
 {
-    [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
-
     MockSSKEnvironment *instance = [[self alloc] init];
     [self setShared:instance];
     [instance configure];

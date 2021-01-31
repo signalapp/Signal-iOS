@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -18,6 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UInt32 sourceDevice;
 @property (nonatomic, readonly) BOOL isUDMessage;
 
+// For Swift implementation of OWSMessageDecrypter.
++ (OWSMessageDecryptResult *)resultWithEnvelopeData:(NSData *)envelopeData
+                                      plaintextData:(nullable NSData *)plaintextData
+                                      sourceAddress:(SignalServiceAddress *)sourceAddress
+                                       sourceDevice:(UInt32)sourceDevice
+                                        isUDMessage:(BOOL)isUDMessage;
 @end
 
 #pragma mark -

@@ -6,6 +6,7 @@ import Foundation
 import PromiseKit
 import SignalMetadataKit
 import SignalCoreKit
+import SignalClient
 
 public enum OWSUDError: Error {
     case assertionError(description: String)
@@ -67,9 +68,9 @@ public class OWSUDAccess: NSObject {
 
 @objc
 public class SenderCertificates: NSObject {
-    let defaultCert: SMKSenderCertificate
-    let uuidOnlyCert: SMKSenderCertificate
-    init(defaultCert: SMKSenderCertificate, uuidOnlyCert: SMKSenderCertificate) {
+    let defaultCert: SenderCertificate
+    let uuidOnlyCert: SenderCertificate
+    init(defaultCert: SenderCertificate, uuidOnlyCert: SenderCertificate) {
         self.defaultCert = defaultCert
         self.uuidOnlyCert = uuidOnlyCert
     }
@@ -81,10 +82,9 @@ public class OWSUDSendingAccess: NSObject {
     @objc
     public let udAccess: OWSUDAccess
 
-    @objc
-    public let senderCertificate: SMKSenderCertificate
+    public let senderCertificate: SenderCertificate
 
-    init(udAccess: OWSUDAccess, senderCertificate: SMKSenderCertificate) {
+    init(udAccess: OWSUDAccess, senderCertificate: SenderCertificate) {
         self.udAccess = udAccess
         self.senderCertificate = senderCertificate
     }
@@ -494,7 +494,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
 
-        let senderCertificate: SMKSenderCertificate
+        let senderCertificate: SenderCertificate
         switch phoneNumberSharingMode {
         case .everybody:
             senderCertificate = senderCertificates.defaultCert
@@ -521,7 +521,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
     #endif
 
-    private func senderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SMKSenderCertificate? {
+    private func senderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SenderCertificate? {
         var certificateDateValue: Date?
         var certificateDataValue: Data?
         databaseStorage.read { transaction in
@@ -544,7 +544,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         do {
-            let certificate = try SMKSenderCertificate(serializedData: certificateData)
+            let certificate = try SenderCertificate(certificateData)
 
             guard isValidCertificate(certificate) else {
                 Logger.warn("Current sender certificate is not valid.")
@@ -618,7 +618,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    public func ensureSenderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
+    public func ensureSenderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificate> {
         // If there is a valid cached sender certificate, use that.
         if let certificate = senderCertificate(uuidOnly: uuidOnly, certificateExpirationPolicy: certificateExpirationPolicy) {
             return Promise.value(certificate)
@@ -626,45 +626,48 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         return firstly {
             requestSenderCertificate(uuidOnly: uuidOnly)
-        }.map { (certificate: SMKSenderCertificate) in
-            self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: certificate.serializedData)
+        }.map { (certificate: SenderCertificate) in
+            self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: Data(certificate.serialize()))
             return certificate
         }
     }
 
-    private func requestSenderCertificate(uuidOnly: Bool) -> Promise<SMKSenderCertificate> {
+    private func requestSenderCertificate(uuidOnly: Bool) -> Promise<SenderCertificate> {
         return firstly {
             SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: uuidOnly)
-        }.map { certificateData -> SMKSenderCertificate in
-            let certificate = try SMKSenderCertificate(serializedData: certificateData)
+        }.map { certificateData -> SenderCertificate in
+            let certificate = try SenderCertificate(certificateData)
 
             guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
             return certificate
-        }.recover { error -> Promise<SMKSenderCertificate> in
+        }.recover { error -> Promise<SenderCertificate> in
             throw error
         }
     }
 
-    private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
-        guard certificate.senderDeviceId == tsAccountManager.storedDeviceId() else {
+    private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {
+        let sender = certificate.sender
+        guard sender.deviceId == tsAccountManager.storedDeviceId() else {
             Logger.warn("Sender certificate has incorrect device ID")
             return false
         }
 
-        guard certificate.senderAddress.e164 == nil || certificate.senderAddress.e164 == tsAccountManager.localNumber else {
+        guard sender.e164 == nil || sender.e164 == tsAccountManager.localNumber else {
             Logger.warn("Sender certificate has incorrect phone number")
             return false
         }
 
-        guard certificate.senderAddress.uuid == nil || certificate.senderAddress.uuid == tsAccountManager.localUuid else {
+        owsAssert(tsAccountManager.localUuid != nil)
+        // Note that the certificate's UUID string may not be the same form as what UUID.uuidString produces.
+        guard sender.uuidString == nil || UUID(uuidString: sender.uuidString!) == tsAccountManager.localUuid else {
             Logger.warn("Sender certificate has incorrect UUID")
             return false
         }
 
-        guard certificate.senderAddress.uuid != nil || certificate.senderAddress.e164 != nil else {
+        guard sender.uuidString != nil || sender.e164 != nil else {
             Logger.warn("Sender certificate does not have a valid address.")
             return false
         }

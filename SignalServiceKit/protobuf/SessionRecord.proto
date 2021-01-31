@@ -1,0 +1,62 @@
+//
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//
+
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package SessionRecordProtos;
+
+message SessionStructure {
+  message Chain {
+    optional bytes senderRatchetKey = 1;
+    optional bytes senderRatchetKeyPrivate = 2;
+
+    message ChainKey {
+      optional uint32 index = 1;
+      optional bytes  key   = 2;
+    }
+
+    optional ChainKey chainKey = 3;
+
+    message MessageKey {
+      optional uint32 index     = 1;
+      optional bytes  cipherKey = 2;
+      optional bytes  macKey    = 3;
+      optional bytes  iv        = 4;
+    }
+
+    repeated MessageKey messageKeys = 4;
+  }
+
+  message PendingPreKey {
+    optional uint32 preKeyId       = 1;
+    optional int32  signedPreKeyId = 3;
+    optional bytes  baseKey        = 2;
+  }
+
+  optional uint32 sessionVersion      = 1;
+  optional bytes localIdentityPublic  = 2;
+  optional bytes remoteIdentityPublic = 3;
+
+  optional bytes rootKey              = 4;
+  optional uint32 previousCounter     = 5;
+
+  optional Chain senderChain          = 6;
+  // The order is significant; keys at the end are "older" and will get trimmed.
+  repeated Chain receiverChains       = 7;
+
+  optional PendingPreKey pendingPreKey = 9;
+
+  optional uint32 remoteRegistrationId = 10;
+  optional uint32 localRegistrationId  = 11;
+
+  optional bool needsRefresh = 12;
+  optional bytes aliceBaseKey = 13;
+}
+
+message RecordStructure {
+  optional SessionStructure currentSession   = 1;
+  // The order is significant; sessions at the end are "older" and will get trimmed.
+  repeated SessionStructure previousSessions = 2;
+}

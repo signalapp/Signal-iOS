@@ -13,17 +13,20 @@
 /* Accessibility label for contact. */
 "ACCESSIBILITY_LABEL_CONTACT" = "連絡先";
 
+/* Accessibility label for contact. Embeds: {{ the contact name }}. */
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "メディア";
-
-/* Accessibility label for message. */
-"ACCESSIBILITY_LABEL_MESSAGE" = "メッセージ";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "あなた";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "ステッカー";
+
+/* Accessibility label for a voice memo. */
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal通話";
@@ -981,6 +984,12 @@
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "連絡先に追加";
+
+/* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
+
+/* Format for sender info for outgoing messages. */
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "You sent:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "すべて削除する";
@@ -3686,7 +3695,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "新しいことをしています";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "この連絡先について";
+"PROFILE_BIO_VIEW_TITLE" = "自己紹介";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "自己紹介 (%@)";
@@ -3704,7 +3713,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "プロフィール写真を設定";
 
 /* Header for the 'bio' section of the profile view. */
-"PROFILE_VIEW_BIO_SECTION_HEADER" = "この連絡先について";
+"PROFILE_VIEW_BIO_SECTION_HEADER" = "自己紹介";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "写真を消去";
@@ -5186,16 +5195,16 @@
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "写真をぼかす";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ピンチして拡大、ドラッグして調整します。";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ピンチで拡大、ドラッグで調整します。";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "スワイプしてさらに壁紙をプレビュー";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "スワイプすると別の壁紙をプレビューできます。";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "すべてのチャットに壁紙を設定しましょう。";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "すべてのチャットの壁紙を設定します。";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ の壁紙を設定しましょう。";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ の壁紙を設定します。";
 
 /* The text for the set button on wallpaper preview view. */
 "WALLPAPER_PREVIEW_SET_BUTTON" = "設定する";

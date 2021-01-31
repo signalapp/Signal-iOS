@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,10 +36,6 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         let hostView = componentView.hostView
         hostView.addSubview(contactShareView)
         contactShareView.autoPinEdgesToSuperviewEdges()
-
-        let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_CONTACT",
-                                                         comment: "Accessibility label for contact.")
-        contactShareView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -80,6 +76,22 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
 
         public func reset() {
             hostView.removeAllSubviews()
+        }
+    }
+}
+
+// MARK: -
+
+extension CVComponentContactShare: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        if let contactName = contactShare.displayName.filterForDisplay,
+           !contactName.isEmpty {
+            let format = NSLocalizedString("ACCESSIBILITY_LABEL_CONTACT_FORMAT",
+                                           comment: "Accessibility label for contact. Embeds: {{ the contact name }}.")
+            return String(format: format, contactName)
+        } else {
+            return NSLocalizedString("ACCESSIBILITY_LABEL_CONTACT",
+                                     comment: "Accessibility label for contact.")
         }
     }
 }

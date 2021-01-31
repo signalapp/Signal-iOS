@@ -15,7 +15,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 
 @implementation OWSMessageHandler
 
-- (NSString *)descriptionForEnvelopeType:(SSKProtoEnvelope *)envelope
++ (NSString *)descriptionForEnvelopeType:(SSKProtoEnvelope *)envelope
 {
     OWSAssertDebug(envelope != nil);
 
@@ -47,7 +47,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     }
 }
 
-- (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope
++ (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope
 {
     OWSAssertDebug(envelope != nil);
 
@@ -57,6 +57,12 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
                      envelope.timestamp,
                      (unsigned long)envelope.content.length];
 }
+
+- (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope
+{
+    return [[self class] descriptionForEnvelope:envelope];
+}
+
 
 /**
  * We don't want to just log `content.description` because we'd potentially log message bodies for dataMesssages and

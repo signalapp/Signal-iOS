@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -83,7 +83,7 @@ public extension TSAccountManager {
     @objc
     func localAccountId(transaction: SDSAnyReadTransaction) -> AccountId? {
         guard let localAddress = localAddress else { return nil }
-        return OWSAccountIdFinder().accountId(forAddress: localAddress, transaction: transaction)
+        return OWSAccountIdFinder.accountId(forAddress: localAddress, transaction: transaction)
     }
 
     // MARK: - Account Attributes & Capabilities

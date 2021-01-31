@@ -77,6 +77,15 @@ public protocol CVRootComponent: CVComponent {
 
 // MARK: -
 
+public protocol CVAccessibilityComponent: CVComponent {
+    var accessibilityDescription: String { get }
+
+    // TODO: We should have a getter for "accessiblity actions",
+    //       presumably as [CVMessageAction].
+}
+
+// MARK: -
+
 // CVCellMeasurement captures the measurement state from the load.
 // This lets us pin cell views to their measured sizes.  This is
 // necessary because some UIViews (like UIImageView) set up
@@ -229,23 +238,6 @@ extension CVComponentBase: CVNode {
     }
 
     var isTextOnlyMessage: Bool { messageCellType == .textOnlyMessage }
-
-    func accessibilityLabel(description descriptionParam: String?) -> String {
-        let description = { () -> String in
-            if let description = descriptionParam,
-               !description.isEmpty {
-                return description
-            }
-            return NSLocalizedString("ACCESSIBILITY_LABEL_MESSAGE", comment: "Accessibility label for message.")
-        }()
-        if let authorName = itemViewState.accessibilityAuthorName,
-           !authorName.isEmpty {
-            return "\(authorName) \(description)"
-        } else {
-            owsFailDebug("Missing sender name.")
-            return description
-        }
-    }
 
     // This var should only be accessed for messages.
     var bubbleColorForMessage: UIColor {

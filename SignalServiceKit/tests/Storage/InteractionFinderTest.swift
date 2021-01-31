@@ -42,9 +42,11 @@ class InteractionFinderTest: SSKBaseTestSwift {
         let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens", attachmentId: attachment1.uniqueId)
         let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes", attachmentId: attachment2.uniqueId)
         let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word", attachmentId: nil)
-        let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(in: contactThread1, address: address1)
-        let errorMessage2 = TSErrorMessage(thread: contactThread1,
-                                           failedMessageType: .groupCreationFailed)
+        let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(in: contactThread1,
+                                                                     address: address1,
+                                                                     wasIdentityVerified: false)
+        let errorMessage2 = TSErrorMessageBuilder(thread: contactThread1,
+                                                  errorType: .groupCreationFailed).build()
 
         let finder1 = InteractionFinder(threadUniqueId: contactThread1.uniqueId)
         let finder2 = InteractionFinder(threadUniqueId: contactThread2.uniqueId)

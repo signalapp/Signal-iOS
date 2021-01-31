@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -39,8 +39,7 @@
     SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        __unused NSString *accountId = [[OWSAccountIdFinder new] ensureAccountIdForAddress:address
-                                                                               transaction:transaction];
+        __unused NSString *accountId = [OWSAccountIdFinder ensureAccountIdForAddress:address transaction:transaction];
 
         XCTAssert([self.identityManager isTrustedIdentityKey:newKey
                                                      address:address

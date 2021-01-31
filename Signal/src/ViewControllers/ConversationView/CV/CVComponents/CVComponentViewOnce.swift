@@ -358,3 +358,12 @@ fileprivate extension CVComponentViewOnce {
         }
     }
 }
+
+// MARK: -
+
+extension CVComponentViewOnce: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        // TODO: We could include the media type (video, image, animated image).
+        labelConfig.stringValue
+    }
+}

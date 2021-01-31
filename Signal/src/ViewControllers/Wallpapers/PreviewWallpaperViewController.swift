@@ -4,6 +4,11 @@
 
 import Foundation
 
+protocol PreviewWallpaperDelegate: class {
+    func previewWallpaperDidCancel(_ vc: PreviewWallpaperViewController)
+    func previewWallpaperDidComplete(_ vc: PreviewWallpaperViewController)
+}
+
 class PreviewWallpaperViewController: UIViewController {
     enum Mode {
         case preset(selectedWallpaper: Wallpaper)
@@ -11,6 +16,7 @@ class PreviewWallpaperViewController: UIViewController {
     }
     private(set) var mode: Mode { didSet { modeDidChange() }}
     let thread: TSThread?
+    weak var delegate: PreviewWallpaperDelegate?
     lazy var blurButton = BlurButton { [weak self] shouldBlur in self?.standalonePage?.shouldBlur = shouldBlur }
 
     let pageViewController = UIPageViewController(
@@ -24,15 +30,20 @@ class PreviewWallpaperViewController: UIViewController {
         hasWallpaper: true
     )
 
-    init(mode: Mode, thread: TSThread? = nil) {
+    init(mode: Mode, thread: TSThread? = nil, delegate: PreviewWallpaperDelegate) {
         self.mode = mode
         self.thread = thread
+        self.delegate = delegate
 
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
     }
 
     override func loadView() {
@@ -57,7 +68,8 @@ class PreviewWallpaperViewController: UIViewController {
         buttonStack.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
 
         let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            guard let self = self else { return }
+            self.delegate?.previewWallpaperDidCancel(self)
         }
         cancelButton.setTitleColor(Theme.primaryTextColor, for: .normal)
         buttonStack.addArrangedSubview(cancelButton)
@@ -124,12 +136,7 @@ class PreviewWallpaperViewController: UIViewController {
             }
 
             transaction.addAsyncCompletion {
-                guard let wallpaperSettingsVC = self.navigationController?.viewControllers.first(
-                    where: { $0 is WallpaperSettingsViewController }
-                ) else {
-                    return owsFailDebug("Missing wallpaper settings in view hierarchy")
-                }
-                self.navigationController?.popToViewController(wallpaperSettingsVC, animated: true)
+                self.delegate?.previewWallpaperDidComplete(self)
             }
         }
     }

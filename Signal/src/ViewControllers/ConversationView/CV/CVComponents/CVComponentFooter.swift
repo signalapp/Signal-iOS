@@ -147,8 +147,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         outerStack.addArrangedSubviews(outerViews, reverseOrder: isIncoming)
         innerStack.addArrangedSubviews(innerViews)
-
-        componentView.rootView.accessibilityLabel = footerState.accessibilityLabel
     }
 
     static func buildState(interaction: TSInteraction,

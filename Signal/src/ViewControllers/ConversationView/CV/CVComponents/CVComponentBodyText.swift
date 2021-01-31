@@ -259,15 +259,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private func configureForRemotelyDeleted(componentView: CVComponentViewBodyText) {
-        // TODO: Set accessibilityLabel.
         _ = configureForLabel(componentView: componentView,
-                          labelConfig: labelConfigForRemotelyDeleted)
+                              labelConfig: labelConfigForRemotelyDeleted)
     }
 
     private func configureForOversizeTextDownloading(componentView: CVComponentViewBodyText) {
-        // TODO: Set accessibilityLabel.
         _ = configureForLabel(componentView: componentView,
-                          labelConfig: labelConfigForOversizeTextDownloading)
+                              labelConfig: labelConfigForOversizeTextDownloading)
     }
 
     private func configureForLabel(componentView: CVComponentViewBodyText,
@@ -290,8 +288,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                      displayableText: DisplayableText) {
         switch textConfig(displayableText: displayableText) {
         case .labelConfig(let labelConfig):
-            let label = configureForLabel(componentView: componentView, labelConfig: labelConfig)
-            label.accessibilityLabel = accessibilityLabel(description: labelConfig.stringValue)
+            _ = configureForLabel(componentView: componentView, labelConfig: labelConfig)
         case .textViewConfig(let textViewConfig):
             let textView = componentView.ensuredTextView
 
@@ -306,8 +303,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             textView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
 
             textViewConfig.applyForRendering(textView: textView)
-
-            textView.accessibilityLabel = accessibilityLabel(description: textViewConfig.stringValue)
 
             textView.isHiddenInStackView = false
             if textView.superview == nil {
@@ -620,5 +615,21 @@ extension CVComponentBodyText.CVComponentViewBodyText: UITextViewDelegate {
             return false
         }
         return true
+    }
+}
+
+// MARK: -
+
+extension CVComponentBodyText: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        switch bodyText {
+        case .bodyText(let displayableText):
+            // NOTE: we use the full text.
+            return displayableText.fullTextValue.stringValue
+        case .oversizeTextDownloading:
+            return labelConfigForOversizeTextDownloading.stringValue
+        case .remotelyDeleted:
+            return labelConfigForRemotelyDeleted.stringValue
+        }
     }
 }

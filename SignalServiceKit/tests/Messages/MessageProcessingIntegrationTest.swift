@@ -32,10 +32,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     let localUUID = UUID()
 
     let aliceE164Identifier = "+14715355555"
-    var aliceClient: SignalClient!
+    var aliceClient: TestSignalClient!
 
     let bobE164Identifier = "+18083235555"
-    var bobClient: SignalClient!
+    var bobClient: TestSignalClient!
 
     let localClient = LocalSignalClient()
     let runner = TestProtocolRunner()

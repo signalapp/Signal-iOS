@@ -28,7 +28,6 @@
 #import "OWSRecordTranscriptJob.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"

@@ -23,6 +23,8 @@ public class CVAttachmentProgressView: UIView {
         }
     }
 
+    private static let overlayCircleSize: CGFloat = 44
+
     // The progress views have two styles:
     //
     // * Light on dark circle, overlaid over media.
@@ -36,7 +38,7 @@ public class CVAttachmentProgressView: UIView {
         var outerDiameter: CGFloat {
             switch self {
             case .withCircle:
-                return 44
+                return CVAttachmentProgressView.overlayCircleSize
             case .withoutCircle(let diameter):
                 return diameter
             }
@@ -130,6 +132,7 @@ public class CVAttachmentProgressView: UIView {
         private lazy var imageView = UIImageView()
         private var unknownProgressView: Lottie.AnimationView?
         private var progressView: Lottie.AnimationView?
+        private lazy var outerCircleView = UIImageView()
 
         private var layoutConstraints = [NSLayoutConstraint]()
 
@@ -174,14 +177,16 @@ public class CVAttachmentProgressView: UIView {
             case .tapToDownload:
                 if oldState != newState {
                     presentIcon(templateName: "arrow-down-24",
-                                sizeInsideCircle: 15,
-                                isInsideProgress: false)
+                                sizeInsideCircle: 16,
+                                isInsideProgress: false,
+                                showOuterCircleIfNecessary: true)
                 }
             case .downloadFailed:
                 if oldState != newState {
                     presentIcon(templateName: "retry-alt-24",
                                 sizeInsideCircle: 18,
-                                isInsideProgress: false)
+                                isInsideProgress: false,
+                                showOuterCircleIfNecessary: true)
                 }
             case .downloadProgress(let progress):
                 switch oldState {
@@ -190,7 +195,7 @@ public class CVAttachmentProgressView: UIView {
                 default:
                     presentProgress(progress: progress)
                     presentIcon(templateName: "stop-20",
-                                sizeInsideCircle: 10,
+                                sizeInsideCircle: 16,
                                 isInsideProgress: true)
                 }
             case .uploadProgress(let progress):
@@ -212,27 +217,47 @@ public class CVAttachmentProgressView: UIView {
 
         private func presentIcon(templateName: String,
                                  sizeInsideCircle: CGFloat,
-                                 isInsideProgress: Bool) {
+                                 isInsideProgress: Bool,
+                                 showOuterCircleIfNecessary: Bool = false) {
             if !isInsideProgress {
                 reset()
             }
 
             let iconSize: CGFloat
             let tintColor: UIColor
+            let hasOuterCircle: Bool
             switch style {
             case .withCircle:
+                hasOuterCircle = false
                 tintColor = .ows_white
                 owsAssertDebug(sizeInsideCircle < diameter)
                 iconSize = sizeInsideCircle
             case .withoutCircle:
+                hasOuterCircle = showOuterCircleIfNecessary
                 tintColor = Theme.primaryTextColor
-                let fractionalSize: CGFloat = isInsideProgress ? 0.45 : 1.0
-                iconSize = diameter * fractionalSize
+                // The icon size hint (sizeInsideCircle) is the size
+                // in the "circle" style.  We can determine the size
+                // in the "no-circle" style by multiplying by the
+                // ratio between the "no-circle" diameter and the
+                // "circle" diameter.
+                iconSize = sizeInsideCircle * diameter / CVAttachmentProgressView.outerDiameter(style: style)
             }
             imageView.setTemplateImageName(templateName, tintColor: tintColor)
             addSubview(imageView)
             layoutConstraints.append(contentsOf: imageView.autoSetDimensions(to: .square(iconSize)))
             layoutConstraints.append(contentsOf: imageView.autoCenterInSuperview())
+
+            if hasOuterCircle {
+                let imageName: String
+                if isDarkThemeEnabled || !isIncoming {
+                    imageName = "circle_outgoing_white_40"
+                } else {
+                    imageName = "circle_incoming_grey_40"
+                }
+                outerCircleView.setImage(imageName: imageName)
+                addSubview(outerCircleView)
+                layoutConstraints.append(contentsOf: outerCircleView.autoPinEdgesToSuperviewEdges())
+            }
         }
 
         private func presentProgress(progress: CGFloat) {
@@ -241,13 +266,14 @@ public class CVAttachmentProgressView: UIView {
             let animationName: String
             switch style {
             case .withCircle:
-                animationName = "determinate_spinner"
+                animationName = "determinate_spinner_white"
             case .withoutCircle:
                 animationName = (isIncoming && !isDarkThemeEnabled
                                     ? "determinate_spinner_blue"
-                                    : "determinate_spinner")
+                                    : "determinate_spinner_white")
             }
             let animationView = ensureAnimationView(progressView, animationName: animationName)
+            owsAssertDebug(animationView.animation != nil)
             progressView = animationView
             animationView.backgroundBehavior = .pause
             animationView.loopMode = .playOnce
@@ -265,13 +291,14 @@ public class CVAttachmentProgressView: UIView {
             let animationName: String
             switch style {
             case .withCircle:
-                animationName = "indeterminate_spinner"
+                animationName = "indeterminate_spinner_white"
             case .withoutCircle:
                 animationName = (isIncoming && !isDarkThemeEnabled
                                     ? "indeterminate_spinner_blue"
-                                    : "indeterminate_spinner")
+                                    : "indeterminate_spinner_white")
             }
             let animationView = ensureAnimationView(unknownProgressView, animationName: animationName)
+            owsAssertDebug(animationView.animation != nil)
             unknownProgressView = animationView
             animationView.backgroundBehavior = .pauseAndRestore
             animationView.loopMode = .loop
@@ -314,6 +341,8 @@ public class CVAttachmentProgressView: UIView {
             layoutConstraints.removeAll()
             progressView?.stop()
             unknownProgressView?.stop()
+            outerCircleView.image = nil
+            imageView.image = nil
         }
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,6 +17,8 @@ extension TSGroupThread {
 
 @objc
 public extension TSGroupThread {
+
+    var groupId: Data { groupModel.groupId }
 
     var groupMembership: GroupMembership {
         groupModel.groupMembership

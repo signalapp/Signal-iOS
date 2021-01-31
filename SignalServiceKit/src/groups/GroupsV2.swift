@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -161,7 +161,7 @@ public protocol GroupsV2Swift: GroupsV2 {
 
 // MARK: -
 
-// TODO: Rename to GroupsV2ProposedChanges
+// TODO: Rename to GroupsV2ProposedChanges or GroupsV2OutgoingChanges.
 public protocol GroupsV2ChangeSet: AnyObject {
     var groupId: Data { get }
     var groupSecretParamsData: Data { get }

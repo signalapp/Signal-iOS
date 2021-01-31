@@ -46,10 +46,6 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         componentView.audioMessageView = audioMessageView
         componentView.rootView.addSubview(audioMessageView)
         audioMessageView.autoPinEdgesToSuperviewEdges()
-
-        let accessibilityDescription = NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
-                                                         comment: "Accessibility label for audio.")
-        audioMessageView.accessibilityLabel = accessibilityLabel(description: accessibilityDescription)
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -185,5 +181,18 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             audioMessageView?.removeFromSuperview()
             audioMessageView = nil
         }
+    }
+}
+
+// MARK: -
+
+extension CVComponentAudioAttachment: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        // TODO: We could include information about the attachment format.
+        (attachment.isVoiceMessage
+            ? NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
+            comment: "Accessibility label for a voice memo.")
+            : NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
+            comment: "Accessibility label for audio."))
     }
 }

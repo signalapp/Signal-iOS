@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUnfairLock.h"
+#import "UnfairLock.h"
 #import <os/lock.h>
 
-@implementation OWSUnfairLock {
+@implementation UnfairLock {
     os_unfair_lock _lock;
 }
 

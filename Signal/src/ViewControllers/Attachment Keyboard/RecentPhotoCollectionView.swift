@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -116,6 +116,12 @@ extension RecentPhotosCollectionView: PhotoLibraryDelegate {
 extension RecentPhotosCollectionView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard fetchingAttachmentIndex == nil else { return }
+
+        guard indexPath.row < collectionContents.assetCount else {
+            owsFailDebug("Asset does not exist.")
+            return
+        }
+
         fetchingAttachmentIndex = indexPath
 
         let asset = collectionContents.asset(at: indexPath.item)

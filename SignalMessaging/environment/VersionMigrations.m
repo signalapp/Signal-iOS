@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "VersionMigrations.h"
@@ -55,20 +55,15 @@ NS_ASSUME_NONNULL_BEGIN
         currentVersion,
         lastCompletedLaunchAppVersion);
 
-    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
-
     if (!lastCompletedLaunchAppVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         if (self.databaseStorage.canReadFromGrdb) {
-            [grdbSchemaMigrator runSchemaMigrations];
+            [self.databaseStorage runGrdbSchemaMigrationsWithCompletion:completion];
         } else {
             OWSDatabaseMigrationRunner *runner = [OWSDatabaseMigrationRunner new];
             [runner assumeAllExistingMigrationsRun];
+            dispatch_async(dispatch_get_main_queue(), completion);
         }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion();
-        });
         return;
     }
 
@@ -101,10 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (self.databaseStorage.canReadFromGrdb) {
-            [grdbSchemaMigrator runSchemaMigrations];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                completion();
-            });
+            [self.databaseStorage runGrdbSchemaMigrationsWithCompletion:completion];
         } else {
             [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
                 completion();

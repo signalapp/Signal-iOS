@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalRecipient.h"
 #import "OWSDevice.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -566,28 +565,24 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     SignalRecipient *_Nullable winningInstance = nil;
 
     // We try to preserve the recipient that has a session.
-    NSNumber *_Nullable sessionIndexForUuid =
-        [self.sessionStore maxSessionSenderChainKeyIndexForAccountId:uuidInstance.accountId transaction:transaction];
-    NSNumber *_Nullable sessionIndexForPhoneNumber =
-        [self.sessionStore maxSessionSenderChainKeyIndexForAccountId:phoneNumberInstance.accountId
-                                                         transaction:transaction];
+    BOOL hasSessionForUuid = [self.sessionStore containsActiveSessionForAccountId:uuidInstance.accountId
+                                                                         deviceId:OWSDevicePrimaryDeviceId
+                                                                      transaction:transaction];
+    BOOL hasSessionForPhoneNumber = [self.sessionStore containsActiveSessionForAccountId:phoneNumberInstance.accountId
+                                                                                deviceId:OWSDevicePrimaryDeviceId
+                                                                             transaction:transaction];
 
     if (SSKDebugFlags.verboseSignalRecipientLogging) {
         OWSLogInfo(@"phoneNumberInstance: %@", phoneNumberInstance);
         OWSLogInfo(@"uuidInstance: %@", uuidInstance);
-        OWSLogInfo(@"sessionIndexForUuid: %@", sessionIndexForUuid);
-        OWSLogInfo(@"sessionIndexForPhoneNumber: %@", sessionIndexForPhoneNumber);
+        OWSLogInfo(@"hasSessionForUuid: %@", @(hasSessionForUuid));
+        OWSLogInfo(@"hasSessionForPhoneNumber: %@", @(hasSessionForPhoneNumber));
     }
 
-    // We want to retain the phone number recipient if it
-    // has a session and the uuid recipient doesn't or if
-    // both have a session but the phone number recipient
-    // has seen more use.
-    //
-    // All things being equal, we default to retaining the
-    // UUID recipient.
-    BOOL shouldUseUuid = (sessionIndexForPhoneNumber.intValue <= sessionIndexForUuid.intValue);
-    if (shouldUseUuid) {
+    // We want to retain the phone number recipient only if it has a session and the UUID recipient doesn't.
+    // Historically, we tried to be clever and pick the session that had seen more use,
+    // but merging sessions should only happen in exceptional circumstances these days.
+    if (hasSessionForUuid) {
         OWSLogWarn(@"Discarding phone number recipient in favor of uuid recipient.");
         winningInstance = uuidInstance;
         [phoneNumberInstance anyRemoveWithTransaction:transaction];

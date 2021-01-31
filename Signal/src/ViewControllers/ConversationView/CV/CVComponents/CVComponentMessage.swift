@@ -638,6 +638,70 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                of: outerContentView,
                                                withOffset: -reactionsVOverlap)
         }
+
+        componentView.rootView.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
+        componentView.rootView.isAccessibilityElement = true
+    }
+
+    // Builds an accessibility label for the entire message.
+    // This label uses basic punctuation which might be used by
+    // VoiceOver for pauses/timing.
+    //
+    // Example: Lilia sent: a picture, check out my selfie.
+    // Example: You sent: great shot!
+    private func buildAccessibilityLabel(componentView: CVComponentViewMessage) -> String {
+        var elements = [String]()
+
+        if isIncoming {
+            if let accessibilityAuthorName = itemViewState.accessibilityAuthorName {
+                let format = NSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT",
+                                               comment: "Format for sender info for accessibility label for message. Embeds {{ the sender name }}.")
+                elements.append(String(format: format, accessibilityAuthorName))
+            } else {
+                owsFailDebug("Missing accessibilityAuthorName.")
+            }
+        } else if isOutgoing {
+            elements.append(NSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER",
+                                              comment: "Format for sender info for outgoing messages."))
+        }
+
+        // Order matters. For example, body media should be before body text.
+        let accessibilityComponentKeys: [CVComponentKey] = [
+            .bodyMedia,
+            .bodyText,
+            .sticker,
+            .viewOnce,
+            .audioAttachment,
+            .genericAttachment,
+            .contactShare
+        ]
+        var contents = [String]()
+        for key in accessibilityComponentKeys {
+            if let subcomponent = self.subcomponent(forKey: key) {
+                if let accessibilityComponent = subcomponent as? CVAccessibilityComponent {
+                    contents.append(accessibilityComponent.accessibilityDescription)
+                } else {
+                    owsFailDebug("Invalid accessibilityComponent.")
+                }
+            }
+        }
+        elements.append(contents.joined(separator: ", "))
+
+        // NOTE: In the interest of keeping the accessibility label short,
+        // we do not include information that is usually presented in the
+        // following components:
+        //
+        // * footer (message send status, disappearing message status, date/time).
+        // * senderName
+        // * senderAvatar
+        // * quotedReply
+        // * linkPreview
+        // * reactions
+        // * bottomButtons
+        // * sendFailureBadge
+
+        let result = elements.joined(separator: " ")
+        return result
     }
 
     private var cellLayoutMargins: UIEdgeInsets {

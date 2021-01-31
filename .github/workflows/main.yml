@@ -53,6 +53,10 @@ jobs:
           bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
 
+      - name: Set up Rust
+        run: rustup target install x86_64-apple-ios
+        working-directory: Pods/SignalClient
+
       - name: Build and Test
         run: |
           function formatFailures() {

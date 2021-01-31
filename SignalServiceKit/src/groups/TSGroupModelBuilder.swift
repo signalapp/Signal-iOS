@@ -29,6 +29,7 @@ public struct TSGroupModelBuilder {
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
     public var wasJustCreatedByLocalUser: Bool = false
+    public var didJustAddSelfViaGroupLink: Bool = false
     public var droppedMembers = [SignalServiceAddress]()
 
     public init() {}
@@ -49,6 +50,7 @@ public struct TSGroupModelBuilder {
         self.isPlaceholderModel = false
         self.wasJustMigrated = false
         self.wasJustCreatedByLocalUser = false
+        self.didJustAddSelfViaGroupLink = false
     }
 
     public
@@ -69,6 +71,12 @@ public struct TSGroupModelBuilder {
         let oldGroupModel = oldGroupThread.groupModel
         builder.droppedMembers = oldGroupModel.asBuilder.droppedMembers
         return builder
+    }
+
+    public mutating func apply(options: TSGroupModelOptions) {
+        if options.contains(.didJustAddSelfViaGroupLink) {
+            didJustAddSelfViaGroupLink = true
+        }
     }
 
     private func checkUsers() throws {
@@ -186,6 +194,7 @@ public struct TSGroupModelBuilder {
                                   isPlaceholderModel: isPlaceholderModel,
                                   wasJustMigrated: wasJustMigrated,
                                   wasJustCreatedByLocalUser: wasJustCreatedByLocalUser,
+                                  didJustAddSelfViaGroupLink: didJustAddSelfViaGroupLink,
                                   addedByAddress: addedByAddress,
                                   droppedMembers: droppedMembers)
         }
@@ -280,10 +289,27 @@ public extension TSGroupModel {
             builder.inviteLinkPassword = v2.inviteLinkPassword
             builder.droppedMembers = v2.droppedMembers
 
-            // Do not copy isPlaceholderModel or wasJustMigrated or wasJustCreatedByLocalUser;
+            // Do not copy transient properties:
+            //
+            // * isPlaceholderModel
+            // * wasJustMigrated
+            // * wasJustCreatedByLocalUser
+            // * didJustAddSelfViaGroupLink
+            //
             // We want to discard these values when updating group models.
         }
 
         return builder
+    }
+}
+
+// MARK: -
+
+public struct TSGroupModelOptions: OptionSet {
+    public let rawValue: Int
+    public static let didJustAddSelfViaGroupLink  = TSGroupModelOptions(rawValue: 1 << 0)
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
     }
 }

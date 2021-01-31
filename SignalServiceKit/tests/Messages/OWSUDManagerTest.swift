@@ -7,6 +7,7 @@ import Foundation
 import Curve25519Kit
 import SignalCoreKit
 import SignalMetadataKit
+import SignalClient
 @testable import SignalServiceKit
 
 class OWSUDManagerTest: SSKBaseTestSwift {
@@ -30,8 +31,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     let aliceE164 = "+13213214321"
     let aliceUuid = UUID()
     lazy var aliceAddress = SignalServiceAddress(uuid: aliceUuid, phoneNumber: aliceE164)
-    lazy var defaultSenderCert = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto(uuidOnly: false).serializedData())
-    lazy var uuidOnlySenderCert = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto(uuidOnly: true).serializedData())
+    lazy var defaultSenderCert = try! SenderCertificate(buildSenderCertificateProto(uuidOnly: false).serializedData())
+    lazy var uuidOnlySenderCert = try! SenderCertificate(buildSenderCertificateProto(uuidOnly: true).serializedData())
 
     override func setUp() {
         super.setUp()
@@ -47,8 +48,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         udManager.certificateValidator = MockCertificateValidator()
-        udManager.setSenderCertificate(uuidOnly: true, certificateData: uuidOnlySenderCert.serializedData)
-        udManager.setSenderCertificate(uuidOnly: false, certificateData: defaultSenderCert.serializedData)
+        udManager.setSenderCertificate(uuidOnly: true, certificateData: Data(uuidOnlySenderCert.serialize()))
+        udManager.setSenderCertificate(uuidOnly: false, certificateData: Data(defaultSenderCert.serialize()))
     }
 
     override func tearDown() {
@@ -251,7 +252,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                 let sendingAccess = self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificates: senderCertificates)!
                 XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
                 XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-                XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.defaultSenderCert.serializedData)
+                XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                               self.defaultSenderCert.serialize())
             }
         }.done {
             completed.fulfill()
@@ -297,11 +299,11 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 // MARK: -
 
 class MockCertificateValidator: NSObject, SMKCertificateValidator {
-    @objc public func throwswrapped_validate(senderCertificate: SMKSenderCertificate, validationTime: UInt64) throws {
+    public func throwswrapped_validate(senderCertificate: SenderCertificate, validationTime: UInt64) throws {
         // Do not throw
     }
 
-    @objc public func throwswrapped_validate(serverCertificate: SMKServerCertificate) throws {
+    public func throwswrapped_validate(serverCertificate: ServerCertificate) throws {
         // Do not throw
     }
 }

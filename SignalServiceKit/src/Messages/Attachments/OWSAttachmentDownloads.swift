@@ -313,7 +313,7 @@ public class OWSAttachmentDownloads: NSObject {
         switch job.category {
         case .bodyMediaImage, .bodyMediaVideo:
             break
-        case .bodyAudioVoiceMemo:
+        case .bodyAudioVoiceMemo, .bodyOversizeText:
             return false
         case .bodyAudioOther, .bodyFile:
             break
@@ -388,7 +388,7 @@ public class OWSAttachmentDownloads: NSObject {
             return !autoDownloadableMediaTypes.contains(.photo)
         case .bodyMediaVideo:
             return !autoDownloadableMediaTypes.contains(.video)
-        case .bodyAudioVoiceMemo:
+        case .bodyAudioVoiceMemo, .bodyOversizeText:
             return false
         case .bodyAudioOther:
             return !autoDownloadableMediaTypes.contains(.audio)
@@ -811,6 +811,7 @@ public extension OWSAttachmentDownloads {
         case bodyAudioVoiceMemo
         case bodyAudioOther
         case bodyFile
+        case bodyOversizeText
         case stickerSmall
         case stickerLarge
         case quotedReplyThumbnail
@@ -874,6 +875,8 @@ public extension OWSAttachmentDownloads {
                     return .bodyAudioVoiceMemo
                 } else if attachment.isAudio {
                     return .bodyAudioOther
+                } else if attachment.isOversizeText {
+                    return .bodyOversizeText
                 } else {
                     return .bodyFile
                 }
@@ -1024,7 +1027,9 @@ public extension OWSAttachmentDownloads {
         }
 
         guard !promises.isEmpty else {
-            success(attachmentStreams)
+            Self.serialQueue.async {
+                success(attachmentStreams)
+            }
             return
         }
 

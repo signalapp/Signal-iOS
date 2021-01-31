@@ -8,7 +8,6 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
-#import "SSKSessionStore.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"
@@ -188,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
             // This is probably a v2 group update.
             OWSLogWarn(@"Ignoring message transcript for empty v2 group message.");
         } else {
-            OWSFailDebug(@"Ignoring message transcript for empty message.");
+            OWSLogWarn(@"Ignoring message transcript for empty message.");
         }
         return;
     }
