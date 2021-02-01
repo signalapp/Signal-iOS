@@ -743,7 +743,8 @@ fileprivate extension CVComponentState.Builder {
             }
         }
 
-        if let linkPreview = message.linkPreview {
+        if !threadViewModel.hasPendingMessageRequest,
+           let linkPreview = message.linkPreview {
             try buildLinkPreview(message: message, linkPreview: linkPreview)
         }
 
