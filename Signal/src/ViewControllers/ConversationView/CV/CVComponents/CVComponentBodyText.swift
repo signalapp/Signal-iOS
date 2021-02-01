@@ -317,7 +317,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             textView.shouldIgnoreEvents = shouldIgnoreEvents
 
             if hasPendingMessageRequest {
-                // Do not linkify test if there is a pending message request for this conversation.
+                // Do not linkify text if there is a pending message request for this conversation.
                 textView.dataDetectorTypes = []
             } else {
                 textView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
