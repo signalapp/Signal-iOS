@@ -412,13 +412,24 @@ extension MessageReceiver {
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             let didAdminLeave = group.groupAdminIds.contains(message.sender!)
             let members: Set<String> = didAdminLeave ? [] : Set(group.groupMemberIds).subtracting([ message.sender! ]) // If the admin leaves the group is disbanded
+            let userPublicKey = getUserHexEncodedPublicKey()
+            let isCurrentUserAdmin = group.groupAdminIds.contains(userPublicKey)
             // Guard against self-sends
             guard message.sender != getUserHexEncodedPublicKey() else {
                 return SNLog("Ignoring invalid closed group update.")
             }
-            // Generate and distribute a new encryption key pair if needed
-            let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
-            if isCurrentUserAdmin {
+            // If a regular member left:
+            // • Distribute a new encryption key pair if we're the admin of the group
+            // If the admin left:
+            // • Don't distribute a new encryption key pair
+            // • Unsubscribe from PNs, delete the group public key, etc. as the group will be disbanded
+            if didAdminLeave {
+                // Remove the group from the database and unsubscribe from PNs
+                Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
+                Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
+                let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
+            } else if isCurrentUserAdmin {
+                // Generate and distribute a new encryption key pair if needed
                 do {
                     try MessageSender.generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members, using: transaction)
                 } catch {
