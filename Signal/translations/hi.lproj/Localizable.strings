@@ -4514,7 +4514,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "मेसेज मिलने की आवाज़";
 
 /* Label for settings view that allows user to change the wallpaper. */
-"SETTINGS_ITEM_WALLPAPER" = "Chat Wallpaper";
+"SETTINGS_ITEM_WALLPAPER" = "चैट वॉलपेपर";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "नियम और गोपनीयता नीति";
@@ -5243,7 +5243,7 @@
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
 
 /* Title for the wallpaper settings view. */
-"WALLPAPER_SETTINGS_TITLE" = "Chat Wallpaper";
+"WALLPAPER_SETTINGS_TITLE" = "चैट वॉलपेपर";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "आपने यह संदेश डिलीट कर दिया।";

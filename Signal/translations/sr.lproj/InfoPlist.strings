@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal-у је потребан прис�
 NSMicrophoneUsageDescription = "Signal-у је потребан приступ микрофону за разговоре и снимање гласовних порука.";
 NSPhotoLibraryAddUsageDescription = "Signal ће сачувати фотографије у вашу галерију.";
 NSPhotoLibraryUsageDescription = "Signal вам омогућава избор фотографија за слање из ваше галерије.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Signal користи локалну мрежу како би вам омогућио да директно пребаците свој налог на нови телефон. Неће се користити уколико изричито не одлучите да започнете пренос на нови уређај.";

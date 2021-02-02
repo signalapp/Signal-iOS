@@ -1,6 +1,6 @@
-NSAppleMusicUsageDescription = "Signal trebuie să folosească Apple Music pentru a putea reda atașamente media.";
-NSCameraUsageDescription = "Signal folosește camera foto pentru a face fotografii și pentru apeluri video.";
-NSContactsUsageDescription = "Signal folosește contactele tale pentru a găsi utilizatori pe care îi cunoști. Nu stocăm contactele tale pe server.";
+NSAppleMusicUsageDescription = "Signal trebuie să folosească Apple Music pentru a reda atașamente media.";
+NSCameraUsageDescription = "Signal folosește camera foto pentru a face fotografii și apeluri video.";
+NSContactsUsageDescription = "Signal folosește contactele tale pentru a găsi utilizatori cunoscuți. Nu stocăm contactele tale pe server.";
 NSFaceIDUsageDescription = "Ecranul de blocare Signal utilizează Face ID.";
 NSLocationWhenInUseUsageDescription = "Signal are nevoie de acces la locația ta pentru a partaja locația curentă.";
 NSMicrophoneUsageDescription = "Signal are nevoie de acces la microfon pentru a efectua și primi apeluri telefonice și înregistra mesaje vocale.";

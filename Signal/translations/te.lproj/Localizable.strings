@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "పరిచయం";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "పరిచయం %@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "మీడియా";
@@ -26,7 +26,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "స్టికర్";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "వాయిస్ సందేశం";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal కాల్ ";

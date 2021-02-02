@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "جهة الاتصال";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "جهة الاتصال لـ %@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "الوسائط";
@@ -26,7 +26,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "مُلصق";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -44,7 +44,7 @@
 "ACTION_TAP_TO_DOWNLOAD" = "يُرجى اللمس للتنزيل";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "اتصال فيديو";
+"ACTION_VIDEO_CALL" = "الاتصال بالفيديو";
 
 /* Label for the 'add group member' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "إضافة عضو";
@@ -68,10 +68,10 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "إضافة أعضاء";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "هل تريد مشاركة ملفك الشخصي مع هذه المجموعة؟";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذه المجموعة ؟";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "هل ترغب في إضافة هذا المستخدم لجهات الاتصال الخاصة بك؟";
+"ADD_TO_CONTACTS_OFFER" = "هل لديك الرغبة في إضافة هذا المستخدم لجهات اتصالك؟";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "إضافة إلى مجموعة أُخرى";
@@ -98,7 +98,7 @@
 "ADD_TO_GROUP_TITLE" = "إضافة إلى مجموعة أُخرى";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل تريد مشاركة ملفك الشخصي مع هذا المُستخدم؟";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذا المستخدم ؟";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "فهِمت";
@@ -122,7 +122,7 @@
 "APN_Message" = "رسالة جديدة !";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذّر بدأ Signal. حتى نتمكّن من تصحيح المُشكلة الرجاء إرسال سجلات الفحص إلى بريد الدعم: support@signal.org";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء Signal. لتمكيننا من مساعَفتك حول المشكل، الرجاء إرسال سجلات التصحيح إلى بريد الدعم : support@signal.org";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "خطأ";
@@ -137,19 +137,19 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "إصدار قاعدة البيانات مجهول.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "يتعذّر إستعادة البيانات المنقولة من جِهازك القديم. يُرجى إرسال سِجل الفحص إلى support@signal.org حتى نتمكن من إستكشاف هذه المُشكلة وإصلاحها. إذا قمت بإعادة تثبيت Signal  قد يتم فُقدان محفوظات الرسائل.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّرت استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكن من مُساعَفتك حول هذه المُشكلة. إذا قمت بإعادة تثبيت Signal  قد تُفقًد محفوظات رسائلك.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "يتعذّر إتمام عملية النقل";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "تعذّر إتمام عملية النقل";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "أدخل اسمك";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "عليك بإدخال اسمك";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ليس الآن";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "النُسخة %@ غير مُتاحة على متجر الآب ستور.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "الإصدار %@ غير متاح في متجر App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "هناك إصدار Signal جديد متوفر";
@@ -188,10 +188,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "فشل الحفظ.";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "نوع الملف: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "صنف الملف : %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "الحجم: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "الحجم : %@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "تم الحفظ";
@@ -200,7 +200,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "إرسال إلى %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "أرسل";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "إرسال";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "المُرفقات";
@@ -212,19 +212,19 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "تعذر تحويل الصورة.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "يتعذّر مُعالجة الفيديو.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "تعذّرت معالجة الفيديو.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "يتعذّر مُعالجة الصورة.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "تعذّرت معالجة الصورة.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "يتعذّر حذف المعلومات الوصفية من الصورة.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "تعذّر حذف البيانات الوصفية من الصورة.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "تعذّر تعديل حجم الصورة.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "تعذّر تعديل أبعاد الصورة.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "حجم المُرفق كبير جداً.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "حجم المُرفق كبير جدا.";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "المُرفق يحتوي على بيانات غير صالحة. ";
@@ -233,10 +233,10 @@
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "صيغة الملف المرفق غير صالحة.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "المُفرق فارغ.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "المُرفق فارغ.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "اختر ملف وسائط للإرسال.";
+"ATTACHMENT_HINT" = "عليك اختيار ملف وسائط لإرساله.";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "الكاميرا";
@@ -257,19 +257,19 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "يجب عليك منح صلاحيات الوصول للصور من الإعدادات للتمكن من إرسالها هنا.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "بمُجرّد أن تلتقط صور، ستتمكن من إرسال الأخيرة من هُنا.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "بمُجرد التقاطك صورا، سيصبح بإمكانك إرسال الأخيرة من هنا.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "مُرفق";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "فَشل في إختيار المُرفق.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "فشل في اختيار المُرفق.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "يُرجى إنشاء أرشيف مضغوط لهذا الملف أو المجلد ثم أعد إرساله كبديل.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "يُرجى إنشاء أرشيف مضغوط لهذا الملف أو المجلد، ثم عليك إعادة إرساله ذلك الأرشيف بدل ذلك المجلد.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ملف غير مدعوم";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "الملف غير مدعوم";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "صوت";
@@ -326,19 +326,19 @@
 "BACKUP_EXPORT_PHASE_UPLOAD" = "يجري رفع النسخة الاحتياطية";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "يتعذّر إستيراد النُسخة الاحتياطية.";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "تعذّر استيراد النسخة الاحتياطية.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "جاري تهيئة النُسخة الاحتياطية";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "تجري تهيئة النسخة الاحتياطية";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "جاري تحميل بيانات النُسخة الاحتياطية";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "يجري تنزيل بيانات النسخة الاحتياطية";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "يتم إنهاء إستيراد النُسخة الاحتياطية";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "يجري إنهاء استيراد النسخة الاحتياطية";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "جاري إستيراد النُسخة الاحتياطية.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "يجري استيراد النسخة الاحتياطية.";
 
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "جاري استعادة قاعدة البيانات";
@@ -347,10 +347,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "استعادة الملفات";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "تتوفر نُسخة احتياطية";
+"BACKUP_RESTORE_DECISION_TITLE" = "النسخ الاحتياطية المتاحة";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "جاري استعادة النُسخة الاحتياطية";
+"BACKUP_RESTORE_DESCRIPTION" = "تجري استعادة النسخة الاحتياطية";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "التقدم";
@@ -359,13 +359,13 @@
 "BACKUP_RESTORE_STATUS" = "الحالة";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "خطأ نَسخ احتياطي غير متوقع";
+"BACKUP_UNEXPECTED_ERROR" = "خطأ غير متوقع خلال النَسخ الاحتياطي";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "إغلاق اللافتة";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "لن تستقبل رسائل أو تحديثات من هذه المجموعة بعد الآن.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "لن تصلك الرسائل أو التحديثات من هذه المجموعة بعد الآن.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "حَظر";
@@ -392,10 +392,10 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "رفع الحظر";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "ستتمكن من التراسل والإتصال مع الطرف الآخر كذلك هو.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "سيصبح بإمكانكما التراسل والتواصل فيما بينكما.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "سيستطيع الأعضاء المتواجدين إضافتك للمجموعة مرة أُخرى.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "سيتمكن من إضافتك الأعضاء الموجودون للمجموعة مرة أُخرى.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "سيتمكن أعضاء المجموعة من إضافتك للمجموعة مرة أُخرى.";
@@ -404,13 +404,13 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "إلغاء حظر المجموعة؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "رفع حظر %@؟";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "رفع حظر عن %@؟";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "حَظر";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "حظر";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "تم حَظر %@";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "تم حظر %@";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المُستخدم محظور";
@@ -428,13 +428,13 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "تم رفع الحظر عن %@";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اﻷعضاء المتواجدين يمكنهم إضافتك للمجموعة مرة أُخرى.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اﻷعضاء الموجودون يمكنهم إضافتك للمجموعة مرة أُخرى.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الاتصال بك أو الإرسال برسالة إليك.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الاتصال بك أو إرسال رسالة إليك.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "جديد: اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
+"BLUR_TOOLTIP" = "جديد : اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "إضافة";
@@ -455,13 +455,13 @@
 "BUTTON_NOT_NOW" = "ليس الآن";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "حسنًا";
+"BUTTON_OKAY" = "حسنا";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "حَدِّد";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "سَلِّم";
+"BUTTON_SUBMIT" = "إرسال";
 
 /* Label for the 'yes' button. */
 "BUTTON_YES" = "نعم";
@@ -470,16 +470,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "مُعاودة الاتصال";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞مكالمة صوتية واردة...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 مكالمة صوتية واردة...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞مكالمة صوتية فائتة";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 مكالمة صوتية فائتة";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من إعدادات الجهاز لتتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal. ";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal. ";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "الإذن لاستخدام الميكرفون مطلوب";
+"CALL_AUDIO_PERMISSION_TITLE" = "إذن استخدام الميكروفون ضروري";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ مُكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر. ";
@@ -500,13 +500,13 @@
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "هل تُريد الاتصال بـ%@؟";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "إتصال؟";
+"CALL_USER_ALERT_TITLE" = "أأتصل ؟";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 مكالمة فيديو واردة...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 مكالمة بالصورة واردة...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 مكالمة فيديو فائتة";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 مكالمة بالصورة فائتة";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "أجِب بلا فيديو";
@@ -527,7 +527,7 @@
 "CALL_VIEW_MUTE_LABEL" = "كتم";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "سيتلقى %@ طلب للتراسل منك. ويُمكنك الاتصال عندما يقبل طلب المراسلة الخاص بك.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "سيتلقى %@ طلبا للتراسل منك. ويُمكنك الاتصال عندما يقبل طلب التراسل معك.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغيير اتجاه الكاميرا";
@@ -536,13 +536,13 @@
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "التحويل إلى مكالمة صوتية";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "التحويل إلى مكالمة مرئية";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "التحويل إلى مكالمة بالصورة";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "إعادة الاتصال";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "الكاميرا مطفأة";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "الكاميرا غير مشغلة";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "مُستخدم Signal";
@@ -557,16 +557,16 @@
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "لا يمكن التحقق من هذا المستخدم حتى يتم تبادل الرسائل معه.";
 
 /* Title for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "يوجد خطأ";
+"CANT_VERIFY_IDENTITY_ALERT_TITLE" = "خطأ";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "إختر الدولة";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "عليك باختيار الدولة";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "لا تستعيد";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "لا تستعِدْ";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "لم يُمكن التأكد إذا ما توافرت نُسخة احتياطية يمكن استعادتها.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "تعذر التأكد من وجود نُسخة احتياطية يمكن الاستعادة من خلالها.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "خطأ";
@@ -656,7 +656,7 @@
 "CONTACT_EDIT_NAME_BUTTON" = "تحرير";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "البريد الاكتروني";
+"CONTACT_EMAIL" = "البريد الإلكتروني";
 
 /* Label for the 'city' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_CITY" = "المدينة";
@@ -674,7 +674,7 @@
 "CONTACT_FIELD_ADDRESS_POSTCODE" = "الرمز البريدي";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "الاقليم";
+"CONTACT_FIELD_ADDRESS_REGION" = "الإقليم";
 
 /* Label for the 'street' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_STREET" = "الشارع";
@@ -683,7 +683,7 @@
 "CONTACT_FIELD_FAMILY_NAME" = "اسم العائلة";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "الاسم الاول";
+"CONTACT_FIELD_GIVEN_NAME" = "الاسم الشخصي";
 
 /* Label for the 'middle name' field of a contact. */
 "CONTACT_FIELD_MIDDLE_NAME" = "الاسم الأوسط";
@@ -701,7 +701,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "لرؤية اسماء وصور جهات الاتصال في مُحادثاتك";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "إنقر على \"إذهب إلى الإعدادات\" في الأسفل";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "يجب لمس  \"اذهب إلى الإعدادات\" في الأسفل";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "فعّل \"جهات الاتصال\"";
@@ -755,7 +755,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "حاول مرة أُخرى";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "تساعدنا سجلات الفحص في استكشاف مشاكلك وإصلاحها في أسرع وقت. إرسال سجلاتك إلينا اختياري.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "تساعدنا سجلات التصحيح في استكشاف مشاكلك وإصلاحها في أسرع وقت. إرسال سجلاتك إلينا اختياري.";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "هل تود إرسال سجل الفحص ؟";
@@ -770,7 +770,7 @@
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "الفتح في الخريطة";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "ارسال بريد الكتروني";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "إرسال رسالة إلكترونية";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "جهة اتصال غير مُسماة";
@@ -791,10 +791,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "المحادثات الحديثة";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "الاشخاص";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "الأشخاص";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "اختر المستلمون";
+"CONVERSATION_PICKER_TITLE" = "اختر المستلمين";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "لا يوجد توافُق";
@@ -986,10 +986,10 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "أضف إلى جهات الاتصال";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ قد أرسلَ:";
 
 /* Format for sender info for outgoing messages. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "You sent:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "أنت قد أرسلتَ:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "حذف الكل";
@@ -2708,31 +2708,31 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "حذف للجميع";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "سوف تُحذَف هذه الرسالة لأياً كان في هذه المحادثة إن كانوا يستخدمون إصدار Signal حديث. سيكون بمقدرتهم رؤية أنك قد حذف رسالة.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "سوف تُحذَف هذه الرسالة لأياً كان في هذه المحادثة إن كانوا يستخدمون إصدار حديث مِن Signal. سيكون بمقدرتهم رؤية أنك قد حذفت رسالة.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "من هم الأشخاص الذين تريد حذف هذه الرسالة من عندهم؟";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "من هم الأشخاص الذين تريد حذف هذه الرسالة لديهم؟";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذف بالنسبة إليّ فقط";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذف بالنسبة لي";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "حذف هذه الرسالة";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "احذف الرسائل المحددة";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "حدف الرسائل المُحددة";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "مزيد من المعلومات";
+"MESSAGE_ACTION_DETAILS" = "المزيد من المعلومات";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "قم بإعادة توجيه هذه الرسالة";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "إعادة توجيه هذه الرسالة";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "الرد على هذه الرسالة";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "اختيار متعدد";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "تحديد مُتعدد";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "شارك الوسائط";
@@ -2747,10 +2747,10 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "حجم الملف";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "صنف MIME";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "نوع MIME";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "تم تسليم الرسالة";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "تمَّ التسليم";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "فشل";
@@ -2759,28 +2759,28 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "تمت القراءة";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "إرسال";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "جار الإرسال";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "أرسلت";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "تمَّ الإرسال";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تم تجاوزه";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تمَّ التخطي";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "يجري الرفع";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "جار الرفع";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "الرسالة فارغة من المحتوى أو المرفق.";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "الرسالة لا تحمل مُحتوى أو مُرفق.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "استُقبلت";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "تمَّ الاستلام";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "المرسل";
+"MESSAGE_METADATA_VIEW_SENDER" = "المُرسِل";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "أرسلت";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "أُرسِلت";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "اسم الملف";
@@ -2795,58 +2795,58 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "حظر وحذف";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "لن يتمكن الأشخاص المحظورون من الاتصال بك أو إرسال أي رسالة إليك.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "لن يتمكن الأشخاص المحظورون من الاتصال بك أو إرسال رسالة إليك.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "حظر %@؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "سوف تغادر هذه المجموعة ولن تصلك أي رسالة أو مستجدات منها.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "سوف تُغادر هذه المجموعة ولن تصلك بعد الآن رسالة أو مستجدات منها.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "قم بحظر و غادر %@ ؟";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "حظر ومُغادرة %@؟";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف  ";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه المحادثة من كل أجهزتك.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه المُحادثة من جميع أجهزتك.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "حذف المحادثة ؟";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "حذف المُحادثة؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "احذف و غادر";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "الحذف والمُغادرة";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "سوف تغادر هذه المجموعة، ثم ستُحذَف من كل أجهزتك.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "سوف تُغادر هذه المجموعة، ثم ستُحذَف من جميع أجهزتك.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "احذف و غادر المجموعة ؟";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "حذف ومُغادرة المجموعة؟";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "يجب مراجعة الطلبات بعناية. لقد وجد Signal جهة اتصال بنفس الاسم.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "راجع الطلبات بعِناية. عثرَ Signal على جهة اتصال أُخرى بنفس الاسم.";
 
 /* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "جهة اتصالك";
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "جهة الاتصال الخاصة بك";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "إذا كنت لست على يقين من هوية صاحب الطلب، يجب مراجعة جهات الاتصال أدناه ثم اتخاذ إجراء مناسب.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "إذا كنت غير مُتأكد من هوية صاحب الطلب، راجِع جهات الاتصال أدناه ثم اتخذ الإجراء.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "الطلب";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "طلب المراجعة";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "مُراجعة الطلب";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "تحديث جهة الاتصال";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "طلب المراجعة";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "مُراجعة الطلب";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "موافقة";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "قُبول";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "حظر";
