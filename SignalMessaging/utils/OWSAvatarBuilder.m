@@ -98,16 +98,16 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     return [self avatarImageWithDiameter:diameter
                          backgroundColor:backgroundColor
                                drawBlock:^(CGContextRef context) {
-        const NSUInteger stride = 3;
-        for (NSUInteger x = 0; x < diameter; x += stride) {
-            for (NSUInteger y = 0; y < diameter; y += stride) {
-                UIColor *color = [UIColor ows_randomColorWithIsAlphaRandom:NO];
-                CGContextSetFillColorWithColor(context, color.CGColor);
-                CGRect frame = CGRectMake(x, y, stride, stride);
-                CGContextFillRect(context, frame);
-            }
-        }
-    }];
+                                   const NSUInteger stride = 1;
+                                   for (NSUInteger x = 0; x < diameter; x += stride) {
+                                       for (NSUInteger y = 0; y < diameter; y += stride) {
+                                           UIColor *color = [UIColor ows_randomColorWithIsAlphaRandom:NO];
+                                           CGContextSetFillColorWithColor(context, color.CGColor);
+                                           CGRect frame = CGRectMake(x, y, stride, stride);
+                                           CGContextFillRect(context, frame);
+                                       }
+                                   }
+                               }];
 }
 
 + (UIColor *)avatarForegroundColor
