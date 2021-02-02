@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
-import Lottie
 import PromiseKit
 import SafariServices
 
@@ -558,7 +557,7 @@ public class PinSetupViewController: OWSViewController {
 
         pinTextField.resignFirstResponder()
 
-        let progressView = PinProgressView(
+        let progressView = AnimatedProgressView(
             loadingText: NSLocalizedString("PIN_CREATION_PIN_PROGRESS",
                                            comment: "Indicates the work we are doing while creating the user's pin")
         )
@@ -566,9 +565,12 @@ public class PinSetupViewController: OWSViewController {
         progressView.autoPinWidthToSuperview()
         progressView.autoVCenterInSuperview()
 
-        progressView.startLoading {
+        progressView.startAnimating {
             self.view.isUserInteractionEnabled = false
             self.nextButton.alpha = 0.5
+            self.pinTextField.alpha = 0
+            self.validationWarningLabel.alpha = 0
+            self.recommendationLabel.alpha = 0
         }
 
         OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2).then { () -> Promise<Void> in
@@ -581,10 +583,8 @@ public class PinSetupViewController: OWSViewController {
             AssertIsOnMainThread()
 
             // The completion handler always dismisses this view, so we don't want to animate anything.
-            progressView.loadingComplete(success: true, animated: false) { [weak self] in
-                guard let self = self else { return }
-                self.completionHandler(self, nil)
-            }
+            progressView.stopAnimatingImmediately()
+            self.completionHandler(self, nil)
 
             // Clear the experience upgrade if it was pending.
             SDSDatabaseStorage.shared.asyncWrite { transaction in
@@ -600,9 +600,12 @@ public class PinSetupViewController: OWSViewController {
             // whenever enabling it fails.
             OWS2FAManager.shared().disable2FA(success: nil, failure: nil)
 
-            progressView.loadingComplete(success: false, animateAlongside: {
+            progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
-            }) {
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.recommendationLabel.alpha = 1
+            } completion: {
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
 
@@ -736,126 +739,5 @@ extension PinSetupViewController {
         fromViewController.presentActionSheet(actionSheet)
 
         return promise
-    }
-}
-
-class PinProgressView: UIView {
-    private let label = UILabel()
-    private let progressAnimation = AnimationView(name: "pinCreationInProgress")
-    private let errorAnimation = AnimationView(name: "pinCreationFail")
-    private let successAnimation = AnimationView(name: "pinCreationSuccess")
-
-    required init(loadingText: String) {
-        super.init(frame: .zero)
-
-        backgroundColor = Theme.backgroundColor
-
-        let animationContainer = UIView()
-        addSubview(animationContainer)
-        animationContainer.autoPinWidthToSuperview()
-        animationContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        progressAnimation.backgroundBehavior = .pauseAndRestore
-        progressAnimation.loopMode = .playOnce
-        progressAnimation.contentMode = .scaleAspectFit
-        animationContainer.addSubview(progressAnimation)
-        progressAnimation.autoPinEdgesToSuperviewEdges()
-
-        errorAnimation.isHidden = true
-        errorAnimation.backgroundBehavior = .pauseAndRestore
-        errorAnimation.loopMode = .playOnce
-        errorAnimation.contentMode = .scaleAspectFit
-        animationContainer.addSubview(errorAnimation)
-        errorAnimation.autoPinEdgesToSuperviewEdges()
-
-        successAnimation.isHidden = true
-        successAnimation.backgroundBehavior = .pauseAndRestore
-        successAnimation.loopMode = .playOnce
-        successAnimation.contentMode = .scaleAspectFit
-        animationContainer.addSubview(successAnimation)
-        successAnimation.autoPinEdgesToSuperviewEdges()
-
-        label.font = .systemFont(ofSize: 17)
-        label.textColor = Theme.primaryTextColor
-        label.textAlignment = .center
-        label.text = loadingText
-
-        addSubview(label)
-        label.autoPinWidthToSuperview(withMargin: 8)
-        label.autoPinEdge(.top, to: .bottom, of: animationContainer, withOffset: 12)
-        label.autoPinBottomToSuperviewMargin()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func reset() {
-        progressAnimation.isHidden = false
-        progressAnimation.stop()
-        successAnimation.isHidden = true
-        successAnimation.stop()
-        errorAnimation.isHidden = true
-        errorAnimation.stop()
-        completedSuccessfully = nil
-        completionHandler = nil
-        alpha = 0
-    }
-
-    func startLoading(animateAlongside: @escaping () -> Void) {
-        reset()
-
-        progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
-
-        UIView.animate(withDuration: 0.15) {
-            self.alpha = 1
-            animateAlongside()
-        }
-    }
-
-    func loadingComplete(success: Bool, animated: Bool = true, animateAlongside: (() -> Void)? = nil, completion: @escaping () -> Void) {
-        // Marking loading complete does not immediately stop the loading indicator,
-        // instead it sets this flag which waits until the animation is at the point
-        // it can transition to the next state.
-        completedSuccessfully = success
-
-        guard animated else {
-            reset()
-            return completion()
-        }
-
-        completionHandler = { [weak self] in
-            UIView.animate(withDuration: 0.15, animations: {
-                self?.alpha = 0
-                animateAlongside?()
-            }) { _ in
-                self?.reset()
-                completion()
-            }
-        }
-    }
-
-    private var completedSuccessfully: Bool?
-    private var completionHandler: (() -> Void)?
-
-    private func startNextLoopOrFinish() {
-        // If we haven't yet completed, start another loop of the progress animation.
-        // We'll check again when it's done.
-        guard let completedSuccessfully = completedSuccessfully else {
-            return progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
-        }
-
-        guard !progressAnimation.isHidden else { return }
-
-        progressAnimation.stop()
-        progressAnimation.isHidden = true
-
-        if completedSuccessfully {
-            successAnimation.isHidden = false
-            successAnimation.play { [weak self] _ in self?.completionHandler?() }
-        } else {
-            errorAnimation.isHidden = false
-            errorAnimation.play { [weak self] _ in self?.completionHandler?() }
-        }
     }
 }

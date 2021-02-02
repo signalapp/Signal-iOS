@@ -248,7 +248,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
         pinTextField.resignFirstResponder()
 
-        let progressView = PinProgressView(
+        let progressView = AnimatedProgressView(
             loadingText: NSLocalizedString("REGISTER_2FA_PIN_PROGRESS",
                                            comment: "Indicates the work we are doing while verifying the user's pin")
         )
@@ -256,17 +256,23 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         progressView.autoPinWidthToSuperview()
         progressView.autoVCenterInSuperview()
 
-        progressView.startLoading {
+        progressView.startAnimating {
             self.view.isUserInteractionEnabled = false
             self.nextButton.alpha = 0.5
             self.pinTypeToggle.alpha = 0.5
+            self.pinTextField.alpha = 0
+            self.validationWarningLabel.alpha = 0
+            self.needHelpLink.alpha = 0
         }
 
         func animateProgressFail() {
-            progressView.loadingComplete(success: false, animateAlongside: {
+            progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
                 self.pinTypeToggle.alpha = 1
-            }) {
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.needHelpLink.alpha = 1
+            } completion: {
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
             }
@@ -297,33 +303,33 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             case .exhaustedV2RegistrationLockAttempts:
                 self.attemptState = .exhausted
 
-                progressView.loadingComplete(success: false, animated: false) { [weak self] in
-                    guard let self = self else { return }
+                progressView.stopAnimatingImmediately()
+                progressView.removeFromSuperview()
 
-                    self.nextButton.alpha = 1
-                    self.pinTypeToggle.alpha = 1
+                self.nextButton.alpha = 1
+                self.pinTypeToggle.alpha = 1
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.needHelpLink.alpha = 1
+                self.view.isUserInteractionEnabled = true
+                self.showAttemptsExhausted()
 
-                    self.view.isUserInteractionEnabled = true
-                    progressView.removeFromSuperview()
-
-                    self.showAttemptsExhausted()
-                }
             case .success:
                 self.attemptState = .valid
 
                 // The completion handler always dismisses this view, so we don't want to animate anything.
-                progressView.loadingComplete(success: true, animated: false) { [weak self] in
-                    guard let self = self else { return }
+                progressView.stopAnimatingImmediately()
+                progressView.removeFromSuperview()
 
-                    self.nextButton.alpha = 1
-                    self.pinTypeToggle.alpha = 1
+                self.nextButton.alpha = 1
+                self.pinTypeToggle.alpha = 1
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.needHelpLink.alpha = 1
+                self.view.isUserInteractionEnabled = true
 
-                    self.view.isUserInteractionEnabled = true
-                    progressView.removeFromSuperview()
-
-                    // If we have success while pending restoration, show the next onboarding milestone.
-                    if self.hasPendingRestoration { self.showNextMilestone(wasSuccessful: true) }
-                }
+                // If we have success while pending restoration, show the next onboarding milestone.
+                if self.hasPendingRestoration { self.showNextMilestone(wasSuccessful: true) }
 
             case .invalidVerificationCode:
                 owsFailDebug("Invalid verification code in 2FA view.")
