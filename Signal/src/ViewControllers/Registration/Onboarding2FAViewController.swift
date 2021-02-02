@@ -260,12 +260,18 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             self.view.isUserInteractionEnabled = false
             self.nextButton.alpha = 0.5
             self.pinTypeToggle.alpha = 0.5
+            self.pinTextField.alpha = 0
+            self.validationWarningLabel.alpha = 0
+            self.needHelpLink.alpha = 0
         }
 
         func animateProgressFail() {
             progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
                 self.pinTypeToggle.alpha = 1
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.needHelpLink.alpha = 1
             } completion: {
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
@@ -302,6 +308,9 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
                 self.nextButton.alpha = 1
                 self.pinTypeToggle.alpha = 1
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.needHelpLink.alpha = 1
                 self.view.isUserInteractionEnabled = true
                 self.showAttemptsExhausted()
 
@@ -314,6 +323,9 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
                 self.nextButton.alpha = 1
                 self.pinTypeToggle.alpha = 1
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.needHelpLink.alpha = 1
                 self.view.isUserInteractionEnabled = true
 
                 // If we have success while pending restoration, show the next onboarding milestone.

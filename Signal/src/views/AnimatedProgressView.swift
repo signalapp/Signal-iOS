@@ -81,6 +81,7 @@ class AnimatedProgressView: UIView {
     }
 
     func startAnimating(alongside animationBlock: @escaping () -> Void = {}) {
+        AssertIsOnMainThread()
         owsAssertDebug(!isAnimating)
         reset()
         isAnimating = true
@@ -96,6 +97,7 @@ class AnimatedProgressView: UIView {
     }
 
     func stopAnimatingImmediately() {
+        AssertIsOnMainThread()
         owsAssertDebug(isAnimating)
 
         if let animationCompletionHandler = animationCompletionHandler {
@@ -106,6 +108,7 @@ class AnimatedProgressView: UIView {
     }
 
     func stopAnimating(success: Bool, animateAlongside: (() -> Void)? = nil, completion: @escaping () -> Void) {
+        AssertIsOnMainThread()
         owsAssertDebug(isAnimating)
 
         // Marking the animation complete does not immediately stop the animation,
@@ -114,13 +117,20 @@ class AnimatedProgressView: UIView {
         completedSuccessfully = success
 
         animationCompletionHandler = { [weak self] in
+            guard let self = self else {
+                animateAlongside?()
+                completion()
+                return
+            }
+
+            self.animationCompletionHandler = nil
             UIView.animate(withDuration: 0.15, animations: {
-                if self?.hidesWhenStopped == true {
-                    self?.alpha = 0
+                if self.hidesWhenStopped == true {
+                    self.alpha = 0
                 }
                 animateAlongside?()
             }) { _ in
-                self?.reset()
+                self.reset()
                 completion()
             }
         }
@@ -145,15 +155,18 @@ class AnimatedProgressView: UIView {
 
         if completedSuccessfully {
             successAnimation.isHidden = false
-            successAnimation.playAndWhenFinished { [weak self] in
-                self?.animationCompletionHandler?()
-            }
+            successAnimation.play { [weak self] _ in self?.completeAnimation() }
         } else {
             errorAnimation.isHidden = false
-            errorAnimation.playAndWhenFinished { [weak self] in
-                self?.animationCompletionHandler?()
-            }
+            errorAnimation.play { [weak self] _ in self?.completeAnimation() }
         }
+    }
+
+    private func completeAnimation() {
+        guard let animationCompletion = self.animationCompletionHandler else { return }
+        self.animationCompletionHandler = nil
+
+        animationCompletion()
     }
 }
 

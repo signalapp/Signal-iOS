@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -568,6 +568,9 @@ public class PinSetupViewController: OWSViewController {
         progressView.startAnimating {
             self.view.isUserInteractionEnabled = false
             self.nextButton.alpha = 0.5
+            self.pinTextField.alpha = 0
+            self.validationWarningLabel.alpha = 0
+            self.recommendationLabel.alpha = 0
         }
 
         OWS2FAManager.shared().requestEnable2FA(withPin: pin, mode: .V2).then { () -> Promise<Void> in
@@ -599,6 +602,9 @@ public class PinSetupViewController: OWSViewController {
 
             progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
+                self.pinTextField.alpha = 1
+                self.validationWarningLabel.alpha = 1
+                self.recommendationLabel.alpha = 1
             } completion: {
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
