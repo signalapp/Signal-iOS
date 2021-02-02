@@ -451,4 +451,52 @@ public class CVAttachmentProgressView: UIView {
             stateView.state = .uploadUnknownProgress
         }
     }
+
+    public enum ProgressType {
+        case none
+        case uploading(attachmentStream: TSAttachmentStream)
+        case pendingDownload(attachmentPointer: TSAttachmentPointer)
+        case downloading(attachmentPointer: TSAttachmentPointer)
+        case restoring(attachmentPointer: TSAttachmentPointer)
+        case unknown
+    }
+
+    public static func progressType(forAttachment attachment: TSAttachment,
+                                    interaction: TSInteraction) -> ProgressType {
+
+        if let attachmentStream = attachment as? TSAttachmentStream {
+            if let outgoingMessage = interaction as? TSOutgoingMessage {
+                let hasSendFailed = outgoingMessage.messageState == .failed
+                let isFromLinkedDevice = outgoingMessage.isFromLinkedDevice
+                guard !attachmentStream.isUploaded,
+                        !isFromLinkedDevice,
+                        !hasSendFailed else {
+                    return .none
+                }
+                return .uploading(attachmentStream: attachmentStream)
+            } else if interaction is TSIncomingMessage {
+                return .none
+            } else {
+                owsFailDebug("Unexpected interaction: \(type(of: interaction))")
+                return .unknown
+            }
+        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
+            guard attachmentPointer.pointerType == .incoming else {
+                return .restoring(attachmentPointer: attachmentPointer)
+            }
+            switch attachmentPointer.state {
+            case .pendingMessageRequest, .pendingManualDownload:
+                return .pendingDownload(attachmentPointer: attachmentPointer)
+            case .failed, .enqueued, .downloading:
+                return .downloading(attachmentPointer: attachmentPointer)
+            @unknown default:
+                owsFailDebug("Invalid value.")
+                return .unknown
+            }
+
+        } else {
+            owsFailDebug("Unexpected attachment: \(type(of: attachment))")
+            return .unknown
+        }
+    }
 }

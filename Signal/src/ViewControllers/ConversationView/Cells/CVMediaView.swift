@@ -16,11 +16,10 @@ public class CVMediaView: UIView {
 
     private let mediaCache: CVMediaCache
     public let attachment: TSAttachment
+    private let interaction: TSInteraction
     private let conversationStyle: ConversationStyle
-    private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
-    private let isFromLinkedDevice: Bool
 
     private var reusableMediaView: ReusableMediaView?
 
@@ -28,17 +27,15 @@ public class CVMediaView: UIView {
 
     public required init(mediaCache: CVMediaCache,
                          attachment: TSAttachment,
-                         isOutgoing: Bool,
+                         interaction: TSInteraction,
                          maxMessageWidth: CGFloat,
                          isBorderless: Bool,
-                         isFromLinkedDevice: Bool,
                          conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
         self.attachment = attachment
-        self.isOutgoing = isOutgoing
+        self.interaction = interaction
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
-        self.isFromLinkedDevice = isFromLinkedDevice
         self.conversationStyle = conversationStyle
 
         super.init(frame: .zero)
@@ -77,49 +74,40 @@ public class CVMediaView: UIView {
     private func configureForUndownloadedMedia() {
         tryToConfigureForBlurHash(attachment: attachment)
 
-        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
-            owsFailDebug("Attachment has unexpected type.")
-            configure(forError: .invalid)
-            return
-        }
-        guard attachmentPointer.pointerType == .incoming else {
-            // TODO: Show "restoring" indicator and possibly progress.
-            configure(forError: .missing)
-            return
-        }
-        switch attachmentPointer.state {
-        case .pendingMessageRequest, .pendingManualDownload:
-            // We don't need to add a download indicator for pending
-            // attachments; CVComponentBodyMedia will add a download
-            // button if any media in the gallery is pending.
-            return
-        case .failed, .enqueued, .downloading:
-            break
-        @unknown default:
-            owsFailDebug("Invalid value.")
-        }
-
-        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                    style: .withCircle,
-                                                    conversationStyle: conversationStyle)
-        self.addSubview(progressView)
-        progressView.autoCenterInSuperview()
+        _ = addProgressIfNecessary()
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
+        return addProgressIfNecessary()
+    }
+
+    private func addProgressIfNecessary() -> Bool {
+
+        let direction: CVAttachmentProgressView.Direction
+        switch CVAttachmentProgressView.progressType(forAttachment: attachment,
+                                                     interaction: interaction) {
+        case .none:
+            return false
+        case .uploading(let attachmentStream):
+            direction = .upload(attachmentStream: attachmentStream)
+        case .pendingDownload(let attachmentPointer):
+            direction = .download(attachmentPointer: attachmentPointer)
+        case .downloading(let attachmentPointer):
+            direction = .download(attachmentPointer: attachmentPointer)
+        case .restoring:
+            // TODO: We could easily show progress for restores.
+            owsFailDebug("Restoring progress type.")
+            return false
+        case .unknown:
+            owsFailDebug("Unknown progress type.")
             return false
         }
-        guard isOutgoing,
-              !attachmentStream.isUploaded,
-              !isFromLinkedDevice else {
-            return false
-        }
-        let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
+
+        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
+        let progressView = CVAttachmentProgressView(direction: direction,
                                                     style: .withCircle,
                                                     conversationStyle: conversationStyle)
-        self.addSubview(progressView)
+        addSubview(progressView)
         progressView.autoCenterInSuperview()
         return true
     }
