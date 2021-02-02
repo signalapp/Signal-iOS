@@ -90,8 +90,11 @@ public class CVMediaView: UIView {
             return false
         case .uploading(let attachmentStream):
             direction = .upload(attachmentStream: attachmentStream)
-        case .pendingDownload(let attachmentPointer):
-            direction = .download(attachmentPointer: attachmentPointer)
+        case .pendingDownload:
+            // We don't need to add a download indicator for pending
+            // attachments; CVComponentBodyMedia will add a download
+            // button if any media in the gallery is pending.
+            return false
         case .downloading(let attachmentPointer):
             direction = .download(attachmentPointer: attachmentPointer)
         case .restoring:
