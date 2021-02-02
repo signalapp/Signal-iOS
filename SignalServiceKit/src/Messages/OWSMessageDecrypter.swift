@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
@@ -22,7 +22,7 @@ extension OWSMessageDecrypter {
                                                  file: String = #file,
                                                  line: Int32 = #line,
                                                  function: String = #function) {
-        OWSLogger.error("\(function):\(line) \(eventName): \(self.description(for: envelope))")
+        Logger.error("\(function):\(line) \(eventName): \(self.description(for: envelope))")
         OWSAnalytics.logEvent(eventName,
                               severity: .error,
                               parameters: nil,
@@ -34,7 +34,7 @@ extension OWSMessageDecrypter {
                                            senderId: String,
                                            transaction: SDSAnyWriteTransaction) {
         if RemoteConfig.automaticSessionResetKillSwitch {
-            OWSLogger.warn("Skipping null message after undecryptable message from \(senderId) due to kill switch.")
+            Logger.warn("Skipping null message after undecryptable message from \(senderId) due to kill switch.")
             return
         }
 
@@ -43,22 +43,29 @@ extension OWSMessageDecrypter {
         let lastNullMessageDate = store.getDate(senderId, transaction: transaction)
         let timeSinceNullMessage = abs(lastNullMessageDate?.timeIntervalSinceNow ?? .infinity)
         guard timeSinceNullMessage > RemoteConfig.automaticSessionResetAttemptInterval else {
-            OWSLogger.warn("Skipping null message after undecryptable message from \(senderId), " +
+            Logger.warn("Skipping null message after undecryptable message from \(senderId), " +
                             "last null message sent \(lastNullMessageDate!.ows_millisecondsSince1970).")
             return
         }
 
-        OWSLogger.info("Sending null message to reset session after undecryptable message from: \(senderId)")
+        Logger.info("Sending null message to reset session after undecryptable message from: \(senderId)")
         store.setDate(Date(), key: senderId, transaction: transaction)
 
         transaction.addAsyncCompletion {
             let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread)
             SSKEnvironment.shared.messageSender.sendMessage(nullMessage.asPreparer, success: {
-                OWSLogger.info("Successfully sent null message after session reset " +
+                Logger.info("Successfully sent null message after session reset " +
                                 "for undecryptable message from \(senderId)")
             }, failure: { error in
-                owsFailDebug("Failed to send null message after session reset " +
-                                "for undecryptable message from \(senderId) (\(error))")
+                let nsError = error as NSError
+                if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                    nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                    Logger.info("Failed to send null message after session reset for " +
+                                    "for undecryptable message from \(senderId) (\(error))")
+                } else {
+                    owsFailDebug("Failed to send null message after session reset " +
+                                    "for undecryptable message from \(senderId) (\(error))")
+                }
             })
         }
     }
@@ -70,12 +77,12 @@ extension OWSMessageDecrypter {
         let logString = "Error while decrypting \(self.description(forEnvelopeType: envelope)) message: \(error)"
 
         if case SignalError.duplicatedMessage(_) = error {
-            OWSLogger.info(logString)
+            Logger.info(logString)
             // Duplicate messages are not recorded in the database.
             return OWSErrorWithUserInfo(.failedToDecryptDuplicateMessage, [NSUnderlyingErrorKey: error])
         }
 
-        OWSLogger.error(logString)
+        Logger.error(logString)
 
         let wrappedError: Error
         if (error as NSError).domain == OWSSignalServiceKitErrorDomain {
@@ -111,7 +118,7 @@ extension OWSMessageDecrypter {
                 if !recentlyResetSenderIds.contains(senderId) {
                     recentlyResetSenderIds.add(senderId)
 
-                    OWSLogger.warn("Archiving session for undecryptable message from \(senderId)")
+                    Logger.warn("Archiving session for undecryptable message from \(senderId)")
                     SSKEnvironment.shared.sessionStore.archiveSession(for: sourceAddress,
                                                                       deviceId: Int32(envelope.sourceDevice),
                                                                       transaction: transaction)
@@ -121,7 +128,7 @@ extension OWSMessageDecrypter {
 
                     trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
                 } else {
-                    OWSLogger.warn("Skipping session reset for undecryptable message from \(senderId), " +
+                    Logger.warn("Skipping session reset for undecryptable message from \(senderId), " +
                                     "already reset during this batch")
                     errorMessage = nil
                 }
