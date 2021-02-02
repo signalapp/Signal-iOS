@@ -188,11 +188,21 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
 extension CVComponentAudioAttachment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
-        // TODO: We could include information about the attachment format.
-        (attachment.isVoiceMessage
-            ? NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
-            comment: "Accessibility label for a voice memo.")
-            : NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
-            comment: "Accessibility label for audio."))
+        if attachment.isVoiceMessage {
+            if let attachmentStream = attachmentStream,
+               attachmentStream.audioDurationSeconds() > 0 {
+                let format = NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT",
+                                               comment: "Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}.")
+                let duration = OWSFormat.formatInt(Int(attachmentStream.audioDurationSeconds()))
+                return String(format: format, duration)
+            } else {
+                return NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
+                                         comment: "Accessibility label for a voice memo.")
+            }
+        } else {
+            // TODO: We could include information about the attachment format.
+            return NSLocalizedString("ACCESSIBILITY_LABEL_AUDIO",
+                                     comment: "Accessibility label for audio.")
+        }
     }
 }
