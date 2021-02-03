@@ -27,6 +27,7 @@ public enum GroupsV2Error: Error {
     case groupNeedsToBeMigrated
     case groupCannotBeMigrated
     case groupDowngradeNotAllowed
+    case missingGroupChangeProtos
 }
 
 // MARK: -
