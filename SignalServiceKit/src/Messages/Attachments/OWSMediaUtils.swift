@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -169,12 +169,16 @@ public class OWSMediaUtils: NSObject {
     public static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
     @objc
     public static let kMaxFileSizeImage = UInt(8 * 1024 * 1024)
+    // Cloudflare limits uploads to 100 MB. To avoid hitting those limits,
+    // we use limits that are 5% lower for the unencrypted content.
     @objc
-    public static let kMaxFileSizeVideo = UInt(100 * 1024 * 1024)
+    public static let kMaxFileSizeVideo = UInt(95 * 1000 * 1000)
     @objc
-    public static let kMaxFileSizeAudio = UInt(100 * 1024 * 1024)
+    public static let kMaxFileSizeAudio = UInt(95 * 1000 * 1000)
     @objc
-    public static let kMaxFileSizeGeneric = UInt(100 * 1024 * 1024)
+    public static let kMaxFileSizeGeneric = UInt(95 * 1000 * 1000)
+    @objc
+    public static let kMaxAttachmentUploadSizeBytes = UInt(100 * 1000 * 1000)
 
     @objc
     public static let kMaxVideoDimensions: CGFloat = 3 * 1024
