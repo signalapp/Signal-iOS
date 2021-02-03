@@ -126,10 +126,6 @@ public class OWSAttachmentUploadV2: NSObject {
         return firstly(on: Self.serialQueue) { () -> Data in
             let attachmentData = try self.attachmentStream.readDataFromFile()
 
-            guard attachmentData.count <= OWSMediaUtils.kMaxFileSizeGeneric else {
-                throw OWSAssertionError("Unencrypted data is too large: \(attachmentData.count).").asUnretryableError
-            }
-
             var nsEncryptionKey = NSData()
             var nsDigest = NSData()
             guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(attachmentData,
@@ -148,8 +144,9 @@ public class OWSAttachmentUploadV2: NSObject {
             self.encryptionKey = encryptionKey
             self.digest = digest
 
-            guard encryptedAttachmentData.count <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
-                throw OWSAssertionError("Encrypted data is too large: \(encryptedAttachmentData.count).").asUnretryableError
+            guard attachmentData.count <= OWSMediaUtils.kMaxFileSizeGeneric,
+                  encryptedAttachmentData.count <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
+                throw OWSAssertionError("Data is too large: \(encryptedAttachmentData.count).").asUnretryableError
             }
 
             return encryptedAttachmentData
