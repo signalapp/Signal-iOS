@@ -154,11 +154,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
             OWSLogError(@"Failed: %@", error);
 
             if (HTTPStatusCodeForError(error).intValue == 413) {
-                if (SSKDebugFlags.betaLogging) {
-                    OWSFailDebug(@"Request entity too large: %@.", @(attachmentStream.byteCount));
-                } else {
-                    OWSFailDebug(@"Request entity too large.");
-                }
+                OWSFailDebug(@"Request entity too large: %@.", @(attachmentStream.byteCount));
                 error.isRetryable = NO;
             } else if (error.code == kCFURLErrorSecureConnectionFailed) {
                 error.isRetryable = NO;
