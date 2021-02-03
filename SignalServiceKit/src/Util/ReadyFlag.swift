@@ -74,6 +74,15 @@ public class ReadyFlag: NSObject {
         // * The sync blocks are performed sync when the flag is set.
         // * The async blocks are performed async after the flag is set.
         case serialQueue
+
+        fileprivate var dispatchQueue: DispatchQueue {
+            switch self {
+            case .mainThread:
+                return .main
+            case .serialQueue:
+                return ReadyFlag.serialQueue
+            }
+        }
     }
 
     private let queueMode: QueueMode
@@ -114,15 +123,27 @@ public class ReadyFlag: NSObject {
             AssertIsOnMainThread()
         }
 
-        unfairLock.withLock {
-            if isSet {
-                autoreleasepool {
-                    readyBlock()
+        let priority = priority ?? Self.defaultPriority
+        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+
+        let didEnqueue: Bool = {
+            unfairLock.withLock {
+                guard !isSet else {
+                    return false
                 }
-            } else {
-                let priority = priority ?? Self.defaultPriority
-                let task = ReadyTask(label: label, priority: priority, block: readyBlock)
                 willBecomeReadyTasks.append(task)
+                return true
+            }
+        }()
+
+        if !didEnqueue {
+            // We perform the block outside unfairLock to avoid deadlock.
+            BenchManager.bench(title: self.name + ".willBecomeReady " + task.displayLabel,
+                               logIfLongerThan: Self.blockLogDuration,
+                               logInProduction: true) {
+                autoreleasepool {
+                    task.block()
+                }
             }
         }
     }
@@ -134,15 +155,27 @@ public class ReadyFlag: NSObject {
             AssertIsOnMainThread()
         }
 
-        unfairLock.withLock {
-            if isSet {
-                autoreleasepool {
-                    readyBlock()
+        let priority = priority ?? Self.defaultPriority
+        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+
+        let didEnqueue: Bool = {
+            unfairLock.withLock {
+                guard !isSet else {
+                    return false
                 }
-            } else {
-                let priority = priority ?? Self.defaultPriority
-                let task = ReadyTask(label: label, priority: priority, block: readyBlock)
                 didBecomeReadySyncTasks.append(task)
+                return true
+            }
+        }()
+
+        if !didEnqueue {
+            // We perform the block outside unfairLock to avoid deadlock.
+            BenchManager.bench(title: self.name + ".didBecomeReady " + task.displayLabel,
+                               logIfLongerThan: Self.blockLogDuration,
+                               logInProduction: true) {
+                autoreleasepool {
+                    task.block()
+                }
             }
         }
     }
@@ -154,15 +187,32 @@ public class ReadyFlag: NSObject {
             AssertIsOnMainThread()
         }
 
-        unfairLock.withLock {
-            if isSet {
-                autoreleasepool {
-                    readyBlock()
+        let priority = priority ?? Self.defaultPriority
+        let task = ReadyTask(label: label, priority: priority, block: readyBlock)
+
+        let didEnqueue: Bool = {
+            unfairLock.withLock {
+                guard !isSet else {
+                    return false
                 }
-            } else {
-                let priority = priority ?? Self.defaultPriority
-                let task = ReadyTask(label: label, priority: priority, block: readyBlock)
                 didBecomeReadyAsyncTasks.append(task)
+                return true
+            }
+        }()
+
+        if !didEnqueue {
+            // We perform the block outside unfairLock to avoid deadlock.
+            //
+            // Always perform async blocks async.
+            let dispatchQueue = queueMode.dispatchQueue
+            dispatchQueue.async { () -> Void in
+                BenchManager.bench(title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
+                                   logIfLongerThan: Self.blockLogDuration,
+                                   logInProduction: true) {
+                    autoreleasepool {
+                        task.block()
+                    }
+                }
             }
         }
     }
@@ -241,14 +291,7 @@ public class ReadyFlag: NSObject {
     }
 
     private func performDidBecomeReadyAsyncTasks(_ tasks: [ReadyTask]) {
-        let dispatchQueue: DispatchQueue
-        switch queueMode {
-        case .mainThread:
-            dispatchQueue = .main
-        case .serialQueue:
-            dispatchQueue = Self.serialQueue
-        }
-
+        let dispatchQueue = queueMode.dispatchQueue
         dispatchQueue.asyncAfter(deadline: DispatchTime.now() + 0.025) { [weak self] in
             guard let self = self else {
                 return
