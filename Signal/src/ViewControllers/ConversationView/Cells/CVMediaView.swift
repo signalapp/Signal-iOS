@@ -77,10 +77,6 @@ public class CVMediaView: UIView {
         _ = addProgressIfNecessary()
     }
 
-    private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
-        return addProgressIfNecessary()
-    }
-
     private func addProgressIfNecessary() -> Bool {
 
         let direction: CVAttachmentProgressView.Direction
@@ -96,6 +92,8 @@ public class CVMediaView: UIView {
             // button if any media in the gallery is pending.
             return false
         case .downloading(let attachmentPointer):
+            backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
+
             direction = .download(attachmentPointer: attachmentPointer)
         case .restoring:
             // TODO: We could easily show progress for restores.
@@ -106,7 +104,6 @@ public class CVMediaView: UIView {
             return false
         }
 
-        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         let progressView = CVAttachmentProgressView(direction: direction,
                                                     style: .withCircle,
                                                     conversationStyle: conversationStyle)
@@ -136,7 +133,7 @@ public class CVMediaView: UIView {
         }
         mediaView.backgroundColor = isBorderless ? .clear : Theme.washColor
 
-        if !addUploadProgressIfNecessary(mediaView) {
+        if !addProgressIfNecessary() {
             if reusableMediaView.isVideo {
                 let videoPlayButton = Self.buildVideoPlayButton()
                 addSubview(videoPlayButton)
