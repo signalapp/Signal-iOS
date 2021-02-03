@@ -26,9 +26,8 @@ public class CVMediaAlbumView: UIStackView {
 
     public func configure(mediaCache: CVMediaCache,
                           items: [CVMediaAlbumItem],
-                          isOutgoing: Bool,
+                          interaction: TSInteraction,
                           isBorderless: Bool,
-                          isFromLinkedDevice: Bool,
                           cellMeasurement: CVCellMeasurement,
                           conversationStyle: ConversationStyle) {
 
@@ -41,10 +40,9 @@ public class CVMediaAlbumView: UIStackView {
         self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map {
             CVMediaView(mediaCache: mediaCache,
                         attachment: $0.attachment,
-                        isOutgoing: isOutgoing,
+                        interaction: interaction,
                         maxMessageWidth: maxMessageWidth,
                         isBorderless: isBorderless,
-                        isFromLinkedDevice: isFromLinkedDevice,
                         conversationStyle: conversationStyle)
         }
         self.isBorderless = isBorderless
