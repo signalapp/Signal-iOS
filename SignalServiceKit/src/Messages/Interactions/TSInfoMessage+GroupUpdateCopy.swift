@@ -530,7 +530,7 @@ extension GroupUpdateCopy {
             case .requesting:
                 switch newMembershipStatus {
                 case .normalMember:
-                    addUserRequestWasApproved(for: address)
+                    addUserRequestWasApproved(for: address, oldGroupMembership: oldGroupMembership)
                 case .invited:
                     addUserWasInvitedToTheGroup(for: address,
                                                 membershipCounts: &membershipCounts)
@@ -1353,7 +1353,8 @@ extension GroupUpdateCopy {
         }
     }
 
-    mutating func addUserRequestWasApproved(for address: SignalServiceAddress) {
+    mutating func addUserRequestWasApproved(for address: SignalServiceAddress,
+                                            oldGroupMembership: GroupMembership) {
         let isLocalUser = localAddress == address
         if isLocalUser {
             switch updater {
@@ -1366,10 +1367,19 @@ extension GroupUpdateCopy {
                         address: address,
                         copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was added to the group."))
-            case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
-                                               comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}.")
-                addItem(.userMembershipState, address: address, format: format, updaterName)
+            case .otherUser(let updaterName, let updaterAddress):
+                // A user with a "pending request to join the group" can be "added" or "approved".
+                // If the adder was an admin, we treat this as "approved".
+                if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
+                    let format = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}.")
+                    addItem(.userMembershipState, address: address, format: format, updaterName)
+                } else {
+                    addItem(.userMembershipState_added,
+                            address: address,
+                            copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                    comment: "Message indicating that the local user was added to the group."))
+                }
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1380,17 +1390,41 @@ extension GroupUpdateCopy {
             let requesterName = contactsManager.displayName(for: address, transaction: transaction)
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT",
-                                               comment: "Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}.")
-                addItem(.userMembershipState, address: address, format: format, requesterName)
-            case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
-                                               comment: "Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
-                addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
+                // A user with a "pending request to join the group" can be "added" or "approved".
+                // If the adder was an admin, we treat this as "approved".
+                if oldGroupMembership.isFullMemberAndAdministrator(localAddress) {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}.")
+                    addItem(.userMembershipState, address: address, format: format, requesterName)
+                } else {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}.")
+                    addItem(.userMembershipState_added,
+                            address: address,
+                            format: format, requesterName)
+                }
+            case .otherUser(let updaterName, let updaterAddress):
+                // A user with a "pending request to join the group" can be "added" or "approved".
+                // If the adder was an admin, we treat this as "approved".
+                if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
+                    addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
+                } else {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}.")
+                    addItem(.userMembershipState_added,
+                            address: address,
+                            format: format, updaterName, requesterName)
+                }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT",
-                                               comment: "Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}.")
-                addItem(.userMembershipState, address: address, format: format, requesterName)
+                // If we don't know who added the user we can't infer whether
+                // they were "added" or "approved".
+                let format = NSLocalizedString("GROUP_REMOTE_USER_JOINED_GROUP_FORMAT",
+                                               comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
+                addItem(.userMembershipState_added,
+                        address: address,
+                        format: format, requesterName)
             }
         }
     }
