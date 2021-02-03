@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,7 +31,7 @@ public class ReadyFlag: NSObject {
                                                    autoreleaseFrequency: .workItem)
 
     private let unfairLock = UnfairLock()
-    
+
     public typealias ReadyBlock = () -> Void
     public typealias Priority = Int
 
@@ -39,11 +39,11 @@ public class ReadyFlag: NSObject {
         let label: String?
         let priority: Priority
         let block: ReadyBlock
-        
+
         var displayLabel: String {
             label ?? "unknown"
         }
-        
+
         static func sort(_ tasks: [ReadyTask]) -> [ReadyTask] {
             tasks.sorted { (left, right) -> Bool in
                 // TODO: Verify correctness.
@@ -51,7 +51,7 @@ public class ReadyFlag: NSObject {
             }
         }
     }
-    
+
     private static let defaultPriority: Priority = 0
 
     // This class supports two thread modes.
@@ -113,10 +113,12 @@ public class ReadyFlag: NSObject {
         if queueMode == .mainThread {
             AssertIsOnMainThread()
         }
-        
+
         unfairLock.withLock {
             if isSet {
-                readyBlock()
+                autoreleasepool {
+                    readyBlock()
+                }
             } else {
                 let priority = priority ?? Self.defaultPriority
                 let task = ReadyTask(label: label, priority: priority, block: readyBlock)
@@ -124,17 +126,19 @@ public class ReadyFlag: NSObject {
             }
         }
     }
-    
+
     public func runNowOrWhenDidBecomeReadySync(_ readyBlock: @escaping ReadyBlock,
                                                label: String? = nil,
                                                priority: Priority? = nil) {
         if queueMode == .mainThread {
             AssertIsOnMainThread()
         }
-        
+
         unfairLock.withLock {
             if isSet {
-                readyBlock()
+                autoreleasepool {
+                    readyBlock()
+                }
             } else {
                 let priority = priority ?? Self.defaultPriority
                 let task = ReadyTask(label: label, priority: priority, block: readyBlock)
@@ -142,17 +146,19 @@ public class ReadyFlag: NSObject {
             }
         }
     }
-    
+
     public func runNowOrWhenDidBecomeReadyAsync(_ readyBlock: @escaping ReadyBlock,
                                                 label: String? = nil,
                                                 priority: Priority? = nil) {
         if queueMode == .mainThread {
             AssertIsOnMainThread()
         }
-        
+
         unfairLock.withLock {
             if isSet {
-                readyBlock()
+                autoreleasepool {
+                    readyBlock()
+                }
             } else {
                 let priority = priority ?? Self.defaultPriority
                 let task = ReadyTask(label: label, priority: priority, block: readyBlock)
@@ -166,7 +172,7 @@ public class ReadyFlag: NSObject {
         if queueMode == .mainThread {
             AssertIsOnMainThread()
         }
-     
+
         guard let tasksToPerform = tryToSetFlag() else {
             return
         }
@@ -189,7 +195,7 @@ public class ReadyFlag: NSObject {
                 }
             }
         }
-        
+
         BenchManager.bench(title: self.name + ".didBecomeReady group",
                            logIfLongerThan: Self.groupLogDuration,
                            logInProduction: true) {
@@ -203,16 +209,16 @@ public class ReadyFlag: NSObject {
                 }
             }
         }
-        
+
         self.performDidBecomeReadyAsyncTasks(didBecomeReadyAsyncTasks)
     }
-    
+
     private struct TasksToPerform {
         let willBecomeReadyTasks: [ReadyTask]
         let didBecomeReadySyncTasks: [ReadyTask]
         let didBecomeReadyAsyncTasks: [ReadyTask]
     }
-    
+
     private func tryToSetFlag() -> TasksToPerform? {
         unfairLock.withLock {
             guard flag.tryToSetFlag() else {
@@ -223,7 +229,7 @@ public class ReadyFlag: NSObject {
                 owsAssertDebug(didBecomeReadyAsyncTasks.isEmpty)
                 return nil
             }
-            
+
             let tasksToPerform = TasksToPerform(willBecomeReadyTasks: self.willBecomeReadyTasks,
                                                 didBecomeReadySyncTasks: self.didBecomeReadySyncTasks,
                                                 didBecomeReadyAsyncTasks: self.didBecomeReadyAsyncTasks)
