@@ -586,9 +586,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
             if !finished {
                 Logger.warn("performBatchUpdates did not finish")
-                Logger.warn("Layout: \(self.layout.debugDescription)")
-                Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
-                Logger.warn("renderState: \(update.renderState.debugDescription)")
+                if DebugFlags.internalLogging {
+                    Logger.warn("Layout: \(self.layout.debugDescription)")
+                    Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
+                    Logger.warn("renderState: \(update.renderState.debugDescription)")
+                }
 
                 // If animations were interrupted, reset to get back to a known good state.
                 DispatchQueue.main.async { [weak self] in

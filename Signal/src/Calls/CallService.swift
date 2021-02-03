@@ -932,8 +932,8 @@ extension CallService: CallManagerDelegate {
         }
 
         let session = OWSURLSession(
-            securityPolicy: OWSURLSession.signalServiceSecurityPolicy(),
-            configuration: OWSURLSession.defaultURLSessionConfiguration()
+            securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
+            configuration: OWSURLSession.defaultConfigurationWithoutCaching
         )
         session.require2xxOr3xx = false
         session.allowRedirects = true

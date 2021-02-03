@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -82,7 +82,7 @@ fileprivate extension OWSSignalService {
             securityPolicy = OWSHTTPSecurityPolicy.shared()
         }
 
-        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        let sessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
         let sessionManager = AFHTTPSessionManager(baseURL: baseUrl,
                                                   sessionConfiguration: sessionConfiguration)
         sessionManager.securityPolicy = securityPolicy
@@ -138,7 +138,7 @@ fileprivate extension OWSSignalService {
 
         let urlSession = OWSURLSession(baseUrl: baseUrl,
                                        securityPolicy: securityPolicy,
-                                       configuration: .ephemeral,
+                                       configuration: OWSURLSession.defaultConfigurationWithoutCaching,
                                        censorshipCircumventionHost: censorshipCircumventionHost,
                                        extraHeaders: extraHeaders)
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
