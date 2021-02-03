@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -70,25 +70,43 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     NSArray<NSString *> *mouths = @[ @"3", @")", @"(", @"|", @"\\", @"P", @"D", @"o" ];
     // eyebrows are rare
     NSArray<NSString *> *eyebrows = @[ @">", @"", @"", @"", @"" ];
-
+    
     NSString *randomEye = eyes[arc4random_uniform((uint32_t)eyes.count)];
     NSString *randomMouth = mouths[arc4random_uniform((uint32_t)mouths.count)];
     NSString *randomEyebrow = eyebrows[arc4random_uniform((uint32_t)eyebrows.count)];
     NSString *face = [NSString stringWithFormat:@"%@%@%@", randomEyebrow, randomEye, randomMouth];
-
+    
     UIColor *backgroundColor = [UIColor colorWithRGBHex:0xaca6633];
-
+    
     return [self avatarImageWithDiameter:diameter
                          backgroundColor:backgroundColor
                                drawBlock:^(CGContextRef context) {
-                                   CGContextTranslateCTM(context, diameter / 2, diameter / 2);
-                                   CGContextRotateCTM(context, (CGFloat)M_PI_2);
-                                   CGContextTranslateCTM(context, -diameter / 2, -diameter / 2);
+        CGContextTranslateCTM(context, diameter / 2, diameter / 2);
+        CGContextRotateCTM(context, (CGFloat)M_PI_2);
+        CGContextTranslateCTM(context, -diameter / 2, -diameter / 2);
+        
+        [self drawInitialsInAvatar:face
+                         textColor:self.avatarForegroundColor
+                              font:[self avatarTextFontForDiameter:diameter]
+                          diameter:diameter];
+    }];
+}
 
-                                   [self drawInitialsInAvatar:face
-                                                    textColor:self.avatarForegroundColor
-                                                         font:[self avatarTextFontForDiameter:diameter]
-                                                     diameter:diameter];
++ (nullable UIImage *)buildNoiseAvatarWithDiameter:(NSUInteger)diameter
+{
+    UIColor *backgroundColor = [UIColor colorWithRGBHex:0xaca6633];
+    return [self avatarImageWithDiameter:diameter
+                         backgroundColor:backgroundColor
+                               drawBlock:^(CGContextRef context) {
+                                   const NSUInteger stride = 1;
+                                   for (NSUInteger x = 0; x < diameter; x += stride) {
+                                       for (NSUInteger y = 0; y < diameter; y += stride) {
+                                           UIColor *color = [UIColor ows_randomColorWithIsAlphaRandom:NO];
+                                           CGContextSetFillColorWithColor(context, color.CGColor);
+                                           CGRect frame = CGRectMake(x, y, stride, stride);
+                                           CGContextFillRect(context, frame);
+                                       }
+                                   }
                                }];
 }
 
