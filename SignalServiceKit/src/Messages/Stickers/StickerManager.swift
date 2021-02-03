@@ -105,7 +105,7 @@ public class StickerManager: NSObject {
         super.init()
 
         // Resume sticker and sticker pack downloads when app is ready.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             StickerManager.cleanupOrphans()
 
             if TSAccountManager.shared().isRegisteredAndReady {

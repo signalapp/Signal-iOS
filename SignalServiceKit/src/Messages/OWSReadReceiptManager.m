@@ -66,7 +66,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSSingletonAssert();
 
     // Start processing.
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         [self scheduleProcessing];
     }];
 

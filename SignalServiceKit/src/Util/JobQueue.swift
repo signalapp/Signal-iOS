@@ -138,7 +138,7 @@ public extension JobQueue {
             return
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             guard self.isSetup.get() else {
                 return
             }

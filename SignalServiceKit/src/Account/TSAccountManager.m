@@ -217,12 +217,12 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         if (!CurrentAppContext().isMainApp) {
             [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
         }
     }];
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         [self updateAccountAttributesIfNecessary];
     }];
 
@@ -1031,7 +1031,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (void)reachabilityChanged {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         [self updateAccountAttributesIfNecessary];
     }];
 }

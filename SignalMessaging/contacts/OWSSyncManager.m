@@ -68,7 +68,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         [self addObservers];
         
         if ([self.tsAccountManager isRegisteredAndReady]) {
@@ -209,7 +209,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 }
 
 - (void)sendConfigurationSyncMessage {
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         if (!self.tsAccountManager.isRegisteredAndReady) {
             return;
         }
@@ -394,7 +394,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }
 
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
             dispatch_async(self.serialQueue, ^{
                 if (debounce && self.isRequestInFlight) {
                     // De-bounce.  It's okay if we ignore some new changes;

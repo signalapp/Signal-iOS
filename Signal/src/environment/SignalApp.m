@@ -50,7 +50,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
     [self handleCrashDetection];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self warmCachesAsync]; }];
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self warmCachesAsync]; }];
 
     return self;
 }

@@ -66,7 +66,7 @@ public class BulkProfileFetch: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // Try to update missing & stale profiles on launch.
             DispatchQueue.global(qos: .utility).async {
                 self.fetchMissingAndStaleProfiles()

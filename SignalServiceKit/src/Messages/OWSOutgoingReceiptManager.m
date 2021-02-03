@@ -75,7 +75,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
                                                object:nil];
 
     // Start processing.
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         [self process];
     }];
 

@@ -42,7 +42,7 @@ public class UUIDBackfillTask: NSObject {
     // MARK: - Public
 
     func performWithCompletion(_ completion: @escaping () -> Void = {}) {
-        readiness.runNowOrWhenAppDidBecomeReady {
+        readiness.runNowOrWhenAppDidBecomeReadySync {
             self.queue.async {
                 self.onqueue_start(with: completion)
             }
@@ -181,8 +181,8 @@ extension UUIDBackfillTask {
     class ReadinessProvider {
         static var `default`: ReadinessProvider { return ReadinessProvider() }
 
-        func runNowOrWhenAppDidBecomeReady(_ workItem: @escaping () -> Void) {
-            AppReadiness.runNowOrWhenAppDidBecomeReady(workItem)
+        func runNowOrWhenAppDidBecomeReadySync(_ workItem: @escaping () -> Void) {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync(workItem)
         }
     }
 }

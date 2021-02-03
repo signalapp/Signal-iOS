@@ -74,7 +74,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.configure()
         }
     }

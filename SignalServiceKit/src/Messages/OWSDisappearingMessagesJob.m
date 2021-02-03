@@ -63,7 +63,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     // suspenders in case a deletion schedule is missed.
     NSTimeInterval kFallBackTimerInterval = 5 * kMinuteInterval;
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         if (CurrentAppContext().isMainApp) {
             self.fallbackTimer = [NSTimer weakScheduledTimerWithTimeInterval:kFallBackTimerInterval
                                                                       target:self
@@ -206,7 +206,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)startIfNecessary
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         OWSAssertIsOnMainThread();
 
         if (self.hasStarted) {
@@ -228,7 +228,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)schedulePass
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{ [self runLoop]; });
     }];
 }
@@ -305,7 +305,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         [self resetNextDisappearanceTimer];
 
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{ [self runLoop]; });
@@ -327,7 +327,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             NSUInteger deletedCount = [self runLoop];
 
@@ -383,7 +383,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             [self runLoop];
         });

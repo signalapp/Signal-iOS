@@ -136,7 +136,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [self setup];
     }];
 

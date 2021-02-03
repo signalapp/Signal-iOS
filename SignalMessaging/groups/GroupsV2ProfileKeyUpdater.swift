@@ -61,7 +61,7 @@ class GroupsV2ProfileKeyUpdater {
     @objc func didBecomeActive() {
         AssertIsOnMainThread()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.tryToUpdateNext()
         }
     }
@@ -69,7 +69,7 @@ class GroupsV2ProfileKeyUpdater {
     @objc func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.tryToUpdateNext()
         }
     }

@@ -67,7 +67,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
         if (self.mode == OWS2FAMode_V1) {
             OWSLogInfo(@"Migrating V1 reglock to V2 reglock");
 

@@ -65,7 +65,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         // IOS-782: +[Theme shared] re-enterant initialization
         // AppReadiness will invoke the block synchronously if the app is already ready.
         // This doesn't work here, because we'll end up reenterantly calling +shared

@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(errorHandle != nil);
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [self appDidBecomeReady];
     }];
 

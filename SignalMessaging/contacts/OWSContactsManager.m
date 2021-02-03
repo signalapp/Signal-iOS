@@ -510,7 +510,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
         OWSAssertDebug(address.isValid);
 

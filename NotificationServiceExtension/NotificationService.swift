@@ -67,7 +67,7 @@ class NotificationService: UNNotificationServiceExtension {
 
             Logger.info("Processing received notification.")
 
-            AppReadiness.runNowOrWhenAppDidBecomeReady { self.fetchAndProcessMessages() }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync { self.fetchAndProcessMessages() }
         }
     }
 

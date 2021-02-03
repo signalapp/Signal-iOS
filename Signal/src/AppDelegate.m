@@ -499,7 +499,7 @@ void uncaughtExceptionHandler(NSException *exception)
 - (BOOL)tryToShowStickerPackView:(StickerPackInfo *)stickerPackInfo
 {
     OWSAssertDebug(!self.didAppLaunchFail);
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         if (!self.tsAccountManager.isRegistered) {
             OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
             return;
@@ -528,7 +528,7 @@ void uncaughtExceptionHandler(NSException *exception)
         return NO;
     }
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         if (!self.tsAccountManager.isRegistered) {
             OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
             return;
@@ -563,7 +563,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [self handleActivation];
     }];
 
@@ -584,7 +584,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
 - (void)enableBackgroundRefreshIfNecessary
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         if (OWS2FAManager.shared.isRegistrationLockEnabled && [self.tsAccountManager isRegisteredAndReady]) {
             // Ping server once a day to keep-alive reglock clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
@@ -676,7 +676,7 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [AppEnvironment.shared.notificationPresenter clearAllNotifications];
         [OWSMessageUtils.shared updateApplicationBadgeCount];
     }];
@@ -693,7 +693,7 @@ void uncaughtExceptionHandler(NSException *exception)
         return;
     }
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         if (![self.tsAccountManager isRegisteredAndReady]) {
             ActionSheetController *controller = [[ActionSheetController alloc]
                 initWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
@@ -758,7 +758,7 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
 
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
             if (![self.tsAccountManager isRegisteredAndReady]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
@@ -785,7 +785,7 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
 
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
             if (![self.tsAccountManager isRegisteredAndReady]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
@@ -841,7 +841,7 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
 
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
             if (![self.tsAccountManager isRegisteredAndReady]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
@@ -889,7 +889,7 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
 
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
             if (![self.tsAccountManager isRegisteredAndReady]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
                 return;
@@ -1044,7 +1044,7 @@ void uncaughtExceptionHandler(NSException *exception)
         return;
     }
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [self.messageFetcherJob runObjc];
 
         if (completion != nil) {
@@ -1057,7 +1057,7 @@ void uncaughtExceptionHandler(NSException *exception)
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
     OWSLogInfo(@"performing background fetch");
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [self.messageFetcherJob runObjc].then(^{
             // HACK: Call completion handler after n seconds.
             //
@@ -1198,7 +1198,7 @@ void uncaughtExceptionHandler(NSException *exception)
     [self enableBackgroundRefreshIfNecessary];
 
     if ([self.tsAccountManager isRegisteredAndReady]) {
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
             OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -1242,7 +1242,7 @@ void uncaughtExceptionHandler(NSException *exception)
     __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
     OWSLogInfo(@"");
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^() {
         // We need to respect the in-app notification sound preference. This method, which is called
         // for modern UNUserNotification users, could be a place to do that, but since we'd still
         // need to handle this behavior for legacy UINotification users anyway, we "allow" all
@@ -1263,7 +1263,7 @@ void uncaughtExceptionHandler(NSException *exception)
                                        __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
 {
     OWSLogInfo(@"");
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^() {
         [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
     }];
 }
@@ -1298,7 +1298,7 @@ void uncaughtExceptionHandler(NSException *exception)
                     // does not attempt to process messages while we are active.
                     [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppHandledNotification];
 
-                    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+                    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
                         [self.messageFetcherJob runObjc];
                     }];
                 }];

@@ -373,7 +373,7 @@ extension UUIDBackfillTaskTest {
             }
         }
 
-        override func runNowOrWhenAppDidBecomeReady(_ workItem: @escaping () -> Void) {
+        override func runNowOrWhenAppDidBecomeReadySync(_ workItem: @escaping () -> Void) {
             if ready {
                 workItem()
             } else {

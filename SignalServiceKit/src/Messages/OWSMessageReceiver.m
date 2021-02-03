@@ -296,7 +296,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
         [self.pipelineSupervisor registerPipelineStage:self];
         [self drainQueue];
     }];
@@ -353,7 +353,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self drainQueue]; }];
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self drainQueue]; }];
 }
 
 #pragma mark - Instance methods
@@ -507,7 +507,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)supervisorDidResumeMessageProcessing:(OWSMessagePipelineSupervisor *)supervisor
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self drainQueue]; }];
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self drainQueue]; }];
 }
 
 @end
@@ -538,7 +538,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     _yapProcessingQueue = yapProcessingQueue;
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self.yapProcessingQueue drainQueue]; }];
+    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self.yapProcessingQueue drainQueue]; }];
 
     return self;
 }
