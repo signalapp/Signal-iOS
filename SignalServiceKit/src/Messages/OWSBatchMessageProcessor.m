@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBatchMessageProcessor.h"
@@ -149,10 +149,10 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
                                                object:nil];
 
     // Start processing.
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:runNowOrWhenAppDidBecomeReadySync:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         [self.pipelineSupervisor registerPipelineStage:self];
         [self drainQueue];
-    }];
+    });
 
     return self;
 }
@@ -209,7 +209,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self drainQueue]; }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self drainQueue]; });
 }
 
 #pragma mark - instance methods
@@ -393,7 +393,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
 - (void)supervisorDidResumeMessageProcessing:(OWSMessagePipelineSupervisor *)supervisor
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self drainQueue]; }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self drainQueue]; });
 }
 
 @end
@@ -421,7 +421,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
     _processingQueue = [OWSMessageContentQueue new];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{ [self.processingQueue drainQueue]; }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self.processingQueue drainQueue]; });
 
     return self;
 }

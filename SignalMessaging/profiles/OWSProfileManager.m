@@ -143,12 +143,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
             [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
         }
-    }];
+    });
 
     [self observeNotifications];
 
@@ -872,7 +872,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSAssertDebug(addresses);
 
     // Try to avoid opening a write transaction.
-    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
             NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
                                                                                        transaction:readTransaction];
@@ -887,7 +887,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                              transaction:writeTransaction];
             });
         }];
-    }];
+    });
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
@@ -2074,9 +2074,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 - (void)blockListDidChange:(NSNotification *)notification {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
-        [self rotateLocalProfileKeyIfNecessary];
-    }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self rotateLocalProfileKeyIfNecessary]; });
 }
 
 #ifdef DEBUG

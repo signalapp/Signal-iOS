@@ -217,14 +217,12 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         if (!CurrentAppContext().isMainApp) {
             [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
         }
-    }];
-    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
-        [self updateAccountAttributesIfNecessary];
-    }];
+    });
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self updateAccountAttributesIfNecessary]; });
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged)
@@ -1031,9 +1029,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (void)reachabilityChanged {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyAsync:^{
-        [self updateAccountAttributesIfNecessary];
-    }];
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self updateAccountAttributesIfNecessary]; });
 }
 
 #pragma mark - Notifications

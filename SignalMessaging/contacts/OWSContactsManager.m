@@ -95,11 +95,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
+    AppReadinessRunNowOrWhenAppWillBecomeReady(^{
         [self setup];
         
         [self startObserving];
-    }];
+    });
 
     return self;
 }
@@ -510,12 +510,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
         OWSAssertDebug(address.isValid);
 
         [self removeAllFromAvatarCacheWithKey:address.stringForDisplay];
-    }];
+    });
 }
 
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts

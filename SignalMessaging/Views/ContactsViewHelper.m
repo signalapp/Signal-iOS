@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     _observers = [NSHashTable weakObjectsHashTable];
     _blockListCache = [OWSBlockListCache new];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         // setup() - especially updateContacts() - can
         // be expensive, so we don't want to run that
         // directly in runNowOrWhenAppDidBecomeReadySync().
@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
         // without introducing the risk of a 0x8badf00d
         // crash.
         dispatch_async(dispatch_get_main_queue(), ^{ [self setup]; });
-    }];
+    });
 
     return self;
 }

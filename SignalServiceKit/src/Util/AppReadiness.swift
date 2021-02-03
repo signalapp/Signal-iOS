@@ -1,34 +1,37 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
 @objc
 public class AppReadiness: NSObject {
-    
+
     private static let shared = AppReadiness()
 
-    typealias BlockType = () -> Void
-    
+    public typealias BlockType = () -> Void
+
     private override init() {
         super.init()
-        
+
         SwiftSingletons.register(self)
     }
-        
+
     private let readyFlag = ReadyFlag(name: "AppReadiness", queueMode: .mainThread)
 
     @objc
-    static var isAppReady: Bool { shared.readyFlag.isSet }
+    public static var isAppReady: Bool { shared.readyFlag.isSet }
 
     @objc
-    static func setAppIsReady() {
+    public static func setAppIsReady() {
         AssertIsOnMainThread()
         owsAssertDebug(!shared.readyFlag.isSet)
-        
+
         Logger.info("")
-        
+
         shared.readyFlag.setIsReady()
     }
-    
+
     // MARK: - Readiness Blocks
 
     // If the app is ready, the block is called immediately;
@@ -51,61 +54,87 @@ public class AppReadiness: NSObject {
     //   since they avoid a stampede of activity on launch.
 
     private static let defaultPriority: ReadyFlag.Priority = 0
-    
-    @objc
-    static func runNowOrWhenAppWillBecomeReady(_ block: @escaping BlockType,
-                                               file: String = #file,
-                                               function: String = #function,
-                                               line: Int = #line) {
+
+    public static func runNowOrWhenAppWillBecomeReady(_ block: @escaping BlockType,
+                                                      file: String = #file,
+                                                      function: String = #function,
+                                                      line: Int = #line) {
         let label = Self.buildLabel(file: file, function: function, line: line)
         let priority = Self.defaultPriority
-        DispatchMainThreadSafe() {
+        DispatchMainThreadSafe {
             shared.runNowOrWhenAppWillBecomeReady(block,
                                                   label: label,
                                                   priority: priority)
         }
     }
-    
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    static func runNowOrWhenAppWillBecomeReady(_ block: @escaping BlockType,
+                                               label: String) {
+        let priority = Self.defaultPriority
+        DispatchMainThreadSafe {
+            shared.runNowOrWhenAppWillBecomeReady(block,
+                                                  label: label,
+                                                  priority: priority)
+        }
+    }
+
     private func runNowOrWhenAppWillBecomeReady(_ block: @escaping BlockType,
                                                 label: String,
                                                 priority: ReadyFlag.Priority) {
         AssertIsOnMainThread()
-        
+
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return
         }
-        
+
         readyFlag.runNowOrWhenWillBecomeReady(block, label: label, priority: priority)
     }
-    
-    @objc
-    static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
-                                                  file: String = #file,
-                                                  function: String = #function,
-                                                  line: Int = #line) {
+
+    // MARK: -
+
+    public static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
+                                                         file: String = #file,
+                                                         function: String = #function,
+                                                         line: Int = #line) {
         let label = Self.buildLabel(file: file, function: function, line: line)
         let priority = Self.defaultPriority
-        DispatchMainThreadSafe() {
+        DispatchMainThreadSafe {
             shared.runNowOrWhenAppDidBecomeReadySync(block,
                                                      label: label,
                                                      priority: priority)
         }
     }
-    
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    static func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
+                                                  label: String) {
+        let priority = Self.defaultPriority
+        DispatchMainThreadSafe {
+            shared.runNowOrWhenAppDidBecomeReadySync(block,
+                                                     label: label,
+                                                     priority: priority)
+        }
+    }
+
     private func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
                                                    label: String,
                                                    priority: ReadyFlag.Priority) {
         AssertIsOnMainThread()
-        
+
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return
         }
-        
+
         readyFlag.runNowOrWhenDidBecomeReadySync(block, label: label, priority: priority)
     }
-    
+
+    // MARK: -
+
     // We now have many (36+ in best case; many more in worst case)
     // "app did become ready" blocks, many of which
     // perform database writes. This can cause a "stampede" of writes
@@ -121,33 +150,45 @@ public class AppReadiness: NSObject {
     // perform them one-by-one with slight delays between them to
     // reduce the risk of starving the main thread, especially if
     // any given block is expensive.
-    @objc
-    static func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping BlockType,
-                                                   file: String = #file,
-                                                   function: String = #function,
-                                                   line: Int = #line) {
+
+    public static func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping BlockType,
+                                                          file: String = #file,
+                                                          function: String = #function,
+                                                          line: Int = #line) {
         let label = Self.buildLabel(file: file, function: function, line: line)
         let priority = Self.defaultPriority
-        DispatchMainThreadSafe() {
+        DispatchMainThreadSafe {
             shared.runNowOrWhenAppDidBecomeReadyAsync(block,
                                                       label: label,
                                                       priority: priority)
         }
     }
-    
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    static func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping BlockType,
+                                                   label: String) {
+        let priority = Self.defaultPriority
+        DispatchMainThreadSafe {
+            shared.runNowOrWhenAppDidBecomeReadyAsync(block,
+                                                      label: label,
+                                                      priority: priority)
+        }
+    }
+
     private func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping BlockType,
                                                     label: String,
                                                     priority: ReadyFlag.Priority) {
         AssertIsOnMainThread()
-        
+
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
             return
         }
-        
+
         readyFlag.runNowOrWhenDidBecomeReadyAsync(block, label: label, priority: priority)
     }
-    
+
     private static func buildLabel(file: String, function: String, line: Int) -> String {
         let filename = (file as NSString).lastPathComponent
         // We format the filename & line number in a format compatible

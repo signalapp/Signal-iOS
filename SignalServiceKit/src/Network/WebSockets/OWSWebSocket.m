@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSWebSocket.h"
@@ -1094,11 +1094,8 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            [AppReadiness runNowOrWhenAppDidBecomeReadySync:^{
-                [self applyDesiredSocketState];
-            }];
-        });
+        dispatch_once(
+            &onceToken, ^{ AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self applyDesiredSocketState]; }); });
         return;
     }
 
