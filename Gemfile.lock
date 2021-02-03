@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/signalapp/cocoapods-binary.git
-  revision: 0abc38a2cfd8810e3c5492d5ec4463a486a8497a
-  branch: nt/fix-readlink
+  revision: c5c5a8bb6ecb2a397e3a4861d742a089dd875676
+  branch: jrose/acknowledgements
   specs:
     cocoapods-binary (0.4.4)
       cocoapods (>= 1.5.0, < 2.0)
