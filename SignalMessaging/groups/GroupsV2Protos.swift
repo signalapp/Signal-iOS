@@ -522,7 +522,8 @@ public class GroupsV2Protos {
             avatarUrlPaths += collectAvatarUrlPaths(groupProto: groupState)
 
             guard let changeProto = changeStateProto.groupChange else {
-                throw OWSAssertionError("Missing groupChange proto.")
+                owsFailDebug("Missing groupChange proto.")
+                throw GroupsV2Error.missingGroupChangeProtos
             }
             // We can ignoreSignature because these protos came from the service.
             let changeActionsProto = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: ignoreSignature)

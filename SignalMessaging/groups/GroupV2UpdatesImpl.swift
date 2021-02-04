@@ -272,6 +272,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 } else if case GroupsV2Error.timeout = error {
                     Logger.warn("Group refresh timed out: \(error)")
                     nsError.isRetryable = true
+                } else if case GroupsV2Error.missingGroupChangeProtos = error {
+                    Logger.warn("Group state missing change protos: \(error)")
+                    nsError.isRetryable = false
                 } else {
                     owsFailDebug("Group refresh failed: \(error)")
                     nsError.isRetryable = true
@@ -353,6 +356,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         return true
                     case GroupsV2Error.cantApplyChangesToPlaceholder:
                         // We can only update placeholder groups using a snapshot.
+                        return true
+                    case GroupsV2Error.missingGroupChangeProtos:
+                        // If the service returns a group state without change protos,
+                        // fail over to the snapshot.
                         return true
                     default:
                         owsFailDebug("Error: \(error)")
