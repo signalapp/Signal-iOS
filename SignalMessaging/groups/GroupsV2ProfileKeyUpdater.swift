@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -100,7 +100,7 @@ class GroupsV2ProfileKeyUpdater {
     public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
         TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
             guard let groupThread = thread as? TSGroupThread,
-                groupThread.isGroupV2Thread else {
+                  groupThread.isGroupV2Thread else {
                 return
             }
             self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
@@ -118,8 +118,8 @@ class GroupsV2ProfileKeyUpdater {
         let groupMembership = groupThread.groupModel.groupMembership
         // We only need to update v2 groups of which we are a full member.
         guard groupThread.isGroupV2Thread,
-            groupMembership.isFullMember(localAddress) else {
-                return
+              groupMembership.isFullMember(localAddress) else {
+            return
         }
         let groupId = groupThread.groupModel.groupId
         let key = self.key(for: groupId)
@@ -181,7 +181,7 @@ class GroupsV2ProfileKeyUpdater {
                     self.markAsComplete(groupId: groupId)
                 case is NetworkManagerError:
                     if let statusCode = error.httpStatusCode,
-                        400 <= statusCode && statusCode <= 599 {
+                       400 <= statusCode && statusCode <= 599 {
                         // If a non-recoverable error occurs (e.g. we've been kicked
                         // out of the group), give up.
                         Logger.info("Failed: \(statusCode)")
@@ -264,7 +264,7 @@ class GroupsV2ProfileKeyUpdater {
         }.then(on: .global()) { (groupThread: TSGroupThread) throws -> Promise<Void> in
             return firstly {
                 return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-            }.map(on: .global()) { () throws -> GroupsV2ChangeSet in
+            }.map(on: .global()) { () throws -> GroupsV2OutgoingChanges in
                 let groupId = groupThread.groupModel.groupId
 
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -272,12 +272,12 @@ class GroupsV2ProfileKeyUpdater {
                     throw GroupsV2Error.shouldDiscard
                 }
                 let groupSecretParamsData = groupModel.secretParamsData
-                let changeSet = GroupsV2ChangeSetImpl(groupId: groupId,
-                                                      groupSecretParamsData: groupSecretParamsData)
-                changeSet.setShouldUpdateLocalProfileKey()
-                return changeSet
-            }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-                return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
+                let changes = GroupsV2OutgoingChangesImpl(groupId: groupId,
+                                                          groupSecretParamsData: groupSecretParamsData)
+                changes.setShouldUpdateLocalProfileKey()
+                return changes
+            }.then(on: DispatchQueue.global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
+                return self.groupsV2.updateExistingGroupOnService(changes: changes)
             }.asVoid()
         }
     }

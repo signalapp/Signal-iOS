@@ -37,7 +37,7 @@ import ZKGroup
 //   GroupsV2Error.redundantChange when computing a GroupChange proto.
 // * If we add (alice and bob) but another user adds (alice) first, we'll just add (bob).
 @objc
-public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
+public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
 
     // MARK: - Dependencies
 
@@ -176,10 +176,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         for uuid in oldUserUuids.intersection(newUserUuids) {
             if oldGroupMembership.isInvitedMember(uuid),
-                newGroupMembership.isFullMember(uuid) {
+               newGroupMembership.isFullMember(uuid) {
                 addMember(uuid, role: .normal)
             } else if oldGroupMembership.isRequestingMember(uuid),
-                newGroupMembership.isFullMember(uuid) {
+                      newGroupMembership.isFullMember(uuid) {
                 // We only currently support accepting join requests
                 // with "normal" role.
                 addMember(uuid, role: .normal)
@@ -311,8 +311,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             inviteLinkPasswordMode = .ignore
         case .enabledWithoutApproval, .enabledWithApproval:
             accessForAddFromInviteLink = (linkMode == .enabledWithoutApproval
-                ? .any
-                : .administrator)
+                                            ? .any
+                                            : .administrator)
             inviteLinkPasswordMode = .ensureValid
         }
     }
@@ -473,7 +473,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()
             case .ensureValid:
                 if let oldInviteLinkPassword = currentGroupModel.inviteLinkPassword,
-                    !oldInviteLinkPassword.isEmpty {
+                   !oldInviteLinkPassword.isEmpty {
                     newInviteLinkPassword = oldInviteLinkPassword
                 } else {
                     newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()

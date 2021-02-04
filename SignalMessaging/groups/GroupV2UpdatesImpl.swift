@@ -113,9 +113,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                           groupSecretParamsData: Data,
                                           groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         tryToRefreshV2GroupThread(groupId: groupId,
-                                          groupSecretParamsData: groupSecretParamsData,
-                                          groupUpdateMode: groupUpdateMode,
-                                          groupModelOptions: [])
+                                  groupSecretParamsData: groupSecretParamsData,
+                                  groupUpdateMode: groupUpdateMode,
+                                  groupModelOptions: [])
     }
 
     public func tryToRefreshV2GroupThread(groupId: Data,
@@ -392,11 +392,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         guard groupThread.groupModel.groupsVersion == .V2 else {
             throw OWSAssertionError("Invalid groupsVersion.")
         }
-        let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
-                                                                             changeActionsProto: changeActionsProto,
-                                                                             downloadedAvatars: downloadedAvatars,
-                                                                             groupModelOptions: [],
-                                                                             transaction: transaction)
+        let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(groupThread: groupThread,
+                                                                                     changeActionsProto: changeActionsProto,
+                                                                                     downloadedAvatars: downloadedAvatars,
+                                                                                     groupModelOptions: [],
+                                                                                     transaction: transaction)
         guard changedGroupModel.newGroupModel.revision > changedGroupModel.oldGroupModel.revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
         }
@@ -438,7 +438,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                           groupModelOptions: groupModelOptions)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update via changes") {
-                    GroupsV2Error.timeout
+            GroupsV2Error.timeout
         }
     }
 
@@ -682,11 +682,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     newDisappearingMessageToken = snapshot.disappearingMessageToken
                     newProfileKeys = snapshot.profileKeys
                 } else {
-                    let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
-                                                                                         changeActionsProto: changeActionsProto,
-                                                                                         downloadedAvatars: diff.downloadedAvatars,
-                                                                                         groupModelOptions: groupModelOptions,
-                                                                                         transaction: transaction)
+                    let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(groupThread: groupThread,
+                                                                                                 changeActionsProto: changeActionsProto,
+                                                                                                 downloadedAvatars: diff.downloadedAvatars,
+                                                                                                 groupModelOptions: groupModelOptions,
+                                                                                                 transaction: transaction)
                     newGroupModel = changedGroupModel.newGroupModel
                     newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
                     newProfileKeys = changedGroupModel.profileKeys
@@ -724,7 +724,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 // If the group state includes a stale profile key for the
                 // local user, schedule an update to fix that.
                 if let profileKey = newProfileKeys[localUuid],
-                    profileKey != localProfileKey.keyData {
+                   profileKey != localProfileKey.keyData {
                     shouldUpdateProfileKeyInGroup = true
                 }
 
@@ -945,7 +945,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             // If the group state includes a stale profile key for the
             // local user, schedule an update to fix that.
             if let profileKey = groupV2Snapshot.profileKeys[localUuid],
-                profileKey != localProfileKey.keyData {
+               profileKey != localProfileKey.keyData {
                 self.groupsV2.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
             }
 
