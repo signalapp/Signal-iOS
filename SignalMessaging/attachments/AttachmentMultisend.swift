@@ -45,13 +45,9 @@ public class AttachmentMultisend {
                 var messages: [TSOutgoingMessage] = []
 
                 for (conversation, attachments) in conversationAttachments {
-                    let thread: TSThread
-                    switch conversation.messageRecipient {
-                    case .contact(let address):
-                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                                   transaction: transaction)
-                    case .group(let groupThread):
-                        thread = groupThread
+                    guard let thread = conversation.thread(transaction: transaction) else {
+                        owsFailDebug("Missing thread for conversation")
+                        continue
                     }
 
                     // If this thread has a pending message request, treat it as accepted.
@@ -121,13 +117,9 @@ public class AttachmentMultisend {
             self.databaseStorage.write { transaction in
 
                 for (conversation, attachments) in conversationAttachments {
-                    let thread: TSThread
-                    switch conversation.messageRecipient {
-                    case .contact(let address):
-                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                                   transaction: transaction)
-                    case .group(let groupThread):
-                        thread = groupThread
+                    guard let thread = conversation.thread(transaction: transaction) else {
+                        owsFailDebug("Missing thread for conversation")
+                        continue
                     }
 
                     // If this thread has a pending message request, treat it as accepted.

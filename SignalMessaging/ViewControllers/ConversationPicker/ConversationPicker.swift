@@ -147,7 +147,7 @@ open class ConversationPickerViewController: OWSViewController {
     func buildGroupItem(_ groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> GroupConversationItem {
         let isBlocked = self.blockListCache.isBlocked(thread: groupThread)
         let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
-        return GroupConversationItem(groupThread: groupThread,
+        return GroupConversationItem(groupThreadId: groupThread.uniqueId,
                                      isBlocked: isBlocked,
                                      disappearingMessagesConfig: dmConfig)
     }
@@ -290,8 +290,8 @@ open class ConversationPickerViewController: OWSViewController {
 
     public func conversation(for thread: TSThread) -> ConversationItem? {
         return conversationCollection.allConversations.first { item in
-            if let thread = thread as? TSGroupThread, case .group(let otherThread) = item.messageRecipient {
-                return thread.uniqueId == otherThread.uniqueId
+            if let thread = thread as? TSGroupThread, case .group(let otherThreadId) = item.messageRecipient {
+                return thread.uniqueId == otherThreadId
             } else if let thread = thread as? TSContactThread, case .contact(let otherAddress) = item.messageRecipient {
                 return thread.contactAddress == otherAddress
             } else {
@@ -488,7 +488,13 @@ extension ConversationPickerViewController: UITableViewDelegate {
                                                                 tableView.reloadData()
                                                                 self.restoreSelection(tableView: tableView)
                 }
-            case .group(let groupThread):
+            case .group(let groupThreadId):
+                guard let groupThread = databaseStorage.read(block: { transaction in
+                    return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+                }) else {
+                    owsFailDebug("Missing group thread for blocked thread")
+                    return nil
+                }
                 BlockListUIUtils.showUnblockThreadActionSheet(groupThread,
                                                               from: self) { isStillBlocked in
                                                                 AssertIsOnMainThread()
@@ -647,7 +653,14 @@ private class ConversationPickerCell: ContactTableViewCell {
         switch conversationItem.messageRecipient {
         case .contact(let address):
             super.configure(withRecipientAddress: address, transaction: transaction)
-        case .group(let groupThread):
+        case .group(let groupThreadId):
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(
+                uniqueId: groupThreadId,
+                transaction: transaction
+            ) else {
+                owsFailDebug("Failed to find group thread")
+                break
+            }
             super.configure(with: groupThread, transaction: transaction)
         }
 

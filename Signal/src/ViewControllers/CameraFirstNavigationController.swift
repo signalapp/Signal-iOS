@@ -62,8 +62,11 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] {
         guard selectedConversations.count == 1,
-            case .group(let groupThread) = selectedConversations.first?.messageRecipient,
-            Mention.threadAllowsMentionSend(groupThread) else { return [] }
+              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient,
+              let groupThread = SDSDatabaseStorage.shared.uiRead(block: { transaction in
+                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+              }),
+              Mention.threadAllowsMentionSend(groupThread) else { return [] }
         return groupThread.recipientAddresses
     }
 }

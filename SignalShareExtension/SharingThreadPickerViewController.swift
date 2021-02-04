@@ -350,15 +350,10 @@ extension SharingThreadPickerViewController {
 
             self.databaseStorage.write { transaction in
                 for conversation in conversationItems {
-                    let thread: TSThread
-                    switch conversation.messageRecipient {
-                    case .contact(let address):
-                        thread = TSContactThread.getOrCreateThread(withContactAddress: address,
-                                                                   transaction: transaction)
-                    case .group(let groupThread):
-                        thread = groupThread
+                    guard let thread = conversation.thread(transaction: transaction) else {
+                        owsFailDebug("Missing thread for conversation")
+                        continue
                     }
-
                     threads.append(thread)
                 }
             }
@@ -618,8 +613,11 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
         guard selectedConversationsForConversationPicker.count == 1,
-            case .group(let groupThread) = selectedConversationsForConversationPicker.first?.messageRecipient,
-            Mention.threadAllowsMentionSend(groupThread) else { return [] }
+              case .group(let groupThreadId) = selectedConversationsForConversationPicker.first?.messageRecipient,
+              let groupThread = databaseStorage.uiRead(block: { transaction in
+                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+              }),
+              Mention.threadAllowsMentionSend(groupThread) else { return [] }
         return groupThread.recipientAddresses
     }
 }
