@@ -361,7 +361,7 @@ CHECKOUT OPTIONS:
     :commit: b6985abcacda0292b82785ba93b8be47c0d608b6
     :git: https://github.com/signalapp/HKDFKit.git
   libPhoneNumber-iOS:
-    :commit: 01c0b2a0626a149c98d3cfa4909184843f094293
+    :commit: 9e30e12883947b95972c1eee36b6801a09689364
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
