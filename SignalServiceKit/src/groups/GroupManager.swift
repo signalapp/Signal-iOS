@@ -1651,8 +1651,8 @@ public class GroupManager: NSObject {
             if thread.isGroupV1Thread,
                let avatarData = groupModel.groupAvatarData,
                avatarData.count > 0 {
-                if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
-                    let attachment = GroupUpdateMessageAttachment(contentType: OWSMimeTypeImagePng, dataSource: dataSource)
+                if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "jpg") {
+                    let attachment = GroupUpdateMessageAttachment(contentType: OWSMimeTypeImageJpeg, dataSource: dataSource)
                     return self.sendGroupUpdateMessage(message, thread: thread, attachment: attachment)
                 }
             }
@@ -1675,6 +1675,7 @@ public class GroupManager: NSObject {
             return firstly(on: .global()) { () -> Promise<Void> in
                 if let attachment = attachment {
                     // v1 group update with avatar.
+                    owsAssertDebug(TSGroupModel.isValidGroupAvatarData(attachment.dataSource.data))
                     return self.messageSender.sendTemporaryAttachment(.promise,
                                                                       dataSource: attachment.dataSource,
                                                                       contentType: attachment.contentType,

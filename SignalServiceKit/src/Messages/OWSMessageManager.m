@@ -2013,12 +2013,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     _Nullable id<DataSource> groupAvatarDataSource;
     if (groupAvatarData.length > 0) {
-        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"png"];
+        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:@"jpg"];
     }
     if (groupAvatarDataSource != nil) {
         [self.messageSenderJobQueue addMediaMessage:message
                                          dataSource:groupAvatarDataSource
-                                        contentType:OWSMimeTypeImagePng
+                                        contentType:OWSMimeTypeImageJpeg
                                      sourceFilename:nil
                                             caption:nil
                                      albumMessageId:nil

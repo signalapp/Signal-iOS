@@ -211,6 +211,10 @@ struct GroupAvatar {
             owsFailDebug("Invalid image data.")
             return nil
         }
+        guard TSGroupModel.isValidGroupAvatarData(imageData) else {
+            owsFailDebug("Invalid group avatar.")
+            return nil
+        }
         guard let image = UIImage(data: imageData) else {
             owsFailDebug("Could not load image.")
             return nil
@@ -223,6 +227,10 @@ struct GroupAvatar {
             return nil
         }
         guard let imageData = TSGroupModel.data(forGroupAvatar: image) else {
+            owsFailDebug("Invalid image.")
+            return nil
+        }
+        guard TSGroupModel.isValidGroupAvatarData(imageData) else {
             owsFailDebug("Invalid image.")
             return nil
         }

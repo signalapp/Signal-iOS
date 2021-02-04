@@ -77,7 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (group.groupAvatarData.length > 0) {
         SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
 
-        [avatarBuilder setContentType:OWSMimeTypeImagePng];
+        OWSAssertDebug([TSGroupModel isValidGroupAvatarData:group.groupAvatarData]);
+        [avatarBuilder setContentType:OWSMimeTypeImageJpeg];
         groupAvatarData = group.groupAvatarData;
         [avatarBuilder setLength:(uint32_t)groupAvatarData.length];
 

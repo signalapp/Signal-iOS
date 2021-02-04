@@ -4,6 +4,7 @@
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
+#import "NSData+Image.h"
 #import "UIImage+OWS.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
@@ -12,6 +13,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Be careful tweaking this value. We currently store group avatars in the group model,
+// and a ton of these live in memory at any time. Avoid increasing this value until we have
+// a better solution.
+const NSUInteger kMaxAvatarSize = 500 * 1000;
+const CGFloat kMaxAvatarDimension = 1024;
 const int32_t kGroupIdLengthV1 = 16;
 const int32_t kGroupIdLengthV2 = 32;
 
@@ -37,6 +43,8 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                         members:(NSArray<SignalServiceAddress *> *)members
                  addedByAddress:(nullable SignalServiceAddress *)addedByAddress
 {
+    OWSAssertDebug(!avatarData || [[self class] isValidGroupAvatarData:avatarData]);
+
     self = [super init];
     if (!self) {
         return self;
@@ -98,41 +106,58 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [[GroupMembership alloc] initWithV1Members:[NSSet setWithArray:self.groupMembers]];
 }
 
++ (BOOL)isValidGroupAvatarData:(nullable NSData *)imageData
+{
+    ImageMetadata *metadata = [imageData imageMetadataWithPath:nil mimeType:nil];
+
+    BOOL isValid = YES;
+    isValid = isValid && metadata.isValid;
+    isValid = isValid && metadata.pixelSize.height <= kMaxAvatarDimension;
+    isValid = isValid && metadata.pixelSize.width <= kMaxAvatarDimension;
+    isValid = isValid && imageData.length <= kMaxAvatarSize;
+    return isValid;
+}
+
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image
 {
     if (image == nil) {
         return nil;
     }
-    const CGFloat kMaxDimension = 1024;
-    if (image.pixelWidth > kMaxDimension ||
-        image.pixelHeight > kMaxDimension) {
-        CGFloat thumbnailSizePixels = MIN(kMaxDimension, MIN(image.pixelWidth, image.pixelHeight));
-        image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
 
-        if (image == nil ||
-            image.pixelWidth > kMaxDimension ||
-            image.pixelHeight > kMaxDimension) {
-            OWSLogVerbose(@"Could not resize group avatar: %@",
-                          NSStringFromCGSize(image.pixelSize));
-            OWSFailDebug(@"Could not resize group avatar.");
+    // First, resize the image if necessary
+    if (image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension) {
+        CGFloat thumbnailSizePixels = MIN(kMaxAvatarDimension, MIN(image.pixelWidth, image.pixelHeight));
+        image = [image resizedImageToFillPixelSize:CGSizeMake(thumbnailSizePixels, thumbnailSizePixels)];
+    }
+    if (image.pixelWidth > kMaxAvatarDimension || image.pixelHeight > kMaxAvatarDimension) {
+        OWSLogVerbose(@"Could not resize group avatar: %@", NSStringFromCGSize(image.pixelSize));
+        OWSFailDebug(@"Could not resize group avatar.");
+        return nil;
+    }
+
+    // Then, convert the image to jpeg. Try to use 0.6 compression quality, but we'll ratchet down if the
+    // image is still too large.
+    const CGFloat kMaxQuality = 0.6;
+    NSData *_Nullable imageData = nil;
+    for (CGFloat targetQuality = kMaxQuality; targetQuality >= 0 && imageData == nil; targetQuality -= 0.1) {
+        NSData *data = UIImageJPEGRepresentation(image, targetQuality);
+
+        if (data.length >= 0 && data.length <= kMaxAvatarSize) {
+            imageData = data;
+        } else if (data.length > kMaxAvatarSize) {
+            OWSLogInfo(@"Jpeg representation with quality %f is too large.", targetQuality);
+        } else {
+            OWSFailDebug(@"Failed to generate jpeg representation with quality %f", targetQuality);
             return nil;
         }
     }
-    NSData *_Nullable data = UIImagePNGRepresentation(image);
-    if (data.length < 1) {
-        OWSFailDebug(@"Could not convert group avatar to PNG.");
+
+    // Double check the image is still valid after we converted.
+    if (![self isValidGroupAvatarData:imageData]) {
+        OWSFailDebug(@"Invalid image");
         return nil;
     }
-    // We should almost never hit this limit, given the max dimension above.
-    const NSUInteger kMaxLength = 1024 * 1024 * 2.9;
-    if (data.length > kMaxLength) {
-        OWSLogVerbose(@"Group avatar data length: %lu (%@)",
-                      (unsigned long)data.length,
-                      NSStringFromCGSize(image.pixelSize));
-        OWSFailDebug(@"Group avatar data has invalid length.");
-        return nil;
-    }
-    return data;
+    return imageData;
 }
 
 - (nullable UIImage *)groupAvatarImage

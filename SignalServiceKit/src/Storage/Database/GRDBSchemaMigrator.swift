@@ -138,6 +138,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_disableLinkPreviewForExistingUsers
         case dataMigration_groupIdMapping
         case dataMigration_disableSharingSuggestionsForExistingUsers
+        case dataMigration_removeOversizedGroupAvatars
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1088,6 +1089,28 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             SSKPreferences.setAreSharingSuggestionsEnabled(false, transaction: transaction.asAnyWrite)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_removeOversizedGroupAvatars.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _) in
+                guard let groupThread = thread as? TSGroupThread else { return }
+                guard let avatarData = groupThread.groupModel.groupAvatarData else { return }
+                guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
+
+                var builder = groupThread.groupModel.asBuilder
+                builder.avatarData = nil
+                builder.avatarUrlPath = nil
+
+                do {
+                    let newGroupModel = try builder.build(transaction: transaction.asAnyWrite)
+                    groupThread.update(with: newGroupModel, transaction: transaction.asAnyWrite)
+                } catch {
+                    owsFailDebug("Failed to remove invalid group avatar during migration: \(error)")
+                }
+            }
         }
     }
 }
