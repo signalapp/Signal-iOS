@@ -28,6 +28,9 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "音声メッセージ";
 
+/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal通話";
 
@@ -1121,7 +1124,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "このiPadを新規のリンク済み端末として追加し、メッセージ履歴の移行は行わない";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "新規端末の追加";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "新しい端末として設定";
 
 /* The title for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "移行せずに登録する";

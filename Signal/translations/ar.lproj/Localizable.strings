@@ -28,6 +28,9 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
+/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
 
@@ -2852,34 +2855,34 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "حظر";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "السماح لـ%@ بمراسلتك ومشاركة اسمك وصورة حسابك معهم؟ لن تتمكن من استقبال أي رسائل حتى تقوم بإزالة الحظر عنهم.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "السماح لـ%@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن تستقبل أي رسائل حتى تقوم برفع الحظر عنه.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "إزالة الحظر عن هذه المجموعة ومشاركة اسمك وصورة حسابك مع أعضاءها؟ لن تتمكن من استقبال أي رسائل من المجموعة حتى تقوم بإزالة الحظر عنها.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ارفع الحظر عن هذه المجموعة وشاركة اسمك وصورتك مع أعضاءها؟ لن تستقبل أي رسائل من المجموعة حتى تقوم برفع الحظر عنها.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "إلغاء حظر هذه المجموعة؟ لن يعرفوا أنك قرأت رسائلهم حتى تقوم بإزالة الحظر عنهم.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "رفع حظر هذه المجموعة؟ لن يعلموا أنك قد قرأت رسائلهم حتى تقوم برفع الحظر عنهم.";
 
 /* A button used to continue a conversation and share your profile. */
-"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "استمرار";
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "الاستمرار";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "أحذف  ";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "أأنت بحاجة إلى متابعة محادثتك مع %@ ومشاركة اسمك وصورتك مع هذا الفرد ؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "مُواصلة هذه المُحادثة مع %@ ومُشاركة اسمك وصورتك معه؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "أأنت بحاجة إلى متابعة محادثتك مع هذه المجموعة ومشاركة اسمك وصورتك مع أعضائها ؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "مُواصلة مُحادثتك مع هذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "مشاركة اسمك وصورة حسابك مع %@ والسماح لهم بمراسلتك؟ لن يعلموا أنك شاهدت رسائلهم حتى تقبل دعوة المحادثة.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "السماح لـ %@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن يعلم أنك قد قرأت رسائله حتى تقوم بالقبول.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "الإنضمام لهذه المجموعة ومشاركة اسمك وصورة حسابك الشخصية؟ لن يعلموا أنك شاهدت رسائلهم حتى تقبل دعوة الإنضمام.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "الإنضمام لهذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟ لن يعلموا أنك قد قرأت رسائلهم حتى تقوم بالقبول.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "هل تود الانضمام إلى هذه المجموعة؟ لن يعرفوا أنك قرأت رسائلهم إلّا إذا وافقت.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "الإنضمام لهذه المجموعة؟ لن يعلموا انك قد قرأت رسائلهم حتى تقوم بالقبول.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "رفع الحظر";
@@ -2888,16 +2891,16 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "إلغاء الطلب";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "إلغاء طلب انضمامك لهذه المجموعة ؟";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "إلغاء طلبك في الإنضمام لهذه المجموعة؟";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "تم إرسال طلبك للانضمام إلى المشرفين على المجموعة. سيتم تنبيهك عند اتخاذهم الإجراء المناسب لهم.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "لقد تمّ إرسال طلبك للإنضمام إلى مُشرف المجموعة. سيتم إخطارك عند اتخاذه للإجراء.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "تم الاستلام";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "التنزيل جارٍ...";
+"MESSAGE_STATUS_DOWNLOADING" = "جار التنزيل";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "فشل الإرسال.";
@@ -2906,7 +2909,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "فشل";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "تم الإرسال جزئياً فقط، انقر لمعرفة المزيد";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "تمّ الإرسال جزئياً، انقر للحصول على التفاصيل";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "تمت القراءة";
@@ -2915,40 +2918,40 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "تم تجاوزه";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "الإرسال فشل";
+"MESSAGE_STATUS_SEND_FAILED" = "فشل الإرسال";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "إرسال..";
+"MESSAGE_STATUS_SENDING" = "جار الإرسال...";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "تم الارسال";
+"MESSAGE_STATUS_SENT" = "تمّ الارسال";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "جار التحميل ...";
+"MESSAGE_STATUS_UPLOADING" = "جار الرفع...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "رسالة جديدة";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "لم تعد هناك دلالة تحقق من %@. انقر للحصول على خيارات.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ لم يعُد مُعلَّم كمُتحقق منه. انقر للحصول على الخيارات.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "لم تعد هناك دلالة تحقق من %@. انقر للحصول على خيارات";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ لم يعُد مُعلَّم كمُتحقق منه. انقر للحصول على الخيارات.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "قد حظرت عضوًا في هذه المجموعة";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "أنت قد حظرتَ عضو واحد من هذه المجموعة.";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "قد حظرت %@ عضوًا في المجموعة";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "أنت قد حظرتَ عدد %@ عضو من هذه المجموعة";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "لم يعد هناك دلالة تحقق لأكثر من عضو في هذه المجموعة. انقر للحصول على خيارات.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "أكثر من عضو من هذه المجموعة لم يعُد مُعلّم كمُتحقق منه. انقر للحصول على الخيارات.";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "رسائل جديدة";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "رسائل حديثة";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "مكالمة فائتة";
+"MISSED_CALL" = "مُكالمة فائتة";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "يمكنك تفعيل الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بالمكالمة المرئية في Signal.";
