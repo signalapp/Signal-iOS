@@ -340,11 +340,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"");
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [TSThread anyRemoveAllWithInstantationWithTransaction:transaction];
+        [TSThread anyEnumerateWithTransaction:transaction
+                                      batched:YES
+                                        block:^(TSThread *thread, BOOL *stop) {
+                                            [thread softDeleteThreadWithTransaction:transaction];
+                                        }];
         [TSInteraction anyRemoveAllWithInstantationWithTransaction:transaction];
         [TSAttachment anyRemoveAllWithInstantationWithTransaction:transaction];
-        [SignalRecipient anyRemoveAllWithInstantationWithTransaction:transaction];
-        
+
         // Deleting attachments above should be enough to remove any gallery items, but
         // we redunantly clean up *all* gallery items to be safe.
         [AnyMediaGalleryFinder didRemoveAllContentWithTransaction:transaction];
