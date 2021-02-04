@@ -222,7 +222,16 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             viewControllersToDisplay.append(vc)
             primaryNavController.setViewControllers(viewControllersToDisplay, animated: true)
         } else {
-            viewControllers[1] = vc
+            // There is a race condition at app launch where `isCollapsed` cannot be
+            // relied upon. This leads to a crash where viewControllers is empty, so
+            // setting index 1 is not possible. We know what the primary view controller
+            // should always be, so we attempt to fill it in when that happens. The only
+            // ways this could really be happening is if, somehow, before `viewControllers`
+            // is set in init this method is getting called OR this `viewControllers` is
+            // returning stale information. The latter seems most plausible, but is near
+            // impossible to reproduce.
+            owsAssertDebug(viewControllers.first == primaryNavController)
+            viewControllers = [primaryNavController, vc]
         }
 
         // If the detail VC is a nav controller, we want to keep track of
